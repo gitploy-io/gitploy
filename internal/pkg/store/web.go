@@ -6,18 +6,6 @@ import (
 	"github.com/hanjunlee/gitploy/ent"
 )
 
-type (
-	Store struct {
-		c *ent.Client
-	}
-)
-
-func NewStore(c *ent.Client) *Store {
-	return &Store{
-		c: c,
-	}
-}
-
 func (s *Store) FindUserByID(ctx context.Context, id string) (*ent.User, error) {
 	return s.c.User.Get(ctx, id)
 }
