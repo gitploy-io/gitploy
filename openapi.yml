@@ -1,0 +1,131 @@
+openapi: '3.0.2'
+info:
+  title: gitploy.
+  version: '1.0'
+servers:
+  - url: https://gitploy.jp.ngrok.io/v1
+  - url: https://cloud.gitploy.io/v1
+paths:
+  /sync:
+    post:
+      tags:
+        - common
+      summary: Synchronize with SCM
+      responses:
+        '200':
+          description: OK
+        '401': 
+          $ref: '#/components/responses/401Unauthorized'
+        '503':
+          $ref: '#/components/responses/503InternalError'
+  /repos:
+    get:
+      tags:
+        - Repo
+      summary: List repositories the user can access
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+            description: The page number
+      responses:
+        '200':
+          description: Repositories
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Repositories'
+        '401': 
+          $ref: '#/components/responses/401Unauthorized'
+        '503':
+          $ref: '#/components/responses/503InternalError'
+  /repos/{repoId}:
+    get:
+      tags:
+        - Repo
+      summary: Get repository
+      parameters:
+        - in: path
+          name: repoId
+          required: true
+          schema:
+            type: integer
+            description: The repository id
+      responses:
+        '200':
+          description: Repository
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Repository'
+        '401': 
+          $ref: '#/components/responses/401Unauthorized'
+        '503':
+          $ref: '#/components/responses/503InternalError'
+
+
+security:
+  - BearerAuth: []
+  - OAuth2:
+    - read
+
+components:
+  schemas:
+    Repositories:
+      type: array
+      items:
+        $ref: '#/components/schemas/Repository'
+    Repository:
+      type: object
+      properties:
+        id:
+          type: integer
+        namespace:
+          type: string
+          description: Repository owner
+        name:
+          type: string
+        full_name:
+          type: string
+          description: Full name of repository
+        html_url:
+          type: string
+
+    Error:
+      type: object
+      properties:
+        message: 
+          type: string
+
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      description: Hash key of user
+    OAuth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://github.com/oauth/authorize
+          tokenUrl: https://github.com/oauth/token
+          scopes:
+            read: Grants read access
+            write: Grants write access
+            admin: Grants access to admin operations
+    
+  responses:
+    401Unauthorized:
+      description: Unauthorized access
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+        
+    503InternalError:
+      description: Server internal error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
