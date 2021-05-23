@@ -16,7 +16,7 @@ type (
 
 	SCMConfig struct {
 		ClientID     string
-		ClientSEcret string
+		ClientSecret string
 	}
 
 	Store interface {
