@@ -1,6 +1,8 @@
 package server
 
 import (
+	"fmt"
+
 	"github.com/gin-gonic/gin"
 	"golang.org/x/oauth2"
 
@@ -13,9 +15,15 @@ const (
 
 type (
 	RouterConfig struct {
+		*ServerConfig
 		*SCMConfig
 		Store Store
 		SCM   SCM
+	}
+
+	ServerConfig struct {
+		Host  string
+		Proto string
 	}
 
 	SCMType string
@@ -58,21 +66,21 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 
 func newWebConfig(c *RouterConfig) *web.WebConfig {
 	return &web.WebConfig{
-		Config: newGithubOauthConfig(c.SCMConfig),
+		Config: newGithubOauthConfig(c),
 		Store:  c.Store,
 		SCM:    c.SCM,
 	}
 }
 
-func newGithubOauthConfig(c *SCMConfig) *oauth2.Config {
+func newGithubOauthConfig(c *RouterConfig) *oauth2.Config {
 	return &oauth2.Config{
 		ClientID:     c.ClientID,
 		ClientSecret: c.ClientSecret,
 		Endpoint: oauth2.Endpoint{
 			AuthURL:  "https://github.com/login/oauth/authorize",
-			TokenURL: "https://github.com/login/oauth/access_toke",
+			TokenURL: "https://github.com/login/oauth/access_token",
 		},
-		RedirectURL: "",
+		RedirectURL: fmt.Sprintf("%s://%s/signin", c.Proto, c.Host),
 		Scopes:      c.Scopes,
 	}
 }

@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"flag"
+	"fmt"
 	"log"
 
 	"github.com/joho/godotenv"
@@ -13,6 +14,8 @@ import (
 	"github.com/hanjunlee/gitploy/internal/pkg/github"
 	"github.com/hanjunlee/gitploy/internal/pkg/store"
 	"github.com/hanjunlee/gitploy/internal/server"
+
+	_ "github.com/mattn/go-sqlite3"
 )
 
 func main() {
@@ -26,8 +29,11 @@ func main() {
 		log.Fatalf("main: invalid configuration: %s", err)
 	}
 
-	e := server.NewRouter(newRouterConfig(c))
-	e.Run()
+	setGlobalLogger(true)
+
+	r := server.NewRouter(newRouterConfig(c))
+	log.Printf("Run server with port %s ...", c.ServerPort)
+	r.Run(fmt.Sprintf(":%s", c.ServerPort))
 }
 
 func setGlobalLogger(debug bool) {
@@ -46,9 +52,17 @@ func setGlobalLogger(debug bool) {
 
 func newRouterConfig(c *Config) *server.RouterConfig {
 	return &server.RouterConfig{
-		SCMConfig: newSCMConfig(c),
-		Store:     newStore(c),
-		SCM:       nil,
+		ServerConfig: newServerConfig(c),
+		SCMConfig:    newSCMConfig(c),
+		Store:        newStore(c),
+		SCM:          newSCM(c),
+	}
+}
+
+func newServerConfig(c *Config) *server.ServerConfig {
+	return &server.ServerConfig{
+		Host:  c.ServerHost,
+		Proto: c.ServerProto,
 	}
 }
 
@@ -60,6 +74,7 @@ func newSCMConfig(c *Config) *server.SCMConfig {
 			Type:         server.SCMTypeGithub,
 			ClientID:     c.GithubClientID,
 			ClientSecret: c.GithubClientSecret,
+			Scopes:       c.GithubScopes,
 		}
 	}
 

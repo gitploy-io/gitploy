@@ -39,7 +39,7 @@ func NewWeb(wc *WebConfig) *Web {
 
 func (w *Web) Index(c *gin.Context) {
 	s := c.GetString(gb.KeySession)
-	if s != "" {
+	if s == "" {
 		w.redirectToAuth(c)
 		return
 	}
@@ -99,12 +99,19 @@ func (w *Web) Signin(c *gin.Context) {
 	u.Refresh = token.RefreshToken
 	u.Expiry = token.Expiry
 
-	u, err = w.store.FindUserByID(ctx, u.ID)
+	_, err = w.store.FindUserByID(ctx, u.ID)
 	if ent.IsNotFound(err) {
-		w.store.CreateUser(ctx, u)
+		u, _ = w.store.CreateUser(ctx, u)
 	}
 
-	w.store.UpdateUser(ctx, u)
+	u, _ = w.store.UpdateUser(ctx, u)
+
+	// Register cookie.
+	const (
+		secure   = false
+		httpOnly = true
+	)
+	c.SetCookie(gb.CookieSession, u.Hash, 0, "/", "", secure, httpOnly)
 	c.Redirect(http.StatusFound, "/")
 }
 

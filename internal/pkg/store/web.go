@@ -23,7 +23,7 @@ func (s *Store) CreateUser(ctx context.Context, u *ent.User) (*ent.User, error) 
 }
 
 func (s *Store) UpdateUser(ctx context.Context, u *ent.User) (*ent.User, error) {
-	return s.c.User.UpdateOne(u).
+	return s.c.User.UpdateOneID(u.ID).
 		SetLogin(u.Login).
 		SetAvatar(u.Avatar).
 		SetAdmin(u.Admin).
