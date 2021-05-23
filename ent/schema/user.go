@@ -1,11 +1,13 @@
 package schema
 
 import (
+	"crypto/rand"
+	"encoding/base64"
 	"time"
 
 	"entgo.io/ent"
-	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/edge"
+	"entgo.io/ent/schema/field"
 )
 
 // User holds the schema definition for the User entity.
@@ -28,7 +30,12 @@ func (User) Fields() []ent.Field {
 		field.Time("expiry"),
 		field.String("hash").
 			Immutable().
-			Unique(),
+			Unique().
+			DefaultFunc(func() string {
+				b := make([]byte, 16)
+				rand.Read(b)
+				return base64.URLEncoding.EncodeToString(b)
+			}),
 		field.Time("synced_at").
 			Optional(),
 		field.Time("created_at").

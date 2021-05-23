@@ -79,6 +79,14 @@ func (uc *UserCreate) SetHash(s string) *UserCreate {
 	return uc
 }
 
+// SetNillableHash sets the "hash" field if the given value is not nil.
+func (uc *UserCreate) SetNillableHash(s *string) *UserCreate {
+	if s != nil {
+		uc.SetHash(*s)
+	}
+	return uc
+}
+
 // SetSyncedAt sets the "synced_at" field.
 func (uc *UserCreate) SetSyncedAt(t time.Time) *UserCreate {
 	uc.mutation.SetSyncedAt(t)
@@ -197,6 +205,10 @@ func (uc *UserCreate) defaults() {
 	if _, ok := uc.mutation.Admin(); !ok {
 		v := user.DefaultAdmin
 		uc.mutation.SetAdmin(v)
+	}
+	if _, ok := uc.mutation.Hash(); !ok {
+		v := user.DefaultHash()
+		uc.mutation.SetHash(v)
 	}
 	if _, ok := uc.mutation.CreatedAt(); !ok {
 		v := user.DefaultCreatedAt()

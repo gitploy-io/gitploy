@@ -1,12 +1,16 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"log"
 
 	"github.com/joho/godotenv"
 	"go.uber.org/zap"
 
+	"github.com/hanjunlee/gitploy/ent"
+	"github.com/hanjunlee/gitploy/ent/migrate"
+	"github.com/hanjunlee/gitploy/internal/pkg/store"
 	"github.com/hanjunlee/gitploy/internal/server"
 )
 
@@ -45,7 +49,24 @@ func newRouterConfig(c *Config) *server.RouterConfig {
 			ClientID:     c.ClientID,
 			ClientSecret: c.ClientSecret,
 		},
-		Store: nil,
+		Store: newStoreClient(c),
 		SCM:   nil,
 	}
+}
+
+func newStoreClient(c *Config) *store.Store {
+	client, err := ent.Open(c.Store.StoreDriver, c.Store.StoreSource)
+	if err != nil {
+		log.Fatalf("failed create the connection for store: %v", err)
+	}
+
+	err = client.Schema.Create(
+		context.Background(),
+		migrate.WithForeignKeys(false),
+	)
+	if err != nil {
+		log.Fatalf("failed creating schema resources: %v", err)
+	}
+
+	return store.NewStore(client)
 }

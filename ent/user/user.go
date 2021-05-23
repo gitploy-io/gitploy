@@ -72,6 +72,8 @@ func ValidColumn(column string) bool {
 var (
 	// DefaultAdmin holds the default value on creation for the "admin" field.
 	DefaultAdmin bool
+	// DefaultHash holds the default value on creation for the "hash" field.
+	DefaultHash func() string
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
 	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.

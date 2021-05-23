@@ -45,6 +45,10 @@ func init() {
 	userDescAdmin := userFields[3].Descriptor()
 	// user.DefaultAdmin holds the default value on creation for the admin field.
 	user.DefaultAdmin = userDescAdmin.Default.(bool)
+	// userDescHash is the schema descriptor for hash field.
+	userDescHash := userFields[7].Descriptor()
+	// user.DefaultHash holds the default value on creation for the hash field.
+	user.DefaultHash = userDescHash.Default.(func() string)
 	// userDescCreatedAt is the schema descriptor for created_at field.
 	userDescCreatedAt := userFields[9].Descriptor()
 	// user.DefaultCreatedAt holds the default value on creation for the created_at field.
