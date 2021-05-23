@@ -7,6 +7,10 @@ import (
 	"github.com/hanjunlee/gitploy/internal/server/web"
 )
 
+const (
+	SCMTypeGithub SCMType = "github"
+)
+
 type (
 	RouterConfig struct {
 		*SCMConfig
@@ -14,9 +18,13 @@ type (
 		SCM   SCM
 	}
 
+	SCMType string
+
 	SCMConfig struct {
+		Type         SCMType
 		ClientID     string
 		ClientSecret string
+		Scopes       []string
 	}
 
 	Store interface {
@@ -50,8 +58,21 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 
 func newWebConfig(c *RouterConfig) *web.WebConfig {
 	return &web.WebConfig{
-		Config: &oauth2.Config{},
+		Config: newGithubOauthConfig(c.SCMConfig),
 		Store:  c.Store,
 		SCM:    c.SCM,
+	}
+}
+
+func newGithubOauthConfig(c *SCMConfig) *oauth2.Config {
+	return &oauth2.Config{
+		ClientID:     c.ClientID,
+		ClientSecret: c.ClientSecret,
+		Endpoint: oauth2.Endpoint{
+			AuthURL:  "https://github.com/login/oauth/authorize",
+			TokenURL: "https://github.com/login/oauth/access_toke",
+		},
+		RedirectURL: "",
+		Scopes:      c.Scopes,
 	}
 }

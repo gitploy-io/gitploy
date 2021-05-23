@@ -10,6 +10,7 @@ import (
 
 	"github.com/hanjunlee/gitploy/ent"
 	"github.com/hanjunlee/gitploy/ent/migrate"
+	"github.com/hanjunlee/gitploy/internal/pkg/github"
 	"github.com/hanjunlee/gitploy/internal/pkg/store"
 	"github.com/hanjunlee/gitploy/internal/server"
 )
@@ -45,17 +46,28 @@ func setGlobalLogger(debug bool) {
 
 func newRouterConfig(c *Config) *server.RouterConfig {
 	return &server.RouterConfig{
-		SCMConfig: &server.SCMConfig{
-			ClientID:     c.ClientID,
-			ClientSecret: c.ClientSecret,
-		},
-		Store: newStoreClient(c),
-		SCM:   nil,
+		SCMConfig: newSCMConfig(c),
+		Store:     newStore(c),
+		SCM:       nil,
 	}
 }
 
-func newStoreClient(c *Config) *store.Store {
-	client, err := ent.Open(c.Store.StoreDriver, c.Store.StoreSource)
+func newSCMConfig(c *Config) *server.SCMConfig {
+	var sc *server.SCMConfig
+
+	if c.isGithub() {
+		sc = &server.SCMConfig{
+			Type:         server.SCMTypeGithub,
+			ClientID:     c.GithubClientID,
+			ClientSecret: c.GithubClientSecret,
+		}
+	}
+
+	return sc
+}
+
+func newStore(c *Config) server.Store {
+	client, err := ent.Open(c.StoreDriver, c.StoreSource)
 	if err != nil {
 		log.Fatalf("failed create the connection for store: %v", err)
 	}
@@ -69,4 +81,14 @@ func newStoreClient(c *Config) *store.Store {
 	}
 
 	return store.NewStore(client)
+}
+
+func newSCM(c *Config) server.SCM {
+	var scm server.SCM
+
+	if c.isGithub() {
+		scm = github.NewGithub()
+	}
+
+	return scm
 }
