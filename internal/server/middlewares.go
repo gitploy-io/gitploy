@@ -27,5 +27,7 @@ func Session() gin.HandlerFunc {
 			c.Set(gb.KeySession, s)
 			c.Abort()
 		}
+
+		gb.ErrorResponse(c, http.StatusUnauthorized, "Unauthorized user")
 	}
 }
