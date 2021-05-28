@@ -15,7 +15,7 @@ type (
 	}
 
 	SCM interface {
-		ListCommits(ctx context.Context, r *ent.Repo, branch string, page, perPage int) ([]*vo.Commit, error)
-		GetCommit(ctx context.Context, r *ent.Repo, hash string) (*vo.Commit, error)
+		ListCommits(ctx context.Context, u *ent.User, r *ent.Repo, branch string, page, perPage int) ([]*vo.Commit, error)
+		GetCommit(ctx context.Context, u *ent.User, r *ent.Repo, sha string) (*vo.Commit, error)
 	}
 )

@@ -27,7 +27,7 @@ func (r *Repo) ListCommits(c *gin.Context) {
 		return
 	}
 
-	commits, err := r.scm.ListCommits(ctx, repo, branch, atoi(page), atoi(perPage))
+	commits, err := r.scm.ListCommits(ctx, u, repo, branch, atoi(page), atoi(perPage))
 	if err != nil {
 		r.log.Error("failed to list commits.", zap.String("repoID", repoID), zap.Error(err))
 		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to list commits.")
@@ -54,7 +54,7 @@ func (r *Repo) GetCommit(c *gin.Context) {
 		return
 	}
 
-	commit, err := r.scm.GetCommit(ctx, repo, sha)
+	commit, err := r.scm.GetCommit(ctx, u, repo, sha)
 	if err != nil {
 		r.log.Error("failed to list commits.", zap.String("repoID", repoID), zap.Error(err))
 		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to list commits.")

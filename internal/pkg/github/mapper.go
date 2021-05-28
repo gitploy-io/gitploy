@@ -7,6 +7,7 @@ import (
 	"github.com/google/go-github/v32/github"
 	"github.com/hanjunlee/gitploy/ent"
 	"github.com/hanjunlee/gitploy/ent/perm"
+	"github.com/hanjunlee/gitploy/vo"
 )
 
 func mapGithubUserToUser(u *github.User) *ent.User {
@@ -52,5 +53,15 @@ func mapGithubPermToPerm(perms map[string]bool) *ent.Perm {
 
 	return &ent.Perm{
 		RepoPerm: p,
+	}
+}
+
+func mapGithubCommitToCommit(cm *github.RepositoryCommit) *vo.Commit {
+	isPullRequest := *cm.Commit.Author.Name != *cm.Commit.Committer.Login
+
+	return &vo.Commit{
+		Sha:           *cm.SHA,
+		Message:       *cm.Commit.Message,
+		IsPullRequest: isPullRequest,
 	}
 }
