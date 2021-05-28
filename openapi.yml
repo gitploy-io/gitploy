@@ -16,8 +16,8 @@ paths:
           description: OK
         '401': 
           $ref: '#/components/responses/401Unauthorized'
-        '503':
-          $ref: '#/components/responses/503InternalError'
+        '500':
+          $ref: '#/components/responses/500InternalError'
   /repos:
     get:
       tags:
@@ -39,8 +39,8 @@ paths:
                 $ref: '#/components/schemas/Repositories'
         '401': 
           $ref: '#/components/responses/401Unauthorized'
-        '503':
-          $ref: '#/components/responses/503InternalError'
+        '500':
+          $ref: '#/components/responses/500InternalError'
   /repos/{repoId}:
     get:
       tags:
@@ -62,8 +62,8 @@ paths:
                 $ref: '#/components/schemas/Repository'
         '401': 
           $ref: '#/components/responses/401Unauthorized'
-        '503':
-          $ref: '#/components/responses/503InternalError'
+        '500':
+          $ref: '#/components/responses/500InternalError'
 
 
 security:
@@ -129,7 +129,7 @@ components:
           schema:
             $ref: '#/components/schemas/Error'
         
-    503InternalError:
+    500InternalError:
       description: Server internal error
       content:
         application/json:
