@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/hanjunlee/gitploy/ent"
+	"github.com/hanjunlee/gitploy/vo"
 )
 
 type (
@@ -13,5 +14,8 @@ type (
 		FindUserByHash(ctx context.Context, hash string) (*ent.User, error)
 	}
 
-	SCM interface{}
+	SCM interface {
+		ListCommits(ctx context.Context, r *ent.Repo, branch string, page, perPage int) ([]*vo.Commit, error)
+		GetCommit(ctx context.Context, r *ent.Repo, hash string) (*vo.Commit, error)
+	}
 )
