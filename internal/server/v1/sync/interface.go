@@ -14,7 +14,7 @@ type (
 
 	// StoreHandler store remote repositories into local.
 	StoreHandler interface {
-		GetUserByHash(ctx context.Context, hash string) (*ent.User, error)
+		FindUserByHash(ctx context.Context, hash string) (*ent.User, error)
 		SyncPerm(ctx context.Context, user *ent.User, perm *ent.Perm, sync time.Time) error
 	}
 )

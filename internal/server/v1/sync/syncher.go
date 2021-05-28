@@ -33,7 +33,7 @@ func NewSyncher(scm SCMHandler, store StoreHandler) *Syncher {
 func (s *Syncher) Sync(c *gin.Context) {
 	ctx := c.Request.Context()
 
-	u, _ := s.store.GetUserByHash(ctx, c.GetString(gb.KeySession))
+	u, _ := s.store.FindUserByHash(ctx, c.GetString(gb.KeySession))
 
 	perms, err := s.scm.GetAllPermsWithRepo(c, u.Token)
 	if err != nil {
