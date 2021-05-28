@@ -23,6 +23,14 @@ type (
 	}
 )
 
+func NewRepo(store Store, scm SCM) *Repo {
+	return &Repo{
+		store: store,
+		scm:   scm,
+		log:   zap.L().Named("repos"),
+	}
+}
+
 func (r *Repo) ListRepos(c *gin.Context) {
 	var (
 		page    = c.DefaultQuery("page", "1")
