@@ -77,10 +77,24 @@ paths:
             type: integer
             description: The repository id
         - in: query
+          name: branch
+          schema:
+            type: string
+            default: 
+            description: > 
+              The branch to start listing commits from. 
+              Default - the repository’s default branch.
+        - in: query
           name: page
           schema:
             type: integer
             default: 1
+            description: The page number
+        - in: query
+          name: per_page
+          schema:
+            type: integer
+            default: 30
             description: The page number
       responses:
         '200':
@@ -93,7 +107,7 @@ paths:
           $ref: '#/components/responses/401Unauthorized'
         '500':
           $ref: '#/components/responses/500InternalError'
-  /repos/{repoId}/commits{commitId}:
+  /repos/{repoId}/commits{sha}:
     get:
       tags:
         - Repo
@@ -106,17 +120,11 @@ paths:
             type: integer
             description: The repository id
         - in: path
-          name: commitId
+          name: sha
           required: true
           schema:
-            type: integer
-            description: The commit id
-        - in: query
-          name: page
-          schema:
-            type: integer
-            default: 1
-            description: The page number
+            type: string
+            description: The commit sha
       responses:
         '200':
           description: Commit
@@ -128,8 +136,6 @@ paths:
           $ref: '#/components/responses/401Unauthorized'
         '500':
           $ref: '#/components/responses/500InternalError'
-
-
 
 security:
   - BearerAuth: []
