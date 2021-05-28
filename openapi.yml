@@ -64,6 +64,71 @@ paths:
           $ref: '#/components/responses/401Unauthorized'
         '500':
           $ref: '#/components/responses/500InternalError'
+  /repos/{repoId}/commits:
+    get:
+      tags:
+        - Repo
+      summary: List commits
+      parameters:
+        - in: path
+          name: repoId
+          required: true
+          schema:
+            type: integer
+            description: The repository id
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+            description: The page number
+      responses:
+        '200':
+          description: Commits
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Commits'
+        '401': 
+          $ref: '#/components/responses/401Unauthorized'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+  /repos/{repoId}/commits{commitId}:
+    get:
+      tags:
+        - Repo
+      summary: List commits
+      parameters:
+        - in: path
+          name: repoId
+          required: true
+          schema:
+            type: integer
+            description: The repository id
+        - in: path
+          name: commitId
+          required: true
+          schema:
+            type: integer
+            description: The commit id
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+            description: The page number
+      responses:
+        '200':
+          description: Commit
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Commit'
+        '401': 
+          $ref: '#/components/responses/401Unauthorized'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+
 
 
 security:
@@ -98,7 +163,19 @@ components:
           type: string
         updated_at:
           type: string
-
+    Commits:
+      type: array
+      items:
+        $ref: '#/components/schemas/Commit'
+    Commit:
+      type: object
+      properties:
+        sha:
+          type: string
+        message:
+          type: string
+        is_pull_request:
+          type: boolean
     Error:
       type: object
       properties:
