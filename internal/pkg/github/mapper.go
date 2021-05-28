@@ -57,7 +57,12 @@ func mapGithubPermToPerm(perms map[string]bool) *ent.Perm {
 }
 
 func mapGithubCommitToCommit(cm *github.RepositoryCommit) *vo.Commit {
-	isPullRequest := *cm.Commit.Author.Name != *cm.Commit.Committer.Login
+	isPullRequest := false
+	if cm.Commit.Author != nil && cm.Commit.Committer != nil {
+		if *cm.Commit.Author.Name != *cm.Commit.Committer.Name {
+			isPullRequest = true
+		}
+	}
 
 	return &vo.Commit{
 		Sha:           *cm.SHA,

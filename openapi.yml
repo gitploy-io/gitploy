@@ -107,7 +107,7 @@ paths:
           $ref: '#/components/responses/401Unauthorized'
         '500':
           $ref: '#/components/responses/500InternalError'
-  /repos/{repoId}/commits{sha}:
+  /repos/{repoId}/commits/{sha}:
     get:
       tags:
         - Repo
