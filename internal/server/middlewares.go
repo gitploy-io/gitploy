@@ -13,19 +13,28 @@ func Session() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		s, err := c.Cookie(gb.CookieSession)
 		if err != nil && !errors.Is(err, http.ErrNoCookie) {
-			c.JSON(http.StatusInternalServerError, nil)
-			c.Abort()
+			c.AbortWithStatusJSON(http.StatusInternalServerError, nil)
 		}
 		if s != "" {
 			c.Set(gb.KeySession, s)
-			c.Abort()
+			return
 		}
 
 		header := c.GetHeader("Authorization")
-		s = strings.TrimPrefix(header, "Bearer: ")
+		s = strings.TrimPrefix(header, "Bearer ")
 		if s != "" {
 			c.Set(gb.KeySession, s)
+			return
+		}
+	}
+}
+
+func OnlyAuthorized() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		_, ok := c.Get(gb.KeySession)
+		if !ok {
 			c.Abort()
+			gb.ErrorResponse(c, http.StatusUnauthorized, "Unauthorized user")
 		}
 	}
 }
