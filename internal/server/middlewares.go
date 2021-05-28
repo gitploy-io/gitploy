@@ -27,7 +27,15 @@ func Session() gin.HandlerFunc {
 			c.Set(gb.KeySession, s)
 			c.Abort()
 		}
+	}
+}
 
-		gb.ErrorResponse(c, http.StatusUnauthorized, "Unauthorized user")
+func OnlyAuthorized() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		_, ok := c.Get(gb.KeySession)
+		if !ok {
+			gb.ErrorResponse(c, http.StatusUnauthorized, "Unauthorized user")
+			c.Abort()
+		}
 	}
 }

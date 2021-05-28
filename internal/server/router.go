@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"golang.org/x/oauth2"
 
+	"github.com/hanjunlee/gitploy/internal/server/v1/sync"
 	"github.com/hanjunlee/gitploy/internal/server/web"
 )
 
@@ -37,10 +38,12 @@ type (
 
 	Store interface {
 		web.Store
+		sync.Store
 	}
 
 	SCM interface {
 		web.SCM
+		sync.SCM
 	}
 )
 
@@ -59,6 +62,14 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 		w := web.NewWeb(newWebConfig(c))
 		root.GET("/", w.Index)
 		root.GET("/signin", w.Signin)
+	}
+
+	v1 := r.Group("/v1", OnlyAuthorized())
+
+	syncv1 := v1.Group("/sync")
+	{
+		s := sync.NewSyncher(c.Store, c.SCM)
+		syncv1.POST("/", s.Sync)
 	}
 
 	return r

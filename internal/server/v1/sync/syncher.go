@@ -12,14 +12,14 @@ import (
 type (
 	// Syncher syncronizes local repositories with remote repositories.
 	Syncher struct {
-		scm   SCMHandler
-		store StoreHandler
+		store Store
+		scm   SCM
 		log   *zap.Logger
 	}
 )
 
 // NewSyncher create a new syncher.
-func NewSyncher(scm SCMHandler, store StoreHandler) *Syncher {
+func NewSyncher(store Store, scm SCM) *Syncher {
 	return &Syncher{
 		scm:   scm,
 		store: store,
