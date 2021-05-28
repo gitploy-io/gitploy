@@ -3,6 +3,7 @@ package server
 import (
 	"fmt"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/oauth2"
 
@@ -55,6 +56,12 @@ func init() {
 func NewRouter(c *RouterConfig) *gin.Engine {
 	r := gin.New()
 
+	r.Use(cors.New(cors.Config{
+		AllowAllOrigins:  true,
+		AllowCredentials: true,
+		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD"},
+		AllowHeaders:     []string{"Origin", "Authorization", "Content-Length", "Content-Type"},
+	}))
 	r.Use(Session())
 
 	root := r.Group("/")
@@ -69,7 +76,7 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 	syncv1 := v1.Group("/sync")
 	{
 		s := sync.NewSyncher(c.Store, c.SCM)
-		syncv1.POST("/", s.Sync)
+		syncv1.POST("", s.Sync)
 	}
 
 	return r
