@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"golang.org/x/oauth2"
 
+	"github.com/hanjunlee/gitploy/internal/server/v1/repos"
 	"github.com/hanjunlee/gitploy/internal/server/v1/sync"
 	"github.com/hanjunlee/gitploy/internal/server/web"
 )
@@ -40,11 +41,13 @@ type (
 	Store interface {
 		web.Store
 		sync.Store
+		repos.Store
 	}
 
 	SCM interface {
 		web.SCM
 		sync.SCM
+		repos.SCM
 	}
 )
 
@@ -77,6 +80,13 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 	{
 		s := sync.NewSyncher(c.Store, c.SCM)
 		syncv1.POST("", s.Sync)
+	}
+
+	repov1 := v1.Group("/repos")
+	{
+		r := repos.NewRepo(c.Store, c.SCM)
+		repov1.GET("", r.ListRepos)
+		repov1.GET("/:id", r.GetRepo)
 	}
 
 	return r

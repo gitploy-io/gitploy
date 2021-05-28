@@ -42,3 +42,7 @@ func (s *Store) WithTx(ctx context.Context, fn func(tx *ent.Tx) error) error {
 	}
 	return nil
 }
+
+func offset(page, perPage int) int {
+	return (page - 1) * perPage
+}

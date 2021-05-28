@@ -90,7 +90,13 @@ components:
         full_name:
           type: string
           description: Full name of repository
-        html_url:
+        description:
+          type: string
+        synched_at:
+          type: string
+        created_at:
+          type: string
+        updated_at:
           type: string
 
     Error:
