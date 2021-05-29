@@ -53,20 +53,8 @@ func (r *Repo) ListRepos(c *gin.Context) {
 }
 
 func (r *Repo) GetRepo(c *gin.Context) {
-	var (
-		id = c.Param("repoID")
-	)
-	ctx := c.Request.Context()
-
-	v, _ := c.Get(gb.KeyUser)
-	u := v.(*ent.User)
-
-	repo, err := r.store.FindRepo(ctx, u, id)
-	if err != nil {
-		r.log.Error("failed to get the repository.", zap.String("id", id), zap.Error(err))
-		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to get the repository.")
-		return
-	}
+	rv, _ := c.Get(KeyRepo)
+	repo := rv.(*ent.Repo)
 
 	gb.Response(c, http.StatusOK, mapRepoToRepoData(repo))
 }

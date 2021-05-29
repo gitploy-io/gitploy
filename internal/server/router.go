@@ -91,11 +91,12 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 
 	repov1 := v1.Group("/repos")
 	{
+		rm := repos.NewRepoMiddleware(c.Store)
 		r := repos.NewRepo(c.Store, c.SCM)
 		repov1.GET("", r.ListRepos)
-		repov1.GET("/:repoID", r.GetRepo)
-		repov1.GET("/:repoID/commits", r.ListCommits)
-		repov1.GET("/:repoID/commits/:sha", r.GetCommit)
+		repov1.GET("/:repoID", rm.Repo(), r.GetRepo)
+		repov1.GET("/:repoID/commits", rm.Repo(), r.ListCommits)
+		repov1.GET("/:repoID/commits/:sha", rm.Repo(), r.GetCommit)
 	}
 
 	return r
