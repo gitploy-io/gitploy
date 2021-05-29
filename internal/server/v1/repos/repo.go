@@ -39,7 +39,8 @@ func (r *Repo) ListRepos(c *gin.Context) {
 
 	ctx := c.Request.Context()
 
-	u, _ := r.store.FindUserByHash(ctx, c.GetString(gb.KeySession))
+	v, _ := c.Get(gb.KeyUser)
+	u := v.(*ent.User)
 
 	repos, err := r.store.ListRepos(ctx, u, atoi(page), atoi(perPage))
 	if err != nil {
@@ -52,19 +53,8 @@ func (r *Repo) ListRepos(c *gin.Context) {
 }
 
 func (r *Repo) GetRepo(c *gin.Context) {
-	var (
-		id = c.Param("repoID")
-	)
-	ctx := c.Request.Context()
-
-	u, _ := r.store.FindUserByHash(ctx, c.GetString(gb.KeySession))
-
-	repo, err := r.store.FindRepo(ctx, u, id)
-	if err != nil {
-		r.log.Error("failed to get the repository.", zap.String("id", id), zap.Error(err))
-		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to get the repository.")
-		return
-	}
+	rv, _ := c.Get(KeyRepo)
+	repo := rv.(*ent.Repo)
 
 	gb.Response(c, http.StatusOK, mapRepoToRepoData(repo))
 }

@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/hanjunlee/gitploy/ent"
 	gb "github.com/hanjunlee/gitploy/internal/server/global"
 	"go.uber.org/zap"
 )
@@ -18,14 +19,11 @@ func (r *Repo) ListCommits(c *gin.Context) {
 
 	ctx := c.Request.Context()
 
-	u, _ := r.store.FindUserByHash(ctx, c.GetString(gb.KeySession))
+	uv, _ := c.Get(gb.KeyUser)
+	u := uv.(*ent.User)
 
-	repo, err := r.store.FindRepo(ctx, u, repoID)
-	if err != nil {
-		r.log.Error("failed to get the repository.", zap.String("repoID", repoID), zap.Error(err))
-		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to get the repository.")
-		return
-	}
+	rv, _ := c.Get(KeyRepo)
+	repo := rv.(*ent.Repo)
 
 	commits, err := r.scm.ListCommits(ctx, u, repo, branch, atoi(page), atoi(perPage))
 	if err != nil {
@@ -45,14 +43,11 @@ func (r *Repo) GetCommit(c *gin.Context) {
 
 	ctx := c.Request.Context()
 
-	u, _ := r.store.FindUserByHash(ctx, c.GetString(gb.KeySession))
+	uv, _ := c.Get(gb.KeyUser)
+	u := uv.(*ent.User)
 
-	repo, err := r.store.FindRepo(ctx, u, repoID)
-	if err != nil {
-		r.log.Error("failed to get the repository.", zap.String("repoID", repoID), zap.Error(err))
-		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to get the repository.")
-		return
-	}
+	rv, _ := c.Get(KeyRepo)
+	repo := rv.(*ent.Repo)
 
 	commit, err := r.scm.GetCommit(ctx, u, repo, sha)
 	if err != nil {
