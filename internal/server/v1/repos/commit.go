@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/hanjunlee/gitploy/ent"
 	gb "github.com/hanjunlee/gitploy/internal/server/global"
 	"go.uber.org/zap"
 )
@@ -18,7 +19,8 @@ func (r *Repo) ListCommits(c *gin.Context) {
 
 	ctx := c.Request.Context()
 
-	u, _ := r.store.FindUserByHash(ctx, c.GetString(gb.KeySession))
+	v, _ := c.Get(gb.KeyUser)
+	u := v.(*ent.User)
 
 	repo, err := r.store.FindRepo(ctx, u, repoID)
 	if err != nil {
@@ -45,7 +47,8 @@ func (r *Repo) GetCommit(c *gin.Context) {
 
 	ctx := c.Request.Context()
 
-	u, _ := r.store.FindUserByHash(ctx, c.GetString(gb.KeySession))
+	v, _ := c.Get(gb.KeyUser)
+	u := v.(*ent.User)
 
 	repo, err := r.store.FindRepo(ctx, u, repoID)
 	if err != nil {

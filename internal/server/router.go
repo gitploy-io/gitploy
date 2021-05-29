@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"golang.org/x/oauth2"
 
+	mw "github.com/hanjunlee/gitploy/internal/server/middlewares"
 	"github.com/hanjunlee/gitploy/internal/server/v1/repos"
 	"github.com/hanjunlee/gitploy/internal/server/v1/sync"
 	"github.com/hanjunlee/gitploy/internal/server/web"
@@ -42,6 +43,7 @@ type (
 		web.Store
 		sync.Store
 		repos.Store
+		mw.Store
 	}
 
 	SCM interface {
@@ -65,7 +67,7 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD"},
 		AllowHeaders:     []string{"Origin", "Authorization", "accept", "Content-Length", "Content-Type"},
 	}))
-	r.Use(Session())
+	r.Use(mw.Session())
 
 	root := r.Group("/")
 	{
@@ -74,7 +76,12 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 		root.GET("/signin", w.Signin)
 	}
 
-	v1 := r.Group("/v1", OnlyAuthorized())
+	v1 := r.Group("/v1")
+	{
+		sm := mw.NewSessMiddleware(c.Store)
+		// Only authed user access to API.
+		v1.Use(sm.User())
+	}
 
 	syncv1 := v1.Group("/sync")
 	{
