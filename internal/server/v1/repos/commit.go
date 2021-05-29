@@ -6,12 +6,12 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hanjunlee/gitploy/ent"
 	gb "github.com/hanjunlee/gitploy/internal/server/global"
+	"github.com/hanjunlee/gitploy/vo"
 	"go.uber.org/zap"
 )
 
 func (r *Repo) ListCommits(c *gin.Context) {
 	var (
-		repoID  = c.Param("repoID")
 		branch  = c.Query("branch")
 		page    = c.DefaultQuery("page", "1")
 		perPage = c.DefaultQuery("per_page", "30")
@@ -27,7 +27,7 @@ func (r *Repo) ListCommits(c *gin.Context) {
 
 	commits, err := r.scm.ListCommits(ctx, u, repo, branch, atoi(page), atoi(perPage))
 	if err != nil {
-		r.log.Error("failed to list commits.", zap.String("repoID", repoID), zap.Error(err))
+		r.log.Error("failed to list commits.", zap.String("repo", repo.Name), zap.Error(err))
 		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to list commits.")
 		return
 	}
@@ -37,8 +37,7 @@ func (r *Repo) ListCommits(c *gin.Context) {
 
 func (r *Repo) GetCommit(c *gin.Context) {
 	var (
-		repoID = c.Param("repoID")
-		sha    = c.Param("sha")
+		sha = c.Param("sha")
 	)
 
 	ctx := c.Request.Context()
@@ -51,10 +50,53 @@ func (r *Repo) GetCommit(c *gin.Context) {
 
 	commit, err := r.scm.GetCommit(ctx, u, repo, sha)
 	if err != nil {
-		r.log.Error("failed to list commits.", zap.String("repoID", repoID), zap.Error(err))
-		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to list commits.")
+		r.log.Error("failed to get the commit.", zap.String("repo", repo.Name), zap.String("sha", sha), zap.Error(err))
+		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to get the commit.")
 		return
 	}
 
 	gb.Response(c, http.StatusOK, commit)
+}
+
+func (r *Repo) ListStatuses(c *gin.Context) {
+	var (
+		sha = c.Param("sha")
+	)
+
+	ctx := c.Request.Context()
+
+	uv, _ := c.Get(gb.KeyUser)
+	u := uv.(*ent.User)
+
+	rv, _ := c.Get(KeyRepo)
+	repo := rv.(*ent.Repo)
+
+	ss, err := r.scm.ListCommitStatuses(ctx, u, repo, sha)
+	if err != nil {
+		r.log.Error("failed to get the commit status.", zap.String("repo", repo.Name), zap.String("sha", sha), zap.Error(err))
+		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to get the commit.")
+		return
+	}
+
+	gb.Response(c, http.StatusOK, map[string]interface{}{
+		"state":    mergeState(ss),
+		"statuses": ss,
+	})
+}
+
+func mergeState(ss []*vo.Status) string {
+	// The state is failure if one of them is failure.
+	for _, s := range ss {
+		if s.State == vo.StatusStateFailure {
+			return string(vo.StatusStateFailure)
+		}
+	}
+
+	for _, s := range ss {
+		if s.State == vo.StatusStatePending {
+			return string(vo.StatusStatePending)
+		}
+	}
+
+	return string(vo.StatusStateSuccess)
 }

@@ -97,6 +97,7 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 		repov1.GET("/:repoID", rm.Repo(), r.GetRepo)
 		repov1.GET("/:repoID/commits", rm.Repo(), r.ListCommits)
 		repov1.GET("/:repoID/commits/:sha", rm.Repo(), r.GetCommit)
+		repov1.GET("/:repoID/commits/:sha/statuses", rm.Repo(), r.ListStatuses)
 	}
 
 	return r

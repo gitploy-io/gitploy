@@ -142,6 +142,42 @@ paths:
           $ref: '#/components/responses/403Forbidden'
         '500':
           $ref: '#/components/responses/500InternalError'
+  /repos/{repoId}/commits/{sha}/statuses:
+    get:
+      tags:
+        - Repo
+      summary: List commits
+      parameters:
+        - in: path
+          name: repoId
+          required: true
+          schema:
+            type: integer
+            description: The repository id
+        - in: path
+          name: sha
+          required: true
+          schema:
+            type: string
+            description: The commit sha
+      responses:
+        '200':
+          description: Statuses for ref
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  state:
+                    type: string
+                  statuses:
+                    $ref: '#/components/schemas/Statuses'
+        '401': 
+          $ref: '#/components/responses/401Unauthorized'
+        '403': 
+          $ref: '#/components/responses/403Forbidden'
+        '500':
+          $ref: '#/components/responses/500InternalError'
 
 security:
   - BearerAuth: []
@@ -188,6 +224,22 @@ components:
           type: string
         is_pull_request:
           type: boolean
+    Statuses:
+      type: array
+      items:
+        $ref: '#/components/schemas/Status'
+    Status:
+      type: object
+      properties:
+        context:
+          type: string
+        avatar_url: 
+          type: string
+        target_url:
+          type: string
+        state:
+          type: string
+          description: The state is one of failure, pending, and success.
     Error:
       type: object
       properties:

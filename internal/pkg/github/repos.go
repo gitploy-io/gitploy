@@ -41,3 +41,41 @@ func (g *Github) GetCommit(ctx context.Context, u *ent.User, r *ent.Repo, sha st
 
 	return mapGithubCommitToCommit(cm), nil
 }
+
+func (g *Github) ListCommitStatuses(ctx context.Context, u *ent.User, r *ent.Repo, sha string) ([]*vo.Status, error) {
+	ss := []*vo.Status{}
+
+	client := g.Client(ctx, u.Token)
+
+	// Repo status
+	cs, _, err := client.Repositories.GetCombinedStatus(ctx, r.Namespace, r.Name, sha, &github.ListOptions{
+		PerPage: 100,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	for _, rs := range cs.Statuses {
+		ss = append(ss, mapGithubStatusToStatus(rs))
+	}
+
+	// Check-run
+	result, _, err := client.Checks.ListCheckRunsForRef(ctx, r.Namespace, r.Name, sha, &github.ListCheckRunsOptions{
+		ListOptions: github.ListOptions{
+			PerPage: 100,
+		},
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	for _, c := range result.CheckRuns {
+		if c.Conclusion == nil {
+			continue
+		}
+
+		ss = append(ss, mapGithubCheckRunToStatus(c))
+	}
+
+	return ss, nil
+}
