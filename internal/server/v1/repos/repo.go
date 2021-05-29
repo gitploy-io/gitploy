@@ -53,7 +53,7 @@ func (r *Repo) ListRepos(c *gin.Context) {
 
 func (r *Repo) GetRepo(c *gin.Context) {
 	var (
-		id = c.Param("id")
+		id = c.Param("repoID")
 	)
 	ctx := c.Request.Context()
 

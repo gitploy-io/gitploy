@@ -63,7 +63,7 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 		AllowAllOrigins:  true,
 		AllowCredentials: true,
 		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD"},
-		AllowHeaders:     []string{"Origin", "Authorization", "Content-Length", "Content-Type"},
+		AllowHeaders:     []string{"Origin", "Authorization", "accept", "Content-Length", "Content-Type"},
 	}))
 	r.Use(Session())
 
@@ -86,7 +86,9 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 	{
 		r := repos.NewRepo(c.Store, c.SCM)
 		repov1.GET("", r.ListRepos)
-		repov1.GET("/:id", r.GetRepo)
+		repov1.GET("/:repoID", r.GetRepo)
+		repov1.GET("/:repoID/commits", r.ListCommits)
+		repov1.GET("/:repoID/commits/:sha", r.GetCommit)
 	}
 
 	return r
