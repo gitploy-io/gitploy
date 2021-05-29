@@ -178,6 +178,74 @@ paths:
           $ref: '#/components/responses/403Forbidden'
         '500':
           $ref: '#/components/responses/500InternalError'
+  /repos/{repoId}/branches:
+    get:
+      tags:
+        - Repo
+      summary: List branches
+      parameters:
+        - in: path
+          name: repoId
+          required: true
+          schema:
+            type: integer
+            description: The repository id
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+            description: The page number
+        - in: query
+          name: per_page
+          schema:
+            type: integer
+            default: 30
+            description: The item count per page
+      responses:
+        '200':
+          description: Branches
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Branches'
+        '401': 
+          $ref: '#/components/responses/401Unauthorized'
+        '403': 
+          $ref: '#/components/responses/403Forbidden'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+  /repos/{repoId}/branches/{branch}:
+    get:
+      tags:
+        - Repo
+      summary: List branches
+      parameters:
+        - in: path
+          name: repoId
+          required: true
+          schema:
+            type: integer
+            description: The repository id
+        - in: path
+          name: branch
+          required: true
+          schema:
+            type: string
+            description: The branch name
+      responses:
+        '200':
+          description: Branch
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Branch'
+        '401': 
+          $ref: '#/components/responses/401Unauthorized'
+        '403': 
+          $ref: '#/components/responses/403Forbidden'
+        '500':
+          $ref: '#/components/responses/500InternalError'
 
 security:
   - BearerAuth: []
@@ -240,6 +308,17 @@ components:
         state:
           type: string
           description: The state is one of failure, pending, and success.
+    Branches:
+      type: array
+      items:
+        $ref: '#/components/schemas/Branch'
+    Branch:
+      type: object
+      properties:
+        name:
+          type: string
+        commit_sha:
+          type: string
     Error:
       type: object
       properties:
