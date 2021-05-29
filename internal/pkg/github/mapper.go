@@ -70,3 +70,61 @@ func mapGithubCommitToCommit(cm *github.RepositoryCommit) *vo.Commit {
 		IsPullRequest: isPullRequest,
 	}
 }
+
+func mapGithubStatusToStatus(s *github.RepoStatus) *vo.Status {
+	var (
+		state vo.StatusState
+	)
+	switch *s.State {
+	case "pending":
+		state = vo.StatusStatePending
+		break
+	case "failure":
+		state = vo.StatusStateFailure
+		break
+	case "error":
+		state = vo.StatusStateFailure
+		break
+	case "success":
+		state = vo.StatusStateSuccess
+		break
+	}
+
+	return &vo.Status{
+		Context: *s.Context,
+		// TODO: fix
+		AvatarURL: "",
+		TargetURL: *s.TargetURL,
+		State:     state,
+	}
+}
+
+func mapGithubCheckRunToStatus(c *github.CheckRun) *vo.Status {
+	var (
+		state vo.StatusState
+	)
+
+	switch *c.Conclusion {
+	case "failure":
+		state = vo.StatusStateFailure
+		break
+	case "cancelled":
+		state = vo.StatusStateFailure
+		break
+	case "timed_out":
+		state = vo.StatusStateFailure
+		break
+	case "success":
+		state = vo.StatusStateSuccess
+		break
+	default:
+		state = vo.StatusStatePending
+	}
+
+	return &vo.Status{
+		Context:   *c.Name,
+		AvatarURL: *c.App.Owner.AvatarURL,
+		TargetURL: *c.App.HTMLURL,
+		State:     state,
+	}
+}
