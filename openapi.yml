@@ -319,8 +319,6 @@ components:
           type: string
         commit_sha:
           type: string
-        is_default:
-          type: boolean
     Error:
       type: object
       properties:
