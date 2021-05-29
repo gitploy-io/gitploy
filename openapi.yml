@@ -162,11 +162,11 @@ paths:
             description: The commit sha
       responses:
         '200':
-          description: Commit status
+          description: Statuses for ref
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CommitStatuses'
+                $ref: '#/components/schemas/Statuses'
         '401': 
           $ref: '#/components/responses/401Unauthorized'
         '403': 
@@ -219,11 +219,11 @@ components:
           type: string
         is_pull_request:
           type: boolean
-    CommitStatuses:
+    Statuses:
       type: array
       items:
-        $ref: '#/components/schemas/CommitStatus'
-    CommitStatus:
+        $ref: '#/components/schemas/Status'
+    Status:
       type: object
       properties:
         context:
