@@ -142,7 +142,7 @@ paths:
           $ref: '#/components/responses/403Forbidden'
         '500':
           $ref: '#/components/responses/500InternalError'
-  /repos/{repoId}/commits/{sha}/status:
+  /repos/{repoId}/commits/{sha}/statuses:
     get:
       tags:
         - Repo
@@ -166,7 +166,12 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Statuses'
+                type: object
+                properties:
+                  state:
+                    type: string
+                  statuses:
+                    $ref: '#/components/schemas/Statuses'
         '401': 
           $ref: '#/components/responses/401Unauthorized'
         '403': 
