@@ -128,3 +128,10 @@ func mapGithubCheckRunToStatus(c *github.CheckRun) *vo.Status {
 		State:     state,
 	}
 }
+
+func mapGithubBranchToBranch(b *github.Branch) *vo.Branch {
+	return &vo.Branch{
+		Name:      *b.Name,
+		CommitSha: *b.Commit.SHA,
+	}
+}

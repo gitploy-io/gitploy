@@ -79,3 +79,35 @@ func (g *Github) ListCommitStatuses(ctx context.Context, u *ent.User, r *ent.Rep
 
 	return ss, nil
 }
+
+func (g *Github) ListBranches(ctx context.Context, u *ent.User, r *ent.Repo, page, perPage int) ([]*vo.Branch, error) {
+	bs, _, err := g.Client(ctx, u.Token).
+		Repositories.
+		ListBranches(ctx, r.Namespace, r.Name, &github.BranchListOptions{
+			ListOptions: github.ListOptions{
+				Page:    page,
+				PerPage: perPage,
+			},
+		})
+	if err != nil {
+		return nil, err
+	}
+
+	branches := []*vo.Branch{}
+	for _, b := range bs {
+		branches = append(branches, mapGithubBranchToBranch(b))
+	}
+
+	return branches, nil
+}
+
+func (g *Github) GetBranch(ctx context.Context, u *ent.User, r *ent.Repo, branch string) (*vo.Branch, error) {
+	b, _, err := g.Client(ctx, u.Token).
+		Repositories.
+		GetBranch(ctx, r.Namespace, r.Name, branch)
+	if err != nil {
+		return nil, err
+	}
+
+	return mapGithubBranchToBranch(b), nil
+}
