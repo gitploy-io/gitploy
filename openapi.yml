@@ -219,7 +219,7 @@ paths:
     get:
       tags:
         - Repo
-      summary: List branches
+      summary: Return the branch
       parameters:
         - in: path
           name: repoId
@@ -240,6 +240,74 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Branch'
+        '401': 
+          $ref: '#/components/responses/401Unauthorized'
+        '403': 
+          $ref: '#/components/responses/403Forbidden'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+  /repos/{repoId}/tags:
+    get:
+      tags:
+        - Repo
+      summary: List tags
+      parameters:
+        - in: path
+          name: repoId
+          required: true
+          schema:
+            type: integer
+            description: The repository id
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+            description: The page number
+        - in: query
+          name: per_page
+          schema:
+            type: integer
+            default: 30
+            description: The item count per page
+      responses:
+        '200':
+          description: Tags
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tags'
+        '401': 
+          $ref: '#/components/responses/401Unauthorized'
+        '403': 
+          $ref: '#/components/responses/403Forbidden'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+  /repos/{repoId}/tags/{tag}:
+    get:
+      tags:
+        - Repo
+      summary: Return the tag
+      parameters:
+        - in: path
+          name: repoId
+          required: true
+          schema:
+            type: integer
+            description: The repository id
+        - in: path
+          name: tag
+          required: true
+          schema:
+            type: string
+            description: The tag name
+      responses:
+        '200':
+          description: Tag
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tag'
         '401': 
           $ref: '#/components/responses/401Unauthorized'
         '403': 
@@ -313,6 +381,17 @@ components:
       items:
         $ref: '#/components/schemas/Branch'
     Branch:
+      type: object
+      properties:
+        name:
+          type: string
+        commit_sha:
+          type: string
+    Tags:
+      type: array
+      items:
+        $ref: '#/components/schemas/Tag'
+    Tag:
       type: object
       properties:
         name:
