@@ -48,14 +48,14 @@ func (g *Github) ListCommitStatuses(ctx context.Context, u *ent.User, r *ent.Rep
 	client := g.Client(ctx, u.Token)
 
 	// Repo status
-	rss, _, err := client.Repositories.ListStatuses(ctx, r.Namespace, r.Name, sha, &github.ListOptions{
+	cs, _, err := client.Repositories.GetCombinedStatus(ctx, r.Namespace, r.Name, sha, &github.ListOptions{
 		PerPage: 100,
 	})
 	if err != nil {
 		return nil, err
 	}
 
-	for _, rs := range rss {
+	for _, rs := range cs.Statuses {
 		ss = append(ss, mapGithubStatusToStatus(rs))
 	}
 
