@@ -252,7 +252,10 @@ func (g *Github) GetConfig(ctx context.Context, u *ent.User, r *ent.Repo) (*vo.C
 
 	c := &vo.Config{}
 	if err := yaml.Unmarshal([]byte(content), c); err != nil {
-		return nil, fmt.Errorf("failed to parse the config file: %w", err)
+		return nil, &reposv1.ConfigParseError{
+			RepoName: r.Name,
+			Err:      err,
+		}
 	}
 
 	return c, nil
