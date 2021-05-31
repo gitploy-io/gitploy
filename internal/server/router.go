@@ -102,6 +102,7 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 		repov1.GET("/:repoID/branches/:branch", rm.Repo(), r.GetBranch)
 		repov1.GET("/:repoID/tags", rm.Repo(), r.ListTags)
 		repov1.GET("/:repoID/tags/:tag", rm.Repo(), r.GetTag)
+		repov1.POST("/:repoID/deployments", rm.Repo(), r.CreateDeployment)
 	}
 
 	return r

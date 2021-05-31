@@ -8,6 +8,40 @@ import (
 )
 
 var (
+	// DeploymentsColumns holds the columns for the "deployments" table.
+	DeploymentsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "uid", Type: field.TypeInt64, Nullable: true},
+		{Name: "type", Type: field.TypeEnum, Enums: []string{"commit", "branch", "tag"}, Default: "commit"},
+		{Name: "ref", Type: field.TypeString},
+		{Name: "sha", Type: field.TypeString, Nullable: true},
+		{Name: "env", Type: field.TypeString},
+		{Name: "status", Type: field.TypeEnum, Enums: []string{"waiting", "created", "running", "success", "failure"}, Default: "waiting"},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "repo_deployments", Type: field.TypeString, Nullable: true},
+		{Name: "user_deployments", Type: field.TypeString, Nullable: true},
+	}
+	// DeploymentsTable holds the schema information for the "deployments" table.
+	DeploymentsTable = &schema.Table{
+		Name:       "deployments",
+		Columns:    DeploymentsColumns,
+		PrimaryKey: []*schema.Column{DeploymentsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "deployments_repos_deployments",
+				Columns:    []*schema.Column{DeploymentsColumns[9]},
+				RefColumns: []*schema.Column{ReposColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "deployments_users_deployments",
+				Columns:    []*schema.Column{DeploymentsColumns[10]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+	}
 	// PermsColumns holds the columns for the "perms" table.
 	PermsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
@@ -44,6 +78,7 @@ var (
 		{Name: "namespace", Type: field.TypeString},
 		{Name: "name", Type: field.TypeString},
 		{Name: "description", Type: field.TypeString, Nullable: true},
+		{Name: "config_path", Type: field.TypeString, Default: "deploy.yml"},
 		{Name: "synced_at", Type: field.TypeTime, Nullable: true},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
@@ -78,6 +113,7 @@ var (
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
+		DeploymentsTable,
 		PermsTable,
 		ReposTable,
 		UsersTable,
@@ -85,6 +121,8 @@ var (
 )
 
 func init() {
+	DeploymentsTable.ForeignKeys[0].RefTable = ReposTable
+	DeploymentsTable.ForeignKeys[1].RefTable = UsersTable
 	PermsTable.ForeignKeys[0].RefTable = ReposTable
 	PermsTable.ForeignKeys[1].RefTable = UsersTable
 }

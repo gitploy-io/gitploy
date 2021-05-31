@@ -5,6 +5,7 @@ package ent
 import (
 	"time"
 
+	"github.com/hanjunlee/gitploy/ent/deployment"
 	"github.com/hanjunlee/gitploy/ent/perm"
 	"github.com/hanjunlee/gitploy/ent/repo"
 	"github.com/hanjunlee/gitploy/ent/schema"
@@ -15,6 +16,18 @@ import (
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	deploymentFields := schema.Deployment{}.Fields()
+	_ = deploymentFields
+	// deploymentDescCreatedAt is the schema descriptor for created_at field.
+	deploymentDescCreatedAt := deploymentFields[6].Descriptor()
+	// deployment.DefaultCreatedAt holds the default value on creation for the created_at field.
+	deployment.DefaultCreatedAt = deploymentDescCreatedAt.Default.(func() time.Time)
+	// deploymentDescUpdatedAt is the schema descriptor for updated_at field.
+	deploymentDescUpdatedAt := deploymentFields[7].Descriptor()
+	// deployment.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	deployment.DefaultUpdatedAt = deploymentDescUpdatedAt.Default.(func() time.Time)
+	// deployment.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	deployment.UpdateDefaultUpdatedAt = deploymentDescUpdatedAt.UpdateDefault.(func() time.Time)
 	permFields := schema.Perm{}.Fields()
 	_ = permFields
 	// permDescCreatedAt is the schema descriptor for created_at field.
@@ -29,12 +42,16 @@ func init() {
 	perm.UpdateDefaultUpdatedAt = permDescUpdatedAt.UpdateDefault.(func() time.Time)
 	repoFields := schema.Repo{}.Fields()
 	_ = repoFields
+	// repoDescConfigPath is the schema descriptor for config_path field.
+	repoDescConfigPath := repoFields[4].Descriptor()
+	// repo.DefaultConfigPath holds the default value on creation for the config_path field.
+	repo.DefaultConfigPath = repoDescConfigPath.Default.(string)
 	// repoDescCreatedAt is the schema descriptor for created_at field.
-	repoDescCreatedAt := repoFields[5].Descriptor()
+	repoDescCreatedAt := repoFields[6].Descriptor()
 	// repo.DefaultCreatedAt holds the default value on creation for the created_at field.
 	repo.DefaultCreatedAt = repoDescCreatedAt.Default.(func() time.Time)
 	// repoDescUpdatedAt is the schema descriptor for updated_at field.
-	repoDescUpdatedAt := repoFields[6].Descriptor()
+	repoDescUpdatedAt := repoFields[7].Descriptor()
 	// repo.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	repo.DefaultUpdatedAt = repoDescUpdatedAt.Default.(func() time.Time)
 	// repo.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.

@@ -21,6 +21,8 @@ func (Repo) Fields() []ent.Field {
 		field.String("name"),
 		field.String("description").
 			Optional(),
+		field.String("config_path").
+			Default("deploy.yml"),
 		field.Time("synced_at").
 			Optional(),
 		field.Time("created_at").
@@ -35,5 +37,6 @@ func (Repo) Fields() []ent.Field {
 func (Repo) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("perms", Perm.Type),
+		edge.To("deployments", Deployment.Type),
 	}
 }

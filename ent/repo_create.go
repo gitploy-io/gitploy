@@ -10,6 +10,7 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/hanjunlee/gitploy/ent/deployment"
 	"github.com/hanjunlee/gitploy/ent/perm"
 	"github.com/hanjunlee/gitploy/ent/repo"
 )
@@ -43,6 +44,20 @@ func (rc *RepoCreate) SetDescription(s string) *RepoCreate {
 func (rc *RepoCreate) SetNillableDescription(s *string) *RepoCreate {
 	if s != nil {
 		rc.SetDescription(*s)
+	}
+	return rc
+}
+
+// SetConfigPath sets the "config_path" field.
+func (rc *RepoCreate) SetConfigPath(s string) *RepoCreate {
+	rc.mutation.SetConfigPath(s)
+	return rc
+}
+
+// SetNillableConfigPath sets the "config_path" field if the given value is not nil.
+func (rc *RepoCreate) SetNillableConfigPath(s *string) *RepoCreate {
+	if s != nil {
+		rc.SetConfigPath(*s)
 	}
 	return rc
 }
@@ -110,6 +125,21 @@ func (rc *RepoCreate) AddPerms(p ...*Perm) *RepoCreate {
 	return rc.AddPermIDs(ids...)
 }
 
+// AddDeploymentIDs adds the "deployments" edge to the Deployment entity by IDs.
+func (rc *RepoCreate) AddDeploymentIDs(ids ...int) *RepoCreate {
+	rc.mutation.AddDeploymentIDs(ids...)
+	return rc
+}
+
+// AddDeployments adds the "deployments" edges to the Deployment entity.
+func (rc *RepoCreate) AddDeployments(d ...*Deployment) *RepoCreate {
+	ids := make([]int, len(d))
+	for i := range d {
+		ids[i] = d[i].ID
+	}
+	return rc.AddDeploymentIDs(ids...)
+}
+
 // Mutation returns the RepoMutation object of the builder.
 func (rc *RepoCreate) Mutation() *RepoMutation {
 	return rc.mutation
@@ -162,6 +192,10 @@ func (rc *RepoCreate) SaveX(ctx context.Context) *Repo {
 
 // defaults sets the default values of the builder before save.
 func (rc *RepoCreate) defaults() {
+	if _, ok := rc.mutation.ConfigPath(); !ok {
+		v := repo.DefaultConfigPath
+		rc.mutation.SetConfigPath(v)
+	}
 	if _, ok := rc.mutation.CreatedAt(); !ok {
 		v := repo.DefaultCreatedAt()
 		rc.mutation.SetCreatedAt(v)
@@ -179,6 +213,9 @@ func (rc *RepoCreate) check() error {
 	}
 	if _, ok := rc.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New("ent: missing required field \"name\"")}
+	}
+	if _, ok := rc.mutation.ConfigPath(); !ok {
+		return &ValidationError{Name: "config_path", err: errors.New("ent: missing required field \"config_path\"")}
 	}
 	if _, ok := rc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New("ent: missing required field \"created_at\"")}
@@ -239,6 +276,14 @@ func (rc *RepoCreate) createSpec() (*Repo, *sqlgraph.CreateSpec) {
 		})
 		_node.Description = value
 	}
+	if value, ok := rc.mutation.ConfigPath(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: repo.FieldConfigPath,
+		})
+		_node.ConfigPath = value
+	}
 	if value, ok := rc.mutation.SyncedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
@@ -274,6 +319,25 @@ func (rc *RepoCreate) createSpec() (*Repo, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
 					Column: perm.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := rc.mutation.DeploymentsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   repo.DeploymentsTable,
+			Columns: []string{repo.DeploymentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: deployment.FieldID,
 				},
 			},
 		}

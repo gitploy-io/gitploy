@@ -316,6 +316,45 @@ paths:
           $ref: '#/components/responses/404NotFound'
         '500':
           $ref: '#/components/responses/500InternalError'
+  /repos/{repoId}/deployments:
+    post:
+      tags:
+        - Repo
+      summary: Create a new deployment
+      parameters:
+        - in: path
+          name: repoId
+          required: true
+          schema:
+            type: integer
+            description: The repository id
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                type:
+                  type: string
+                  default: commit
+                ref:
+                  type: string
+                env:
+                  type: string
+      responses:
+        '201':
+          description: Created
+        '400': 
+          $ref: '#/components/responses/400BadRequest'
+        '401': 
+          $ref: '#/components/responses/401Unauthorized'
+        '403': 
+          $ref: '#/components/responses/403Forbidden'
+        '422':
+          description: The configuration file is not valid.
+          $ref: '#/components/responses/422UnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/500InternalError'
 
 security:
   - BearerAuth: []
@@ -423,6 +462,13 @@ components:
             admin: Grants access to admin operations
     
   responses:
+    400BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
     401Unauthorized:
       description: Unauthorized access
       content:
@@ -444,6 +490,12 @@ components:
           schema:
             $ref: '#/components/schemas/Error'
 
+    422UnprocessableEntity:
+      description: Validation Failed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
         
     500InternalError:
       description: Server internal error

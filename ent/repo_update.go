@@ -10,6 +10,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/hanjunlee/gitploy/ent/deployment"
 	"github.com/hanjunlee/gitploy/ent/perm"
 	"github.com/hanjunlee/gitploy/ent/predicate"
 	"github.com/hanjunlee/gitploy/ent/repo"
@@ -57,6 +58,20 @@ func (ru *RepoUpdate) SetNillableDescription(s *string) *RepoUpdate {
 // ClearDescription clears the value of the "description" field.
 func (ru *RepoUpdate) ClearDescription() *RepoUpdate {
 	ru.mutation.ClearDescription()
+	return ru
+}
+
+// SetConfigPath sets the "config_path" field.
+func (ru *RepoUpdate) SetConfigPath(s string) *RepoUpdate {
+	ru.mutation.SetConfigPath(s)
+	return ru
+}
+
+// SetNillableConfigPath sets the "config_path" field if the given value is not nil.
+func (ru *RepoUpdate) SetNillableConfigPath(s *string) *RepoUpdate {
+	if s != nil {
+		ru.SetConfigPath(*s)
+	}
 	return ru
 }
 
@@ -115,6 +130,21 @@ func (ru *RepoUpdate) AddPerms(p ...*Perm) *RepoUpdate {
 	return ru.AddPermIDs(ids...)
 }
 
+// AddDeploymentIDs adds the "deployments" edge to the Deployment entity by IDs.
+func (ru *RepoUpdate) AddDeploymentIDs(ids ...int) *RepoUpdate {
+	ru.mutation.AddDeploymentIDs(ids...)
+	return ru
+}
+
+// AddDeployments adds the "deployments" edges to the Deployment entity.
+func (ru *RepoUpdate) AddDeployments(d ...*Deployment) *RepoUpdate {
+	ids := make([]int, len(d))
+	for i := range d {
+		ids[i] = d[i].ID
+	}
+	return ru.AddDeploymentIDs(ids...)
+}
+
 // Mutation returns the RepoMutation object of the builder.
 func (ru *RepoUpdate) Mutation() *RepoMutation {
 	return ru.mutation
@@ -139,6 +169,27 @@ func (ru *RepoUpdate) RemovePerms(p ...*Perm) *RepoUpdate {
 		ids[i] = p[i].ID
 	}
 	return ru.RemovePermIDs(ids...)
+}
+
+// ClearDeployments clears all "deployments" edges to the Deployment entity.
+func (ru *RepoUpdate) ClearDeployments() *RepoUpdate {
+	ru.mutation.ClearDeployments()
+	return ru
+}
+
+// RemoveDeploymentIDs removes the "deployments" edge to Deployment entities by IDs.
+func (ru *RepoUpdate) RemoveDeploymentIDs(ids ...int) *RepoUpdate {
+	ru.mutation.RemoveDeploymentIDs(ids...)
+	return ru
+}
+
+// RemoveDeployments removes "deployments" edges to Deployment entities.
+func (ru *RepoUpdate) RemoveDeployments(d ...*Deployment) *RepoUpdate {
+	ids := make([]int, len(d))
+	for i := range d {
+		ids[i] = d[i].ID
+	}
+	return ru.RemoveDeploymentIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -246,6 +297,13 @@ func (ru *RepoUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: repo.FieldDescription,
 		})
 	}
+	if value, ok := ru.mutation.ConfigPath(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: repo.FieldConfigPath,
+		})
+	}
 	if value, ok := ru.mutation.SyncedAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
@@ -327,6 +385,60 @@ func (ru *RepoUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if ru.mutation.DeploymentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   repo.DeploymentsTable,
+			Columns: []string{repo.DeploymentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: deployment.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ru.mutation.RemovedDeploymentsIDs(); len(nodes) > 0 && !ru.mutation.DeploymentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   repo.DeploymentsTable,
+			Columns: []string{repo.DeploymentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: deployment.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ru.mutation.DeploymentsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   repo.DeploymentsTable,
+			Columns: []string{repo.DeploymentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: deployment.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, ru.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{repo.Label}
@@ -375,6 +487,20 @@ func (ruo *RepoUpdateOne) SetNillableDescription(s *string) *RepoUpdateOne {
 // ClearDescription clears the value of the "description" field.
 func (ruo *RepoUpdateOne) ClearDescription() *RepoUpdateOne {
 	ruo.mutation.ClearDescription()
+	return ruo
+}
+
+// SetConfigPath sets the "config_path" field.
+func (ruo *RepoUpdateOne) SetConfigPath(s string) *RepoUpdateOne {
+	ruo.mutation.SetConfigPath(s)
+	return ruo
+}
+
+// SetNillableConfigPath sets the "config_path" field if the given value is not nil.
+func (ruo *RepoUpdateOne) SetNillableConfigPath(s *string) *RepoUpdateOne {
+	if s != nil {
+		ruo.SetConfigPath(*s)
+	}
 	return ruo
 }
 
@@ -433,6 +559,21 @@ func (ruo *RepoUpdateOne) AddPerms(p ...*Perm) *RepoUpdateOne {
 	return ruo.AddPermIDs(ids...)
 }
 
+// AddDeploymentIDs adds the "deployments" edge to the Deployment entity by IDs.
+func (ruo *RepoUpdateOne) AddDeploymentIDs(ids ...int) *RepoUpdateOne {
+	ruo.mutation.AddDeploymentIDs(ids...)
+	return ruo
+}
+
+// AddDeployments adds the "deployments" edges to the Deployment entity.
+func (ruo *RepoUpdateOne) AddDeployments(d ...*Deployment) *RepoUpdateOne {
+	ids := make([]int, len(d))
+	for i := range d {
+		ids[i] = d[i].ID
+	}
+	return ruo.AddDeploymentIDs(ids...)
+}
+
 // Mutation returns the RepoMutation object of the builder.
 func (ruo *RepoUpdateOne) Mutation() *RepoMutation {
 	return ruo.mutation
@@ -457,6 +598,27 @@ func (ruo *RepoUpdateOne) RemovePerms(p ...*Perm) *RepoUpdateOne {
 		ids[i] = p[i].ID
 	}
 	return ruo.RemovePermIDs(ids...)
+}
+
+// ClearDeployments clears all "deployments" edges to the Deployment entity.
+func (ruo *RepoUpdateOne) ClearDeployments() *RepoUpdateOne {
+	ruo.mutation.ClearDeployments()
+	return ruo
+}
+
+// RemoveDeploymentIDs removes the "deployments" edge to Deployment entities by IDs.
+func (ruo *RepoUpdateOne) RemoveDeploymentIDs(ids ...int) *RepoUpdateOne {
+	ruo.mutation.RemoveDeploymentIDs(ids...)
+	return ruo
+}
+
+// RemoveDeployments removes "deployments" edges to Deployment entities.
+func (ruo *RepoUpdateOne) RemoveDeployments(d ...*Deployment) *RepoUpdateOne {
+	ids := make([]int, len(d))
+	for i := range d {
+		ids[i] = d[i].ID
+	}
+	return ruo.RemoveDeploymentIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -588,6 +750,13 @@ func (ruo *RepoUpdateOne) sqlSave(ctx context.Context) (_node *Repo, err error) 
 			Column: repo.FieldDescription,
 		})
 	}
+	if value, ok := ruo.mutation.ConfigPath(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: repo.FieldConfigPath,
+		})
+	}
 	if value, ok := ruo.mutation.SyncedAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
@@ -661,6 +830,60 @@ func (ruo *RepoUpdateOne) sqlSave(ctx context.Context) (_node *Repo, err error) 
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
 					Column: perm.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if ruo.mutation.DeploymentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   repo.DeploymentsTable,
+			Columns: []string{repo.DeploymentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: deployment.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ruo.mutation.RemovedDeploymentsIDs(); len(nodes) > 0 && !ruo.mutation.DeploymentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   repo.DeploymentsTable,
+			Columns: []string{repo.DeploymentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: deployment.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ruo.mutation.DeploymentsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   repo.DeploymentsTable,
+			Columns: []string{repo.DeploymentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: deployment.FieldID,
 				},
 			},
 		}

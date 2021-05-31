@@ -22,6 +22,8 @@ type Repo struct {
 	Name string `json:"name,omitempty"`
 	// Description holds the value of the "description" field.
 	Description string `json:"description,omitempty"`
+	// ConfigPath holds the value of the "config_path" field.
+	ConfigPath string `json:"config_path,omitempty"`
 	// SyncedAt holds the value of the "synced_at" field.
 	SyncedAt time.Time `json:"synced_at,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
@@ -37,9 +39,11 @@ type Repo struct {
 type RepoEdges struct {
 	// Perms holds the value of the perms edge.
 	Perms []*Perm `json:"perms,omitempty"`
+	// Deployments holds the value of the deployments edge.
+	Deployments []*Deployment `json:"deployments,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [1]bool
+	loadedTypes [2]bool
 }
 
 // PermsOrErr returns the Perms value or an error if the edge
@@ -51,12 +55,21 @@ func (e RepoEdges) PermsOrErr() ([]*Perm, error) {
 	return nil, &NotLoadedError{edge: "perms"}
 }
 
+// DeploymentsOrErr returns the Deployments value or an error if the edge
+// was not loaded in eager-loading.
+func (e RepoEdges) DeploymentsOrErr() ([]*Deployment, error) {
+	if e.loadedTypes[1] {
+		return e.Deployments, nil
+	}
+	return nil, &NotLoadedError{edge: "deployments"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*Repo) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case repo.FieldID, repo.FieldNamespace, repo.FieldName, repo.FieldDescription:
+		case repo.FieldID, repo.FieldNamespace, repo.FieldName, repo.FieldDescription, repo.FieldConfigPath:
 			values[i] = new(sql.NullString)
 		case repo.FieldSyncedAt, repo.FieldCreatedAt, repo.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -99,6 +112,12 @@ func (r *Repo) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				r.Description = value.String
 			}
+		case repo.FieldConfigPath:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field config_path", values[i])
+			} else if value.Valid {
+				r.ConfigPath = value.String
+			}
 		case repo.FieldSyncedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field synced_at", values[i])
@@ -125,6 +144,11 @@ func (r *Repo) assignValues(columns []string, values []interface{}) error {
 // QueryPerms queries the "perms" edge of the Repo entity.
 func (r *Repo) QueryPerms() *PermQuery {
 	return (&RepoClient{config: r.config}).QueryPerms(r)
+}
+
+// QueryDeployments queries the "deployments" edge of the Repo entity.
+func (r *Repo) QueryDeployments() *DeploymentQuery {
+	return (&RepoClient{config: r.config}).QueryDeployments(r)
 }
 
 // Update returns a builder for updating this Repo.
@@ -156,6 +180,8 @@ func (r *Repo) String() string {
 	builder.WriteString(r.Name)
 	builder.WriteString(", description=")
 	builder.WriteString(r.Description)
+	builder.WriteString(", config_path=")
+	builder.WriteString(r.ConfigPath)
 	builder.WriteString(", synced_at=")
 	builder.WriteString(r.SyncedAt.Format(time.ANSIC))
 	builder.WriteString(", created_at=")

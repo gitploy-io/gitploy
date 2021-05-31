@@ -9,6 +9,7 @@ import (
 
 	"github.com/hanjunlee/gitploy/ent/migrate"
 
+	"github.com/hanjunlee/gitploy/ent/deployment"
 	"github.com/hanjunlee/gitploy/ent/perm"
 	"github.com/hanjunlee/gitploy/ent/repo"
 	"github.com/hanjunlee/gitploy/ent/user"
@@ -23,6 +24,8 @@ type Client struct {
 	config
 	// Schema is the client for creating, migrating and dropping schema.
 	Schema *migrate.Schema
+	// Deployment is the client for interacting with the Deployment builders.
+	Deployment *DeploymentClient
 	// Perm is the client for interacting with the Perm builders.
 	Perm *PermClient
 	// Repo is the client for interacting with the Repo builders.
@@ -42,6 +45,7 @@ func NewClient(opts ...Option) *Client {
 
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
+	c.Deployment = NewDeploymentClient(c.config)
 	c.Perm = NewPermClient(c.config)
 	c.Repo = NewRepoClient(c.config)
 	c.User = NewUserClient(c.config)
@@ -76,11 +80,12 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:    ctx,
-		config: cfg,
-		Perm:   NewPermClient(cfg),
-		Repo:   NewRepoClient(cfg),
-		User:   NewUserClient(cfg),
+		ctx:        ctx,
+		config:     cfg,
+		Deployment: NewDeploymentClient(cfg),
+		Perm:       NewPermClient(cfg),
+		Repo:       NewRepoClient(cfg),
+		User:       NewUserClient(cfg),
 	}, nil
 }
 
@@ -98,17 +103,18 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		config: cfg,
-		Perm:   NewPermClient(cfg),
-		Repo:   NewRepoClient(cfg),
-		User:   NewUserClient(cfg),
+		config:     cfg,
+		Deployment: NewDeploymentClient(cfg),
+		Perm:       NewPermClient(cfg),
+		Repo:       NewRepoClient(cfg),
+		User:       NewUserClient(cfg),
 	}, nil
 }
 
 // Debug returns a new debug-client. It's used to get verbose logging on specific operations.
 //
 //	client.Debug().
-//		Perm.
+//		Deployment.
 //		Query().
 //		Count(ctx)
 //
@@ -131,9 +137,132 @@ func (c *Client) Close() error {
 // Use adds the mutation hooks to all the entity clients.
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
+	c.Deployment.Use(hooks...)
 	c.Perm.Use(hooks...)
 	c.Repo.Use(hooks...)
 	c.User.Use(hooks...)
+}
+
+// DeploymentClient is a client for the Deployment schema.
+type DeploymentClient struct {
+	config
+}
+
+// NewDeploymentClient returns a client for the Deployment from the given config.
+func NewDeploymentClient(c config) *DeploymentClient {
+	return &DeploymentClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `deployment.Hooks(f(g(h())))`.
+func (c *DeploymentClient) Use(hooks ...Hook) {
+	c.hooks.Deployment = append(c.hooks.Deployment, hooks...)
+}
+
+// Create returns a create builder for Deployment.
+func (c *DeploymentClient) Create() *DeploymentCreate {
+	mutation := newDeploymentMutation(c.config, OpCreate)
+	return &DeploymentCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Deployment entities.
+func (c *DeploymentClient) CreateBulk(builders ...*DeploymentCreate) *DeploymentCreateBulk {
+	return &DeploymentCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Deployment.
+func (c *DeploymentClient) Update() *DeploymentUpdate {
+	mutation := newDeploymentMutation(c.config, OpUpdate)
+	return &DeploymentUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *DeploymentClient) UpdateOne(d *Deployment) *DeploymentUpdateOne {
+	mutation := newDeploymentMutation(c.config, OpUpdateOne, withDeployment(d))
+	return &DeploymentUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *DeploymentClient) UpdateOneID(id int) *DeploymentUpdateOne {
+	mutation := newDeploymentMutation(c.config, OpUpdateOne, withDeploymentID(id))
+	return &DeploymentUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Deployment.
+func (c *DeploymentClient) Delete() *DeploymentDelete {
+	mutation := newDeploymentMutation(c.config, OpDelete)
+	return &DeploymentDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *DeploymentClient) DeleteOne(d *Deployment) *DeploymentDeleteOne {
+	return c.DeleteOneID(d.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *DeploymentClient) DeleteOneID(id int) *DeploymentDeleteOne {
+	builder := c.Delete().Where(deployment.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &DeploymentDeleteOne{builder}
+}
+
+// Query returns a query builder for Deployment.
+func (c *DeploymentClient) Query() *DeploymentQuery {
+	return &DeploymentQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a Deployment entity by its id.
+func (c *DeploymentClient) Get(ctx context.Context, id int) (*Deployment, error) {
+	return c.Query().Where(deployment.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *DeploymentClient) GetX(ctx context.Context, id int) *Deployment {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryUser queries the user edge of a Deployment.
+func (c *DeploymentClient) QueryUser(d *Deployment) *UserQuery {
+	query := &UserQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := d.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(deployment.Table, deployment.FieldID, id),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, deployment.UserTable, deployment.UserColumn),
+		)
+		fromV = sqlgraph.Neighbors(d.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryRepo queries the repo edge of a Deployment.
+func (c *DeploymentClient) QueryRepo(d *Deployment) *RepoQuery {
+	query := &RepoQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := d.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(deployment.Table, deployment.FieldID, id),
+			sqlgraph.To(repo.Table, repo.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, deployment.RepoTable, deployment.RepoColumn),
+		)
+		fromV = sqlgraph.Neighbors(d.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *DeploymentClient) Hooks() []Hook {
+	return c.hooks.Deployment
 }
 
 // PermClient is a client for the Perm schema.
@@ -359,6 +488,22 @@ func (c *RepoClient) QueryPerms(r *Repo) *PermQuery {
 	return query
 }
 
+// QueryDeployments queries the deployments edge of a Repo.
+func (c *RepoClient) QueryDeployments(r *Repo) *DeploymentQuery {
+	query := &DeploymentQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := r.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(repo.Table, repo.FieldID, id),
+			sqlgraph.To(deployment.Table, deployment.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, repo.DeploymentsTable, repo.DeploymentsColumn),
+		)
+		fromV = sqlgraph.Neighbors(r.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *RepoClient) Hooks() []Hook {
 	return c.hooks.Repo
@@ -458,6 +603,22 @@ func (c *UserClient) QueryPerms(u *User) *PermQuery {
 			sqlgraph.From(user.Table, user.FieldID, id),
 			sqlgraph.To(perm.Table, perm.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, user.PermsTable, user.PermsColumn),
+		)
+		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryDeployments queries the deployments edge of a User.
+func (c *UserClient) QueryDeployments(u *User) *DeploymentQuery {
+	query := &DeploymentQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := u.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, id),
+			sqlgraph.To(deployment.Table, deployment.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.DeploymentsTable, user.DeploymentsColumn),
 		)
 		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
 		return fromV, nil

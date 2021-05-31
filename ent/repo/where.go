@@ -114,6 +114,13 @@ func Description(v string) predicate.Repo {
 	})
 }
 
+// ConfigPath applies equality check predicate on the "config_path" field. It's identical to ConfigPathEQ.
+func ConfigPath(v string) predicate.Repo {
+	return predicate.Repo(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldConfigPath), v))
+	})
+}
+
 // SyncedAt applies equality check predicate on the "synced_at" field. It's identical to SyncedAtEQ.
 func SyncedAt(v time.Time) predicate.Repo {
 	return predicate.Repo(func(s *sql.Selector) {
@@ -482,6 +489,117 @@ func DescriptionContainsFold(v string) predicate.Repo {
 	})
 }
 
+// ConfigPathEQ applies the EQ predicate on the "config_path" field.
+func ConfigPathEQ(v string) predicate.Repo {
+	return predicate.Repo(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldConfigPath), v))
+	})
+}
+
+// ConfigPathNEQ applies the NEQ predicate on the "config_path" field.
+func ConfigPathNEQ(v string) predicate.Repo {
+	return predicate.Repo(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldConfigPath), v))
+	})
+}
+
+// ConfigPathIn applies the In predicate on the "config_path" field.
+func ConfigPathIn(vs ...string) predicate.Repo {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Repo(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldConfigPath), v...))
+	})
+}
+
+// ConfigPathNotIn applies the NotIn predicate on the "config_path" field.
+func ConfigPathNotIn(vs ...string) predicate.Repo {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Repo(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldConfigPath), v...))
+	})
+}
+
+// ConfigPathGT applies the GT predicate on the "config_path" field.
+func ConfigPathGT(v string) predicate.Repo {
+	return predicate.Repo(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldConfigPath), v))
+	})
+}
+
+// ConfigPathGTE applies the GTE predicate on the "config_path" field.
+func ConfigPathGTE(v string) predicate.Repo {
+	return predicate.Repo(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldConfigPath), v))
+	})
+}
+
+// ConfigPathLT applies the LT predicate on the "config_path" field.
+func ConfigPathLT(v string) predicate.Repo {
+	return predicate.Repo(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldConfigPath), v))
+	})
+}
+
+// ConfigPathLTE applies the LTE predicate on the "config_path" field.
+func ConfigPathLTE(v string) predicate.Repo {
+	return predicate.Repo(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldConfigPath), v))
+	})
+}
+
+// ConfigPathContains applies the Contains predicate on the "config_path" field.
+func ConfigPathContains(v string) predicate.Repo {
+	return predicate.Repo(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldConfigPath), v))
+	})
+}
+
+// ConfigPathHasPrefix applies the HasPrefix predicate on the "config_path" field.
+func ConfigPathHasPrefix(v string) predicate.Repo {
+	return predicate.Repo(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldConfigPath), v))
+	})
+}
+
+// ConfigPathHasSuffix applies the HasSuffix predicate on the "config_path" field.
+func ConfigPathHasSuffix(v string) predicate.Repo {
+	return predicate.Repo(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldConfigPath), v))
+	})
+}
+
+// ConfigPathEqualFold applies the EqualFold predicate on the "config_path" field.
+func ConfigPathEqualFold(v string) predicate.Repo {
+	return predicate.Repo(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldConfigPath), v))
+	})
+}
+
+// ConfigPathContainsFold applies the ContainsFold predicate on the "config_path" field.
+func ConfigPathContainsFold(v string) predicate.Repo {
+	return predicate.Repo(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldConfigPath), v))
+	})
+}
+
 // SyncedAtEQ applies the EQ predicate on the "synced_at" field.
 func SyncedAtEQ(v time.Time) predicate.Repo {
 	return predicate.Repo(func(s *sql.Selector) {
@@ -743,6 +861,34 @@ func HasPermsWith(preds ...predicate.Perm) predicate.Repo {
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(PermsInverseTable, FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, PermsTable, PermsColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasDeployments applies the HasEdge predicate on the "deployments" edge.
+func HasDeployments() predicate.Repo {
+	return predicate.Repo(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(DeploymentsTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, DeploymentsTable, DeploymentsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasDeploymentsWith applies the HasEdge predicate on the "deployments" edge with a given conditions (other predicates).
+func HasDeploymentsWith(preds ...predicate.Deployment) predicate.Repo {
+	return predicate.Repo(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(DeploymentsInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, DeploymentsTable, DeploymentsColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
