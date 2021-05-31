@@ -42,12 +42,16 @@ func init() {
 	perm.UpdateDefaultUpdatedAt = permDescUpdatedAt.UpdateDefault.(func() time.Time)
 	repoFields := schema.Repo{}.Fields()
 	_ = repoFields
+	// repoDescConfigPath is the schema descriptor for config_path field.
+	repoDescConfigPath := repoFields[4].Descriptor()
+	// repo.DefaultConfigPath holds the default value on creation for the config_path field.
+	repo.DefaultConfigPath = repoDescConfigPath.Default.(string)
 	// repoDescCreatedAt is the schema descriptor for created_at field.
-	repoDescCreatedAt := repoFields[5].Descriptor()
+	repoDescCreatedAt := repoFields[6].Descriptor()
 	// repo.DefaultCreatedAt holds the default value on creation for the created_at field.
 	repo.DefaultCreatedAt = repoDescCreatedAt.Default.(func() time.Time)
 	// repoDescUpdatedAt is the schema descriptor for updated_at field.
-	repoDescUpdatedAt := repoFields[6].Descriptor()
+	repoDescUpdatedAt := repoFields[7].Descriptor()
 	// repo.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	repo.DefaultUpdatedAt = repoDescUpdatedAt.Default.(func() time.Time)
 	// repo.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.

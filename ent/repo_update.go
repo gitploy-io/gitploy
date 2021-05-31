@@ -61,6 +61,20 @@ func (ru *RepoUpdate) ClearDescription() *RepoUpdate {
 	return ru
 }
 
+// SetConfigPath sets the "config_path" field.
+func (ru *RepoUpdate) SetConfigPath(s string) *RepoUpdate {
+	ru.mutation.SetConfigPath(s)
+	return ru
+}
+
+// SetNillableConfigPath sets the "config_path" field if the given value is not nil.
+func (ru *RepoUpdate) SetNillableConfigPath(s *string) *RepoUpdate {
+	if s != nil {
+		ru.SetConfigPath(*s)
+	}
+	return ru
+}
+
 // SetSyncedAt sets the "synced_at" field.
 func (ru *RepoUpdate) SetSyncedAt(t time.Time) *RepoUpdate {
 	ru.mutation.SetSyncedAt(t)
@@ -283,6 +297,13 @@ func (ru *RepoUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: repo.FieldDescription,
 		})
 	}
+	if value, ok := ru.mutation.ConfigPath(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: repo.FieldConfigPath,
+		})
+	}
 	if value, ok := ru.mutation.SyncedAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
@@ -466,6 +487,20 @@ func (ruo *RepoUpdateOne) SetNillableDescription(s *string) *RepoUpdateOne {
 // ClearDescription clears the value of the "description" field.
 func (ruo *RepoUpdateOne) ClearDescription() *RepoUpdateOne {
 	ruo.mutation.ClearDescription()
+	return ruo
+}
+
+// SetConfigPath sets the "config_path" field.
+func (ruo *RepoUpdateOne) SetConfigPath(s string) *RepoUpdateOne {
+	ruo.mutation.SetConfigPath(s)
+	return ruo
+}
+
+// SetNillableConfigPath sets the "config_path" field if the given value is not nil.
+func (ruo *RepoUpdateOne) SetNillableConfigPath(s *string) *RepoUpdateOne {
+	if s != nil {
+		ruo.SetConfigPath(*s)
+	}
 	return ruo
 }
 
@@ -713,6 +748,13 @@ func (ruo *RepoUpdateOne) sqlSave(ctx context.Context) (_node *Repo, err error) 
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Column: repo.FieldDescription,
+		})
+	}
+	if value, ok := ruo.mutation.ConfigPath(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: repo.FieldConfigPath,
 		})
 	}
 	if value, ok := ruo.mutation.SyncedAt(); ok {

@@ -17,6 +17,8 @@ const (
 	FieldName = "name"
 	// FieldDescription holds the string denoting the description field in the database.
 	FieldDescription = "description"
+	// FieldConfigPath holds the string denoting the config_path field in the database.
+	FieldConfigPath = "config_path"
 	// FieldSyncedAt holds the string denoting the synced_at field in the database.
 	FieldSyncedAt = "synced_at"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
@@ -51,6 +53,7 @@ var Columns = []string{
 	FieldNamespace,
 	FieldName,
 	FieldDescription,
+	FieldConfigPath,
 	FieldSyncedAt,
 	FieldCreatedAt,
 	FieldUpdatedAt,
@@ -67,6 +70,8 @@ func ValidColumn(column string) bool {
 }
 
 var (
+	// DefaultConfigPath holds the default value on creation for the "config_path" field.
+	DefaultConfigPath string
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
 	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.

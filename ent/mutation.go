@@ -1492,6 +1492,7 @@ type RepoMutation struct {
 	namespace          *string
 	name               *string
 	description        *string
+	config_path        *string
 	synced_at          *time.Time
 	created_at         *time.Time
 	updated_at         *time.Time
@@ -1711,6 +1712,42 @@ func (m *RepoMutation) DescriptionCleared() bool {
 func (m *RepoMutation) ResetDescription() {
 	m.description = nil
 	delete(m.clearedFields, repo.FieldDescription)
+}
+
+// SetConfigPath sets the "config_path" field.
+func (m *RepoMutation) SetConfigPath(s string) {
+	m.config_path = &s
+}
+
+// ConfigPath returns the value of the "config_path" field in the mutation.
+func (m *RepoMutation) ConfigPath() (r string, exists bool) {
+	v := m.config_path
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldConfigPath returns the old "config_path" field's value of the Repo entity.
+// If the Repo object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RepoMutation) OldConfigPath(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldConfigPath is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldConfigPath requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldConfigPath: %w", err)
+	}
+	return oldValue.ConfigPath, nil
+}
+
+// ResetConfigPath resets all changes to the "config_path" field.
+func (m *RepoMutation) ResetConfigPath() {
+	m.config_path = nil
 }
 
 // SetSyncedAt sets the "synced_at" field.
@@ -1954,7 +1991,7 @@ func (m *RepoMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *RepoMutation) Fields() []string {
-	fields := make([]string, 0, 6)
+	fields := make([]string, 0, 7)
 	if m.namespace != nil {
 		fields = append(fields, repo.FieldNamespace)
 	}
@@ -1963,6 +2000,9 @@ func (m *RepoMutation) Fields() []string {
 	}
 	if m.description != nil {
 		fields = append(fields, repo.FieldDescription)
+	}
+	if m.config_path != nil {
+		fields = append(fields, repo.FieldConfigPath)
 	}
 	if m.synced_at != nil {
 		fields = append(fields, repo.FieldSyncedAt)
@@ -1987,6 +2027,8 @@ func (m *RepoMutation) Field(name string) (ent.Value, bool) {
 		return m.Name()
 	case repo.FieldDescription:
 		return m.Description()
+	case repo.FieldConfigPath:
+		return m.ConfigPath()
 	case repo.FieldSyncedAt:
 		return m.SyncedAt()
 	case repo.FieldCreatedAt:
@@ -2008,6 +2050,8 @@ func (m *RepoMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldName(ctx)
 	case repo.FieldDescription:
 		return m.OldDescription(ctx)
+	case repo.FieldConfigPath:
+		return m.OldConfigPath(ctx)
 	case repo.FieldSyncedAt:
 		return m.OldSyncedAt(ctx)
 	case repo.FieldCreatedAt:
@@ -2043,6 +2087,13 @@ func (m *RepoMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetDescription(v)
+		return nil
+	case repo.FieldConfigPath:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetConfigPath(v)
 		return nil
 	case repo.FieldSyncedAt:
 		v, ok := value.(time.Time)
@@ -2137,6 +2188,9 @@ func (m *RepoMutation) ResetField(name string) error {
 		return nil
 	case repo.FieldDescription:
 		m.ResetDescription()
+		return nil
+	case repo.FieldConfigPath:
+		m.ResetConfigPath()
 		return nil
 	case repo.FieldSyncedAt:
 		m.ResetSyncedAt()

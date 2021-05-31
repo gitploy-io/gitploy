@@ -78,6 +78,7 @@ var (
 		{Name: "namespace", Type: field.TypeString},
 		{Name: "name", Type: field.TypeString},
 		{Name: "description", Type: field.TypeString, Nullable: true},
+		{Name: "config_path", Type: field.TypeString, Default: "deploy.yml"},
 		{Name: "synced_at", Type: field.TypeTime, Nullable: true},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},

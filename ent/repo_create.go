@@ -48,6 +48,20 @@ func (rc *RepoCreate) SetNillableDescription(s *string) *RepoCreate {
 	return rc
 }
 
+// SetConfigPath sets the "config_path" field.
+func (rc *RepoCreate) SetConfigPath(s string) *RepoCreate {
+	rc.mutation.SetConfigPath(s)
+	return rc
+}
+
+// SetNillableConfigPath sets the "config_path" field if the given value is not nil.
+func (rc *RepoCreate) SetNillableConfigPath(s *string) *RepoCreate {
+	if s != nil {
+		rc.SetConfigPath(*s)
+	}
+	return rc
+}
+
 // SetSyncedAt sets the "synced_at" field.
 func (rc *RepoCreate) SetSyncedAt(t time.Time) *RepoCreate {
 	rc.mutation.SetSyncedAt(t)
@@ -178,6 +192,10 @@ func (rc *RepoCreate) SaveX(ctx context.Context) *Repo {
 
 // defaults sets the default values of the builder before save.
 func (rc *RepoCreate) defaults() {
+	if _, ok := rc.mutation.ConfigPath(); !ok {
+		v := repo.DefaultConfigPath
+		rc.mutation.SetConfigPath(v)
+	}
 	if _, ok := rc.mutation.CreatedAt(); !ok {
 		v := repo.DefaultCreatedAt()
 		rc.mutation.SetCreatedAt(v)
@@ -195,6 +213,9 @@ func (rc *RepoCreate) check() error {
 	}
 	if _, ok := rc.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New("ent: missing required field \"name\"")}
+	}
+	if _, ok := rc.mutation.ConfigPath(); !ok {
+		return &ValidationError{Name: "config_path", err: errors.New("ent: missing required field \"config_path\"")}
 	}
 	if _, ok := rc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New("ent: missing required field \"created_at\"")}
@@ -254,6 +275,14 @@ func (rc *RepoCreate) createSpec() (*Repo, *sqlgraph.CreateSpec) {
 			Column: repo.FieldDescription,
 		})
 		_node.Description = value
+	}
+	if value, ok := rc.mutation.ConfigPath(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: repo.FieldConfigPath,
+		})
+		_node.ConfigPath = value
 	}
 	if value, ok := rc.mutation.SyncedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

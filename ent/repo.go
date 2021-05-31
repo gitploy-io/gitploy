@@ -22,6 +22,8 @@ type Repo struct {
 	Name string `json:"name,omitempty"`
 	// Description holds the value of the "description" field.
 	Description string `json:"description,omitempty"`
+	// ConfigPath holds the value of the "config_path" field.
+	ConfigPath string `json:"config_path,omitempty"`
 	// SyncedAt holds the value of the "synced_at" field.
 	SyncedAt time.Time `json:"synced_at,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
@@ -67,7 +69,7 @@ func (*Repo) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case repo.FieldID, repo.FieldNamespace, repo.FieldName, repo.FieldDescription:
+		case repo.FieldID, repo.FieldNamespace, repo.FieldName, repo.FieldDescription, repo.FieldConfigPath:
 			values[i] = new(sql.NullString)
 		case repo.FieldSyncedAt, repo.FieldCreatedAt, repo.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -109,6 +111,12 @@ func (r *Repo) assignValues(columns []string, values []interface{}) error {
 				return fmt.Errorf("unexpected type %T for field description", values[i])
 			} else if value.Valid {
 				r.Description = value.String
+			}
+		case repo.FieldConfigPath:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field config_path", values[i])
+			} else if value.Valid {
+				r.ConfigPath = value.String
 			}
 		case repo.FieldSyncedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -172,6 +180,8 @@ func (r *Repo) String() string {
 	builder.WriteString(r.Name)
 	builder.WriteString(", description=")
 	builder.WriteString(r.Description)
+	builder.WriteString(", config_path=")
+	builder.WriteString(r.ConfigPath)
 	builder.WriteString(", synced_at=")
 	builder.WriteString(r.SyncedAt.Format(time.ANSIC))
 	builder.WriteString(", created_at=")
