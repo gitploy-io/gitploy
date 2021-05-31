@@ -55,6 +55,8 @@ func (s *Store) CreateDeployment(ctx context.Context, u *ent.User, r *ent.Repo, 
 		SetType(d.Type).
 		SetRef(d.Ref).
 		SetEnv(d.Env).
+		SetUserID(u.ID).
+		SetRepoID(r.ID).
 		Save(ctx)
 }
 
