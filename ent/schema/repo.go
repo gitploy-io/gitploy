@@ -35,5 +35,6 @@ func (Repo) Fields() []ent.Field {
 func (Repo) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("perms", Perm.Type),
+		edge.To("deployments", Deployment.Type),
 	}
 }

@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/hanjunlee/gitploy/ent/deployment"
 	"github.com/hanjunlee/gitploy/ent/perm"
 	"github.com/hanjunlee/gitploy/ent/predicate"
 	"github.com/hanjunlee/gitploy/ent/user"
@@ -27,7 +28,8 @@ type UserQuery struct {
 	fields     []string
 	predicates []predicate.User
 	// eager-loading edges.
-	withPerms *PermQuery
+	withPerms       *PermQuery
+	withDeployments *DeploymentQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -79,6 +81,28 @@ func (uq *UserQuery) QueryPerms() *PermQuery {
 			sqlgraph.From(user.Table, user.FieldID, selector),
 			sqlgraph.To(perm.Table, perm.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, user.PermsTable, user.PermsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(uq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryDeployments chains the current query on the "deployments" edge.
+func (uq *UserQuery) QueryDeployments() *DeploymentQuery {
+	query := &DeploymentQuery{config: uq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := uq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := uq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, selector),
+			sqlgraph.To(deployment.Table, deployment.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.DeploymentsTable, user.DeploymentsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(uq.driver.Dialect(), step)
 		return fromU, nil
@@ -262,12 +286,13 @@ func (uq *UserQuery) Clone() *UserQuery {
 		return nil
 	}
 	return &UserQuery{
-		config:     uq.config,
-		limit:      uq.limit,
-		offset:     uq.offset,
-		order:      append([]OrderFunc{}, uq.order...),
-		predicates: append([]predicate.User{}, uq.predicates...),
-		withPerms:  uq.withPerms.Clone(),
+		config:          uq.config,
+		limit:           uq.limit,
+		offset:          uq.offset,
+		order:           append([]OrderFunc{}, uq.order...),
+		predicates:      append([]predicate.User{}, uq.predicates...),
+		withPerms:       uq.withPerms.Clone(),
+		withDeployments: uq.withDeployments.Clone(),
 		// clone intermediate query.
 		sql:  uq.sql.Clone(),
 		path: uq.path,
@@ -282,6 +307,17 @@ func (uq *UserQuery) WithPerms(opts ...func(*PermQuery)) *UserQuery {
 		opt(query)
 	}
 	uq.withPerms = query
+	return uq
+}
+
+// WithDeployments tells the query-builder to eager-load the nodes that are connected to
+// the "deployments" edge. The optional arguments are used to configure the query builder of the edge.
+func (uq *UserQuery) WithDeployments(opts ...func(*DeploymentQuery)) *UserQuery {
+	query := &DeploymentQuery{config: uq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	uq.withDeployments = query
 	return uq
 }
 
@@ -350,8 +386,9 @@ func (uq *UserQuery) sqlAll(ctx context.Context) ([]*User, error) {
 	var (
 		nodes       = []*User{}
 		_spec       = uq.querySpec()
-		loadedTypes = [1]bool{
+		loadedTypes = [2]bool{
 			uq.withPerms != nil,
+			uq.withDeployments != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -400,6 +437,35 @@ func (uq *UserQuery) sqlAll(ctx context.Context) ([]*User, error) {
 				return nil, fmt.Errorf(`unexpected foreign-key "user_perms" returned %v for node %v`, *fk, n.ID)
 			}
 			node.Edges.Perms = append(node.Edges.Perms, n)
+		}
+	}
+
+	if query := uq.withDeployments; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[string]*User)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.Deployments = []*Deployment{}
+		}
+		query.withFKs = true
+		query.Where(predicate.Deployment(func(s *sql.Selector) {
+			s.Where(sql.InValues(user.DeploymentsColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.user_deployments
+			if fk == nil {
+				return nil, fmt.Errorf(`foreign-key "user_deployments" is nil for node %v`, n.ID)
+			}
+			node, ok := nodeids[*fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "user_deployments" returned %v for node %v`, *fk, n.ID)
+			}
+			node.Edges.Deployments = append(node.Edges.Deployments, n)
 		}
 	}
 

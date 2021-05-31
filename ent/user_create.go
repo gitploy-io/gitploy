@@ -10,6 +10,7 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/hanjunlee/gitploy/ent/deployment"
 	"github.com/hanjunlee/gitploy/ent/perm"
 	"github.com/hanjunlee/gitploy/ent/user"
 )
@@ -148,6 +149,21 @@ func (uc *UserCreate) AddPerms(p ...*Perm) *UserCreate {
 		ids[i] = p[i].ID
 	}
 	return uc.AddPermIDs(ids...)
+}
+
+// AddDeploymentIDs adds the "deployments" edge to the Deployment entity by IDs.
+func (uc *UserCreate) AddDeploymentIDs(ids ...int) *UserCreate {
+	uc.mutation.AddDeploymentIDs(ids...)
+	return uc
+}
+
+// AddDeployments adds the "deployments" edges to the Deployment entity.
+func (uc *UserCreate) AddDeployments(d ...*Deployment) *UserCreate {
+	ids := make([]int, len(d))
+	for i := range d {
+		ids[i] = d[i].ID
+	}
+	return uc.AddDeploymentIDs(ids...)
 }
 
 // Mutation returns the UserMutation object of the builder.
@@ -366,6 +382,25 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
 					Column: perm.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := uc.mutation.DeploymentsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.DeploymentsTable,
+			Columns: []string{user.DeploymentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: deployment.FieldID,
 				},
 			},
 		}

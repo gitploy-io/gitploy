@@ -50,5 +50,6 @@ func (User) Fields() []ent.Field {
 func (User) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("perms", Perm.Type),
+		edge.To("deployments", Deployment.Type),
 	}
 }

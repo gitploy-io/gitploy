@@ -10,6 +10,7 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/hanjunlee/gitploy/ent/deployment"
 	"github.com/hanjunlee/gitploy/ent/perm"
 	"github.com/hanjunlee/gitploy/ent/repo"
 )
@@ -108,6 +109,21 @@ func (rc *RepoCreate) AddPerms(p ...*Perm) *RepoCreate {
 		ids[i] = p[i].ID
 	}
 	return rc.AddPermIDs(ids...)
+}
+
+// AddDeploymentIDs adds the "deployments" edge to the Deployment entity by IDs.
+func (rc *RepoCreate) AddDeploymentIDs(ids ...int) *RepoCreate {
+	rc.mutation.AddDeploymentIDs(ids...)
+	return rc
+}
+
+// AddDeployments adds the "deployments" edges to the Deployment entity.
+func (rc *RepoCreate) AddDeployments(d ...*Deployment) *RepoCreate {
+	ids := make([]int, len(d))
+	for i := range d {
+		ids[i] = d[i].ID
+	}
+	return rc.AddDeploymentIDs(ids...)
 }
 
 // Mutation returns the RepoMutation object of the builder.
@@ -274,6 +290,25 @@ func (rc *RepoCreate) createSpec() (*Repo, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
 					Column: perm.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := rc.mutation.DeploymentsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   repo.DeploymentsTable,
+			Columns: []string{repo.DeploymentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: deployment.FieldID,
 				},
 			},
 		}

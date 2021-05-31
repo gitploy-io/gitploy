@@ -5,6 +5,7 @@ package ent
 import (
 	"time"
 
+	"github.com/hanjunlee/gitploy/ent/deployment"
 	"github.com/hanjunlee/gitploy/ent/perm"
 	"github.com/hanjunlee/gitploy/ent/repo"
 	"github.com/hanjunlee/gitploy/ent/schema"
@@ -15,6 +16,18 @@ import (
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	deploymentFields := schema.Deployment{}.Fields()
+	_ = deploymentFields
+	// deploymentDescCreatedAt is the schema descriptor for created_at field.
+	deploymentDescCreatedAt := deploymentFields[6].Descriptor()
+	// deployment.DefaultCreatedAt holds the default value on creation for the created_at field.
+	deployment.DefaultCreatedAt = deploymentDescCreatedAt.Default.(func() time.Time)
+	// deploymentDescUpdatedAt is the schema descriptor for updated_at field.
+	deploymentDescUpdatedAt := deploymentFields[7].Descriptor()
+	// deployment.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	deployment.DefaultUpdatedAt = deploymentDescUpdatedAt.Default.(func() time.Time)
+	// deployment.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	deployment.UpdateDefaultUpdatedAt = deploymentDescUpdatedAt.UpdateDefault.(func() time.Time)
 	permFields := schema.Perm{}.Fields()
 	_ = permFields
 	// permDescCreatedAt is the schema descriptor for created_at field.

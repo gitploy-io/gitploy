@@ -37,9 +37,11 @@ type Repo struct {
 type RepoEdges struct {
 	// Perms holds the value of the perms edge.
 	Perms []*Perm `json:"perms,omitempty"`
+	// Deployments holds the value of the deployments edge.
+	Deployments []*Deployment `json:"deployments,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [1]bool
+	loadedTypes [2]bool
 }
 
 // PermsOrErr returns the Perms value or an error if the edge
@@ -49,6 +51,15 @@ func (e RepoEdges) PermsOrErr() ([]*Perm, error) {
 		return e.Perms, nil
 	}
 	return nil, &NotLoadedError{edge: "perms"}
+}
+
+// DeploymentsOrErr returns the Deployments value or an error if the edge
+// was not loaded in eager-loading.
+func (e RepoEdges) DeploymentsOrErr() ([]*Deployment, error) {
+	if e.loadedTypes[1] {
+		return e.Deployments, nil
+	}
+	return nil, &NotLoadedError{edge: "deployments"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -125,6 +136,11 @@ func (r *Repo) assignValues(columns []string, values []interface{}) error {
 // QueryPerms queries the "perms" edge of the Repo entity.
 func (r *Repo) QueryPerms() *PermQuery {
 	return (&RepoClient{config: r.config}).QueryPerms(r)
+}
+
+// QueryDeployments queries the "deployments" edge of the Repo entity.
+func (r *Repo) QueryDeployments() *DeploymentQuery {
+	return (&RepoClient{config: r.config}).QueryDeployments(r)
 }
 
 // Update returns a builder for updating this Repo.

@@ -25,6 +25,8 @@ const (
 	FieldUpdatedAt = "updated_at"
 	// EdgePerms holds the string denoting the perms edge name in mutations.
 	EdgePerms = "perms"
+	// EdgeDeployments holds the string denoting the deployments edge name in mutations.
+	EdgeDeployments = "deployments"
 	// Table holds the table name of the repo in the database.
 	Table = "repos"
 	// PermsTable is the table the holds the perms relation/edge.
@@ -34,6 +36,13 @@ const (
 	PermsInverseTable = "perms"
 	// PermsColumn is the table column denoting the perms relation/edge.
 	PermsColumn = "repo_perms"
+	// DeploymentsTable is the table the holds the deployments relation/edge.
+	DeploymentsTable = "deployments"
+	// DeploymentsInverseTable is the table name for the Deployment entity.
+	// It exists in this package in order to avoid circular dependency with the "deployment" package.
+	DeploymentsInverseTable = "deployments"
+	// DeploymentsColumn is the table column denoting the deployments relation/edge.
+	DeploymentsColumn = "repo_deployments"
 )
 
 // Columns holds all SQL columns for repo fields.

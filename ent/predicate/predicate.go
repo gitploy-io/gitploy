@@ -6,6 +6,9 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
+// Deployment is the predicate function for deployment builders.
+type Deployment func(*sql.Selector)
+
 // Perm is the predicate function for perm builders.
 type Perm func(*sql.Selector)
 
