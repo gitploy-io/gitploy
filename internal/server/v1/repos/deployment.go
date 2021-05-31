@@ -74,6 +74,33 @@ func (r *Repo) GetLatestDeployment(c *gin.Context) {
 	gb.Response(c, http.StatusOK, d)
 }
 
+func (r *Repo) GetConfig(c *gin.Context) {
+	vu, _ := c.Get(gb.KeyUser)
+	u := vu.(*ent.User)
+
+	vr, _ := c.Get(KeyRepo)
+	re := vr.(*ent.Repo)
+
+	ctx := c.Request.Context()
+
+	config, err := r.scm.GetConfig(ctx, u, re)
+	if IsConfigNotFoundError(err) {
+		r.log.Warn("failed to find the config file.", zap.Error(err))
+		gb.ErrorResponse(c, http.StatusNotFound, "It has failed to find the configuraton file.")
+		return
+	} else if IsConfigParseError(err) {
+		r.log.Warn("failed to parse the config.", zap.Error(err))
+		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "It has failed to parse the configuraton file.")
+		return
+	} else if err != nil {
+		r.log.Error("failed to get the config file.", zap.Error(err))
+		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to get the config file.")
+		return
+	}
+
+	gb.Response(c, http.StatusOK, config)
+}
+
 func (r *Repo) CreateDeployment(c *gin.Context) {
 	vu, _ := c.Get(gb.KeyUser)
 	u := vu.(*ent.User)

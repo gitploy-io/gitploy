@@ -401,7 +401,7 @@ paths:
     get:
       tags:
         - Repo
-      summary: List deployments
+      summary: Get latest deployments
       parameters:
         - in: path
           name: repoId
@@ -429,6 +429,36 @@ paths:
           $ref: '#/components/responses/403Forbidden'
         '404': 
           $ref: '#/components/responses/404NotFound'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+
+  /repos/{repoId}/config:
+    get:
+      tags:
+        - Repo
+      summary: Get the config file
+      parameters:
+        - in: path
+          name: repoId
+          required: true
+          schema:
+            type: integer
+            description: The repository id
+      responses:
+        '200':
+          description: Config 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Config'
+        '401': 
+          $ref: '#/components/responses/401Unauthorized'
+        '403': 
+          $ref: '#/components/responses/403Forbidden'
+        '404': 
+          $ref: '#/components/responses/404NotFound'
+        '422': 
+          $ref: '#/components/responses/422UnprocessableEntity'
         '500':
           $ref: '#/components/responses/500InternalError'
 
@@ -540,6 +570,31 @@ components:
           type: string
         updated_at:
           type: string
+    Config:
+      type: object
+      properties:
+        envs:
+          type: array
+          items:
+            $ref: '#/components/schemas/Env'
+    Env:
+      type: object
+      properties:
+        name:
+          type: string
+        required_contexts:
+          type: array
+          items:
+            type: integer
+        approval:
+          type: object
+          properties:
+            approvers:
+              type: array
+              items:
+                type: string
+            wait_minute:
+              type: integer
     Error:
       type: object
       properties:

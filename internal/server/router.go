@@ -105,6 +105,7 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 		repov1.GET("/:repoID/deployments", rm.Repo(), r.ListDeployments)
 		repov1.POST("/:repoID/deployments", rm.Repo(), r.CreateDeployment)
 		repov1.GET("/:repoID/deployments/latest", rm.Repo(), r.GetLatestDeployment)
+		repov1.GET("/:repoID/config", rm.Repo(), r.GetConfig)
 	}
 
 	return r
