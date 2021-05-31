@@ -62,5 +62,6 @@ func (Deployment) Edges() []ent.Edge {
 func (Deployment) Indexes() []ent.Index {
 	return []ent.Index{
 		index.Fields("env", "created_at"),
+		index.Fields("created_at"),
 	}
 }
