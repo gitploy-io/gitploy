@@ -49,3 +49,21 @@ func (s *Store) FindRepo(ctx context.Context, u *ent.User, id string) (*ent.Repo
 
 	return p.Edges.Repo, nil
 }
+
+func (s *Store) CreateDeployment(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment) (*ent.Deployment, error) {
+	return s.c.Deployment.Create().
+		SetType(d.Type).
+		SetRef(d.Ref).
+		SetEnv(d.Env).
+		Save(ctx)
+}
+
+func (s *Store) UpdateDeployment(ctx context.Context, d *ent.Deployment) (*ent.Deployment, error) {
+	return s.c.Deployment.UpdateOne(d).
+		SetUID(d.UID).
+		SetType(d.Type).
+		SetRef(d.Ref).
+		SetSha(d.Sha).
+		SetEnv(d.Env).
+		Save(ctx)
+}

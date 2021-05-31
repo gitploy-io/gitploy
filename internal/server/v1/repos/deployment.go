@@ -64,7 +64,6 @@ func (r *Repo) Deploy(ctx context.Context, u *ent.User, re *ent.Repo, d *ent.Dep
 		return fmt.Errorf("failed to create a new deployment on the store: %w", err)
 	}
 
-	// Deploy on the strategy
 	c, err := r.scm.GetConfig(ctx, u, re)
 	if err != nil {
 		return err
@@ -76,10 +75,10 @@ func (r *Repo) Deploy(ctx context.Context, u *ent.User, re *ent.Repo, d *ent.Dep
 
 	env := c.GetEnv(d.Env)
 
-	return r.deploy(ctx, u, re, d, env)
+	return r.deployToSCM(ctx, u, re, d, env)
 }
 
-func (r *Repo) deploy(ctx context.Context, u *ent.User, re *ent.Repo, d *ent.Deployment, e *vo.Env) error {
+func (r *Repo) deployToSCM(ctx context.Context, u *ent.User, re *ent.Repo, d *ent.Deployment, e *vo.Env) error {
 	if !e.HasApproval() {
 		d, err := r.scm.CreateDeployment(ctx, u, re, d, e)
 		if err != nil {
@@ -93,5 +92,6 @@ func (r *Repo) deploy(ctx context.Context, u *ent.User, re *ent.Repo, d *ent.Dep
 		return nil
 	}
 
+	// TODO: handling approval.
 	return fmt.Errorf("Not implemented yet.")
 }

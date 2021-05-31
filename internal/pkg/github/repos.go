@@ -2,9 +2,13 @@ package github
 
 import (
 	"context"
+	"encoding/base64"
+	"fmt"
+	"net/http"
 
 	"github.com/google/go-github/v32/github"
 	graphql "github.com/shurcooL/githubv4"
+	"gopkg.in/yaml.v3"
 
 	"github.com/hanjunlee/gitploy/ent"
 	reposv1 "github.com/hanjunlee/gitploy/internal/server/v1/repos"
@@ -207,4 +211,49 @@ func (g *Github) GetTag(ctx context.Context, u *ent.User, r *ent.Repo, tag strin
 	}
 
 	return t, nil
+}
+
+func (g *Github) CreateDeployment(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, e *vo.Env) (*ent.Deployment, error) {
+	gd, _, err := g.Client(ctx, u.Token).
+		Repositories.
+		CreateDeployment(ctx, r.Namespace, r.Name, &github.DeploymentRequest{
+			Ref:              github.String(d.Ref),
+			RequiredContexts: &e.RequiredContexts,
+			Environment:      github.String(d.Env),
+			Description:      github.String("Deployed by Gitploy."),
+		})
+	if err != nil {
+		return nil, err
+	}
+
+	// Update UID and SHA
+	d.UID = *gd.ID
+	d.Sha = *gd.SHA
+
+	return d, nil
+}
+
+func (g *Github) GetConfig(ctx context.Context, u *ent.User, r *ent.Repo) (*vo.Config, error) {
+	file, _, res, err := g.Client(ctx, u.Token).
+		Repositories.
+		GetContents(ctx, r.Namespace, r.Name, r.ConfigPath, &github.RepositoryContentGetOptions{})
+	if res.StatusCode == http.StatusNotFound {
+		return nil, &reposv1.ConfigNotFoundError{
+			RepoName: r.Name,
+		}
+	} else if err != nil {
+		return nil, err
+	}
+
+	content, err := base64.StdEncoding.DecodeString(*file.Content)
+	if err != nil {
+		return nil, fmt.Errorf("failed to decode the config file: %w", err)
+	}
+
+	c := &vo.Config{}
+	if err := yaml.Unmarshal([]byte(content), c); err != nil {
+		return nil, fmt.Errorf("failed to parse the config file: %w", err)
+	}
+
+	return c, nil
 }

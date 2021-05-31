@@ -2,18 +2,18 @@ package vo
 
 type (
 	Config struct {
-		Envs []*Env
+		Envs []*Env `yaml:"envs"`
 	}
 
 	Env struct {
-		Name             string
-		RequiredContexts []string
-		Approval         *Approval
+		Name             string    `yaml:"name"`
+		RequiredContexts []string  `yaml:"required_contexts"`
+		Approval         *Approval `yaml:"approval"`
 	}
 
 	Approval struct {
-		Approvers []string
-		WaitTime  int
+		Approvers  []string `yaml:"approvers"`
+		WaitMinute int      `yaml:"wait_minute"`
 	}
 )
 

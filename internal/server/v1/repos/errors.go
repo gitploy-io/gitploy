@@ -30,3 +30,17 @@ func IsConfigNotFoundError(err error) bool {
 	var e *ConfigNotFoundError
 	return errors.As(err, &e)
 }
+
+type ConfigParseError struct {
+	RepoName string
+	Err      error
+}
+
+func (e *ConfigParseError) Error() string {
+	return fmt.Sprintf("failed to parse the config file.")
+}
+
+func IsConfigParseError(err error) bool {
+	var e *ConfigParseError
+	return errors.As(err, &e)
+}
