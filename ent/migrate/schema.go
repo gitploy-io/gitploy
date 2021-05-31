@@ -14,7 +14,7 @@ var (
 		{Name: "uid", Type: field.TypeInt64, Nullable: true},
 		{Name: "type", Type: field.TypeEnum, Enums: []string{"commit", "branch", "tag"}, Default: "commit"},
 		{Name: "ref", Type: field.TypeString},
-		{Name: "sha", Type: field.TypeString},
+		{Name: "sha", Type: field.TypeString, Nullable: true},
 		{Name: "env", Type: field.TypeString},
 		{Name: "status", Type: field.TypeEnum, Enums: []string{"waiting", "created", "running", "success", "failure"}, Default: "waiting"},
 		{Name: "created_at", Type: field.TypeTime},

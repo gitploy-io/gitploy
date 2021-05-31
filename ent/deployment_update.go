@@ -82,6 +82,20 @@ func (du *DeploymentUpdate) SetSha(s string) *DeploymentUpdate {
 	return du
 }
 
+// SetNillableSha sets the "sha" field if the given value is not nil.
+func (du *DeploymentUpdate) SetNillableSha(s *string) *DeploymentUpdate {
+	if s != nil {
+		du.SetSha(*s)
+	}
+	return du
+}
+
+// ClearSha clears the value of the "sha" field.
+func (du *DeploymentUpdate) ClearSha() *DeploymentUpdate {
+	du.mutation.ClearSha()
+	return du
+}
+
 // SetEnv sets the "env" field.
 func (du *DeploymentUpdate) SetEnv(s string) *DeploymentUpdate {
 	du.mutation.SetEnv(s)
@@ -317,6 +331,12 @@ func (du *DeploymentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: deployment.FieldSha,
 		})
 	}
+	if du.mutation.ShaCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: deployment.FieldSha,
+		})
+	}
 	if value, ok := du.mutation.Env(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -484,6 +504,20 @@ func (duo *DeploymentUpdateOne) SetRef(s string) *DeploymentUpdateOne {
 // SetSha sets the "sha" field.
 func (duo *DeploymentUpdateOne) SetSha(s string) *DeploymentUpdateOne {
 	duo.mutation.SetSha(s)
+	return duo
+}
+
+// SetNillableSha sets the "sha" field if the given value is not nil.
+func (duo *DeploymentUpdateOne) SetNillableSha(s *string) *DeploymentUpdateOne {
+	if s != nil {
+		duo.SetSha(*s)
+	}
+	return duo
+}
+
+// ClearSha clears the value of the "sha" field.
+func (duo *DeploymentUpdateOne) ClearSha() *DeploymentUpdateOne {
+	duo.mutation.ClearSha()
 	return duo
 }
 
@@ -743,6 +777,12 @@ func (duo *DeploymentUpdateOne) sqlSave(ctx context.Context) (_node *Deployment,
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
+			Column: deployment.FieldSha,
+		})
+	}
+	if duo.mutation.ShaCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
 			Column: deployment.FieldSha,
 		})
 	}

@@ -62,6 +62,14 @@ func (dc *DeploymentCreate) SetSha(s string) *DeploymentCreate {
 	return dc
 }
 
+// SetNillableSha sets the "sha" field if the given value is not nil.
+func (dc *DeploymentCreate) SetNillableSha(s *string) *DeploymentCreate {
+	if s != nil {
+		dc.SetSha(*s)
+	}
+	return dc
+}
+
 // SetEnv sets the "env" field.
 func (dc *DeploymentCreate) SetEnv(s string) *DeploymentCreate {
 	dc.mutation.SetEnv(s)
@@ -230,9 +238,6 @@ func (dc *DeploymentCreate) check() error {
 	}
 	if _, ok := dc.mutation.Ref(); !ok {
 		return &ValidationError{Name: "ref", err: errors.New("ent: missing required field \"ref\"")}
-	}
-	if _, ok := dc.mutation.Sha(); !ok {
-		return &ValidationError{Name: "sha", err: errors.New("ent: missing required field \"sha\"")}
 	}
 	if _, ok := dc.mutation.Env(); !ok {
 		return &ValidationError{Name: "env", err: errors.New("ent: missing required field \"env\"")}

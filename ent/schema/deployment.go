@@ -26,7 +26,8 @@ func (Deployment) Fields() []ent.Field {
 			).
 			Default("commit"),
 		field.String("ref"),
-		field.String("sha"),
+		field.String("sha").
+			Optional(),
 		field.String("env"),
 		field.Enum("status").
 			Values(

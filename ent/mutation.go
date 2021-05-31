@@ -309,9 +309,22 @@ func (m *DeploymentMutation) OldSha(ctx context.Context) (v string, err error) {
 	return oldValue.Sha, nil
 }
 
+// ClearSha clears the value of the "sha" field.
+func (m *DeploymentMutation) ClearSha() {
+	m.sha = nil
+	m.clearedFields[deployment.FieldSha] = struct{}{}
+}
+
+// ShaCleared returns if the "sha" field was cleared in this mutation.
+func (m *DeploymentMutation) ShaCleared() bool {
+	_, ok := m.clearedFields[deployment.FieldSha]
+	return ok
+}
+
 // ResetSha resets all changes to the "sha" field.
 func (m *DeploymentMutation) ResetSha() {
 	m.sha = nil
+	delete(m.clearedFields, deployment.FieldSha)
 }
 
 // SetEnv sets the "env" field.
@@ -737,6 +750,9 @@ func (m *DeploymentMutation) ClearedFields() []string {
 	if m.FieldCleared(deployment.FieldUID) {
 		fields = append(fields, deployment.FieldUID)
 	}
+	if m.FieldCleared(deployment.FieldSha) {
+		fields = append(fields, deployment.FieldSha)
+	}
 	return fields
 }
 
@@ -753,6 +769,9 @@ func (m *DeploymentMutation) ClearField(name string) error {
 	switch name {
 	case deployment.FieldUID:
 		m.ClearUID()
+		return nil
+	case deployment.FieldSha:
+		m.ClearSha()
 		return nil
 	}
 	return fmt.Errorf("unknown Deployment nullable field %s", name)

@@ -481,6 +481,20 @@ func ShaHasSuffix(v string) predicate.Deployment {
 	})
 }
 
+// ShaIsNil applies the IsNil predicate on the "sha" field.
+func ShaIsNil() predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldSha)))
+	})
+}
+
+// ShaNotNil applies the NotNil predicate on the "sha" field.
+func ShaNotNil() predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldSha)))
+	})
+}
+
 // ShaEqualFold applies the EqualFold predicate on the "sha" field.
 func ShaEqualFold(v string) predicate.Deployment {
 	return predicate.Deployment(func(s *sql.Selector) {
