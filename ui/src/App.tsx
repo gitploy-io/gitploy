@@ -1,9 +1,10 @@
-import { Button, Alert } from 'react-bootstrap';
+import Home from './views/Home'
 
 function App() {
   return (
     <div className="App">
-      <Button>Hello world!</Button>
+      <Home>
+      </Home>
     </div>
   );
 }
