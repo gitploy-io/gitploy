@@ -316,6 +316,40 @@ paths:
           $ref: '#/components/responses/404NotFound'
         '500':
           $ref: '#/components/responses/500InternalError'
+  /repos/{repoId}/deployments:
+    post:
+      tags:
+        - Repo
+      summary: Create a new deployment
+      parameters:
+        - in: path
+          name: repoId
+          required: true
+          schema:
+            type: integer
+            description: The repository id
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                type:
+                  type: string
+                  default: commit
+                ref:
+                  type: string
+                env:
+                  type: string
+      responses:
+        '201':
+          description: Created
+        '401': 
+          $ref: '#/components/responses/401Unauthorized'
+        '403': 
+          $ref: '#/components/responses/403Forbidden'
+        '500':
+          $ref: '#/components/responses/500InternalError'
 
 security:
   - BearerAuth: []
