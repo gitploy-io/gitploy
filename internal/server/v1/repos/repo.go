@@ -33,6 +33,7 @@ func NewRepo(store Store, scm SCM) *Repo {
 
 func (r *Repo) ListRepos(c *gin.Context) {
 	var (
+		q       = c.Query("q")
 		page    = c.DefaultQuery("page", "1")
 		perPage = c.DefaultQuery("per_page", "30")
 	)
@@ -42,7 +43,7 @@ func (r *Repo) ListRepos(c *gin.Context) {
 	v, _ := c.Get(gb.KeyUser)
 	u := v.(*ent.User)
 
-	repos, err := r.store.ListRepos(ctx, u, atoi(page), atoi(perPage))
+	repos, err := r.store.ListRepos(ctx, u, q, atoi(page), atoi(perPage))
 	if err != nil {
 		r.log.Error("failed to list repositories.", zap.Error(err))
 		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to list repositories.")

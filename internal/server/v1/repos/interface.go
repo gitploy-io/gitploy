@@ -9,7 +9,7 @@ import (
 
 type (
 	Store interface {
-		ListRepos(ctx context.Context, u *ent.User, page, perPage int) ([]*ent.Repo, error)
+		ListRepos(ctx context.Context, u *ent.User, q string, page, perPage int) ([]*ent.Repo, error)
 		FindRepo(ctx context.Context, u *ent.User, id string) (*ent.Repo, error)
 		FindUserByHash(ctx context.Context, hash string) (*ent.User, error)
 		ListDeployments(ctx context.Context, r *ent.Repo, env string, page, perPage int) ([]*ent.Deployment, error)

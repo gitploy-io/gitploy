@@ -25,11 +25,22 @@ paths:
       summary: List repositories the user can access
       parameters:
         - in: query
+          name: q
+          schema:
+            type: string
+            default: ""
+        - in: query
           name: page
           schema:
             type: integer
             default: 1
             description: The page number
+        - in: query
+          name: per_page
+          schema:
+            type: integer
+            default: 30
+            description: The number per page
       responses:
         '200':
           description: Repositories

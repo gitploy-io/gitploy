@@ -10,12 +10,14 @@ import (
 	"github.com/hanjunlee/gitploy/ent/user"
 )
 
-func (s *Store) ListRepos(ctx context.Context, u *ent.User, page, perPage int) ([]*ent.Repo, error) {
-	// TODO: support sort by
+func (s *Store) ListRepos(ctx context.Context, u *ent.User, q string, page, perPage int) ([]*ent.Repo, error) {
 	ps, err := s.c.Perm.
 		Query().
 		Where(
-			perm.HasUserWith(user.IDEQ(u.ID)),
+			perm.And(
+				perm.HasUserWith(user.IDEQ(u.ID)),
+				perm.HasRepoWith(repo.NameContains(q)),
+			),
 		).
 		Limit(perPage).
 		Offset(offset(page, perPage)).
