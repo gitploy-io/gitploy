@@ -12,6 +12,8 @@ type (
 		ListRepos(ctx context.Context, u *ent.User, page, perPage int) ([]*ent.Repo, error)
 		FindRepo(ctx context.Context, u *ent.User, id string) (*ent.Repo, error)
 		FindUserByHash(ctx context.Context, hash string) (*ent.User, error)
+		CreateDeployment(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment) (*ent.Deployment, error)
+		UpdateDeployment(ctx context.Context, d *ent.Deployment) (*ent.Deployment, error)
 	}
 
 	SCM interface {
@@ -22,5 +24,8 @@ type (
 		GetBranch(ctx context.Context, u *ent.User, r *ent.Repo, branch string) (*vo.Branch, error)
 		ListTags(ctx context.Context, u *ent.User, r *ent.Repo, page, perPage int) ([]*vo.Tag, error)
 		GetTag(ctx context.Context, u *ent.User, r *ent.Repo, tag string) (*vo.Tag, error)
+		// SCM returns the deployment with UID and SHA.
+		CreateDeployment(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, e *vo.Env) (*ent.Deployment, error)
+		GetConfig(ctx context.Context, u *ent.User, r *ent.Repo) (*vo.Config, error)
 	}
 )

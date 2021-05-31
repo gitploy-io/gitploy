@@ -344,6 +344,8 @@ paths:
       responses:
         '201':
           description: Created
+        '400': 
+          $ref: '#/components/responses/400BadRequest'
         '401': 
           $ref: '#/components/responses/401Unauthorized'
         '403': 
@@ -457,6 +459,13 @@ components:
             admin: Grants access to admin operations
     
   responses:
+    400BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
     401Unauthorized:
       description: Unauthorized access
       content:

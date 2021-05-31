@@ -5,11 +5,9 @@ import (
 	"fmt"
 )
 
-type (
-	RefNotFoundError struct {
-		Ref string
-	}
-)
+type RefNotFoundError struct {
+	Ref string
+}
 
 func (e *RefNotFoundError) Error() string {
 	return fmt.Sprintf("%s is not found.", e.Ref)
@@ -17,5 +15,18 @@ func (e *RefNotFoundError) Error() string {
 
 func IsRefNotFoundError(err error) bool {
 	var e *RefNotFoundError
+	return errors.As(err, &e)
+}
+
+type ConfigNotFoundError struct {
+	RepoName string
+}
+
+func (e *ConfigNotFoundError) Error() string {
+	return fmt.Sprintf("%s doesn't have the configuration file.", e.RepoName)
+}
+
+func IsConfigNotFoundError(err error) bool {
+	var e *ConfigNotFoundError
 	return errors.As(err, &e)
 }
