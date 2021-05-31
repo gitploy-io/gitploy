@@ -312,6 +312,8 @@ paths:
           $ref: '#/components/responses/401Unauthorized'
         '403': 
           $ref: '#/components/responses/403Forbidden'
+        '404': 
+          $ref: '#/components/responses/404NotFound'
         '500':
           $ref: '#/components/responses/500InternalError'
 
@@ -434,6 +436,14 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
+
+    404NotFound:
+      description: The resource is not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
         
     500InternalError:
       description: Server internal error
