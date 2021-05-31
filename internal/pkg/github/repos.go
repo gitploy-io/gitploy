@@ -143,13 +143,24 @@ func (g *Github) ListTags(ctx context.Context, u *ent.User, r *ent.Repo, page, p
 
 	client := g.GraphQLClient(ctx, u.Token)
 	v := map[string]interface{}{
-		"namespace": r.Namespace,
-		"name":      r.Name,
-		"perPage":   perPage,
+		"namespace": graphql.String(r.Namespace),
+		"name":      graphql.String(r.Name),
+		"perPage":   graphql.Int(perPage),
 		"cursor":    (*graphql.String)(nil),
 	}
-	if err := client.Query(ctx, &q, v); err != nil {
-		return nil, err
+
+	curPage := 0
+	for {
+		curPage = curPage + 1
+		if err := client.Query(ctx, &q, v); err != nil {
+			return nil, err
+		}
+
+		if curPage == page || !q.Repository.Refs.PageInfo.HasNextPage {
+			break
+		}
+
+		v["cursor"] = graphql.NewString(q.Repository.Refs.PageInfo.EndCursor)
 	}
 
 	tags := []*vo.Tag{}
@@ -175,15 +186,15 @@ func (g *Github) GetTag(ctx context.Context, u *ent.User, r *ent.Repo, tag strin
 
 	client := g.GraphQLClient(ctx, u.Token)
 	v := map[string]interface{}{
-		"namespace": r.Namespace,
-		"name":      r.Name,
-		"tag":       tag,
+		"namespace": graphql.String(r.Namespace),
+		"name":      graphql.String(r.Name),
+		"tag":       graphql.String(tag),
 	}
 	if err := client.Query(ctx, &q, v); err != nil {
 		return nil, err
 	}
 
-	if q.Repository.Refs.TotalCount != 0 {
+	if q.Repository.Refs.TotalCount == 0 {
 		return nil, &reposv1.RefNotFoundError{
 			Ref: tag,
 		}
