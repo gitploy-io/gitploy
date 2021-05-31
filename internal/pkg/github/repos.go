@@ -4,9 +4,22 @@ import (
 	"context"
 
 	"github.com/google/go-github/v32/github"
+	graphql "github.com/shurcooL/githubv4"
 
 	"github.com/hanjunlee/gitploy/ent"
+	reposv1 "github.com/hanjunlee/gitploy/internal/server/v1/repos"
 	"github.com/hanjunlee/gitploy/vo"
+)
+
+type (
+	// Node is tag of Github GraphQL.
+	Node struct {
+		Name   string
+		Target struct {
+			Oid       string
+			CommitUrl string
+		}
+	}
 )
 
 func (g *Github) ListCommits(ctx context.Context, u *ent.User, r *ent.Repo, branch string, page, perPage int) ([]*vo.Commit, error) {
@@ -110,4 +123,88 @@ func (g *Github) GetBranch(ctx context.Context, u *ent.User, r *ent.Repo, branch
 	}
 
 	return mapGithubBranchToBranch(b), nil
+}
+
+// ListTags list up tags as ordered by commit date.
+// Github GraphQL explore - https://docs.github.com/en/graphql/overview/explorer
+func (g *Github) ListTags(ctx context.Context, u *ent.User, r *ent.Repo, page, perPage int) ([]*vo.Tag, error) {
+	var q struct {
+		Repository struct {
+			Refs struct {
+				Nodes    []Node
+				PageInfo struct {
+					EndCursor   graphql.String
+					HasNextPage bool
+				}
+				TotalCount int
+			} `graphql:"refs(refPrefix: \"refs/tags/\", orderBy: {field: TAG_COMMIT_DATE, direction: DESC}, after: $cursor, first: $perPage)"`
+		} `graphql:"repository(owner: $namespace, name: $name)"`
+	}
+
+	client := g.GraphQLClient(ctx, u.Token)
+	v := map[string]interface{}{
+		"namespace": graphql.String(r.Namespace),
+		"name":      graphql.String(r.Name),
+		"perPage":   graphql.Int(perPage),
+		"cursor":    (*graphql.String)(nil),
+	}
+
+	curPage := 0
+	for {
+		curPage = curPage + 1
+		if err := client.Query(ctx, &q, v); err != nil {
+			return nil, err
+		}
+
+		if curPage == page || !q.Repository.Refs.PageInfo.HasNextPage {
+			break
+		}
+
+		v["cursor"] = graphql.NewString(q.Repository.Refs.PageInfo.EndCursor)
+	}
+
+	tags := []*vo.Tag{}
+	for _, n := range q.Repository.Refs.Nodes {
+		tags = append(tags, &vo.Tag{
+			Name:      n.Name,
+			CommitSha: n.Target.Oid,
+		})
+	}
+
+	return tags, nil
+}
+
+func (g *Github) GetTag(ctx context.Context, u *ent.User, r *ent.Repo, tag string) (*vo.Tag, error) {
+	var q struct {
+		Repository struct {
+			Refs struct {
+				Nodes      []Node
+				TotalCount int
+			} `graphql:"refs(refPrefix: \"refs/tags/\", orderBy: {field: TAG_COMMIT_DATE, direction: DESC}, first: 1, query: $tag)"`
+		} `graphql:"repository(owner: $namespace, name: $name)"`
+	}
+
+	client := g.GraphQLClient(ctx, u.Token)
+	v := map[string]interface{}{
+		"namespace": graphql.String(r.Namespace),
+		"name":      graphql.String(r.Name),
+		"tag":       graphql.String(tag),
+	}
+	if err := client.Query(ctx, &q, v); err != nil {
+		return nil, err
+	}
+
+	if q.Repository.Refs.TotalCount == 0 {
+		return nil, &reposv1.RefNotFoundError{
+			Ref: tag,
+		}
+	}
+
+	n := q.Repository.Refs.Nodes[0]
+	t := &vo.Tag{
+		Name:      n.Name,
+		CommitSha: n.Target.Oid,
+	}
+
+	return t, nil
 }
