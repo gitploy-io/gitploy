@@ -46,7 +46,15 @@ func (r *Repo) CreateDeployment(c *gin.Context) {
 	if err := r.Deploy(ctx, u, re, d); err != nil {
 		if IsConfigNotFoundError(err) {
 			r.log.Warn("failed to get the config.", zap.Error(err))
-			gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to find the configuraton file.")
+			gb.ErrorResponse(c, http.StatusUnprocessableEntity, "It has failed to find the configuraton file.")
+			return
+		} else if IsConfigParseError(err) {
+			r.log.Warn("failed to parse the config.", zap.Error(err))
+			gb.ErrorResponse(c, http.StatusUnprocessableEntity, "It has failed to parse the configuraton file.")
+			return
+		} else if IsEnvNotFoundError(err) {
+			r.log.Warn("failed to get the env.", zap.Error(err))
+			gb.ErrorResponse(c, http.StatusUnprocessableEntity, "It has failed to get the env in the configuration file.")
 			return
 		}
 
@@ -69,8 +77,10 @@ func (r *Repo) Deploy(ctx context.Context, u *ent.User, re *ent.Repo, d *ent.Dep
 		return err
 	}
 
-	if c.HasEnv(d.Env) {
-		return fmt.Errorf("The environment is not defined in the configuration file")
+	if !c.HasEnv(d.Env) {
+		return &EnvNotFoundError{
+			RepoName: re.Name,
+		}
 	}
 
 	env := c.GetEnv(d.Env)

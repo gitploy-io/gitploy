@@ -350,6 +350,9 @@ paths:
           $ref: '#/components/responses/401Unauthorized'
         '403': 
           $ref: '#/components/responses/403Forbidden'
+        '422':
+          description: The configuration file is not valid.
+          $ref: '#/components/responses/422UnprocessableEntity'
         '500':
           $ref: '#/components/responses/500InternalError'
 
@@ -487,6 +490,12 @@ components:
           schema:
             $ref: '#/components/schemas/Error'
 
+    422UnprocessableEntity:
+      description: Validation Failed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
         
     500InternalError:
       description: Server internal error

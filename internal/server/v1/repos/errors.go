@@ -44,3 +44,16 @@ func IsConfigParseError(err error) bool {
 	var e *ConfigParseError
 	return errors.As(err, &e)
 }
+
+type EnvNotFoundError struct {
+	RepoName string
+}
+
+func (e *EnvNotFoundError) Error() string {
+	return fmt.Sprintf("failed to get the env.")
+}
+
+func IsEnvNotFoundError(err error) bool {
+	var e *EnvNotFoundError
+	return errors.As(err, &e)
+}
