@@ -67,11 +67,6 @@ func (r *Repo) CreateDeployment(c *gin.Context) {
 }
 
 func (r *Repo) Deploy(ctx context.Context, u *ent.User, re *ent.Repo, d *ent.Deployment) error {
-	d, err := r.store.CreateDeployment(ctx, u, re, d)
-	if err != nil {
-		return fmt.Errorf("failed to create a new deployment on the store: %w", err)
-	}
-
 	c, err := r.scm.GetConfig(ctx, u, re)
 	if err != nil {
 		return err
@@ -84,6 +79,11 @@ func (r *Repo) Deploy(ctx context.Context, u *ent.User, re *ent.Repo, d *ent.Dep
 	}
 
 	env := c.GetEnv(d.Env)
+
+	d, err = r.store.CreateDeployment(ctx, u, re, d)
+	if err != nil {
+		return fmt.Errorf("failed to create a new deployment on the store: %w", err)
+	}
 
 	return r.deployToSCM(ctx, u, re, d, env)
 }
