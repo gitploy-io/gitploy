@@ -65,5 +65,6 @@ func (s *Store) UpdateDeployment(ctx context.Context, d *ent.Deployment) (*ent.D
 		SetRef(d.Ref).
 		SetSha(d.Sha).
 		SetEnv(d.Env).
+		SetStatus(d.Status).
 		Save(ctx)
 }
