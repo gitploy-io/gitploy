@@ -317,6 +317,47 @@ paths:
         '500':
           $ref: '#/components/responses/500InternalError'
   /repos/{repoId}/deployments:
+    get:
+      tags:
+        - Repo
+      summary: List deployments
+      parameters:
+        - in: path
+          name: repoId
+          required: true
+          schema:
+            type: integer
+            description: The repository id
+        - in: query
+          name: env
+          schema:
+            type: string
+            description: The target environment
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+            description: The page number
+        - in: query
+          name: per_page
+          schema:
+            type: integer
+            default: 30
+            description: The item count per page
+      responses:
+        '200':
+          description: Deployment list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Deployments'
+        '401': 
+          $ref: '#/components/responses/401Unauthorized'
+        '403': 
+          $ref: '#/components/responses/403Forbidden'
+        '500':
+          $ref: '#/components/responses/500InternalError'
     post:
       tags:
         - Repo
@@ -353,6 +394,41 @@ paths:
         '422':
           description: The configuration file is not valid.
           $ref: '#/components/responses/422UnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+
+  /repos/{repoId}/deployments/latest:
+    get:
+      tags:
+        - Repo
+      summary: List deployments
+      parameters:
+        - in: path
+          name: repoId
+          required: true
+          schema:
+            type: integer
+            description: The repository id
+        - in: query
+          name: env
+          schema:
+            type: string
+            description: The target environment
+      responses:
+        '200':
+          description: Deployment 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Deployment'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401': 
+          $ref: '#/components/responses/401Unauthorized'
+        '403': 
+          $ref: '#/components/responses/403Forbidden'
+        '404': 
+          $ref: '#/components/responses/404NotFound'
         '500':
           $ref: '#/components/responses/500InternalError'
 
@@ -438,6 +514,31 @@ components:
         name:
           type: string
         commit_sha:
+          type: string
+    Deployments:
+      type: array
+      items:
+        $ref: '#/components/schemas/Deployment'
+    Deployment:
+      type: object
+      properties:
+        id:
+          type: integer
+        uid:
+          type: integer
+        type:
+          type: string
+        ref:
+          type: string
+        sha:
+          type: string
+        env:
+          type: string
+        status:
+          type: string
+        created_at:
+          type: string
+        updated_at:
           type: string
     Error:
       type: object

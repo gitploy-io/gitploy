@@ -41,6 +41,18 @@ var (
 				OnDelete:   schema.SetNull,
 			},
 		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "deployment_env_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{DeploymentsColumns[5], DeploymentsColumns[7]},
+			},
+			{
+				Name:    "deployment_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{DeploymentsColumns[7]},
+			},
+		},
 	}
 	// PermsColumns holds the columns for the "perms" table.
 	PermsColumns = []*schema.Column{

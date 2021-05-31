@@ -12,6 +12,8 @@ type (
 		ListRepos(ctx context.Context, u *ent.User, page, perPage int) ([]*ent.Repo, error)
 		FindRepo(ctx context.Context, u *ent.User, id string) (*ent.Repo, error)
 		FindUserByHash(ctx context.Context, hash string) (*ent.User, error)
+		ListDeployments(ctx context.Context, r *ent.Repo, env string, page, perPage int) ([]*ent.Deployment, error)
+		FindLatestDeployment(ctx context.Context, r *ent.Repo, env string) (*ent.Deployment, error)
 		CreateDeployment(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment) (*ent.Deployment, error)
 		UpdateDeployment(ctx context.Context, d *ent.Deployment) (*ent.Deployment, error)
 	}

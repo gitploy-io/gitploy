@@ -6,6 +6,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
+	"entgo.io/ent/schema/index"
 )
 
 // Deployment holds the schema definition for the Deployment entity.
@@ -55,5 +56,12 @@ func (Deployment) Edges() []ent.Edge {
 		edge.From("repo", Repo.Type).
 			Ref("deployments").
 			Unique(),
+	}
+}
+
+func (Deployment) Indexes() []ent.Index {
+	return []ent.Index{
+		index.Fields("env", "created_at"),
+		index.Fields("created_at"),
 	}
 }
