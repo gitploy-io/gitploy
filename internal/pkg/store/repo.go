@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/hanjunlee/gitploy/ent"
+	"github.com/hanjunlee/gitploy/ent/deployment"
 	"github.com/hanjunlee/gitploy/ent/perm"
 	"github.com/hanjunlee/gitploy/ent/repo"
 	"github.com/hanjunlee/gitploy/ent/user"
@@ -48,6 +49,36 @@ func (s *Store) FindRepo(ctx context.Context, u *ent.User, id string) (*ent.Repo
 	}
 
 	return p.Edges.Repo, nil
+}
+
+func (s *Store) ListDeployments(ctx context.Context, r *ent.Repo, env string, page, perPage int) ([]*ent.Deployment, error) {
+	q := s.c.Deployment.
+		Query()
+
+	if env != "" {
+		q = q.Where(
+			deployment.EnvEQ(env),
+		)
+	}
+
+	return q.Order(
+		ent.Desc(deployment.FieldCreatedAt),
+	).
+		Limit(perPage).
+		Offset(offset(page, perPage)).
+		All(ctx)
+}
+
+func (s *Store) FindLatestDeployment(ctx context.Context, r *ent.Repo, env string) (*ent.Deployment, error) {
+	return s.c.Deployment.
+		Query().
+		Where(
+			deployment.EnvEQ(env),
+		).
+		Order(
+			ent.Desc(deployment.FieldCreatedAt),
+		).
+		First(ctx)
 }
 
 func (s *Store) CreateDeployment(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment) (*ent.Deployment, error) {

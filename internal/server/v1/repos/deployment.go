@@ -23,6 +23,57 @@ type (
 	}
 )
 
+func (r *Repo) ListDeployments(c *gin.Context) {
+	var (
+		env     = c.Query("env")
+		page    = c.DefaultQuery("page", "1")
+		perPage = c.DefaultQuery("per_page", "30")
+	)
+	vr, _ := c.Get(KeyRepo)
+	re := vr.(*ent.Repo)
+
+	ctx := c.Request.Context()
+
+	ds, err := r.store.ListDeployments(ctx, re, env, atoi(page), atoi(perPage))
+	if err != nil {
+		r.log.Error("failed to list deployments.", zap.Error(err))
+		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to list deployments.")
+		return
+	}
+
+	gb.Response(c, http.StatusOK, ds)
+}
+
+func (r *Repo) GetLatestDeployment(c *gin.Context) {
+	var (
+		env = c.Query("env")
+	)
+
+	vr, _ := c.Get(KeyRepo)
+	re := vr.(*ent.Repo)
+
+	if env == "" {
+		r.log.Warn("\"env\" query is required.")
+		gb.ErrorResponse(c, http.StatusBadRequest, "\"env\" is not exist in the query.")
+		return
+	}
+
+	ctx := c.Request.Context()
+
+	d, err := r.store.FindLatestDeployment(ctx, re, env)
+	if ent.IsNotFound(err) {
+		r.log.Warn("the latest deployment is not found.", zap.String("repo", re.Name), zap.String("env", env))
+		gb.ErrorResponse(c, http.StatusNotFound, "the latest deployment is not found.")
+		return
+	} else if err != nil {
+		r.log.Error("failed to get the latest deployment.", zap.Error(err))
+		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to get the latest deployment.")
+		return
+	}
+
+	gb.Response(c, http.StatusOK, d)
+}
+
 func (r *Repo) CreateDeployment(c *gin.Context) {
 	vu, _ := c.Get(gb.KeyUser)
 	u := vu.(*ent.User)
