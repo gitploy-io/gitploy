@@ -33,9 +33,12 @@ func NewRepo(store Store, scm SCM) *Repo {
 
 func (r *Repo) ListRepos(c *gin.Context) {
 	var (
+		sort    = c.DefaultQuery("sort", "false")
 		q       = c.Query("q")
 		page    = c.DefaultQuery("page", "1")
 		perPage = c.DefaultQuery("per_page", "30")
+
+		repos []*ent.Repo
 	)
 
 	ctx := c.Request.Context()
@@ -43,7 +46,18 @@ func (r *Repo) ListRepos(c *gin.Context) {
 	v, _ := c.Get(gb.KeyUser)
 	u := v.(*ent.User)
 
-	repos, err := r.store.ListRepos(ctx, u, q, atoi(page), atoi(perPage))
+	sorted, err := strconv.ParseBool(sort)
+	if err != nil {
+		r.log.Error("invalid sort value.", zap.Error(err))
+		gb.ErrorResponse(c, http.StatusBadRequest, "It was invalid request.")
+		return
+	}
+
+	if sorted {
+		repos, err = r.store.ListSortedRepos(ctx, u, q, atoi(page), atoi(perPage))
+	} else {
+		repos, err = r.store.ListRepos(ctx, u, q, atoi(page), atoi(perPage))
+	}
 	if err != nil {
 		r.log.Error("failed to list repositories.", zap.Error(err))
 		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to list repositories.")

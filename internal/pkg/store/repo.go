@@ -2,7 +2,6 @@ package store
 
 import (
 	"context"
-	"time"
 
 	"github.com/hanjunlee/gitploy/ent"
 	"github.com/hanjunlee/gitploy/ent/deployment"
@@ -34,6 +33,25 @@ func (s *Store) ListRepos(ctx context.Context, u *ent.User, q string, page, perP
 		rs = append(rs, p.Edges.Repo)
 	}
 	return rs, nil
+}
+
+func (s *Store) ListSortedRepos(ctx context.Context, u *ent.User, q string, page, perPage int) ([]*ent.Repo, error) {
+	return s.c.Repo.
+		Query().
+		Where(
+			repo.And(
+				repo.HasPermsWith(perm.HasUserWith(user.IDEQ(u.ID))),
+				repo.NameContains(q),
+			),
+		).
+		Order(ent.Desc(repo.FieldLatestDeployedAt)).
+		Limit(perPage).
+		Offset(offset(page, perPage)).
+		WithDeployments(func(dq *ent.DeploymentQuery) {
+			dq.Order(ent.Desc(deployment.FieldCreatedAt)).
+				Limit(5)
+		}).
+		All(ctx)
 }
 
 func (s *Store) FindRepo(ctx context.Context, u *ent.User, id string) (*ent.Repo, error) {
@@ -97,7 +115,7 @@ func (s *Store) CreateDeployment(ctx context.Context, u *ent.User, r *ent.Repo, 
 	}
 
 	s.c.Repo.UpdateOneID(r.ID).
-		SetLatestDeployedAt(time.Now()).
+		SetLatestDeployedAt(d.CreatedAt).
 		Save(ctx)
 
 	return d, nil
