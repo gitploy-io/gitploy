@@ -495,7 +495,7 @@ components:
       type: object
       properties:
         id:
-          type: integer
+          type: string
         namespace:
           type: string
           description: Repository owner
@@ -506,11 +506,13 @@ components:
           description: Full name of repository
         description:
           type: string
-        synched_at:
+        synced_at:
           type: string
         created_at:
           type: string
         updated_at:
+          type: string
+        latest_deployed_at:
           type: string
     Commits:
       type: array
