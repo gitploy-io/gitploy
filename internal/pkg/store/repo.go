@@ -2,6 +2,7 @@ package store
 
 import (
 	"context"
+	"time"
 
 	"github.com/hanjunlee/gitploy/ent"
 	"github.com/hanjunlee/gitploy/ent/deployment"
@@ -84,13 +85,22 @@ func (s *Store) FindLatestDeployment(ctx context.Context, r *ent.Repo, env strin
 }
 
 func (s *Store) CreateDeployment(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment) (*ent.Deployment, error) {
-	return s.c.Deployment.Create().
+	d, err := s.c.Deployment.Create().
 		SetType(d.Type).
 		SetRef(d.Ref).
 		SetEnv(d.Env).
 		SetUserID(u.ID).
 		SetRepoID(r.ID).
 		Save(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	s.c.Repo.UpdateOneID(r.ID).
+		SetLatestDeployedAt(time.Now()).
+		Save(ctx)
+
+	return d, nil
 }
 
 func (s *Store) UpdateDeployment(ctx context.Context, d *ent.Deployment) (*ent.Deployment, error) {
