@@ -104,6 +104,12 @@ func (rc *RepoCreate) SetNillableUpdatedAt(t *time.Time) *RepoCreate {
 	return rc
 }
 
+// SetLatestDeployedAt sets the "latest_deployed_at" field.
+func (rc *RepoCreate) SetLatestDeployedAt(t time.Time) *RepoCreate {
+	rc.mutation.SetLatestDeployedAt(t)
+	return rc
+}
+
 // SetID sets the "id" field.
 func (rc *RepoCreate) SetID(s string) *RepoCreate {
 	rc.mutation.SetID(s)
@@ -223,6 +229,9 @@ func (rc *RepoCreate) check() error {
 	if _, ok := rc.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New("ent: missing required field \"updated_at\"")}
 	}
+	if _, ok := rc.mutation.LatestDeployedAt(); !ok {
+		return &ValidationError{Name: "latest_deployed_at", err: errors.New("ent: missing required field \"latest_deployed_at\"")}
+	}
 	return nil
 }
 
@@ -307,6 +316,14 @@ func (rc *RepoCreate) createSpec() (*Repo, *sqlgraph.CreateSpec) {
 			Column: repo.FieldUpdatedAt,
 		})
 		_node.UpdatedAt = value
+	}
+	if value, ok := rc.mutation.LatestDeployedAt(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: repo.FieldLatestDeployedAt,
+		})
+		_node.LatestDeployedAt = value
 	}
 	if nodes := rc.mutation.PermsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

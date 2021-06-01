@@ -25,6 +25,8 @@ const (
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
 	FieldUpdatedAt = "updated_at"
+	// FieldLatestDeployedAt holds the string denoting the latest_deployed_at field in the database.
+	FieldLatestDeployedAt = "latest_deployed_at"
 	// EdgePerms holds the string denoting the perms edge name in mutations.
 	EdgePerms = "perms"
 	// EdgeDeployments holds the string denoting the deployments edge name in mutations.
@@ -57,6 +59,7 @@ var Columns = []string{
 	FieldSyncedAt,
 	FieldCreatedAt,
 	FieldUpdatedAt,
+	FieldLatestDeployedAt,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
