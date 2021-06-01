@@ -25,6 +25,11 @@ paths:
       summary: List repositories the user can access
       parameters:
         - in: query
+          name: sort 
+          schema:
+            type: boolean
+            default: false
+        - in: query
           name: q
           schema:
             type: string
@@ -48,6 +53,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Repositories'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
         '401': 
           $ref: '#/components/responses/401Unauthorized'
         '500':

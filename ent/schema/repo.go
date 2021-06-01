@@ -30,6 +30,9 @@ func (Repo) Fields() []ent.Field {
 		field.Time("updated_at").
 			Default(time.Now).
 			UpdateDefault(time.Now),
+		// Denormalization to sort with deployment.
+		field.Time("latest_deployed_at").
+			Optional(),
 	}
 }
 

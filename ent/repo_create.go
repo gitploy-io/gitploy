@@ -104,6 +104,20 @@ func (rc *RepoCreate) SetNillableUpdatedAt(t *time.Time) *RepoCreate {
 	return rc
 }
 
+// SetLatestDeployedAt sets the "latest_deployed_at" field.
+func (rc *RepoCreate) SetLatestDeployedAt(t time.Time) *RepoCreate {
+	rc.mutation.SetLatestDeployedAt(t)
+	return rc
+}
+
+// SetNillableLatestDeployedAt sets the "latest_deployed_at" field if the given value is not nil.
+func (rc *RepoCreate) SetNillableLatestDeployedAt(t *time.Time) *RepoCreate {
+	if t != nil {
+		rc.SetLatestDeployedAt(*t)
+	}
+	return rc
+}
+
 // SetID sets the "id" field.
 func (rc *RepoCreate) SetID(s string) *RepoCreate {
 	rc.mutation.SetID(s)
@@ -307,6 +321,14 @@ func (rc *RepoCreate) createSpec() (*Repo, *sqlgraph.CreateSpec) {
 			Column: repo.FieldUpdatedAt,
 		})
 		_node.UpdatedAt = value
+	}
+	if value, ok := rc.mutation.LatestDeployedAt(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: repo.FieldLatestDeployedAt,
+		})
+		_node.LatestDeployedAt = value
 	}
 	if nodes := rc.mutation.PermsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

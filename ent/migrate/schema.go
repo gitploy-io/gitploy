@@ -94,6 +94,7 @@ var (
 		{Name: "synced_at", Type: field.TypeTime, Nullable: true},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "latest_deployed_at", Type: field.TypeTime, Nullable: true},
 	}
 	// ReposTable holds the schema information for the "repos" table.
 	ReposTable = &schema.Table{

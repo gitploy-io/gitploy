@@ -1515,6 +1515,7 @@ type RepoMutation struct {
 	synced_at          *time.Time
 	created_at         *time.Time
 	updated_at         *time.Time
+	latest_deployed_at *time.Time
 	clearedFields      map[string]struct{}
 	perms              map[int]struct{}
 	removedperms       map[int]struct{}
@@ -1890,6 +1891,55 @@ func (m *RepoMutation) ResetUpdatedAt() {
 	m.updated_at = nil
 }
 
+// SetLatestDeployedAt sets the "latest_deployed_at" field.
+func (m *RepoMutation) SetLatestDeployedAt(t time.Time) {
+	m.latest_deployed_at = &t
+}
+
+// LatestDeployedAt returns the value of the "latest_deployed_at" field in the mutation.
+func (m *RepoMutation) LatestDeployedAt() (r time.Time, exists bool) {
+	v := m.latest_deployed_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLatestDeployedAt returns the old "latest_deployed_at" field's value of the Repo entity.
+// If the Repo object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RepoMutation) OldLatestDeployedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldLatestDeployedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldLatestDeployedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLatestDeployedAt: %w", err)
+	}
+	return oldValue.LatestDeployedAt, nil
+}
+
+// ClearLatestDeployedAt clears the value of the "latest_deployed_at" field.
+func (m *RepoMutation) ClearLatestDeployedAt() {
+	m.latest_deployed_at = nil
+	m.clearedFields[repo.FieldLatestDeployedAt] = struct{}{}
+}
+
+// LatestDeployedAtCleared returns if the "latest_deployed_at" field was cleared in this mutation.
+func (m *RepoMutation) LatestDeployedAtCleared() bool {
+	_, ok := m.clearedFields[repo.FieldLatestDeployedAt]
+	return ok
+}
+
+// ResetLatestDeployedAt resets all changes to the "latest_deployed_at" field.
+func (m *RepoMutation) ResetLatestDeployedAt() {
+	m.latest_deployed_at = nil
+	delete(m.clearedFields, repo.FieldLatestDeployedAt)
+}
+
 // AddPermIDs adds the "perms" edge to the Perm entity by ids.
 func (m *RepoMutation) AddPermIDs(ids ...int) {
 	if m.perms == nil {
@@ -2010,7 +2060,7 @@ func (m *RepoMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *RepoMutation) Fields() []string {
-	fields := make([]string, 0, 7)
+	fields := make([]string, 0, 8)
 	if m.namespace != nil {
 		fields = append(fields, repo.FieldNamespace)
 	}
@@ -2031,6 +2081,9 @@ func (m *RepoMutation) Fields() []string {
 	}
 	if m.updated_at != nil {
 		fields = append(fields, repo.FieldUpdatedAt)
+	}
+	if m.latest_deployed_at != nil {
+		fields = append(fields, repo.FieldLatestDeployedAt)
 	}
 	return fields
 }
@@ -2054,6 +2107,8 @@ func (m *RepoMutation) Field(name string) (ent.Value, bool) {
 		return m.CreatedAt()
 	case repo.FieldUpdatedAt:
 		return m.UpdatedAt()
+	case repo.FieldLatestDeployedAt:
+		return m.LatestDeployedAt()
 	}
 	return nil, false
 }
@@ -2077,6 +2132,8 @@ func (m *RepoMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldCreatedAt(ctx)
 	case repo.FieldUpdatedAt:
 		return m.OldUpdatedAt(ctx)
+	case repo.FieldLatestDeployedAt:
+		return m.OldLatestDeployedAt(ctx)
 	}
 	return nil, fmt.Errorf("unknown Repo field %s", name)
 }
@@ -2135,6 +2192,13 @@ func (m *RepoMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetUpdatedAt(v)
 		return nil
+	case repo.FieldLatestDeployedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLatestDeployedAt(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Repo field %s", name)
 }
@@ -2171,6 +2235,9 @@ func (m *RepoMutation) ClearedFields() []string {
 	if m.FieldCleared(repo.FieldSyncedAt) {
 		fields = append(fields, repo.FieldSyncedAt)
 	}
+	if m.FieldCleared(repo.FieldLatestDeployedAt) {
+		fields = append(fields, repo.FieldLatestDeployedAt)
+	}
 	return fields
 }
 
@@ -2190,6 +2257,9 @@ func (m *RepoMutation) ClearField(name string) error {
 		return nil
 	case repo.FieldSyncedAt:
 		m.ClearSyncedAt()
+		return nil
+	case repo.FieldLatestDeployedAt:
+		m.ClearLatestDeployedAt()
 		return nil
 	}
 	return fmt.Errorf("unknown Repo nullable field %s", name)
@@ -2219,6 +2289,9 @@ func (m *RepoMutation) ResetField(name string) error {
 		return nil
 	case repo.FieldUpdatedAt:
 		m.ResetUpdatedAt()
+		return nil
+	case repo.FieldLatestDeployedAt:
+		m.ResetLatestDeployedAt()
 		return nil
 	}
 	return fmt.Errorf("unknown Repo field %s", name)

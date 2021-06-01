@@ -142,6 +142,13 @@ func UpdatedAt(v time.Time) predicate.Repo {
 	})
 }
 
+// LatestDeployedAt applies equality check predicate on the "latest_deployed_at" field. It's identical to LatestDeployedAtEQ.
+func LatestDeployedAt(v time.Time) predicate.Repo {
+	return predicate.Repo(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldLatestDeployedAt), v))
+	})
+}
+
 // NamespaceEQ applies the EQ predicate on the "namespace" field.
 func NamespaceEQ(v string) predicate.Repo {
 	return predicate.Repo(func(s *sql.Selector) {
@@ -839,6 +846,96 @@ func UpdatedAtLT(v time.Time) predicate.Repo {
 func UpdatedAtLTE(v time.Time) predicate.Repo {
 	return predicate.Repo(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldUpdatedAt), v))
+	})
+}
+
+// LatestDeployedAtEQ applies the EQ predicate on the "latest_deployed_at" field.
+func LatestDeployedAtEQ(v time.Time) predicate.Repo {
+	return predicate.Repo(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldLatestDeployedAt), v))
+	})
+}
+
+// LatestDeployedAtNEQ applies the NEQ predicate on the "latest_deployed_at" field.
+func LatestDeployedAtNEQ(v time.Time) predicate.Repo {
+	return predicate.Repo(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldLatestDeployedAt), v))
+	})
+}
+
+// LatestDeployedAtIn applies the In predicate on the "latest_deployed_at" field.
+func LatestDeployedAtIn(vs ...time.Time) predicate.Repo {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Repo(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldLatestDeployedAt), v...))
+	})
+}
+
+// LatestDeployedAtNotIn applies the NotIn predicate on the "latest_deployed_at" field.
+func LatestDeployedAtNotIn(vs ...time.Time) predicate.Repo {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Repo(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldLatestDeployedAt), v...))
+	})
+}
+
+// LatestDeployedAtGT applies the GT predicate on the "latest_deployed_at" field.
+func LatestDeployedAtGT(v time.Time) predicate.Repo {
+	return predicate.Repo(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldLatestDeployedAt), v))
+	})
+}
+
+// LatestDeployedAtGTE applies the GTE predicate on the "latest_deployed_at" field.
+func LatestDeployedAtGTE(v time.Time) predicate.Repo {
+	return predicate.Repo(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldLatestDeployedAt), v))
+	})
+}
+
+// LatestDeployedAtLT applies the LT predicate on the "latest_deployed_at" field.
+func LatestDeployedAtLT(v time.Time) predicate.Repo {
+	return predicate.Repo(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldLatestDeployedAt), v))
+	})
+}
+
+// LatestDeployedAtLTE applies the LTE predicate on the "latest_deployed_at" field.
+func LatestDeployedAtLTE(v time.Time) predicate.Repo {
+	return predicate.Repo(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldLatestDeployedAt), v))
+	})
+}
+
+// LatestDeployedAtIsNil applies the IsNil predicate on the "latest_deployed_at" field.
+func LatestDeployedAtIsNil() predicate.Repo {
+	return predicate.Repo(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldLatestDeployedAt)))
+	})
+}
+
+// LatestDeployedAtNotNil applies the NotNil predicate on the "latest_deployed_at" field.
+func LatestDeployedAtNotNil() predicate.Repo {
+	return predicate.Repo(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldLatestDeployedAt)))
 	})
 }
 

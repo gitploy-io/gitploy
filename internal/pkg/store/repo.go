@@ -35,6 +35,25 @@ func (s *Store) ListRepos(ctx context.Context, u *ent.User, q string, page, perP
 	return rs, nil
 }
 
+func (s *Store) ListSortedRepos(ctx context.Context, u *ent.User, q string, page, perPage int) ([]*ent.Repo, error) {
+	return s.c.Repo.
+		Query().
+		Where(
+			repo.And(
+				repo.HasPermsWith(perm.HasUserWith(user.IDEQ(u.ID))),
+				repo.NameContains(q),
+			),
+		).
+		Order(ent.Desc(repo.FieldLatestDeployedAt)).
+		Limit(perPage).
+		Offset(offset(page, perPage)).
+		WithDeployments(func(dq *ent.DeploymentQuery) {
+			dq.Order(ent.Desc(deployment.FieldCreatedAt)).
+				Limit(5)
+		}).
+		All(ctx)
+}
+
 func (s *Store) FindRepo(ctx context.Context, u *ent.User, id string) (*ent.Repo, error) {
 	p, err := s.c.Perm.
 		Query().
@@ -84,13 +103,22 @@ func (s *Store) FindLatestDeployment(ctx context.Context, r *ent.Repo, env strin
 }
 
 func (s *Store) CreateDeployment(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment) (*ent.Deployment, error) {
-	return s.c.Deployment.Create().
+	d, err := s.c.Deployment.Create().
 		SetType(d.Type).
 		SetRef(d.Ref).
 		SetEnv(d.Env).
 		SetUserID(u.ID).
 		SetRepoID(r.ID).
 		Save(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	s.c.Repo.UpdateOneID(r.ID).
+		SetLatestDeployedAt(d.CreatedAt).
+		Save(ctx)
+
+	return d, nil
 }
 
 func (s *Store) UpdateDeployment(ctx context.Context, d *ent.Deployment) (*ent.Deployment, error) {

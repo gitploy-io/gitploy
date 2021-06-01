@@ -30,6 +30,8 @@ type Repo struct {
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
+	// LatestDeployedAt holds the value of the "latest_deployed_at" field.
+	LatestDeployedAt time.Time `json:"latest_deployed_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the RepoQuery when eager-loading is set.
 	Edges RepoEdges `json:"edges"`
@@ -71,7 +73,7 @@ func (*Repo) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case repo.FieldID, repo.FieldNamespace, repo.FieldName, repo.FieldDescription, repo.FieldConfigPath:
 			values[i] = new(sql.NullString)
-		case repo.FieldSyncedAt, repo.FieldCreatedAt, repo.FieldUpdatedAt:
+		case repo.FieldSyncedAt, repo.FieldCreatedAt, repo.FieldUpdatedAt, repo.FieldLatestDeployedAt:
 			values[i] = new(sql.NullTime)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Repo", columns[i])
@@ -136,6 +138,12 @@ func (r *Repo) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				r.UpdatedAt = value.Time
 			}
+		case repo.FieldLatestDeployedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field latest_deployed_at", values[i])
+			} else if value.Valid {
+				r.LatestDeployedAt = value.Time
+			}
 		}
 	}
 	return nil
@@ -188,6 +196,8 @@ func (r *Repo) String() string {
 	builder.WriteString(r.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", updated_at=")
 	builder.WriteString(r.UpdatedAt.Format(time.ANSIC))
+	builder.WriteString(", latest_deployed_at=")
+	builder.WriteString(r.LatestDeployedAt.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
 }
