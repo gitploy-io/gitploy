@@ -121,6 +121,20 @@ func (ru *RepoUpdate) SetLatestDeployedAt(t time.Time) *RepoUpdate {
 	return ru
 }
 
+// SetNillableLatestDeployedAt sets the "latest_deployed_at" field if the given value is not nil.
+func (ru *RepoUpdate) SetNillableLatestDeployedAt(t *time.Time) *RepoUpdate {
+	if t != nil {
+		ru.SetLatestDeployedAt(*t)
+	}
+	return ru
+}
+
+// ClearLatestDeployedAt clears the value of the "latest_deployed_at" field.
+func (ru *RepoUpdate) ClearLatestDeployedAt() *RepoUpdate {
+	ru.mutation.ClearLatestDeployedAt()
+	return ru
+}
+
 // AddPermIDs adds the "perms" edge to the Perm entity by IDs.
 func (ru *RepoUpdate) AddPermIDs(ids ...int) *RepoUpdate {
 	ru.mutation.AddPermIDs(ids...)
@@ -344,6 +358,12 @@ func (ru *RepoUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: repo.FieldLatestDeployedAt,
 		})
 	}
+	if ru.mutation.LatestDeployedAtCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Column: repo.FieldLatestDeployedAt,
+		})
+	}
 	if ru.mutation.PermsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
@@ -560,6 +580,20 @@ func (ruo *RepoUpdateOne) SetUpdatedAt(t time.Time) *RepoUpdateOne {
 // SetLatestDeployedAt sets the "latest_deployed_at" field.
 func (ruo *RepoUpdateOne) SetLatestDeployedAt(t time.Time) *RepoUpdateOne {
 	ruo.mutation.SetLatestDeployedAt(t)
+	return ruo
+}
+
+// SetNillableLatestDeployedAt sets the "latest_deployed_at" field if the given value is not nil.
+func (ruo *RepoUpdateOne) SetNillableLatestDeployedAt(t *time.Time) *RepoUpdateOne {
+	if t != nil {
+		ruo.SetLatestDeployedAt(*t)
+	}
+	return ruo
+}
+
+// ClearLatestDeployedAt clears the value of the "latest_deployed_at" field.
+func (ruo *RepoUpdateOne) ClearLatestDeployedAt() *RepoUpdateOne {
+	ruo.mutation.ClearLatestDeployedAt()
 	return ruo
 }
 
@@ -807,6 +841,12 @@ func (ruo *RepoUpdateOne) sqlSave(ctx context.Context) (_node *Repo, err error) 
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  value,
+			Column: repo.FieldLatestDeployedAt,
+		})
+	}
+	if ruo.mutation.LatestDeployedAtCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
 			Column: repo.FieldLatestDeployedAt,
 		})
 	}

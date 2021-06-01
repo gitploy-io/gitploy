@@ -110,6 +110,14 @@ func (rc *RepoCreate) SetLatestDeployedAt(t time.Time) *RepoCreate {
 	return rc
 }
 
+// SetNillableLatestDeployedAt sets the "latest_deployed_at" field if the given value is not nil.
+func (rc *RepoCreate) SetNillableLatestDeployedAt(t *time.Time) *RepoCreate {
+	if t != nil {
+		rc.SetLatestDeployedAt(*t)
+	}
+	return rc
+}
+
 // SetID sets the "id" field.
 func (rc *RepoCreate) SetID(s string) *RepoCreate {
 	rc.mutation.SetID(s)
@@ -228,9 +236,6 @@ func (rc *RepoCreate) check() error {
 	}
 	if _, ok := rc.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New("ent: missing required field \"updated_at\"")}
-	}
-	if _, ok := rc.mutation.LatestDeployedAt(); !ok {
-		return &ValidationError{Name: "latest_deployed_at", err: errors.New("ent: missing required field \"latest_deployed_at\"")}
 	}
 	return nil
 }

@@ -925,6 +925,20 @@ func LatestDeployedAtLTE(v time.Time) predicate.Repo {
 	})
 }
 
+// LatestDeployedAtIsNil applies the IsNil predicate on the "latest_deployed_at" field.
+func LatestDeployedAtIsNil() predicate.Repo {
+	return predicate.Repo(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldLatestDeployedAt)))
+	})
+}
+
+// LatestDeployedAtNotNil applies the NotNil predicate on the "latest_deployed_at" field.
+func LatestDeployedAtNotNil() predicate.Repo {
+	return predicate.Repo(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldLatestDeployedAt)))
+	})
+}
+
 // HasPerms applies the HasEdge predicate on the "perms" edge.
 func HasPerms() predicate.Repo {
 	return predicate.Repo(func(s *sql.Selector) {

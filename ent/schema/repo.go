@@ -30,7 +30,8 @@ func (Repo) Fields() []ent.Field {
 		field.Time("updated_at").
 			Default(time.Now).
 			UpdateDefault(time.Now),
-		field.Time("latest_deployed_at"),
+		field.Time("latest_deployed_at").
+			Optional(),
 	}
 }
 
