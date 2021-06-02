@@ -1,26 +1,25 @@
 import { Component } from 'react';
-import { Navbar, Nav, Container } from 'react-bootstrap'
+import { Layout, Menu, Row, Col } from 'antd';
+
+const { Header, Content, Footer } = Layout;
 
 export default class Main extends Component {
     render() {
         return (
-            <div>
-                <div>
-                    <Navbar bg="dark" variant="dark" expand="lg">
-                      <Navbar.Brand href="/">Gitploy</Navbar.Brand>
-                      <Navbar.Toggle aria-controls="basic-navbar-nav" />
-                      <Navbar.Collapse id="basic-navbar-nav">
-                        <Nav className="mr-auto">
-                          <Nav.Link href="/">Home</Nav.Link>
-                          <Nav.Link href="/history">History</Nav.Link>
-                        </Nav>
-                      </Navbar.Collapse>
-                    </Navbar>
-                </div>
-                <Container className="mt-5">
+            <Layout className="layout">
+                <Header>
+                    <div className="logo" />
+                    <Menu theme="dark" mode="horizontal" defaultSelectedKeys={['2']}>
+                        <Menu.Item key="1">nav 1</Menu.Item>
+                        <Menu.Item key="2">nav 2</Menu.Item>
+                        <Menu.Item key="3">nav 3</Menu.Item>
+                    </Menu>
+                </Header>
+                <Content style={{ padding: '0 50px' }}>
                     {this.props.children}
-                </Container>
-            </div>
+                </Content>
+                <Footer style={{ textAlign: 'center' }}>Gitploy ©2021 Created by Gitploy.io </Footer>
+            </Layout>
         )
     }
 }

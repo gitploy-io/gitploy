@@ -1,5 +1,5 @@
 import { Component } from "react"
-import { Card } from 'react-bootstrap'
+import { List } from 'antd'
 
 import { Repo } from '../models'
 
@@ -10,15 +10,17 @@ export interface RepoListProps {
 export default class RepoList extends Component<RepoListProps> {
     render() {
         return (
-            <div>
-                {this.props.repos.map((repo, index) => {
-                return <Card key={index} className="mb-3">
-                        <Card.Body >
-                            <p className="mb-0">{repo.namespace} / {repo.name} </p>
-                        </Card.Body>
-                    </Card>
-                })}
-            </div>
+            <List
+                itemLayout="horizontal"
+                dataSource={this.props.repos}
+                renderItem={repo => (
+                  <List.Item>
+                    <List.Item.Meta
+                      title={<a href="https://ant.design">{repo.namespace} / {repo.name}</a>}
+                    />
+                  </List.Item>
+                )}
+            />
         )
     }
 }

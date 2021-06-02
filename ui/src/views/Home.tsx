@@ -20,7 +20,7 @@ interface HomeProps {
     listRepos(q: string, page: number, perPage: number): void
 }
 
-export default class Home extends Component<HomeProps> {
+export default class Home extends Component {
     render() {
         return (
             <Main >
