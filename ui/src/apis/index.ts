@@ -1,5 +1,5 @@
-import * as repos from './repos'
+import { listRepos } from './repos'
 
 export {
-    repos,
+    listRepos,
 }

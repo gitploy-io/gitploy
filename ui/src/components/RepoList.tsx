@@ -16,7 +16,7 @@ export default class RepoList extends Component<RepoListProps> {
                 renderItem={repo => (
                   <List.Item>
                     <List.Item.Meta
-                      title={<a href="https://ant.design">{repo.namespace} / {repo.name}</a>}
+                      title={<a href="/">{repo.namespace} / {repo.name}</a>}
                     />
                   </List.Item>
                 )}

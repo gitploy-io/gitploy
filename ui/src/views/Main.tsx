@@ -1,5 +1,5 @@
 import { Component } from 'react';
-import { Layout, Menu, Row, Col } from 'antd';
+import { Layout, Menu } from 'antd';
 
 const { Header, Content, Footer } = Layout;
 

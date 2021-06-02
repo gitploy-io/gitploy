@@ -22,8 +22,8 @@ export const listRepos = async (q: string, page: number = 1, perPage: number = 3
                 }
             }))
     } catch (e) {
-        return [[], e]
+        throw e
     }
 
-    return [repos, null]
+    return repos
 }
