@@ -1,11 +1,11 @@
 import { instance, headers } from './config'
 import { Repo } from '../models'
 
-export const listRepos = async () => {
+export const listRepos = async (q: string, page: number = 1, perPage: number = 30) => {
     let repos:Repo[]
 
     try {
-        repos = await fetch(`${instance}/v1/repos`, {
+        repos = await fetch(`${instance}/v1/repos?q=${q}&page=${page}&per_page=${perPage}`, {
             headers,
             credentials: 'same-origin',
         })

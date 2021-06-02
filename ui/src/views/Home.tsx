@@ -13,7 +13,14 @@ const repos:Repo[] = [{
     createdAt: new Date(),
     updatedAt: new Date(),
 }]
-export default class Home extends Component {
+
+interface HomeProps {
+    loading: boolean
+    repos: Repo[]
+    listRepos(q: string, page: number, perPage: number): void
+}
+
+export default class Home extends Component<HomeProps> {
     render() {
         return (
             <Main >
