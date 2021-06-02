@@ -1,3 +1,4 @@
+import './App.less'
 import Home from './views/Home'
 
 function App() {
