@@ -35,7 +35,6 @@ export const homeSlice = createSlice({
     extraReducers: builder => {
         builder
             .addCase(listRepos.fulfilled, (state, action) => {
-                console.log("test")
                 state.repos = action.payload
                 state.loading = false
             })

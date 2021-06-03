@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { shallowEqual } from 'react-redux'
 
 import { useAppSelector, useAppDispatch } from '../redux/hooks'
 import { listRepos } from '../redux/home'
@@ -8,14 +9,12 @@ import RepoList from '../components/RepoList'
 import Spin from '../components/Spin'
 
 export default function Home(){
-    const loading = useAppSelector(state => state.home.loading)
-    const repos = useAppSelector(state => state.home.repos)
+    const { loading, repos } = useAppSelector(state => state.home, shallowEqual)
     const dispatch = useAppDispatch()
 
     useEffect(() => {
-        console.log("test")
         dispatch(listRepos())
-    })
+    }, [dispatch])
 
     if (loading) {
         return (
