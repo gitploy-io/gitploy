@@ -1,9 +1,9 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
+import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit'
 
 import { Repo } from '../models'
 import * as apis from '../apis'
 
-const perPage = 30
+export const perPage = 30
 
 interface HomeSate {
     loading: boolean 
@@ -31,7 +31,17 @@ export const listRepos = createAsyncThunk<Repo[], void, { state: {home: HomeSate
 export const homeSlice = createSlice({
     name: 'home',
     initialState,
-    reducers: {},
+    reducers: {
+        setQ: (state, action: PayloadAction<string>) => {
+            state.q = action.payload
+        },
+        increasePage: (state) => {
+            state.page = state.page + 1
+        },
+        decreasePage: (state) => {
+            state.page = state.page - 1
+        }
+    },
     extraReducers: builder => {
         builder
             .addCase(listRepos.fulfilled, (state, action) => {
