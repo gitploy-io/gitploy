@@ -1,10 +1,8 @@
-import { Component } from 'react';
 import { Layout, Menu, Row, Col } from 'antd';
 
 const { Header, Content, Footer } = Layout;
 
-export default class Main extends Component {
-    render() {
+export default function Main(props: any) {
         return (
             <Layout className="layout">
                 <Header>
@@ -16,10 +14,13 @@ export default class Main extends Component {
                     </Menu>
                 </Header>
                 <Content style={{ padding: '0 50px' }}>
-                    {this.props.children}
+                    <Row>
+                        <Col span={10} offset={7}>
+                            {props.children}
+                        </Col>
+                    </Row>
                 </Content>
                 <Footer style={{ textAlign: 'center' }}>Gitploy ©2021 Created by Gitploy.io </Footer>
             </Layout>
         )
-    }
 }

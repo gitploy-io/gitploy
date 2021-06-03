@@ -1,31 +1,32 @@
-import { Component } from "react";
+import { useEffect } from 'react'
+import { shallowEqual } from 'react-redux'
+
+import { useAppSelector, useAppDispatch } from '../redux/hooks'
+import { listRepos } from '../redux/home'
 
 import Main from './Main'
 import RepoList from '../components/RepoList'
-import { Repo } from '../models'
+import Spin from '../components/Spin'
 
-const repos:Repo[] = [{
-    id: "1",
-    namespace: "hanjunlee",
-    name: "gitploy",
-    description: "",
-    syncedAt: new Date(),
-    createdAt: new Date(),
-    updatedAt: new Date(),
-}]
+export default function Home(){
+    const { loading, repos } = useAppSelector(state => state.home, shallowEqual)
+    const dispatch = useAppDispatch()
 
-interface HomeProps {
-    loading: boolean
-    repos: Repo[]
-    listRepos(q: string, page: number, perPage: number): void
-}
+    useEffect(() => {
+        dispatch(listRepos())
+    }, [dispatch])
 
-export default class Home extends Component {
-    render() {
+    if (loading) {
         return (
-            <Main >
-                <RepoList repos={repos}></RepoList>
+            <Main>
+                <Spin />
             </Main>
         )
     }
+
+    return (
+        <Main>
+            <RepoList repos={repos}></RepoList>
+        </Main>
+    )
 }
