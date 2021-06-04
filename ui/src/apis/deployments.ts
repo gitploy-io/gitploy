@@ -51,6 +51,8 @@ export const listDeployments = async (repoId: string, env: string, page: number,
                     status: mapDeploymentStatus(d.status),
                     createdAt: new Date(d.created_at),
                     updatedAt: new Date(d.updatedAt),
+                    // TODO: mapping the user
+                    deployer: null,
                 }
             }))
     } catch (e) {
