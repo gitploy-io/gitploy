@@ -69,6 +69,32 @@ func (r *Repo) GetRepo(c *gin.Context) {
 	gb.Response(c, http.StatusOK, repo)
 }
 
+func (r *Repo) GetRepoByNamespaceName(c *gin.Context) {
+	var (
+		namespace = c.Query("namespace")
+		name      = c.Query("name")
+	)
+
+	v, _ := c.Get(gb.KeyUser)
+	u := v.(*ent.User)
+
+	ctx := c.Request.Context()
+
+	repo, err := r.store.FindRepoByNamespaceName(ctx, u, namespace, name)
+	if ent.IsNotFound(err) {
+		r.log.Error("failed to access the repo.", zap.String("repo", name), zap.Error(err))
+		gb.ErrorResponse(c, http.StatusNotFound, "It has failed to search the repo.")
+		return
+
+	} else if err != nil {
+		r.log.Error("failed to get the repository.", zap.String("repo", name), zap.Error(err))
+		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to get the repository.")
+		return
+	}
+
+	gb.Response(c, http.StatusOK, repo)
+}
+
 func atoi(s string) int {
 	i, _ := strconv.Atoi(s)
 	return i

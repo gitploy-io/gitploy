@@ -59,18 +59,18 @@ paths:
           $ref: '#/components/responses/401Unauthorized'
         '500':
           $ref: '#/components/responses/500InternalError'
-  /repos/{namespace}/{name}:
+  /repos/search:
     get:
       tags:
         - Repo
-      summary: Get repository
+      summary: Search repository with namespace and name
       parameters:
-        - in: path
+        - in: query
           name: namespace
           required: true
           schema:
             type: string
-        - in: path
+        - in: query
           name: name
           required: true
           schema:

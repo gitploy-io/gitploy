@@ -72,6 +72,24 @@ func (s *Store) FindRepo(ctx context.Context, u *ent.User, id string) (*ent.Repo
 	return p.Edges.Repo, nil
 }
 
+func (s *Store) FindRepoByNamespaceName(ctx context.Context, u *ent.User, namespace, name string) (*ent.Repo, error) {
+	r, err := s.c.Repo.
+		Query().
+		Where(
+			repo.And(
+				repo.NamespaceEQ(namespace),
+				repo.NameEQ(name),
+				repo.HasPermsWith(perm.HasUserWith(user.IDEQ(u.ID))),
+			),
+		).
+		Only(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return r, nil
+}
+
 func (s *Store) ListDeployments(ctx context.Context, r *ent.Repo, env string, page, perPage int) ([]*ent.Deployment, error) {
 	q := s.c.Deployment.
 		Query()
