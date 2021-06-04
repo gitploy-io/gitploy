@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { shallowEqual } from 'react-redux'
-import { Input } from 'antd'
+import { Input, Breadcrumb } from 'antd'
 
 import { useAppSelector, useAppDispatch } from '../redux/hooks'
 import { homeSlice, listRepos, perPage } from '../redux/home'
@@ -41,13 +41,26 @@ export default function Home(){
     if (loading) {
         return (
             <Main>
-                <Spin />
+                <div style={{"marginTop": "20px"}}>
+                    <Breadcrumb>
+                        <Breadcrumb.Item>
+                            <a href="/">Repositories</a>
+                        </Breadcrumb.Item>
+                    </Breadcrumb>
+                </div>
             </Main>
         )
     }
 
     return (
         <Main>
+            <div style={{"marginTop": "20px"}}>
+                <Breadcrumb>
+                    <Breadcrumb.Item>
+                        <a href="/">Repositories</a>
+                    </Breadcrumb.Item>
+                </Breadcrumb>
+            </div>
             <div style={{"marginTop": "20px"}}>
                 <Search placeholder="Search repository ..." onSearch={search} size="large" enterButton />
             </div>

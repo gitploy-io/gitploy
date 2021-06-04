@@ -6,16 +6,17 @@ import {
 } from "react-router-dom";
 
 import Home from './views/Home'
+import Repo from './views/Repo'
 
 function App() {
   return (
     <div className="App">
       <Router>
         <Switch>
-          <Route path="/">
-            <Home />
-          </Route>
           <Route path="/:namespace/:name">
+            <Repo />
+          </Route>
+          <Route path="/">
             <Home />
           </Route>
         </Switch>
