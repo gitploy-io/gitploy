@@ -532,9 +532,6 @@ components:
           description: Repository owner
         name:
           type: string
-        full_name:
-          type: string
-          description: Full name of repository
         description:
           type: string
         synced_at:

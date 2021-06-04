@@ -16,11 +16,6 @@ type (
 		scm   SCM
 		log   *zap.Logger
 	}
-
-	repoData struct {
-		*ent.Repo
-		FullName string `json:"full_name"`
-	}
 )
 
 func NewRepo(store Store, scm SCM) *Repo {
@@ -64,14 +59,14 @@ func (r *Repo) ListRepos(c *gin.Context) {
 		return
 	}
 
-	gb.Response(c, http.StatusOK, mapReposToRepoDatas(repos))
+	gb.Response(c, http.StatusOK, repos)
 }
 
 func (r *Repo) GetRepo(c *gin.Context) {
 	rv, _ := c.Get(KeyRepo)
 	repo := rv.(*ent.Repo)
 
-	gb.Response(c, http.StatusOK, mapRepoToRepoData(repo))
+	gb.Response(c, http.StatusOK, repo)
 }
 
 func atoi(s string) int {
