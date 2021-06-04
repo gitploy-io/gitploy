@@ -59,6 +59,37 @@ paths:
           $ref: '#/components/responses/401Unauthorized'
         '500':
           $ref: '#/components/responses/500InternalError'
+  /repos/{namespace}/{name}:
+    get:
+      tags:
+        - Repo
+      summary: Get repository
+      parameters:
+        - in: path
+          name: namespace
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: name
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Repository
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Repository'
+        '401': 
+          $ref: '#/components/responses/401Unauthorized'
+        '403': 
+          $ref: '#/components/responses/403Forbidden'
+        '404': 
+          $ref: '#/components/responses/404NotFound'
+        '500':
+          $ref: '#/components/responses/500InternalError'
   /repos/{repoId}:
     get:
       tags:
