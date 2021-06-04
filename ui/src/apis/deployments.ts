@@ -35,7 +35,7 @@ export const listDeployments = async (repoId: string, env: string, page: number,
     let deployments:Deployment[]
 
     try {
-        deployments = await fetch(`${instance}/v1/repos/${repoId}/?env=${env}&page=${page}&per_page=${perPage}`, {
+        deployments = await fetch(`${instance}/v1/repos/${repoId}/deployments?env=${env}&page=${page}&per_page=${perPage}`, {
             headers,
             credentials: 'same-origin',
         })

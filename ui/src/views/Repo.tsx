@@ -54,7 +54,7 @@ export default function Repo() {
                 </Menu>
             </div>
             <div style={{"marginTop": "20px"}}>
-                <RepoHome />
+                {(key === "home")? <RepoHome /> : null}
             </div>
         </Main>
     )
