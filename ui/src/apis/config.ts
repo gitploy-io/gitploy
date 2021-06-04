@@ -1,18 +1,29 @@
-// default authentication credentials. In product cookie-based
-// authentication is being used.
-export const headers = new Headers(
-    process.env.REACT_APP_GITPLOY_TOKEN ?
-        {
-            'Authorization': `Bearer ${process.env.REACT_APP_GITPLOY_TOKEN}`,
-            'Content-Type': 'application/json',
-        } :
-        {
-            'Content-Type': 'application/json',
-        }
-);
+import { instance, headers } from './settings'
+import { Config, Env } from '../models'
 
-// default server api token.
-export const token: string | undefined = process.env.REACT_APP_GITPLOY_TOKEN;
+export const getConfig = async (repoId: string) => {
+    let conf: Config
 
-// default server address.
-export const instance: string = process.env.REACT_APP_GITPLOY_SERVER || "";
+    try {
+        conf = await fetch(`${instance}/v1/repos/${repoId}/config`, {
+            headers,
+            credentials: "same-origin",
+        })
+            .then(response => response.json())
+            .then(c => {
+                const envs: Env[] = c.envs.map((e: any) => {
+                    return {
+                        name: e.name,
+                        requiredContexts: e.required_contexts
+                    }
+                })
+                return {
+                    envs: envs
+                }
+            })
+    } catch (e) {
+        throw e
+    }
+
+    return conf
+}

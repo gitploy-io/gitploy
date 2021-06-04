@@ -1,4 +1,4 @@
-import { instance, headers } from './config'
+import { instance, headers } from './settings'
 import { Repo } from '../models'
 
 export const listRepos = async (q: string, page: number = 1, perPage: number = 30) => {
@@ -26,4 +26,31 @@ export const listRepos = async (q: string, page: number = 1, perPage: number = 3
     }
 
     return repos
+}
+
+export const searchRepo = async (namespace: string, name: string) => {
+    let repo:Repo
+
+    try {
+        repo = await fetch(`${instance}/v1/repos/search?namespace=${namespace}&name=${name}`, {
+            headers,
+            credentials: 'same-origin',
+        })
+            .then(response => response.json())
+            .then((repo: any) => {
+                return {
+                    id: repo.id,
+                    namespace: repo.namespace,
+                    name: repo.name,
+                    description: repo.description, 
+                    syncedAt: new Date(repo.synced_at),
+                    createdAt: new Date(repo.created_at),
+                    updatedAt: new Date(repo.updated_at),
+                }
+            })
+    } catch (e) {
+        throw e
+    }
+
+    return repo
 }
