@@ -1,4 +1,4 @@
-import { instance, headers } from './config'
+import { instance, headers } from './settings'
 import { Deployment, DeploymentType, DeploymentStatus } from '../models'
 
 const mapDeploymentType = (t: string) => {

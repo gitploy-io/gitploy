@@ -1,4 +1,4 @@
-import { instance, headers } from './config'
+import { instance, headers } from './settings'
 import { Repo } from '../models'
 
 export const listRepos = async (q: string, page: number = 1, perPage: number = 30) => {
