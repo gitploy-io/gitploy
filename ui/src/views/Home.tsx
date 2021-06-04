@@ -8,7 +8,6 @@ import { homeSlice, listRepos, perPage } from '../redux/home'
 import Main from './Main'
 import RepoList from '../components/RepoList'
 import Pagination from '../components/Pagination'
-import Spin from '../components/Spin'
 
 const { Search } = Input
 const { actions } = homeSlice

@@ -1,10 +1,12 @@
 import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit'
 
 import { homeSlice } from './home'
+import { repoSlice } from './repo'
 
 export const store =  configureStore({
   reducer: {
     home: homeSlice.reducer,
+    repo: repoSlice.reducer,
   },
   middleware: getDefaultMiddleware({
     serializableCheck: false

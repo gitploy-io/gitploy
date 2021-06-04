@@ -1,7 +1,13 @@
 import { useParams } from "react-router-dom";
 import { Menu, Breadcrumb } from 'antd'
 
+import { useAppSelector, useAppDispatch } from '../redux/hooks'
+import { repoSlice } from '../redux/repo'
+
 import Main from './Main'
+import RepoHome from './RepoHome'
+
+const { actions } = repoSlice
 
 interface Params {
     namespace: string
@@ -10,6 +16,13 @@ interface Params {
 
 export default function Repo() {
     let { namespace, name } = useParams<Params>()
+    const key = useAppSelector(state => state.repo.key)
+    const dispatch = useAppDispatch()
+
+    const onClickMenu = (e: any) => {
+        const key: string = e.key
+        dispatch(actions.setKey(key))
+    }
 
     return (
         <Main>
@@ -25,7 +38,7 @@ export default function Repo() {
                 </Breadcrumb>
             </div>
             <div style={{"marginTop": "20px"}}>
-                <Menu mode="horizontal" selectedKeys={["home"]}>
+                <Menu mode="horizontal" onClick={onClickMenu} selectedKeys={[key]}>
                     <Menu.Item key="home">
                         Home
                     </Menu.Item>
@@ -39,6 +52,9 @@ export default function Repo() {
                         Settings
                     </Menu.Item>
                 </Menu>
+            </div>
+            <div style={{"marginTop": "20px"}}>
+                <RepoHome />
             </div>
         </Main>
     )
