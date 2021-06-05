@@ -96,7 +96,16 @@ func (s *Store) ListDeployments(ctx context.Context, r *ent.Repo, env string, pa
 
 	if env != "" {
 		q = q.Where(
-			deployment.EnvEQ(env),
+			deployment.And(
+				deployment.EnvEQ(env),
+				deployment.HasRepoWith(repo.IDEQ(r.ID)),
+			),
+		)
+	} else {
+		q = q.Where(
+			deployment.And(
+				deployment.HasRepoWith(repo.IDEQ(r.ID)),
+			),
 		)
 	}
 
@@ -113,6 +122,7 @@ func (s *Store) FindLatestDeployment(ctx context.Context, r *ent.Repo, env strin
 		Query().
 		Where(
 			deployment.EnvEQ(env),
+			deployment.HasRepoWith(repo.IDEQ(r.ID)),
 		).
 		Order(
 			ent.Desc(deployment.FieldCreatedAt),
