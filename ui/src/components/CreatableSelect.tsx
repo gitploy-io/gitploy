@@ -21,7 +21,7 @@ export default function CreatableSelect(props: CreatableSelectProps) {
     // https://stackoverflow.com/questions/34698905/how-can-i-clone-a-javascript-object-except-for-one-key
     const {options, onSelectOption, onClickAddItem, ...selectProps} = props
 
-    const onChangeItem = (e: any) => {
+    const _onChangeItem = (e: any) => {
         const value = e.target.value
         setItem({
             label: value,
@@ -30,7 +30,7 @@ export default function CreatableSelect(props: CreatableSelectProps) {
     }
 
     const _onClickAddItem = () => {
-        props.onClickAddItem(item)
+        onClickAddItem(item)
         setItem(initOption)
     }
 
@@ -39,7 +39,7 @@ export default function CreatableSelect(props: CreatableSelectProps) {
 
         if (option === undefined) throw new Error("The option doesn't exist.")
 
-        props.onSelectOption(option)
+        onSelectOption(option)
     }
 
     return (
@@ -53,7 +53,7 @@ export default function CreatableSelect(props: CreatableSelectProps) {
                 <div style={{ display: 'flex', flexWrap: 'nowrap' }}>
                     <Input 
                         value={item.value}
-                        onChange={onChangeItem}
+                        onChange={_onChangeItem}
                         placeholder="Add item manually"
                         bordered={false} />
                     {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
