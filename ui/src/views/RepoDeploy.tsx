@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import { PageHeader, Result, Button, Alert } from "antd";
+import { PageHeader, Result, Button, message } from "antd";
 import { shallowEqual } from "react-redux";
 
 import { useAppSelector, useAppDispatch } from "../redux/hooks"
@@ -84,13 +84,17 @@ export default function RepoDeploy() {
 
     const showAlertMessage = () => {
         if (deploying === RequestStatus.Failure) {
-            setTimeout(() => dispatch(actions.unsetDeploy()) , 2000)
-            return <Alert message="Failed to deploy" type="error" showIcon/>
+            message.error("Failed to deploy.")
+            dispatch(actions.unsetDeploy())
+            return 
         } else if (deploying === RequestStatus.Success) {
-            setTimeout(() => dispatch(actions.unsetDeploy()) , 2000)
-            return <Alert message="Start to deploy" type="success" showIcon/>
+            message.success("Start to deploy.", 3)
+            dispatch(actions.unsetDeploy())
+            return
         }
     }
+
+    showAlertMessage()
 
     if (!hasConfig) {
         return (
@@ -112,9 +116,6 @@ export default function RepoDeploy() {
                 <PageHeader
                     title="Deploy"
                 />
-            </div>
-            <div>
-                {showAlertMessage()}
             </div>
             <div style={{padding: "16px 0px"}}>
                 <DeployForm 

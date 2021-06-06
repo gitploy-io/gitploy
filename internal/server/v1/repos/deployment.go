@@ -166,17 +166,17 @@ func (r *Repo) Deploy(ctx context.Context, u *ent.User, re *ent.Repo, d *ent.Dep
 	return r.deployToSCM(ctx, u, re, d, env)
 }
 
-func (r *Repo) deployToSCM(ctx context.Context, u *ent.User, re *ent.Repo, d *ent.Deployment, e *vo.Env) error {
+func (r *Repo) deployToSCM(ctx context.Context, u *ent.User, re *ent.Repo, od *ent.Deployment, e *vo.Env) error {
 	if !e.HasApproval() {
-		d, err := r.scm.CreateDeployment(ctx, u, re, d, e)
+		nd, err := r.scm.CreateDeployment(ctx, u, re, od, e)
 		if err != nil {
-			d.Status = deployment.StatusFailure
-			r.store.UpdateDeployment(ctx, d)
-			return nil
+			od.Status = deployment.StatusFailure
+			r.store.UpdateDeployment(ctx, od)
+			return err
 		}
 
-		d.Status = deployment.StatusCreated
-		r.store.UpdateDeployment(ctx, d)
+		nd.Status = deployment.StatusCreated
+		r.store.UpdateDeployment(ctx, nd)
 		return nil
 	}
 
