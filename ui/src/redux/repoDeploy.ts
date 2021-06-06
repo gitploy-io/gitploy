@@ -1,11 +1,14 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit'
 
-import { Repo, Branch, Commit, DeploymentType, NotFoundError, Tag,  } from '../models'
-import { searchRepo, getConfig, listBranches, listCommits, listTags } from '../apis'
+import { Repo, Branch, Commit, DeploymentType, Tag, RequestStatus } from '../models'
+import { searchRepo, getConfig, listBranches, listCommits, listTags, createDeployment } from '../apis'
 import { StatusCodes } from 'http-status-codes'
 
+// fetch all at the first page.
+const firstPage = 1
+const perPage = 100
+
 interface RepoDeployState {
-    deploying: boolean
     repo: Repo | null
     hasConfig: boolean
     env: string
@@ -17,10 +20,11 @@ interface RepoDeployState {
     commits: Commit[]
     tag: Tag | null
     tags: Tag[]
+    deploying: RequestStatus
+    deployId: string
 }
 
 const initialState: RepoDeployState = {
-    deploying: false,
     repo: null,
     hasConfig: true,
     env: "",
@@ -32,11 +36,9 @@ const initialState: RepoDeployState = {
     commits: [],
     tag: null,
     tags: [],
+    deploying: RequestStatus.Idle,
+    deployId: "",
 }
-
-// fetch all at the first page.
-const firstPage = 1
-const perPage = 100
 
 export const init = createAsyncThunk<Repo, {namespace: string, name: string}, { state: {repoDeploy: RepoDeployState} }>(
     'repoDeploy/init', 
@@ -97,6 +99,33 @@ export const fetchTags = createAsyncThunk<Tag[], void, { state: {repoDeploy: Rep
 
 // TODO: support dynamic addition for commit, branch, tag by async.
 
+export const deploy = createAsyncThunk<void, void, { state: {repoDeploy: RepoDeployState}}> (
+    "repoDeploy/deploy",
+    async (_ , { getState, rejectWithValue, requestId }) => {
+        const { repo, env, type, branch, commit, tag, deploying, deployId } = getState().repoDeploy
+        if (repo === null) {
+            throw new Error("The repo was not set.")
+        }
+        if (deploying !== RequestStatus.Pending || requestId !== deployId ) {
+            return
+        }
+
+        try {
+            if (type === DeploymentType.Commit && commit !== null) {
+                createDeployment(repo.id, type, commit.sha, env)
+            } else if (type === DeploymentType.Branch && branch !== null) {
+                createDeployment(repo.id, type, branch.name, env)
+            } else if (type === DeploymentType.Tag && tag !== null) {
+                createDeployment(repo.id, type, tag.name, env)
+            } else {
+                throw new Error("failed")
+            }
+        } catch(e) {
+            return rejectWithValue(e)
+        }
+    }
+)
+
 export const repoDeploySlice = createSlice({
     name: "repoDeploy",
     initialState,
@@ -125,6 +154,10 @@ export const repoDeploySlice = createSlice({
         addTagManually: (state, action: PayloadAction<Tag>) => {
             state.tags.unshift(action.payload)
         },
+        unsetDeploy: (state) => {
+            state.deploying = RequestStatus.Idle
+            state.deployId = ""
+        }
     },
     extraReducers: builder => {
         builder
@@ -134,8 +167,8 @@ export const repoDeploySlice = createSlice({
             .addCase(fetchEnvs.fulfilled, (state, action) => {
                 state.envs = action.payload
             })
-            .addCase(fetchEnvs.rejected, (state, action: PayloadAction<any>) => {
-                if (action.payload.code === StatusCodes.NOT_FOUND) {
+            .addCase(fetchEnvs.rejected, (state, action: any) => {
+                if (action.error.name === "RejectedError" && action.payload.code === StatusCodes.NOT_FOUND) {
                     state.hasConfig = false
                 }
             })
@@ -147,6 +180,22 @@ export const repoDeploySlice = createSlice({
             })
             .addCase(fetchTags.fulfilled, (state, action) => {
                 state.tags = action.payload
+            })
+            .addCase(deploy.pending, (state, action) => {
+                if (state.deploying === RequestStatus.Idle) {
+                    state.deploying = RequestStatus.Pending
+                    state.deployId = action.meta.requestId
+                }
+            })
+            .addCase(deploy.fulfilled, (state, action) => {
+                if (state.deploying === RequestStatus.Pending && state.deployId === action.meta.requestId) {
+                    state.deploying = RequestStatus.Success
+                }
+            })
+            .addCase(deploy.rejected, (state, action) => {
+                if (state.deploying === RequestStatus.Pending && state.deployId === action.meta.requestId) {
+                    state.deploying = RequestStatus.Failure
+                }
             })
     }
 })

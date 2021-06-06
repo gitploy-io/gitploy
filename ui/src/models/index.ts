@@ -5,6 +5,7 @@ import Commit from './Commit'
 import Branch from './Branch'
 import Tag from './Tag'
 import { HttpRequestError, NotFoundError } from './errors'
+import { RequestStatus } from './Request'
 
 export type {
     Repo,
@@ -21,4 +22,5 @@ export {
     NotFoundError,
     DeploymentStatus,
     DeploymentType,
+    RequestStatus,
 }

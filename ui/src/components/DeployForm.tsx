@@ -19,11 +19,13 @@ interface DeployFormProps {
     tags: Tag[]
     onSelectTag(tag: Tag): void
     onClickAddTag(option: Option): void
+    deploying: boolean
+    onClickDeploy(): void
 }
 
 export default function DeployForm(props: DeployFormProps) {
     const layout = {
-      labelCol: { span: 4 },
+      labelCol: { span: 5},
       wrapperCol: { span: 16 },
     };
 
@@ -33,7 +35,7 @@ export default function DeployForm(props: DeployFormProps) {
     }
 
     const submitLayout = {
-      wrapperCol: { offset: 4, span: 16 },
+      wrapperCol: { offset: 5, span: 16 },
     };
 
     const hide: React.CSSProperties = {
@@ -177,7 +179,11 @@ export default function DeployForm(props: DeployFormProps) {
                         placeholder="Select commit"/>
             </Form.Item>
             <Form.Item {...submitLayout}>
-                <Button type="primary" htmlType="submit">
+                <Button 
+                    loading={props.deploying}
+                    onClick={props.onClickDeploy}
+                    type="primary" 
+                    htmlType="submit">
                   Submit
                 </Button>
             </Form.Item>

@@ -1,10 +1,10 @@
 import { useParams } from "react-router-dom";
-import { PageHeader, Result, Button } from "antd";
+import { PageHeader, Result, Button, Alert } from "antd";
 import { shallowEqual } from "react-redux";
 
 import { useAppSelector, useAppDispatch } from "../redux/hooks"
-import { init, fetchEnvs, repoDeploySlice, fetchBranches, fetchCommits, fetchTags} from '../redux/repoDeploy'
-import { DeploymentType, Branch, Commit, Tag } from "../models";
+import { init, fetchEnvs, repoDeploySlice, fetchBranches, fetchCommits, fetchTags, deploy} from '../redux/repoDeploy'
+import { DeploymentType, Branch, Commit, Tag, RequestStatus } from "../models";
 
 import DeployForm, {Option} from '../components/DeployForm'
 import { useEffect } from "react";
@@ -18,7 +18,7 @@ interface Params {
 
 export default function RepoDeploy() {
     let { namespace, name } = useParams<Params>()
-    const { hasConfig, envs, type, branches, commits, tags } = useAppSelector(state => state.repoDeploy, shallowEqual)
+    const { hasConfig, envs, type, branches, commits, tags, deploying } = useAppSelector(state => state.repoDeploy, shallowEqual)
     const dispatch = useAppDispatch()
 
     useEffect(() => {
@@ -78,6 +78,20 @@ export default function RepoDeploy() {
         dispatch(actions.addTagManually(tag))
     }
 
+    const onClickDeploy = () => {
+        dispatch(deploy())
+    }
+
+    const showAlertMessage = () => {
+        if (deploying === RequestStatus.Failure) {
+            setTimeout(() => dispatch(actions.unsetDeploy()) , 2000)
+            return <Alert message="Failed to deploy" type="error" showIcon/>
+        } else if (deploying === RequestStatus.Success) {
+            setTimeout(() => dispatch(actions.unsetDeploy()) , 2000)
+            return <Alert message="Start to deploy" type="success" showIcon/>
+        }
+    }
+
     if (!hasConfig) {
         return (
             <Result
@@ -99,7 +113,10 @@ export default function RepoDeploy() {
                     title="Deploy"
                 />
             </div>
-            <div style={{padding: "16px 24px"}}>
+            <div>
+                {showAlertMessage()}
+            </div>
+            <div style={{padding: "16px 0px"}}>
                 <DeployForm 
                     envs={envs}
                     onSelectEnv={onSelectEnv}
@@ -113,7 +130,9 @@ export default function RepoDeploy() {
                     onClickAddCommit={onClickAddCommit}
                     tags={tags}
                     onSelectTag={onSelectTag}
-                    onClickAddTag={onClickAddTag}/>
+                    onClickAddTag={onClickAddTag}
+                    deploying={deploying === RequestStatus.Pending}
+                    onClickDeploy={onClickDeploy} />
             </div>
         </div>
     )
