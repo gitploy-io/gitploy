@@ -112,14 +112,13 @@ export const deploy = createAsyncThunk<void, void, { state: {repoDeploy: RepoDep
 
         try {
             if (type === DeploymentType.Commit && commit !== null) {
-                createDeployment(repo.id, type, commit.sha, env)
+                await createDeployment(repo.id, type, commit.sha, env)
             } else if (type === DeploymentType.Branch && branch !== null) {
-                createDeployment(repo.id, type, branch.name, env)
+                await createDeployment(repo.id, type, branch.name, env)
             } else if (type === DeploymentType.Tag && tag !== null) {
-                createDeployment(repo.id, type, tag.name, env)
-            } else {
-                throw new Error("failed")
-            }
+                await createDeployment(repo.id, type, tag.name, env)
+            } 
+            return
         } catch(e) {
             return rejectWithValue(e)
         }
