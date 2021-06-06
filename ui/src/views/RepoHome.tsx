@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { shallowEqual } from "react-redux";
 import { PageHeader, Select } from 'antd'
@@ -8,7 +9,6 @@ import { repoHomeSlice, init, fetchEnvs, fetchDeployments, perPage } from '../re
 import ActivityLogs from '../components/ActivityLogs'
 import Spin from '../components/Spin'
 import Pagination from '../components/Pagination'
-import { useEffect } from "react";
 
 const { actions } = repoHomeSlice
 const { Option } = Select

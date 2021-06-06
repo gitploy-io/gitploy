@@ -6,8 +6,13 @@ import { repoSlice } from '../redux/repo'
 
 import Main from './Main'
 import RepoHome from './RepoHome'
+import RepoDeploy from './RepoDeploy'
 
 const { actions } = repoSlice
+
+const hide = {
+    display: "none"
+}
 
 interface Params {
     namespace: string
@@ -54,7 +59,12 @@ export default function Repo() {
                 </Menu>
             </div>
             <div style={{"marginTop": "20px"}}>
-                {(key === "home")? <RepoHome /> : null}
+                {(key === "home")? 
+                    <div><RepoHome /></div> : 
+                    <div style={hide}><RepoHome /></div>}
+                {(key === "deploy")?
+                    <div><RepoDeploy /></div> :
+                    <div style={hide}><RepoDeploy /></div>}
             </div>
         </Main>
     )
