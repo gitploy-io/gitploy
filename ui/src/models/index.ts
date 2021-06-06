@@ -4,6 +4,7 @@ import Config, { Env } from './Config'
 import Commit from './Commit'
 import Branch from './Branch'
 import Tag from './Tag'
+import { HttpRequestError, NotFoundError } from './errors'
 
 export type {
     Repo,
@@ -12,10 +13,12 @@ export type {
     Env,
     Commit,
     Branch,
-    Tag
+    Tag,
 }
 
 export {
+    HttpRequestError,
+    NotFoundError,
     DeploymentStatus,
     DeploymentType,
 }
