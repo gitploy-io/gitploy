@@ -119,13 +119,19 @@ export default function DeployForm(props: DeployFormProps) {
         props.onSelectTag(tag)
     }
 
+    const onClickFinish = (values: any) => {
+        props.onClickDeploy()
+    }
+
     return (
         <Form
+            onFinish={onClickFinish}
             name="deploy">
             <Form.Item
                 {...selectLayout}
+                rules={[{required: true}]}
                 label="Environment"
-                name="env">
+                name="environment">
                 <Select 
                     onSelect={props.onSelectEnv}
                     placeholder="Select target environment">
@@ -136,6 +142,7 @@ export default function DeployForm(props: DeployFormProps) {
             </Form.Item>
             <Form.Item
                 {...layout}
+                rules={[{required: true}]}
                 label="Type"
                 name="type">
                 <Radio.Group 
@@ -148,6 +155,7 @@ export default function DeployForm(props: DeployFormProps) {
             <Form.Item
                 {...selectLayout}
                 style={(isBranchVisible(props.type)? {}: hide)}
+                rules={[{required: isBranchVisible(props.type)}]}
                 label="Branch"
                 name="branch">
                     <CreatableSelect 
@@ -159,6 +167,7 @@ export default function DeployForm(props: DeployFormProps) {
             <Form.Item
                 {...layout}
                 style={(isCommitVisible(props.type)? {}: hide)}
+                rules={[{required: isCommitVisible(props.type)}]}
                 label="Commit"
                 name="commit">
                     <CreatableSelect 
@@ -170,6 +179,7 @@ export default function DeployForm(props: DeployFormProps) {
             <Form.Item
                 {...selectLayout}
                 style={(isTagVisible(props.type)? {}: hide)}
+                rules={[{required: isTagVisible(props.type)}]}
                 label="Tag"
                 name="tag">
                     <CreatableSelect 
@@ -181,7 +191,6 @@ export default function DeployForm(props: DeployFormProps) {
             <Form.Item {...submitLayout}>
                 <Button 
                     loading={props.deploying}
-                    onClick={props.onClickDeploy}
                     type="primary" 
                     htmlType="submit">
                   Submit

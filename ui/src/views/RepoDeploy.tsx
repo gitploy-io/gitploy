@@ -96,7 +96,7 @@ export default function RepoDeploy() {
         return (
             <Result
                 status="warning"
-                title="There is no the configuration file."
+                title="There isn't the configuration file."
                 extra={
                     <Button type="primary" key="console">
                       Read Document
