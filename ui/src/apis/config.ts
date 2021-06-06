@@ -1,7 +1,7 @@
 import { StatusCodes } from 'http-status-codes'
 
 import { instance, headers } from './settings'
-import { Config, Env, NotFoundError } from '../models'
+import { Config, Env, HttpNotFoundError } from '../models'
 
 export const getConfig = async (repoId: string) => {
     let conf: Config
@@ -11,7 +11,8 @@ export const getConfig = async (repoId: string) => {
         credentials: "same-origin",
     })
     if (response.status === StatusCodes.NOT_FOUND) {
-        throw new NotFoundError("The configuration file doesn't exist.")
+        const message = await response.json().then(data => data.message)
+        throw new HttpNotFoundError(message)
     }
 
     conf = await response.json()

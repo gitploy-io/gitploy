@@ -8,10 +8,10 @@ export class HttpRequestError extends Error {
     }
 }
 
-export class NotFoundError extends HttpRequestError {
+export class HttpNotFoundError extends HttpRequestError {
     constructor(public m: string) {
         super(StatusCodes.NOT_FOUND, m)
 
-        Object.setPrototypeOf(this, NotFoundError.prototype)
+        Object.setPrototypeOf(this, HttpNotFoundError.prototype)
     }
 }

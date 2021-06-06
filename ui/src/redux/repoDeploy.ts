@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit'
 
-import { Repo, Branch, Commit, DeploymentType, Tag, RequestStatus } from '../models'
+import { Repo, Branch, Commit, DeploymentType, Tag, RequestStatus, HttpNotFoundError } from '../models'
 import { searchRepo, getConfig, listBranches, listCommits, listTags, createDeployment } from '../apis'
 import { StatusCodes } from 'http-status-codes'
 
@@ -167,8 +167,8 @@ export const repoDeploySlice = createSlice({
             .addCase(fetchEnvs.fulfilled, (state, action) => {
                 state.envs = action.payload
             })
-            .addCase(fetchEnvs.rejected, (state, action: any) => {
-                if (action.error.name === "RejectedError" && action.payload.code === StatusCodes.NOT_FOUND) {
+            .addCase(fetchEnvs.rejected, (state, action: PayloadAction<unknown> | PayloadAction<typeof HttpNotFoundError>) => {
+                if (action.payload instanceof HttpNotFoundError && action.payload.code === StatusCodes.NOT_FOUND) {
                     state.hasConfig = false
                 }
             })

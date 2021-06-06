@@ -4,7 +4,7 @@ import Config, { Env } from './Config'
 import Commit from './Commit'
 import Branch from './Branch'
 import Tag from './Tag'
-import { HttpRequestError, NotFoundError } from './errors'
+import { HttpRequestError, HttpNotFoundError } from './errors'
 import { RequestStatus } from './Request'
 
 export type {
@@ -19,7 +19,7 @@ export type {
 
 export {
     HttpRequestError,
-    NotFoundError,
+    HttpNotFoundError,
     DeploymentStatus,
     DeploymentType,
     RequestStatus,
