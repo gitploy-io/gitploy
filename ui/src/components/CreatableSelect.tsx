@@ -33,7 +33,7 @@ export default function CreatableSelect(props: CreatableSelectProps) {
     }
 
     const onSelectOption = (value: string) => {
-        const option = props.options.find(o => o.value == value)
+        const option = props.options.find(o => o.value === value)
 
         if (option === undefined) throw new Error("The option doesn't exist.")
 

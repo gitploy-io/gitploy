@@ -1,12 +1,14 @@
 import { Form, Select, Radio, Button } from 'antd'
 
 import { Branch, Commit, Tag, DeploymentType } from '../models'
-import CreatableSelect, {Option} from './CreatableSelect'
+import CreatableSelect, {Option as Op} from './CreatableSelect'
+
+export type Option = Op
 
 interface DeployFormProps {
     envs: string[]
     onSelectEnv(env: string): void
-    type: DeploymentType | undefined
+    type: DeploymentType | null
     onChangeType(type: DeploymentType): void
     branches: Branch[]
     onSelectBranch(branch: Branch): void
@@ -14,38 +16,42 @@ interface DeployFormProps {
     commits: Commit[]
     onSelectCommit(commit: Commit): void
     onClickAddCommit(option: Option): void
-    // TODO: support tag
-    // tags: Tag[]
-    // onSelectTag(tag: Tag): void
-    // onClickAddTag(option: Option): void
+    tags: Tag[]
+    onSelectTag(tag: Tag): void
+    onClickAddTag(option: Option): void
 }
 
 export default function DeployForm(props: DeployFormProps) {
     const layout = {
-      labelCol: { span: 3 },
+      labelCol: { span: 4 },
       wrapperCol: { span: 16 },
     };
 
+    const selectLayout = {
+        ...layout,
+        wrapperCol: {span: 10}
+    }
+
     const submitLayout = {
-      wrapperCol: { offset: 3, span: 16 },
+      wrapperCol: { offset: 4, span: 16 },
     };
 
     const hide: React.CSSProperties = {
         display: "none"
     }
 
-    const isBranchVisible = (type: DeploymentType | undefined) => {
-        if (type === undefined) return false
+    const isBranchVisible = (type: DeploymentType | null) => {
+        if (type === null) return false
         return type === DeploymentType.Commit || type === DeploymentType.Branch
     }
 
-    const isCommitVisible = (type: DeploymentType | undefined) => {
-        if (type === undefined) return false
+    const isCommitVisible = (type: DeploymentType | null) => {
+        if (type === null) return false
         return type === DeploymentType.Commit 
     }
 
-    const isTagVisible = (type: DeploymentType | undefined) => {
-        if (type === undefined) return false
+    const isTagVisible = (type: DeploymentType | null) => {
+        if (type === null) return false
         return type === DeploymentType.Tag 
     }
 
@@ -77,8 +83,7 @@ export default function DeployForm(props: DeployFormProps) {
     }
 
     const onSelectBranch = (option: Option) => {
-        const branch = props.branches.find(b => b.name == option.value)
-
+        const branch = props.branches.find(b => b.name === option.value)
         if (branch === undefined) throw new Error("The branch doesn't exist.")
 
         props.onSelectBranch(branch)
@@ -86,25 +91,37 @@ export default function DeployForm(props: DeployFormProps) {
 
     const mapCommitToOption = (commit: Commit) => {
         return {
-            label: `${commit.sha.substr(7)} - ${commit.message}`,
+            label: `${commit.sha.substr(0, 7)} - ${commit.message}`,
             value: commit.sha,
         } as Option
     }
 
     const onSelectCommit = (option: Option) => {
-        const commit = props.commits.find(c => c.sha == option.value)
-
+        const commit = props.commits.find(c => c.sha === option.value)
         if (commit === undefined) throw new Error("The commit doesn't exist.")
 
         props.onSelectCommit(commit)
+    }
+
+    const mapTagToOption = (tag: Tag) => {
+        return {
+            label: tag.name,
+            value: tag.name
+        } as Option
+    }
+
+    const onSelectTag = (option: Option) => {
+        const tag = props.tags.find(t => t.name === option.value)
+        if (tag === undefined) throw new Error("The tag doesn't exist.")
+
+        props.onSelectTag(tag)
     }
 
     return (
         <Form
             name="deploy">
             <Form.Item
-                {...layout}
-                wrapperCol={{span: 8}}
+                {...selectLayout}
                 label="Environment"
                 name="env">
                 <Select 
@@ -127,8 +144,7 @@ export default function DeployForm(props: DeployFormProps) {
                 </Radio.Group>
             </Form.Item>
             <Form.Item
-                {...layout}
-                wrapperCol={{span: 8}}
+                {...selectLayout}
                 style={(isBranchVisible(props.type)? {}: hide)}
                 label="Branch"
                 name="branch">
@@ -147,6 +163,17 @@ export default function DeployForm(props: DeployFormProps) {
                         options={props.commits.map(commit => mapCommitToOption(commit))}
                         onSelectOption={onSelectCommit}
                         onClickAddItem={props.onClickAddCommit}
+                        placeholder="Select commit"/>
+            </Form.Item>
+            <Form.Item
+                {...selectLayout}
+                style={(isTagVisible(props.type)? {}: hide)}
+                label="Tag"
+                name="tag">
+                    <CreatableSelect 
+                        options={props.tags.map(tag => mapTagToOption(tag))}
+                        onSelectOption={onSelectTag}
+                        onClickAddItem={props.onClickAddTag}
                         placeholder="Select commit"/>
             </Form.Item>
             <Form.Item {...submitLayout}>
