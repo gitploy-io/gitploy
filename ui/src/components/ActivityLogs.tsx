@@ -30,9 +30,9 @@ const getStatusColor = (status: DeploymentStatus) => {
         case DeploymentStatus.Running:
             return "blue"
         case DeploymentStatus.Success:
-            return "red"
-        case DeploymentStatus.Failure:
             return "green"
+        case DeploymentStatus.Failure:
+            return "red"
         default:
             return "gray"
     }
