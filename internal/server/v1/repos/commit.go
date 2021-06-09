@@ -49,7 +49,11 @@ func (r *Repo) GetCommit(c *gin.Context) {
 	repo := rv.(*ent.Repo)
 
 	commit, err := r.scm.GetCommit(ctx, u, repo, sha)
-	if err != nil {
+	if IsRefNotFoundError(err) {
+		r.log.Warn("The commit is not found.", zap.String("repo", repo.Name), zap.String("sha", sha), zap.Error(err))
+		gb.ErrorResponse(c, http.StatusNotFound, "The commit is not found.")
+		return
+	} else if err != nil {
 		r.log.Error("failed to get the commit.", zap.String("repo", repo.Name), zap.String("sha", sha), zap.Error(err))
 		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to get the commit.")
 		return
@@ -72,7 +76,11 @@ func (r *Repo) ListStatuses(c *gin.Context) {
 	repo := rv.(*ent.Repo)
 
 	ss, err := r.scm.ListCommitStatuses(ctx, u, repo, sha)
-	if err != nil {
+	if IsRefNotFoundError(err) {
+		r.log.Warn("The commit is not found.", zap.String("repo", repo.Name), zap.String("sha", sha), zap.Error(err))
+		gb.ErrorResponse(c, http.StatusNotFound, "The commit is not found.")
+		return
+	} else if err != nil {
 		r.log.Error("failed to get the commit status.", zap.String("repo", repo.Name), zap.String("sha", sha), zap.Error(err))
 		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to get the commit.")
 		return

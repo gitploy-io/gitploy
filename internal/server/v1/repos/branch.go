@@ -46,7 +46,11 @@ func (r *Repo) GetBranch(c *gin.Context) {
 	repo := rv.(*ent.Repo)
 
 	b, err := r.scm.GetBranch(ctx, u, repo, branch)
-	if err != nil {
+	if IsRefNotFoundError(err) {
+		r.log.Warn("The branch is not found.", zap.String("repo", repo.Name), zap.String("branch", branch), zap.Error(err))
+		gb.ErrorResponse(c, http.StatusNotFound, "The branch is not found.")
+		return
+	} else if err != nil {
 		r.log.Error("failed to get the branch.", zap.String("repo", repo.Name), zap.String("branch", branch), zap.Error(err))
 		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to get the branch.")
 		return

@@ -11,6 +11,7 @@ import (
 	"gopkg.in/yaml.v3"
 
 	"github.com/hanjunlee/gitploy/ent"
+	"github.com/hanjunlee/gitploy/internal/server/v1/repos"
 	reposv1 "github.com/hanjunlee/gitploy/internal/server/v1/repos"
 	"github.com/hanjunlee/gitploy/vo"
 )
@@ -49,9 +50,15 @@ func (g *Github) ListCommits(ctx context.Context, u *ent.User, r *ent.Repo, bran
 }
 
 func (g *Github) GetCommit(ctx context.Context, u *ent.User, r *ent.Repo, sha string) (*vo.Commit, error) {
-	cm, _, err := g.Client(ctx, u.Token).
+	cm, res, err := g.Client(ctx, u.Token).
 		Repositories.
 		GetCommit(ctx, r.Namespace, r.Name, sha)
+	// Github returns Unprocessable entity if the commit is not found.
+	if res.StatusCode == http.StatusNotFound || res.StatusCode == http.StatusUnprocessableEntity {
+		return nil, &reposv1.RefNotFoundError{
+			Ref: sha,
+		}
+	}
 	if err != nil {
 		return nil, err
 	}
@@ -77,11 +84,17 @@ func (g *Github) ListCommitStatuses(ctx context.Context, u *ent.User, r *ent.Rep
 	}
 
 	// Check-run
-	result, _, err := client.Checks.ListCheckRunsForRef(ctx, r.Namespace, r.Name, sha, &github.ListCheckRunsOptions{
+	result, res, err := client.Checks.ListCheckRunsForRef(ctx, r.Namespace, r.Name, sha, &github.ListCheckRunsOptions{
 		ListOptions: github.ListOptions{
 			PerPage: 100,
 		},
 	})
+	// check-runs secures the commit is exist.
+	if res.StatusCode == http.StatusUnprocessableEntity {
+		return nil, &repos.RefNotFoundError{
+			Ref: sha,
+		}
+	}
 	if err != nil {
 		return nil, err
 	}
@@ -119,9 +132,14 @@ func (g *Github) ListBranches(ctx context.Context, u *ent.User, r *ent.Repo, pag
 }
 
 func (g *Github) GetBranch(ctx context.Context, u *ent.User, r *ent.Repo, branch string) (*vo.Branch, error) {
-	b, _, err := g.Client(ctx, u.Token).
+	b, res, err := g.Client(ctx, u.Token).
 		Repositories.
 		GetBranch(ctx, r.Namespace, r.Name, branch)
+	if res.StatusCode == http.StatusNotFound {
+		return nil, &reposv1.RefNotFoundError{
+			Ref: branch,
+		}
+	}
 	if err != nil {
 		return nil, err
 	}
