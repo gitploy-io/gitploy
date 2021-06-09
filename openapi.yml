@@ -189,6 +189,8 @@ paths:
           $ref: '#/components/responses/401Unauthorized'
         '403': 
           $ref: '#/components/responses/403Forbidden'
+        '404':
+          $ref: '#/components/responses/404NotFound'
         '500':
           $ref: '#/components/responses/500InternalError'
   /repos/{repoId}/commits/{sha}/statuses:
@@ -225,6 +227,8 @@ paths:
           $ref: '#/components/responses/401Unauthorized'
         '403': 
           $ref: '#/components/responses/403Forbidden'
+        '404':
+          $ref: '#/components/responses/404NotFound'
         '500':
           $ref: '#/components/responses/500InternalError'
   /repos/{repoId}/branches:
@@ -293,6 +297,8 @@ paths:
           $ref: '#/components/responses/401Unauthorized'
         '403': 
           $ref: '#/components/responses/403Forbidden'
+        '404':
+          $ref: '#/components/responses/404NotFound'
         '500':
           $ref: '#/components/responses/500InternalError'
   /repos/{repoId}/tags:

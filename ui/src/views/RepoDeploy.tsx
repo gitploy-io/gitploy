@@ -3,7 +3,7 @@ import { PageHeader, Result, Button, message } from "antd";
 import { shallowEqual } from "react-redux";
 
 import { useAppSelector, useAppDispatch } from "../redux/hooks"
-import { init, fetchEnvs, repoDeploySlice, fetchBranches, fetchCommits, fetchTags, deploy} from '../redux/repoDeploy'
+import { init, fetchEnvs, repoDeploySlice, fetchBranches, addBranchManually, fetchCommits, addCommitManually, fetchTags, addTagManually, deploy} from '../redux/repoDeploy'
 import { DeploymentType, Branch, Commit, Tag, RequestStatus } from "../models";
 
 import DeployForm, {Option} from '../components/DeployForm'
@@ -18,7 +18,7 @@ interface Params {
 
 export default function RepoDeploy() {
     let { namespace, name } = useParams<Params>()
-    const { hasConfig, envs, type, branches, commits, tags, deploying } = useAppSelector(state => state.repoDeploy, shallowEqual)
+    const { hasConfig, envs, type, branches, commits, tags, adding, deploying } = useAppSelector(state => state.repoDeploy, shallowEqual)
     const dispatch = useAppDispatch()
 
     useEffect(() => {
@@ -46,11 +46,7 @@ export default function RepoDeploy() {
     }
 
     const onClickAddBranch = (option: Option) => {
-        const branch: Branch = {
-            name: option.value,
-            commitSha: "",
-        }
-        dispatch(actions.addBranchManually(branch))
+        dispatch(addBranchManually(option.value))
     }
 
     const onSelectCommit = (commit: Commit) => {
@@ -58,12 +54,7 @@ export default function RepoDeploy() {
     }
 
     const onClickAddCommit = (option: Option) => {
-        const commit: Commit = {
-            sha: option.value,
-            message: "Manually added",
-            isPullRequest: false,
-        }
-        dispatch(actions.addCommitManually(commit))
+        dispatch(addCommitManually(option.value))
     }
 
     const onSelectTag = (tag: Tag) => {
@@ -71,30 +62,35 @@ export default function RepoDeploy() {
     }
 
     const onClickAddTag = (option: Option) => {
-        const tag: Tag = {
-            name: option.value,
-            commitSha: "",
-        }
-        dispatch(actions.addTagManually(tag))
+        dispatch(addTagManually(option.value))
     }
+
+    const handleAddManuallyStatus = () => {
+        if (adding === RequestStatus.Failure) {
+            message.error("It has failed to add the item. Check Ref is correct.")
+            dispatch(actions.unsetAddManually())
+        }
+    }
+
 
     const onClickDeploy = () => {
         dispatch(deploy())
     }
 
-    const showAlertMessage = () => {
+    const handleDeployStatus = () => {
         if (deploying === RequestStatus.Failure) {
-            message.error("Failed to deploy.")
+            message.error("It has failed to deploy.")
             dispatch(actions.unsetDeploy())
             return 
         } else if (deploying === RequestStatus.Success) {
-            message.success("Start to deploy.", 3)
+            message.success("It starts to deploy.", 3)
             dispatch(actions.unsetDeploy())
             return
         }
     }
 
-    showAlertMessage()
+    handleAddManuallyStatus()
+    handleDeployStatus()
 
     if (!hasConfig) {
         return (

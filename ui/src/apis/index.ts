@@ -1,9 +1,9 @@
 import { listRepos, searchRepo } from './repos'
 import { listDeployments, createDeployment } from './deployments'
 import { getConfig } from './config'
-import { listCommits } from './commits'
-import { listBranches } from './branchs'
-import { listTags } from './tags'
+import { listCommits, getCommit } from './commits'
+import { listBranches, getBranch } from './branchs'
+import { listTags, getTag } from './tags'
 
 export {
     listRepos,
@@ -12,6 +12,9 @@ export {
     createDeployment,
     getConfig,
     listCommits,
+    getCommit,
     listBranches,
-    listTags
+    getBranch,
+    listTags,
+    getTag
 }
