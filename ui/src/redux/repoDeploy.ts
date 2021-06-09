@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit'
 
 import { Repo, Branch, Commit, DeploymentType, Tag, RequestStatus, HttpNotFoundError } from '../models'
-import { searchRepo, getConfig, listBranches, listCommits, listTags, createDeployment } from '../apis'
+import { searchRepo, getConfig, listBranches, getBranch, listCommits, getCommit, listTags, getTag, createDeployment } from '../apis'
 import { StatusCodes } from 'http-status-codes'
 
 // fetch all at the first page.
@@ -20,6 +20,7 @@ interface RepoDeployState {
     commits: Commit[]
     tag: Tag | null
     tags: Tag[]
+    adding: RequestStatus
     deploying: RequestStatus
     deployId: string
 }
@@ -36,6 +37,7 @@ const initialState: RepoDeployState = {
     commits: [],
     tag: null,
     tags: [],
+    adding: RequestStatus.Idle,
     deploying: RequestStatus.Idle,
     deployId: "",
 }
@@ -74,6 +76,21 @@ export const fetchBranches = createAsyncThunk<Branch[], void, { state: {repoDepl
     }
 )
 
+export const addBranchManually = createAsyncThunk<Branch, string, { state: {repoDeploy: RepoDeployState}}>(
+    "repoDeploy/addBranchManually",
+    async (name: string, { getState, rejectWithValue }) => {
+        const { repo } = getState().repoDeploy
+        if (repo === null) throw new Error("The repo was not set.")
+
+        try {
+            const branch = await getBranch(repo.id, name)
+            return branch
+        } catch(e) {
+            return rejectWithValue(e)
+        }
+    }
+)
+
 export const fetchCommits = createAsyncThunk<Commit[], void, { state: {repoDeploy: RepoDeployState }}>(
     "repoDeploy/fetchCommits",
     async (_, { getState }) => {
@@ -83,6 +100,21 @@ export const fetchCommits = createAsyncThunk<Commit[], void, { state: {repoDeplo
         const name = (branch !== null)? branch.name : ""
         const commits = await listCommits(repo.id, name, firstPage, perPage)
         return commits
+    }
+)
+
+export const addCommitManually = createAsyncThunk<Commit, string, { state: {repoDeploy: RepoDeployState}}>(
+    "repoDeploy/addCommitManually",
+    async (sha: string, { getState, rejectWithValue }) => {
+        const { repo } = getState().repoDeploy
+        if (repo === null) throw new Error("The repo was not set.")
+
+        try {
+            const commit = await getCommit(repo.id, sha)
+            return commit
+        } catch(e) {
+            return rejectWithValue(e)
+        }
     }
 )
 
@@ -97,7 +129,20 @@ export const fetchTags = createAsyncThunk<Tag[], void, { state: {repoDeploy: Rep
     }
 )
 
-// TODO: support dynamic addition for commit, branch, tag by async.
+export const addTagManually = createAsyncThunk<Tag, string, { state: {repoDeploy: RepoDeployState}}>(
+    "repoDeploy/addTagManually",
+    async (name: string, { getState, rejectWithValue }) => {
+        const { repo } = getState().repoDeploy
+        if (repo === null) throw new Error("The repo was not set.")
+
+        try {
+            const tag = await getTag(repo.id, name)
+            return tag
+        } catch(e) {
+            return rejectWithValue(e)
+        }
+    }
+)
 
 export const deploy = createAsyncThunk<void, void, { state: {repoDeploy: RepoDeployState}}> (
     "repoDeploy/deploy",
@@ -138,20 +183,14 @@ export const repoDeploySlice = createSlice({
         setBranch: (state, action: PayloadAction<Branch>) => {
             state.branch = action.payload
         },
-        addBranchManually: (state, action: PayloadAction<Branch>) => {
-            state.branches.unshift(action.payload)
-        },
         setCommit: (state, action: PayloadAction<Commit>) => {
             state.commit = action.payload
-        },
-        addCommitManually: (state, action: PayloadAction<Commit>) => {
-            state.commits.unshift(action.payload)
         },
         setTag: (state, action: PayloadAction<Tag>) => {
             state.tag = action.payload
         },
-        addTagManually: (state, action: PayloadAction<Tag>) => {
-            state.tags.unshift(action.payload)
+        unsetAddManually: (state) => {
+            state.adding = RequestStatus.Idle
         },
         unsetDeploy: (state) => {
             state.deploying = RequestStatus.Idle
@@ -174,11 +213,41 @@ export const repoDeploySlice = createSlice({
             .addCase(fetchBranches.fulfilled, (state, action) => {
                 state.branches = action.payload
             })
+            .addCase(addBranchManually.pending, (state) => {
+                state.adding = RequestStatus.Pending
+            })
+            .addCase(addBranchManually.fulfilled, (state, action) => {
+                state.branches.unshift(action.payload)
+                state.adding = RequestStatus.Success
+            })
+            .addCase(addBranchManually.rejected, (state) => {
+                state.adding = RequestStatus.Failure
+            })
             .addCase(fetchCommits.fulfilled, (state, action) => {
                 state.commits = action.payload
             })
+            .addCase(addCommitManually.pending, (state) => {
+                state.adding = RequestStatus.Pending
+            })
+            .addCase(addCommitManually.fulfilled, (state, action) => {
+                state.commits.unshift(action.payload)
+                state.adding = RequestStatus.Success
+            })
+            .addCase(addCommitManually.rejected, (state) => {
+                state.adding = RequestStatus.Failure
+            })
             .addCase(fetchTags.fulfilled, (state, action) => {
                 state.tags = action.payload
+            })
+            .addCase(addTagManually.pending, (state) => {
+                state.adding = RequestStatus.Pending
+            })
+            .addCase(addTagManually.fulfilled, (state, action) => {
+                state.tags.unshift(action.payload)
+                state.adding = RequestStatus.Success
+            })
+            .addCase(addTagManually.rejected, (state) => {
+                state.adding = RequestStatus.Failure
             })
             .addCase(deploy.pending, (state, action) => {
                 if (state.deploying === RequestStatus.Idle) {
