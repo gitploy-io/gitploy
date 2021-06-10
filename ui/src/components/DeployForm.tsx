@@ -1,7 +1,9 @@
 import { Form, Select, Radio, Button } from 'antd'
 
-import { Branch, Commit, Tag, DeploymentType } from '../models'
+import { Branch, Commit, Tag, DeploymentType, StatusState } from '../models'
+
 import CreatableSelect, {Option as Op} from './CreatableSelect'
+import StatusStateIcon from './StatusStateIcon'
 
 export type Option = Op
 
@@ -13,12 +15,15 @@ interface DeployFormProps {
     branches: Branch[]
     onSelectBranch(branch: Branch): void
     onClickAddBranch(option: Option): void
+    branchCheck: StatusState
     commits: Commit[]
     onSelectCommit(commit: Commit): void
     onClickAddCommit(option: Option): void
+    commitCheck: StatusState
     tags: Tag[]
     onSelectTag(tag: Tag): void
     onClickAddTag(option: Option): void
+    tagCheck: StatusState
     deploying: boolean
     onClickDeploy(): void
 }
@@ -38,8 +43,12 @@ export default function DeployForm(props: DeployFormProps) {
       wrapperCol: { offset: 5, span: 16 },
     };
 
-    const hide: React.CSSProperties = {
+    const styleHide: React.CSSProperties = {
         display: "none"
+    }
+
+    const styleWidthForCheck: React.CSSProperties = {
+        width: "90%"
     }
 
     const isBranchVisible = (type: DeploymentType | null) => {
@@ -47,7 +56,17 @@ export default function DeployForm(props: DeployFormProps) {
         return type === DeploymentType.Commit || type === DeploymentType.Branch
     }
 
+    const isBranchCheckVisible = (type: DeploymentType | null) => {
+        if (type === null) return false
+        return type === DeploymentType.Branch
+    }
+
     const isCommitVisible = (type: DeploymentType | null) => {
+        if (type === null) return false
+        return type === DeploymentType.Commit 
+    }
+
+    const isCommitCheckVisible = (type: DeploymentType | null) => {
         if (type === null) return false
         return type === DeploymentType.Commit 
     }
@@ -55,6 +74,11 @@ export default function DeployForm(props: DeployFormProps) {
     const isTagVisible = (type: DeploymentType | null) => {
         if (type === null) return false
         return type === DeploymentType.Tag 
+    }
+
+    const isTagCheckVisible = (type: DeploymentType | null) => {
+        if (type === null) return false
+        return type === DeploymentType.Tag
     }
 
     const onChangeType = (e: any) => {
@@ -154,7 +178,7 @@ export default function DeployForm(props: DeployFormProps) {
             </Form.Item>
             <Form.Item
                 {...selectLayout}
-                style={(isBranchVisible(props.type)? {}: hide)}
+                style={(isBranchVisible(props.type)? {}: styleHide)}
                 rules={[{required: isBranchVisible(props.type)}]}
                 label="Branch"
                 name="branch">
@@ -162,11 +186,16 @@ export default function DeployForm(props: DeployFormProps) {
                         options={props.branches.map(branch => mapBranchToOption(branch))}
                         onSelectOption={onSelectBranch}
                         onClickAddItem={props.onClickAddBranch}
-                        placeholder="Select branch"/>
+                        placeholder="Select branch"
+                        style={styleWidthForCheck}/>
+                    <span
+                        style={(isBranchCheckVisible(props.type)? {}: styleHide)}>
+                        &nbsp; <StatusStateIcon state={props.branchCheck} /> 
+                    </span>
             </Form.Item>
             <Form.Item
                 {...layout}
-                style={(isCommitVisible(props.type)? {}: hide)}
+                style={(isCommitVisible(props.type)? {}: styleHide)}
                 rules={[{required: isCommitVisible(props.type)}]}
                 label="Commit"
                 name="commit">
@@ -174,11 +203,16 @@ export default function DeployForm(props: DeployFormProps) {
                         options={props.commits.map(commit => mapCommitToOption(commit))}
                         onSelectOption={onSelectCommit}
                         onClickAddItem={props.onClickAddCommit}
-                        placeholder="Select commit"/>
+                        placeholder="Select commit"
+                        style={styleWidthForCheck}/>
+                    <span
+                        style={(isCommitCheckVisible(props.type)? {}: styleHide)}>
+                        &nbsp; <StatusStateIcon state={props.commitCheck} /> 
+                    </span>
             </Form.Item>
             <Form.Item
                 {...selectLayout}
-                style={(isTagVisible(props.type)? {}: hide)}
+                style={(isTagVisible(props.type)? {}: styleHide)}
                 rules={[{required: isTagVisible(props.type)}]}
                 label="Tag"
                 name="tag">
@@ -186,7 +220,12 @@ export default function DeployForm(props: DeployFormProps) {
                         options={props.tags.map(tag => mapTagToOption(tag))}
                         onSelectOption={onSelectTag}
                         onClickAddItem={props.onClickAddTag}
-                        placeholder="Select commit"/>
+                        placeholder="Select commit"
+                        style={styleWidthForCheck}/>
+                    <span
+                        style={(isTagCheckVisible(props.type)? {}: styleHide)}>
+                        &nbsp; <StatusStateIcon state={props.tagCheck} /> 
+                    </span>
             </Form.Item>
             <Form.Item {...submitLayout}>
                 <Button 

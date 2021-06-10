@@ -9,11 +9,11 @@ interface StatusStateIconProps {
 export default function StatusStateIcon(props: StatusStateIconProps) {
 	const { state } = props
 	if (state === StatusState.Pending) {
-		return <ClockCircleTwoTone />
+		return <ClockCircleTwoTone twoToneColor="#d9d9d9"/>
 	} else if (state === StatusState.Success) {
-		return <CheckCircleTwoTone />
+		return <CheckCircleTwoTone twoToneColor="#52c41a"/>
 	} else if (state === StatusState.Failure) {
-		return <CloseCircleTwoTone />
+		return <CloseCircleTwoTone twoToneColor="red"/>
 	}
-	return <ClockCircleTwoTone />
+	return <span></span>
 }

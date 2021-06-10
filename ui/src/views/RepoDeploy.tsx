@@ -3,8 +3,21 @@ import { PageHeader, Result, Button, message } from "antd";
 import { shallowEqual } from "react-redux";
 
 import { useAppSelector, useAppDispatch } from "../redux/hooks"
-import { init, fetchEnvs, repoDeploySlice, fetchBranches, addBranchManually, fetchCommits, addCommitManually, fetchTags, addTagManually, deploy} from '../redux/repoDeploy'
 import { DeploymentType, Branch, Commit, Tag, RequestStatus } from "../models";
+import { 
+    init, 
+    fetchEnvs, 
+    repoDeploySlice, 
+    fetchBranches, 
+    checkBranch,
+    addBranchManually, 
+    fetchCommits, 
+    checkCommit,
+    addCommitManually, 
+    fetchTags, 
+    checkTag,
+    addTagManually, 
+    deploy} from '../redux/repoDeploy'
 
 import DeployForm, {Option} from '../components/DeployForm'
 import { useEffect } from "react";
@@ -18,7 +31,18 @@ interface Params {
 
 export default function RepoDeploy() {
     let { namespace, name } = useParams<Params>()
-    const { hasConfig, envs, type, branches, commits, tags, adding, deploying } = useAppSelector(state => state.repoDeploy, shallowEqual)
+    const { 
+        hasConfig, 
+        envs, 
+        type, 
+        branches, 
+        branchCheck,
+        commits, 
+        commitCheck,
+        tags, 
+        tagCheck,
+        adding, 
+        deploying } = useAppSelector(state => state.repoDeploy, shallowEqual)
     const dispatch = useAppDispatch()
 
     useEffect(() => {
@@ -42,6 +66,7 @@ export default function RepoDeploy() {
 
     const onSelectBranch = (branch: Branch) => {
         dispatch(actions.setBranch(branch))
+        dispatch(checkBranch())
         dispatch(fetchCommits())
     }
 
@@ -51,6 +76,7 @@ export default function RepoDeploy() {
 
     const onSelectCommit = (commit: Commit) => {
         dispatch(actions.setCommit(commit))
+        dispatch(checkCommit())
     }
 
     const onClickAddCommit = (option: Option) => {
@@ -59,6 +85,7 @@ export default function RepoDeploy() {
 
     const onSelectTag = (tag: Tag) => {
         dispatch(actions.setTag(tag))
+        dispatch(checkTag())
     }
 
     const onClickAddTag = (option: Option) => {
@@ -122,12 +149,15 @@ export default function RepoDeploy() {
                     branches={branches}
                     onSelectBranch={onSelectBranch}
                     onClickAddBranch={onClickAddBranch}
+                    branchCheck={branchCheck}
                     commits={commits}
                     onSelectCommit={onSelectCommit}
                     onClickAddCommit={onClickAddCommit}
+                    commitCheck={commitCheck}
                     tags={tags}
                     onSelectTag={onSelectTag}
                     onClickAddTag={onClickAddTag}
+                    tagCheck={tagCheck}
                     deploying={deploying === RequestStatus.Pending}
                     onClickDeploy={onClickDeploy} />
             </div>
