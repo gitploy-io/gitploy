@@ -35,7 +35,7 @@ const mapDeploymentStatus = (s: string) => {
 export const listDeployments = async (repoId: string, env: string, page: number, perPage: number) => {
     let deployments:Deployment[]
 
-    deployments = await fetch(`${instance}/v1/repos/${repoId}/deployments?env=${env}&page=${page}&per_page=${perPage}`, {
+    deployments = await fetch(`${instance}/api/v1/repos/${repoId}/deployments?env=${env}&page=${page}&per_page=${perPage}`, {
         headers,
         credentials: 'same-origin',
     })
@@ -65,7 +65,7 @@ export const createDeployment = async (repoId: string, type: DeploymentType = De
         ref,
         env
     })
-    const response = await fetch(`${instance}/v1/repos/${repoId}/deployments`, {
+    const response = await fetch(`${instance}/api/v1/repos/${repoId}/deployments`, {
         headers,
         credentials: 'same-origin',
         method: "POST",

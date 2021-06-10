@@ -5,7 +5,7 @@ export const listRepos = async (q: string, page: number = 1, perPage: number = 3
     let repos:Repo[]
 
     try {
-        repos = await fetch(`${instance}/v1/repos?q=${q}&page=${page}&per_page=${perPage}`, {
+        repos = await fetch(`${instance}/api/v1/repos?q=${q}&page=${page}&per_page=${perPage}`, {
             headers,
             credentials: 'same-origin',
         })
@@ -32,7 +32,7 @@ export const searchRepo = async (namespace: string, name: string) => {
     let repo:Repo
 
     try {
-        repo = await fetch(`${instance}/v1/repos/search?namespace=${namespace}&name=${name}`, {
+        repo = await fetch(`${instance}/api/v1/repos/search?namespace=${namespace}&name=${name}`, {
             headers,
             credentials: 'same-origin',
         })

@@ -6,7 +6,7 @@ import { Config, Env, HttpNotFoundError } from '../models'
 export const getConfig = async (repoId: string) => {
     let conf: Config
 
-    const response = await fetch(`${instance}/v1/repos/${repoId}/config`, {
+    const response = await fetch(`${instance}/api/v1/repos/${repoId}/config`, {
         headers,
         credentials: "same-origin",
     })

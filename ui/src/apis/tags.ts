@@ -4,7 +4,7 @@ import { instance, headers } from './settings'
 import { Tag, HttpNotFoundError } from '../models'
 
 export const listTags = async (repoId: string, page: number = 1, perPage: number = 30) => {
-    const tags: Tag[] = await fetch(`${instance}/v1/repos/${repoId}/tags?page=${page}&per_page=${perPage}`, {
+    const tags: Tag[] = await fetch(`${instance}/api/v1/repos/${repoId}/tags?page=${page}&per_page=${perPage}`, {
         headers,
         credentials: "same-origin",
     })
@@ -20,7 +20,7 @@ export const listTags = async (repoId: string, page: number = 1, perPage: number
 }
 
 export const getTag = async (repoId: string, name: string) => {
-    const response = await fetch(`${instance}/v1/repos/${repoId}/tags/${name}`, {
+    const response = await fetch(`${instance}/api/v1/repos/${repoId}/tags/${name}`, {
         headers,
         credentials: "same-origin",
     })
