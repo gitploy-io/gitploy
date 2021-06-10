@@ -1,7 +1,7 @@
 import { StatusCodes } from 'http-status-codes'
 
 import { instance, headers } from './settings'
-import { Commit, HttpNotFoundError } from '../models'
+import { Commit, Status, HttpNotFoundError, StatusState } from '../models'
 
 export const listCommits = async (repoId: string, branch: string, page: number = 1, perPage: number = 30) => {
     const commits: Commit[] = await fetch(`${instance}/api/v1/repos/${repoId}/commits?branch=${branch}&page=${page}&per_page=${perPage}`, {
@@ -39,4 +39,51 @@ export const getCommit = async (repoId: string, sha: string) => {
         }))
     
     return commit
+}
+
+const mapStatusState = (state: string) => {
+    if (state === "pending") {
+        return StatusState.Pending
+    } else if (state === "success") {
+        return StatusState.Success
+    } else if (state === "failure") {
+        return StatusState.Failure
+    }
+    return StatusState.Pending
+}
+
+export const listStatuses = async (repoId: string, sha: string) => {
+    const response = await fetch(`${instance}/api/v1/repos/${repoId}/commits/${sha}/statuses`, {
+        headers,
+        credentials: "same-origin",
+    })
+    if (response.status === StatusCodes.NOT_FOUND) {
+        const message = await response.json().then(data => data.message)
+        throw new HttpNotFoundError(message)
+    }
+
+    const result = await response
+        .json()
+        .then(d => {
+            let state: StatusState
+            const statuses: Status[] =  d.statuses.map((s: any) => ({
+                context: s.context,
+                avatarUrl: s.avatar_url,
+                targetUrl: s.target_url,
+                state: mapStatusState(s.state)
+            }))
+
+            if (statuses.length === 0) {
+                state = StatusState.Null
+            } else {
+                state = mapStatusState(d.state)
+            }
+
+            return {
+                state,
+                statuses
+            }
+        })
+    
+    return result 
 }

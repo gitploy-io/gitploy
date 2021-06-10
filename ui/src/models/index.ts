@@ -1,7 +1,7 @@
 import Repo from './Repo'
 import Deployment, { DeploymentStatus, DeploymentType } from './Deployment'
 import Config, { Env } from './Config'
-import Commit from './Commit'
+import Commit, { Status, StatusState } from './Commit'
 import Branch from './Branch'
 import Tag from './Tag'
 import { HttpRequestError, HttpNotFoundError } from './errors'
@@ -13,6 +13,7 @@ export type {
     Config,
     Env,
     Commit,
+    Status,
     Branch,
     Tag,
 }
@@ -22,5 +23,6 @@ export {
     HttpNotFoundError,
     DeploymentStatus,
     DeploymentType,
+    StatusState,
     RequestStatus,
 }
