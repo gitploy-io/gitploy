@@ -4,7 +4,7 @@ import { instance, headers } from './settings'
 import { Commit, HttpNotFoundError } from '../models'
 
 export const listCommits = async (repoId: string, branch: string, page: number = 1, perPage: number = 30) => {
-    const commits: Commit[] = await fetch(`${instance}/v1/repos/${repoId}/commits?branch=${branch}&page=${page}&per_page=${perPage}`, {
+    const commits: Commit[] = await fetch(`${instance}/api/v1/repos/${repoId}/commits?branch=${branch}&page=${page}&per_page=${perPage}`, {
         headers,
         credentials: "same-origin",
     })
@@ -21,7 +21,7 @@ export const listCommits = async (repoId: string, branch: string, page: number =
 }
 
 export const getCommit = async (repoId: string, sha: string) => {
-    const response = await fetch(`${instance}/v1/repos/${repoId}/commits/${sha}`, {
+    const response = await fetch(`${instance}/api/v1/repos/${repoId}/commits/${sha}`, {
         headers,
         credentials: "same-origin",
     })

@@ -7,9 +7,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"golang.org/x/oauth2"
 
+	"github.com/hanjunlee/gitploy/internal/server/api/v1/repos"
+	"github.com/hanjunlee/gitploy/internal/server/api/v1/sync"
 	mw "github.com/hanjunlee/gitploy/internal/server/middlewares"
-	"github.com/hanjunlee/gitploy/internal/server/v1/repos"
-	"github.com/hanjunlee/gitploy/internal/server/v1/sync"
 	"github.com/hanjunlee/gitploy/internal/server/web"
 )
 
@@ -76,7 +76,7 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 		root.GET("/signin", w.Signin)
 	}
 
-	v1 := r.Group("/v1")
+	v1 := r.Group("/api/v1")
 	{
 		sm := mw.NewSessMiddleware(c.Store)
 		// Only authed user access to API.

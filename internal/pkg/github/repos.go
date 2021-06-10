@@ -11,8 +11,8 @@ import (
 	"gopkg.in/yaml.v3"
 
 	"github.com/hanjunlee/gitploy/ent"
-	"github.com/hanjunlee/gitploy/internal/server/v1/repos"
-	reposv1 "github.com/hanjunlee/gitploy/internal/server/v1/repos"
+	"github.com/hanjunlee/gitploy/internal/server/api/v1/repos"
+	reposv1 "github.com/hanjunlee/gitploy/internal/server/api/v1/repos"
 	"github.com/hanjunlee/gitploy/vo"
 )
 
