@@ -46,12 +46,16 @@ func init() {
 	repoDescConfigPath := repoFields[4].Descriptor()
 	// repo.DefaultConfigPath holds the default value on creation for the config_path field.
 	repo.DefaultConfigPath = repoDescConfigPath.Default.(string)
+	// repoDescActive is the schema descriptor for active field.
+	repoDescActive := repoFields[5].Descriptor()
+	// repo.DefaultActive holds the default value on creation for the active field.
+	repo.DefaultActive = repoDescActive.Default.(bool)
 	// repoDescCreatedAt is the schema descriptor for created_at field.
-	repoDescCreatedAt := repoFields[6].Descriptor()
+	repoDescCreatedAt := repoFields[8].Descriptor()
 	// repo.DefaultCreatedAt holds the default value on creation for the created_at field.
 	repo.DefaultCreatedAt = repoDescCreatedAt.Default.(func() time.Time)
 	// repoDescUpdatedAt is the schema descriptor for updated_at field.
-	repoDescUpdatedAt := repoFields[7].Descriptor()
+	repoDescUpdatedAt := repoFields[9].Descriptor()
 	// repo.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	repo.DefaultUpdatedAt = repoDescUpdatedAt.Default.(func() time.Time)
 	// repo.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.

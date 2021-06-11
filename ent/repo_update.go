@@ -75,6 +75,47 @@ func (ru *RepoUpdate) SetNillableConfigPath(s *string) *RepoUpdate {
 	return ru
 }
 
+// SetActive sets the "active" field.
+func (ru *RepoUpdate) SetActive(b bool) *RepoUpdate {
+	ru.mutation.SetActive(b)
+	return ru
+}
+
+// SetNillableActive sets the "active" field if the given value is not nil.
+func (ru *RepoUpdate) SetNillableActive(b *bool) *RepoUpdate {
+	if b != nil {
+		ru.SetActive(*b)
+	}
+	return ru
+}
+
+// SetWebhookID sets the "webhook_id" field.
+func (ru *RepoUpdate) SetWebhookID(i int64) *RepoUpdate {
+	ru.mutation.ResetWebhookID()
+	ru.mutation.SetWebhookID(i)
+	return ru
+}
+
+// SetNillableWebhookID sets the "webhook_id" field if the given value is not nil.
+func (ru *RepoUpdate) SetNillableWebhookID(i *int64) *RepoUpdate {
+	if i != nil {
+		ru.SetWebhookID(*i)
+	}
+	return ru
+}
+
+// AddWebhookID adds i to the "webhook_id" field.
+func (ru *RepoUpdate) AddWebhookID(i int64) *RepoUpdate {
+	ru.mutation.AddWebhookID(i)
+	return ru
+}
+
+// ClearWebhookID clears the value of the "webhook_id" field.
+func (ru *RepoUpdate) ClearWebhookID() *RepoUpdate {
+	ru.mutation.ClearWebhookID()
+	return ru
+}
+
 // SetSyncedAt sets the "synced_at" field.
 func (ru *RepoUpdate) SetSyncedAt(t time.Time) *RepoUpdate {
 	ru.mutation.SetSyncedAt(t)
@@ -324,6 +365,33 @@ func (ru *RepoUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: repo.FieldConfigPath,
 		})
 	}
+	if value, ok := ru.mutation.Active(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: repo.FieldActive,
+		})
+	}
+	if value, ok := ru.mutation.WebhookID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt64,
+			Value:  value,
+			Column: repo.FieldWebhookID,
+		})
+	}
+	if value, ok := ru.mutation.AddedWebhookID(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt64,
+			Value:  value,
+			Column: repo.FieldWebhookID,
+		})
+	}
+	if ru.mutation.WebhookIDCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt64,
+			Column: repo.FieldWebhookID,
+		})
+	}
 	if value, ok := ru.mutation.SyncedAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
@@ -534,6 +602,47 @@ func (ruo *RepoUpdateOne) SetNillableConfigPath(s *string) *RepoUpdateOne {
 	if s != nil {
 		ruo.SetConfigPath(*s)
 	}
+	return ruo
+}
+
+// SetActive sets the "active" field.
+func (ruo *RepoUpdateOne) SetActive(b bool) *RepoUpdateOne {
+	ruo.mutation.SetActive(b)
+	return ruo
+}
+
+// SetNillableActive sets the "active" field if the given value is not nil.
+func (ruo *RepoUpdateOne) SetNillableActive(b *bool) *RepoUpdateOne {
+	if b != nil {
+		ruo.SetActive(*b)
+	}
+	return ruo
+}
+
+// SetWebhookID sets the "webhook_id" field.
+func (ruo *RepoUpdateOne) SetWebhookID(i int64) *RepoUpdateOne {
+	ruo.mutation.ResetWebhookID()
+	ruo.mutation.SetWebhookID(i)
+	return ruo
+}
+
+// SetNillableWebhookID sets the "webhook_id" field if the given value is not nil.
+func (ruo *RepoUpdateOne) SetNillableWebhookID(i *int64) *RepoUpdateOne {
+	if i != nil {
+		ruo.SetWebhookID(*i)
+	}
+	return ruo
+}
+
+// AddWebhookID adds i to the "webhook_id" field.
+func (ruo *RepoUpdateOne) AddWebhookID(i int64) *RepoUpdateOne {
+	ruo.mutation.AddWebhookID(i)
+	return ruo
+}
+
+// ClearWebhookID clears the value of the "webhook_id" field.
+func (ruo *RepoUpdateOne) ClearWebhookID() *RepoUpdateOne {
+	ruo.mutation.ClearWebhookID()
 	return ruo
 }
 
@@ -808,6 +917,33 @@ func (ruo *RepoUpdateOne) sqlSave(ctx context.Context) (_node *Repo, err error) 
 			Type:   field.TypeString,
 			Value:  value,
 			Column: repo.FieldConfigPath,
+		})
+	}
+	if value, ok := ruo.mutation.Active(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: repo.FieldActive,
+		})
+	}
+	if value, ok := ruo.mutation.WebhookID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt64,
+			Value:  value,
+			Column: repo.FieldWebhookID,
+		})
+	}
+	if value, ok := ruo.mutation.AddedWebhookID(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt64,
+			Value:  value,
+			Column: repo.FieldWebhookID,
+		})
+	}
+	if ruo.mutation.WebhookIDCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt64,
+			Column: repo.FieldWebhookID,
 		})
 	}
 	if value, ok := ruo.mutation.SyncedAt(); ok {

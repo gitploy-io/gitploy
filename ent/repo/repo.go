@@ -19,6 +19,10 @@ const (
 	FieldDescription = "description"
 	// FieldConfigPath holds the string denoting the config_path field in the database.
 	FieldConfigPath = "config_path"
+	// FieldActive holds the string denoting the active field in the database.
+	FieldActive = "active"
+	// FieldWebhookID holds the string denoting the webhook_id field in the database.
+	FieldWebhookID = "webhook_id"
 	// FieldSyncedAt holds the string denoting the synced_at field in the database.
 	FieldSyncedAt = "synced_at"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
@@ -56,6 +60,8 @@ var Columns = []string{
 	FieldName,
 	FieldDescription,
 	FieldConfigPath,
+	FieldActive,
+	FieldWebhookID,
 	FieldSyncedAt,
 	FieldCreatedAt,
 	FieldUpdatedAt,
@@ -75,6 +81,8 @@ func ValidColumn(column string) bool {
 var (
 	// DefaultConfigPath holds the default value on creation for the "config_path" field.
 	DefaultConfigPath string
+	// DefaultActive holds the default value on creation for the "active" field.
+	DefaultActive bool
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
 	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.

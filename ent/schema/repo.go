@@ -23,6 +23,10 @@ func (Repo) Fields() []ent.Field {
 			Optional(),
 		field.String("config_path").
 			Default("deploy.yml"),
+		field.Bool("active").
+			Default(false),
+		field.Int64("webhook_id").
+			Optional(),
 		field.Time("synced_at").
 			Optional(),
 		field.Time("created_at").
