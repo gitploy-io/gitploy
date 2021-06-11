@@ -106,7 +106,7 @@ export default function RepoDeploy() {
 
     const handleDeployStatus = () => {
         if (deploying === RequestStatus.Failure) {
-            message.error("It has failed to deploy.")
+            message.error("It has failed to deploy.", 3)
             dispatch(actions.unsetDeploy())
             return 
         } else if (deploying === RequestStatus.Success) {
