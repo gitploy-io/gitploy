@@ -278,3 +278,32 @@ func (g *Github) GetConfig(ctx context.Context, u *ent.User, r *ent.Repo) (*vo.C
 
 	return c, nil
 }
+
+func (g *Github) CreateWebhook(ctx context.Context, u *ent.User, r *ent.Repo, c *vo.WebhookConfig) (int64, error) {
+	const contentType = "json"
+
+	h, _, err := g.Client(ctx, u.Token).
+		Repositories.
+		CreateHook(ctx, r.Namespace, r.Name, &github.Hook{
+			URL: github.String(c.URL),
+			Config: map[string]interface{}{
+				"content_type": contentType,
+				"secret":       c.Secret,
+				"insecure_ssl": mapInsecureSSL(c.InsecureSSL),
+			},
+			Events: []string{"deployment_status"},
+			Active: github.Bool(true),
+		})
+	if err != nil {
+		return -1, err
+	}
+
+	return *h.ID, nil
+}
+
+func (g *Github) DeleteWebhook(ctx context.Context, u *ent.User, r *ent.Repo, id int64) error {
+	_, err := g.Client(ctx, u.Token).
+		Repositories.
+		DeleteHook(ctx, r.Namespace, r.Name, id)
+	return err
+}

@@ -12,9 +12,15 @@ import (
 
 type (
 	Repo struct {
-		store Store
-		scm   SCM
-		log   *zap.Logger
+		config *RepoConfig
+		store  Store
+		scm    SCM
+		log    *zap.Logger
+	}
+
+	RepoConfig struct {
+		WebhookURL    string
+		WebhookSecret string
 	}
 )
 
