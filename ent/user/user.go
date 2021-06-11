@@ -43,14 +43,14 @@ const (
 	// It exists in this package in order to avoid circular dependency with the "perm" package.
 	PermsInverseTable = "perms"
 	// PermsColumn is the table column denoting the perms relation/edge.
-	PermsColumn = "user_perms"
+	PermsColumn = "user_id"
 	// DeploymentsTable is the table the holds the deployments relation/edge.
 	DeploymentsTable = "deployments"
 	// DeploymentsInverseTable is the table name for the Deployment entity.
 	// It exists in this package in order to avoid circular dependency with the "deployment" package.
 	DeploymentsInverseTable = "deployments"
 	// DeploymentsColumn is the table column denoting the deployments relation/edge.
-	DeploymentsColumn = "user_deployments"
+	DeploymentsColumn = "user_id"
 )
 
 // Columns holds all SQL columns for user fields.

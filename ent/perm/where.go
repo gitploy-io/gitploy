@@ -114,6 +114,20 @@ func UpdatedAt(v time.Time) predicate.Perm {
 	})
 }
 
+// UserID applies equality check predicate on the "user_id" field. It's identical to UserIDEQ.
+func UserID(v string) predicate.Perm {
+	return predicate.Perm(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldUserID), v))
+	})
+}
+
+// RepoID applies equality check predicate on the "repo_id" field. It's identical to RepoIDEQ.
+func RepoID(v string) predicate.Perm {
+	return predicate.Perm(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldRepoID), v))
+	})
+}
+
 // RepoPermEQ applies the EQ predicate on the "repo_perm" field.
 func RepoPermEQ(v RepoPerm) predicate.Perm {
 	return predicate.Perm(func(s *sql.Selector) {
@@ -401,6 +415,256 @@ func UpdatedAtLT(v time.Time) predicate.Perm {
 func UpdatedAtLTE(v time.Time) predicate.Perm {
 	return predicate.Perm(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldUpdatedAt), v))
+	})
+}
+
+// UserIDEQ applies the EQ predicate on the "user_id" field.
+func UserIDEQ(v string) predicate.Perm {
+	return predicate.Perm(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldUserID), v))
+	})
+}
+
+// UserIDNEQ applies the NEQ predicate on the "user_id" field.
+func UserIDNEQ(v string) predicate.Perm {
+	return predicate.Perm(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldUserID), v))
+	})
+}
+
+// UserIDIn applies the In predicate on the "user_id" field.
+func UserIDIn(vs ...string) predicate.Perm {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Perm(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldUserID), v...))
+	})
+}
+
+// UserIDNotIn applies the NotIn predicate on the "user_id" field.
+func UserIDNotIn(vs ...string) predicate.Perm {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Perm(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldUserID), v...))
+	})
+}
+
+// UserIDGT applies the GT predicate on the "user_id" field.
+func UserIDGT(v string) predicate.Perm {
+	return predicate.Perm(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldUserID), v))
+	})
+}
+
+// UserIDGTE applies the GTE predicate on the "user_id" field.
+func UserIDGTE(v string) predicate.Perm {
+	return predicate.Perm(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldUserID), v))
+	})
+}
+
+// UserIDLT applies the LT predicate on the "user_id" field.
+func UserIDLT(v string) predicate.Perm {
+	return predicate.Perm(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldUserID), v))
+	})
+}
+
+// UserIDLTE applies the LTE predicate on the "user_id" field.
+func UserIDLTE(v string) predicate.Perm {
+	return predicate.Perm(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldUserID), v))
+	})
+}
+
+// UserIDContains applies the Contains predicate on the "user_id" field.
+func UserIDContains(v string) predicate.Perm {
+	return predicate.Perm(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldUserID), v))
+	})
+}
+
+// UserIDHasPrefix applies the HasPrefix predicate on the "user_id" field.
+func UserIDHasPrefix(v string) predicate.Perm {
+	return predicate.Perm(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldUserID), v))
+	})
+}
+
+// UserIDHasSuffix applies the HasSuffix predicate on the "user_id" field.
+func UserIDHasSuffix(v string) predicate.Perm {
+	return predicate.Perm(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldUserID), v))
+	})
+}
+
+// UserIDIsNil applies the IsNil predicate on the "user_id" field.
+func UserIDIsNil() predicate.Perm {
+	return predicate.Perm(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldUserID)))
+	})
+}
+
+// UserIDNotNil applies the NotNil predicate on the "user_id" field.
+func UserIDNotNil() predicate.Perm {
+	return predicate.Perm(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldUserID)))
+	})
+}
+
+// UserIDEqualFold applies the EqualFold predicate on the "user_id" field.
+func UserIDEqualFold(v string) predicate.Perm {
+	return predicate.Perm(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldUserID), v))
+	})
+}
+
+// UserIDContainsFold applies the ContainsFold predicate on the "user_id" field.
+func UserIDContainsFold(v string) predicate.Perm {
+	return predicate.Perm(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldUserID), v))
+	})
+}
+
+// RepoIDEQ applies the EQ predicate on the "repo_id" field.
+func RepoIDEQ(v string) predicate.Perm {
+	return predicate.Perm(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldRepoID), v))
+	})
+}
+
+// RepoIDNEQ applies the NEQ predicate on the "repo_id" field.
+func RepoIDNEQ(v string) predicate.Perm {
+	return predicate.Perm(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldRepoID), v))
+	})
+}
+
+// RepoIDIn applies the In predicate on the "repo_id" field.
+func RepoIDIn(vs ...string) predicate.Perm {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Perm(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldRepoID), v...))
+	})
+}
+
+// RepoIDNotIn applies the NotIn predicate on the "repo_id" field.
+func RepoIDNotIn(vs ...string) predicate.Perm {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Perm(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldRepoID), v...))
+	})
+}
+
+// RepoIDGT applies the GT predicate on the "repo_id" field.
+func RepoIDGT(v string) predicate.Perm {
+	return predicate.Perm(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldRepoID), v))
+	})
+}
+
+// RepoIDGTE applies the GTE predicate on the "repo_id" field.
+func RepoIDGTE(v string) predicate.Perm {
+	return predicate.Perm(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldRepoID), v))
+	})
+}
+
+// RepoIDLT applies the LT predicate on the "repo_id" field.
+func RepoIDLT(v string) predicate.Perm {
+	return predicate.Perm(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldRepoID), v))
+	})
+}
+
+// RepoIDLTE applies the LTE predicate on the "repo_id" field.
+func RepoIDLTE(v string) predicate.Perm {
+	return predicate.Perm(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldRepoID), v))
+	})
+}
+
+// RepoIDContains applies the Contains predicate on the "repo_id" field.
+func RepoIDContains(v string) predicate.Perm {
+	return predicate.Perm(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldRepoID), v))
+	})
+}
+
+// RepoIDHasPrefix applies the HasPrefix predicate on the "repo_id" field.
+func RepoIDHasPrefix(v string) predicate.Perm {
+	return predicate.Perm(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldRepoID), v))
+	})
+}
+
+// RepoIDHasSuffix applies the HasSuffix predicate on the "repo_id" field.
+func RepoIDHasSuffix(v string) predicate.Perm {
+	return predicate.Perm(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldRepoID), v))
+	})
+}
+
+// RepoIDIsNil applies the IsNil predicate on the "repo_id" field.
+func RepoIDIsNil() predicate.Perm {
+	return predicate.Perm(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldRepoID)))
+	})
+}
+
+// RepoIDNotNil applies the NotNil predicate on the "repo_id" field.
+func RepoIDNotNil() predicate.Perm {
+	return predicate.Perm(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldRepoID)))
+	})
+}
+
+// RepoIDEqualFold applies the EqualFold predicate on the "repo_id" field.
+func RepoIDEqualFold(v string) predicate.Perm {
+	return predicate.Perm(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldRepoID), v))
+	})
+}
+
+// RepoIDContainsFold applies the ContainsFold predicate on the "repo_id" field.
+func RepoIDContainsFold(v string) predicate.Perm {
+	return predicate.Perm(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldRepoID), v))
 	})
 }
 

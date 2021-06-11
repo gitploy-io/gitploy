@@ -78,16 +78,30 @@ func (pc *PermCreate) SetNillableUpdatedAt(t *time.Time) *PermCreate {
 	return pc
 }
 
-// SetUserID sets the "user" edge to the User entity by ID.
-func (pc *PermCreate) SetUserID(id string) *PermCreate {
-	pc.mutation.SetUserID(id)
+// SetUserID sets the "user_id" field.
+func (pc *PermCreate) SetUserID(s string) *PermCreate {
+	pc.mutation.SetUserID(s)
 	return pc
 }
 
-// SetNillableUserID sets the "user" edge to the User entity by ID if the given value is not nil.
-func (pc *PermCreate) SetNillableUserID(id *string) *PermCreate {
-	if id != nil {
-		pc = pc.SetUserID(*id)
+// SetNillableUserID sets the "user_id" field if the given value is not nil.
+func (pc *PermCreate) SetNillableUserID(s *string) *PermCreate {
+	if s != nil {
+		pc.SetUserID(*s)
+	}
+	return pc
+}
+
+// SetRepoID sets the "repo_id" field.
+func (pc *PermCreate) SetRepoID(s string) *PermCreate {
+	pc.mutation.SetRepoID(s)
+	return pc
+}
+
+// SetNillableRepoID sets the "repo_id" field if the given value is not nil.
+func (pc *PermCreate) SetNillableRepoID(s *string) *PermCreate {
+	if s != nil {
+		pc.SetRepoID(*s)
 	}
 	return pc
 }
@@ -95,20 +109,6 @@ func (pc *PermCreate) SetNillableUserID(id *string) *PermCreate {
 // SetUser sets the "user" edge to the User entity.
 func (pc *PermCreate) SetUser(u *User) *PermCreate {
 	return pc.SetUserID(u.ID)
-}
-
-// SetRepoID sets the "repo" edge to the Repo entity by ID.
-func (pc *PermCreate) SetRepoID(id string) *PermCreate {
-	pc.mutation.SetRepoID(id)
-	return pc
-}
-
-// SetNillableRepoID sets the "repo" edge to the Repo entity by ID if the given value is not nil.
-func (pc *PermCreate) SetNillableRepoID(id *string) *PermCreate {
-	if id != nil {
-		pc = pc.SetRepoID(*id)
-	}
-	return pc
 }
 
 // SetRepo sets the "repo" edge to the Repo entity.
@@ -274,7 +274,7 @@ func (pc *PermCreate) createSpec() (*Perm, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.user_perms = &nodes[0]
+		_node.UserID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := pc.mutation.RepoIDs(); len(nodes) > 0 {
@@ -294,7 +294,7 @@ func (pc *PermCreate) createSpec() (*Perm, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.repo_perms = &nodes[0]
+		_node.RepoID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

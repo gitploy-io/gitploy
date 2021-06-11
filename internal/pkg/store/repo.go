@@ -11,28 +11,21 @@ import (
 )
 
 func (s *Store) ListRepos(ctx context.Context, u *ent.User, q string, page, perPage int) ([]*ent.Repo, error) {
-	ps, err := s.c.Perm.
+	return s.c.Repo.
 		Query().
 		Where(
-			perm.And(
-				perm.HasUserWith(user.IDEQ(u.ID)),
-				perm.HasRepoWith(repo.NameContains(q)),
+			repo.And(
+				repo.HasPermsWith(perm.HasUserWith(user.IDEQ(u.ID))),
+				repo.NameContains(q),
 			),
 		).
 		Limit(perPage).
 		Offset(offset(page, perPage)).
-		WithRepo().
+		WithDeployments(func(dq *ent.DeploymentQuery) {
+			dq.Order(ent.Desc(deployment.FieldCreatedAt)).
+				Limit(5)
+		}).
 		All(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	rs := []*ent.Repo{}
-
-	for _, p := range ps {
-		rs = append(rs, p.Edges.Repo)
-	}
-	return rs, nil
 }
 
 func (s *Store) ListSortedRepos(ctx context.Context, u *ent.User, q string, page, perPage int) ([]*ent.Repo, error) {

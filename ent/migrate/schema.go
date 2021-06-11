@@ -19,8 +19,8 @@ var (
 		{Name: "status", Type: field.TypeEnum, Enums: []string{"waiting", "created", "running", "success", "failure"}, Default: "waiting"},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "repo_deployments", Type: field.TypeString, Nullable: true},
-		{Name: "user_deployments", Type: field.TypeString, Nullable: true},
+		{Name: "repo_id", Type: field.TypeString, Nullable: true},
+		{Name: "user_id", Type: field.TypeString, Nullable: true},
 	}
 	// DeploymentsTable holds the schema information for the "deployments" table.
 	DeploymentsTable = &schema.Table{
@@ -43,14 +43,24 @@ var (
 		},
 		Indexes: []*schema.Index{
 			{
-				Name:    "deployment_env_created_at",
+				Name:    "deployment_user_id",
 				Unique:  false,
-				Columns: []*schema.Column{DeploymentsColumns[5], DeploymentsColumns[7]},
+				Columns: []*schema.Column{DeploymentsColumns[10]},
 			},
 			{
-				Name:    "deployment_created_at",
+				Name:    "deployment_repo_id",
 				Unique:  false,
-				Columns: []*schema.Column{DeploymentsColumns[7]},
+				Columns: []*schema.Column{DeploymentsColumns[9]},
+			},
+			{
+				Name:    "deployment_repo_id_env_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{DeploymentsColumns[9], DeploymentsColumns[5], DeploymentsColumns[7]},
+			},
+			{
+				Name:    "deployment_repo_id_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{DeploymentsColumns[9], DeploymentsColumns[7]},
 			},
 		},
 	}
@@ -61,8 +71,8 @@ var (
 		{Name: "synced_at", Type: field.TypeTime, Nullable: true},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "repo_perms", Type: field.TypeString, Nullable: true},
-		{Name: "user_perms", Type: field.TypeString, Nullable: true},
+		{Name: "repo_id", Type: field.TypeString, Nullable: true},
+		{Name: "user_id", Type: field.TypeString, Nullable: true},
 	}
 	// PermsTable holds the schema information for the "perms" table.
 	PermsTable = &schema.Table{
@@ -81,6 +91,18 @@ var (
 				Columns:    []*schema.Column{PermsColumns[6]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "perm_user_id",
+				Unique:  false,
+				Columns: []*schema.Column{PermsColumns[6]},
+			},
+			{
+				Name:    "perm_repo_id",
+				Unique:  false,
+				Columns: []*schema.Column{PermsColumns[5]},
 			},
 		},
 	}

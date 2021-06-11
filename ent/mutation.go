@@ -471,9 +471,102 @@ func (m *DeploymentMutation) ResetUpdatedAt() {
 	m.updated_at = nil
 }
 
-// SetUserID sets the "user" edge to the User entity by id.
-func (m *DeploymentMutation) SetUserID(id string) {
-	m.user = &id
+// SetUserID sets the "user_id" field.
+func (m *DeploymentMutation) SetUserID(s string) {
+	m.user = &s
+}
+
+// UserID returns the value of the "user_id" field in the mutation.
+func (m *DeploymentMutation) UserID() (r string, exists bool) {
+	v := m.user
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUserID returns the old "user_id" field's value of the Deployment entity.
+// If the Deployment object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DeploymentMutation) OldUserID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldUserID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldUserID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUserID: %w", err)
+	}
+	return oldValue.UserID, nil
+}
+
+// ClearUserID clears the value of the "user_id" field.
+func (m *DeploymentMutation) ClearUserID() {
+	m.user = nil
+	m.clearedFields[deployment.FieldUserID] = struct{}{}
+}
+
+// UserIDCleared returns if the "user_id" field was cleared in this mutation.
+func (m *DeploymentMutation) UserIDCleared() bool {
+	_, ok := m.clearedFields[deployment.FieldUserID]
+	return ok
+}
+
+// ResetUserID resets all changes to the "user_id" field.
+func (m *DeploymentMutation) ResetUserID() {
+	m.user = nil
+	delete(m.clearedFields, deployment.FieldUserID)
+}
+
+// SetRepoID sets the "repo_id" field.
+func (m *DeploymentMutation) SetRepoID(s string) {
+	m.repo = &s
+}
+
+// RepoID returns the value of the "repo_id" field in the mutation.
+func (m *DeploymentMutation) RepoID() (r string, exists bool) {
+	v := m.repo
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRepoID returns the old "repo_id" field's value of the Deployment entity.
+// If the Deployment object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DeploymentMutation) OldRepoID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldRepoID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldRepoID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRepoID: %w", err)
+	}
+	return oldValue.RepoID, nil
+}
+
+// ClearRepoID clears the value of the "repo_id" field.
+func (m *DeploymentMutation) ClearRepoID() {
+	m.repo = nil
+	m.clearedFields[deployment.FieldRepoID] = struct{}{}
+}
+
+// RepoIDCleared returns if the "repo_id" field was cleared in this mutation.
+func (m *DeploymentMutation) RepoIDCleared() bool {
+	_, ok := m.clearedFields[deployment.FieldRepoID]
+	return ok
+}
+
+// ResetRepoID resets all changes to the "repo_id" field.
+func (m *DeploymentMutation) ResetRepoID() {
+	m.repo = nil
+	delete(m.clearedFields, deployment.FieldRepoID)
 }
 
 // ClearUser clears the "user" edge to the User entity.
@@ -483,15 +576,7 @@ func (m *DeploymentMutation) ClearUser() {
 
 // UserCleared reports if the "user" edge to the User entity was cleared.
 func (m *DeploymentMutation) UserCleared() bool {
-	return m.cleareduser
-}
-
-// UserID returns the "user" edge ID in the mutation.
-func (m *DeploymentMutation) UserID() (id string, exists bool) {
-	if m.user != nil {
-		return *m.user, true
-	}
-	return
+	return m.UserIDCleared() || m.cleareduser
 }
 
 // UserIDs returns the "user" edge IDs in the mutation.
@@ -510,11 +595,6 @@ func (m *DeploymentMutation) ResetUser() {
 	m.cleareduser = false
 }
 
-// SetRepoID sets the "repo" edge to the Repo entity by id.
-func (m *DeploymentMutation) SetRepoID(id string) {
-	m.repo = &id
-}
-
 // ClearRepo clears the "repo" edge to the Repo entity.
 func (m *DeploymentMutation) ClearRepo() {
 	m.clearedrepo = true
@@ -522,15 +602,7 @@ func (m *DeploymentMutation) ClearRepo() {
 
 // RepoCleared reports if the "repo" edge to the Repo entity was cleared.
 func (m *DeploymentMutation) RepoCleared() bool {
-	return m.clearedrepo
-}
-
-// RepoID returns the "repo" edge ID in the mutation.
-func (m *DeploymentMutation) RepoID() (id string, exists bool) {
-	if m.repo != nil {
-		return *m.repo, true
-	}
-	return
+	return m.RepoIDCleared() || m.clearedrepo
 }
 
 // RepoIDs returns the "repo" edge IDs in the mutation.
@@ -563,7 +635,7 @@ func (m *DeploymentMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *DeploymentMutation) Fields() []string {
-	fields := make([]string, 0, 8)
+	fields := make([]string, 0, 10)
 	if m.uid != nil {
 		fields = append(fields, deployment.FieldUID)
 	}
@@ -587,6 +659,12 @@ func (m *DeploymentMutation) Fields() []string {
 	}
 	if m.updated_at != nil {
 		fields = append(fields, deployment.FieldUpdatedAt)
+	}
+	if m.user != nil {
+		fields = append(fields, deployment.FieldUserID)
+	}
+	if m.repo != nil {
+		fields = append(fields, deployment.FieldRepoID)
 	}
 	return fields
 }
@@ -612,6 +690,10 @@ func (m *DeploymentMutation) Field(name string) (ent.Value, bool) {
 		return m.CreatedAt()
 	case deployment.FieldUpdatedAt:
 		return m.UpdatedAt()
+	case deployment.FieldUserID:
+		return m.UserID()
+	case deployment.FieldRepoID:
+		return m.RepoID()
 	}
 	return nil, false
 }
@@ -637,6 +719,10 @@ func (m *DeploymentMutation) OldField(ctx context.Context, name string) (ent.Val
 		return m.OldCreatedAt(ctx)
 	case deployment.FieldUpdatedAt:
 		return m.OldUpdatedAt(ctx)
+	case deployment.FieldUserID:
+		return m.OldUserID(ctx)
+	case deployment.FieldRepoID:
+		return m.OldRepoID(ctx)
 	}
 	return nil, fmt.Errorf("unknown Deployment field %s", name)
 }
@@ -702,6 +788,20 @@ func (m *DeploymentMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetUpdatedAt(v)
 		return nil
+	case deployment.FieldUserID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUserID(v)
+		return nil
+	case deployment.FieldRepoID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRepoID(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Deployment field %s", name)
 }
@@ -753,6 +853,12 @@ func (m *DeploymentMutation) ClearedFields() []string {
 	if m.FieldCleared(deployment.FieldSha) {
 		fields = append(fields, deployment.FieldSha)
 	}
+	if m.FieldCleared(deployment.FieldUserID) {
+		fields = append(fields, deployment.FieldUserID)
+	}
+	if m.FieldCleared(deployment.FieldRepoID) {
+		fields = append(fields, deployment.FieldRepoID)
+	}
 	return fields
 }
 
@@ -772,6 +878,12 @@ func (m *DeploymentMutation) ClearField(name string) error {
 		return nil
 	case deployment.FieldSha:
 		m.ClearSha()
+		return nil
+	case deployment.FieldUserID:
+		m.ClearUserID()
+		return nil
+	case deployment.FieldRepoID:
+		m.ClearRepoID()
 		return nil
 	}
 	return fmt.Errorf("unknown Deployment nullable field %s", name)
@@ -804,6 +916,12 @@ func (m *DeploymentMutation) ResetField(name string) error {
 		return nil
 	case deployment.FieldUpdatedAt:
 		m.ResetUpdatedAt()
+		return nil
+	case deployment.FieldUserID:
+		m.ResetUserID()
+		return nil
+	case deployment.FieldRepoID:
+		m.ResetRepoID()
 		return nil
 	}
 	return fmt.Errorf("unknown Deployment field %s", name)
@@ -1159,9 +1277,102 @@ func (m *PermMutation) ResetUpdatedAt() {
 	m.updated_at = nil
 }
 
-// SetUserID sets the "user" edge to the User entity by id.
-func (m *PermMutation) SetUserID(id string) {
-	m.user = &id
+// SetUserID sets the "user_id" field.
+func (m *PermMutation) SetUserID(s string) {
+	m.user = &s
+}
+
+// UserID returns the value of the "user_id" field in the mutation.
+func (m *PermMutation) UserID() (r string, exists bool) {
+	v := m.user
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUserID returns the old "user_id" field's value of the Perm entity.
+// If the Perm object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PermMutation) OldUserID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldUserID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldUserID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUserID: %w", err)
+	}
+	return oldValue.UserID, nil
+}
+
+// ClearUserID clears the value of the "user_id" field.
+func (m *PermMutation) ClearUserID() {
+	m.user = nil
+	m.clearedFields[perm.FieldUserID] = struct{}{}
+}
+
+// UserIDCleared returns if the "user_id" field was cleared in this mutation.
+func (m *PermMutation) UserIDCleared() bool {
+	_, ok := m.clearedFields[perm.FieldUserID]
+	return ok
+}
+
+// ResetUserID resets all changes to the "user_id" field.
+func (m *PermMutation) ResetUserID() {
+	m.user = nil
+	delete(m.clearedFields, perm.FieldUserID)
+}
+
+// SetRepoID sets the "repo_id" field.
+func (m *PermMutation) SetRepoID(s string) {
+	m.repo = &s
+}
+
+// RepoID returns the value of the "repo_id" field in the mutation.
+func (m *PermMutation) RepoID() (r string, exists bool) {
+	v := m.repo
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRepoID returns the old "repo_id" field's value of the Perm entity.
+// If the Perm object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PermMutation) OldRepoID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldRepoID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldRepoID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRepoID: %w", err)
+	}
+	return oldValue.RepoID, nil
+}
+
+// ClearRepoID clears the value of the "repo_id" field.
+func (m *PermMutation) ClearRepoID() {
+	m.repo = nil
+	m.clearedFields[perm.FieldRepoID] = struct{}{}
+}
+
+// RepoIDCleared returns if the "repo_id" field was cleared in this mutation.
+func (m *PermMutation) RepoIDCleared() bool {
+	_, ok := m.clearedFields[perm.FieldRepoID]
+	return ok
+}
+
+// ResetRepoID resets all changes to the "repo_id" field.
+func (m *PermMutation) ResetRepoID() {
+	m.repo = nil
+	delete(m.clearedFields, perm.FieldRepoID)
 }
 
 // ClearUser clears the "user" edge to the User entity.
@@ -1171,15 +1382,7 @@ func (m *PermMutation) ClearUser() {
 
 // UserCleared reports if the "user" edge to the User entity was cleared.
 func (m *PermMutation) UserCleared() bool {
-	return m.cleareduser
-}
-
-// UserID returns the "user" edge ID in the mutation.
-func (m *PermMutation) UserID() (id string, exists bool) {
-	if m.user != nil {
-		return *m.user, true
-	}
-	return
+	return m.UserIDCleared() || m.cleareduser
 }
 
 // UserIDs returns the "user" edge IDs in the mutation.
@@ -1198,11 +1401,6 @@ func (m *PermMutation) ResetUser() {
 	m.cleareduser = false
 }
 
-// SetRepoID sets the "repo" edge to the Repo entity by id.
-func (m *PermMutation) SetRepoID(id string) {
-	m.repo = &id
-}
-
 // ClearRepo clears the "repo" edge to the Repo entity.
 func (m *PermMutation) ClearRepo() {
 	m.clearedrepo = true
@@ -1210,15 +1408,7 @@ func (m *PermMutation) ClearRepo() {
 
 // RepoCleared reports if the "repo" edge to the Repo entity was cleared.
 func (m *PermMutation) RepoCleared() bool {
-	return m.clearedrepo
-}
-
-// RepoID returns the "repo" edge ID in the mutation.
-func (m *PermMutation) RepoID() (id string, exists bool) {
-	if m.repo != nil {
-		return *m.repo, true
-	}
-	return
+	return m.RepoIDCleared() || m.clearedrepo
 }
 
 // RepoIDs returns the "repo" edge IDs in the mutation.
@@ -1251,7 +1441,7 @@ func (m *PermMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *PermMutation) Fields() []string {
-	fields := make([]string, 0, 4)
+	fields := make([]string, 0, 6)
 	if m.repo_perm != nil {
 		fields = append(fields, perm.FieldRepoPerm)
 	}
@@ -1263,6 +1453,12 @@ func (m *PermMutation) Fields() []string {
 	}
 	if m.updated_at != nil {
 		fields = append(fields, perm.FieldUpdatedAt)
+	}
+	if m.user != nil {
+		fields = append(fields, perm.FieldUserID)
+	}
+	if m.repo != nil {
+		fields = append(fields, perm.FieldRepoID)
 	}
 	return fields
 }
@@ -1280,6 +1476,10 @@ func (m *PermMutation) Field(name string) (ent.Value, bool) {
 		return m.CreatedAt()
 	case perm.FieldUpdatedAt:
 		return m.UpdatedAt()
+	case perm.FieldUserID:
+		return m.UserID()
+	case perm.FieldRepoID:
+		return m.RepoID()
 	}
 	return nil, false
 }
@@ -1297,6 +1497,10 @@ func (m *PermMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldCreatedAt(ctx)
 	case perm.FieldUpdatedAt:
 		return m.OldUpdatedAt(ctx)
+	case perm.FieldUserID:
+		return m.OldUserID(ctx)
+	case perm.FieldRepoID:
+		return m.OldRepoID(ctx)
 	}
 	return nil, fmt.Errorf("unknown Perm field %s", name)
 }
@@ -1334,6 +1538,20 @@ func (m *PermMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetUpdatedAt(v)
 		return nil
+	case perm.FieldUserID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUserID(v)
+		return nil
+	case perm.FieldRepoID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRepoID(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Perm field %s", name)
 }
@@ -1367,6 +1585,12 @@ func (m *PermMutation) ClearedFields() []string {
 	if m.FieldCleared(perm.FieldSyncedAt) {
 		fields = append(fields, perm.FieldSyncedAt)
 	}
+	if m.FieldCleared(perm.FieldUserID) {
+		fields = append(fields, perm.FieldUserID)
+	}
+	if m.FieldCleared(perm.FieldRepoID) {
+		fields = append(fields, perm.FieldRepoID)
+	}
 	return fields
 }
 
@@ -1383,6 +1607,12 @@ func (m *PermMutation) ClearField(name string) error {
 	switch name {
 	case perm.FieldSyncedAt:
 		m.ClearSyncedAt()
+		return nil
+	case perm.FieldUserID:
+		m.ClearUserID()
+		return nil
+	case perm.FieldRepoID:
+		m.ClearRepoID()
 		return nil
 	}
 	return fmt.Errorf("unknown Perm nullable field %s", name)
@@ -1403,6 +1633,12 @@ func (m *PermMutation) ResetField(name string) error {
 		return nil
 	case perm.FieldUpdatedAt:
 		m.ResetUpdatedAt()
+		return nil
+	case perm.FieldUserID:
+		m.ResetUserID()
+		return nil
+	case perm.FieldRepoID:
+		m.ResetRepoID()
 		return nil
 	}
 	return fmt.Errorf("unknown Perm field %s", name)

@@ -419,7 +419,6 @@ func (rq *RepoQuery) sqlAll(ctx context.Context) ([]*Repo, error) {
 			nodeids[nodes[i].ID] = nodes[i]
 			nodes[i].Edges.Perms = []*Perm{}
 		}
-		query.withFKs = true
 		query.Where(predicate.Perm(func(s *sql.Selector) {
 			s.Where(sql.InValues(repo.PermsColumn, fks...))
 		}))
@@ -428,13 +427,10 @@ func (rq *RepoQuery) sqlAll(ctx context.Context) ([]*Repo, error) {
 			return nil, err
 		}
 		for _, n := range neighbors {
-			fk := n.repo_perms
-			if fk == nil {
-				return nil, fmt.Errorf(`foreign-key "repo_perms" is nil for node %v`, n.ID)
-			}
-			node, ok := nodeids[*fk]
+			fk := n.RepoID
+			node, ok := nodeids[fk]
 			if !ok {
-				return nil, fmt.Errorf(`unexpected foreign-key "repo_perms" returned %v for node %v`, *fk, n.ID)
+				return nil, fmt.Errorf(`unexpected foreign-key "repo_id" returned %v for node %v`, fk, n.ID)
 			}
 			node.Edges.Perms = append(node.Edges.Perms, n)
 		}
@@ -448,7 +444,6 @@ func (rq *RepoQuery) sqlAll(ctx context.Context) ([]*Repo, error) {
 			nodeids[nodes[i].ID] = nodes[i]
 			nodes[i].Edges.Deployments = []*Deployment{}
 		}
-		query.withFKs = true
 		query.Where(predicate.Deployment(func(s *sql.Selector) {
 			s.Where(sql.InValues(repo.DeploymentsColumn, fks...))
 		}))
@@ -457,13 +452,10 @@ func (rq *RepoQuery) sqlAll(ctx context.Context) ([]*Repo, error) {
 			return nil, err
 		}
 		for _, n := range neighbors {
-			fk := n.repo_deployments
-			if fk == nil {
-				return nil, fmt.Errorf(`foreign-key "repo_deployments" is nil for node %v`, n.ID)
-			}
-			node, ok := nodeids[*fk]
+			fk := n.RepoID
+			node, ok := nodeids[fk]
 			if !ok {
-				return nil, fmt.Errorf(`unexpected foreign-key "repo_deployments" returned %v for node %v`, *fk, n.ID)
+				return nil, fmt.Errorf(`unexpected foreign-key "repo_id" returned %v for node %v`, fk, n.ID)
 			}
 			node.Edges.Deployments = append(node.Edges.Deployments, n)
 		}

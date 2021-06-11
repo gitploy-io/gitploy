@@ -6,6 +6,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
+	"entgo.io/ent/schema/index"
 )
 
 // Perm holds the schema definition for the Perm entity.
@@ -30,6 +31,11 @@ func (Perm) Fields() []ent.Field {
 		field.Time("updated_at").
 			Default(time.Now).
 			UpdateDefault(time.Now),
+		// Edges
+		field.String("user_id").
+			Optional(),
+		field.String("repo_id").
+			Optional(),
 	}
 }
 
@@ -38,9 +44,18 @@ func (Perm) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("user", User.Type).
 			Ref("perms").
+			Field("user_id").
 			Unique(),
 		edge.From("repo", Repo.Type).
 			Ref("perms").
+			Field("repo_id").
 			Unique(),
+	}
+}
+
+func (Perm) Indexes() []ent.Index {
+	return []ent.Index{
+		index.Fields("user_id"),
+		index.Fields("repo_id"),
 	}
 }
