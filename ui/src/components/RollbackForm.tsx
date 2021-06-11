@@ -69,11 +69,11 @@ export default function RollbackForm(props: RollbackFormProps) {
 
                             if (d.deployer) {
                                 option = <Select.Option key={idx} value={d.id}>
-                                   {ref} deployed by <Avatar src={d.deployer.avatar} /> <b>{d.deployer.login}</b> {moment(d.createdAt).fromNow()}
+                                   {ref} deployed by <Avatar size="small" src={d.deployer.avatar} /> {d.deployer.login} {moment(d.createdAt).fromNow()}
                                 </Select.Option>
                             } else {
                                 option = <Select.Option key={idx} value={d.id}>
-                                   {ref} deployed at {moment(d.createdAt).fromNow()}
+                                   {ref} deployed {moment(d.createdAt).fromNow()}
                                 </Select.Option>
                             }
                             return option

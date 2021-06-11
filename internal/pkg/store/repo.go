@@ -106,6 +106,9 @@ func (s *Store) ListDeployments(ctx context.Context, r *ent.Repo, env string, st
 	return q.Order(
 		ent.Desc(deployment.FieldCreatedAt),
 	).
+		WithUser(func(uq *ent.UserQuery) {
+			uq.Select("id", "login", "avatar", "created_at", "updated_at")
+		}).
 		Limit(perPage).
 		Offset(offset(page, perPage)).
 		All(ctx)
@@ -121,6 +124,9 @@ func (s *Store) FindLatestDeployment(ctx context.Context, r *ent.Repo, env strin
 		Order(
 			ent.Desc(deployment.FieldCreatedAt),
 		).
+		WithUser(func(uq *ent.UserQuery) {
+			uq.Select("id", "login", "avatar")
+		}).
 		First(ctx)
 }
 

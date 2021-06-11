@@ -1,6 +1,7 @@
 import { instance, headers } from './settings'
 import { Deployment, DeploymentType, DeploymentStatus, HttpRequestError } from '../models'
 import { StatusCodes } from 'http-status-codes'
+import { Deployer } from '../models/Deployment'
 
 const mapDeploymentType = (t: string) => {
     switch (t) {
@@ -41,6 +42,12 @@ export const listDeployments = async (repoId: string, env: string, status: strin
     })
         .then(response => response.json())
         .then(ds => ds.map((d: any): Deployment => {
+            const u = d.edges.user
+            const user: Deployer = {
+                id: u.id,
+                login: u.login,
+                avatar: u.avatar
+            }
             return {
                 id: d.id,
                 uid: d.uid,
@@ -51,8 +58,7 @@ export const listDeployments = async (repoId: string, env: string, status: strin
                 status: mapDeploymentStatus(d.status),
                 createdAt: new Date(d.created_at),
                 updatedAt: new Date(d.updatedAt),
-                // TODO: mapping the user
-                deployer: null,
+                deployer: user,
             }
         }))
 
