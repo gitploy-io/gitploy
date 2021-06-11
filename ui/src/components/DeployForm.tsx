@@ -176,56 +176,63 @@ export default function DeployForm(props: DeployFormProps) {
                     <Radio.Button value={DeploymentType.Tag}>Tag</Radio.Button>
                 </Radio.Group>
             </Form.Item>
+            {/* https://ant.design/components/form/#components-form-demo-complex-form-control */}
             <Form.Item
-                {...selectLayout}
-                style={(isBranchVisible(props.type)? {}: styleHide)}
-                rules={[{required: isBranchVisible(props.type)}]}
                 label="Branch"
-                name="branch">
-                    <CreatableSelect 
-                        options={props.branches.map(branch => mapBranchToOption(branch))}
-                        onSelectOption={onSelectBranch}
-                        onClickAddItem={props.onClickAddBranch}
-                        placeholder="Select branch"
-                        style={styleWidthForCheck}/>
-                    <span
-                        style={(isBranchCheckVisible(props.type)? {}: styleHide)}>
-                        &nbsp; <StatusStateIcon state={props.branchCheck} /> 
-                    </span>
-            </Form.Item>
-            <Form.Item
-                {...layout}
-                style={(isCommitVisible(props.type)? {}: styleHide)}
-                rules={[{required: isCommitVisible(props.type)}]}
-                label="Commit"
-                name="commit">
-                    <CreatableSelect 
-                        options={props.commits.map(commit => mapCommitToOption(commit))}
-                        onSelectOption={onSelectCommit}
-                        onClickAddItem={props.onClickAddCommit}
-                        placeholder="Select commit"
-                        style={styleWidthForCheck}/>
-                    <span
-                        style={(isCommitCheckVisible(props.type)? {}: styleHide)}>
-                        &nbsp; <StatusStateIcon state={props.commitCheck} /> 
-                    </span>
-            </Form.Item>
-            <Form.Item
                 {...selectLayout}
-                style={(isTagVisible(props.type)? {}: styleHide)}
-                rules={[{required: isTagVisible(props.type)}]}
+                style={(isBranchVisible(props.type)? {}: styleHide)}>
+                <Form.Item
+                    name="branch"
+                    rules={[{required: isBranchVisible(props.type)}]}
+                    noStyle>
+                        <CreatableSelect 
+                            options={props.branches.map(branch => mapBranchToOption(branch))}
+                            onSelectOption={onSelectBranch}
+                            onClickAddItem={props.onClickAddBranch}
+                            placeholder="Select branch"
+                            style={styleWidthForCheck}/>
+                </Form.Item>
+                <span style={(isBranchCheckVisible(props.type)? {}: styleHide)}>
+                    &nbsp; <StatusStateIcon state={props.branchCheck} /> 
+                </span>
+            </Form.Item>
+            <Form.Item
+                label="Commit"
+                {...layout}
+                style={(isCommitVisible(props.type)? {}: styleHide)}>
+                <Form.Item
+                    name="commit"
+                    rules={[{required: isCommitVisible(props.type)}]}
+                    noStyle>
+                        <CreatableSelect 
+                            options={props.commits.map(commit => mapCommitToOption(commit))}
+                            onSelectOption={onSelectCommit}
+                            onClickAddItem={props.onClickAddCommit}
+                            placeholder="Select commit"
+                            style={styleWidthForCheck}/>
+                </Form.Item>
+                <span style={(isCommitCheckVisible(props.type)? {}: styleHide)}>
+                    &nbsp; <StatusStateIcon state={props.commitCheck} /> 
+                </span>
+            </Form.Item>
+            <Form.Item
                 label="Tag"
-                name="tag">
-                    <CreatableSelect 
-                        options={props.tags.map(tag => mapTagToOption(tag))}
-                        onSelectOption={onSelectTag}
-                        onClickAddItem={props.onClickAddTag}
-                        placeholder="Select commit"
-                        style={styleWidthForCheck}/>
-                    <span
-                        style={(isTagCheckVisible(props.type)? {}: styleHide)}>
-                        &nbsp; <StatusStateIcon state={props.tagCheck} /> 
-                    </span>
+                {...selectLayout}
+                style={(isTagVisible(props.type)? {}: styleHide)}>
+                <Form.Item
+                    name="tag"
+                    rules={[{required: isTagVisible(props.type)}]}
+                    noStyle>
+                        <CreatableSelect 
+                            options={props.tags.map(tag => mapTagToOption(tag))}
+                            onSelectOption={onSelectTag}
+                            onClickAddItem={props.onClickAddTag}
+                            placeholder="Select commit"
+                            style={styleWidthForCheck}/>
+                </Form.Item>
+                <span style={(isTagCheckVisible(props.type)? {}: styleHide)}>
+                    &nbsp; <StatusStateIcon state={props.tagCheck} /> 
+                </span>
             </Form.Item>
             <Form.Item {...submitLayout}>
                 <Button 
