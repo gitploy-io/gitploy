@@ -138,7 +138,7 @@ func mapGithubBranchToBranch(b *github.Branch) *vo.Branch {
 
 func mapInsecureSSL(ssl bool) int {
 	if ssl {
-		return 1
+		return 0
 	}
-	return 0
+	return 1
 }

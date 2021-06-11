@@ -28,6 +28,10 @@ type (
 	ServerConfig struct {
 		Host  string
 		Proto string
+
+		WebhookHost   string
+		WebhookProto  string
+		WebhookSecret string
 	}
 
 	SCMType string
@@ -92,7 +96,14 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 	repov1 := v1.Group("/repos")
 	{
 		rm := repos.NewRepoMiddleware(c.Store)
-		r := repos.NewRepo(c.Store, c.SCM)
+		r := repos.NewRepo(
+			repos.RepoConfig{
+				WebhookURL:    fmt.Sprintf("%s://%s/hooks", c.WebhookProto, c.WebhookHost),
+				WebhookSecret: c.WebhookSecret,
+			},
+			c.Store,
+			c.SCM,
+		)
 		repov1.GET("", r.ListRepos)
 		repov1.GET("/search", r.GetRepoByNamespaceName)
 		repov1.GET("/:repoID", rm.Repo(), r.GetRepo)
@@ -107,7 +118,11 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 		repov1.POST("/:repoID/deployments", rm.Repo(), r.CreateDeployment)
 		repov1.GET("/:repoID/deployments/latest", rm.Repo(), r.GetLatestDeployment)
 		repov1.GET("/:repoID/config", rm.Repo(), r.GetConfig)
+		repov1.POST("/:repoID/activate", rm.Repo(), rm.AdminPerm(), r.Activate)
+		repov1.POST("/:repoID/deactivate", rm.Repo(), rm.AdminPerm(), r.Deactivate)
 	}
+
+	// TODO: add hooks
 
 	return r
 }

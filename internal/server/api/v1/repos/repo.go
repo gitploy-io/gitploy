@@ -12,10 +12,10 @@ import (
 
 type (
 	Repo struct {
-		config *RepoConfig
-		store  Store
-		scm    SCM
-		log    *zap.Logger
+		RepoConfig
+		store Store
+		scm   SCM
+		log   *zap.Logger
 	}
 
 	RepoConfig struct {
@@ -24,11 +24,12 @@ type (
 	}
 )
 
-func NewRepo(store Store, scm SCM) *Repo {
+func NewRepo(c RepoConfig, store Store, scm SCM) *Repo {
 	return &Repo{
-		store: store,
-		scm:   scm,
-		log:   zap.L().Named("repos"),
+		RepoConfig: c,
+		store:      store,
+		scm:        scm,
+		log:        zap.L().Named("repos"),
 	}
 }
 

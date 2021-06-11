@@ -22,9 +22,9 @@ func (r *Repo) Activate(c *gin.Context) {
 	ctx := c.Request.Context()
 
 	hid, err := r.scm.CreateWebhook(ctx, u, re, &vo.WebhookConfig{
-		URL:         r.config.WebhookURL,
-		Secret:      r.config.WebhookSecret,
-		InsecureSSL: isSecure(r.config.WebhookURL),
+		URL:         r.WebhookURL,
+		Secret:      r.WebhookSecret,
+		InsecureSSL: isSecure(r.WebhookURL),
 	})
 	if err != nil {
 		r.log.Error("failed to create a new webhook.", zap.Error(err))
