@@ -56,7 +56,7 @@ export const fetchDeployments = createAsyncThunk<Deployment[], void, { state: {r
             return []
         }
 
-        const deployments = await listDeployments(repo.id, env, page, perPage)
+        const deployments = await listDeployments(repo.id, env, "",page, perPage)
         return deployments
     },
 )
