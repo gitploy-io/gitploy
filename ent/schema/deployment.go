@@ -44,6 +44,11 @@ func (Deployment) Fields() []ent.Field {
 		field.Time("updated_at").
 			Default(time.Now).
 			UpdateDefault(time.Now),
+		// Edges
+		field.String("user_id").
+			Optional(),
+		field.String("repo_id").
+			Optional(),
 	}
 }
 
@@ -52,16 +57,20 @@ func (Deployment) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("user", User.Type).
 			Ref("deployments").
+			Field("user_id").
 			Unique(),
 		edge.From("repo", Repo.Type).
 			Ref("deployments").
+			Field("repo_id").
 			Unique(),
 	}
 }
 
 func (Deployment) Indexes() []ent.Index {
 	return []ent.Index{
-		index.Fields("env", "created_at"),
-		index.Fields("created_at"),
+		index.Fields("user_id"),
+		index.Fields("repo_id"),
+		index.Fields("repo_id", "env", "created_at"),
+		index.Fields("repo_id", "created_at"),
 	}
 }

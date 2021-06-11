@@ -34,11 +34,13 @@ type Deployment struct {
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
+	// UserID holds the value of the "user_id" field.
+	UserID string `json:"user_id,omitempty"`
+	// RepoID holds the value of the "repo_id" field.
+	RepoID string `json:"repo_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the DeploymentQuery when eager-loading is set.
-	Edges            DeploymentEdges `json:"edges"`
-	repo_deployments *string
-	user_deployments *string
+	Edges DeploymentEdges `json:"edges"`
 }
 
 // DeploymentEdges holds the relations/edges for other nodes in the graph.
@@ -87,14 +89,10 @@ func (*Deployment) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case deployment.FieldID, deployment.FieldUID:
 			values[i] = new(sql.NullInt64)
-		case deployment.FieldType, deployment.FieldRef, deployment.FieldSha, deployment.FieldEnv, deployment.FieldStatus:
+		case deployment.FieldType, deployment.FieldRef, deployment.FieldSha, deployment.FieldEnv, deployment.FieldStatus, deployment.FieldUserID, deployment.FieldRepoID:
 			values[i] = new(sql.NullString)
 		case deployment.FieldCreatedAt, deployment.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
-		case deployment.ForeignKeys[0]: // repo_deployments
-			values[i] = new(sql.NullString)
-		case deployment.ForeignKeys[1]: // user_deployments
-			values[i] = new(sql.NullString)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Deployment", columns[i])
 		}
@@ -164,19 +162,17 @@ func (d *Deployment) assignValues(columns []string, values []interface{}) error 
 			} else if value.Valid {
 				d.UpdatedAt = value.Time
 			}
-		case deployment.ForeignKeys[0]:
+		case deployment.FieldUserID:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field repo_deployments", values[i])
+				return fmt.Errorf("unexpected type %T for field user_id", values[i])
 			} else if value.Valid {
-				d.repo_deployments = new(string)
-				*d.repo_deployments = value.String
+				d.UserID = value.String
 			}
-		case deployment.ForeignKeys[1]:
+		case deployment.FieldRepoID:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field user_deployments", values[i])
+				return fmt.Errorf("unexpected type %T for field repo_id", values[i])
 			} else if value.Valid {
-				d.user_deployments = new(string)
-				*d.user_deployments = value.String
+				d.RepoID = value.String
 			}
 		}
 	}
@@ -232,6 +228,10 @@ func (d *Deployment) String() string {
 	builder.WriteString(d.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", updated_at=")
 	builder.WriteString(d.UpdatedAt.Format(time.ANSIC))
+	builder.WriteString(", user_id=")
+	builder.WriteString(d.UserID)
+	builder.WriteString(", repo_id=")
+	builder.WriteString(d.RepoID)
 	builder.WriteByte(')')
 	return builder.String()
 }

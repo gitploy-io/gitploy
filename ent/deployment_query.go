@@ -29,7 +29,6 @@ type DeploymentQuery struct {
 	// eager-loading edges.
 	withUser *UserQuery
 	withRepo *RepoQuery
-	withFKs  bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -385,19 +384,12 @@ func (dq *DeploymentQuery) prepareQuery(ctx context.Context) error {
 func (dq *DeploymentQuery) sqlAll(ctx context.Context) ([]*Deployment, error) {
 	var (
 		nodes       = []*Deployment{}
-		withFKs     = dq.withFKs
 		_spec       = dq.querySpec()
 		loadedTypes = [2]bool{
 			dq.withUser != nil,
 			dq.withRepo != nil,
 		}
 	)
-	if dq.withUser != nil || dq.withRepo != nil {
-		withFKs = true
-	}
-	if withFKs {
-		_spec.Node.Columns = append(_spec.Node.Columns, deployment.ForeignKeys...)
-	}
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
 		node := &Deployment{config: dq.config}
 		nodes = append(nodes, node)
@@ -422,10 +414,7 @@ func (dq *DeploymentQuery) sqlAll(ctx context.Context) ([]*Deployment, error) {
 		ids := make([]string, 0, len(nodes))
 		nodeids := make(map[string][]*Deployment)
 		for i := range nodes {
-			if nodes[i].user_deployments == nil {
-				continue
-			}
-			fk := *nodes[i].user_deployments
+			fk := nodes[i].UserID
 			if _, ok := nodeids[fk]; !ok {
 				ids = append(ids, fk)
 			}
@@ -439,7 +428,7 @@ func (dq *DeploymentQuery) sqlAll(ctx context.Context) ([]*Deployment, error) {
 		for _, n := range neighbors {
 			nodes, ok := nodeids[n.ID]
 			if !ok {
-				return nil, fmt.Errorf(`unexpected foreign-key "user_deployments" returned %v`, n.ID)
+				return nil, fmt.Errorf(`unexpected foreign-key "user_id" returned %v`, n.ID)
 			}
 			for i := range nodes {
 				nodes[i].Edges.User = n
@@ -451,10 +440,7 @@ func (dq *DeploymentQuery) sqlAll(ctx context.Context) ([]*Deployment, error) {
 		ids := make([]string, 0, len(nodes))
 		nodeids := make(map[string][]*Deployment)
 		for i := range nodes {
-			if nodes[i].repo_deployments == nil {
-				continue
-			}
-			fk := *nodes[i].repo_deployments
+			fk := nodes[i].RepoID
 			if _, ok := nodeids[fk]; !ok {
 				ids = append(ids, fk)
 			}
@@ -468,7 +454,7 @@ func (dq *DeploymentQuery) sqlAll(ctx context.Context) ([]*Deployment, error) {
 		for _, n := range neighbors {
 			nodes, ok := nodeids[n.ID]
 			if !ok {
-				return nil, fmt.Errorf(`unexpected foreign-key "repo_deployments" returned %v`, n.ID)
+				return nil, fmt.Errorf(`unexpected foreign-key "repo_id" returned %v`, n.ID)
 			}
 			for i := range nodes {
 				nodes[i].Edges.Repo = n

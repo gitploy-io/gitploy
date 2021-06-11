@@ -83,37 +83,49 @@ func (pu *PermUpdate) SetUpdatedAt(t time.Time) *PermUpdate {
 	return pu
 }
 
-// SetUserID sets the "user" edge to the User entity by ID.
-func (pu *PermUpdate) SetUserID(id string) *PermUpdate {
-	pu.mutation.SetUserID(id)
+// SetUserID sets the "user_id" field.
+func (pu *PermUpdate) SetUserID(s string) *PermUpdate {
+	pu.mutation.SetUserID(s)
 	return pu
 }
 
-// SetNillableUserID sets the "user" edge to the User entity by ID if the given value is not nil.
-func (pu *PermUpdate) SetNillableUserID(id *string) *PermUpdate {
-	if id != nil {
-		pu = pu.SetUserID(*id)
+// SetNillableUserID sets the "user_id" field if the given value is not nil.
+func (pu *PermUpdate) SetNillableUserID(s *string) *PermUpdate {
+	if s != nil {
+		pu.SetUserID(*s)
 	}
+	return pu
+}
+
+// ClearUserID clears the value of the "user_id" field.
+func (pu *PermUpdate) ClearUserID() *PermUpdate {
+	pu.mutation.ClearUserID()
+	return pu
+}
+
+// SetRepoID sets the "repo_id" field.
+func (pu *PermUpdate) SetRepoID(s string) *PermUpdate {
+	pu.mutation.SetRepoID(s)
+	return pu
+}
+
+// SetNillableRepoID sets the "repo_id" field if the given value is not nil.
+func (pu *PermUpdate) SetNillableRepoID(s *string) *PermUpdate {
+	if s != nil {
+		pu.SetRepoID(*s)
+	}
+	return pu
+}
+
+// ClearRepoID clears the value of the "repo_id" field.
+func (pu *PermUpdate) ClearRepoID() *PermUpdate {
+	pu.mutation.ClearRepoID()
 	return pu
 }
 
 // SetUser sets the "user" edge to the User entity.
 func (pu *PermUpdate) SetUser(u *User) *PermUpdate {
 	return pu.SetUserID(u.ID)
-}
-
-// SetRepoID sets the "repo" edge to the Repo entity by ID.
-func (pu *PermUpdate) SetRepoID(id string) *PermUpdate {
-	pu.mutation.SetRepoID(id)
-	return pu
-}
-
-// SetNillableRepoID sets the "repo" edge to the Repo entity by ID if the given value is not nil.
-func (pu *PermUpdate) SetNillableRepoID(id *string) *PermUpdate {
-	if id != nil {
-		pu = pu.SetRepoID(*id)
-	}
-	return pu
 }
 
 // SetRepo sets the "repo" edge to the Repo entity.
@@ -409,37 +421,49 @@ func (puo *PermUpdateOne) SetUpdatedAt(t time.Time) *PermUpdateOne {
 	return puo
 }
 
-// SetUserID sets the "user" edge to the User entity by ID.
-func (puo *PermUpdateOne) SetUserID(id string) *PermUpdateOne {
-	puo.mutation.SetUserID(id)
+// SetUserID sets the "user_id" field.
+func (puo *PermUpdateOne) SetUserID(s string) *PermUpdateOne {
+	puo.mutation.SetUserID(s)
 	return puo
 }
 
-// SetNillableUserID sets the "user" edge to the User entity by ID if the given value is not nil.
-func (puo *PermUpdateOne) SetNillableUserID(id *string) *PermUpdateOne {
-	if id != nil {
-		puo = puo.SetUserID(*id)
+// SetNillableUserID sets the "user_id" field if the given value is not nil.
+func (puo *PermUpdateOne) SetNillableUserID(s *string) *PermUpdateOne {
+	if s != nil {
+		puo.SetUserID(*s)
 	}
+	return puo
+}
+
+// ClearUserID clears the value of the "user_id" field.
+func (puo *PermUpdateOne) ClearUserID() *PermUpdateOne {
+	puo.mutation.ClearUserID()
+	return puo
+}
+
+// SetRepoID sets the "repo_id" field.
+func (puo *PermUpdateOne) SetRepoID(s string) *PermUpdateOne {
+	puo.mutation.SetRepoID(s)
+	return puo
+}
+
+// SetNillableRepoID sets the "repo_id" field if the given value is not nil.
+func (puo *PermUpdateOne) SetNillableRepoID(s *string) *PermUpdateOne {
+	if s != nil {
+		puo.SetRepoID(*s)
+	}
+	return puo
+}
+
+// ClearRepoID clears the value of the "repo_id" field.
+func (puo *PermUpdateOne) ClearRepoID() *PermUpdateOne {
+	puo.mutation.ClearRepoID()
 	return puo
 }
 
 // SetUser sets the "user" edge to the User entity.
 func (puo *PermUpdateOne) SetUser(u *User) *PermUpdateOne {
 	return puo.SetUserID(u.ID)
-}
-
-// SetRepoID sets the "repo" edge to the Repo entity by ID.
-func (puo *PermUpdateOne) SetRepoID(id string) *PermUpdateOne {
-	puo.mutation.SetRepoID(id)
-	return puo
-}
-
-// SetNillableRepoID sets the "repo" edge to the Repo entity by ID if the given value is not nil.
-func (puo *PermUpdateOne) SetNillableRepoID(id *string) *PermUpdateOne {
-	if id != nil {
-		puo = puo.SetRepoID(*id)
-	}
-	return puo
 }
 
 // SetRepo sets the "repo" edge to the Repo entity.

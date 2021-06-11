@@ -136,37 +136,49 @@ func (du *DeploymentUpdate) SetUpdatedAt(t time.Time) *DeploymentUpdate {
 	return du
 }
 
-// SetUserID sets the "user" edge to the User entity by ID.
-func (du *DeploymentUpdate) SetUserID(id string) *DeploymentUpdate {
-	du.mutation.SetUserID(id)
+// SetUserID sets the "user_id" field.
+func (du *DeploymentUpdate) SetUserID(s string) *DeploymentUpdate {
+	du.mutation.SetUserID(s)
 	return du
 }
 
-// SetNillableUserID sets the "user" edge to the User entity by ID if the given value is not nil.
-func (du *DeploymentUpdate) SetNillableUserID(id *string) *DeploymentUpdate {
-	if id != nil {
-		du = du.SetUserID(*id)
+// SetNillableUserID sets the "user_id" field if the given value is not nil.
+func (du *DeploymentUpdate) SetNillableUserID(s *string) *DeploymentUpdate {
+	if s != nil {
+		du.SetUserID(*s)
 	}
+	return du
+}
+
+// ClearUserID clears the value of the "user_id" field.
+func (du *DeploymentUpdate) ClearUserID() *DeploymentUpdate {
+	du.mutation.ClearUserID()
+	return du
+}
+
+// SetRepoID sets the "repo_id" field.
+func (du *DeploymentUpdate) SetRepoID(s string) *DeploymentUpdate {
+	du.mutation.SetRepoID(s)
+	return du
+}
+
+// SetNillableRepoID sets the "repo_id" field if the given value is not nil.
+func (du *DeploymentUpdate) SetNillableRepoID(s *string) *DeploymentUpdate {
+	if s != nil {
+		du.SetRepoID(*s)
+	}
+	return du
+}
+
+// ClearRepoID clears the value of the "repo_id" field.
+func (du *DeploymentUpdate) ClearRepoID() *DeploymentUpdate {
+	du.mutation.ClearRepoID()
 	return du
 }
 
 // SetUser sets the "user" edge to the User entity.
 func (du *DeploymentUpdate) SetUser(u *User) *DeploymentUpdate {
 	return du.SetUserID(u.ID)
-}
-
-// SetRepoID sets the "repo" edge to the Repo entity by ID.
-func (du *DeploymentUpdate) SetRepoID(id string) *DeploymentUpdate {
-	du.mutation.SetRepoID(id)
-	return du
-}
-
-// SetNillableRepoID sets the "repo" edge to the Repo entity by ID if the given value is not nil.
-func (du *DeploymentUpdate) SetNillableRepoID(id *string) *DeploymentUpdate {
-	if id != nil {
-		du = du.SetRepoID(*id)
-	}
-	return du
 }
 
 // SetRepo sets the "repo" edge to the Repo entity.
@@ -561,37 +573,49 @@ func (duo *DeploymentUpdateOne) SetUpdatedAt(t time.Time) *DeploymentUpdateOne {
 	return duo
 }
 
-// SetUserID sets the "user" edge to the User entity by ID.
-func (duo *DeploymentUpdateOne) SetUserID(id string) *DeploymentUpdateOne {
-	duo.mutation.SetUserID(id)
+// SetUserID sets the "user_id" field.
+func (duo *DeploymentUpdateOne) SetUserID(s string) *DeploymentUpdateOne {
+	duo.mutation.SetUserID(s)
 	return duo
 }
 
-// SetNillableUserID sets the "user" edge to the User entity by ID if the given value is not nil.
-func (duo *DeploymentUpdateOne) SetNillableUserID(id *string) *DeploymentUpdateOne {
-	if id != nil {
-		duo = duo.SetUserID(*id)
+// SetNillableUserID sets the "user_id" field if the given value is not nil.
+func (duo *DeploymentUpdateOne) SetNillableUserID(s *string) *DeploymentUpdateOne {
+	if s != nil {
+		duo.SetUserID(*s)
 	}
+	return duo
+}
+
+// ClearUserID clears the value of the "user_id" field.
+func (duo *DeploymentUpdateOne) ClearUserID() *DeploymentUpdateOne {
+	duo.mutation.ClearUserID()
+	return duo
+}
+
+// SetRepoID sets the "repo_id" field.
+func (duo *DeploymentUpdateOne) SetRepoID(s string) *DeploymentUpdateOne {
+	duo.mutation.SetRepoID(s)
+	return duo
+}
+
+// SetNillableRepoID sets the "repo_id" field if the given value is not nil.
+func (duo *DeploymentUpdateOne) SetNillableRepoID(s *string) *DeploymentUpdateOne {
+	if s != nil {
+		duo.SetRepoID(*s)
+	}
+	return duo
+}
+
+// ClearRepoID clears the value of the "repo_id" field.
+func (duo *DeploymentUpdateOne) ClearRepoID() *DeploymentUpdateOne {
+	duo.mutation.ClearRepoID()
 	return duo
 }
 
 // SetUser sets the "user" edge to the User entity.
 func (duo *DeploymentUpdateOne) SetUser(u *User) *DeploymentUpdateOne {
 	return duo.SetUserID(u.ID)
-}
-
-// SetRepoID sets the "repo" edge to the Repo entity by ID.
-func (duo *DeploymentUpdateOne) SetRepoID(id string) *DeploymentUpdateOne {
-	duo.mutation.SetRepoID(id)
-	return duo
-}
-
-// SetNillableRepoID sets the "repo" edge to the Repo entity by ID if the given value is not nil.
-func (duo *DeploymentUpdateOne) SetNillableRepoID(id *string) *DeploymentUpdateOne {
-	if id != nil {
-		duo = duo.SetRepoID(*id)
-	}
-	return duo
 }
 
 // SetRepo sets the "repo" edge to the Repo entity.

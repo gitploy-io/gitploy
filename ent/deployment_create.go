@@ -118,16 +118,30 @@ func (dc *DeploymentCreate) SetNillableUpdatedAt(t *time.Time) *DeploymentCreate
 	return dc
 }
 
-// SetUserID sets the "user" edge to the User entity by ID.
-func (dc *DeploymentCreate) SetUserID(id string) *DeploymentCreate {
-	dc.mutation.SetUserID(id)
+// SetUserID sets the "user_id" field.
+func (dc *DeploymentCreate) SetUserID(s string) *DeploymentCreate {
+	dc.mutation.SetUserID(s)
 	return dc
 }
 
-// SetNillableUserID sets the "user" edge to the User entity by ID if the given value is not nil.
-func (dc *DeploymentCreate) SetNillableUserID(id *string) *DeploymentCreate {
-	if id != nil {
-		dc = dc.SetUserID(*id)
+// SetNillableUserID sets the "user_id" field if the given value is not nil.
+func (dc *DeploymentCreate) SetNillableUserID(s *string) *DeploymentCreate {
+	if s != nil {
+		dc.SetUserID(*s)
+	}
+	return dc
+}
+
+// SetRepoID sets the "repo_id" field.
+func (dc *DeploymentCreate) SetRepoID(s string) *DeploymentCreate {
+	dc.mutation.SetRepoID(s)
+	return dc
+}
+
+// SetNillableRepoID sets the "repo_id" field if the given value is not nil.
+func (dc *DeploymentCreate) SetNillableRepoID(s *string) *DeploymentCreate {
+	if s != nil {
+		dc.SetRepoID(*s)
 	}
 	return dc
 }
@@ -135,20 +149,6 @@ func (dc *DeploymentCreate) SetNillableUserID(id *string) *DeploymentCreate {
 // SetUser sets the "user" edge to the User entity.
 func (dc *DeploymentCreate) SetUser(u *User) *DeploymentCreate {
 	return dc.SetUserID(u.ID)
-}
-
-// SetRepoID sets the "repo" edge to the Repo entity by ID.
-func (dc *DeploymentCreate) SetRepoID(id string) *DeploymentCreate {
-	dc.mutation.SetRepoID(id)
-	return dc
-}
-
-// SetNillableRepoID sets the "repo" edge to the Repo entity by ID if the given value is not nil.
-func (dc *DeploymentCreate) SetNillableRepoID(id *string) *DeploymentCreate {
-	if id != nil {
-		dc = dc.SetRepoID(*id)
-	}
-	return dc
 }
 
 // SetRepo sets the "repo" edge to the Repo entity.
@@ -364,7 +364,7 @@ func (dc *DeploymentCreate) createSpec() (*Deployment, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.user_deployments = &nodes[0]
+		_node.UserID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := dc.mutation.RepoIDs(); len(nodes) > 0 {
@@ -384,7 +384,7 @@ func (dc *DeploymentCreate) createSpec() (*Deployment, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.repo_deployments = &nodes[0]
+		_node.RepoID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

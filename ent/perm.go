@@ -26,11 +26,13 @@ type Perm struct {
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
+	// UserID holds the value of the "user_id" field.
+	UserID string `json:"user_id,omitempty"`
+	// RepoID holds the value of the "repo_id" field.
+	RepoID string `json:"repo_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the PermQuery when eager-loading is set.
-	Edges      PermEdges `json:"edges"`
-	repo_perms *string
-	user_perms *string
+	Edges PermEdges `json:"edges"`
 }
 
 // PermEdges holds the relations/edges for other nodes in the graph.
@@ -79,14 +81,10 @@ func (*Perm) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case perm.FieldID:
 			values[i] = new(sql.NullInt64)
-		case perm.FieldRepoPerm:
+		case perm.FieldRepoPerm, perm.FieldUserID, perm.FieldRepoID:
 			values[i] = new(sql.NullString)
 		case perm.FieldSyncedAt, perm.FieldCreatedAt, perm.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
-		case perm.ForeignKeys[0]: // repo_perms
-			values[i] = new(sql.NullString)
-		case perm.ForeignKeys[1]: // user_perms
-			values[i] = new(sql.NullString)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Perm", columns[i])
 		}
@@ -132,19 +130,17 @@ func (pe *Perm) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				pe.UpdatedAt = value.Time
 			}
-		case perm.ForeignKeys[0]:
+		case perm.FieldUserID:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field repo_perms", values[i])
+				return fmt.Errorf("unexpected type %T for field user_id", values[i])
 			} else if value.Valid {
-				pe.repo_perms = new(string)
-				*pe.repo_perms = value.String
+				pe.UserID = value.String
 			}
-		case perm.ForeignKeys[1]:
+		case perm.FieldRepoID:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field user_perms", values[i])
+				return fmt.Errorf("unexpected type %T for field repo_id", values[i])
 			} else if value.Valid {
-				pe.user_perms = new(string)
-				*pe.user_perms = value.String
+				pe.RepoID = value.String
 			}
 		}
 	}
@@ -192,6 +188,10 @@ func (pe *Perm) String() string {
 	builder.WriteString(pe.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", updated_at=")
 	builder.WriteString(pe.UpdatedAt.Format(time.ANSIC))
+	builder.WriteString(", user_id=")
+	builder.WriteString(pe.UserID)
+	builder.WriteString(", repo_id=")
+	builder.WriteString(pe.RepoID)
 	builder.WriteByte(')')
 	return builder.String()
 }
