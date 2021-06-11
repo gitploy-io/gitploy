@@ -70,6 +70,7 @@ func (Deployment) Indexes() []ent.Index {
 	return []ent.Index{
 		index.Fields("user_id"),
 		index.Fields("repo_id"),
+		index.Fields("repo_id", "env", "status", "created_at"),
 		index.Fields("repo_id", "env", "created_at"),
 		index.Fields("repo_id", "created_at"),
 	}

@@ -26,6 +26,7 @@ type (
 func (r *Repo) ListDeployments(c *gin.Context) {
 	var (
 		env     = c.Query("env")
+		status  = c.Query("status")
 		page    = c.DefaultQuery("page", "1")
 		perPage = c.DefaultQuery("per_page", "30")
 	)
@@ -34,7 +35,7 @@ func (r *Repo) ListDeployments(c *gin.Context) {
 
 	ctx := c.Request.Context()
 
-	ds, err := r.store.ListDeployments(ctx, re, env, atoi(page), atoi(perPage))
+	ds, err := r.store.ListDeployments(ctx, re, env, status, atoi(page), atoi(perPage))
 	if err != nil {
 		r.log.Error("failed to list deployments.", zap.Error(err))
 		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to list deployments.")

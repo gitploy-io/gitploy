@@ -53,6 +53,11 @@ var (
 				Columns: []*schema.Column{DeploymentsColumns[9]},
 			},
 			{
+				Name:    "deployment_repo_id_env_status_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{DeploymentsColumns[9], DeploymentsColumns[5], DeploymentsColumns[6], DeploymentsColumns[7]},
+			},
+			{
 				Name:    "deployment_repo_id_env_created_at",
 				Unique:  false,
 				Columns: []*schema.Column{DeploymentsColumns[9], DeploymentsColumns[5], DeploymentsColumns[7]},
