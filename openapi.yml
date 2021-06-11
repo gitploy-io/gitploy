@@ -115,6 +115,28 @@ paths:
           $ref: '#/components/responses/403Forbidden'
         '500':
           $ref: '#/components/responses/500InternalError'
+    put:
+      tags:
+        - Repo
+      summary: Update config path.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                config_path:
+                  type: string
+      parameters:
+        - in: path
+          name: repoId
+          required: true
+          schema:
+            type: integer
+            description: The repository id
+      responses:
+        '200':
+          description: Ok
   /repos/{repoId}/commits:
     get:
       tags:

@@ -47,6 +47,13 @@ func (s *Store) ListSortedRepos(ctx context.Context, u *ent.User, q string, page
 		All(ctx)
 }
 
+func (s *Store) UpdateRepo(ctx context.Context, r *ent.Repo) (*ent.Repo, error) {
+	return s.c.Repo.
+		UpdateOne(r).
+		SetConfigPath(r.ConfigPath).
+		Save(ctx)
+}
+
 func (s *Store) FindRepo(ctx context.Context, u *ent.User, id string) (*ent.Repo, error) {
 	p, err := s.c.Perm.
 		Query().

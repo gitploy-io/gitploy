@@ -54,6 +54,36 @@ func (rm *RepoMiddleware) Repo() gin.HandlerFunc {
 	}
 }
 
+func (rm *RepoMiddleware) WritePerm() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var (
+			repoID = c.Param("repoID")
+		)
+
+		v, _ := c.Get(gb.KeyUser)
+		u := v.(*ent.User)
+
+		ctx := c.Request.Context()
+
+		p, err := rm.store.FindPerm(ctx, u, repoID)
+		if ent.IsNotFound(err) {
+			rm.log.Error("denied to access the repo.", zap.String("repoID", repoID), zap.Error(err))
+			gb.ErrorResponse(c, http.StatusForbidden, "It has denied to access the repo.")
+			return
+		} else if err != nil {
+			rm.log.Error("failed to get the repository.", zap.String("repoID", repoID), zap.Error(err))
+			gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to get the repository.")
+			return
+		}
+
+		if !(p.RepoPerm == perm.RepoPermWrite || p.RepoPerm == perm.RepoPermAdmin) {
+			rm.log.Warn("denied to access the repo.", zap.String("repoID", repoID), zap.Error(err))
+			gb.ErrorResponse(c, http.StatusForbidden, "It has denied to access the repo, only write permission can access.")
+			return
+		}
+	}
+}
+
 func (rm *RepoMiddleware) AdminPerm() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var (
@@ -78,7 +108,7 @@ func (rm *RepoMiddleware) AdminPerm() gin.HandlerFunc {
 
 		if p.RepoPerm != perm.RepoPermAdmin {
 			rm.log.Warn("denied to access the repo.", zap.String("repoID", repoID), zap.Error(err))
-			gb.ErrorResponse(c, http.StatusForbidden, "It has denied to access the repo, only admin can access.")
+			gb.ErrorResponse(c, http.StatusForbidden, "It has denied to access the repo, only admin permission can access.")
 			return
 		}
 	}
