@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 	"github.com/hanjunlee/gitploy/ent"
 	gb "github.com/hanjunlee/gitploy/internal/server/global"
 	"go.uber.org/zap"
@@ -21,6 +22,10 @@ type (
 	RepoConfig struct {
 		WebhookURL    string
 		WebhookSecret string
+	}
+
+	repoPayload struct {
+		ConfigPath string `json:"config_path"`
 	}
 )
 
@@ -67,6 +72,28 @@ func (r *Repo) ListRepos(c *gin.Context) {
 	}
 
 	gb.Response(c, http.StatusOK, repos)
+}
+
+func (r *Repo) UpdateRepo(c *gin.Context) {
+	rv, _ := c.Get(KeyRepo)
+	re := rv.(*ent.Repo)
+
+	p := &repoPayload{}
+	if err := c.ShouldBindBodyWith(p, binding.JSON); err != nil {
+		gb.ErrorResponse(c, http.StatusBadRequest, "It has failed to bind the body")
+		return
+	}
+
+	ctx := c.Request.Context()
+
+	re.ConfigPath = p.ConfigPath
+	_, err := r.store.UpdateRepo(ctx, re)
+	if err != nil {
+		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to update the repository.")
+		return
+	}
+
+	gb.Response(c, http.StatusOK, nil)
 }
 
 func (r *Repo) GetRepo(c *gin.Context) {

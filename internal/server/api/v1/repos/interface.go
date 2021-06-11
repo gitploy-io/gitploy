@@ -11,6 +11,7 @@ type (
 	Store interface {
 		ListRepos(ctx context.Context, u *ent.User, q string, page, perPage int) ([]*ent.Repo, error)
 		ListSortedRepos(ctx context.Context, u *ent.User, q string, page, perPage int) ([]*ent.Repo, error)
+		UpdateRepo(ctx context.Context, r *ent.Repo) (*ent.Repo, error)
 		FindRepo(ctx context.Context, u *ent.User, id string) (*ent.Repo, error)
 		FindRepoByNamespaceName(ctx context.Context, u *ent.User, namespace, name string) (*ent.Repo, error)
 		FindUserByHash(ctx context.Context, hash string) (*ent.User, error)
