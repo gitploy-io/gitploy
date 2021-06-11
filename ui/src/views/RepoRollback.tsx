@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { PageHeader, message } from 'antd'
+import { PageHeader, Result, Button, message } from 'antd'
 import { shallowEqual } from "react-redux";
 
 import { useAppDispatch, useAppSelector } from "../redux/hooks"
@@ -19,6 +19,7 @@ export interface Params {
 export default function RepoHome() {
     let { namespace, name } = useParams<Params>()
     const {
+        hasConfig,
         envs,
         deployments, 
         deploying } = useAppSelector(state => state.repoRollback, shallowEqual)
@@ -59,6 +60,20 @@ export default function RepoHome() {
     }
 
     handleRollbackStatus()
+
+    if (!hasConfig) {
+        return (
+            <Result
+                status="warning"
+                title="There isn't the configuration file."
+                extra={
+                    <Button type="primary" key="console">
+                      Read Document
+                    </Button>
+                }
+            />
+        )
+    }
 
     return (
 	    <div>
