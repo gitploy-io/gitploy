@@ -20,7 +20,7 @@ interface RepoRollbackState {
 
 const initialState: RepoRollbackState = {
     repo: null,
-    hasConfig: false,
+    hasConfig: true,
     env: "",
     envs: [],
     deployment: null,
