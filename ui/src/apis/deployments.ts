@@ -32,10 +32,10 @@ const mapDeploymentStatus = (s: string) => {
     }
 }
 
-export const listDeployments = async (repoId: string, env: string, page: number, perPage: number) => {
+export const listDeployments = async (repoId: string, env: string, status: string, page: number, perPage: number) => {
     let deployments:Deployment[]
 
-    deployments = await fetch(`${instance}/api/v1/repos/${repoId}/deployments?env=${env}&page=${page}&per_page=${perPage}`, {
+    deployments = await fetch(`${instance}/api/v1/repos/${repoId}/deployments?env=${env}&status=${status}&page=${page}&per_page=${perPage}`, {
         headers,
         credentials: 'same-origin',
     })

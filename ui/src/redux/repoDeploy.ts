@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit'
+import { StatusCodes } from 'http-status-codes'
 
 import { Repo, Branch, Commit, StatusState, DeploymentType, Tag, RequestStatus, HttpNotFoundError } from '../models'
 import { 
@@ -12,7 +13,6 @@ import {
     listTags, 
     getTag, 
     createDeployment } from '../apis'
-import { StatusCodes } from 'http-status-codes'
 
 // fetch all at the first page.
 const firstPage = 1

@@ -83,22 +83,23 @@ func (s *Store) FindRepoByNamespaceName(ctx context.Context, u *ent.User, namesp
 	return r, nil
 }
 
-func (s *Store) ListDeployments(ctx context.Context, r *ent.Repo, env string, page, perPage int) ([]*ent.Deployment, error) {
+func (s *Store) ListDeployments(ctx context.Context, r *ent.Repo, env string, status string, page, perPage int) ([]*ent.Deployment, error) {
 	q := s.c.Deployment.
 		Query()
 
+	q = q.Where(
+		deployment.HasRepoWith(repo.IDEQ(r.ID)),
+	)
+
 	if env != "" {
 		q = q.Where(
-			deployment.And(
-				deployment.EnvEQ(env),
-				deployment.HasRepoWith(repo.IDEQ(r.ID)),
-			),
+			deployment.EnvEQ(env),
 		)
-	} else {
+	}
+
+	if status != "" {
 		q = q.Where(
-			deployment.And(
-				deployment.HasRepoWith(repo.IDEQ(r.ID)),
-			),
+			deployment.StatusEQ(deployment.Status(status)),
 		)
 	}
 

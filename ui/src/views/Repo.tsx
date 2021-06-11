@@ -7,6 +7,7 @@ import { repoSlice } from '../redux/repo'
 import Main from './Main'
 import RepoHome from './RepoHome'
 import RepoDeploy from './RepoDeploy'
+import RepoRollabck from './RepoRollback'
 
 const { actions } = repoSlice
 
@@ -65,6 +66,9 @@ export default function Repo() {
                 {(key === "deploy")?
                     <div><RepoDeploy /></div> :
                     <div style={hide}><RepoDeploy /></div>}
+                {(key === "rollback")?
+                    <div><RepoRollabck /></div> :
+                    <div style={hide}><RepoRollabck /></div>}
             </div>
         </Main>
     )
