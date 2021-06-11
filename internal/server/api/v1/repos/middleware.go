@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/hanjunlee/gitploy/ent"
+	"github.com/hanjunlee/gitploy/ent/perm"
 	gb "github.com/hanjunlee/gitploy/internal/server/global"
 	"go.uber.org/zap"
 )
@@ -41,9 +42,8 @@ func (rm *RepoMiddleware) Repo() gin.HandlerFunc {
 		repo, err := rm.store.FindRepo(ctx, u, repoID)
 		if ent.IsNotFound(err) {
 			rm.log.Error("denied to access the repo.", zap.String("repoID", repoID), zap.Error(err))
-			gb.ErrorResponse(c, http.StatusInternalServerError, "It is denied to access the repo.")
+			gb.ErrorResponse(c, http.StatusForbidden, "It has denied to access the repo.")
 			return
-
 		} else if err != nil {
 			rm.log.Error("failed to get the repository.", zap.String("repoID", repoID), zap.Error(err))
 			gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to get the repository.")
@@ -51,5 +51,35 @@ func (rm *RepoMiddleware) Repo() gin.HandlerFunc {
 		}
 
 		c.Set(KeyRepo, repo)
+	}
+}
+
+func (rm *RepoMiddleware) AdminPerm() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var (
+			repoID = c.Param("repoID")
+		)
+
+		v, _ := c.Get(gb.KeyUser)
+		u := v.(*ent.User)
+
+		ctx := c.Request.Context()
+
+		p, err := rm.store.FindPerm(ctx, u, repoID)
+		if ent.IsNotFound(err) {
+			rm.log.Error("denied to access the repo.", zap.String("repoID", repoID), zap.Error(err))
+			gb.ErrorResponse(c, http.StatusForbidden, "It has denied to access the repo.")
+			return
+		} else if err != nil {
+			rm.log.Error("failed to get the repository.", zap.String("repoID", repoID), zap.Error(err))
+			gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to get the repository.")
+			return
+		}
+
+		if p.RepoPerm != perm.RepoPermAdmin {
+			rm.log.Warn("denied to access the repo.", zap.String("repoID", repoID), zap.Error(err))
+			gb.ErrorResponse(c, http.StatusForbidden, "It has denied to access the repo, only admin can access.")
+			return
+		}
 	}
 }
