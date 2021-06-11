@@ -1,7 +1,10 @@
-import { Timeline } from 'antd'
-import { SyncOutlined } from '@ant-design/icons';
+import { Timeline, Typography, Avatar, Badge } from 'antd'
+import { SyncOutlined } from '@ant-design/icons'
+import moment from "moment"
 
-import { Deployment, DeploymentStatus } from '../models'
+import { Deployment, DeploymentType, DeploymentStatus } from '../models'
+
+const { Text } = Typography
 
 interface ActivityLogsProps {
     deployments: Deployment[]
@@ -12,8 +15,24 @@ export default function ActivityLogs(props: ActivityLogsProps) {
     return (
         <Timeline>
             {props.deployments.map((d, idx) => {
-                return <Timeline.Item key={idx} color={getStatusColor(d.status)} dot={(d.status === DeploymentStatus.Running) ? <SyncOutlined spin /> : null}>
-                    {d.env} {d.ref}
+                const dot = (d.status === DeploymentStatus.Running) ? <SyncOutlined spin /> : null
+                const ref = (d.type === DeploymentType.Commit)? d.sha.substr(0, 7) : d.ref
+                let description: React.ReactElement
+
+                if (d.deployer) {
+                    description = <p>
+                        Deployed by <Avatar size="small" src={d.deployer.avatar} /> <Text strong>{d.deployer.login}</Text> {moment(d.createdAt).fromNow()}  
+                    </p>
+                } else {
+                    description = <p>
+                        Deployed {moment(d.createdAt).fromNow()}
+                    </p>
+                }
+
+                return <Timeline.Item key={idx} color={getStatusColor(d.status)} dot={dot}>
+                    <p><Text strong>{d.env}</Text> <Text code>{ref}</Text> <Badge color={getStatusColor(d.status)} text={d.status}/></p>
+                    {description}
+                    
                 </Timeline.Item>
             })}
         </Timeline>
@@ -26,9 +45,9 @@ const getStatusColor = (status: DeploymentStatus) => {
         case DeploymentStatus.Waiting:
             return "gray"
         case DeploymentStatus.Created:
-            return "blue"
+            return "purple"
         case DeploymentStatus.Running:
-            return "blue"
+            return "purple"
         case DeploymentStatus.Success:
             return "green"
         case DeploymentStatus.Failure:
