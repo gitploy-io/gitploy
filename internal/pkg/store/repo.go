@@ -159,3 +159,31 @@ func (s *Store) UpdateDeployment(ctx context.Context, d *ent.Deployment) (*ent.D
 		SetStatus(d.Status).
 		Save(ctx)
 }
+
+func (s *Store) FindPerm(ctx context.Context, u *ent.User, repoID string) (*ent.Perm, error) {
+	return s.c.Perm.
+		Query().
+		Where(
+			perm.And(
+				perm.HasUserWith(user.IDEQ(u.ID)),
+				perm.HasRepoWith(repo.IDEQ(repoID)),
+			),
+		).
+		Only(ctx)
+}
+
+func (s *Store) Activate(ctx context.Context, r *ent.Repo) (*ent.Repo, error) {
+	return s.c.Repo.
+		UpdateOne(r).
+		SetActive(true).
+		SetWebhookID(r.WebhookID).
+		Save(ctx)
+}
+
+func (s *Store) Deactivate(ctx context.Context, r *ent.Repo) (*ent.Repo, error) {
+	return s.c.Repo.
+		UpdateOne(r).
+		SetActive(true).
+		SetWebhookID(0).
+		Save(ctx)
+}

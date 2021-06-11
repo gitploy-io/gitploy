@@ -135,3 +135,10 @@ func mapGithubBranchToBranch(b *github.Branch) *vo.Branch {
 		CommitSha: *b.Commit.SHA,
 	}
 }
+
+func mapInsecureSSL(ssl bool) int {
+	if ssl {
+		return 0
+	}
+	return 1
+}

@@ -8,12 +8,16 @@ type (
 		Server
 		Store
 		Github
+		Webhook
 	}
 
 	Server struct {
-		ServerHost  string `required:"true" split_words:"true"`
-		ServerProto string `required:"true" default:"https" split_words:"true"`
-		ServerPort  string `required:"true" default:"8080" split_words:"true"`
+		ServerHost       string `required:"true" split_words:"true"`
+		ServerProto      string `required:"true" default:"https" split_words:"true"`
+		ServerPort       string `required:"true" default:"8080" split_words:"true"`
+		ServerProxyHost  string `split_words:"true"`
+		ServerProxyProto string `default:"https" split_words:"true"`
+		ServerProxyPort  string `default:"8081" split_words:"true"`
 	}
 
 	Store struct {
@@ -25,6 +29,10 @@ type (
 		GithubClientID     string   `split_words:"true"`
 		GithubClientSecret string   `split_words:"true"`
 		GithubScopes       []string `split_words:"true" default:"repo"`
+	}
+
+	Webhook struct {
+		WebhookSecret string `split_words:"true"`
 	}
 )
 

@@ -24,6 +24,10 @@ type Repo struct {
 	Description string `json:"description,omitempty"`
 	// ConfigPath holds the value of the "config_path" field.
 	ConfigPath string `json:"config_path,omitempty"`
+	// Active holds the value of the "active" field.
+	Active bool `json:"active,omitempty"`
+	// WebhookID holds the value of the "webhook_id" field.
+	WebhookID int64 `json:"webhook_id,omitempty"`
 	// SyncedAt holds the value of the "synced_at" field.
 	SyncedAt time.Time `json:"synced_at,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
@@ -71,6 +75,10 @@ func (*Repo) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
+		case repo.FieldActive:
+			values[i] = new(sql.NullBool)
+		case repo.FieldWebhookID:
+			values[i] = new(sql.NullInt64)
 		case repo.FieldID, repo.FieldNamespace, repo.FieldName, repo.FieldDescription, repo.FieldConfigPath:
 			values[i] = new(sql.NullString)
 		case repo.FieldSyncedAt, repo.FieldCreatedAt, repo.FieldUpdatedAt, repo.FieldLatestDeployedAt:
@@ -119,6 +127,18 @@ func (r *Repo) assignValues(columns []string, values []interface{}) error {
 				return fmt.Errorf("unexpected type %T for field config_path", values[i])
 			} else if value.Valid {
 				r.ConfigPath = value.String
+			}
+		case repo.FieldActive:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field active", values[i])
+			} else if value.Valid {
+				r.Active = value.Bool
+			}
+		case repo.FieldWebhookID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field webhook_id", values[i])
+			} else if value.Valid {
+				r.WebhookID = value.Int64
 			}
 		case repo.FieldSyncedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -190,6 +210,10 @@ func (r *Repo) String() string {
 	builder.WriteString(r.Description)
 	builder.WriteString(", config_path=")
 	builder.WriteString(r.ConfigPath)
+	builder.WriteString(", active=")
+	builder.WriteString(fmt.Sprintf("%v", r.Active))
+	builder.WriteString(", webhook_id=")
+	builder.WriteString(fmt.Sprintf("%v", r.WebhookID))
 	builder.WriteString(", synced_at=")
 	builder.WriteString(r.SyncedAt.Format(time.ANSIC))
 	builder.WriteString(", created_at=")

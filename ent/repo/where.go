@@ -121,6 +121,20 @@ func ConfigPath(v string) predicate.Repo {
 	})
 }
 
+// Active applies equality check predicate on the "active" field. It's identical to ActiveEQ.
+func Active(v bool) predicate.Repo {
+	return predicate.Repo(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldActive), v))
+	})
+}
+
+// WebhookID applies equality check predicate on the "webhook_id" field. It's identical to WebhookIDEQ.
+func WebhookID(v int64) predicate.Repo {
+	return predicate.Repo(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldWebhookID), v))
+	})
+}
+
 // SyncedAt applies equality check predicate on the "synced_at" field. It's identical to SyncedAtEQ.
 func SyncedAt(v time.Time) predicate.Repo {
 	return predicate.Repo(func(s *sql.Selector) {
@@ -604,6 +618,110 @@ func ConfigPathEqualFold(v string) predicate.Repo {
 func ConfigPathContainsFold(v string) predicate.Repo {
 	return predicate.Repo(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldConfigPath), v))
+	})
+}
+
+// ActiveEQ applies the EQ predicate on the "active" field.
+func ActiveEQ(v bool) predicate.Repo {
+	return predicate.Repo(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldActive), v))
+	})
+}
+
+// ActiveNEQ applies the NEQ predicate on the "active" field.
+func ActiveNEQ(v bool) predicate.Repo {
+	return predicate.Repo(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldActive), v))
+	})
+}
+
+// WebhookIDEQ applies the EQ predicate on the "webhook_id" field.
+func WebhookIDEQ(v int64) predicate.Repo {
+	return predicate.Repo(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldWebhookID), v))
+	})
+}
+
+// WebhookIDNEQ applies the NEQ predicate on the "webhook_id" field.
+func WebhookIDNEQ(v int64) predicate.Repo {
+	return predicate.Repo(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldWebhookID), v))
+	})
+}
+
+// WebhookIDIn applies the In predicate on the "webhook_id" field.
+func WebhookIDIn(vs ...int64) predicate.Repo {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Repo(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldWebhookID), v...))
+	})
+}
+
+// WebhookIDNotIn applies the NotIn predicate on the "webhook_id" field.
+func WebhookIDNotIn(vs ...int64) predicate.Repo {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Repo(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldWebhookID), v...))
+	})
+}
+
+// WebhookIDGT applies the GT predicate on the "webhook_id" field.
+func WebhookIDGT(v int64) predicate.Repo {
+	return predicate.Repo(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldWebhookID), v))
+	})
+}
+
+// WebhookIDGTE applies the GTE predicate on the "webhook_id" field.
+func WebhookIDGTE(v int64) predicate.Repo {
+	return predicate.Repo(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldWebhookID), v))
+	})
+}
+
+// WebhookIDLT applies the LT predicate on the "webhook_id" field.
+func WebhookIDLT(v int64) predicate.Repo {
+	return predicate.Repo(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldWebhookID), v))
+	})
+}
+
+// WebhookIDLTE applies the LTE predicate on the "webhook_id" field.
+func WebhookIDLTE(v int64) predicate.Repo {
+	return predicate.Repo(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldWebhookID), v))
+	})
+}
+
+// WebhookIDIsNil applies the IsNil predicate on the "webhook_id" field.
+func WebhookIDIsNil() predicate.Repo {
+	return predicate.Repo(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldWebhookID)))
+	})
+}
+
+// WebhookIDNotNil applies the NotNil predicate on the "webhook_id" field.
+func WebhookIDNotNil() predicate.Repo {
+	return predicate.Repo(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldWebhookID)))
 	})
 }
 

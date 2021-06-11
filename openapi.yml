@@ -521,6 +521,50 @@ paths:
           $ref: '#/components/responses/422UnprocessableEntity'
         '500':
           $ref: '#/components/responses/500InternalError'
+  
+  /repos/{repoId}/activate:
+    post:
+      tags:
+        - Repo
+      summary: It create the webhook of the repo
+      parameters:
+        - in: path
+          name: repoId
+          required: true
+          schema:
+            type: integer
+            description: The repository id
+      responses:
+        '200':
+          description: Activate successfully
+        '401': 
+          $ref: '#/components/responses/401Unauthorized'
+        '403': 
+          $ref: '#/components/responses/403Forbidden'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+
+  /repos/{repoId}/deactivate:
+    post:
+      tags:
+        - Repo
+      summary: It removes the webhook of the repo
+      parameters:
+        - in: path
+          name: repoId
+          required: true
+          schema:
+            type: integer
+            description: The repository id
+      responses:
+        '200':
+          description: Deactivate successfully
+        '401': 
+          $ref: '#/components/responses/401Unauthorized'
+        '403': 
+          $ref: '#/components/responses/403Forbidden'
+        '500':
+          $ref: '#/components/responses/500InternalError'
 
 security:
   - BearerAuth: []
@@ -545,6 +589,10 @@ components:
           type: string
         description:
           type: string
+        active:
+          type: boolean
+        webhook_id:
+          type: integer
         synced_at:
           type: string
         created_at:

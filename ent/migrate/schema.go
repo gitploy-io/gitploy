@@ -118,6 +118,8 @@ var (
 		{Name: "name", Type: field.TypeString},
 		{Name: "description", Type: field.TypeString, Nullable: true},
 		{Name: "config_path", Type: field.TypeString, Default: "deploy.yml"},
+		{Name: "active", Type: field.TypeBool, Default: false},
+		{Name: "webhook_id", Type: field.TypeInt64, Nullable: true},
 		{Name: "synced_at", Type: field.TypeTime, Nullable: true},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},

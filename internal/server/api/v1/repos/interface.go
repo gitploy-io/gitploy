@@ -18,6 +18,9 @@ type (
 		FindLatestDeployment(ctx context.Context, r *ent.Repo, env string) (*ent.Deployment, error)
 		CreateDeployment(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment) (*ent.Deployment, error)
 		UpdateDeployment(ctx context.Context, d *ent.Deployment) (*ent.Deployment, error)
+		FindPerm(ctx context.Context, u *ent.User, repoID string) (*ent.Perm, error)
+		Activate(ctx context.Context, r *ent.Repo) (*ent.Repo, error)
+		Deactivate(ctx context.Context, r *ent.Repo) (*ent.Repo, error)
 	}
 
 	SCM interface {
@@ -31,5 +34,7 @@ type (
 		// SCM returns the deployment with UID and SHA.
 		CreateDeployment(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, e *vo.Env) (*ent.Deployment, error)
 		GetConfig(ctx context.Context, u *ent.User, r *ent.Repo) (*vo.Config, error)
+		CreateWebhook(ctx context.Context, u *ent.User, r *ent.Repo, c *vo.WebhookConfig) (int64, error)
+		DeleteWebhook(ctx context.Context, u *ent.User, r *ent.Repo, id int64) error
 	}
 )

@@ -62,6 +62,34 @@ func (rc *RepoCreate) SetNillableConfigPath(s *string) *RepoCreate {
 	return rc
 }
 
+// SetActive sets the "active" field.
+func (rc *RepoCreate) SetActive(b bool) *RepoCreate {
+	rc.mutation.SetActive(b)
+	return rc
+}
+
+// SetNillableActive sets the "active" field if the given value is not nil.
+func (rc *RepoCreate) SetNillableActive(b *bool) *RepoCreate {
+	if b != nil {
+		rc.SetActive(*b)
+	}
+	return rc
+}
+
+// SetWebhookID sets the "webhook_id" field.
+func (rc *RepoCreate) SetWebhookID(i int64) *RepoCreate {
+	rc.mutation.SetWebhookID(i)
+	return rc
+}
+
+// SetNillableWebhookID sets the "webhook_id" field if the given value is not nil.
+func (rc *RepoCreate) SetNillableWebhookID(i *int64) *RepoCreate {
+	if i != nil {
+		rc.SetWebhookID(*i)
+	}
+	return rc
+}
+
 // SetSyncedAt sets the "synced_at" field.
 func (rc *RepoCreate) SetSyncedAt(t time.Time) *RepoCreate {
 	rc.mutation.SetSyncedAt(t)
@@ -210,6 +238,10 @@ func (rc *RepoCreate) defaults() {
 		v := repo.DefaultConfigPath
 		rc.mutation.SetConfigPath(v)
 	}
+	if _, ok := rc.mutation.Active(); !ok {
+		v := repo.DefaultActive
+		rc.mutation.SetActive(v)
+	}
 	if _, ok := rc.mutation.CreatedAt(); !ok {
 		v := repo.DefaultCreatedAt()
 		rc.mutation.SetCreatedAt(v)
@@ -230,6 +262,9 @@ func (rc *RepoCreate) check() error {
 	}
 	if _, ok := rc.mutation.ConfigPath(); !ok {
 		return &ValidationError{Name: "config_path", err: errors.New("ent: missing required field \"config_path\"")}
+	}
+	if _, ok := rc.mutation.Active(); !ok {
+		return &ValidationError{Name: "active", err: errors.New("ent: missing required field \"active\"")}
 	}
 	if _, ok := rc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New("ent: missing required field \"created_at\"")}
@@ -297,6 +332,22 @@ func (rc *RepoCreate) createSpec() (*Repo, *sqlgraph.CreateSpec) {
 			Column: repo.FieldConfigPath,
 		})
 		_node.ConfigPath = value
+	}
+	if value, ok := rc.mutation.Active(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: repo.FieldActive,
+		})
+		_node.Active = value
+	}
+	if value, ok := rc.mutation.WebhookID(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt64,
+			Value:  value,
+			Column: repo.FieldWebhookID,
+		})
+		_node.WebhookID = value
 	}
 	if value, ok := rc.mutation.SyncedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

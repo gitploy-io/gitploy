@@ -1748,6 +1748,9 @@ type RepoMutation struct {
 	name               *string
 	description        *string
 	config_path        *string
+	active             *bool
+	webhook_id         *int64
+	addwebhook_id      *int64
 	synced_at          *time.Time
 	created_at         *time.Time
 	updated_at         *time.Time
@@ -2004,6 +2007,112 @@ func (m *RepoMutation) OldConfigPath(ctx context.Context) (v string, err error) 
 // ResetConfigPath resets all changes to the "config_path" field.
 func (m *RepoMutation) ResetConfigPath() {
 	m.config_path = nil
+}
+
+// SetActive sets the "active" field.
+func (m *RepoMutation) SetActive(b bool) {
+	m.active = &b
+}
+
+// Active returns the value of the "active" field in the mutation.
+func (m *RepoMutation) Active() (r bool, exists bool) {
+	v := m.active
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldActive returns the old "active" field's value of the Repo entity.
+// If the Repo object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RepoMutation) OldActive(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldActive is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldActive requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldActive: %w", err)
+	}
+	return oldValue.Active, nil
+}
+
+// ResetActive resets all changes to the "active" field.
+func (m *RepoMutation) ResetActive() {
+	m.active = nil
+}
+
+// SetWebhookID sets the "webhook_id" field.
+func (m *RepoMutation) SetWebhookID(i int64) {
+	m.webhook_id = &i
+	m.addwebhook_id = nil
+}
+
+// WebhookID returns the value of the "webhook_id" field in the mutation.
+func (m *RepoMutation) WebhookID() (r int64, exists bool) {
+	v := m.webhook_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldWebhookID returns the old "webhook_id" field's value of the Repo entity.
+// If the Repo object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RepoMutation) OldWebhookID(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldWebhookID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldWebhookID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldWebhookID: %w", err)
+	}
+	return oldValue.WebhookID, nil
+}
+
+// AddWebhookID adds i to the "webhook_id" field.
+func (m *RepoMutation) AddWebhookID(i int64) {
+	if m.addwebhook_id != nil {
+		*m.addwebhook_id += i
+	} else {
+		m.addwebhook_id = &i
+	}
+}
+
+// AddedWebhookID returns the value that was added to the "webhook_id" field in this mutation.
+func (m *RepoMutation) AddedWebhookID() (r int64, exists bool) {
+	v := m.addwebhook_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearWebhookID clears the value of the "webhook_id" field.
+func (m *RepoMutation) ClearWebhookID() {
+	m.webhook_id = nil
+	m.addwebhook_id = nil
+	m.clearedFields[repo.FieldWebhookID] = struct{}{}
+}
+
+// WebhookIDCleared returns if the "webhook_id" field was cleared in this mutation.
+func (m *RepoMutation) WebhookIDCleared() bool {
+	_, ok := m.clearedFields[repo.FieldWebhookID]
+	return ok
+}
+
+// ResetWebhookID resets all changes to the "webhook_id" field.
+func (m *RepoMutation) ResetWebhookID() {
+	m.webhook_id = nil
+	m.addwebhook_id = nil
+	delete(m.clearedFields, repo.FieldWebhookID)
 }
 
 // SetSyncedAt sets the "synced_at" field.
@@ -2296,7 +2405,7 @@ func (m *RepoMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *RepoMutation) Fields() []string {
-	fields := make([]string, 0, 8)
+	fields := make([]string, 0, 10)
 	if m.namespace != nil {
 		fields = append(fields, repo.FieldNamespace)
 	}
@@ -2308,6 +2417,12 @@ func (m *RepoMutation) Fields() []string {
 	}
 	if m.config_path != nil {
 		fields = append(fields, repo.FieldConfigPath)
+	}
+	if m.active != nil {
+		fields = append(fields, repo.FieldActive)
+	}
+	if m.webhook_id != nil {
+		fields = append(fields, repo.FieldWebhookID)
 	}
 	if m.synced_at != nil {
 		fields = append(fields, repo.FieldSyncedAt)
@@ -2337,6 +2452,10 @@ func (m *RepoMutation) Field(name string) (ent.Value, bool) {
 		return m.Description()
 	case repo.FieldConfigPath:
 		return m.ConfigPath()
+	case repo.FieldActive:
+		return m.Active()
+	case repo.FieldWebhookID:
+		return m.WebhookID()
 	case repo.FieldSyncedAt:
 		return m.SyncedAt()
 	case repo.FieldCreatedAt:
@@ -2362,6 +2481,10 @@ func (m *RepoMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldDescription(ctx)
 	case repo.FieldConfigPath:
 		return m.OldConfigPath(ctx)
+	case repo.FieldActive:
+		return m.OldActive(ctx)
+	case repo.FieldWebhookID:
+		return m.OldWebhookID(ctx)
 	case repo.FieldSyncedAt:
 		return m.OldSyncedAt(ctx)
 	case repo.FieldCreatedAt:
@@ -2407,6 +2530,20 @@ func (m *RepoMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetConfigPath(v)
 		return nil
+	case repo.FieldActive:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetActive(v)
+		return nil
+	case repo.FieldWebhookID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetWebhookID(v)
+		return nil
 	case repo.FieldSyncedAt:
 		v, ok := value.(time.Time)
 		if !ok {
@@ -2442,13 +2579,21 @@ func (m *RepoMutation) SetField(name string, value ent.Value) error {
 // AddedFields returns all numeric fields that were incremented/decremented during
 // this mutation.
 func (m *RepoMutation) AddedFields() []string {
-	return nil
+	var fields []string
+	if m.addwebhook_id != nil {
+		fields = append(fields, repo.FieldWebhookID)
+	}
+	return fields
 }
 
 // AddedField returns the numeric value that was incremented/decremented on a field
 // with the given name. The second boolean return value indicates that this field
 // was not set, or was not defined in the schema.
 func (m *RepoMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case repo.FieldWebhookID:
+		return m.AddedWebhookID()
+	}
 	return nil, false
 }
 
@@ -2457,6 +2602,13 @@ func (m *RepoMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *RepoMutation) AddField(name string, value ent.Value) error {
 	switch name {
+	case repo.FieldWebhookID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddWebhookID(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Repo numeric field %s", name)
 }
@@ -2467,6 +2619,9 @@ func (m *RepoMutation) ClearedFields() []string {
 	var fields []string
 	if m.FieldCleared(repo.FieldDescription) {
 		fields = append(fields, repo.FieldDescription)
+	}
+	if m.FieldCleared(repo.FieldWebhookID) {
+		fields = append(fields, repo.FieldWebhookID)
 	}
 	if m.FieldCleared(repo.FieldSyncedAt) {
 		fields = append(fields, repo.FieldSyncedAt)
@@ -2490,6 +2645,9 @@ func (m *RepoMutation) ClearField(name string) error {
 	switch name {
 	case repo.FieldDescription:
 		m.ClearDescription()
+		return nil
+	case repo.FieldWebhookID:
+		m.ClearWebhookID()
 		return nil
 	case repo.FieldSyncedAt:
 		m.ClearSyncedAt()
@@ -2516,6 +2674,12 @@ func (m *RepoMutation) ResetField(name string) error {
 		return nil
 	case repo.FieldConfigPath:
 		m.ResetConfigPath()
+		return nil
+	case repo.FieldActive:
+		m.ResetActive()
+		return nil
+	case repo.FieldWebhookID:
+		m.ResetWebhookID()
 		return nil
 	case repo.FieldSyncedAt:
 		m.ResetSyncedAt()
