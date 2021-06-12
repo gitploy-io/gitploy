@@ -4,6 +4,7 @@ import { shallowEqual } from "react-redux";
 
 import { useAppSelector, useAppDispatch } from "../redux/hooks"
 import { DeploymentType, Branch, Commit, Tag, RequestStatus } from "../models";
+import { fetchDeployments } from "../redux/repoHome";
 import { 
     init, 
     fetchEnvs, 
@@ -17,9 +18,9 @@ import {
     fetchTags, 
     checkTag,
     addTagManually, 
-    deploy} from '../redux/repoDeploy'
+    deploy} from "../redux/repoDeploy"
 
-import DeployForm, {Option} from '../components/DeployForm'
+import DeployForm, {Option} from "../components/DeployForm"
 import { useEffect } from "react";
 
 const { actions } = repoDeploySlice
@@ -92,7 +93,13 @@ export default function RepoDeploy() {
     }
 
     const onClickDeploy = () => {
-        dispatch(deploy())
+        const f = async () => {
+            await dispatch(deploy())
+            // TODO: replace procedure into event stream.
+            // Rollback also have to be replaced.
+            await dispatch(fetchDeployments())
+        }
+        f()
     }
 
     if (!hasConfig) {

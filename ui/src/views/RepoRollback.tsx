@@ -4,6 +4,7 @@ import { PageHeader, Result, Button } from 'antd'
 import { shallowEqual } from "react-redux";
 
 import { useAppDispatch, useAppSelector } from "../redux/hooks"
+import { fetchDeployments as refreshDeployments } from "../redux/repoHome";
 import { repoRollbackSlice, init, fetchEnvs, fetchDeployments, rollback } from "../redux/repoRollback"
 
 import { Deployment, RequestStatus } from '../models'
@@ -44,7 +45,11 @@ export default function RepoHome() {
     }
 
     const onClickRollback = () => {
-        dispatch(rollback())
+        const f = async () => {
+            await dispatch(rollback())
+            await dispatch(refreshDeployments())
+        }
+        f()
     }
 
     if (!hasConfig) {
