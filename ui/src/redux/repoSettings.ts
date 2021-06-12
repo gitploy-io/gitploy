@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit"
+import { message } from "antd"
 
 import { searchRepo, updateRepo, deactivateRepo } from "../apis"
 import { Repo, RepoPayload, RequestStatus, HttpForbiddenError  } from "../models"
@@ -27,7 +28,7 @@ export const init = createAsyncThunk<Repo, {namespace: string, name: string}, { 
 
 export const save = createAsyncThunk<Repo, RepoPayload, { state: {repoSettings: RepoSettingsState} }>(
     'repoSettings/save', 
-    async (payload, { getState, requestId } ) => {
+    async (payload, { getState, rejectWithValue, requestId } ) => {
         const { repo, saveId, saving } = getState().repoSettings
         if (repo === null) {
             throw new Error("There is no repo.")
@@ -37,8 +38,14 @@ export const save = createAsyncThunk<Repo, RepoPayload, { state: {repoSettings: 
             return repo
         }
 
-        const nr = await updateRepo(repo.id, payload)
-        return nr
+        try {
+            const nr = await updateRepo(repo.id, payload)
+            message.success("Success to save.", 3)
+            return nr
+        } catch(e) {
+            message.error("It has failed to save.", 3)
+            return rejectWithValue(e)
+        }
     },
 )
 
@@ -49,8 +56,15 @@ export const deactivate = createAsyncThunk<Repo, void, { state: {repoSettings: R
         if (repo === null) throw new Error("There is no repo.")
 
         try {
-            return await deactivateRepo(repo.id)
+            const nr = await deactivateRepo(repo.id)
+            window.location.reload()
+            return nr
         } catch(e) {
+            if (e instanceof HttpForbiddenError) {
+                message.error("Only admin permission can deactivate.", 3)
+            } else {
+                message.error("It has failed to save.", 3)
+            }
             return rejectWithValue(e)
         }
     },
@@ -59,15 +73,7 @@ export const deactivate = createAsyncThunk<Repo, void, { state: {repoSettings: R
 export const repoSettingsSlice = createSlice({
     name: "repoSettings",
     initialState,
-    reducers: {
-        unsetSaving: (state) => {
-            state.saving = RequestStatus.Idle
-            state.saveId = ""
-        },
-        unsetDeactivating: (state) => {
-            state.deactivating = RequestStatus.Idle
-        }
-    },
+    reducers: {},
     extraReducers: builder => {
         builder
             .addCase(init.fulfilled, (state, action) => {
@@ -81,26 +87,22 @@ export const repoSettingsSlice = createSlice({
             })
             .addCase(save.fulfilled, (state, action) => {
                 if (state.saving === RequestStatus.Pending && state.saveId === action.meta.requestId) {
-                    state.saving = RequestStatus.Success
+                    state.repo = action.payload
+                    state.saving = RequestStatus.Idle
                 }
             })
             .addCase(save.rejected, (state, action) => {
                 if (state.saving === RequestStatus.Pending && state.saveId === action.meta.requestId) {
-                    state.saving = RequestStatus.Failure
+                    state.saving = RequestStatus.Idle
                 }
             })
             .addCase(deactivate.pending, (state) => {
-                state.deactivating = RequestStatus.Idle
+                state.deactivating = RequestStatus.Pending
             })
             .addCase(deactivate.fulfilled, (state) => {
-                state.deactivating = RequestStatus.Success
+                state.deactivating = RequestStatus.Idle
             })
             .addCase(deactivate.rejected, (state, action: PayloadAction<unknown> | PayloadAction<HttpForbiddenError>) => {
-                if (action.payload instanceof HttpForbiddenError) {
-                    state.deactivating = RequestStatus.Failure
-                }
-
-                console.log(action)
                 state.deactivating = RequestStatus.Idle
             })
     }

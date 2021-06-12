@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit'
+import { message } from "antd"
 
 import { searchRepo, activateRepo } from "../apis/repos"
 import { Repo, RequestStatus } from "../models"
@@ -31,8 +32,14 @@ export const activate = createAsyncThunk<Repo, void, { state: {repo: RepoState} 
         if (repo === null) throw new Error("There is no repo.")
 
         try {
-            return await activateRepo(repo.id)
+            const nr =  await activateRepo(repo.id)
+            return nr
         } catch(e) {
+            if (e instanceof HttpForbiddenError) {
+                message.error("Only admin permission can activate.", 3)
+            } else {
+                message.error("It has failed to activate.", 3)
+            }
             return rejectWithValue(e)
         }
     },
@@ -45,9 +52,6 @@ export const repoSlice = createSlice({
         setKey: (state, action: PayloadAction<string>) => {
             state.key = action.payload
         },
-        unsetActivating: (state) => {
-            state.activating = RequestStatus.Idle
-        }
     },
     extraReducers: builder => {
         builder
@@ -59,15 +63,10 @@ export const repoSlice = createSlice({
                 state.activating = RequestStatus.Pending
             })
             .addCase(activate.fulfilled, (state, action) => {
-                state.activating = RequestStatus.Success
+                state.activating = RequestStatus.Idle
                 state.repo = action.payload
             })
-            .addCase(activate.rejected, (state, action: PayloadAction<unknown> | PayloadAction<HttpForbiddenError>) => {
-                if (action.payload instanceof HttpForbiddenError) {
-                    state.activating = RequestStatus.Failure
-                }
-
-                console.log(action)
+            .addCase(activate.rejected, (state) => {
                 state.activating = RequestStatus.Idle
             })
     }

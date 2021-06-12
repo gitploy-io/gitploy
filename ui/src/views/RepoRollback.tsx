@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { PageHeader, Result, Button, message } from 'antd'
+import { PageHeader, Result, Button } from 'antd'
 import { shallowEqual } from "react-redux";
 
 import { useAppDispatch, useAppSelector } from "../redux/hooks"
@@ -46,20 +46,6 @@ export default function RepoHome() {
     const onClickRollback = () => {
         dispatch(rollback())
     }
-
-    const handleRollbackStatus = () => {
-        if (deploying === RequestStatus.Failure) {
-            message.error("It has failed to rollback.", 3)
-            dispatch(actions.unsetDeploy())
-            return 
-        } else if (deploying === RequestStatus.Success) {
-            message.success("It starts to rollback.", 3)
-            dispatch(actions.unsetDeploy())
-            return
-        }
-    }
-
-    handleRollbackStatus()
 
     if (!hasConfig) {
         return (

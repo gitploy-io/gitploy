@@ -1,16 +1,14 @@
 import { useEffect  } from "react";
 import { shallowEqual } from "react-redux";
 import { useParams } from "react-router-dom";
-import { message, PageHeader } from "antd"
+import { PageHeader } from "antd"
 
 import { useAppSelector, useAppDispatch } from "../redux/hooks"
-import { repoSettingsSlice, init, save, deactivate } from "../redux/repoSettings"
+import { init, save, deactivate } from "../redux/repoSettings"
 import { RepoPayload, RequestStatus } from "../models";
 
 import SettingsForm from "../components/SettingsForm"
 import Spin from "../components/Spin";
-
-const { actions } = repoSettingsSlice
 
 interface Params {
     namespace: string
@@ -19,7 +17,7 @@ interface Params {
 
 export default function RepoSettings() {
     let { namespace, name } = useParams<Params>()
-    const { repo, saving, deactivating } = useAppSelector(state => state.repoSettings, shallowEqual)
+    const { repo, saving } = useAppSelector(state => state.repoSettings, shallowEqual)
     const dispatch = useAppDispatch()
 
     useEffect(() => {
@@ -37,29 +35,6 @@ export default function RepoSettings() {
     const onClickDeactivate = () => {
         dispatch(deactivate())
     }
-
-    const handleSaving = () => {
-        if (saving === RequestStatus.Success) {
-            dispatch(actions.unsetSaving())
-            message.success("It has succeed to save.", 3)
-        } else if (saving === RequestStatus.Failure) {
-            dispatch(actions.unsetSaving())
-            message.error("It has failed to save.", 3)
-        }
-    }
-
-    const handleDeactivating = () => {
-        if (deactivating === RequestStatus.Success) {
-            dispatch(actions.unsetDeactivating())
-            window.location.reload()
-        } else if (deactivating === RequestStatus.Failure) {
-            message.error("Only admin permission can deactivate.", 3)
-            dispatch(actions.unsetDeactivating())
-        }
-    }
-
-    handleSaving()
-    handleDeactivating()
 
     if (repo === null) {
         return <div><Spin /></div>

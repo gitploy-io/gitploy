@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import { PageHeader, Result, Button, message } from "antd";
+import { PageHeader, Result, Button } from "antd";
 import { shallowEqual } from "react-redux";
 
 import { useAppSelector, useAppDispatch } from "../redux/hooks"
@@ -41,7 +41,6 @@ export default function RepoDeploy() {
         commitCheck,
         tags, 
         tagCheck,
-        adding, 
         deploying } = useAppSelector(state => state.repoDeploy, shallowEqual)
     const dispatch = useAppDispatch()
 
@@ -92,32 +91,9 @@ export default function RepoDeploy() {
         dispatch(addTagManually(option.value))
     }
 
-    const handleAddManuallyStatus = () => {
-        if (adding === RequestStatus.Failure) {
-            message.error("It has failed to add the item. Check Ref is correct.")
-            dispatch(actions.unsetAddManually())
-        }
-    }
-
-
     const onClickDeploy = () => {
         dispatch(deploy())
     }
-
-    const handleDeployStatus = () => {
-        if (deploying === RequestStatus.Failure) {
-            message.error("It has failed to deploy.", 3)
-            dispatch(actions.unsetDeploy())
-            return 
-        } else if (deploying === RequestStatus.Success) {
-            message.success("It starts to deploy.", 3)
-            dispatch(actions.unsetDeploy())
-            return
-        }
-    }
-
-    handleAddManuallyStatus()
-    handleDeployStatus()
 
     if (!hasConfig) {
         return (

@@ -50,10 +50,10 @@ export const listDeployments = async (repoId: string, env: string, status: strin
             }
             return {
                 id: d.id,
-                uid: d.uid,
+                uid: d.uid? d.uid : "",
                 type: mapDeploymentType(d.type),
                 ref: d.ref,
-                sha: d.sha,
+                sha: d.sha? d.sha : "",
                 env: d.env,
                 status: mapDeploymentStatus(d.status),
                 createdAt: new Date(d.created_at),

@@ -1,11 +1,10 @@
 import { useParams } from "react-router-dom";
-import { Menu, Breadcrumb, message } from 'antd'
+import { Menu, Breadcrumb } from 'antd'
 import { shallowEqual } from "react-redux";
 import { useEffect } from "react";
 
 import { useAppSelector, useAppDispatch } from '../redux/hooks'
 import { repoSlice, init, activate } from '../redux/repo'
-import { RequestStatus } from "../models"
 
 import ActivateButton from "../components/ActivateButton"
 import Main from './Main'
@@ -27,7 +26,7 @@ interface Params {
 
 export default function Repo() {
     let { namespace, name } = useParams<Params>()
-    const { key, repo, activating } = useAppSelector(state => state.repo, shallowEqual)
+    const { key, repo } = useAppSelector(state => state.repo, shallowEqual)
     const dispatch = useAppDispatch()
 
     useEffect(() => {
@@ -47,13 +46,6 @@ export default function Repo() {
         dispatch(activate())
     }
 
-    const handleActivating = () => {
-        if (activating === RequestStatus.Failure) {
-            message.error("Only admin permission can activate.", 3)
-            dispatch(actions.unsetActivating())
-        }
-    }
-
     const hasInit = (repo)? true : false
     const active = (repo?.active)? true : false
 
@@ -67,8 +59,6 @@ export default function Repo() {
         display: (hasInit && active)? "" : "none",
         marginTop: "20px", 
     }
-
-    handleActivating()
 
     return (
         <Main>
