@@ -115,7 +115,7 @@ paths:
           $ref: '#/components/responses/403Forbidden'
         '500':
           $ref: '#/components/responses/500InternalError'
-    put:
+    patch:
       tags:
         - Repo
       summary: Update config path.
@@ -137,6 +137,58 @@ paths:
       responses:
         '200':
           description: Ok
+  /repos/{repoId}/activate:
+    patch:
+      tags:
+        - Repo
+      summary: It create the webhook of the repo
+      parameters:
+        - in: path
+          name: repoId
+          required: true
+          schema:
+            type: integer
+            description: The repository id
+      responses:
+        '200':
+          description: Repository
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Repository'
+        '401': 
+          $ref: '#/components/responses/401Unauthorized'
+        '403': 
+          $ref: '#/components/responses/403Forbidden'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+
+  /repos/{repoId}/deactivate:
+    patch:
+      tags:
+        - Repo
+      summary: It removes the webhook of the repo
+      parameters:
+        - in: path
+          name: repoId
+          required: true
+          schema:
+            type: integer
+            description: The repository id
+      responses:
+        '200':
+          description: Repository
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Repository'
+        '401': 
+          $ref: '#/components/responses/401Unauthorized'
+        '403': 
+          $ref: '#/components/responses/403Forbidden'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+
   /repos/{repoId}/commits:
     get:
       tags:
@@ -544,50 +596,6 @@ paths:
         '500':
           $ref: '#/components/responses/500InternalError'
   
-  /repos/{repoId}/activate:
-    post:
-      tags:
-        - Repo
-      summary: It create the webhook of the repo
-      parameters:
-        - in: path
-          name: repoId
-          required: true
-          schema:
-            type: integer
-            description: The repository id
-      responses:
-        '200':
-          description: Activate successfully
-        '401': 
-          $ref: '#/components/responses/401Unauthorized'
-        '403': 
-          $ref: '#/components/responses/403Forbidden'
-        '500':
-          $ref: '#/components/responses/500InternalError'
-
-  /repos/{repoId}/deactivate:
-    post:
-      tags:
-        - Repo
-      summary: It removes the webhook of the repo
-      parameters:
-        - in: path
-          name: repoId
-          required: true
-          schema:
-            type: integer
-            description: The repository id
-      responses:
-        '200':
-          description: Deactivate successfully
-        '401': 
-          $ref: '#/components/responses/401Unauthorized'
-        '403': 
-          $ref: '#/components/responses/403Forbidden'
-        '500':
-          $ref: '#/components/responses/500InternalError'
-
 security:
   - BearerAuth: []
   - OAuth2:
