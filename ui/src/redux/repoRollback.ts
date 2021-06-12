@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit'
 import { StatusCodes } from 'http-status-codes'
+import { message } from "antd"
 
 import { searchRepo, getConfig, listDeployments, createDeployment } from "../apis"
 import { Repo, Deployment, DeploymentStatus, RequestStatus, DeploymentType, HttpNotFoundError } from "../models"
@@ -81,8 +82,10 @@ export const rollback = createAsyncThunk<void, void, { state: {repoRollback: Rep
             } else if (deployment.type === DeploymentType.Tag) {
                 await createDeployment(repo.id, DeploymentType.Tag, deployment.ref, env)
             } 
+            message.success("It starts to rollback.", 3)
             return
         } catch(e) {
+            message.error("It has failed to rollback.", 3)
             return rejectWithValue(e)
         }
     }
@@ -98,10 +101,6 @@ export const repoRollbackSlice = createSlice({
         setDeployment: (state, action: PayloadAction<Deployment>) => {
             state.deployment = action.payload
         },
-        unsetDeploy: (state) => {
-            state.deploying = RequestStatus.Idle
-            state.deployId = ""
-        }
     },
     extraReducers: builder => {
         builder
@@ -127,12 +126,12 @@ export const repoRollbackSlice = createSlice({
             })
             .addCase(rollback.fulfilled, (state, action) => {
                 if (state.deploying === RequestStatus.Pending && state.deployId === action.meta.requestId) {
-                    state.deploying = RequestStatus.Success
+                    state.deploying = RequestStatus.Idle
                 }
             })
             .addCase(rollback.rejected, (state, action) => {
                 if (state.deploying === RequestStatus.Pending && state.deployId === action.meta.requestId) {
-                    state.deploying = RequestStatus.Failure
+                    state.deploying = RequestStatus.Idle
                 }
             })
     }

@@ -255,10 +255,6 @@ export const repoDeploySlice = createSlice({
         setTag: (state, action: PayloadAction<Tag>) => {
             state.tag = action.payload
         },
-        unsetDeploy: (state) => {
-            state.deploying = RequestStatus.Idle
-            state.deployId = ""
-        }
     },
     extraReducers: builder => {
         builder

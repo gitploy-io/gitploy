@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import { Menu, Breadcrumb, message } from 'antd'
+import { Menu, Breadcrumb } from 'antd'
 import { shallowEqual } from "react-redux";
 import { useEffect } from "react";
 

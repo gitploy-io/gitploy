@@ -52,9 +52,6 @@ export const repoSlice = createSlice({
         setKey: (state, action: PayloadAction<string>) => {
             state.key = action.payload
         },
-        unsetActivating: (state) => {
-            state.activating = RequestStatus.Idle
-        }
     },
     extraReducers: builder => {
         builder

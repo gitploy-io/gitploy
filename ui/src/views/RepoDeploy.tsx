@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import { PageHeader, Result, Button, message } from "antd";
+import { PageHeader, Result, Button } from "antd";
 import { shallowEqual } from "react-redux";
 
 import { useAppSelector, useAppDispatch } from "../redux/hooks"
