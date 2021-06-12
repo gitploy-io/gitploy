@@ -2,7 +2,7 @@ import { StatusCodes } from 'http-status-codes'
 import { HttpForbiddenError } from '../models/errors'
 
 import { instance, headers } from './settings'
-import { Repo } from '../models'
+import { Repo, RepoPayload } from '../models'
 
 const mapRepo = (r: any): Repo => {
     return {
@@ -34,6 +34,22 @@ export const searchRepo = async (namespace: string, name: string) => {
     const repo = await fetch(`${instance}/api/v1/repos/search?namespace=${namespace}&name=${name}`, {
         headers,
         credentials: 'same-origin',
+    })
+        .then(response => response.json())
+        .then((repo: any) => (mapRepo(repo)))
+
+    return repo
+}
+
+export const updateRepo = async (id: string, payload: RepoPayload) => {
+    const body = {
+        "config_path": payload.configPath
+    }
+    const repo = await fetch(`${instance}/api/v1/repos/${id}`, {
+        headers,
+        credentials: 'same-origin',
+        method: "PATCH",
+        body: JSON.stringify(body)
     })
         .then(response => response.json())
         .then((repo: any) => (mapRepo(repo)))

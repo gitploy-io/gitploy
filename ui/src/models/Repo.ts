@@ -10,3 +10,7 @@ export default interface Repo {
     createdAt: Date
     updatedAt: Date 
 }
+
+export interface RepoPayload {
+    configPath: string
+}
