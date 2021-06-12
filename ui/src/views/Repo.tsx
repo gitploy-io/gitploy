@@ -1,13 +1,17 @@
 import { useParams } from "react-router-dom";
-import { Menu, Breadcrumb } from 'antd'
+import { Menu, Breadcrumb, message } from 'antd'
+import { shallowEqual } from "react-redux";
+import { useEffect } from "react";
 
 import { useAppSelector, useAppDispatch } from '../redux/hooks'
-import { repoSlice } from '../redux/repo'
+import { repoSlice, init, activate } from '../redux/repo'
 
+import ActivateButton from "../components/ActivateButton"
 import Main from './Main'
 import RepoHome from './RepoHome'
 import RepoDeploy from './RepoDeploy'
 import RepoRollabck from './RepoRollback'
+import { RequestStatus } from "../models";
 
 const { actions } = repoSlice
 
@@ -22,13 +26,48 @@ interface Params {
 
 export default function Repo() {
     let { namespace, name } = useParams<Params>()
-    const key = useAppSelector(state => state.repo.key)
+    const { key, repo, activating } = useAppSelector(state => state.repo, shallowEqual)
     const dispatch = useAppDispatch()
+
+    useEffect(() => {
+        const f = async () => {
+            await dispatch(init({namespace, name}))
+        }
+        f()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [dispatch])
 
     const onClickMenu = (e: any) => {
         const key: string = e.key
         dispatch(actions.setKey(key))
     }
+
+    const onClickActivate = () => {
+        dispatch(activate())
+    }
+
+    const handleActivating = () => {
+        if (activating === RequestStatus.Failure) {
+            message.error("Only admin permission can activate.", 3)
+            dispatch(actions.unsetActivating())
+        }
+    }
+
+    const hasInit = (repo)? true : false
+    const active = (repo?.active)? true : false
+
+    const styleActivateButton: React.CSSProperties = {
+        display: (hasInit && !active)? "" : "none",
+        marginTop: "20px", 
+        textAlign: "center"
+    }
+
+    const styleContent: React.CSSProperties = {
+        display: (hasInit && active)? "" : "none",
+        marginTop: "20px", 
+    }
+
+    handleActivating()
 
     return (
         <Main>
@@ -59,7 +98,10 @@ export default function Repo() {
                     </Menu.Item>
                 </Menu>
             </div>
-            <div style={{"marginTop": "20px"}}>
+            <div style={styleActivateButton}>
+                <ActivateButton onClickActivate={onClickActivate}/>
+            </div>
+            <div style={styleContent}>
                 {(key === "home")? 
                     <div><RepoHome /></div> : 
                     <div style={hide}><RepoHome /></div>}
