@@ -1,4 +1,4 @@
-import { listRepos, searchRepo } from './repos'
+import { listRepos, searchRepo, activateRepo, deactivateRepo } from './repos'
 import { listDeployments, createDeployment } from './deployments'
 import { getConfig } from './config'
 import { listCommits, getCommit, listStatuses } from './commits'
@@ -8,6 +8,8 @@ import { listTags, getTag } from './tags'
 export {
     listRepos,
     searchRepo,
+    activateRepo,
+    deactivateRepo,
     listDeployments,
     createDeployment,
     getConfig,

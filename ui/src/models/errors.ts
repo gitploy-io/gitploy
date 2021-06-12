@@ -8,6 +8,14 @@ export class HttpRequestError extends Error {
     }
 }
 
+export class HttpForbiddenError extends HttpRequestError {
+    constructor(public m: string) {
+        super(StatusCodes.FORBIDDEN, m)
+
+        Object.setPrototypeOf(this, HttpNotFoundError.prototype)
+    }
+}
+
 export class HttpNotFoundError extends HttpRequestError {
     constructor(public m: string) {
         super(StatusCodes.NOT_FOUND, m)
