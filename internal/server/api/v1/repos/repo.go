@@ -89,13 +89,13 @@ func (r *Repo) UpdateRepo(c *gin.Context) {
 	ctx := c.Request.Context()
 
 	re.ConfigPath = p.ConfigPath
-	_, err := r.store.UpdateRepo(ctx, re)
+	re, err := r.store.UpdateRepo(ctx, re)
 	if err != nil {
 		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to update the repository.")
 		return
 	}
 
-	gb.Response(c, http.StatusOK, nil)
+	gb.Response(c, http.StatusOK, re)
 }
 
 func (r *Repo) GetRepo(c *gin.Context) {

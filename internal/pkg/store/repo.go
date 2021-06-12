@@ -190,7 +190,7 @@ func (s *Store) Activate(ctx context.Context, r *ent.Repo) (*ent.Repo, error) {
 func (s *Store) Deactivate(ctx context.Context, r *ent.Repo) (*ent.Repo, error) {
 	return s.c.Repo.
 		UpdateOne(r).
-		SetActive(true).
+		SetActive(false).
 		SetWebhookID(0).
 		Save(ctx)
 }
