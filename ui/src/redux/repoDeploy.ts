@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit'
 import { StatusCodes } from 'http-status-codes'
+import { message } from "antd"
 
 import { Repo, Branch, Commit, StatusState, DeploymentType, Tag, RequestStatus, HttpNotFoundError } from '../models'
 import { 
@@ -33,7 +34,6 @@ interface RepoDeployState {
     tag: Tag | null
     tagCheck: StatusState
     tags: Tag[]
-    adding: RequestStatus
     deploying: RequestStatus
     deployId: string
 }
@@ -53,7 +53,6 @@ const initialState: RepoDeployState = {
     tag: null,
     tagCheck: StatusState.Null,
     tags: [],
-    adding: RequestStatus.Idle,
     deploying: RequestStatus.Idle,
     deployId: "",
 }
@@ -113,6 +112,11 @@ export const addBranchManually = createAsyncThunk<Branch, string, { state: {repo
             const branch = await getBranch(repo.id, name)
             return branch
         } catch(e) {
+            if (e instanceof HttpNotFoundError) {
+                message.error("The ref is not found. Check the ref is corrent.")
+            } else {
+                message.error("It has failed to add the ref.")
+            }
             return rejectWithValue(e)
         }
     }
@@ -151,6 +155,11 @@ export const addCommitManually = createAsyncThunk<Commit, string, { state: {repo
             const commit = await getCommit(repo.id, sha)
             return commit
         } catch(e) {
+            if (e instanceof HttpNotFoundError) {
+                message.error("The ref is not found. Check the ref is corrent.")
+            } else {
+                message.error("It has failed to add the ref.")
+            }
             return rejectWithValue(e)
         }
     }
@@ -188,6 +197,11 @@ export const addTagManually = createAsyncThunk<Tag, string, { state: {repoDeploy
             const tag = await getTag(repo.id, name)
             return tag
         } catch(e) {
+            if (e instanceof HttpNotFoundError) {
+                message.error("The ref is not found. Check the ref is corrent.")
+            } else {
+                message.error("It has failed to add the ref.")
+            }
             return rejectWithValue(e)
         }
     }
@@ -212,8 +226,11 @@ export const deploy = createAsyncThunk<void, void, { state: {repoDeploy: RepoDep
             } else if (type === DeploymentType.Tag && tag !== null) {
                 await createDeployment(repo.id, type, tag.name, env)
             } 
+
+            message.success("It starts to deploy.", 3)
             return
         } catch(e) {
+            message.error("It has failed to deploy.", 3)
             return rejectWithValue(e)
         }
     }
@@ -237,9 +254,6 @@ export const repoDeploySlice = createSlice({
         },
         setTag: (state, action: PayloadAction<Tag>) => {
             state.tag = action.payload
-        },
-        unsetAddManually: (state) => {
-            state.adding = RequestStatus.Idle
         },
         unsetDeploy: (state) => {
             state.deploying = RequestStatus.Idle
@@ -265,15 +279,8 @@ export const repoDeploySlice = createSlice({
             .addCase(checkBranch.fulfilled, (state, action) => {
                 state.branchCheck = action.payload
             })
-            .addCase(addBranchManually.pending, (state) => {
-                state.adding = RequestStatus.Pending
-            })
             .addCase(addBranchManually.fulfilled, (state, action) => {
                 state.branches.unshift(action.payload)
-                state.adding = RequestStatus.Success
-            })
-            .addCase(addBranchManually.rejected, (state) => {
-                state.adding = RequestStatus.Failure
             })
             .addCase(fetchCommits.fulfilled, (state, action) => {
                 state.commits = action.payload
@@ -281,15 +288,8 @@ export const repoDeploySlice = createSlice({
             .addCase(checkCommit.fulfilled, (state, action) => {
                 state.commitCheck = action.payload
             })
-            .addCase(addCommitManually.pending, (state) => {
-                state.adding = RequestStatus.Pending
-            })
             .addCase(addCommitManually.fulfilled, (state, action) => {
                 state.commits.unshift(action.payload)
-                state.adding = RequestStatus.Success
-            })
-            .addCase(addCommitManually.rejected, (state) => {
-                state.adding = RequestStatus.Failure
             })
             .addCase(fetchTags.fulfilled, (state, action) => {
                 state.tags = action.payload
@@ -297,15 +297,8 @@ export const repoDeploySlice = createSlice({
             .addCase(checkTag.fulfilled, (state, action) => {
                 state.tagCheck = action.payload
             })
-            .addCase(addTagManually.pending, (state) => {
-                state.adding = RequestStatus.Pending
-            })
             .addCase(addTagManually.fulfilled, (state, action) => {
                 state.tags.unshift(action.payload)
-                state.adding = RequestStatus.Success
-            })
-            .addCase(addTagManually.rejected, (state) => {
-                state.adding = RequestStatus.Failure
             })
             .addCase(deploy.pending, (state, action) => {
                 if (state.deploying === RequestStatus.Idle) {
@@ -315,12 +308,12 @@ export const repoDeploySlice = createSlice({
             })
             .addCase(deploy.fulfilled, (state, action) => {
                 if (state.deploying === RequestStatus.Pending && state.deployId === action.meta.requestId) {
-                    state.deploying = RequestStatus.Success
+                    state.deploying = RequestStatus.Idle
                 }
             })
             .addCase(deploy.rejected, (state, action) => {
                 if (state.deploying === RequestStatus.Pending && state.deployId === action.meta.requestId) {
-                    state.deploying = RequestStatus.Failure
+                    state.deploying = RequestStatus.Idle
                 }
             })
     }
