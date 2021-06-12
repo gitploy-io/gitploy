@@ -29,16 +29,18 @@ func (r *Repo) Activate(c *gin.Context) {
 	if err != nil {
 		r.log.Error("failed to create a new webhook.", zap.Error(err))
 		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to create a new webhook.")
+		return
 	}
 
 	re.WebhookID = hid
-	_, err = r.store.Activate(ctx, re)
+	re, err = r.store.Activate(ctx, re)
 	if err != nil {
 		r.log.Error("failed to activate the webhook.", zap.Error(err))
 		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to activate the webhook.")
+		return
 	}
 
-	gb.Response(c, http.StatusOK, nil)
+	gb.Response(c, http.StatusOK, re)
 }
 
 func (r *Repo) Deactivate(c *gin.Context) {
@@ -54,15 +56,17 @@ func (r *Repo) Deactivate(c *gin.Context) {
 	if err != nil {
 		r.log.Error("failed to delete the webhook.", zap.Error(err))
 		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to delete the webhook.")
+		return
 	}
 
-	_, err = r.store.Deactivate(ctx, re)
+	re, err = r.store.Deactivate(ctx, re)
 	if err != nil {
 		r.log.Error("failed to deactivate the webhook.", zap.Error(err))
 		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to deactivate the webhook.")
+		return
 	}
 
-	gb.Response(c, http.StatusOK, nil)
+	gb.Response(c, http.StatusOK, re)
 }
 
 func isSecure(raw string) bool {
