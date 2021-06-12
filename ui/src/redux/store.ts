@@ -5,6 +5,7 @@ import { repoSlice } from './repo'
 import { repoHomeSlice } from './repoHome'
 import { repoDeploySlice } from './repoDeploy'
 import { repoRollbackSlice } from './repoRollback'
+import { repoSettingsSlice } from "./repoSettings"
 
 export const store =  configureStore({
   reducer: {
@@ -13,6 +14,7 @@ export const store =  configureStore({
     repoHome: repoHomeSlice.reducer,
     repoDeploy: repoDeploySlice.reducer,
     repoRollback: repoRollbackSlice.reducer,
+    repoSettings: repoSettingsSlice.reducer,
   },
   middleware: getDefaultMiddleware({
     serializableCheck: false

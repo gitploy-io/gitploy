@@ -5,13 +5,14 @@ import { useEffect } from "react";
 
 import { useAppSelector, useAppDispatch } from '../redux/hooks'
 import { repoSlice, init, activate } from '../redux/repo'
+import { RequestStatus } from "../models"
 
 import ActivateButton from "../components/ActivateButton"
 import Main from './Main'
 import RepoHome from './RepoHome'
 import RepoDeploy from './RepoDeploy'
 import RepoRollabck from './RepoRollback'
-import { RequestStatus } from "../models";
+import RepoSettings from "./RepoSettings"
 
 const { actions } = repoSlice
 
@@ -111,6 +112,9 @@ export default function Repo() {
                 {(key === "rollback")?
                     <div><RepoRollabck /></div> :
                     <div style={hide}><RepoRollabck /></div>}
+                {(key === "settings")?
+                    <div><RepoSettings /></div> :
+                    <div style={hide}><RepoSettings /></div>}
             </div>
         </Main>
     )
