@@ -10,6 +10,7 @@ import (
 	"github.com/hanjunlee/gitploy/internal/server/api/v1/repos"
 	"github.com/hanjunlee/gitploy/internal/server/api/v1/sync"
 	mw "github.com/hanjunlee/gitploy/internal/server/middlewares"
+	s "github.com/hanjunlee/gitploy/internal/server/slack"
 	"github.com/hanjunlee/gitploy/internal/server/web"
 )
 
@@ -23,6 +24,7 @@ type (
 		*SCMConfig
 		Store Store
 		SCM   SCM
+		Interactor
 	}
 
 	ServerConfig struct {
@@ -54,6 +56,10 @@ type (
 		web.SCM
 		sync.SCM
 		repos.SCM
+	}
+
+	Interactor interface {
+		s.Interactor
 	}
 )
 
@@ -123,7 +129,14 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 		repov1.PATCH("/:repoID/deactivate", rm.Repo(), rm.AdminPerm(), r.Deactivate)
 	}
 
-	// TODO: add hooks
+	// TODO: add webhook
+
+	slackapi := r.Group("/slack")
+	{
+		slack := s.NewSlack(c.Interactor)
+		slackapi.POST("/", slack.Interact)
+		slackapi.POST("/deploy", slack.Deploy)
+	}
 
 	return r
 }

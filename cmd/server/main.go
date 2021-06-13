@@ -11,6 +11,7 @@ import (
 
 	"github.com/hanjunlee/gitploy/ent"
 	"github.com/hanjunlee/gitploy/ent/migrate"
+	"github.com/hanjunlee/gitploy/internal/interactor"
 	"github.com/hanjunlee/gitploy/internal/pkg/github"
 	"github.com/hanjunlee/gitploy/internal/pkg/store"
 	"github.com/hanjunlee/gitploy/internal/server"
@@ -56,6 +57,7 @@ func newRouterConfig(c *Config) *server.RouterConfig {
 		SCMConfig:    newSCMConfig(c),
 		Store:        newStore(c),
 		SCM:          newSCM(c),
+		Interactor:   interactor.NewInteractor(newStore(c), newSCM(c)),
 	}
 }
 
@@ -96,7 +98,7 @@ func newSCMConfig(c *Config) *server.SCMConfig {
 	return sc
 }
 
-func newStore(c *Config) server.Store {
+func newStore(c *Config) *store.Store {
 	client, err := ent.Open(c.StoreDriver, c.StoreSource)
 	if err != nil {
 		log.Fatalf("failed create the connection for store: %v", err)

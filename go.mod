@@ -15,8 +15,10 @@ require (
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/mattn/go-sqlite3 v1.14.7
 	github.com/pkg/errors v0.9.1
+	github.com/prometheus/common v0.4.0
 	github.com/shurcooL/githubv4 v0.0.0-20201206200315-234843c633fa
 	github.com/shurcooL/graphql v0.0.0-20200928012149-18c5c3165e3a // indirect
+	github.com/slack-go/slack v0.9.1
 	github.com/ugorji/go v1.2.6 // indirect
 	go.uber.org/zap v1.10.0
 	golang.org/x/crypto v0.0.0-20210513164829-c07d793c2f9a // indirect
