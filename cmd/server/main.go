@@ -55,8 +55,6 @@ func newRouterConfig(c *Config) *server.RouterConfig {
 	return &server.RouterConfig{
 		ServerConfig: newServerConfig(c),
 		SCMConfig:    newSCMConfig(c),
-		Store:        newStore(c),
-		SCM:          newSCM(c),
 		Interactor:   interactor.NewInteractor(newStore(c), newSCM(c)),
 	}
 }
@@ -98,7 +96,7 @@ func newSCMConfig(c *Config) *server.SCMConfig {
 	return sc
 }
 
-func newStore(c *Config) *store.Store {
+func newStore(c *Config) interactor.Store {
 	client, err := ent.Open(c.StoreDriver, c.StoreSource)
 	if err != nil {
 		log.Fatalf("failed create the connection for store: %v", err)
@@ -115,8 +113,8 @@ func newStore(c *Config) *store.Store {
 	return store.NewStore(client)
 }
 
-func newSCM(c *Config) *github.Github {
-	var scm *github.Github
+func newSCM(c *Config) interactor.SCM {
+	var scm interactor.SCM
 
 	if c.isGithub() {
 		scm = github.NewGithub()

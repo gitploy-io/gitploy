@@ -12,9 +12,8 @@ import (
 
 type (
 	RepoMiddleware struct {
-		i     Interactor
-		store Store
-		log   *zap.Logger
+		i   Interactor
+		log *zap.Logger
 	}
 )
 

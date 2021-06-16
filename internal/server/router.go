@@ -22,8 +22,6 @@ type (
 	RouterConfig struct {
 		*ServerConfig
 		*SCMConfig
-		Store Store
-		SCM   SCM
 		Interactor
 	}
 
@@ -43,14 +41,6 @@ type (
 		ClientID     string
 		ClientSecret string
 		Scopes       []string
-	}
-
-	Store interface {
-		repos.Store
-	}
-
-	SCM interface {
-		repos.SCM
 	}
 
 	Interactor interface {
@@ -87,7 +77,7 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 
 	v1 := r.Group("/api/v1")
 	{
-		sm := mw.NewSessMiddleware(c.Store)
+		sm := mw.NewSessMiddleware(c.Interactor)
 		// Only authed user access to API.
 		v1.Use(sm.User())
 	}
@@ -106,8 +96,7 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 				WebhookURL:    fmt.Sprintf("%s://%s/hooks", c.WebhookProto, c.WebhookHost),
 				WebhookSecret: c.WebhookSecret,
 			},
-			c.Store,
-			c.SCM,
+			c.Interactor,
 		)
 		repov1.GET("", r.ListRepos)
 		repov1.GET("/search", r.GetRepoByNamespaceName)

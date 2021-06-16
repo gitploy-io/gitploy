@@ -16,10 +16,8 @@ import (
 type (
 	Repo struct {
 		RepoConfig
-		i     Interactor
-		store Store
-		scm   SCM
-		log   *zap.Logger
+		i   Interactor
+		log *zap.Logger
 	}
 
 	RepoConfig struct {
@@ -32,11 +30,10 @@ type (
 	}
 )
 
-func NewRepo(c RepoConfig, store Store, scm SCM) *Repo {
+func NewRepo(c RepoConfig, i Interactor) *Repo {
 	return &Repo{
 		RepoConfig: c,
-		store:      store,
-		scm:        scm,
+		i:          i,
 		log:        zap.L().Named("repos"),
 	}
 }
