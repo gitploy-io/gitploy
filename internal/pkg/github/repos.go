@@ -11,8 +11,8 @@ import (
 	"gopkg.in/yaml.v3"
 
 	"github.com/hanjunlee/gitploy/ent"
+	errs "github.com/hanjunlee/gitploy/internal/errors"
 	"github.com/hanjunlee/gitploy/internal/server/api/v1/repos"
-	reposv1 "github.com/hanjunlee/gitploy/internal/server/api/v1/repos"
 	"github.com/hanjunlee/gitploy/vo"
 )
 
@@ -55,7 +55,7 @@ func (g *Github) GetCommit(ctx context.Context, u *ent.User, r *ent.Repo, sha st
 		GetCommit(ctx, r.Namespace, r.Name, sha)
 	// Github returns Unprocessable entity if the commit is not found.
 	if res.StatusCode == http.StatusNotFound || res.StatusCode == http.StatusUnprocessableEntity {
-		return nil, &reposv1.RefNotFoundError{
+		return nil, &errs.RefNotFoundError{
 			Ref: sha,
 		}
 	}
@@ -136,7 +136,7 @@ func (g *Github) GetBranch(ctx context.Context, u *ent.User, r *ent.Repo, branch
 		Repositories.
 		GetBranch(ctx, r.Namespace, r.Name, branch)
 	if res.StatusCode == http.StatusNotFound {
-		return nil, &reposv1.RefNotFoundError{
+		return nil, &errs.RefNotFoundError{
 			Ref: branch,
 		}
 	}
@@ -217,7 +217,7 @@ func (g *Github) GetTag(ctx context.Context, u *ent.User, r *ent.Repo, tag strin
 	}
 
 	if q.Repository.Refs.TotalCount == 0 {
-		return nil, &reposv1.RefNotFoundError{
+		return nil, &errs.RefNotFoundError{
 			Ref: tag,
 		}
 	}
@@ -256,7 +256,7 @@ func (g *Github) GetConfig(ctx context.Context, u *ent.User, r *ent.Repo) (*vo.C
 		Repositories.
 		GetContents(ctx, r.Namespace, r.Name, r.ConfigPath, &github.RepositoryContentGetOptions{})
 	if res.StatusCode == http.StatusNotFound {
-		return nil, &reposv1.ConfigNotFoundError{
+		return nil, &errs.ConfigNotFoundError{
 			RepoName: r.Name,
 		}
 	} else if err != nil {
@@ -270,7 +270,7 @@ func (g *Github) GetConfig(ctx context.Context, u *ent.User, r *ent.Repo) (*vo.C
 
 	c := &vo.Config{}
 	if err := yaml.Unmarshal([]byte(content), c); err != nil {
-		return nil, &reposv1.ConfigParseError{
+		return nil, &errs.ConfigParseError{
 			RepoName: r.Name,
 			Err:      err,
 		}

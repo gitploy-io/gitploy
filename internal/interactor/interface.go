@@ -26,12 +26,19 @@ type (
 
 		FindPerm(ctx context.Context, u *ent.User, repoID string) (*ent.Perm, error)
 		SyncPerm(ctx context.Context, user *ent.User, perm *ent.Perm, sync time.Time) error
+
+		ListDeployments(ctx context.Context, r *ent.Repo, env string, status string, page, perPage int) ([]*ent.Deployment, error)
+		FindLatestDeployment(ctx context.Context, r *ent.Repo, env string) (*ent.Deployment, error)
+		CreateDeployment(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment) (*ent.Deployment, error)
+		UpdateDeployment(ctx context.Context, d *ent.Deployment) (*ent.Deployment, error)
 	}
 
 	SCM interface {
 		GetUser(ctx context.Context, token string) (*ent.User, error)
-		GetConfig(ctx context.Context, u *ent.User, r *ent.Repo) (*vo.Config, error)
 		GetAllPermsWithRepo(ctx context.Context, token string) ([]*ent.Perm, error)
+		// SCM returns the deployment with UID and SHA.
+		CreateDeployment(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, e *vo.Env) (*ent.Deployment, error)
+		GetConfig(ctx context.Context, u *ent.User, r *ent.Repo) (*vo.Config, error)
 		CreateWebhook(ctx context.Context, u *ent.User, r *ent.Repo, c *vo.WebhookConfig) (int64, error)
 		DeleteWebhook(ctx context.Context, u *ent.User, r *ent.Repo, id int64) error
 	}
