@@ -38,4 +38,9 @@ type (
 		CreateWebhook(ctx context.Context, u *ent.User, r *ent.Repo, c *vo.WebhookConfig) (int64, error)
 		DeleteWebhook(ctx context.Context, u *ent.User, r *ent.Repo, id int64) error
 	}
+
+	Interactor interface {
+		FindRepoByID(ctx context.Context, u *ent.User, id string) (*ent.Repo, error)
+		FindPermByRepoID(ctx context.Context, u *ent.User, repoID string) (*ent.Perm, error)
+	}
 )

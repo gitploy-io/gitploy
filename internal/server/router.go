@@ -58,6 +58,7 @@ type (
 		sync.Interactor
 		mw.Interactor
 		web.Interactor
+		repos.Interactor
 	}
 )
 
@@ -99,7 +100,7 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 
 	repov1 := v1.Group("/repos")
 	{
-		rm := repos.NewRepoMiddleware(c.Store)
+		rm := repos.NewRepoMiddleware(c.Interactor)
 		r := repos.NewRepo(
 			repos.RepoConfig{
 				WebhookURL:    fmt.Sprintf("%s://%s/hooks", c.WebhookProto, c.WebhookHost),

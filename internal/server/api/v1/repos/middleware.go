@@ -12,6 +12,7 @@ import (
 
 type (
 	RepoMiddleware struct {
+		i     Interactor
 		store Store
 		log   *zap.Logger
 	}
@@ -21,10 +22,10 @@ const (
 	KeyRepo = "gitploy.repo"
 )
 
-func NewRepoMiddleware(store Store) *RepoMiddleware {
+func NewRepoMiddleware(i Interactor) *RepoMiddleware {
 	return &RepoMiddleware{
-		store: store,
-		log:   zap.L().Named("repo-middleware"),
+		i:   i,
+		log: zap.L().Named("repo-middleware"),
 	}
 }
 
@@ -39,7 +40,7 @@ func (rm *RepoMiddleware) Repo() gin.HandlerFunc {
 
 		ctx := c.Request.Context()
 
-		repo, err := rm.store.FindRepo(ctx, u, repoID)
+		repo, err := rm.i.FindRepoByID(ctx, u, repoID)
 		if ent.IsNotFound(err) {
 			rm.log.Error("denied to access the repo.", zap.String("repoID", repoID), zap.Error(err))
 			gb.ErrorResponse(c, http.StatusForbidden, "It has denied to access the repo.")
@@ -65,7 +66,7 @@ func (rm *RepoMiddleware) WritePerm() gin.HandlerFunc {
 
 		ctx := c.Request.Context()
 
-		p, err := rm.store.FindPerm(ctx, u, repoID)
+		p, err := rm.i.FindPermByRepoID(ctx, u, repoID)
 		if ent.IsNotFound(err) {
 			rm.log.Error("denied to access the repo.", zap.String("repoID", repoID), zap.Error(err))
 			gb.ErrorResponse(c, http.StatusForbidden, "It has denied to access the repo.")
@@ -95,7 +96,7 @@ func (rm *RepoMiddleware) AdminPerm() gin.HandlerFunc {
 
 		ctx := c.Request.Context()
 
-		p, err := rm.store.FindPerm(ctx, u, repoID)
+		p, err := rm.i.FindPermByRepoID(ctx, u, repoID)
 		if ent.IsNotFound(err) {
 			rm.log.Error("denied to access the repo.", zap.String("repoID", repoID), zap.Error(err))
 			gb.ErrorResponse(c, http.StatusForbidden, "It has denied to access the repo.")

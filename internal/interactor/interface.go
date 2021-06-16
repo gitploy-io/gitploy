@@ -15,7 +15,9 @@ type (
 		FindUserByID(ctx context.Context, id string) (*ent.User, error)
 		CreateUser(ctx context.Context, u *ent.User) (*ent.User, error)
 		UpdateUser(ctx context.Context, u *ent.User) (*ent.User, error)
+		FindRepo(ctx context.Context, u *ent.User, id string) (*ent.Repo, error)
 		FindRepoByNamespaceName(ctx context.Context, u *ent.User, namespace, name string) (*ent.Repo, error)
+		FindPerm(ctx context.Context, u *ent.User, repoID string) (*ent.Perm, error)
 		SyncPerm(ctx context.Context, user *ent.User, perm *ent.Perm, sync time.Time) error
 	}
 
