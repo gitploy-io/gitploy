@@ -7,18 +7,10 @@ import (
 )
 
 type (
-	Store interface {
-		FindUserByID(ctx context.Context, id string) (*ent.User, error)
-		CreateUser(ctx context.Context, u *ent.User) (*ent.User, error)
-		UpdateUser(ctx context.Context, u *ent.User) (*ent.User, error)
-	}
-
-	SCM interface {
-		GetUser(ctx context.Context, token string) (*ent.User, error)
-	}
-
 	Interactor interface {
 		SaveSCMUser(ctx context.Context, u *ent.User) (*ent.User, error)
+		// Fetch the user information from SCM.
+		// It has the id, login, avatar and so on.
 		GetSCMUserByToken(ctx context.Context, token string) (*ent.User, error)
 	}
 )
