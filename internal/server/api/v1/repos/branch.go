@@ -23,7 +23,7 @@ func (r *Repo) ListBranches(c *gin.Context) {
 	rv, _ := c.Get(KeyRepo)
 	repo := rv.(*ent.Repo)
 
-	branches, err := r.scm.ListBranches(ctx, u, repo, atoi(page), atoi(perPage))
+	branches, err := r.i.ListBranches(ctx, u, repo, atoi(page), atoi(perPage))
 	if err != nil {
 		r.log.Error("failed to list branches.", zap.String("repo", repo.Name), zap.Error(err))
 		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to list branches.")
@@ -45,7 +45,7 @@ func (r *Repo) GetBranch(c *gin.Context) {
 	rv, _ := c.Get(KeyRepo)
 	repo := rv.(*ent.Repo)
 
-	b, err := r.scm.GetBranch(ctx, u, repo, branch)
+	b, err := r.i.GetBranch(ctx, u, repo, branch)
 	if IsRefNotFoundError(err) {
 		r.log.Warn("The branch is not found.", zap.String("repo", repo.Name), zap.String("branch", branch), zap.Error(err))
 		gb.ErrorResponse(c, http.StatusNotFound, "The branch is not found.")
