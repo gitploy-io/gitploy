@@ -77,7 +77,7 @@ func (r *Repo) ListStatuses(c *gin.Context) {
 	repo := rv.(*ent.Repo)
 
 	ss, err := r.i.ListCommitStatuses(ctx, u, repo, sha)
-	if IsRefNotFoundError(err) {
+	if errs.IsRefNotFoundError(err) {
 		r.log.Warn("The commit is not found.", zap.String("repo", repo.Name), zap.String("sha", sha), zap.Error(err))
 		gb.ErrorResponse(c, http.StatusNotFound, "The commit is not found.")
 		return

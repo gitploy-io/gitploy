@@ -12,7 +12,6 @@ import (
 
 	"github.com/hanjunlee/gitploy/ent"
 	errs "github.com/hanjunlee/gitploy/internal/errors"
-	"github.com/hanjunlee/gitploy/internal/server/api/v1/repos"
 	"github.com/hanjunlee/gitploy/vo"
 )
 
@@ -91,7 +90,7 @@ func (g *Github) ListCommitStatuses(ctx context.Context, u *ent.User, r *ent.Rep
 	})
 	// check-runs secures the commit is exist.
 	if res.StatusCode == http.StatusUnprocessableEntity {
-		return nil, &repos.RefNotFoundError{
+		return nil, &errs.RefNotFoundError{
 			Ref: sha,
 		}
 	}

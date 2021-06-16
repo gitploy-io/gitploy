@@ -7,6 +7,7 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/hanjunlee/gitploy/ent"
+	errs "github.com/hanjunlee/gitploy/internal/errors"
 	gb "github.com/hanjunlee/gitploy/internal/server/global"
 )
 
@@ -46,7 +47,7 @@ func (r *Repo) GetBranch(c *gin.Context) {
 	repo := rv.(*ent.Repo)
 
 	b, err := r.i.GetBranch(ctx, u, repo, branch)
-	if IsRefNotFoundError(err) {
+	if errs.IsRefNotFoundError(err) {
 		r.log.Warn("The branch is not found.", zap.String("repo", repo.Name), zap.String("branch", branch), zap.Error(err))
 		gb.ErrorResponse(c, http.StatusNotFound, "The branch is not found.")
 		return

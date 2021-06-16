@@ -7,6 +7,7 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/hanjunlee/gitploy/ent"
+	errs "github.com/hanjunlee/gitploy/internal/errors"
 	gb "github.com/hanjunlee/gitploy/internal/server/global"
 )
 
@@ -46,7 +47,7 @@ func (r *Repo) GetTag(c *gin.Context) {
 	repo := rv.(*ent.Repo)
 
 	t, err := r.i.GetTag(ctx, u, repo, tag)
-	if IsRefNotFoundError(err) {
+	if errs.IsRefNotFoundError(err) {
 		r.log.Warn("the tag is not found.", zap.String("repo", repo.Name), zap.String("tag", tag), zap.Error(err))
 		gb.ErrorResponse(c, http.StatusNotFound, "the tag is not found.")
 		return
