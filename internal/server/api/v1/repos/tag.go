@@ -23,7 +23,7 @@ func (r *Repo) ListTags(c *gin.Context) {
 	rv, _ := c.Get(KeyRepo)
 	repo := rv.(*ent.Repo)
 
-	tags, err := r.scm.ListTags(ctx, u, repo, atoi(page), atoi(perPage))
+	tags, err := r.i.ListTags(ctx, u, repo, atoi(page), atoi(perPage))
 	if err != nil {
 		r.log.Error("failed to list tags.", zap.String("repo", repo.Name), zap.Error(err))
 		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to list tags.")
@@ -45,7 +45,7 @@ func (r *Repo) GetTag(c *gin.Context) {
 	rv, _ := c.Get(KeyRepo)
 	repo := rv.(*ent.Repo)
 
-	t, err := r.scm.GetTag(ctx, u, repo, tag)
+	t, err := r.i.GetTag(ctx, u, repo, tag)
 	if IsRefNotFoundError(err) {
 		r.log.Warn("the tag is not found.", zap.String("repo", repo.Name), zap.String("tag", tag), zap.Error(err))
 		gb.ErrorResponse(c, http.StatusNotFound, "the tag is not found.")
