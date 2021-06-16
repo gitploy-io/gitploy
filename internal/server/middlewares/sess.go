@@ -12,13 +12,13 @@ import (
 
 type (
 	SessMiddleware struct {
-		store Store
+		i Interactor
 	}
 )
 
-func NewSessMiddleware(store Store) *SessMiddleware {
+func NewSessMiddleware(i Interactor) *SessMiddleware {
 	return &SessMiddleware{
-		store: store,
+		i: i,
 	}
 }
 
@@ -33,7 +33,7 @@ func (s *SessMiddleware) User() gin.HandlerFunc {
 
 		ctx := c.Request.Context()
 
-		u, err := s.store.FindUserByHash(ctx, hash)
+		u, err := s.i.FindUserByHash(ctx, hash)
 		if ent.IsNotFound(err) {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, map[string]string{
 				"message": "Unauthorized user",

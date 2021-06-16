@@ -48,7 +48,6 @@ type (
 	Store interface {
 		web.Store
 		repos.Store
-		mw.Store
 	}
 
 	SCM interface {
@@ -59,6 +58,7 @@ type (
 	Interactor interface {
 		s.Interactor
 		sync.Interactor
+		mw.Interactor
 	}
 )
 

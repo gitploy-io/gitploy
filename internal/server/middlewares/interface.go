@@ -7,7 +7,7 @@ import (
 )
 
 type (
-	Store interface {
+	Interactor interface {
 		FindUserByHash(ctx context.Context, hash string) (*ent.User, error)
 	}
 )
