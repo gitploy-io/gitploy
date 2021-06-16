@@ -115,8 +115,8 @@ func newStore(c *Config) *store.Store {
 	return store.NewStore(client)
 }
 
-func newSCM(c *Config) server.SCM {
-	var scm server.SCM
+func newSCM(c *Config) *github.Github {
+	var scm *github.Github
 
 	if c.isGithub() {
 		scm = github.NewGithub()

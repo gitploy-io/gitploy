@@ -47,19 +47,18 @@ type (
 
 	Store interface {
 		web.Store
-		sync.Store
 		repos.Store
 		mw.Store
 	}
 
 	SCM interface {
 		web.SCM
-		sync.SCM
 		repos.SCM
 	}
 
 	Interactor interface {
 		s.Interactor
+		sync.Interactor
 	}
 )
 
@@ -95,7 +94,7 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 
 	syncv1 := v1.Group("/sync")
 	{
-		s := sync.NewSyncher(c.Store, c.SCM)
+		s := sync.NewSyncher(c.Interactor)
 		syncv1.POST("", s.Sync)
 	}
 
