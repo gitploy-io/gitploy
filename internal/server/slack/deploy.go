@@ -10,7 +10,7 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/hanjunlee/gitploy/ent"
-	gb "github.com/hanjunlee/gitploy/internal/server/global"
+	errs "github.com/hanjunlee/gitploy/internal/errors"
 	"github.com/hanjunlee/gitploy/vo"
 )
 
@@ -50,11 +50,11 @@ func (s *Slack) Deploy(c *gin.Context) {
 	}
 
 	config, err := s.i.GetConfig(ctx, u, r)
-	if gb.IsConfigNotFoundError(err) {
+	if errs.IsConfigNotFoundError(err) {
 		sendResponse(sc, cmd, "The config file is not found")
 		c.Status(http.StatusOK)
 		return
-	} else if gb.IsConfigParseError(err) {
+	} else if errs.IsConfigParseError(err) {
 		sendResponse(sc, cmd, "The config file is invliad format.")
 		c.Status(http.StatusOK)
 		return
