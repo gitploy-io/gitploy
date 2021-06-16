@@ -14,5 +14,6 @@ func NewInteractor(store Store, scm SCM) *Interactor {
 	return &Interactor{
 		store: store,
 		scm:   scm,
+		log:   zap.L().Named("interactor"),
 	}
 }
