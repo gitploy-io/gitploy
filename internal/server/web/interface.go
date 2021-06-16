@@ -16,4 +16,9 @@ type (
 	SCM interface {
 		GetUser(ctx context.Context, token string) (*ent.User, error)
 	}
+
+	Interactor interface {
+		SaveSCMUser(ctx context.Context, u *ent.User) (*ent.User, error)
+		GetSCMUserByToken(ctx context.Context, token string) (*ent.User, error)
+	}
 )

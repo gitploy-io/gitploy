@@ -34,3 +34,18 @@ func (i *Interactor) Sync(ctx context.Context, u *ent.User) error {
 
 	return nil
 }
+
+func (i *Interactor) SaveSCMUser(ctx context.Context, u *ent.User) (*ent.User, error) {
+	_, err := i.store.FindUserByID(ctx, u.ID)
+	if ent.IsNotFound(err) {
+		u, _ = i.store.CreateUser(ctx, u)
+	} else if err != nil {
+		return nil, err
+	}
+
+	return i.store.UpdateUser(ctx, u)
+}
+
+func (i *Interactor) GetSCMUserByToken(ctx context.Context, token string) (*ent.User, error) {
+	return i.scm.GetUser(ctx, token)
+}

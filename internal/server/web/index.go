@@ -9,31 +9,22 @@ import (
 	"go.uber.org/zap"
 	"golang.org/x/oauth2"
 
-	"github.com/hanjunlee/gitploy/ent"
 	gb "github.com/hanjunlee/gitploy/internal/server/global"
 )
 
 type (
 	Web struct {
-		c     *oauth2.Config
-		store Store
-		scm   SCM
-		log   *zap.Logger
-	}
-
-	WebConfig struct {
-		Config *oauth2.Config
-		Store  Store
-		SCM    SCM
+		c   *oauth2.Config
+		i   Interactor
+		log *zap.Logger
 	}
 )
 
-func NewWeb(wc *WebConfig) *Web {
+func NewWeb(c *oauth2.Config, i Interactor) *Web {
 	return &Web{
-		c:     wc.Config,
-		store: wc.Store,
-		scm:   wc.SCM,
-		log:   zap.L().Named("web"),
+		c:   c,
+		i:   i,
+		log: zap.L().Named("web"),
 	}
 }
 
@@ -86,10 +77,10 @@ func (w *Web) Signin(c *gin.Context) {
 
 	ctx := c.Request.Context()
 
-	u, err := w.scm.GetUser(ctx, token.AccessToken)
+	u, err := w.i.GetSCMUserByToken(ctx, token.AccessToken)
 	if err != nil {
 		w.log.Error("failed to fetch a user from SCM.", zap.Error(err))
-		c.String(http.StatusInternalServerError, "It's failed to fetch a user from SCM.")
+		c.String(http.StatusInternalServerError, "It has failed to fetch a user from SCM.")
 		return
 	}
 
@@ -99,12 +90,11 @@ func (w *Web) Signin(c *gin.Context) {
 	u.Refresh = token.RefreshToken
 	u.Expiry = token.Expiry
 
-	_, err = w.store.FindUserByID(ctx, u.ID)
-	if ent.IsNotFound(err) {
-		u, _ = w.store.CreateUser(ctx, u)
+	if u, err = w.i.SaveSCMUser(ctx, u); err != nil {
+		w.log.Error("failed to save the user.", zap.Error(err))
+		c.String(http.StatusInternalServerError, "It has failed to save the user.")
+		return
 	}
-
-	u, _ = w.store.UpdateUser(ctx, u)
 
 	// Register cookie.
 	const (

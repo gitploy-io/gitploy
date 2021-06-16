@@ -46,12 +46,10 @@ type (
 	}
 
 	Store interface {
-		web.Store
 		repos.Store
 	}
 
 	SCM interface {
-		web.SCM
 		repos.SCM
 	}
 
@@ -59,6 +57,7 @@ type (
 		s.Interactor
 		sync.Interactor
 		mw.Interactor
+		web.Interactor
 	}
 )
 
@@ -80,7 +79,7 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 
 	root := r.Group("/")
 	{
-		w := web.NewWeb(newWebConfig(c))
+		w := web.NewWeb(newGithubOauthConfig(c), c.Interactor)
 		root.GET("/", w.Index)
 		root.GET("/signin", w.Signin)
 	}
@@ -138,14 +137,6 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 	}
 
 	return r
-}
-
-func newWebConfig(c *RouterConfig) *web.WebConfig {
-	return &web.WebConfig{
-		Config: newGithubOauthConfig(c),
-		Store:  c.Store,
-		SCM:    c.SCM,
-	}
 }
 
 func newGithubOauthConfig(c *RouterConfig) *oauth2.Config {
