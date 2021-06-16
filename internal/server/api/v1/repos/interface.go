@@ -41,6 +41,11 @@ type (
 
 	Interactor interface {
 		FindRepoByID(ctx context.Context, u *ent.User, id string) (*ent.Repo, error)
+		ListRepos(ctx context.Context, u *ent.User, sorted bool, q string, page, perPage int) ([]*ent.Repo, error)
 		FindPermByRepoID(ctx context.Context, u *ent.User, repoID string) (*ent.Perm, error)
+		FindRepoByNamespaceName(ctx context.Context, u *ent.User, namespace, name string) (*ent.Repo, error)
+		PatchRepo(ctx context.Context, r *ent.Repo, p *RepoPayload) (*ent.Repo, error)
+		ActivateRepo(ctx context.Context, u *ent.User, r *ent.Repo, c *vo.WebhookConfig) (*ent.Repo, error)
+		DeactivateRepo(ctx context.Context, u *ent.User, r *ent.Repo) (*ent.Repo, error)
 	}
 )

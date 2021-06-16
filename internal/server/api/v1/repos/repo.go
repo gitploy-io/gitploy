@@ -16,6 +16,7 @@ import (
 type (
 	Repo struct {
 		RepoConfig
+		i     Interactor
 		store Store
 		scm   SCM
 		log   *zap.Logger
@@ -26,7 +27,7 @@ type (
 		WebhookSecret string
 	}
 
-	repoPayload struct {
+	RepoPayload struct {
 		ConfigPath string `json:"config_path"`
 	}
 )
@@ -62,11 +63,7 @@ func (r *Repo) ListRepos(c *gin.Context) {
 		return
 	}
 
-	if sorted {
-		repos, err = r.store.ListSortedRepos(ctx, u, q, atoi(page), atoi(perPage))
-	} else {
-		repos, err = r.store.ListRepos(ctx, u, q, atoi(page), atoi(perPage))
-	}
+	repos, err = r.i.ListRepos(ctx, u, sorted, q, atoi(page), atoi(perPage))
 	if err != nil {
 		r.log.Error("failed to list repositories.", zap.Error(err))
 		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to list repositories.")
@@ -80,7 +77,7 @@ func (r *Repo) UpdateRepo(c *gin.Context) {
 	rv, _ := c.Get(KeyRepo)
 	re := rv.(*ent.Repo)
 
-	p := &repoPayload{}
+	p := &RepoPayload{}
 	if err := c.ShouldBindBodyWith(p, binding.JSON); err != nil {
 		gb.ErrorResponse(c, http.StatusBadRequest, "It has failed to bind the body")
 		return
@@ -88,9 +85,8 @@ func (r *Repo) UpdateRepo(c *gin.Context) {
 
 	ctx := c.Request.Context()
 
-	re.ConfigPath = p.ConfigPath
-	re, err := r.store.UpdateRepo(ctx, re)
-	if err != nil {
+	var err error
+	if re, err = r.i.PatchRepo(ctx, re, p); err != nil {
 		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to update the repository.")
 		return
 	}
@@ -116,7 +112,7 @@ func (r *Repo) GetRepoByNamespaceName(c *gin.Context) {
 
 	ctx := c.Request.Context()
 
-	repo, err := r.store.FindRepoByNamespaceName(ctx, u, namespace, name)
+	repo, err := r.i.FindRepoByNamespaceName(ctx, u, namespace, name)
 	if ent.IsNotFound(err) {
 		r.log.Error("failed to access the repo.", zap.String("repo", name), zap.Error(err))
 		gb.ErrorResponse(c, http.StatusNotFound, "It has failed to search the repo.")
@@ -145,22 +141,14 @@ func (r *Repo) Activate(c *gin.Context) {
 
 	ctx := c.Request.Context()
 
-	hid, err := r.scm.CreateWebhook(ctx, u, re, &vo.WebhookConfig{
+	re, err := r.i.ActivateRepo(ctx, u, re, &vo.WebhookConfig{
 		URL:         r.WebhookURL,
 		Secret:      r.WebhookSecret,
 		InsecureSSL: isSecure(r.WebhookURL),
 	})
 	if err != nil {
-		r.log.Error("failed to create a new webhook.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to create a new webhook.")
-		return
-	}
-
-	re.WebhookID = hid
-	re, err = r.store.Activate(ctx, re)
-	if err != nil {
-		r.log.Error("failed to activate the webhook.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to activate the webhook.")
+		r.log.Error("failed to activate the repo.", zap.Error(err))
+		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to activate.")
 		return
 	}
 
@@ -176,17 +164,10 @@ func (r *Repo) Deactivate(c *gin.Context) {
 
 	ctx := c.Request.Context()
 
-	err := r.scm.DeleteWebhook(ctx, u, re, re.WebhookID)
+	re, err := r.i.DeactivateRepo(ctx, u, re)
 	if err != nil {
-		r.log.Error("failed to delete the webhook.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to delete the webhook.")
-		return
-	}
-
-	re, err = r.store.Deactivate(ctx, re)
-	if err != nil {
-		r.log.Error("failed to deactivate the webhook.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to deactivate the webhook.")
+		r.log.Error("failed to deactivate the repo.", zap.Error(err))
+		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to deactivate the repo.")
 		return
 	}
 
