@@ -10,6 +10,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/hanjunlee/gitploy/ent/chatuser"
 	"github.com/hanjunlee/gitploy/ent/deployment"
 	"github.com/hanjunlee/gitploy/ent/perm"
 	"github.com/hanjunlee/gitploy/ent/predicate"
@@ -127,6 +128,25 @@ func (uu *UserUpdate) SetUpdatedAt(t time.Time) *UserUpdate {
 	return uu
 }
 
+// SetChatUserID sets the "chat_user" edge to the ChatUser entity by ID.
+func (uu *UserUpdate) SetChatUserID(id string) *UserUpdate {
+	uu.mutation.SetChatUserID(id)
+	return uu
+}
+
+// SetNillableChatUserID sets the "chat_user" edge to the ChatUser entity by ID if the given value is not nil.
+func (uu *UserUpdate) SetNillableChatUserID(id *string) *UserUpdate {
+	if id != nil {
+		uu = uu.SetChatUserID(*id)
+	}
+	return uu
+}
+
+// SetChatUser sets the "chat_user" edge to the ChatUser entity.
+func (uu *UserUpdate) SetChatUser(c *ChatUser) *UserUpdate {
+	return uu.SetChatUserID(c.ID)
+}
+
 // AddPermIDs adds the "perms" edge to the Perm entity by IDs.
 func (uu *UserUpdate) AddPermIDs(ids ...int) *UserUpdate {
 	uu.mutation.AddPermIDs(ids...)
@@ -160,6 +180,12 @@ func (uu *UserUpdate) AddDeployments(d ...*Deployment) *UserUpdate {
 // Mutation returns the UserMutation object of the builder.
 func (uu *UserUpdate) Mutation() *UserMutation {
 	return uu.mutation
+}
+
+// ClearChatUser clears the "chat_user" edge to the ChatUser entity.
+func (uu *UserUpdate) ClearChatUser() *UserUpdate {
+	uu.mutation.ClearChatUser()
+	return uu
 }
 
 // ClearPerms clears all "perms" edges to the Perm entity.
@@ -356,6 +382,41 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Value:  value,
 			Column: user.FieldUpdatedAt,
 		})
+	}
+	if uu.mutation.ChatUserCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   user.ChatUserTable,
+			Columns: []string{user.ChatUserColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: chatuser.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.ChatUserIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   user.ChatUserTable,
+			Columns: []string{user.ChatUserColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: chatuser.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if uu.mutation.PermsCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -582,6 +643,25 @@ func (uuo *UserUpdateOne) SetUpdatedAt(t time.Time) *UserUpdateOne {
 	return uuo
 }
 
+// SetChatUserID sets the "chat_user" edge to the ChatUser entity by ID.
+func (uuo *UserUpdateOne) SetChatUserID(id string) *UserUpdateOne {
+	uuo.mutation.SetChatUserID(id)
+	return uuo
+}
+
+// SetNillableChatUserID sets the "chat_user" edge to the ChatUser entity by ID if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableChatUserID(id *string) *UserUpdateOne {
+	if id != nil {
+		uuo = uuo.SetChatUserID(*id)
+	}
+	return uuo
+}
+
+// SetChatUser sets the "chat_user" edge to the ChatUser entity.
+func (uuo *UserUpdateOne) SetChatUser(c *ChatUser) *UserUpdateOne {
+	return uuo.SetChatUserID(c.ID)
+}
+
 // AddPermIDs adds the "perms" edge to the Perm entity by IDs.
 func (uuo *UserUpdateOne) AddPermIDs(ids ...int) *UserUpdateOne {
 	uuo.mutation.AddPermIDs(ids...)
@@ -615,6 +695,12 @@ func (uuo *UserUpdateOne) AddDeployments(d ...*Deployment) *UserUpdateOne {
 // Mutation returns the UserMutation object of the builder.
 func (uuo *UserUpdateOne) Mutation() *UserMutation {
 	return uuo.mutation
+}
+
+// ClearChatUser clears the "chat_user" edge to the ChatUser entity.
+func (uuo *UserUpdateOne) ClearChatUser() *UserUpdateOne {
+	uuo.mutation.ClearChatUser()
+	return uuo
 }
 
 // ClearPerms clears all "perms" edges to the Perm entity.
@@ -835,6 +921,41 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			Value:  value,
 			Column: user.FieldUpdatedAt,
 		})
+	}
+	if uuo.mutation.ChatUserCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   user.ChatUserTable,
+			Columns: []string{user.ChatUserColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: chatuser.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.ChatUserIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   user.ChatUserTable,
+			Columns: []string{user.ChatUserColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: chatuser.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if uuo.mutation.PermsCleared() {
 		edge := &sqlgraph.EdgeSpec{

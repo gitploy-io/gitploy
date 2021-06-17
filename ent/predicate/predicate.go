@@ -6,6 +6,9 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
+// ChatUser is the predicate function for chatuser builders.
+type ChatUser func(*sql.Selector)
+
 // Deployment is the predicate function for deployment builders.
 type Deployment func(*sql.Selector)
 

@@ -9,6 +9,7 @@ import (
 
 	"github.com/hanjunlee/gitploy/ent/migrate"
 
+	"github.com/hanjunlee/gitploy/ent/chatuser"
 	"github.com/hanjunlee/gitploy/ent/deployment"
 	"github.com/hanjunlee/gitploy/ent/perm"
 	"github.com/hanjunlee/gitploy/ent/repo"
@@ -24,6 +25,8 @@ type Client struct {
 	config
 	// Schema is the client for creating, migrating and dropping schema.
 	Schema *migrate.Schema
+	// ChatUser is the client for interacting with the ChatUser builders.
+	ChatUser *ChatUserClient
 	// Deployment is the client for interacting with the Deployment builders.
 	Deployment *DeploymentClient
 	// Perm is the client for interacting with the Perm builders.
@@ -45,6 +48,7 @@ func NewClient(opts ...Option) *Client {
 
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
+	c.ChatUser = NewChatUserClient(c.config)
 	c.Deployment = NewDeploymentClient(c.config)
 	c.Perm = NewPermClient(c.config)
 	c.Repo = NewRepoClient(c.config)
@@ -82,6 +86,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	return &Tx{
 		ctx:        ctx,
 		config:     cfg,
+		ChatUser:   NewChatUserClient(cfg),
 		Deployment: NewDeploymentClient(cfg),
 		Perm:       NewPermClient(cfg),
 		Repo:       NewRepoClient(cfg),
@@ -104,6 +109,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
 		config:     cfg,
+		ChatUser:   NewChatUserClient(cfg),
 		Deployment: NewDeploymentClient(cfg),
 		Perm:       NewPermClient(cfg),
 		Repo:       NewRepoClient(cfg),
@@ -114,7 +120,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 // Debug returns a new debug-client. It's used to get verbose logging on specific operations.
 //
 //	client.Debug().
-//		Deployment.
+//		ChatUser.
 //		Query().
 //		Count(ctx)
 //
@@ -137,10 +143,117 @@ func (c *Client) Close() error {
 // Use adds the mutation hooks to all the entity clients.
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
+	c.ChatUser.Use(hooks...)
 	c.Deployment.Use(hooks...)
 	c.Perm.Use(hooks...)
 	c.Repo.Use(hooks...)
 	c.User.Use(hooks...)
+}
+
+// ChatUserClient is a client for the ChatUser schema.
+type ChatUserClient struct {
+	config
+}
+
+// NewChatUserClient returns a client for the ChatUser from the given config.
+func NewChatUserClient(c config) *ChatUserClient {
+	return &ChatUserClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `chatuser.Hooks(f(g(h())))`.
+func (c *ChatUserClient) Use(hooks ...Hook) {
+	c.hooks.ChatUser = append(c.hooks.ChatUser, hooks...)
+}
+
+// Create returns a create builder for ChatUser.
+func (c *ChatUserClient) Create() *ChatUserCreate {
+	mutation := newChatUserMutation(c.config, OpCreate)
+	return &ChatUserCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of ChatUser entities.
+func (c *ChatUserClient) CreateBulk(builders ...*ChatUserCreate) *ChatUserCreateBulk {
+	return &ChatUserCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for ChatUser.
+func (c *ChatUserClient) Update() *ChatUserUpdate {
+	mutation := newChatUserMutation(c.config, OpUpdate)
+	return &ChatUserUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ChatUserClient) UpdateOne(cu *ChatUser) *ChatUserUpdateOne {
+	mutation := newChatUserMutation(c.config, OpUpdateOne, withChatUser(cu))
+	return &ChatUserUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ChatUserClient) UpdateOneID(id string) *ChatUserUpdateOne {
+	mutation := newChatUserMutation(c.config, OpUpdateOne, withChatUserID(id))
+	return &ChatUserUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for ChatUser.
+func (c *ChatUserClient) Delete() *ChatUserDelete {
+	mutation := newChatUserMutation(c.config, OpDelete)
+	return &ChatUserDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *ChatUserClient) DeleteOne(cu *ChatUser) *ChatUserDeleteOne {
+	return c.DeleteOneID(cu.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *ChatUserClient) DeleteOneID(id string) *ChatUserDeleteOne {
+	builder := c.Delete().Where(chatuser.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ChatUserDeleteOne{builder}
+}
+
+// Query returns a query builder for ChatUser.
+func (c *ChatUserClient) Query() *ChatUserQuery {
+	return &ChatUserQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a ChatUser entity by its id.
+func (c *ChatUserClient) Get(ctx context.Context, id string) (*ChatUser, error) {
+	return c.Query().Where(chatuser.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ChatUserClient) GetX(ctx context.Context, id string) *ChatUser {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryUser queries the user edge of a ChatUser.
+func (c *ChatUserClient) QueryUser(cu *ChatUser) *UserQuery {
+	query := &UserQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := cu.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(chatuser.Table, chatuser.FieldID, id),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, true, chatuser.UserTable, chatuser.UserColumn),
+		)
+		fromV = sqlgraph.Neighbors(cu.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *ChatUserClient) Hooks() []Hook {
+	return c.hooks.ChatUser
 }
 
 // DeploymentClient is a client for the Deployment schema.
@@ -592,6 +705,22 @@ func (c *UserClient) GetX(ctx context.Context, id string) *User {
 		panic(err)
 	}
 	return obj
+}
+
+// QueryChatUser queries the chat_user edge of a User.
+func (c *UserClient) QueryChatUser(u *User) *ChatUserQuery {
+	query := &ChatUserQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := u.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, id),
+			sqlgraph.To(chatuser.Table, chatuser.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, false, user.ChatUserTable, user.ChatUserColumn),
+		)
+		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
 }
 
 // QueryPerms queries the perms edge of a User.

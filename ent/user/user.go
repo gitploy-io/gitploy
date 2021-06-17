@@ -31,12 +31,21 @@ const (
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
 	FieldUpdatedAt = "updated_at"
+	// EdgeChatUser holds the string denoting the chat_user edge name in mutations.
+	EdgeChatUser = "chat_user"
 	// EdgePerms holds the string denoting the perms edge name in mutations.
 	EdgePerms = "perms"
 	// EdgeDeployments holds the string denoting the deployments edge name in mutations.
 	EdgeDeployments = "deployments"
 	// Table holds the table name of the user in the database.
 	Table = "users"
+	// ChatUserTable is the table the holds the chat_user relation/edge.
+	ChatUserTable = "chat_users"
+	// ChatUserInverseTable is the table name for the ChatUser entity.
+	// It exists in this package in order to avoid circular dependency with the "chatuser" package.
+	ChatUserInverseTable = "chat_users"
+	// ChatUserColumn is the table column denoting the chat_user relation/edge.
+	ChatUserColumn = "user_id"
 	// PermsTable is the table the holds the perms relation/edge.
 	PermsTable = "perms"
 	// PermsInverseTable is the table name for the Perm entity.

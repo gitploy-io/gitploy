@@ -10,6 +10,7 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/hanjunlee/gitploy/ent/chatuser"
 	"github.com/hanjunlee/gitploy/ent/deployment"
 	"github.com/hanjunlee/gitploy/ent/perm"
 	"github.com/hanjunlee/gitploy/ent/user"
@@ -134,6 +135,25 @@ func (uc *UserCreate) SetNillableUpdatedAt(t *time.Time) *UserCreate {
 func (uc *UserCreate) SetID(s string) *UserCreate {
 	uc.mutation.SetID(s)
 	return uc
+}
+
+// SetChatUserID sets the "chat_user" edge to the ChatUser entity by ID.
+func (uc *UserCreate) SetChatUserID(id string) *UserCreate {
+	uc.mutation.SetChatUserID(id)
+	return uc
+}
+
+// SetNillableChatUserID sets the "chat_user" edge to the ChatUser entity by ID if the given value is not nil.
+func (uc *UserCreate) SetNillableChatUserID(id *string) *UserCreate {
+	if id != nil {
+		uc = uc.SetChatUserID(*id)
+	}
+	return uc
+}
+
+// SetChatUser sets the "chat_user" edge to the ChatUser entity.
+func (uc *UserCreate) SetChatUser(c *ChatUser) *UserCreate {
+	return uc.SetChatUserID(c.ID)
 }
 
 // AddPermIDs adds the "perms" edge to the Perm entity by IDs.
@@ -370,6 +390,25 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 			Column: user.FieldUpdatedAt,
 		})
 		_node.UpdatedAt = value
+	}
+	if nodes := uc.mutation.ChatUserIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   user.ChatUserTable,
+			Columns: []string{user.ChatUserColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: chatuser.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := uc.mutation.PermsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

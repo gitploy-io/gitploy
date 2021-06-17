@@ -49,6 +49,8 @@ func (User) Fields() []ent.Field {
 // Edges of the User.
 func (User) Edges() []ent.Edge {
 	return []ent.Edge{
+		edge.To("chat_user", ChatUser.Type).
+			Unique(),
 		edge.To("perms", Perm.Type),
 		edge.To("deployments", Deployment.Type),
 	}
