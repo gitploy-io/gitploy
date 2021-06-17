@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+	"github.com/hanjunlee/gitploy/ent/chatuser"
 	"github.com/hanjunlee/gitploy/ent/user"
 )
 
@@ -43,19 +44,35 @@ type User struct {
 
 // UserEdges holds the relations/edges for other nodes in the graph.
 type UserEdges struct {
+	// ChatUser holds the value of the chat_user edge.
+	ChatUser *ChatUser `json:"chat_user,omitempty"`
 	// Perms holds the value of the perms edge.
 	Perms []*Perm `json:"perms,omitempty"`
 	// Deployments holds the value of the deployments edge.
 	Deployments []*Deployment `json:"deployments,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
+	loadedTypes [3]bool
+}
+
+// ChatUserOrErr returns the ChatUser value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e UserEdges) ChatUserOrErr() (*ChatUser, error) {
+	if e.loadedTypes[0] {
+		if e.ChatUser == nil {
+			// The edge chat_user was loaded in eager-loading,
+			// but was not found.
+			return nil, &NotFoundError{label: chatuser.Label}
+		}
+		return e.ChatUser, nil
+	}
+	return nil, &NotLoadedError{edge: "chat_user"}
 }
 
 // PermsOrErr returns the Perms value or an error if the edge
 // was not loaded in eager-loading.
 func (e UserEdges) PermsOrErr() ([]*Perm, error) {
-	if e.loadedTypes[0] {
+	if e.loadedTypes[1] {
 		return e.Perms, nil
 	}
 	return nil, &NotLoadedError{edge: "perms"}
@@ -64,7 +81,7 @@ func (e UserEdges) PermsOrErr() ([]*Perm, error) {
 // DeploymentsOrErr returns the Deployments value or an error if the edge
 // was not loaded in eager-loading.
 func (e UserEdges) DeploymentsOrErr() ([]*Deployment, error) {
-	if e.loadedTypes[1] {
+	if e.loadedTypes[2] {
 		return e.Deployments, nil
 	}
 	return nil, &NotLoadedError{edge: "deployments"}
@@ -165,6 +182,11 @@ func (u *User) assignValues(columns []string, values []interface{}) error {
 		}
 	}
 	return nil
+}
+
+// QueryChatUser queries the "chat_user" edge of the User entity.
+func (u *User) QueryChatUser() *ChatUserQuery {
+	return (&UserClient{config: u.config}).QueryChatUser(u)
 }
 
 // QueryPerms queries the "perms" edge of the User entity.

@@ -1,7 +1,6 @@
 package middlewares
 
 import (
-	"errors"
 	"net/http"
 	"strings"
 
@@ -24,49 +23,35 @@ func NewSessMiddleware(i Interactor) *SessMiddleware {
 
 func (s *SessMiddleware) User() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		hash := c.GetString(gb.KeySession)
-		if hash == "" {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, map[string]string{
-				"message": "Unauthorized user",
-			})
-		}
-
 		ctx := c.Request.Context()
 
-		u, err := s.i.FindUserByHash(ctx, hash)
+		u, err := s.i.FindUserByHash(ctx, FindHash(c))
 		if ent.IsNotFound(err) {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, map[string]string{
-				"message": "Unauthorized user",
-			})
+			return
 		}
 
 		c.Set(gb.KeyUser, u)
 	}
 }
 
-func Session() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		s, err := c.Cookie(gb.CookieSession)
-		if err != nil && !errors.Is(err, http.ErrNoCookie) {
-			c.AbortWithStatusJSON(http.StatusInternalServerError, nil)
-		}
-		if s != "" {
-			c.Set(gb.KeySession, s)
-			return
-		}
-
-		header := c.GetHeader("Authorization")
-		s = strings.TrimPrefix(header, "Bearer ")
-		if s != "" {
-			c.Set(gb.KeySession, s)
-			return
-		}
+func FindHash(c *gin.Context) string {
+	s, _ := c.Cookie(gb.CookieSession)
+	if s != "" {
+		return s
 	}
+
+	header := c.GetHeader("Authorization")
+	s = strings.TrimPrefix(header, "Bearer ")
+	if s != "" {
+		return s
+	}
+
+	return ""
 }
 
 func OnlyAuthorized() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		_, ok := c.Get(gb.KeySession)
+		_, ok := c.Get(gb.KeyUser)
 		if !ok {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, map[string]string{
 				"message": "Unauthorized user",

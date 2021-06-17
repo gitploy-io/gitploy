@@ -8,6 +8,38 @@ import (
 )
 
 var (
+	// ChatUsersColumns holds the columns for the "chat_users" table.
+	ChatUsersColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString},
+		{Name: "token", Type: field.TypeString},
+		{Name: "refresh", Type: field.TypeString},
+		{Name: "expiry", Type: field.TypeTime},
+		{Name: "bot_token", Type: field.TypeString},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "user_id", Type: field.TypeString, Unique: true, Nullable: true},
+	}
+	// ChatUsersTable holds the schema information for the "chat_users" table.
+	ChatUsersTable = &schema.Table{
+		Name:       "chat_users",
+		Columns:    ChatUsersColumns,
+		PrimaryKey: []*schema.Column{ChatUsersColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "chat_users_users_chat_user",
+				Columns:    []*schema.Column{ChatUsersColumns[7]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "chatuser_user_id",
+				Unique:  false,
+				Columns: []*schema.Column{ChatUsersColumns[7]},
+			},
+		},
+	}
 	// DeploymentsColumns holds the columns for the "deployments" table.
 	DeploymentsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
@@ -155,6 +187,7 @@ var (
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
+		ChatUsersTable,
 		DeploymentsTable,
 		PermsTable,
 		ReposTable,
@@ -163,6 +196,7 @@ var (
 )
 
 func init() {
+	ChatUsersTable.ForeignKeys[0].RefTable = UsersTable
 	DeploymentsTable.ForeignKeys[0].RefTable = ReposTable
 	DeploymentsTable.ForeignKeys[1].RefTable = UsersTable
 	PermsTable.ForeignKeys[0].RefTable = ReposTable

@@ -5,6 +5,7 @@ package ent
 import (
 	"time"
 
+	"github.com/hanjunlee/gitploy/ent/chatuser"
 	"github.com/hanjunlee/gitploy/ent/deployment"
 	"github.com/hanjunlee/gitploy/ent/perm"
 	"github.com/hanjunlee/gitploy/ent/repo"
@@ -16,6 +17,18 @@ import (
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	chatuserFields := schema.ChatUser{}.Fields()
+	_ = chatuserFields
+	// chatuserDescCreatedAt is the schema descriptor for created_at field.
+	chatuserDescCreatedAt := chatuserFields[5].Descriptor()
+	// chatuser.DefaultCreatedAt holds the default value on creation for the created_at field.
+	chatuser.DefaultCreatedAt = chatuserDescCreatedAt.Default.(func() time.Time)
+	// chatuserDescUpdatedAt is the schema descriptor for updated_at field.
+	chatuserDescUpdatedAt := chatuserFields[6].Descriptor()
+	// chatuser.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	chatuser.DefaultUpdatedAt = chatuserDescUpdatedAt.Default.(func() time.Time)
+	// chatuser.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	chatuser.UpdateDefaultUpdatedAt = chatuserDescUpdatedAt.UpdateDefault.(func() time.Time)
 	deploymentFields := schema.Deployment{}.Fields()
 	_ = deploymentFields
 	// deploymentDescCreatedAt is the schema descriptor for created_at field.

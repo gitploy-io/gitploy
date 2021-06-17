@@ -1064,6 +1064,34 @@ func UpdatedAtLTE(v time.Time) predicate.User {
 	})
 }
 
+// HasChatUser applies the HasEdge predicate on the "chat_user" edge.
+func HasChatUser() predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(ChatUserTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, false, ChatUserTable, ChatUserColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasChatUserWith applies the HasEdge predicate on the "chat_user" edge with a given conditions (other predicates).
+func HasChatUserWith(preds ...predicate.ChatUser) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(ChatUserInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, false, ChatUserTable, ChatUserColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // HasPerms applies the HasEdge predicate on the "perms" edge.
 func HasPerms() predicate.User {
 	return predicate.User(func(s *sql.Selector) {

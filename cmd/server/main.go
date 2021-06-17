@@ -55,6 +55,7 @@ func newRouterConfig(c *Config) *server.RouterConfig {
 	return &server.RouterConfig{
 		ServerConfig: newServerConfig(c),
 		SCMConfig:    newSCMConfig(c),
+		ChatConfig:   newChatConfig(c),
 		Interactor:   interactor.NewInteractor(newStore(c), newSCM(c)),
 	}
 }
@@ -84,7 +85,7 @@ func newServerConfig(c *Config) *server.ServerConfig {
 func newSCMConfig(c *Config) *server.SCMConfig {
 	var sc *server.SCMConfig
 
-	if c.isGithub() {
+	if c.isGithubEnabled() {
 		sc = &server.SCMConfig{
 			Type:         server.SCMTypeGithub,
 			ClientID:     c.GithubClientID,
@@ -94,6 +95,22 @@ func newSCMConfig(c *Config) *server.SCMConfig {
 	}
 
 	return sc
+}
+
+func newChatConfig(c *Config) *server.ChatConfig {
+	var cc *server.ChatConfig
+
+	if c.isSlackEnabled() {
+		cc = &server.ChatConfig{
+			Type:         server.ChatTypeSlack,
+			ClientID:     c.SlackClientID,
+			ClientSecret: c.SlackClientSecret,
+			BotScopes:    c.SlackBotScopes,
+			UserScopes:   c.SlackUserScopes,
+		}
+	}
+
+	return cc
 }
 
 func newStore(c *Config) interactor.Store {
@@ -116,7 +133,7 @@ func newStore(c *Config) interactor.Store {
 func newSCM(c *Config) interactor.SCM {
 	var scm interactor.SCM
 
-	if c.isGithub() {
+	if c.isGithubEnabled() {
 		scm = github.NewGithub()
 	}
 

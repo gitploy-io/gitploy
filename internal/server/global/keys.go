@@ -6,6 +6,5 @@ const (
 
 // Gin context values.
 const (
-	KeySession = "gitploy.session"
-	KeyUser    = "gitploy.user"
+	KeyUser = "gitploy.user"
 )

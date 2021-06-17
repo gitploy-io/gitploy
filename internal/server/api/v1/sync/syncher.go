@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/hanjunlee/gitploy/ent"
 	gb "github.com/hanjunlee/gitploy/internal/server/global"
 	"go.uber.org/zap"
 )
@@ -30,7 +31,8 @@ func NewSyncher(i Interactor) *Syncher {
 func (s *Syncher) Sync(c *gin.Context) {
 	ctx := c.Request.Context()
 
-	u, _ := s.i.FindUserByHash(ctx, c.GetString(gb.KeySession))
+	v, _ := c.Get(gb.KeyUser)
+	u := v.(*ent.User)
 
 	if err := s.i.Sync(ctx, u); err != nil {
 		s.log.Error("failed to synchronize.", zap.Error(err))

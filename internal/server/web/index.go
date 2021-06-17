@@ -14,23 +14,27 @@ import (
 
 type (
 	Web struct {
-		c   *oauth2.Config
+		// SCM oAuth
+		c *oauth2.Config
+		// Chat oAuth
+		cc  *oauth2.Config
 		i   Interactor
 		log *zap.Logger
 	}
 )
 
-func NewWeb(c *oauth2.Config, i Interactor) *Web {
+func NewWeb(c *oauth2.Config, cc *oauth2.Config, i Interactor) *Web {
 	return &Web{
 		c:   c,
+		cc:  cc,
 		i:   i,
 		log: zap.L().Named("web"),
 	}
 }
 
 func (w *Web) Index(c *gin.Context) {
-	s := c.GetString(gb.KeySession)
-	if s == "" {
+	_, ok := c.Get(gb.KeyUser)
+	if !ok {
 		w.redirectToAuth(c)
 		return
 	}

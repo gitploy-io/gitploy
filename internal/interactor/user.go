@@ -28,3 +28,12 @@ func (i *Interactor) SaveSCMUser(ctx context.Context, u *ent.User) (*ent.User, e
 
 	return i.store.UpdateUser(ctx, u)
 }
+
+func (i *Interactor) SaveChatUser(ctx context.Context, u *ent.User, cu *ent.ChatUser) (*ent.ChatUser, error) {
+	_, err := i.store.FindChatUserByID(ctx, cu.ID)
+	if ent.IsNotFound(err) {
+		return i.store.CreateChatUser(ctx, u, cu)
+	}
+
+	return i.store.UpdateChatUser(ctx, u, cu)
+}
