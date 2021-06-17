@@ -15,13 +15,15 @@ import (
 )
 
 const (
-	SCMTypeGithub SCMType = "github"
+	SCMTypeGithub SCMType  = "github"
+	ChatTypeSlack ChatType = "slack"
 )
 
 type (
 	RouterConfig struct {
 		*ServerConfig
 		*SCMConfig
+		*ChatConfig
 		Interactor
 	}
 
@@ -41,6 +43,16 @@ type (
 		ClientID     string
 		ClientSecret string
 		Scopes       []string
+	}
+
+	ChatType string
+
+	ChatConfig struct {
+		Type         ChatType
+		ClientID     string
+		ClientSecret string
+		BotScopes    []string
+		UserScopes   []string
 	}
 
 	Interactor interface {
@@ -70,9 +82,11 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 
 	root := r.Group("/")
 	{
-		w := web.NewWeb(newGithubOauthConfig(c), c.Interactor)
+		w := web.NewWeb(newGithubOauthConfig(c), newSlackOauthConfig(c), c.Interactor)
 		root.GET("/", w.Index)
 		root.GET("/signin", w.Signin)
+		root.GET("/slack", w.SlackIndex)
+		root.GET("/slack/signin", w.SigninSlack)
 	}
 
 	v1 := r.Group("/api/v1")
@@ -131,13 +145,26 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 
 func newGithubOauthConfig(c *RouterConfig) *oauth2.Config {
 	return &oauth2.Config{
-		ClientID:     c.ClientID,
-		ClientSecret: c.ClientSecret,
+		ClientID:     c.SCMConfig.ClientID,
+		ClientSecret: c.SCMConfig.ClientSecret,
 		Endpoint: oauth2.Endpoint{
 			AuthURL:  "https://github.com/login/oauth/authorize",
 			TokenURL: "https://github.com/login/oauth/access_token",
 		},
 		RedirectURL: fmt.Sprintf("%s://%s/signin", c.Proto, c.Host),
-		Scopes:      c.Scopes,
+		Scopes:      c.SCMConfig.Scopes,
+	}
+}
+
+func newSlackOauthConfig(c *RouterConfig) *oauth2.Config {
+	return &oauth2.Config{
+		ClientID:     c.ChatConfig.ClientID,
+		ClientSecret: c.ChatConfig.ClientSecret,
+		Endpoint: oauth2.Endpoint{
+			AuthURL:  fmt.Sprintf("https://slack.com/oauth/v2/authorize?user_scope=%s", c.ChatConfig.UserScopes),
+			TokenURL: "https://slack.com/api/oauth.v2.access",
+		},
+		RedirectURL: fmt.Sprintf("%s://%s/slack/signin", c.Proto, c.Host),
+		Scopes:      c.ChatConfig.BotScopes,
 	}
 }
