@@ -34,8 +34,8 @@ type (
 )
 
 func (w *Web) SlackIndex(c *gin.Context) {
-	s := c.GetString(gb.KeySession)
-	if s == "" {
+	_, ok := c.Get(gb.KeyUser)
+	if !ok {
 		c.Redirect(http.StatusFound, "/")
 		return
 	}
@@ -78,8 +78,8 @@ func (w *Web) SigninSlack(c *gin.Context) {
 		return
 	}
 
-	hash := c.GetString(gb.KeySession)
-	u, _ := w.i.FindUserByHash(ctx, hash)
+	v, _ := c.Get(gb.KeyUser)
+	u := v.(*ent.User)
 
 	_, err = w.i.SaveChatUser(ctx, u, &ent.ChatUser{
 		ID:       sr.User.ID,

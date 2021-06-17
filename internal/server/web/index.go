@@ -33,8 +33,8 @@ func NewWeb(c *oauth2.Config, cc *oauth2.Config, i Interactor) *Web {
 }
 
 func (w *Web) Index(c *gin.Context) {
-	s := c.GetString(gb.KeySession)
-	if s == "" {
+	_, ok := c.Get(gb.KeyUser)
+	if !ok {
 		w.redirectToAuth(c)
 		return
 	}

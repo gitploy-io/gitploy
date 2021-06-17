@@ -78,7 +78,8 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD"},
 		AllowHeaders:     []string{"Origin", "Authorization", "accept", "Content-Length", "Content-Type"},
 	}))
-	r.Use(mw.Session())
+	sm := mw.NewSessMiddleware(c.Interactor)
+	r.Use(sm.User())
 
 	root := r.Group("/")
 	{
@@ -91,9 +92,7 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 
 	v1 := r.Group("/api/v1")
 	{
-		sm := mw.NewSessMiddleware(c.Interactor)
-		// Only authed user access to API.
-		v1.Use(sm.User())
+		v1.Use(mw.OnlyAuthorized())
 	}
 
 	syncv1 := v1.Group("/sync")
