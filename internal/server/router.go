@@ -161,7 +161,7 @@ func newSlackOauthConfig(c *RouterConfig) *oauth2.Config {
 		ClientID:     c.ChatConfig.ClientID,
 		ClientSecret: c.ChatConfig.ClientSecret,
 		Endpoint: oauth2.Endpoint{
-			AuthURL:  fmt.Sprintf("https://slack.com/oauth/v2/authorize?user_scope=%s", c.ChatConfig.UserScopes),
+			AuthURL:  "https://slack.com/oauth/v2/authorize",
 			TokenURL: "https://slack.com/api/oauth.v2.access",
 		},
 		RedirectURL: fmt.Sprintf("%s://%s/slack/signin", c.Proto, c.Host),

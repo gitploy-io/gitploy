@@ -22,15 +22,17 @@ func (s *Store) CreateChatUser(ctx context.Context, u *ent.User, cu *ent.ChatUse
 		SetBotToken(cu.BotToken).
 		SetRefresh(cu.Refresh).
 		SetExpiry(cu.Expiry).
+		SetUserID(u.ID).
 		Save(ctx)
 }
 
-func (s *Store) UpdateChatUser(ctx context.Context, cu *ent.ChatUser) (*ent.ChatUser, error) {
+func (s *Store) UpdateChatUser(ctx context.Context, u *ent.User, cu *ent.ChatUser) (*ent.ChatUser, error) {
 	return s.c.ChatUser.
 		UpdateOneID(cu.ID).
 		SetToken(cu.Token).
 		SetBotToken(cu.BotToken).
 		SetRefresh(cu.Refresh).
 		SetExpiry(cu.Expiry).
+		SetUserID(u.ID).
 		Save(ctx)
 }

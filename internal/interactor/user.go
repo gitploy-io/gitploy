@@ -35,5 +35,5 @@ func (i *Interactor) SaveChatUser(ctx context.Context, u *ent.User, cu *ent.Chat
 		return i.store.CreateChatUser(ctx, u, cu)
 	}
 
-	return i.store.UpdateChatUser(ctx, cu)
+	return i.store.UpdateChatUser(ctx, u, cu)
 }
