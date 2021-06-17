@@ -8,6 +8,7 @@ type (
 		Server
 		Store
 		Github
+		Slack
 		Webhook
 	}
 
@@ -31,6 +32,13 @@ type (
 		GithubScopes       []string `split_words:"true" default:"repo"`
 	}
 
+	Slack struct {
+		SlackClientID     string   `split_words:"true"`
+		SlackClientSecret string   `split_words:"true"`
+		SlackUserScopes   []string `split_words:"true" default:""`
+		SlackBotScopes    []string `split_words:"true" default:"commands,chat:write"`
+	}
+
 	Webhook struct {
 		WebhookSecret string `split_words:"true"`
 	}
@@ -42,6 +50,10 @@ func NewConfigFromEnv() (*Config, error) {
 	return c, err
 }
 
-func (c *Config) isGithub() bool {
+func (c *Config) isGithubEnabled() bool {
 	return c.GithubClientID != "" && c.GithubClientSecret != ""
+}
+
+func (c *Config) isSlackEnabled() bool {
+	return c.SlackClientID != "" && c.SlackClientSecret != ""
 }
