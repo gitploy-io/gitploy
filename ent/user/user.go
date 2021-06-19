@@ -37,6 +37,8 @@ const (
 	EdgePerms = "perms"
 	// EdgeDeployments holds the string denoting the deployments edge name in mutations.
 	EdgeDeployments = "deployments"
+	// EdgeNotification holds the string denoting the notification edge name in mutations.
+	EdgeNotification = "notification"
 	// Table holds the table name of the user in the database.
 	Table = "users"
 	// ChatUserTable is the table the holds the chat_user relation/edge.
@@ -60,6 +62,13 @@ const (
 	DeploymentsInverseTable = "deployments"
 	// DeploymentsColumn is the table column denoting the deployments relation/edge.
 	DeploymentsColumn = "user_id"
+	// NotificationTable is the table the holds the notification relation/edge.
+	NotificationTable = "notifications"
+	// NotificationInverseTable is the table name for the Notification entity.
+	// It exists in this package in order to avoid circular dependency with the "notification" package.
+	NotificationInverseTable = "notifications"
+	// NotificationColumn is the table column denoting the notification relation/edge.
+	NotificationColumn = "user_id"
 )
 
 // Columns holds all SQL columns for user fields.

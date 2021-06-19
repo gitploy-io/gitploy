@@ -117,16 +117,19 @@ func (s *Slack) interactDeploy(c *gin.Context, scb slack.InteractionCallback) {
 	cu := cb.Edges.ChatUser
 	u, _ := s.i.FindUserWithChatUserByChatUserID(ctx, cu.ID)
 
-	d := &ent.Deployment{
+	d, err := s.i.Deploy(ctx, u, cb.Edges.Repo, &ent.Deployment{
 		Type: deployment.Type(scb.Submission["type"]),
 		Ref:  scb.Submission["ref"],
 		Env:  scb.Submission["env"],
-	}
-	_, err := s.i.Deploy(ctx, u, cb.Edges.Repo, d)
+	})
 	if err != nil {
 		s.log.Error("failed to deploy.", zap.Error(err))
 		c.Status(http.StatusInternalServerError)
 		return
+	}
+
+	if _, err = s.i.Notify(ctx, d); err != nil {
+		s.log.Warn("failed to notify the deployment.", zap.Error(err))
 	}
 
 	s.log.Debug("deployed successfully.")

@@ -13,6 +13,7 @@ import (
 	"github.com/hanjunlee/gitploy/ent/chatcallback"
 	"github.com/hanjunlee/gitploy/ent/chatuser"
 	"github.com/hanjunlee/gitploy/ent/deployment"
+	"github.com/hanjunlee/gitploy/ent/notification"
 	"github.com/hanjunlee/gitploy/ent/perm"
 	"github.com/hanjunlee/gitploy/ent/repo"
 	"github.com/hanjunlee/gitploy/ent/user"
@@ -39,6 +40,7 @@ func columnChecker(table string) func(string) error {
 		chatcallback.Table: chatcallback.ValidColumn,
 		chatuser.Table:     chatuser.ValidColumn,
 		deployment.Table:   deployment.ValidColumn,
+		notification.Table: notification.ValidColumn,
 		perm.Table:         perm.ValidColumn,
 		repo.Table:         repo.ValidColumn,
 		user.Table:         user.ValidColumn,

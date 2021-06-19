@@ -27,6 +27,7 @@ type hooks struct {
 	ChatCallback []ent.Hook
 	ChatUser     []ent.Hook
 	Deployment   []ent.Hook
+	Notification []ent.Hook
 	Perm         []ent.Hook
 	Repo         []ent.Hook
 	User         []ent.Hook
