@@ -115,13 +115,11 @@ func (r *Repo) CreateDeployment(c *gin.Context) {
 
 	ctx := c.Request.Context()
 
-	d := &ent.Deployment{
+	d, err := r.i.Deploy(ctx, u, re, &ent.Deployment{
 		Type: deployment.Type(p.Type),
 		Ref:  p.Ref,
 		Env:  p.Env,
-	}
-
-	d, err := r.i.Deploy(ctx, u, re, d)
+	})
 	if err != nil {
 		if errs.IsConfigNotFoundError(err) {
 			r.log.Warn("failed to get the config.", zap.Error(err))
@@ -140,6 +138,10 @@ func (r *Repo) CreateDeployment(c *gin.Context) {
 		r.log.Error("failed to deploy.", zap.Error(err))
 		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to deploy.")
 		return
+	}
+
+	if _, err = r.i.Notify(ctx, d); err != nil {
+		r.log.Warn("failed to notify the deployment.", zap.Error(err))
 	}
 
 	gb.Response(c, http.StatusCreated, d)
