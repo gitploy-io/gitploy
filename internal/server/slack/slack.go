@@ -8,17 +8,20 @@ import (
 	"github.com/prometheus/common/log"
 	"github.com/slack-go/slack"
 	"go.uber.org/zap"
+	"golang.org/x/oauth2"
 )
 
 type (
 	Slack struct {
 		i   Interactor
+		c   *oauth2.Config
 		log *zap.Logger
 	}
 )
 
-func NewSlack(i Interactor) *Slack {
+func NewSlack(c *oauth2.Config, i Interactor) *Slack {
 	return &Slack{
+		c:   c,
 		i:   i,
 		log: zap.L().Named("slack"),
 	}

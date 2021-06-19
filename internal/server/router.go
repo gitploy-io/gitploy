@@ -84,14 +84,9 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 
 	root := r.Group("/")
 	{
-		w := web.NewWeb(newGithubOauthConfig(c), newSlackOauthConfig(c), c.Interactor)
+		w := web.NewWeb(newGithubOauthConfig(c), c.Interactor)
 		root.GET("/", w.Index)
 		root.GET("/signin", w.Signin)
-
-		if isSlackEnabled(c) {
-			root.GET("/slack", w.SlackIndex)
-			root.GET("/slack/signin", w.SigninSlack)
-		}
 	}
 
 	v1 := r.Group("/api/v1")
@@ -140,7 +135,9 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 		slackapi := r.Group("/slack")
 		{
 			m := s.NewSlackMiddleware(c.ChatConfig.Secret)
-			slack := s.NewSlack(c.Interactor)
+			slack := s.NewSlack(newSlackOauthConfig(c), c.Interactor)
+			slackapi.GET("/", slack.Index)
+			slackapi.GET("/signin", slack.SigninSlack)
 			slackapi.POST("/interact", slack.Interact)
 			slackapi.POST("/command", m.Verify(), slack.Cmd)
 		}
