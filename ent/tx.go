@@ -18,6 +18,8 @@ type Tx struct {
 	ChatUser *ChatUserClient
 	// Deployment is the client for interacting with the Deployment builders.
 	Deployment *DeploymentClient
+	// Notification is the client for interacting with the Notification builders.
+	Notification *NotificationClient
 	// Perm is the client for interacting with the Perm builders.
 	Perm *PermClient
 	// Repo is the client for interacting with the Repo builders.
@@ -162,6 +164,7 @@ func (tx *Tx) init() {
 	tx.ChatCallback = NewChatCallbackClient(tx.config)
 	tx.ChatUser = NewChatUserClient(tx.config)
 	tx.Deployment = NewDeploymentClient(tx.config)
+	tx.Notification = NewNotificationClient(tx.config)
 	tx.Perm = NewPermClient(tx.config)
 	tx.Repo = NewRepoClient(tx.config)
 	tx.User = NewUserClient(tx.config)

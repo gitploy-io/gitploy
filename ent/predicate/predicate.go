@@ -15,6 +15,9 @@ type ChatUser func(*sql.Selector)
 // Deployment is the predicate function for deployment builders.
 type Deployment func(*sql.Selector)
 
+// Notification is the predicate function for notification builders.
+type Notification func(*sql.Selector)
+
 // Perm is the predicate function for perm builders.
 type Perm func(*sql.Selector)
 

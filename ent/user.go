@@ -50,9 +50,11 @@ type UserEdges struct {
 	Perms []*Perm `json:"perms,omitempty"`
 	// Deployments holds the value of the deployments edge.
 	Deployments []*Deployment `json:"deployments,omitempty"`
+	// Notification holds the value of the notification edge.
+	Notification []*Notification `json:"notification,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [3]bool
+	loadedTypes [4]bool
 }
 
 // ChatUserOrErr returns the ChatUser value or an error if the edge
@@ -85,6 +87,15 @@ func (e UserEdges) DeploymentsOrErr() ([]*Deployment, error) {
 		return e.Deployments, nil
 	}
 	return nil, &NotLoadedError{edge: "deployments"}
+}
+
+// NotificationOrErr returns the Notification value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) NotificationOrErr() ([]*Notification, error) {
+	if e.loadedTypes[3] {
+		return e.Notification, nil
+	}
+	return nil, &NotLoadedError{edge: "notification"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -197,6 +208,11 @@ func (u *User) QueryPerms() *PermQuery {
 // QueryDeployments queries the "deployments" edge of the User entity.
 func (u *User) QueryDeployments() *DeploymentQuery {
 	return (&UserClient{config: u.config}).QueryDeployments(u)
+}
+
+// QueryNotification queries the "notification" edge of the User entity.
+func (u *User) QueryNotification() *NotificationQuery {
+	return (&UserClient{config: u.config}).QueryNotification(u)
 }
 
 // Update returns a builder for updating this User.

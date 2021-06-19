@@ -132,6 +132,37 @@ var (
 			},
 		},
 	}
+	// NotificationsColumns holds the columns for the "notifications" table.
+	NotificationsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "type", Type: field.TypeEnum, Enums: []string{"deployment"}, Default: "deployment"},
+		{Name: "resource_id", Type: field.TypeInt},
+		{Name: "notified", Type: field.TypeBool},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "user_id", Type: field.TypeString, Nullable: true},
+	}
+	// NotificationsTable holds the schema information for the "notifications" table.
+	NotificationsTable = &schema.Table{
+		Name:       "notifications",
+		Columns:    NotificationsColumns,
+		PrimaryKey: []*schema.Column{NotificationsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "notifications_users_notification",
+				Columns:    []*schema.Column{NotificationsColumns[6]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "notification_user_id",
+				Unique:  false,
+				Columns: []*schema.Column{NotificationsColumns[6]},
+			},
+		},
+	}
 	// PermsColumns holds the columns for the "perms" table.
 	PermsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
@@ -221,6 +252,7 @@ var (
 		ChatCallbacksTable,
 		ChatUsersTable,
 		DeploymentsTable,
+		NotificationsTable,
 		PermsTable,
 		ReposTable,
 		UsersTable,
@@ -233,6 +265,7 @@ func init() {
 	ChatUsersTable.ForeignKeys[0].RefTable = UsersTable
 	DeploymentsTable.ForeignKeys[0].RefTable = ReposTable
 	DeploymentsTable.ForeignKeys[1].RefTable = UsersTable
+	NotificationsTable.ForeignKeys[0].RefTable = UsersTable
 	PermsTable.ForeignKeys[0].RefTable = ReposTable
 	PermsTable.ForeignKeys[1].RefTable = UsersTable
 }
