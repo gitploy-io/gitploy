@@ -51,6 +51,7 @@ type (
 		Type         ChatType
 		ClientID     string
 		ClientSecret string
+		Secret       string
 		BotScopes    []string
 		UserScopes   []string
 	}
@@ -86,8 +87,11 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 		w := web.NewWeb(newGithubOauthConfig(c), newSlackOauthConfig(c), c.Interactor)
 		root.GET("/", w.Index)
 		root.GET("/signin", w.Signin)
-		root.GET("/slack", w.SlackIndex)
-		root.GET("/slack/signin", w.SigninSlack)
+
+		if isSlackEnabled(c) {
+			root.GET("/slack", w.SlackIndex)
+			root.GET("/slack/signin", w.SigninSlack)
+		}
 	}
 
 	v1 := r.Group("/api/v1")
@@ -132,11 +136,14 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 
 	// TODO: add webhook
 
-	slackapi := r.Group("/slack")
-	{
-		slack := s.NewSlack(c.Interactor)
-		slackapi.POST("/", slack.Interact)
-		slackapi.POST("/command", slack.Cmd)
+	if isSlackEnabled(c) {
+		slackapi := r.Group("/slack")
+		{
+			m := s.NewSlackMiddleware(c.ChatConfig.Secret)
+			slack := s.NewSlack(c.Interactor)
+			slackapi.POST("/interact", slack.Interact)
+			slackapi.POST("/command", m.Verify(), slack.Cmd)
+		}
 	}
 
 	return r
@@ -156,6 +163,10 @@ func newGithubOauthConfig(c *RouterConfig) *oauth2.Config {
 }
 
 func newSlackOauthConfig(c *RouterConfig) *oauth2.Config {
+	if c.ChatConfig == nil {
+		return nil
+	}
+
 	return &oauth2.Config{
 		ClientID:     c.ChatConfig.ClientID,
 		ClientSecret: c.ChatConfig.ClientSecret,
@@ -166,4 +177,8 @@ func newSlackOauthConfig(c *RouterConfig) *oauth2.Config {
 		RedirectURL: fmt.Sprintf("%s://%s/slack/signin", c.Proto, c.Host),
 		Scopes:      c.ChatConfig.BotScopes,
 	}
+}
+
+func isSlackEnabled(c *RouterConfig) bool {
+	return c.ChatConfig != nil && c.ChatConfig.Type == ChatTypeSlack
 }
