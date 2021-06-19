@@ -136,7 +136,7 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 	{
 		slack := s.NewSlack(c.Interactor)
 		slackapi.POST("/", slack.Interact)
-		slackapi.POST("/deploy", slack.Deploy)
+		slackapi.POST("/command", slack.Cmd)
 	}
 
 	return r
