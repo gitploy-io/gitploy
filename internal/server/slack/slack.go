@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/prometheus/common/log"
 	"github.com/slack-go/slack"
 	"go.uber.org/zap"
 	"golang.org/x/oauth2"

@@ -1,6 +1,8 @@
 package slack
 
 import (
+	"crypto/rand"
+	"encoding/base64"
 	"fmt"
 	"net/http"
 	"strings"
@@ -10,6 +12,7 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/hanjunlee/gitploy/ent"
+	"github.com/hanjunlee/gitploy/ent/chatcallback"
 	errs "github.com/hanjunlee/gitploy/internal/errors"
 	"github.com/hanjunlee/gitploy/vo"
 )
@@ -18,7 +21,7 @@ const (
 	token = ""
 )
 
-func (s *Slack) Deploy(c *gin.Context, cmd slack.SlashCommand) {
+func (s *Slack) handleDeployCmd(c *gin.Context, cmd slack.SlashCommand) {
 	ctx := c.Request.Context()
 
 	u, err := s.i.FindUserWithChatUserByChatUserID(ctx, cmd.UserID)
@@ -68,8 +71,12 @@ func (s *Slack) Deploy(c *gin.Context, cmd slack.SlashCommand) {
 		return
 	}
 
+	cb := randstr()
+	state := randstr()
+
 	err = client.OpenDialogContext(ctx, cmd.TriggerID, slack.Dialog{
-		CallbackID:     fmt.Sprintf("deploy.%s", randState()),
+		CallbackID:     cb,
+		State:          state,
 		Title:          "Deploy",
 		SubmitLabel:    "Submit",
 		NotifyOnCancel: true,
@@ -77,6 +84,17 @@ func (s *Slack) Deploy(c *gin.Context, cmd slack.SlashCommand) {
 	})
 	if err != nil {
 		s.log.Error("failed to open the dialog.", zap.Error(err))
+		c.Status(http.StatusInternalServerError)
+		return
+	}
+
+	_, err = s.i.CreateChatCallback(ctx, &ent.ChatCallback{
+		ID:    cb,
+		Type:  chatcallback.TypeDeploy,
+		State: state,
+	})
+	if err != nil {
+		s.log.Error("failed to create a new callback.", zap.Error(err))
 		c.Status(http.StatusInternalServerError)
 		return
 	}
@@ -148,4 +166,12 @@ func createDialogElement(c *vo.Config) []slack.DialogElement {
 			Hint:  "E.g. Commit - 25a667d6, Branch - main, Tag - v0.1.2",
 		},
 	}
+}
+
+func randstr() string {
+	b := make([]byte, 16)
+	rand.Read(b)
+
+	state := base64.URLEncoding.EncodeToString(b)
+	return state
 }

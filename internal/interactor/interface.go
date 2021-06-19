@@ -35,6 +35,8 @@ type (
 		FindLatestDeployment(ctx context.Context, r *ent.Repo, env string) (*ent.Deployment, error)
 		CreateDeployment(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment) (*ent.Deployment, error)
 		UpdateDeployment(ctx context.Context, d *ent.Deployment) (*ent.Deployment, error)
+
+		CreateChatCallback(ctx context.Context, cb *ent.ChatCallback) (*ent.ChatCallback, error)
 	}
 
 	SCM interface {
