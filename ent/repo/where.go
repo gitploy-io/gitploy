@@ -1113,6 +1113,34 @@ func HasDeploymentsWith(preds ...predicate.Deployment) predicate.Repo {
 	})
 }
 
+// HasChatCallback applies the HasEdge predicate on the "chat_callback" edge.
+func HasChatCallback() predicate.Repo {
+	return predicate.Repo(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(ChatCallbackTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ChatCallbackTable, ChatCallbackColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasChatCallbackWith applies the HasEdge predicate on the "chat_callback" edge with a given conditions (other predicates).
+func HasChatCallbackWith(preds ...predicate.ChatCallback) predicate.Repo {
+	return predicate.Repo(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(ChatCallbackInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ChatCallbackTable, ChatCallbackColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Repo) predicate.Repo {
 	return predicate.Repo(func(s *sql.Selector) {

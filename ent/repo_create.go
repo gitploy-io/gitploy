@@ -10,6 +10,7 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/hanjunlee/gitploy/ent/chatcallback"
 	"github.com/hanjunlee/gitploy/ent/deployment"
 	"github.com/hanjunlee/gitploy/ent/perm"
 	"github.com/hanjunlee/gitploy/ent/repo"
@@ -180,6 +181,21 @@ func (rc *RepoCreate) AddDeployments(d ...*Deployment) *RepoCreate {
 		ids[i] = d[i].ID
 	}
 	return rc.AddDeploymentIDs(ids...)
+}
+
+// AddChatCallbackIDs adds the "chat_callback" edge to the ChatCallback entity by IDs.
+func (rc *RepoCreate) AddChatCallbackIDs(ids ...string) *RepoCreate {
+	rc.mutation.AddChatCallbackIDs(ids...)
+	return rc
+}
+
+// AddChatCallback adds the "chat_callback" edges to the ChatCallback entity.
+func (rc *RepoCreate) AddChatCallback(c ...*ChatCallback) *RepoCreate {
+	ids := make([]string, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return rc.AddChatCallbackIDs(ids...)
 }
 
 // Mutation returns the RepoMutation object of the builder.
@@ -411,6 +427,25 @@ func (rc *RepoCreate) createSpec() (*Repo, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
 					Column: deployment.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := rc.mutation.ChatCallbackIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   repo.ChatCallbackTable,
+			Columns: []string{repo.ChatCallbackColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: chatcallback.FieldID,
 				},
 			},
 		}

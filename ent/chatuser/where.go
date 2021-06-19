@@ -814,6 +814,34 @@ func UserIDContainsFold(v string) predicate.ChatUser {
 	})
 }
 
+// HasChatCallback applies the HasEdge predicate on the "chat_callback" edge.
+func HasChatCallback() predicate.ChatUser {
+	return predicate.ChatUser(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(ChatCallbackTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ChatCallbackTable, ChatCallbackColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasChatCallbackWith applies the HasEdge predicate on the "chat_callback" edge with a given conditions (other predicates).
+func HasChatCallbackWith(preds ...predicate.ChatCallback) predicate.ChatUser {
+	return predicate.ChatUser(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(ChatCallbackInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ChatCallbackTable, ChatCallbackColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // HasUser applies the HasEdge predicate on the "user" edge.
 func HasUser() predicate.ChatUser {
 	return predicate.ChatUser(func(s *sql.Selector) {

@@ -1,7 +1,9 @@
-package web
+package slack
 
 import (
 	"context"
+	"crypto/rand"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -33,17 +35,17 @@ type (
 	}
 )
 
-func (w *Web) SlackIndex(c *gin.Context) {
+func (s *Slack) Index(c *gin.Context) {
 	_, ok := c.Get(gb.KeyUser)
 	if !ok {
 		c.Redirect(http.StatusFound, "/")
 		return
 	}
 
-	w.redirectToAuthSlack(c)
+	s.redirectToAuth(c)
 }
 
-func (w *Web) redirectToAuthSlack(c *gin.Context) {
+func (s *Slack) redirectToAuth(c *gin.Context) {
 	const (
 		secure   = false
 		httpOnly = true
@@ -51,13 +53,13 @@ func (w *Web) redirectToAuthSlack(c *gin.Context) {
 	state := randState()
 	c.SetCookie("state", state, 60, "/", "", secure, httpOnly)
 
-	url := w.cc.AuthCodeURL(state)
+	url := s.c.AuthCodeURL(state)
 	c.Redirect(http.StatusFound, url)
 }
 
 // SigninSlack authenticate by Slack oAuth
 // https://api.slack.com/authentication/oauth-v2#exchanging
-func (w *Web) SigninSlack(c *gin.Context) {
+func (s *Slack) SigninSlack(c *gin.Context) {
 	var (
 		state = c.Query("state")
 		code  = c.Query("code")
@@ -65,15 +67,15 @@ func (w *Web) SigninSlack(c *gin.Context) {
 
 	ctx := c.Request.Context()
 
-	s, err := c.Cookie("state")
-	if err != nil || state != s {
+	sv, err := c.Cookie("state")
+	if err != nil || state != sv {
 		c.String(http.StatusInternalServerError, "The state of Slack is invalid. It's possible CSRF or cookies not enabled.")
 		return
 	}
 
-	sr, err := w.exchangeSlackCode(ctx, code)
+	sr, err := s.exchangeSlackCode(ctx, code)
 	if err != nil {
-		w.log.Error("It has failed to exchange the code.", zap.Error(err))
+		s.log.Error("It has failed to exchange the code.", zap.Error(err))
 		c.String(http.StatusInternalServerError, "It has failed to exchange the code for Slack.")
 		return
 	}
@@ -81,13 +83,13 @@ func (w *Web) SigninSlack(c *gin.Context) {
 	v, _ := c.Get(gb.KeyUser)
 	u := v.(*ent.User)
 
-	_, err = w.i.SaveChatUser(ctx, u, &ent.ChatUser{
+	_, err = s.i.SaveChatUser(ctx, u, &ent.ChatUser{
 		ID:       sr.User.ID,
 		Token:    sr.User.AccessToken,
 		BotToken: sr.AccessToken,
 	})
 	if err != nil {
-		w.log.Error("It has failed to save the chat user.", zap.Error(err))
+		s.log.Error("It has failed to save the chat user.", zap.Error(err))
 		c.String(http.StatusInternalServerError, "It has failed to save the chat user.")
 		return
 	}
@@ -97,12 +99,12 @@ func (w *Web) SigninSlack(c *gin.Context) {
 	return
 }
 
-func (w *Web) exchangeSlackCode(ctx context.Context, code string) (*SlackTokenResponse, error) {
+func (s *Slack) exchangeSlackCode(ctx context.Context, code string) (*SlackTokenResponse, error) {
 	url := fmt.Sprintf("%s?code=%s&client_id=%s&client_secret=%s",
-		w.cc.Endpoint.TokenURL,
+		s.c.Endpoint.TokenURL,
 		code,
-		w.cc.ClientID,
-		w.cc.ClientSecret,
+		s.c.ClientID,
+		s.c.ClientSecret,
 	)
 	res, err := http.Get(url)
 	if err != nil {
@@ -112,10 +114,18 @@ func (w *Web) exchangeSlackCode(ctx context.Context, code string) (*SlackTokenRe
 	defer res.Body.Close()
 	body, _ := ioutil.ReadAll(res.Body)
 
-	s := &SlackTokenResponse{}
-	if err = json.Unmarshal(body, s); err != nil {
+	sr := &SlackTokenResponse{}
+	if err = json.Unmarshal(body, sr); err != nil {
 		return nil, err
 	}
 
-	return s, nil
+	return sr, nil
+}
+
+func randState() string {
+	b := make([]byte, 16)
+	rand.Read(b)
+
+	state := base64.URLEncoding.EncodeToString(b)
+	return state
 }

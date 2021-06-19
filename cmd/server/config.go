@@ -33,10 +33,11 @@ type (
 	}
 
 	Slack struct {
-		SlackClientID     string   `split_words:"true"`
-		SlackClientSecret string   `split_words:"true"`
-		SlackUserScopes   []string `split_words:"true" default:""`
-		SlackBotScopes    []string `split_words:"true" default:"commands,chat:write"`
+		SlackClientID      string   `split_words:"true"`
+		SlackClientSecret  string   `split_words:"true"`
+		SlackSigningSecret string   `split_words:"true"`
+		SlackUserScopes    []string `split_words:"true" default:""`
+		SlackBotScopes     []string `split_words:"true" default:"commands,chat:write"`
 	}
 
 	Webhook struct {
@@ -55,5 +56,5 @@ func (c *Config) isGithubEnabled() bool {
 }
 
 func (c *Config) isSlackEnabled() bool {
-	return c.SlackClientID != "" && c.SlackClientSecret != ""
+	return c.SlackClientID != "" && c.SlackClientSecret != "" && c.SlackSigningSecret != ""
 }

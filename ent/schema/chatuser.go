@@ -34,6 +34,7 @@ func (ChatUser) Fields() []ent.Field {
 // Edges of the ChatUser.
 func (ChatUser) Edges() []ent.Edge {
 	return []ent.Edge{
+		edge.To("chat_callback", ChatCallback.Type),
 		edge.From("user", User.Type).
 			Ref("chat_user").
 			Field("user_id").
