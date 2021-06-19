@@ -40,6 +40,9 @@ type (
 		FindChatCallbackByID(ctx context.Context, id string) (*ent.ChatCallback, error)
 		FindChatCallbackWithEdgesByID(ctx context.Context, id string) (*ent.ChatCallback, error)
 		CloseChatCallback(ctx context.Context, cb *ent.ChatCallback) (*ent.ChatCallback, error)
+
+		ListNotificationsFromTime(ctx context.Context, t time.Time) ([]*ent.Notification, error)
+		SetNotificationDone(ctx context.Context, n *ent.Notification) (*ent.Notification, error)
 	}
 
 	SCM interface {
