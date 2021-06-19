@@ -20,6 +20,10 @@ import (
 func init() {
 	chatcallbackFields := schema.ChatCallback{}.Fields()
 	_ = chatcallbackFields
+	// chatcallbackDescIsOpened is the schema descriptor for is_opened field.
+	chatcallbackDescIsOpened := chatcallbackFields[3].Descriptor()
+	// chatcallback.DefaultIsOpened holds the default value on creation for the is_opened field.
+	chatcallback.DefaultIsOpened = chatcallbackDescIsOpened.Default.(bool)
 	// chatcallbackDescCreatedAt is the schema descriptor for created_at field.
 	chatcallbackDescCreatedAt := chatcallbackFields[4].Descriptor()
 	// chatcallback.DefaultCreatedAt holds the default value on creation for the created_at field.

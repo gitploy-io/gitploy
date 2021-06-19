@@ -22,7 +22,8 @@ func (ChatCallback) Fields() []ent.Field {
 				"deploy",
 				"rollback",
 			),
-		field.Bool("is_opened"),
+		field.Bool("is_opened").
+			Default(true),
 		field.Time("created_at").
 			Default(time.Now),
 		field.Time("updated_at").

@@ -45,6 +45,14 @@ func (ccu *ChatCallbackUpdate) SetIsOpened(b bool) *ChatCallbackUpdate {
 	return ccu
 }
 
+// SetNillableIsOpened sets the "is_opened" field if the given value is not nil.
+func (ccu *ChatCallbackUpdate) SetNillableIsOpened(b *bool) *ChatCallbackUpdate {
+	if b != nil {
+		ccu.SetIsOpened(*b)
+	}
+	return ccu
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (ccu *ChatCallbackUpdate) SetCreatedAt(t time.Time) *ChatCallbackUpdate {
 	ccu.mutation.SetCreatedAt(t)
@@ -233,6 +241,14 @@ func (ccuo *ChatCallbackUpdateOne) SetType(c chatcallback.Type) *ChatCallbackUpd
 // SetIsOpened sets the "is_opened" field.
 func (ccuo *ChatCallbackUpdateOne) SetIsOpened(b bool) *ChatCallbackUpdateOne {
 	ccuo.mutation.SetIsOpened(b)
+	return ccuo
+}
+
+// SetNillableIsOpened sets the "is_opened" field if the given value is not nil.
+func (ccuo *ChatCallbackUpdateOne) SetNillableIsOpened(b *bool) *ChatCallbackUpdateOne {
+	if b != nil {
+		ccuo.SetIsOpened(*b)
+	}
 	return ccuo
 }
 

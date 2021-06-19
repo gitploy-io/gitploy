@@ -13,7 +13,7 @@ var (
 		{Name: "id", Type: field.TypeString},
 		{Name: "state", Type: field.TypeString},
 		{Name: "type", Type: field.TypeEnum, Enums: []string{"deploy", "rollback"}},
-		{Name: "is_opened", Type: field.TypeBool},
+		{Name: "is_opened", Type: field.TypeBool, Default: true},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 	}

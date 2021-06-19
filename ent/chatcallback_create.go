@@ -38,6 +38,14 @@ func (ccc *ChatCallbackCreate) SetIsOpened(b bool) *ChatCallbackCreate {
 	return ccc
 }
 
+// SetNillableIsOpened sets the "is_opened" field if the given value is not nil.
+func (ccc *ChatCallbackCreate) SetNillableIsOpened(b *bool) *ChatCallbackCreate {
+	if b != nil {
+		ccc.SetIsOpened(*b)
+	}
+	return ccc
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (ccc *ChatCallbackCreate) SetCreatedAt(t time.Time) *ChatCallbackCreate {
 	ccc.mutation.SetCreatedAt(t)
@@ -124,6 +132,10 @@ func (ccc *ChatCallbackCreate) SaveX(ctx context.Context) *ChatCallback {
 
 // defaults sets the default values of the builder before save.
 func (ccc *ChatCallbackCreate) defaults() {
+	if _, ok := ccc.mutation.IsOpened(); !ok {
+		v := chatcallback.DefaultIsOpened
+		ccc.mutation.SetIsOpened(v)
+	}
 	if _, ok := ccc.mutation.CreatedAt(); !ok {
 		v := chatcallback.DefaultCreatedAt()
 		ccc.mutation.SetCreatedAt(v)
