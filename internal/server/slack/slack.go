@@ -51,7 +51,7 @@ func (s *Slack) Cmd(c *gin.Context) {
 func (s *Slack) handleHelpCmd(c *gin.Context, cmd slack.SlashCommand) {
 	msg := strings.Join([]string{
 		"Below are the commands you can use: \n",
-		"*Deploy* - Create a new deployment.",
+		"*Deploy*",
 		"`/gitploy deploy OWNER/REPO` - Create a new deployment to OWNER/REPO",
 	}, "\n")
 	responseMessage(cmd, msg)
