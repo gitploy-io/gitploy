@@ -18,56 +18,59 @@ const (
 	token = ""
 )
 
-func (s *Slack) Deploy(c *gin.Context) {
-	cmd, err := slack.SlashCommandParse(c.Request)
-	if err != nil {
-		s.log.Error("failed to parse the command.", zap.Error(err))
+func (s *Slack) Deploy(c *gin.Context, cmd slack.SlashCommand) {
+	ctx := c.Request.Context()
+
+	u, err := s.i.FindUserWithChatUserByChatUserID(ctx, cmd.UserID)
+	if u.Edges.ChatUser == nil {
+		responseMessage(cmd, fmt.Sprint("Slack is not connected with Gitploy."))
+		c.Status(http.StatusOK)
+		return
+	} else if err != nil {
+		s.log.Error("failed to find the user.", zap.Error(err))
 		c.Status(http.StatusInternalServerError)
 		return
 	}
 
-	// TODO: Authenticate a user
-	sc := slack.New(token)
-	u, _ := s.i.FindUser()
+	client := slack.New(u.Edges.ChatUser.BotToken)
 
-	ns, n, err := parseFullName(cmd.Text)
+	fullname := trimDeployCommandPrefix(cmd.Text)
+	ns, n, err := parseFullName(fullname)
 	if err != nil {
-		sendResponse(sc, cmd, fmt.Sprintf("`%s` is invalid format.", cmd.Text))
+		responseMessage(cmd, fmt.Sprintf("`%s` is invalid format.", fullname))
 		c.Status(http.StatusOK)
 		return
 	}
 
-	ctx := c.Request.Context()
 	r, err := s.i.FindRepoByNamespaceName(ctx, u, ns, n)
 	if ent.IsNotFound(err) {
-		sendResponse(sc, cmd, fmt.Sprintf("The `%s` is not found", cmd.Text))
+		responseMessage(cmd, fmt.Sprintf("The `%s` is not found.", fullname))
 		c.Status(http.StatusOK)
 		return
 	} else if err != nil {
-		s.log.Error("failed to find the repo.", zap.String("namespace", ns), zap.String("name", n), zap.Error(err))
+		s.log.Error("failed to find the repo.", zap.String("repo", fullname), zap.Error(err))
 		c.Status(http.StatusInternalServerError)
 		return
 	}
 
 	config, err := s.i.GetConfig(ctx, u, r)
 	if errs.IsConfigNotFoundError(err) {
-		sendResponse(sc, cmd, "The config file is not found")
+		responseMessage(cmd, "The config file is not found")
 		c.Status(http.StatusOK)
 		return
 	} else if errs.IsConfigParseError(err) {
-		sendResponse(sc, cmd, "The config file is invliad format.")
+		responseMessage(cmd, "The config file is invliad format.")
 		c.Status(http.StatusOK)
 		return
 	} else if err != nil {
-		s.log.Error("failed to get the config file.", zap.String("namespace", ns), zap.String("name", n), zap.Error(err))
+		s.log.Error("failed to get the config file.", zap.String("repo", fullname), zap.Error(err))
 		c.Status(http.StatusInternalServerError)
 		return
 	}
 
-	err = sc.OpenDialogContext(ctx, cmd.TriggerID, slack.Dialog{
-		CallbackID:     "deploy.1",
+	err = client.OpenDialogContext(ctx, cmd.TriggerID, slack.Dialog{
+		CallbackID:     fmt.Sprintf("deploy.%s", randState()),
 		Title:          "Deploy",
-		State:          "state",
 		SubmitLabel:    "Submit",
 		NotifyOnCancel: true,
 		Elements:       createDialogElement(config),
@@ -84,6 +87,10 @@ func (s *Slack) Deploy(c *gin.Context) {
 func sendResponse(c *slack.Client, cmd slack.SlashCommand, message string) error {
 	_, _, _, err := c.SendMessage(cmd.ChannelID, slack.MsgOptionText(message, true), slack.MsgOptionResponseURL(cmd.ResponseURL, "ephemeral"))
 	return err
+}
+
+func trimDeployCommandPrefix(txt string) string {
+	return strings.TrimPrefix(txt, "deploy ")
 }
 
 func parseFullName(n string) (string, string, error) {

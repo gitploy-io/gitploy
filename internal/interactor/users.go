@@ -6,12 +6,12 @@ import (
 	"github.com/hanjunlee/gitploy/ent"
 )
 
-func (i *Interactor) FindUser() (*ent.User, error) {
-	return i.store.FindUser()
-}
-
 func (i *Interactor) FindUserByHash(ctx context.Context, hash string) (*ent.User, error) {
 	return i.store.FindUserByHash(ctx, hash)
+}
+
+func (i *Interactor) FindUserWithChatUserByChatUserID(ctx context.Context, id string) (*ent.User, error) {
+	return i.store.FindUserWithChatUserByChatUserID(ctx, id)
 }
 
 func (i *Interactor) GetSCMUserByToken(ctx context.Context, token string) (*ent.User, error) {

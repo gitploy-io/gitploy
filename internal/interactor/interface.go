@@ -10,9 +10,9 @@ import (
 
 type (
 	Store interface {
-		FindUser() (*ent.User, error)
-		FindUserByHash(ctx context.Context, hash string) (*ent.User, error)
 		FindUserByID(ctx context.Context, id string) (*ent.User, error)
+		FindUserByHash(ctx context.Context, hash string) (*ent.User, error)
+		FindUserWithChatUserByChatUserID(ctx context.Context, id string) (*ent.User, error)
 		CreateUser(ctx context.Context, u *ent.User) (*ent.User, error)
 		UpdateUser(ctx context.Context, u *ent.User) (*ent.User, error)
 

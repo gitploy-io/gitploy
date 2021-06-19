@@ -38,8 +38,8 @@ func (s *Slack) Cmd(c *gin.Context) {
 	t := strings.TrimSpace(cmd.Text)
 	s.log.Debug("Parse Slack command.", zap.String("text", t))
 
-	if strings.HasPrefix(t, "deploy") {
-
+	if strings.HasPrefix(t, "deploy ") {
+		s.Deploy(c, cmd)
 	} else if strings.HasPrefix(t, "help") {
 		s.handleHelpCmd(c, cmd)
 	} else {
