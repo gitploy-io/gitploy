@@ -2,10 +2,12 @@ package interactor
 
 import (
 	"context"
+	"fmt"
 	"math/rand"
 	"time"
 
 	"github.com/hanjunlee/gitploy/ent"
+	"github.com/hanjunlee/gitploy/ent/notification"
 	"go.uber.org/zap"
 )
 
@@ -21,16 +23,15 @@ func (i *Interactor) polling(stop <-chan struct{}) {
 
 	ctx := context.Background()
 
-	// Notify if user connect Gitploy with Chat (e.g. Slack, Microsoft Teams).
 	i.events.SubscribeAsync(eventNotification, func(n *ent.Notification) {
 		i.store.SetNotificationDone(ctx, n)
 
-		if err := i.Notify(n); err != nil {
+		if err := i.messageByChat(n); err != nil {
 			i.log.Error("failed to notify.", zap.Error(err))
 		}
 	}, false)
 
-	// polling
+	// polling with the randomic term to escape the conflict.
 	ticker := time.NewTicker(time.Millisecond * 1000 * time.Duration(randint(2, max)))
 
 L:
@@ -69,8 +70,27 @@ func (i *Interactor) Subscribe(fn func(*ent.Notification)) {
 	i.events.SubscribeAsync(eventStream, fn, false)
 }
 
-func (i *Interactor) Notify(n *ent.Notification) error {
+// messageByChat notify by Chat if it is connected with Gitploy (e.g. Slack, Microsoft Teams).
+func (i *Interactor) messageByChat(n *ent.Notification) error {
 	return nil
+}
+
+func (i *Interactor) Notify(ctx context.Context, iface interface{}) (*ent.Notification, error) {
+	switch r := iface.(type) {
+	case *ent.Deployment:
+		return i.createDeploymentNotification(ctx, r)
+	}
+
+	return nil, fmt.Errorf("failed to notify")
+}
+
+func (i *Interactor) createDeploymentNotification(ctx context.Context, d *ent.Deployment) (*ent.Notification, error) {
+	return i.store.CreateNotification(ctx, &ent.Notification{
+		Type:       notification.TypeDeployment,
+		ResourceID: d.ID,
+		Notified:   false,
+		UserID:     d.UserID,
+	})
 }
 
 func randint(min, max int64) int64 {
