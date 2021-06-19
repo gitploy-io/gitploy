@@ -8,6 +8,22 @@ import (
 )
 
 var (
+	// ChatCallbacksColumns holds the columns for the "chat_callbacks" table.
+	ChatCallbacksColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString},
+		{Name: "state", Type: field.TypeString},
+		{Name: "type", Type: field.TypeEnum, Enums: []string{"deploy", "rollback"}},
+		{Name: "is_opened", Type: field.TypeBool},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+	}
+	// ChatCallbacksTable holds the schema information for the "chat_callbacks" table.
+	ChatCallbacksTable = &schema.Table{
+		Name:        "chat_callbacks",
+		Columns:     ChatCallbacksColumns,
+		PrimaryKey:  []*schema.Column{ChatCallbacksColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{},
+	}
 	// ChatUsersColumns holds the columns for the "chat_users" table.
 	ChatUsersColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString},
@@ -187,6 +203,7 @@ var (
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
+		ChatCallbacksTable,
 		ChatUsersTable,
 		DeploymentsTable,
 		PermsTable,

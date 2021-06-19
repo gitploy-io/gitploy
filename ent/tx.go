@@ -12,6 +12,8 @@ import (
 // Tx is a transactional client that is created by calling Client.Tx().
 type Tx struct {
 	config
+	// ChatCallback is the client for interacting with the ChatCallback builders.
+	ChatCallback *ChatCallbackClient
 	// ChatUser is the client for interacting with the ChatUser builders.
 	ChatUser *ChatUserClient
 	// Deployment is the client for interacting with the Deployment builders.
@@ -157,6 +159,7 @@ func (tx *Tx) Client() *Client {
 }
 
 func (tx *Tx) init() {
+	tx.ChatCallback = NewChatCallbackClient(tx.config)
 	tx.ChatUser = NewChatUserClient(tx.config)
 	tx.Deployment = NewDeploymentClient(tx.config)
 	tx.Perm = NewPermClient(tx.config)
@@ -171,7 +174,7 @@ func (tx *Tx) init() {
 // of them in order to commit or rollback the transaction.
 //
 // If a closed transaction is embedded in one of the generated entities, and the entity
-// applies a query, for example: ChatUser.QueryXXX(), the query will be executed
+// applies a query, for example: ChatCallback.QueryXXX(), the query will be executed
 // through the driver which created this transaction.
 //
 // Note that txDriver is not goroutine safe.
