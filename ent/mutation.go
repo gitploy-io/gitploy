@@ -39,18 +39,22 @@ const (
 // ChatCallbackMutation represents an operation that mutates the ChatCallback nodes in the graph.
 type ChatCallbackMutation struct {
 	config
-	op            Op
-	typ           string
-	id            *string
-	state         *string
-	_type         *chatcallback.Type
-	is_opened     *bool
-	created_at    *time.Time
-	updated_at    *time.Time
-	clearedFields map[string]struct{}
-	done          bool
-	oldValue      func(context.Context) (*ChatCallback, error)
-	predicates    []predicate.ChatCallback
+	op               Op
+	typ              string
+	id               *string
+	state            *string
+	_type            *chatcallback.Type
+	is_opened        *bool
+	created_at       *time.Time
+	updated_at       *time.Time
+	clearedFields    map[string]struct{}
+	chat_user        *string
+	clearedchat_user bool
+	repo             *string
+	clearedrepo      bool
+	done             bool
+	oldValue         func(context.Context) (*ChatCallback, error)
+	predicates       []predicate.ChatCallback
 }
 
 var _ ent.Mutation = (*ChatCallbackMutation)(nil)
@@ -318,6 +322,143 @@ func (m *ChatCallbackMutation) ResetUpdatedAt() {
 	m.updated_at = nil
 }
 
+// SetChatUserID sets the "chat_user_id" field.
+func (m *ChatCallbackMutation) SetChatUserID(s string) {
+	m.chat_user = &s
+}
+
+// ChatUserID returns the value of the "chat_user_id" field in the mutation.
+func (m *ChatCallbackMutation) ChatUserID() (r string, exists bool) {
+	v := m.chat_user
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldChatUserID returns the old "chat_user_id" field's value of the ChatCallback entity.
+// If the ChatCallback object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ChatCallbackMutation) OldChatUserID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldChatUserID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldChatUserID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldChatUserID: %w", err)
+	}
+	return oldValue.ChatUserID, nil
+}
+
+// ResetChatUserID resets all changes to the "chat_user_id" field.
+func (m *ChatCallbackMutation) ResetChatUserID() {
+	m.chat_user = nil
+}
+
+// SetRepoID sets the "repo_id" field.
+func (m *ChatCallbackMutation) SetRepoID(s string) {
+	m.repo = &s
+}
+
+// RepoID returns the value of the "repo_id" field in the mutation.
+func (m *ChatCallbackMutation) RepoID() (r string, exists bool) {
+	v := m.repo
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRepoID returns the old "repo_id" field's value of the ChatCallback entity.
+// If the ChatCallback object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ChatCallbackMutation) OldRepoID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldRepoID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldRepoID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRepoID: %w", err)
+	}
+	return oldValue.RepoID, nil
+}
+
+// ClearRepoID clears the value of the "repo_id" field.
+func (m *ChatCallbackMutation) ClearRepoID() {
+	m.repo = nil
+	m.clearedFields[chatcallback.FieldRepoID] = struct{}{}
+}
+
+// RepoIDCleared returns if the "repo_id" field was cleared in this mutation.
+func (m *ChatCallbackMutation) RepoIDCleared() bool {
+	_, ok := m.clearedFields[chatcallback.FieldRepoID]
+	return ok
+}
+
+// ResetRepoID resets all changes to the "repo_id" field.
+func (m *ChatCallbackMutation) ResetRepoID() {
+	m.repo = nil
+	delete(m.clearedFields, chatcallback.FieldRepoID)
+}
+
+// ClearChatUser clears the "chat_user" edge to the ChatUser entity.
+func (m *ChatCallbackMutation) ClearChatUser() {
+	m.clearedchat_user = true
+}
+
+// ChatUserCleared reports if the "chat_user" edge to the ChatUser entity was cleared.
+func (m *ChatCallbackMutation) ChatUserCleared() bool {
+	return m.clearedchat_user
+}
+
+// ChatUserIDs returns the "chat_user" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// ChatUserID instead. It exists only for internal usage by the builders.
+func (m *ChatCallbackMutation) ChatUserIDs() (ids []string) {
+	if id := m.chat_user; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetChatUser resets all changes to the "chat_user" edge.
+func (m *ChatCallbackMutation) ResetChatUser() {
+	m.chat_user = nil
+	m.clearedchat_user = false
+}
+
+// ClearRepo clears the "repo" edge to the Repo entity.
+func (m *ChatCallbackMutation) ClearRepo() {
+	m.clearedrepo = true
+}
+
+// RepoCleared reports if the "repo" edge to the Repo entity was cleared.
+func (m *ChatCallbackMutation) RepoCleared() bool {
+	return m.RepoIDCleared() || m.clearedrepo
+}
+
+// RepoIDs returns the "repo" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// RepoID instead. It exists only for internal usage by the builders.
+func (m *ChatCallbackMutation) RepoIDs() (ids []string) {
+	if id := m.repo; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetRepo resets all changes to the "repo" edge.
+func (m *ChatCallbackMutation) ResetRepo() {
+	m.repo = nil
+	m.clearedrepo = false
+}
+
 // Op returns the operation name.
 func (m *ChatCallbackMutation) Op() Op {
 	return m.op
@@ -332,7 +473,7 @@ func (m *ChatCallbackMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ChatCallbackMutation) Fields() []string {
-	fields := make([]string, 0, 5)
+	fields := make([]string, 0, 7)
 	if m.state != nil {
 		fields = append(fields, chatcallback.FieldState)
 	}
@@ -347,6 +488,12 @@ func (m *ChatCallbackMutation) Fields() []string {
 	}
 	if m.updated_at != nil {
 		fields = append(fields, chatcallback.FieldUpdatedAt)
+	}
+	if m.chat_user != nil {
+		fields = append(fields, chatcallback.FieldChatUserID)
+	}
+	if m.repo != nil {
+		fields = append(fields, chatcallback.FieldRepoID)
 	}
 	return fields
 }
@@ -366,6 +513,10 @@ func (m *ChatCallbackMutation) Field(name string) (ent.Value, bool) {
 		return m.CreatedAt()
 	case chatcallback.FieldUpdatedAt:
 		return m.UpdatedAt()
+	case chatcallback.FieldChatUserID:
+		return m.ChatUserID()
+	case chatcallback.FieldRepoID:
+		return m.RepoID()
 	}
 	return nil, false
 }
@@ -385,6 +536,10 @@ func (m *ChatCallbackMutation) OldField(ctx context.Context, name string) (ent.V
 		return m.OldCreatedAt(ctx)
 	case chatcallback.FieldUpdatedAt:
 		return m.OldUpdatedAt(ctx)
+	case chatcallback.FieldChatUserID:
+		return m.OldChatUserID(ctx)
+	case chatcallback.FieldRepoID:
+		return m.OldRepoID(ctx)
 	}
 	return nil, fmt.Errorf("unknown ChatCallback field %s", name)
 }
@@ -429,6 +584,20 @@ func (m *ChatCallbackMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetUpdatedAt(v)
 		return nil
+	case chatcallback.FieldChatUserID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetChatUserID(v)
+		return nil
+	case chatcallback.FieldRepoID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRepoID(v)
+		return nil
 	}
 	return fmt.Errorf("unknown ChatCallback field %s", name)
 }
@@ -458,7 +627,11 @@ func (m *ChatCallbackMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *ChatCallbackMutation) ClearedFields() []string {
-	return nil
+	var fields []string
+	if m.FieldCleared(chatcallback.FieldRepoID) {
+		fields = append(fields, chatcallback.FieldRepoID)
+	}
+	return fields
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -471,6 +644,11 @@ func (m *ChatCallbackMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *ChatCallbackMutation) ClearField(name string) error {
+	switch name {
+	case chatcallback.FieldRepoID:
+		m.ClearRepoID()
+		return nil
+	}
 	return fmt.Errorf("unknown ChatCallback nullable field %s", name)
 }
 
@@ -493,76 +671,131 @@ func (m *ChatCallbackMutation) ResetField(name string) error {
 	case chatcallback.FieldUpdatedAt:
 		m.ResetUpdatedAt()
 		return nil
+	case chatcallback.FieldChatUserID:
+		m.ResetChatUserID()
+		return nil
+	case chatcallback.FieldRepoID:
+		m.ResetRepoID()
+		return nil
 	}
 	return fmt.Errorf("unknown ChatCallback field %s", name)
 }
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *ChatCallbackMutation) AddedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 2)
+	if m.chat_user != nil {
+		edges = append(edges, chatcallback.EdgeChatUser)
+	}
+	if m.repo != nil {
+		edges = append(edges, chatcallback.EdgeRepo)
+	}
 	return edges
 }
 
 // AddedIDs returns all IDs (to other nodes) that were added for the given edge
 // name in this mutation.
 func (m *ChatCallbackMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case chatcallback.EdgeChatUser:
+		if id := m.chat_user; id != nil {
+			return []ent.Value{*id}
+		}
+	case chatcallback.EdgeRepo:
+		if id := m.repo; id != nil {
+			return []ent.Value{*id}
+		}
+	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *ChatCallbackMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 2)
 	return edges
 }
 
 // RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
 // the given name in this mutation.
 func (m *ChatCallbackMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *ChatCallbackMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 2)
+	if m.clearedchat_user {
+		edges = append(edges, chatcallback.EdgeChatUser)
+	}
+	if m.clearedrepo {
+		edges = append(edges, chatcallback.EdgeRepo)
+	}
 	return edges
 }
 
 // EdgeCleared returns a boolean which indicates if the edge with the given name
 // was cleared in this mutation.
 func (m *ChatCallbackMutation) EdgeCleared(name string) bool {
+	switch name {
+	case chatcallback.EdgeChatUser:
+		return m.clearedchat_user
+	case chatcallback.EdgeRepo:
+		return m.clearedrepo
+	}
 	return false
 }
 
 // ClearEdge clears the value of the edge with the given name. It returns an error
 // if that edge is not defined in the schema.
 func (m *ChatCallbackMutation) ClearEdge(name string) error {
+	switch name {
+	case chatcallback.EdgeChatUser:
+		m.ClearChatUser()
+		return nil
+	case chatcallback.EdgeRepo:
+		m.ClearRepo()
+		return nil
+	}
 	return fmt.Errorf("unknown ChatCallback unique edge %s", name)
 }
 
 // ResetEdge resets all changes to the edge with the given name in this mutation.
 // It returns an error if the edge is not defined in the schema.
 func (m *ChatCallbackMutation) ResetEdge(name string) error {
+	switch name {
+	case chatcallback.EdgeChatUser:
+		m.ResetChatUser()
+		return nil
+	case chatcallback.EdgeRepo:
+		m.ResetRepo()
+		return nil
+	}
 	return fmt.Errorf("unknown ChatCallback edge %s", name)
 }
 
 // ChatUserMutation represents an operation that mutates the ChatUser nodes in the graph.
 type ChatUserMutation struct {
 	config
-	op            Op
-	typ           string
-	id            *string
-	token         *string
-	refresh       *string
-	expiry        *time.Time
-	bot_token     *string
-	created_at    *time.Time
-	updated_at    *time.Time
-	clearedFields map[string]struct{}
-	user          *string
-	cleareduser   bool
-	done          bool
-	oldValue      func(context.Context) (*ChatUser, error)
-	predicates    []predicate.ChatUser
+	op                   Op
+	typ                  string
+	id                   *string
+	token                *string
+	refresh              *string
+	expiry               *time.Time
+	bot_token            *string
+	created_at           *time.Time
+	updated_at           *time.Time
+	clearedFields        map[string]struct{}
+	chat_callback        map[string]struct{}
+	removedchat_callback map[string]struct{}
+	clearedchat_callback bool
+	user                 *string
+	cleareduser          bool
+	done                 bool
+	oldValue             func(context.Context) (*ChatUser, error)
+	predicates           []predicate.ChatUser
 }
 
 var _ ent.Mutation = (*ChatUserMutation)(nil)
@@ -902,6 +1135,59 @@ func (m *ChatUserMutation) ResetUserID() {
 	m.user = nil
 }
 
+// AddChatCallbackIDs adds the "chat_callback" edge to the ChatCallback entity by ids.
+func (m *ChatUserMutation) AddChatCallbackIDs(ids ...string) {
+	if m.chat_callback == nil {
+		m.chat_callback = make(map[string]struct{})
+	}
+	for i := range ids {
+		m.chat_callback[ids[i]] = struct{}{}
+	}
+}
+
+// ClearChatCallback clears the "chat_callback" edge to the ChatCallback entity.
+func (m *ChatUserMutation) ClearChatCallback() {
+	m.clearedchat_callback = true
+}
+
+// ChatCallbackCleared reports if the "chat_callback" edge to the ChatCallback entity was cleared.
+func (m *ChatUserMutation) ChatCallbackCleared() bool {
+	return m.clearedchat_callback
+}
+
+// RemoveChatCallbackIDs removes the "chat_callback" edge to the ChatCallback entity by IDs.
+func (m *ChatUserMutation) RemoveChatCallbackIDs(ids ...string) {
+	if m.removedchat_callback == nil {
+		m.removedchat_callback = make(map[string]struct{})
+	}
+	for i := range ids {
+		m.removedchat_callback[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedChatCallback returns the removed IDs of the "chat_callback" edge to the ChatCallback entity.
+func (m *ChatUserMutation) RemovedChatCallbackIDs() (ids []string) {
+	for id := range m.removedchat_callback {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ChatCallbackIDs returns the "chat_callback" edge IDs in the mutation.
+func (m *ChatUserMutation) ChatCallbackIDs() (ids []string) {
+	for id := range m.chat_callback {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetChatCallback resets all changes to the "chat_callback" edge.
+func (m *ChatUserMutation) ResetChatCallback() {
+	m.chat_callback = nil
+	m.clearedchat_callback = false
+	m.removedchat_callback = nil
+}
+
 // ClearUser clears the "user" edge to the User entity.
 func (m *ChatUserMutation) ClearUser() {
 	m.cleareduser = true
@@ -1143,7 +1429,10 @@ func (m *ChatUserMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *ChatUserMutation) AddedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
+	if m.chat_callback != nil {
+		edges = append(edges, chatuser.EdgeChatCallback)
+	}
 	if m.user != nil {
 		edges = append(edges, chatuser.EdgeUser)
 	}
@@ -1154,6 +1443,12 @@ func (m *ChatUserMutation) AddedEdges() []string {
 // name in this mutation.
 func (m *ChatUserMutation) AddedIDs(name string) []ent.Value {
 	switch name {
+	case chatuser.EdgeChatCallback:
+		ids := make([]ent.Value, 0, len(m.chat_callback))
+		for id := range m.chat_callback {
+			ids = append(ids, id)
+		}
+		return ids
 	case chatuser.EdgeUser:
 		if id := m.user; id != nil {
 			return []ent.Value{*id}
@@ -1164,7 +1459,10 @@ func (m *ChatUserMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *ChatUserMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
+	if m.removedchat_callback != nil {
+		edges = append(edges, chatuser.EdgeChatCallback)
+	}
 	return edges
 }
 
@@ -1172,13 +1470,22 @@ func (m *ChatUserMutation) RemovedEdges() []string {
 // the given name in this mutation.
 func (m *ChatUserMutation) RemovedIDs(name string) []ent.Value {
 	switch name {
+	case chatuser.EdgeChatCallback:
+		ids := make([]ent.Value, 0, len(m.removedchat_callback))
+		for id := range m.removedchat_callback {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *ChatUserMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
+	if m.clearedchat_callback {
+		edges = append(edges, chatuser.EdgeChatCallback)
+	}
 	if m.cleareduser {
 		edges = append(edges, chatuser.EdgeUser)
 	}
@@ -1189,6 +1496,8 @@ func (m *ChatUserMutation) ClearedEdges() []string {
 // was cleared in this mutation.
 func (m *ChatUserMutation) EdgeCleared(name string) bool {
 	switch name {
+	case chatuser.EdgeChatCallback:
+		return m.clearedchat_callback
 	case chatuser.EdgeUser:
 		return m.cleareduser
 	}
@@ -1210,6 +1519,9 @@ func (m *ChatUserMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *ChatUserMutation) ResetEdge(name string) error {
 	switch name {
+	case chatuser.EdgeChatCallback:
+		m.ResetChatCallback()
+		return nil
 	case chatuser.EdgeUser:
 		m.ResetUser()
 		return nil
@@ -2926,30 +3238,33 @@ func (m *PermMutation) ResetEdge(name string) error {
 // RepoMutation represents an operation that mutates the Repo nodes in the graph.
 type RepoMutation struct {
 	config
-	op                 Op
-	typ                string
-	id                 *string
-	namespace          *string
-	name               *string
-	description        *string
-	config_path        *string
-	active             *bool
-	webhook_id         *int64
-	addwebhook_id      *int64
-	synced_at          *time.Time
-	created_at         *time.Time
-	updated_at         *time.Time
-	latest_deployed_at *time.Time
-	clearedFields      map[string]struct{}
-	perms              map[int]struct{}
-	removedperms       map[int]struct{}
-	clearedperms       bool
-	deployments        map[int]struct{}
-	removeddeployments map[int]struct{}
-	cleareddeployments bool
-	done               bool
-	oldValue           func(context.Context) (*Repo, error)
-	predicates         []predicate.Repo
+	op                   Op
+	typ                  string
+	id                   *string
+	namespace            *string
+	name                 *string
+	description          *string
+	config_path          *string
+	active               *bool
+	webhook_id           *int64
+	addwebhook_id        *int64
+	synced_at            *time.Time
+	created_at           *time.Time
+	updated_at           *time.Time
+	latest_deployed_at   *time.Time
+	clearedFields        map[string]struct{}
+	perms                map[int]struct{}
+	removedperms         map[int]struct{}
+	clearedperms         bool
+	deployments          map[int]struct{}
+	removeddeployments   map[int]struct{}
+	cleareddeployments   bool
+	chat_callback        map[string]struct{}
+	removedchat_callback map[string]struct{}
+	clearedchat_callback bool
+	done                 bool
+	oldValue             func(context.Context) (*Repo, error)
+	predicates           []predicate.Repo
 }
 
 var _ ent.Mutation = (*RepoMutation)(nil)
@@ -3576,6 +3891,59 @@ func (m *RepoMutation) ResetDeployments() {
 	m.removeddeployments = nil
 }
 
+// AddChatCallbackIDs adds the "chat_callback" edge to the ChatCallback entity by ids.
+func (m *RepoMutation) AddChatCallbackIDs(ids ...string) {
+	if m.chat_callback == nil {
+		m.chat_callback = make(map[string]struct{})
+	}
+	for i := range ids {
+		m.chat_callback[ids[i]] = struct{}{}
+	}
+}
+
+// ClearChatCallback clears the "chat_callback" edge to the ChatCallback entity.
+func (m *RepoMutation) ClearChatCallback() {
+	m.clearedchat_callback = true
+}
+
+// ChatCallbackCleared reports if the "chat_callback" edge to the ChatCallback entity was cleared.
+func (m *RepoMutation) ChatCallbackCleared() bool {
+	return m.clearedchat_callback
+}
+
+// RemoveChatCallbackIDs removes the "chat_callback" edge to the ChatCallback entity by IDs.
+func (m *RepoMutation) RemoveChatCallbackIDs(ids ...string) {
+	if m.removedchat_callback == nil {
+		m.removedchat_callback = make(map[string]struct{})
+	}
+	for i := range ids {
+		m.removedchat_callback[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedChatCallback returns the removed IDs of the "chat_callback" edge to the ChatCallback entity.
+func (m *RepoMutation) RemovedChatCallbackIDs() (ids []string) {
+	for id := range m.removedchat_callback {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ChatCallbackIDs returns the "chat_callback" edge IDs in the mutation.
+func (m *RepoMutation) ChatCallbackIDs() (ids []string) {
+	for id := range m.chat_callback {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetChatCallback resets all changes to the "chat_callback" edge.
+func (m *RepoMutation) ResetChatCallback() {
+	m.chat_callback = nil
+	m.clearedchat_callback = false
+	m.removedchat_callback = nil
+}
+
 // Op returns the operation name.
 func (m *RepoMutation) Op() Op {
 	return m.op
@@ -3884,12 +4252,15 @@ func (m *RepoMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *RepoMutation) AddedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	if m.perms != nil {
 		edges = append(edges, repo.EdgePerms)
 	}
 	if m.deployments != nil {
 		edges = append(edges, repo.EdgeDeployments)
+	}
+	if m.chat_callback != nil {
+		edges = append(edges, repo.EdgeChatCallback)
 	}
 	return edges
 }
@@ -3910,18 +4281,27 @@ func (m *RepoMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case repo.EdgeChatCallback:
+		ids := make([]ent.Value, 0, len(m.chat_callback))
+		for id := range m.chat_callback {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *RepoMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	if m.removedperms != nil {
 		edges = append(edges, repo.EdgePerms)
 	}
 	if m.removeddeployments != nil {
 		edges = append(edges, repo.EdgeDeployments)
+	}
+	if m.removedchat_callback != nil {
+		edges = append(edges, repo.EdgeChatCallback)
 	}
 	return edges
 }
@@ -3942,18 +4322,27 @@ func (m *RepoMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case repo.EdgeChatCallback:
+		ids := make([]ent.Value, 0, len(m.removedchat_callback))
+		for id := range m.removedchat_callback {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *RepoMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	if m.clearedperms {
 		edges = append(edges, repo.EdgePerms)
 	}
 	if m.cleareddeployments {
 		edges = append(edges, repo.EdgeDeployments)
+	}
+	if m.clearedchat_callback {
+		edges = append(edges, repo.EdgeChatCallback)
 	}
 	return edges
 }
@@ -3966,6 +4355,8 @@ func (m *RepoMutation) EdgeCleared(name string) bool {
 		return m.clearedperms
 	case repo.EdgeDeployments:
 		return m.cleareddeployments
+	case repo.EdgeChatCallback:
+		return m.clearedchat_callback
 	}
 	return false
 }
@@ -3987,6 +4378,9 @@ func (m *RepoMutation) ResetEdge(name string) error {
 		return nil
 	case repo.EdgeDeployments:
 		m.ResetDeployments()
+		return nil
+	case repo.EdgeChatCallback:
+		m.ResetChatCallback()
 		return nil
 	}
 	return fmt.Errorf("unknown Repo edge %s", name)

@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"entgo.io/ent"
+	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 )
 
@@ -29,10 +30,23 @@ func (ChatCallback) Fields() []ent.Field {
 		field.Time("updated_at").
 			Default(time.Now).
 			UpdateDefault(time.Now),
+		field.String("chat_user_id"),
+		field.String("repo_id").
+			Optional(),
 	}
 }
 
 // Edges of the ChatCallback.
 func (ChatCallback) Edges() []ent.Edge {
-	return nil
+	return []ent.Edge{
+		edge.From("chat_user", ChatUser.Type).
+			Ref("chat_callback").
+			Field("chat_user_id").
+			Unique().
+			Required(),
+		edge.From("repo", Repo.Type).
+			Ref("chat_callback").
+			Field("repo_id").
+			Unique(),
+	}
 }

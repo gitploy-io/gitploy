@@ -11,6 +11,8 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/hanjunlee/gitploy/ent/chatcallback"
+	"github.com/hanjunlee/gitploy/ent/chatuser"
+	"github.com/hanjunlee/gitploy/ent/repo"
 )
 
 // ChatCallbackCreate is the builder for creating a ChatCallback entity.
@@ -74,10 +76,40 @@ func (ccc *ChatCallbackCreate) SetNillableUpdatedAt(t *time.Time) *ChatCallbackC
 	return ccc
 }
 
+// SetChatUserID sets the "chat_user_id" field.
+func (ccc *ChatCallbackCreate) SetChatUserID(s string) *ChatCallbackCreate {
+	ccc.mutation.SetChatUserID(s)
+	return ccc
+}
+
+// SetRepoID sets the "repo_id" field.
+func (ccc *ChatCallbackCreate) SetRepoID(s string) *ChatCallbackCreate {
+	ccc.mutation.SetRepoID(s)
+	return ccc
+}
+
+// SetNillableRepoID sets the "repo_id" field if the given value is not nil.
+func (ccc *ChatCallbackCreate) SetNillableRepoID(s *string) *ChatCallbackCreate {
+	if s != nil {
+		ccc.SetRepoID(*s)
+	}
+	return ccc
+}
+
 // SetID sets the "id" field.
 func (ccc *ChatCallbackCreate) SetID(s string) *ChatCallbackCreate {
 	ccc.mutation.SetID(s)
 	return ccc
+}
+
+// SetChatUser sets the "chat_user" edge to the ChatUser entity.
+func (ccc *ChatCallbackCreate) SetChatUser(c *ChatUser) *ChatCallbackCreate {
+	return ccc.SetChatUserID(c.ID)
+}
+
+// SetRepo sets the "repo" edge to the Repo entity.
+func (ccc *ChatCallbackCreate) SetRepo(r *Repo) *ChatCallbackCreate {
+	return ccc.SetRepoID(r.ID)
 }
 
 // Mutation returns the ChatCallbackMutation object of the builder.
@@ -168,6 +200,12 @@ func (ccc *ChatCallbackCreate) check() error {
 	if _, ok := ccc.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New("ent: missing required field \"updated_at\"")}
 	}
+	if _, ok := ccc.mutation.ChatUserID(); !ok {
+		return &ValidationError{Name: "chat_user_id", err: errors.New("ent: missing required field \"chat_user_id\"")}
+	}
+	if _, ok := ccc.mutation.ChatUserID(); !ok {
+		return &ValidationError{Name: "chat_user", err: errors.New("ent: missing required edge \"chat_user\"")}
+	}
 	return nil
 }
 
@@ -236,6 +274,46 @@ func (ccc *ChatCallbackCreate) createSpec() (*ChatCallback, *sqlgraph.CreateSpec
 			Column: chatcallback.FieldUpdatedAt,
 		})
 		_node.UpdatedAt = value
+	}
+	if nodes := ccc.mutation.ChatUserIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   chatcallback.ChatUserTable,
+			Columns: []string{chatcallback.ChatUserColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: chatuser.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.ChatUserID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ccc.mutation.RepoIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   chatcallback.RepoTable,
+			Columns: []string{chatcallback.RepoColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: repo.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.RepoID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
 }

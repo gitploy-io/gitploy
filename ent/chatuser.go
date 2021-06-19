@@ -38,17 +38,28 @@ type ChatUser struct {
 
 // ChatUserEdges holds the relations/edges for other nodes in the graph.
 type ChatUserEdges struct {
+	// ChatCallback holds the value of the chat_callback edge.
+	ChatCallback []*ChatCallback `json:"chat_callback,omitempty"`
 	// User holds the value of the user edge.
 	User *User `json:"user,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [1]bool
+	loadedTypes [2]bool
+}
+
+// ChatCallbackOrErr returns the ChatCallback value or an error if the edge
+// was not loaded in eager-loading.
+func (e ChatUserEdges) ChatCallbackOrErr() ([]*ChatCallback, error) {
+	if e.loadedTypes[0] {
+		return e.ChatCallback, nil
+	}
+	return nil, &NotLoadedError{edge: "chat_callback"}
 }
 
 // UserOrErr returns the User value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e ChatUserEdges) UserOrErr() (*User, error) {
-	if e.loadedTypes[0] {
+	if e.loadedTypes[1] {
 		if e.User == nil {
 			// The edge user was loaded in eager-loading,
 			// but was not found.
@@ -134,6 +145,11 @@ func (cu *ChatUser) assignValues(columns []string, values []interface{}) error {
 		}
 	}
 	return nil
+}
+
+// QueryChatCallback queries the "chat_callback" edge of the ChatUser entity.
+func (cu *ChatUser) QueryChatCallback() *ChatCallbackQuery {
+	return (&ChatUserClient{config: cu.config}).QueryChatCallback(cu)
 }
 
 // QueryUser queries the "user" edge of the ChatUser entity.

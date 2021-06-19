@@ -242,6 +242,38 @@ func (c *ChatCallbackClient) GetX(ctx context.Context, id string) *ChatCallback 
 	return obj
 }
 
+// QueryChatUser queries the chat_user edge of a ChatCallback.
+func (c *ChatCallbackClient) QueryChatUser(cc *ChatCallback) *ChatUserQuery {
+	query := &ChatUserQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := cc.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(chatcallback.Table, chatcallback.FieldID, id),
+			sqlgraph.To(chatuser.Table, chatuser.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, chatcallback.ChatUserTable, chatcallback.ChatUserColumn),
+		)
+		fromV = sqlgraph.Neighbors(cc.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryRepo queries the repo edge of a ChatCallback.
+func (c *ChatCallbackClient) QueryRepo(cc *ChatCallback) *RepoQuery {
+	query := &RepoQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := cc.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(chatcallback.Table, chatcallback.FieldID, id),
+			sqlgraph.To(repo.Table, repo.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, chatcallback.RepoTable, chatcallback.RepoColumn),
+		)
+		fromV = sqlgraph.Neighbors(cc.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *ChatCallbackClient) Hooks() []Hook {
 	return c.hooks.ChatCallback
@@ -330,6 +362,22 @@ func (c *ChatUserClient) GetX(ctx context.Context, id string) *ChatUser {
 		panic(err)
 	}
 	return obj
+}
+
+// QueryChatCallback queries the chat_callback edge of a ChatUser.
+func (c *ChatUserClient) QueryChatCallback(cu *ChatUser) *ChatCallbackQuery {
+	query := &ChatCallbackQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := cu.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(chatuser.Table, chatuser.FieldID, id),
+			sqlgraph.To(chatcallback.Table, chatcallback.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, chatuser.ChatCallbackTable, chatuser.ChatCallbackColumn),
+		)
+		fromV = sqlgraph.Neighbors(cu.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
 }
 
 // QueryUser queries the user edge of a ChatUser.
@@ -707,6 +755,22 @@ func (c *RepoClient) QueryDeployments(r *Repo) *DeploymentQuery {
 			sqlgraph.From(repo.Table, repo.FieldID, id),
 			sqlgraph.To(deployment.Table, deployment.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, repo.DeploymentsTable, repo.DeploymentsColumn),
+		)
+		fromV = sqlgraph.Neighbors(r.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryChatCallback queries the chat_callback edge of a Repo.
+func (c *RepoClient) QueryChatCallback(r *Repo) *ChatCallbackQuery {
+	query := &ChatCallbackQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := r.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(repo.Table, repo.FieldID, id),
+			sqlgraph.To(chatcallback.Table, chatcallback.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, repo.ChatCallbackTable, repo.ChatCallbackColumn),
 		)
 		fromV = sqlgraph.Neighbors(r.driver.Dialect(), step)
 		return fromV, nil

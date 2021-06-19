@@ -22,8 +22,30 @@ const (
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
 	FieldUpdatedAt = "updated_at"
+	// FieldChatUserID holds the string denoting the chat_user_id field in the database.
+	FieldChatUserID = "chat_user_id"
+	// FieldRepoID holds the string denoting the repo_id field in the database.
+	FieldRepoID = "repo_id"
+	// EdgeChatUser holds the string denoting the chat_user edge name in mutations.
+	EdgeChatUser = "chat_user"
+	// EdgeRepo holds the string denoting the repo edge name in mutations.
+	EdgeRepo = "repo"
 	// Table holds the table name of the chatcallback in the database.
 	Table = "chat_callbacks"
+	// ChatUserTable is the table the holds the chat_user relation/edge.
+	ChatUserTable = "chat_callbacks"
+	// ChatUserInverseTable is the table name for the ChatUser entity.
+	// It exists in this package in order to avoid circular dependency with the "chatuser" package.
+	ChatUserInverseTable = "chat_users"
+	// ChatUserColumn is the table column denoting the chat_user relation/edge.
+	ChatUserColumn = "chat_user_id"
+	// RepoTable is the table the holds the repo relation/edge.
+	RepoTable = "chat_callbacks"
+	// RepoInverseTable is the table name for the Repo entity.
+	// It exists in this package in order to avoid circular dependency with the "repo" package.
+	RepoInverseTable = "repos"
+	// RepoColumn is the table column denoting the repo relation/edge.
+	RepoColumn = "repo_id"
 )
 
 // Columns holds all SQL columns for chatcallback fields.
@@ -34,6 +56,8 @@ var Columns = []string{
 	FieldIsOpened,
 	FieldCreatedAt,
 	FieldUpdatedAt,
+	FieldChatUserID,
+	FieldRepoID,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).

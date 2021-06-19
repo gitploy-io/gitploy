@@ -12,7 +12,9 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/hanjunlee/gitploy/ent/chatcallback"
+	"github.com/hanjunlee/gitploy/ent/chatuser"
 	"github.com/hanjunlee/gitploy/ent/predicate"
+	"github.com/hanjunlee/gitploy/ent/repo"
 )
 
 // ChatCallbackQuery is the builder for querying ChatCallback entities.
@@ -24,6 +26,9 @@ type ChatCallbackQuery struct {
 	order      []OrderFunc
 	fields     []string
 	predicates []predicate.ChatCallback
+	// eager-loading edges.
+	withChatUser *ChatUserQuery
+	withRepo     *RepoQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -58,6 +63,50 @@ func (ccq *ChatCallbackQuery) Unique(unique bool) *ChatCallbackQuery {
 func (ccq *ChatCallbackQuery) Order(o ...OrderFunc) *ChatCallbackQuery {
 	ccq.order = append(ccq.order, o...)
 	return ccq
+}
+
+// QueryChatUser chains the current query on the "chat_user" edge.
+func (ccq *ChatCallbackQuery) QueryChatUser() *ChatUserQuery {
+	query := &ChatUserQuery{config: ccq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := ccq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := ccq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(chatcallback.Table, chatcallback.FieldID, selector),
+			sqlgraph.To(chatuser.Table, chatuser.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, chatcallback.ChatUserTable, chatcallback.ChatUserColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(ccq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryRepo chains the current query on the "repo" edge.
+func (ccq *ChatCallbackQuery) QueryRepo() *RepoQuery {
+	query := &RepoQuery{config: ccq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := ccq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := ccq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(chatcallback.Table, chatcallback.FieldID, selector),
+			sqlgraph.To(repo.Table, repo.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, chatcallback.RepoTable, chatcallback.RepoColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(ccq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
 }
 
 // First returns the first ChatCallback entity from the query.
@@ -236,15 +285,39 @@ func (ccq *ChatCallbackQuery) Clone() *ChatCallbackQuery {
 		return nil
 	}
 	return &ChatCallbackQuery{
-		config:     ccq.config,
-		limit:      ccq.limit,
-		offset:     ccq.offset,
-		order:      append([]OrderFunc{}, ccq.order...),
-		predicates: append([]predicate.ChatCallback{}, ccq.predicates...),
+		config:       ccq.config,
+		limit:        ccq.limit,
+		offset:       ccq.offset,
+		order:        append([]OrderFunc{}, ccq.order...),
+		predicates:   append([]predicate.ChatCallback{}, ccq.predicates...),
+		withChatUser: ccq.withChatUser.Clone(),
+		withRepo:     ccq.withRepo.Clone(),
 		// clone intermediate query.
 		sql:  ccq.sql.Clone(),
 		path: ccq.path,
 	}
+}
+
+// WithChatUser tells the query-builder to eager-load the nodes that are connected to
+// the "chat_user" edge. The optional arguments are used to configure the query builder of the edge.
+func (ccq *ChatCallbackQuery) WithChatUser(opts ...func(*ChatUserQuery)) *ChatCallbackQuery {
+	query := &ChatUserQuery{config: ccq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	ccq.withChatUser = query
+	return ccq
+}
+
+// WithRepo tells the query-builder to eager-load the nodes that are connected to
+// the "repo" edge. The optional arguments are used to configure the query builder of the edge.
+func (ccq *ChatCallbackQuery) WithRepo(opts ...func(*RepoQuery)) *ChatCallbackQuery {
+	query := &RepoQuery{config: ccq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	ccq.withRepo = query
+	return ccq
 }
 
 // GroupBy is used to group vertices by one or more fields/columns.
@@ -310,8 +383,12 @@ func (ccq *ChatCallbackQuery) prepareQuery(ctx context.Context) error {
 
 func (ccq *ChatCallbackQuery) sqlAll(ctx context.Context) ([]*ChatCallback, error) {
 	var (
-		nodes = []*ChatCallback{}
-		_spec = ccq.querySpec()
+		nodes       = []*ChatCallback{}
+		_spec       = ccq.querySpec()
+		loadedTypes = [2]bool{
+			ccq.withChatUser != nil,
+			ccq.withRepo != nil,
+		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
 		node := &ChatCallback{config: ccq.config}
@@ -323,6 +400,7 @@ func (ccq *ChatCallbackQuery) sqlAll(ctx context.Context) ([]*ChatCallback, erro
 			return fmt.Errorf("ent: Assign called without calling ScanValues")
 		}
 		node := nodes[len(nodes)-1]
+		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
 	if err := sqlgraph.QueryNodes(ctx, ccq.driver, _spec); err != nil {
@@ -331,6 +409,59 @@ func (ccq *ChatCallbackQuery) sqlAll(ctx context.Context) ([]*ChatCallback, erro
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
+
+	if query := ccq.withChatUser; query != nil {
+		ids := make([]string, 0, len(nodes))
+		nodeids := make(map[string][]*ChatCallback)
+		for i := range nodes {
+			fk := nodes[i].ChatUserID
+			if _, ok := nodeids[fk]; !ok {
+				ids = append(ids, fk)
+			}
+			nodeids[fk] = append(nodeids[fk], nodes[i])
+		}
+		query.Where(chatuser.IDIn(ids...))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			nodes, ok := nodeids[n.ID]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "chat_user_id" returned %v`, n.ID)
+			}
+			for i := range nodes {
+				nodes[i].Edges.ChatUser = n
+			}
+		}
+	}
+
+	if query := ccq.withRepo; query != nil {
+		ids := make([]string, 0, len(nodes))
+		nodeids := make(map[string][]*ChatCallback)
+		for i := range nodes {
+			fk := nodes[i].RepoID
+			if _, ok := nodeids[fk]; !ok {
+				ids = append(ids, fk)
+			}
+			nodeids[fk] = append(nodeids[fk], nodes[i])
+		}
+		query.Where(repo.IDIn(ids...))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			nodes, ok := nodeids[n.ID]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "repo_id" returned %v`, n.ID)
+			}
+			for i := range nodes {
+				nodes[i].Edges.Repo = n
+			}
+		}
+	}
+
 	return nodes, nil
 }
 

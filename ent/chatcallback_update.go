@@ -4,6 +4,7 @@ package ent
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -11,7 +12,9 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/hanjunlee/gitploy/ent/chatcallback"
+	"github.com/hanjunlee/gitploy/ent/chatuser"
 	"github.com/hanjunlee/gitploy/ent/predicate"
+	"github.com/hanjunlee/gitploy/ent/repo"
 )
 
 // ChatCallbackUpdate is the builder for updating ChatCallback entities.
@@ -73,9 +76,57 @@ func (ccu *ChatCallbackUpdate) SetUpdatedAt(t time.Time) *ChatCallbackUpdate {
 	return ccu
 }
 
+// SetChatUserID sets the "chat_user_id" field.
+func (ccu *ChatCallbackUpdate) SetChatUserID(s string) *ChatCallbackUpdate {
+	ccu.mutation.SetChatUserID(s)
+	return ccu
+}
+
+// SetRepoID sets the "repo_id" field.
+func (ccu *ChatCallbackUpdate) SetRepoID(s string) *ChatCallbackUpdate {
+	ccu.mutation.SetRepoID(s)
+	return ccu
+}
+
+// SetNillableRepoID sets the "repo_id" field if the given value is not nil.
+func (ccu *ChatCallbackUpdate) SetNillableRepoID(s *string) *ChatCallbackUpdate {
+	if s != nil {
+		ccu.SetRepoID(*s)
+	}
+	return ccu
+}
+
+// ClearRepoID clears the value of the "repo_id" field.
+func (ccu *ChatCallbackUpdate) ClearRepoID() *ChatCallbackUpdate {
+	ccu.mutation.ClearRepoID()
+	return ccu
+}
+
+// SetChatUser sets the "chat_user" edge to the ChatUser entity.
+func (ccu *ChatCallbackUpdate) SetChatUser(c *ChatUser) *ChatCallbackUpdate {
+	return ccu.SetChatUserID(c.ID)
+}
+
+// SetRepo sets the "repo" edge to the Repo entity.
+func (ccu *ChatCallbackUpdate) SetRepo(r *Repo) *ChatCallbackUpdate {
+	return ccu.SetRepoID(r.ID)
+}
+
 // Mutation returns the ChatCallbackMutation object of the builder.
 func (ccu *ChatCallbackUpdate) Mutation() *ChatCallbackMutation {
 	return ccu.mutation
+}
+
+// ClearChatUser clears the "chat_user" edge to the ChatUser entity.
+func (ccu *ChatCallbackUpdate) ClearChatUser() *ChatCallbackUpdate {
+	ccu.mutation.ClearChatUser()
+	return ccu
+}
+
+// ClearRepo clears the "repo" edge to the Repo entity.
+func (ccu *ChatCallbackUpdate) ClearRepo() *ChatCallbackUpdate {
+	ccu.mutation.ClearRepo()
+	return ccu
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -151,6 +202,9 @@ func (ccu *ChatCallbackUpdate) check() error {
 			return &ValidationError{Name: "type", err: fmt.Errorf("ent: validator failed for field \"type\": %w", err)}
 		}
 	}
+	if _, ok := ccu.mutation.ChatUserID(); ccu.mutation.ChatUserCleared() && !ok {
+		return errors.New("ent: clearing a required unique edge \"chat_user\"")
+	}
 	return nil
 }
 
@@ -206,6 +260,76 @@ func (ccu *ChatCallbackUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Value:  value,
 			Column: chatcallback.FieldUpdatedAt,
 		})
+	}
+	if ccu.mutation.ChatUserCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   chatcallback.ChatUserTable,
+			Columns: []string{chatcallback.ChatUserColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: chatuser.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ccu.mutation.ChatUserIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   chatcallback.ChatUserTable,
+			Columns: []string{chatcallback.ChatUserColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: chatuser.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if ccu.mutation.RepoCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   chatcallback.RepoTable,
+			Columns: []string{chatcallback.RepoColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: repo.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ccu.mutation.RepoIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   chatcallback.RepoTable,
+			Columns: []string{chatcallback.RepoColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: repo.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if n, err = sqlgraph.UpdateNodes(ctx, ccu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -272,9 +396,57 @@ func (ccuo *ChatCallbackUpdateOne) SetUpdatedAt(t time.Time) *ChatCallbackUpdate
 	return ccuo
 }
 
+// SetChatUserID sets the "chat_user_id" field.
+func (ccuo *ChatCallbackUpdateOne) SetChatUserID(s string) *ChatCallbackUpdateOne {
+	ccuo.mutation.SetChatUserID(s)
+	return ccuo
+}
+
+// SetRepoID sets the "repo_id" field.
+func (ccuo *ChatCallbackUpdateOne) SetRepoID(s string) *ChatCallbackUpdateOne {
+	ccuo.mutation.SetRepoID(s)
+	return ccuo
+}
+
+// SetNillableRepoID sets the "repo_id" field if the given value is not nil.
+func (ccuo *ChatCallbackUpdateOne) SetNillableRepoID(s *string) *ChatCallbackUpdateOne {
+	if s != nil {
+		ccuo.SetRepoID(*s)
+	}
+	return ccuo
+}
+
+// ClearRepoID clears the value of the "repo_id" field.
+func (ccuo *ChatCallbackUpdateOne) ClearRepoID() *ChatCallbackUpdateOne {
+	ccuo.mutation.ClearRepoID()
+	return ccuo
+}
+
+// SetChatUser sets the "chat_user" edge to the ChatUser entity.
+func (ccuo *ChatCallbackUpdateOne) SetChatUser(c *ChatUser) *ChatCallbackUpdateOne {
+	return ccuo.SetChatUserID(c.ID)
+}
+
+// SetRepo sets the "repo" edge to the Repo entity.
+func (ccuo *ChatCallbackUpdateOne) SetRepo(r *Repo) *ChatCallbackUpdateOne {
+	return ccuo.SetRepoID(r.ID)
+}
+
 // Mutation returns the ChatCallbackMutation object of the builder.
 func (ccuo *ChatCallbackUpdateOne) Mutation() *ChatCallbackMutation {
 	return ccuo.mutation
+}
+
+// ClearChatUser clears the "chat_user" edge to the ChatUser entity.
+func (ccuo *ChatCallbackUpdateOne) ClearChatUser() *ChatCallbackUpdateOne {
+	ccuo.mutation.ClearChatUser()
+	return ccuo
+}
+
+// ClearRepo clears the "repo" edge to the Repo entity.
+func (ccuo *ChatCallbackUpdateOne) ClearRepo() *ChatCallbackUpdateOne {
+	ccuo.mutation.ClearRepo()
+	return ccuo
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -357,6 +529,9 @@ func (ccuo *ChatCallbackUpdateOne) check() error {
 			return &ValidationError{Name: "type", err: fmt.Errorf("ent: validator failed for field \"type\": %w", err)}
 		}
 	}
+	if _, ok := ccuo.mutation.ChatUserID(); ccuo.mutation.ChatUserCleared() && !ok {
+		return errors.New("ent: clearing a required unique edge \"chat_user\"")
+	}
 	return nil
 }
 
@@ -429,6 +604,76 @@ func (ccuo *ChatCallbackUpdateOne) sqlSave(ctx context.Context) (_node *ChatCall
 			Value:  value,
 			Column: chatcallback.FieldUpdatedAt,
 		})
+	}
+	if ccuo.mutation.ChatUserCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   chatcallback.ChatUserTable,
+			Columns: []string{chatcallback.ChatUserColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: chatuser.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ccuo.mutation.ChatUserIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   chatcallback.ChatUserTable,
+			Columns: []string{chatcallback.ChatUserColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: chatuser.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if ccuo.mutation.RepoCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   chatcallback.RepoTable,
+			Columns: []string{chatcallback.RepoColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: repo.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ccuo.mutation.RepoIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   chatcallback.RepoTable,
+			Columns: []string{chatcallback.RepoColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: repo.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_node = &ChatCallback{config: ccuo.config}
 	_spec.Assign = _node.assignValues

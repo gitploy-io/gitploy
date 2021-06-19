@@ -16,13 +16,28 @@ var (
 		{Name: "is_opened", Type: field.TypeBool, Default: true},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "chat_user_id", Type: field.TypeString, Nullable: true},
+		{Name: "repo_id", Type: field.TypeString, Nullable: true},
 	}
 	// ChatCallbacksTable holds the schema information for the "chat_callbacks" table.
 	ChatCallbacksTable = &schema.Table{
-		Name:        "chat_callbacks",
-		Columns:     ChatCallbacksColumns,
-		PrimaryKey:  []*schema.Column{ChatCallbacksColumns[0]},
-		ForeignKeys: []*schema.ForeignKey{},
+		Name:       "chat_callbacks",
+		Columns:    ChatCallbacksColumns,
+		PrimaryKey: []*schema.Column{ChatCallbacksColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "chat_callbacks_chat_users_chat_callback",
+				Columns:    []*schema.Column{ChatCallbacksColumns[6]},
+				RefColumns: []*schema.Column{ChatUsersColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "chat_callbacks_repos_chat_callback",
+				Columns:    []*schema.Column{ChatCallbacksColumns[7]},
+				RefColumns: []*schema.Column{ReposColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
 	}
 	// ChatUsersColumns holds the columns for the "chat_users" table.
 	ChatUsersColumns = []*schema.Column{
@@ -213,6 +228,8 @@ var (
 )
 
 func init() {
+	ChatCallbacksTable.ForeignKeys[0].RefTable = ChatUsersTable
+	ChatCallbacksTable.ForeignKeys[1].RefTable = ReposTable
 	ChatUsersTable.ForeignKeys[0].RefTable = UsersTable
 	DeploymentsTable.ForeignKeys[0].RefTable = ReposTable
 	DeploymentsTable.ForeignKeys[1].RefTable = UsersTable

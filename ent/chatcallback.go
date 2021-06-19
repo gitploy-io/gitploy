@@ -9,6 +9,8 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/hanjunlee/gitploy/ent/chatcallback"
+	"github.com/hanjunlee/gitploy/ent/chatuser"
+	"github.com/hanjunlee/gitploy/ent/repo"
 )
 
 // ChatCallback is the model entity for the ChatCallback schema.
@@ -26,6 +28,52 @@ type ChatCallback struct {
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
+	// ChatUserID holds the value of the "chat_user_id" field.
+	ChatUserID string `json:"chat_user_id,omitempty"`
+	// RepoID holds the value of the "repo_id" field.
+	RepoID string `json:"repo_id,omitempty"`
+	// Edges holds the relations/edges for other nodes in the graph.
+	// The values are being populated by the ChatCallbackQuery when eager-loading is set.
+	Edges ChatCallbackEdges `json:"edges"`
+}
+
+// ChatCallbackEdges holds the relations/edges for other nodes in the graph.
+type ChatCallbackEdges struct {
+	// ChatUser holds the value of the chat_user edge.
+	ChatUser *ChatUser `json:"chat_user,omitempty"`
+	// Repo holds the value of the repo edge.
+	Repo *Repo `json:"repo,omitempty"`
+	// loadedTypes holds the information for reporting if a
+	// type was loaded (or requested) in eager-loading or not.
+	loadedTypes [2]bool
+}
+
+// ChatUserOrErr returns the ChatUser value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e ChatCallbackEdges) ChatUserOrErr() (*ChatUser, error) {
+	if e.loadedTypes[0] {
+		if e.ChatUser == nil {
+			// The edge chat_user was loaded in eager-loading,
+			// but was not found.
+			return nil, &NotFoundError{label: chatuser.Label}
+		}
+		return e.ChatUser, nil
+	}
+	return nil, &NotLoadedError{edge: "chat_user"}
+}
+
+// RepoOrErr returns the Repo value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e ChatCallbackEdges) RepoOrErr() (*Repo, error) {
+	if e.loadedTypes[1] {
+		if e.Repo == nil {
+			// The edge repo was loaded in eager-loading,
+			// but was not found.
+			return nil, &NotFoundError{label: repo.Label}
+		}
+		return e.Repo, nil
+	}
+	return nil, &NotLoadedError{edge: "repo"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -35,7 +83,7 @@ func (*ChatCallback) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case chatcallback.FieldIsOpened:
 			values[i] = new(sql.NullBool)
-		case chatcallback.FieldID, chatcallback.FieldState, chatcallback.FieldType:
+		case chatcallback.FieldID, chatcallback.FieldState, chatcallback.FieldType, chatcallback.FieldChatUserID, chatcallback.FieldRepoID:
 			values[i] = new(sql.NullString)
 		case chatcallback.FieldCreatedAt, chatcallback.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -90,9 +138,31 @@ func (cc *ChatCallback) assignValues(columns []string, values []interface{}) err
 			} else if value.Valid {
 				cc.UpdatedAt = value.Time
 			}
+		case chatcallback.FieldChatUserID:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field chat_user_id", values[i])
+			} else if value.Valid {
+				cc.ChatUserID = value.String
+			}
+		case chatcallback.FieldRepoID:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field repo_id", values[i])
+			} else if value.Valid {
+				cc.RepoID = value.String
+			}
 		}
 	}
 	return nil
+}
+
+// QueryChatUser queries the "chat_user" edge of the ChatCallback entity.
+func (cc *ChatCallback) QueryChatUser() *ChatUserQuery {
+	return (&ChatCallbackClient{config: cc.config}).QueryChatUser(cc)
+}
+
+// QueryRepo queries the "repo" edge of the ChatCallback entity.
+func (cc *ChatCallback) QueryRepo() *RepoQuery {
+	return (&ChatCallbackClient{config: cc.config}).QueryRepo(cc)
 }
 
 // Update returns a builder for updating this ChatCallback.
@@ -128,6 +198,10 @@ func (cc *ChatCallback) String() string {
 	builder.WriteString(cc.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", updated_at=")
 	builder.WriteString(cc.UpdatedAt.Format(time.ANSIC))
+	builder.WriteString(", chat_user_id=")
+	builder.WriteString(cc.ChatUserID)
+	builder.WriteString(", repo_id=")
+	builder.WriteString(cc.RepoID)
 	builder.WriteByte(')')
 	return builder.String()
 }

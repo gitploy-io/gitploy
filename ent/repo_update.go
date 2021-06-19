@@ -10,6 +10,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/hanjunlee/gitploy/ent/chatcallback"
 	"github.com/hanjunlee/gitploy/ent/deployment"
 	"github.com/hanjunlee/gitploy/ent/perm"
 	"github.com/hanjunlee/gitploy/ent/predicate"
@@ -206,6 +207,21 @@ func (ru *RepoUpdate) AddDeployments(d ...*Deployment) *RepoUpdate {
 	return ru.AddDeploymentIDs(ids...)
 }
 
+// AddChatCallbackIDs adds the "chat_callback" edge to the ChatCallback entity by IDs.
+func (ru *RepoUpdate) AddChatCallbackIDs(ids ...string) *RepoUpdate {
+	ru.mutation.AddChatCallbackIDs(ids...)
+	return ru
+}
+
+// AddChatCallback adds the "chat_callback" edges to the ChatCallback entity.
+func (ru *RepoUpdate) AddChatCallback(c ...*ChatCallback) *RepoUpdate {
+	ids := make([]string, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return ru.AddChatCallbackIDs(ids...)
+}
+
 // Mutation returns the RepoMutation object of the builder.
 func (ru *RepoUpdate) Mutation() *RepoMutation {
 	return ru.mutation
@@ -251,6 +267,27 @@ func (ru *RepoUpdate) RemoveDeployments(d ...*Deployment) *RepoUpdate {
 		ids[i] = d[i].ID
 	}
 	return ru.RemoveDeploymentIDs(ids...)
+}
+
+// ClearChatCallback clears all "chat_callback" edges to the ChatCallback entity.
+func (ru *RepoUpdate) ClearChatCallback() *RepoUpdate {
+	ru.mutation.ClearChatCallback()
+	return ru
+}
+
+// RemoveChatCallbackIDs removes the "chat_callback" edge to ChatCallback entities by IDs.
+func (ru *RepoUpdate) RemoveChatCallbackIDs(ids ...string) *RepoUpdate {
+	ru.mutation.RemoveChatCallbackIDs(ids...)
+	return ru
+}
+
+// RemoveChatCallback removes "chat_callback" edges to ChatCallback entities.
+func (ru *RepoUpdate) RemoveChatCallback(c ...*ChatCallback) *RepoUpdate {
+	ids := make([]string, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return ru.RemoveChatCallbackIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -540,6 +577,60 @@ func (ru *RepoUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if ru.mutation.ChatCallbackCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   repo.ChatCallbackTable,
+			Columns: []string{repo.ChatCallbackColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: chatcallback.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ru.mutation.RemovedChatCallbackIDs(); len(nodes) > 0 && !ru.mutation.ChatCallbackCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   repo.ChatCallbackTable,
+			Columns: []string{repo.ChatCallbackColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: chatcallback.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ru.mutation.ChatCallbackIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   repo.ChatCallbackTable,
+			Columns: []string{repo.ChatCallbackColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: chatcallback.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, ru.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{repo.Label}
@@ -736,6 +827,21 @@ func (ruo *RepoUpdateOne) AddDeployments(d ...*Deployment) *RepoUpdateOne {
 	return ruo.AddDeploymentIDs(ids...)
 }
 
+// AddChatCallbackIDs adds the "chat_callback" edge to the ChatCallback entity by IDs.
+func (ruo *RepoUpdateOne) AddChatCallbackIDs(ids ...string) *RepoUpdateOne {
+	ruo.mutation.AddChatCallbackIDs(ids...)
+	return ruo
+}
+
+// AddChatCallback adds the "chat_callback" edges to the ChatCallback entity.
+func (ruo *RepoUpdateOne) AddChatCallback(c ...*ChatCallback) *RepoUpdateOne {
+	ids := make([]string, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return ruo.AddChatCallbackIDs(ids...)
+}
+
 // Mutation returns the RepoMutation object of the builder.
 func (ruo *RepoUpdateOne) Mutation() *RepoMutation {
 	return ruo.mutation
@@ -781,6 +887,27 @@ func (ruo *RepoUpdateOne) RemoveDeployments(d ...*Deployment) *RepoUpdateOne {
 		ids[i] = d[i].ID
 	}
 	return ruo.RemoveDeploymentIDs(ids...)
+}
+
+// ClearChatCallback clears all "chat_callback" edges to the ChatCallback entity.
+func (ruo *RepoUpdateOne) ClearChatCallback() *RepoUpdateOne {
+	ruo.mutation.ClearChatCallback()
+	return ruo
+}
+
+// RemoveChatCallbackIDs removes the "chat_callback" edge to ChatCallback entities by IDs.
+func (ruo *RepoUpdateOne) RemoveChatCallbackIDs(ids ...string) *RepoUpdateOne {
+	ruo.mutation.RemoveChatCallbackIDs(ids...)
+	return ruo
+}
+
+// RemoveChatCallback removes "chat_callback" edges to ChatCallback entities.
+func (ruo *RepoUpdateOne) RemoveChatCallback(c ...*ChatCallback) *RepoUpdateOne {
+	ids := make([]string, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return ruo.RemoveChatCallbackIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -1086,6 +1213,60 @@ func (ruo *RepoUpdateOne) sqlSave(ctx context.Context) (_node *Repo, err error) 
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
 					Column: deployment.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if ruo.mutation.ChatCallbackCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   repo.ChatCallbackTable,
+			Columns: []string{repo.ChatCallbackColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: chatcallback.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ruo.mutation.RemovedChatCallbackIDs(); len(nodes) > 0 && !ruo.mutation.ChatCallbackCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   repo.ChatCallbackTable,
+			Columns: []string{repo.ChatCallbackColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: chatcallback.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ruo.mutation.ChatCallbackIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   repo.ChatCallbackTable,
+			Columns: []string{repo.ChatCallbackColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: chatcallback.FieldID,
 				},
 			},
 		}

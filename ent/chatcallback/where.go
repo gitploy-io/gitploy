@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/hanjunlee/gitploy/ent/predicate"
 )
 
@@ -117,6 +118,20 @@ func CreatedAt(v time.Time) predicate.ChatCallback {
 func UpdatedAt(v time.Time) predicate.ChatCallback {
 	return predicate.ChatCallback(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldUpdatedAt), v))
+	})
+}
+
+// ChatUserID applies equality check predicate on the "chat_user_id" field. It's identical to ChatUserIDEQ.
+func ChatUserID(v string) predicate.ChatCallback {
+	return predicate.ChatCallback(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldChatUserID), v))
+	})
+}
+
+// RepoID applies equality check predicate on the "repo_id" field. It's identical to RepoIDEQ.
+func RepoID(v string) predicate.ChatCallback {
+	return predicate.ChatCallback(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldRepoID), v))
 	})
 }
 
@@ -442,6 +457,298 @@ func UpdatedAtLT(v time.Time) predicate.ChatCallback {
 func UpdatedAtLTE(v time.Time) predicate.ChatCallback {
 	return predicate.ChatCallback(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldUpdatedAt), v))
+	})
+}
+
+// ChatUserIDEQ applies the EQ predicate on the "chat_user_id" field.
+func ChatUserIDEQ(v string) predicate.ChatCallback {
+	return predicate.ChatCallback(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldChatUserID), v))
+	})
+}
+
+// ChatUserIDNEQ applies the NEQ predicate on the "chat_user_id" field.
+func ChatUserIDNEQ(v string) predicate.ChatCallback {
+	return predicate.ChatCallback(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldChatUserID), v))
+	})
+}
+
+// ChatUserIDIn applies the In predicate on the "chat_user_id" field.
+func ChatUserIDIn(vs ...string) predicate.ChatCallback {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.ChatCallback(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldChatUserID), v...))
+	})
+}
+
+// ChatUserIDNotIn applies the NotIn predicate on the "chat_user_id" field.
+func ChatUserIDNotIn(vs ...string) predicate.ChatCallback {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.ChatCallback(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldChatUserID), v...))
+	})
+}
+
+// ChatUserIDGT applies the GT predicate on the "chat_user_id" field.
+func ChatUserIDGT(v string) predicate.ChatCallback {
+	return predicate.ChatCallback(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldChatUserID), v))
+	})
+}
+
+// ChatUserIDGTE applies the GTE predicate on the "chat_user_id" field.
+func ChatUserIDGTE(v string) predicate.ChatCallback {
+	return predicate.ChatCallback(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldChatUserID), v))
+	})
+}
+
+// ChatUserIDLT applies the LT predicate on the "chat_user_id" field.
+func ChatUserIDLT(v string) predicate.ChatCallback {
+	return predicate.ChatCallback(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldChatUserID), v))
+	})
+}
+
+// ChatUserIDLTE applies the LTE predicate on the "chat_user_id" field.
+func ChatUserIDLTE(v string) predicate.ChatCallback {
+	return predicate.ChatCallback(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldChatUserID), v))
+	})
+}
+
+// ChatUserIDContains applies the Contains predicate on the "chat_user_id" field.
+func ChatUserIDContains(v string) predicate.ChatCallback {
+	return predicate.ChatCallback(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldChatUserID), v))
+	})
+}
+
+// ChatUserIDHasPrefix applies the HasPrefix predicate on the "chat_user_id" field.
+func ChatUserIDHasPrefix(v string) predicate.ChatCallback {
+	return predicate.ChatCallback(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldChatUserID), v))
+	})
+}
+
+// ChatUserIDHasSuffix applies the HasSuffix predicate on the "chat_user_id" field.
+func ChatUserIDHasSuffix(v string) predicate.ChatCallback {
+	return predicate.ChatCallback(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldChatUserID), v))
+	})
+}
+
+// ChatUserIDEqualFold applies the EqualFold predicate on the "chat_user_id" field.
+func ChatUserIDEqualFold(v string) predicate.ChatCallback {
+	return predicate.ChatCallback(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldChatUserID), v))
+	})
+}
+
+// ChatUserIDContainsFold applies the ContainsFold predicate on the "chat_user_id" field.
+func ChatUserIDContainsFold(v string) predicate.ChatCallback {
+	return predicate.ChatCallback(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldChatUserID), v))
+	})
+}
+
+// RepoIDEQ applies the EQ predicate on the "repo_id" field.
+func RepoIDEQ(v string) predicate.ChatCallback {
+	return predicate.ChatCallback(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldRepoID), v))
+	})
+}
+
+// RepoIDNEQ applies the NEQ predicate on the "repo_id" field.
+func RepoIDNEQ(v string) predicate.ChatCallback {
+	return predicate.ChatCallback(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldRepoID), v))
+	})
+}
+
+// RepoIDIn applies the In predicate on the "repo_id" field.
+func RepoIDIn(vs ...string) predicate.ChatCallback {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.ChatCallback(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldRepoID), v...))
+	})
+}
+
+// RepoIDNotIn applies the NotIn predicate on the "repo_id" field.
+func RepoIDNotIn(vs ...string) predicate.ChatCallback {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.ChatCallback(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldRepoID), v...))
+	})
+}
+
+// RepoIDGT applies the GT predicate on the "repo_id" field.
+func RepoIDGT(v string) predicate.ChatCallback {
+	return predicate.ChatCallback(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldRepoID), v))
+	})
+}
+
+// RepoIDGTE applies the GTE predicate on the "repo_id" field.
+func RepoIDGTE(v string) predicate.ChatCallback {
+	return predicate.ChatCallback(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldRepoID), v))
+	})
+}
+
+// RepoIDLT applies the LT predicate on the "repo_id" field.
+func RepoIDLT(v string) predicate.ChatCallback {
+	return predicate.ChatCallback(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldRepoID), v))
+	})
+}
+
+// RepoIDLTE applies the LTE predicate on the "repo_id" field.
+func RepoIDLTE(v string) predicate.ChatCallback {
+	return predicate.ChatCallback(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldRepoID), v))
+	})
+}
+
+// RepoIDContains applies the Contains predicate on the "repo_id" field.
+func RepoIDContains(v string) predicate.ChatCallback {
+	return predicate.ChatCallback(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldRepoID), v))
+	})
+}
+
+// RepoIDHasPrefix applies the HasPrefix predicate on the "repo_id" field.
+func RepoIDHasPrefix(v string) predicate.ChatCallback {
+	return predicate.ChatCallback(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldRepoID), v))
+	})
+}
+
+// RepoIDHasSuffix applies the HasSuffix predicate on the "repo_id" field.
+func RepoIDHasSuffix(v string) predicate.ChatCallback {
+	return predicate.ChatCallback(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldRepoID), v))
+	})
+}
+
+// RepoIDIsNil applies the IsNil predicate on the "repo_id" field.
+func RepoIDIsNil() predicate.ChatCallback {
+	return predicate.ChatCallback(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldRepoID)))
+	})
+}
+
+// RepoIDNotNil applies the NotNil predicate on the "repo_id" field.
+func RepoIDNotNil() predicate.ChatCallback {
+	return predicate.ChatCallback(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldRepoID)))
+	})
+}
+
+// RepoIDEqualFold applies the EqualFold predicate on the "repo_id" field.
+func RepoIDEqualFold(v string) predicate.ChatCallback {
+	return predicate.ChatCallback(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldRepoID), v))
+	})
+}
+
+// RepoIDContainsFold applies the ContainsFold predicate on the "repo_id" field.
+func RepoIDContainsFold(v string) predicate.ChatCallback {
+	return predicate.ChatCallback(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldRepoID), v))
+	})
+}
+
+// HasChatUser applies the HasEdge predicate on the "chat_user" edge.
+func HasChatUser() predicate.ChatCallback {
+	return predicate.ChatCallback(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(ChatUserTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, ChatUserTable, ChatUserColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasChatUserWith applies the HasEdge predicate on the "chat_user" edge with a given conditions (other predicates).
+func HasChatUserWith(preds ...predicate.ChatUser) predicate.ChatCallback {
+	return predicate.ChatCallback(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(ChatUserInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, ChatUserTable, ChatUserColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasRepo applies the HasEdge predicate on the "repo" edge.
+func HasRepo() predicate.ChatCallback {
+	return predicate.ChatCallback(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(RepoTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, RepoTable, RepoColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasRepoWith applies the HasEdge predicate on the "repo" edge with a given conditions (other predicates).
+func HasRepoWith(preds ...predicate.Repo) predicate.ChatCallback {
+	return predicate.ChatCallback(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(RepoInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, RepoTable, RepoColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
 	})
 }
 
