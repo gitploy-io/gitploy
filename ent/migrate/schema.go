@@ -161,6 +161,11 @@ var (
 				Unique:  false,
 				Columns: []*schema.Column{NotificationsColumns[6]},
 			},
+			{
+				Name:    "notification_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{NotificationsColumns[4]},
+			},
 		},
 	}
 	// PermsColumns holds the columns for the "perms" table.
