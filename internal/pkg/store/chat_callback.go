@@ -37,5 +37,6 @@ func (s *Store) FindChatCallbackWithEdgesByID(ctx context.Context, id string) (*
 func (s *Store) CloseChatCallback(ctx context.Context, cb *ent.ChatCallback) (*ent.ChatCallback, error) {
 	return s.c.ChatCallback.
 		UpdateOne(cb).
+		SetIsOpened(false).
 		Save(ctx)
 }
