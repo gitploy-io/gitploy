@@ -1,11 +1,11 @@
 package slack
 
 import (
-	"crypto/rand"
-	"encoding/base64"
 	"fmt"
+	"math/rand"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/slack-go/slack"
@@ -13,6 +13,7 @@ import (
 
 	"github.com/hanjunlee/gitploy/ent"
 	"github.com/hanjunlee/gitploy/ent/chatcallback"
+	"github.com/hanjunlee/gitploy/ent/deployment"
 	errs "github.com/hanjunlee/gitploy/internal/errors"
 	"github.com/hanjunlee/gitploy/vo"
 )
@@ -20,6 +21,11 @@ import (
 const (
 	token = ""
 )
+
+func init() {
+	// Seed for randstr
+	rand.Seed(time.Now().UnixNano())
+}
 
 func (s *Slack) handleDeployCmd(c *gin.Context, cmd slack.SlashCommand) {
 	ctx := c.Request.Context()
@@ -35,7 +41,8 @@ func (s *Slack) handleDeployCmd(c *gin.Context, cmd slack.SlashCommand) {
 		return
 	}
 
-	client := slack.New(u.Edges.ChatUser.BotToken)
+	cu := u.Edges.ChatUser
+	client := slack.New(cu.BotToken)
 
 	fullname := trimDeployCommandPrefix(cmd.Text)
 	ns, n, err := parseFullName(fullname)
@@ -88,7 +95,7 @@ func (s *Slack) handleDeployCmd(c *gin.Context, cmd slack.SlashCommand) {
 		return
 	}
 
-	_, err = s.i.CreateChatCallback(ctx, &ent.ChatCallback{
+	_, err = s.i.CreateDeployChatCallback(ctx, cu, r, &ent.ChatCallback{
 		ID:    cb,
 		Type:  chatcallback.TypeDeploy,
 		State: state,
@@ -99,6 +106,30 @@ func (s *Slack) handleDeployCmd(c *gin.Context, cmd slack.SlashCommand) {
 		return
 	}
 
+	c.Status(http.StatusOK)
+}
+
+func (s *Slack) interactDeploy(c *gin.Context, scb slack.InteractionCallback) {
+	ctx := c.Request.Context()
+
+	cb, _ := s.i.FindChatCallbackWithEdgesByID(ctx, scb.CallbackID)
+
+	cu := cb.Edges.ChatUser
+	u, _ := s.i.FindUserWithChatUserByChatUserID(ctx, cu.ID)
+
+	d := &ent.Deployment{
+		Type: deployment.Type(scb.Submission["type"]),
+		Ref:  scb.Submission["ref"],
+		Env:  scb.Submission["env"],
+	}
+	_, err := s.i.Deploy(ctx, u, cb.Edges.Repo, d)
+	if err != nil {
+		s.log.Error("failed to deploy.", zap.Error(err))
+		c.Status(http.StatusInternalServerError)
+		return
+	}
+
+	s.log.Debug("deployed successfully.")
 	c.Status(http.StatusOK)
 }
 
@@ -134,7 +165,7 @@ func createDialogElement(c *vo.Config) []slack.DialogElement {
 			DialogInput: slack.DialogInput{
 				Type:  "select",
 				Label: "Environment",
-				Name:  "environment",
+				Name:  "env",
 			},
 			Options: options,
 		},
@@ -169,9 +200,11 @@ func createDialogElement(c *vo.Config) []slack.DialogElement {
 }
 
 func randstr() string {
-	b := make([]byte, 16)
-	rand.Read(b)
+	var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
 
-	state := base64.URLEncoding.EncodeToString(b)
-	return state
+	b := make([]rune, 16)
+	for i := range b {
+		b[i] = letterRunes[rand.Intn(len(letterRunes))]
+	}
+	return string(b)
 }

@@ -36,7 +36,10 @@ type (
 		CreateDeployment(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment) (*ent.Deployment, error)
 		UpdateDeployment(ctx context.Context, d *ent.Deployment) (*ent.Deployment, error)
 
-		CreateChatCallback(ctx context.Context, cb *ent.ChatCallback) (*ent.ChatCallback, error)
+		CreateDeployChatCallback(ctx context.Context, cu *ent.ChatUser, repo *ent.Repo, cb *ent.ChatCallback) (*ent.ChatCallback, error)
+		FindChatCallbackByID(ctx context.Context, id string) (*ent.ChatCallback, error)
+		FindChatCallbackWithEdgesByID(ctx context.Context, id string) (*ent.ChatCallback, error)
+		CloseChatCallback(ctx context.Context, cb *ent.ChatCallback) (*ent.ChatCallback, error)
 	}
 
 	SCM interface {
