@@ -2001,22 +2001,9 @@ func (m *DeploymentMutation) OldUserID(ctx context.Context) (v string, err error
 	return oldValue.UserID, nil
 }
 
-// ClearUserID clears the value of the "user_id" field.
-func (m *DeploymentMutation) ClearUserID() {
-	m.user = nil
-	m.clearedFields[deployment.FieldUserID] = struct{}{}
-}
-
-// UserIDCleared returns if the "user_id" field was cleared in this mutation.
-func (m *DeploymentMutation) UserIDCleared() bool {
-	_, ok := m.clearedFields[deployment.FieldUserID]
-	return ok
-}
-
 // ResetUserID resets all changes to the "user_id" field.
 func (m *DeploymentMutation) ResetUserID() {
 	m.user = nil
-	delete(m.clearedFields, deployment.FieldUserID)
 }
 
 // SetRepoID sets the "repo_id" field.
@@ -2050,22 +2037,9 @@ func (m *DeploymentMutation) OldRepoID(ctx context.Context) (v string, err error
 	return oldValue.RepoID, nil
 }
 
-// ClearRepoID clears the value of the "repo_id" field.
-func (m *DeploymentMutation) ClearRepoID() {
-	m.repo = nil
-	m.clearedFields[deployment.FieldRepoID] = struct{}{}
-}
-
-// RepoIDCleared returns if the "repo_id" field was cleared in this mutation.
-func (m *DeploymentMutation) RepoIDCleared() bool {
-	_, ok := m.clearedFields[deployment.FieldRepoID]
-	return ok
-}
-
 // ResetRepoID resets all changes to the "repo_id" field.
 func (m *DeploymentMutation) ResetRepoID() {
 	m.repo = nil
-	delete(m.clearedFields, deployment.FieldRepoID)
 }
 
 // ClearUser clears the "user" edge to the User entity.
@@ -2075,7 +2049,7 @@ func (m *DeploymentMutation) ClearUser() {
 
 // UserCleared reports if the "user" edge to the User entity was cleared.
 func (m *DeploymentMutation) UserCleared() bool {
-	return m.UserIDCleared() || m.cleareduser
+	return m.cleareduser
 }
 
 // UserIDs returns the "user" edge IDs in the mutation.
@@ -2101,7 +2075,7 @@ func (m *DeploymentMutation) ClearRepo() {
 
 // RepoCleared reports if the "repo" edge to the Repo entity was cleared.
 func (m *DeploymentMutation) RepoCleared() bool {
-	return m.RepoIDCleared() || m.clearedrepo
+	return m.clearedrepo
 }
 
 // RepoIDs returns the "repo" edge IDs in the mutation.
@@ -2352,12 +2326,6 @@ func (m *DeploymentMutation) ClearedFields() []string {
 	if m.FieldCleared(deployment.FieldSha) {
 		fields = append(fields, deployment.FieldSha)
 	}
-	if m.FieldCleared(deployment.FieldUserID) {
-		fields = append(fields, deployment.FieldUserID)
-	}
-	if m.FieldCleared(deployment.FieldRepoID) {
-		fields = append(fields, deployment.FieldRepoID)
-	}
 	return fields
 }
 
@@ -2377,12 +2345,6 @@ func (m *DeploymentMutation) ClearField(name string) error {
 		return nil
 	case deployment.FieldSha:
 		m.ClearSha()
-		return nil
-	case deployment.FieldUserID:
-		m.ClearUserID()
-		return nil
-	case deployment.FieldRepoID:
-		m.ClearRepoID()
 		return nil
 	}
 	return fmt.Errorf("unknown Deployment nullable field %s", name)

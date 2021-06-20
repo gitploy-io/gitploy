@@ -4,6 +4,7 @@ package ent
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -142,37 +143,9 @@ func (du *DeploymentUpdate) SetUserID(s string) *DeploymentUpdate {
 	return du
 }
 
-// SetNillableUserID sets the "user_id" field if the given value is not nil.
-func (du *DeploymentUpdate) SetNillableUserID(s *string) *DeploymentUpdate {
-	if s != nil {
-		du.SetUserID(*s)
-	}
-	return du
-}
-
-// ClearUserID clears the value of the "user_id" field.
-func (du *DeploymentUpdate) ClearUserID() *DeploymentUpdate {
-	du.mutation.ClearUserID()
-	return du
-}
-
 // SetRepoID sets the "repo_id" field.
 func (du *DeploymentUpdate) SetRepoID(s string) *DeploymentUpdate {
 	du.mutation.SetRepoID(s)
-	return du
-}
-
-// SetNillableRepoID sets the "repo_id" field if the given value is not nil.
-func (du *DeploymentUpdate) SetNillableRepoID(s *string) *DeploymentUpdate {
-	if s != nil {
-		du.SetRepoID(*s)
-	}
-	return du
-}
-
-// ClearRepoID clears the value of the "repo_id" field.
-func (du *DeploymentUpdate) ClearRepoID() *DeploymentUpdate {
-	du.mutation.ClearRepoID()
 	return du
 }
 
@@ -280,6 +253,12 @@ func (du *DeploymentUpdate) check() error {
 		if err := deployment.StatusValidator(v); err != nil {
 			return &ValidationError{Name: "status", err: fmt.Errorf("ent: validator failed for field \"status\": %w", err)}
 		}
+	}
+	if _, ok := du.mutation.UserID(); du.mutation.UserCleared() && !ok {
+		return errors.New("ent: clearing a required unique edge \"user\"")
+	}
+	if _, ok := du.mutation.RepoID(); du.mutation.RepoCleared() && !ok {
+		return errors.New("ent: clearing a required unique edge \"repo\"")
 	}
 	return nil
 }
@@ -579,37 +558,9 @@ func (duo *DeploymentUpdateOne) SetUserID(s string) *DeploymentUpdateOne {
 	return duo
 }
 
-// SetNillableUserID sets the "user_id" field if the given value is not nil.
-func (duo *DeploymentUpdateOne) SetNillableUserID(s *string) *DeploymentUpdateOne {
-	if s != nil {
-		duo.SetUserID(*s)
-	}
-	return duo
-}
-
-// ClearUserID clears the value of the "user_id" field.
-func (duo *DeploymentUpdateOne) ClearUserID() *DeploymentUpdateOne {
-	duo.mutation.ClearUserID()
-	return duo
-}
-
 // SetRepoID sets the "repo_id" field.
 func (duo *DeploymentUpdateOne) SetRepoID(s string) *DeploymentUpdateOne {
 	duo.mutation.SetRepoID(s)
-	return duo
-}
-
-// SetNillableRepoID sets the "repo_id" field if the given value is not nil.
-func (duo *DeploymentUpdateOne) SetNillableRepoID(s *string) *DeploymentUpdateOne {
-	if s != nil {
-		duo.SetRepoID(*s)
-	}
-	return duo
-}
-
-// ClearRepoID clears the value of the "repo_id" field.
-func (duo *DeploymentUpdateOne) ClearRepoID() *DeploymentUpdateOne {
-	duo.mutation.ClearRepoID()
 	return duo
 }
 
@@ -724,6 +675,12 @@ func (duo *DeploymentUpdateOne) check() error {
 		if err := deployment.StatusValidator(v); err != nil {
 			return &ValidationError{Name: "status", err: fmt.Errorf("ent: validator failed for field \"status\": %w", err)}
 		}
+	}
+	if _, ok := duo.mutation.UserID(); duo.mutation.UserCleared() && !ok {
+		return errors.New("ent: clearing a required unique edge \"user\"")
+	}
+	if _, ok := duo.mutation.RepoID(); duo.mutation.RepoCleared() && !ok {
+		return errors.New("ent: clearing a required unique edge \"repo\"")
 	}
 	return nil
 }
