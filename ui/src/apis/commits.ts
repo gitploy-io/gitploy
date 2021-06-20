@@ -1,10 +1,11 @@
 import { StatusCodes } from 'http-status-codes'
 
 import { instance, headers } from './settings'
+import { _fetch } from "./_base"
 import { Commit, Status, HttpNotFoundError, StatusState } from '../models'
 
 export const listCommits = async (repoId: string, branch: string, page: number = 1, perPage: number = 30) => {
-    const commits: Commit[] = await fetch(`${instance}/api/v1/repos/${repoId}/commits?branch=${branch}&page=${page}&per_page=${perPage}`, {
+    const commits: Commit[] = await _fetch(`${instance}/api/v1/repos/${repoId}/commits?branch=${branch}&page=${page}&per_page=${perPage}`, {
         headers,
         credentials: "same-origin",
     })
@@ -21,7 +22,7 @@ export const listCommits = async (repoId: string, branch: string, page: number =
 }
 
 export const getCommit = async (repoId: string, sha: string) => {
-    const response = await fetch(`${instance}/api/v1/repos/${repoId}/commits/${sha}`, {
+    const response = await _fetch(`${instance}/api/v1/repos/${repoId}/commits/${sha}`, {
         headers,
         credentials: "same-origin",
     })
@@ -53,7 +54,7 @@ const mapStatusState = (state: string) => {
 }
 
 export const listStatuses = async (repoId: string, sha: string) => {
-    const response = await fetch(`${instance}/api/v1/repos/${repoId}/commits/${sha}/statuses`, {
+    const response = await _fetch(`${instance}/api/v1/repos/${repoId}/commits/${sha}/statuses`, {
         headers,
         credentials: "same-origin",
     })

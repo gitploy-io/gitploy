@@ -1,6 +1,8 @@
-import { instance, headers } from './settings'
-import { Deployment, DeploymentType, DeploymentStatus, HttpRequestError } from '../models'
 import { StatusCodes } from 'http-status-codes'
+
+import { instance, headers } from './settings'
+import { _fetch } from "./_base"
+import { Deployment, DeploymentType, DeploymentStatus, HttpRequestError } from '../models'
 import { Deployer } from '../models/Deployment'
 
 const mapDeploymentType = (t: string) => {
@@ -36,7 +38,7 @@ const mapDeploymentStatus = (s: string) => {
 export const listDeployments = async (repoId: string, env: string, status: string, page: number, perPage: number) => {
     let deployments:Deployment[]
 
-    deployments = await fetch(`${instance}/api/v1/repos/${repoId}/deployments?env=${env}&status=${status}&page=${page}&per_page=${perPage}`, {
+    deployments = await _fetch(`${instance}/api/v1/repos/${repoId}/deployments?env=${env}&status=${status}&page=${page}&per_page=${perPage}`, {
         headers,
         credentials: 'same-origin',
     })
@@ -71,7 +73,7 @@ export const createDeployment = async (repoId: string, type: DeploymentType = De
         ref,
         env
     })
-    const response = await fetch(`${instance}/api/v1/repos/${repoId}/deployments`, {
+    const response = await _fetch(`${instance}/api/v1/repos/${repoId}/deployments`, {
         headers,
         credentials: 'same-origin',
         method: "POST",
