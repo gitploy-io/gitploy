@@ -12,6 +12,16 @@ func (s *Store) FindChatUserByID(ctx context.Context, id string) (*ent.ChatUser,
 	return s.c.ChatUser.Get(ctx, id)
 }
 
+func (s *Store) FindUserWithChatUserByID(ctx context.Context, id string) (*ent.User, error) {
+	return s.c.User.
+		Query().
+		Where(
+			user.IDEQ(id),
+		).
+		WithChatUser().
+		First(ctx)
+}
+
 func (s *Store) FindUserWithChatUserByChatUserID(ctx context.Context, id string) (*ent.User, error) {
 	return s.c.User.
 		Query().

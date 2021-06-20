@@ -12,6 +12,7 @@ type (
 	Store interface {
 		FindUserByID(ctx context.Context, id string) (*ent.User, error)
 		FindUserByHash(ctx context.Context, hash string) (*ent.User, error)
+		FindUserWithChatUserByID(ctx context.Context, id string) (*ent.User, error)
 		FindUserWithChatUserByChatUserID(ctx context.Context, id string) (*ent.User, error)
 		CreateUser(ctx context.Context, u *ent.User) (*ent.User, error)
 		UpdateUser(ctx context.Context, u *ent.User) (*ent.User, error)
@@ -32,6 +33,7 @@ type (
 		SyncPerm(ctx context.Context, user *ent.User, perm *ent.Perm, sync time.Time) error
 
 		ListDeployments(ctx context.Context, r *ent.Repo, env string, status string, page, perPage int) ([]*ent.Deployment, error)
+		FindDeploymentWithEdgesByID(ctx context.Context, id int) (*ent.Deployment, error)
 		FindLatestDeployment(ctx context.Context, r *ent.Repo, env string) (*ent.Deployment, error)
 		CreateDeployment(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment) (*ent.Deployment, error)
 		UpdateDeployment(ctx context.Context, d *ent.Deployment) (*ent.Deployment, error)
@@ -66,5 +68,9 @@ type (
 
 		ListTags(ctx context.Context, u *ent.User, r *ent.Repo, page, perPage int) ([]*vo.Tag, error)
 		GetTag(ctx context.Context, u *ent.User, r *ent.Repo, tag string) (*vo.Tag, error)
+	}
+
+	Chat interface {
+		NotifyDeployment(ctx context.Context, cu *ent.ChatUser, d *ent.Deployment) error
 	}
 )

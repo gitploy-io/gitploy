@@ -124,25 +124,9 @@ func (dc *DeploymentCreate) SetUserID(s string) *DeploymentCreate {
 	return dc
 }
 
-// SetNillableUserID sets the "user_id" field if the given value is not nil.
-func (dc *DeploymentCreate) SetNillableUserID(s *string) *DeploymentCreate {
-	if s != nil {
-		dc.SetUserID(*s)
-	}
-	return dc
-}
-
 // SetRepoID sets the "repo_id" field.
 func (dc *DeploymentCreate) SetRepoID(s string) *DeploymentCreate {
 	dc.mutation.SetRepoID(s)
-	return dc
-}
-
-// SetNillableRepoID sets the "repo_id" field if the given value is not nil.
-func (dc *DeploymentCreate) SetNillableRepoID(s *string) *DeploymentCreate {
-	if s != nil {
-		dc.SetRepoID(*s)
-	}
 	return dc
 }
 
@@ -255,6 +239,18 @@ func (dc *DeploymentCreate) check() error {
 	}
 	if _, ok := dc.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New("ent: missing required field \"updated_at\"")}
+	}
+	if _, ok := dc.mutation.UserID(); !ok {
+		return &ValidationError{Name: "user_id", err: errors.New("ent: missing required field \"user_id\"")}
+	}
+	if _, ok := dc.mutation.RepoID(); !ok {
+		return &ValidationError{Name: "repo_id", err: errors.New("ent: missing required field \"repo_id\"")}
+	}
+	if _, ok := dc.mutation.UserID(); !ok {
+		return &ValidationError{Name: "user", err: errors.New("ent: missing required edge \"user\"")}
+	}
+	if _, ok := dc.mutation.RepoID(); !ok {
+		return &ValidationError{Name: "repo", err: errors.New("ent: missing required edge \"repo\"")}
 	}
 	return nil
 }

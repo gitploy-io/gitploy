@@ -45,10 +45,8 @@ func (Deployment) Fields() []ent.Field {
 			Default(time.Now).
 			UpdateDefault(time.Now),
 		// Edges
-		field.String("user_id").
-			Optional(),
-		field.String("repo_id").
-			Optional(),
+		field.String("user_id"),
+		field.String("repo_id"),
 	}
 }
 
@@ -58,11 +56,13 @@ func (Deployment) Edges() []ent.Edge {
 		edge.From("user", User.Type).
 			Ref("deployments").
 			Field("user_id").
-			Unique(),
+			Unique().
+			Required(),
 		edge.From("repo", Repo.Type).
 			Ref("deployments").
 			Field("repo_id").
-			Unique(),
+			Unique().
+			Required(),
 	}
 }
 

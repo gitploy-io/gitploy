@@ -931,20 +931,6 @@ func UserIDHasSuffix(v string) predicate.Deployment {
 	})
 }
 
-// UserIDIsNil applies the IsNil predicate on the "user_id" field.
-func UserIDIsNil() predicate.Deployment {
-	return predicate.Deployment(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldUserID)))
-	})
-}
-
-// UserIDNotNil applies the NotNil predicate on the "user_id" field.
-func UserIDNotNil() predicate.Deployment {
-	return predicate.Deployment(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldUserID)))
-	})
-}
-
 // UserIDEqualFold applies the EqualFold predicate on the "user_id" field.
 func UserIDEqualFold(v string) predicate.Deployment {
 	return predicate.Deployment(func(s *sql.Selector) {
@@ -1053,20 +1039,6 @@ func RepoIDHasPrefix(v string) predicate.Deployment {
 func RepoIDHasSuffix(v string) predicate.Deployment {
 	return predicate.Deployment(func(s *sql.Selector) {
 		s.Where(sql.HasSuffix(s.C(FieldRepoID), v))
-	})
-}
-
-// RepoIDIsNil applies the IsNil predicate on the "repo_id" field.
-func RepoIDIsNil() predicate.Deployment {
-	return predicate.Deployment(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldRepoID)))
-	})
-}
-
-// RepoIDNotNil applies the NotNil predicate on the "repo_id" field.
-func RepoIDNotNil() predicate.Deployment {
-	return predicate.Deployment(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldRepoID)))
 	})
 }
 

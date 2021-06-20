@@ -17,22 +17,18 @@ const (
 )
 
 func (i *Interactor) polling(stop <-chan struct{}) {
-	const (
-		max = 4
-	)
-
 	ctx := context.Background()
 
 	i.events.SubscribeAsync(eventNotification, func(n *ent.Notification) {
 		i.store.SetNotificationDone(ctx, n)
 
-		if err := i.messageByChat(n); err != nil {
+		if err := i.notifyByChat(ctx, n); err != nil {
 			i.log.Error("failed to notify.", zap.Error(err))
 		}
 	}, false)
 
-	// polling with the randomic term to escape the conflict.
-	ticker := time.NewTicker(time.Millisecond * 1000 * time.Duration(randint(2, max)))
+	// polling with the random period to escape the conflict; 2s - 4s
+	ticker := time.NewTicker(time.Millisecond * 100 * time.Duration(randint(20, 40)))
 
 L:
 	for {
@@ -43,7 +39,7 @@ L:
 				break L
 			}
 		case t := <-ticker.C:
-			ns, err := i.store.ListNotificationsFromTime(ctx, t.Add(-time.Second*max))
+			ns, err := i.store.ListNotificationsFromTime(ctx, t.Add(-time.Second*4))
 			if err != nil {
 				i.log.Named("polling").Error("failed to read notifications.", zap.Error(err))
 				continue
@@ -61,6 +57,33 @@ L:
 	}
 }
 
+// messageByChat notify by Chat if it is connected with Gitploy (e.g. Slack, Microsoft Teams).
+func (i *Interactor) notifyByChat(ctx context.Context, n *ent.Notification) error {
+	switch n.Type {
+	case notification.TypeDeployment:
+		return i.notifyDeploymentByChat(ctx, n)
+	default:
+		return nil
+	}
+}
+
+func (i *Interactor) notifyDeploymentByChat(ctx context.Context, n *ent.Notification) error {
+	u, err := i.store.FindUserWithChatUserByID(ctx, n.UserID)
+	if err != nil {
+		return err
+	}
+	if u.Edges.ChatUser == nil {
+		return nil
+	}
+
+	d, err := i.store.FindDeploymentWithEdgesByID(ctx, n.ID)
+	if err != nil {
+		return err
+	}
+
+	return i.chat.NotifyDeployment(ctx, u.Edges.ChatUser, d)
+}
+
 func (i *Interactor) publish(n *ent.Notification) {
 	i.events.Publish(eventStream, n)
 	i.events.Publish(eventNotification, n)
@@ -70,11 +93,7 @@ func (i *Interactor) Subscribe(fn func(*ent.Notification)) {
 	i.events.SubscribeAsync(eventStream, fn, false)
 }
 
-// messageByChat notify by Chat if it is connected with Gitploy (e.g. Slack, Microsoft Teams).
-func (i *Interactor) messageByChat(n *ent.Notification) error {
-	return nil
-}
-
+// Notify enqueues a new notification for resource.
 func (i *Interactor) Notify(ctx context.Context, iface interface{}) (*ent.Notification, error) {
 	switch r := iface.(type) {
 	case *ent.Deployment:
