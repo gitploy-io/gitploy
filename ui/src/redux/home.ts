@@ -59,6 +59,9 @@ export const homeSlice = createSlice({
         setQ: (state, action: PayloadAction<string>) => {
             state.q = action.payload
         },
+        setFirstPage: (state) => {
+            state.page = 1
+        },
         increasePage: (state) => {
             state.page = state.page + 1
         },
