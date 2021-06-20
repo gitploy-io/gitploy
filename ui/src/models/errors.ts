@@ -8,6 +8,22 @@ export class HttpRequestError extends Error {
     }
 }
 
+export class HttpInternalServerError extends HttpRequestError {
+    constructor(public m: string) {
+        super(StatusCodes.INTERNAL_SERVER_ERROR, m)
+
+        Object.setPrototypeOf(this, HttpNotFoundError.prototype)
+    }
+}
+
+export class HttpUnauthorizedError extends HttpRequestError {
+    constructor(public m: string) {
+        super(StatusCodes.UNAUTHORIZED, m)
+
+        Object.setPrototypeOf(this, HttpNotFoundError.prototype)
+    }
+}
+
 export class HttpForbiddenError extends HttpRequestError {
     constructor(public m: string) {
         super(StatusCodes.FORBIDDEN, m)
