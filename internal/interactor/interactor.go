@@ -9,6 +9,7 @@ type (
 	Interactor struct {
 		store Store
 		scm   SCM
+		chat  Chat
 
 		// Notification events
 		stopCh chan struct{}

@@ -121,6 +121,17 @@ func (s *Store) ListDeployments(ctx context.Context, r *ent.Repo, env string, st
 		All(ctx)
 }
 
+func (s *Store) FindDeploymentWithEdgesByID(ctx context.Context, id int) (*ent.Deployment, error) {
+	return s.c.Deployment.
+		Query().
+		Where(
+			deployment.IDEQ(id),
+		).
+		WithRepo().
+		WithUser().
+		First(ctx)
+}
+
 func (s *Store) FindLatestDeployment(ctx context.Context, r *ent.Repo, env string) (*ent.Deployment, error) {
 	return s.c.Deployment.
 		Query().

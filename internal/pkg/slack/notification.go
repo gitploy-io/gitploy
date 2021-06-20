@@ -8,16 +8,13 @@ import (
 
 	"github.com/hanjunlee/gitploy/ent"
 	"github.com/hanjunlee/gitploy/ent/deployment"
-	errs "github.com/hanjunlee/gitploy/internal/errors"
 )
 
 func (s *Slack) NotifyDeployment(ctx context.Context, cu *ent.ChatUser, d *ent.Deployment) error {
 	const title = "New Deployment"
 
 	if d.Edges.User == nil || d.Edges.Repo == nil {
-		return &errs.EdgeNotFoundError{
-			Edge: []string{"user", "repo"},
-		}
+		return fmt.Errorf("Edges are not found - user, repo.")
 	}
 
 	u, r := d.Edges.User, d.Edges.Repo
