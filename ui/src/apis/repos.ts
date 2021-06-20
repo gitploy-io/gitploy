@@ -2,6 +2,7 @@ import { StatusCodes } from 'http-status-codes'
 import { HttpForbiddenError } from '../models/errors'
 
 import { instance, headers } from './settings'
+import { _fetch } from "./_base"
 import { Repo, RepoPayload } from '../models'
 
 const mapRepo = (r: any): Repo => {
@@ -20,7 +21,7 @@ const mapRepo = (r: any): Repo => {
 }
 
 export const listRepos = async (q: string, page: number = 1, perPage: number = 30) => {
-    const repos = await fetch(`${instance}/api/v1/repos?q=${q}&page=${page}&per_page=${perPage}`, {
+    const repos = await _fetch(`${instance}/api/v1/repos?q=${q}&page=${page}&per_page=${perPage}`, {
         headers,
         credentials: 'same-origin',
     })
@@ -31,7 +32,7 @@ export const listRepos = async (q: string, page: number = 1, perPage: number = 3
 }
 
 export const searchRepo = async (namespace: string, name: string) => {
-    const repo = await fetch(`${instance}/api/v1/repos/search?namespace=${namespace}&name=${name}`, {
+    const repo = await _fetch(`${instance}/api/v1/repos/search?namespace=${namespace}&name=${name}`, {
         headers,
         credentials: 'same-origin',
     })
@@ -45,7 +46,7 @@ export const updateRepo = async (id: string, payload: RepoPayload) => {
     const body = {
         "config_path": payload.configPath
     }
-    const repo = await fetch(`${instance}/api/v1/repos/${id}`, {
+    const repo = await _fetch(`${instance}/api/v1/repos/${id}`, {
         headers,
         credentials: 'same-origin',
         method: "PATCH",
@@ -58,7 +59,7 @@ export const updateRepo = async (id: string, payload: RepoPayload) => {
 }
 
 export const activateRepo = async (id: string) => {
-    const response = await fetch(`${instance}/api/v1/repos/${id}/activate`, {
+    const response = await _fetch(`${instance}/api/v1/repos/${id}/activate`, {
         headers,
         credentials: 'same-origin',
         method: "PATCH",
@@ -75,7 +76,7 @@ export const activateRepo = async (id: string) => {
 }
 
 export const deactivateRepo = async (id: string) => {
-    const response = await fetch(`${instance}/api/v1/repos/${id}/deactivate`, {
+    const response = await _fetch(`${instance}/api/v1/repos/${id}/deactivate`, {
         headers,
         credentials: 'same-origin',
         method: "PATCH",

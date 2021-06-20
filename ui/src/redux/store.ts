@@ -1,5 +1,6 @@
-import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit'
+import { configureStore } from '@reduxjs/toolkit'
 
+import { mainSlice, apiMiddleware } from "./main"
 import { homeSlice } from './home'
 import { repoSlice } from './repo'
 import { repoHomeSlice } from './repoHome'
@@ -9,6 +10,7 @@ import { repoSettingsSlice } from "./repoSettings"
 
 export const store =  configureStore({
   reducer: {
+    main: mainSlice.reducer,
     home: homeSlice.reducer,
     repo: repoSlice.reducer,
     repoHome: repoHomeSlice.reducer,
@@ -16,9 +18,10 @@ export const store =  configureStore({
     repoRollback: repoRollbackSlice.reducer,
     repoSettings: repoSettingsSlice.reducer,
   },
-  middleware: getDefaultMiddleware({
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware({
     serializableCheck: false
-  }),
+  })
+    .concat(apiMiddleware),
   devTools: true,
 })
 

@@ -24,6 +24,7 @@ export default function Home(){
 
     const search = (q: string) => {
         dispatch(actions.setQ(q))
+        dispatch(actions.setFirstPage())
         dispatch(listRepos())
     }
 
