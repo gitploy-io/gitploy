@@ -25,22 +25,30 @@ const initialState: HomeState = {
 
 export const listRepos = createAsyncThunk<Repo[], void, { state: {home: HomeState} }>(
     'home/listRepos', 
-    async (_, { getState }) => {
+    async (_, { getState, rejectWithValue }) => {
         const {q, page } = getState().home
-        const repos = await apis.listRepos(q, page, perPage)
-        return repos
+        try {
+            const repos = await apis.listRepos(q, page, perPage)
+            return repos
+        } catch(e) {
+            return rejectWithValue(e)
+        }
     },
 )
 
 export const sync = createAsyncThunk<void, void, {state: {home: HomeState}}>(
     "home/sync",
-    async (_, { getState, requestId}) => {
+    async (_, { getState, rejectWithValue, requestId}) => {
         const { syncId, syncing } = getState().home
         if (!(syncing === RequestStatus.Pending && syncId === requestId)) {
             return
         }
 
-        await apis.sync()
+        try {
+            await apis.sync()
+        } catch(e) {
+            return rejectWithValue(e)
+        }
     }
 )
 
