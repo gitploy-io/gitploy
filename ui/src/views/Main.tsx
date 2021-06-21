@@ -1,12 +1,19 @@
+import { useEffect } from 'react';
 import { shallowEqual } from 'react-redux';
 import { Layout, Menu, Row, Col, Result, Button, Avatar, Dropdown} from 'antd';
 
-import { useAppSelector } from "../redux/hooks"
+import { useAppSelector, useAppDispatch } from "../redux/hooks"
+import { init } from "../redux/main"
 
 const { Header, Content, Footer } = Layout;
 
 export default function Main(props: any) {
-    const { available, authorized } = useAppSelector(state => state.main, shallowEqual)
+    const { available, authorized, user } = useAppSelector(state => state.main, shallowEqual)
+    const dispatch = useAppDispatch()
+
+    useEffect(() => {
+        dispatch(init())
+    }, [dispatch])
 
     let content: React.ReactElement
     if (!available) {
@@ -47,7 +54,7 @@ export default function Main(props: any) {
                     <Col span="8" style={{textAlign: "right"}}>
                         {(authorized) ? 
                             <Dropdown overlay={userMenu}>
-                                <Avatar >User</ Avatar> 
+                                <Avatar src={user?.avatar}/>
                             </ Dropdown>
                             : <a href="/" style={{color: "white"}}>Sign in</a>}
                     </Col>

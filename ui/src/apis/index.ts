@@ -5,6 +5,7 @@ import { getConfig } from './config'
 import { listCommits, getCommit, listStatuses } from './commits'
 import { listBranches, getBranch } from './branchs'
 import { listTags, getTag } from './tags'
+import { getMe } from "./users"
 
 export {
     sync,
@@ -22,5 +23,6 @@ export {
     listBranches,
     getBranch,
     listTags,
-    getTag
+    getTag,
+    getMe
 }

@@ -1,14 +1,18 @@
-import { createSlice, Middleware, MiddlewareAPI, isRejectedWithValue, PayloadAction } from "@reduxjs/toolkit"
-import { HttpInternalServerError, HttpUnauthorizedError } from "../models/errors"
+import { createSlice, Middleware, MiddlewareAPI, isRejectedWithValue, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit"
+
+import { User, HttpInternalServerError, HttpUnauthorizedError } from "../models"
+import { getMe } from "../apis"
 
 interface MainState {
     available: boolean
     authorized: boolean
+    user: User | null
 }
 
 const initialState: MainState = {
     available: true,
-    authorized: true
+    authorized: true,
+    user: null,
 }
 
 export const apiMiddleware: Middleware = (api: MiddlewareAPI) => (
@@ -29,6 +33,18 @@ export const apiMiddleware: Middleware = (api: MiddlewareAPI) => (
     next(action)
 }
 
+export const init = createAsyncThunk<User, void, { state: { main: MainState } }>(
+    "main/init",
+    async (_, { rejectWithValue }) => {
+        try {
+            const user = await getMe()
+            return user
+        } catch (e) {
+            return rejectWithValue(e)
+        }
+    }
+)
+
 export const mainSlice = createSlice({
     name: "main",
     initialState,
@@ -39,5 +55,11 @@ export const mainSlice = createSlice({
         setAuthorized: (state, action: PayloadAction<boolean>) => {
             state.authorized = action.payload
         }
+    },
+    extraReducers: builder => {
+        builder
+            .addCase(init.fulfilled, (state, action) => {
+                state.user = action.payload
+            }) 
     }
 })
