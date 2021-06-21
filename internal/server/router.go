@@ -145,6 +145,7 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 			m := s.NewSlackMiddleware(c.ChatConfig.Secret)
 			slack := s.NewSlack(newSlackOauthConfig(c), c.Interactor)
 			slackapi.GET("/", slack.Index)
+			slackapi.GET("/check", slack.Check)
 			slackapi.GET("/signin", slack.SigninSlack)
 			slackapi.POST("/interact", m.Verify(), slack.Interact)
 			slackapi.POST("/command", m.Verify(), slack.Cmd)

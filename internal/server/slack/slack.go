@@ -116,3 +116,8 @@ func (s *Slack) Interact(c *gin.Context) {
 
 	c.Status(http.StatusOK)
 }
+
+// Check checks Slack is enabled.
+func (s *Slack) Check(c *gin.Context) {
+	c.Status(http.StatusOK)
+}

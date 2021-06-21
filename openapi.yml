@@ -633,6 +633,20 @@ components:
           type: string
         updated_at:
           type: string
+        edges:
+          type: object
+          properties:
+            chat_user:
+              $ref: '#/components/schemas/ChatUser'
+    ChatUser:
+      type: object
+      properties:
+        id:
+          type: string
+        created_at:
+          type: string
+        updated_at:
+          type: string
     Repositories:
       type: array
       items:
