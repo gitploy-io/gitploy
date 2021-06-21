@@ -595,6 +595,21 @@ paths:
           $ref: '#/components/responses/422UnprocessableEntity'
         '500':
           $ref: '#/components/responses/500InternalError'
+  /users/me:
+    get:
+      tags:
+        - User
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+               $ref: '#/components/schemas/User'
+        '401': 
+          $ref: '#/components/responses/401Unauthorized'
+        '500':
+          $ref: '#/components/responses/500InternalError'
   
 security:
   - BearerAuth: []
@@ -603,6 +618,21 @@ security:
 
 components:
   schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        login:
+          type: string
+        avatar:
+          type: string
+        admin:
+          type: boolean
+        created_at:
+          type: string
+        updated_at:
+          type: string
     Repositories:
       type: array
       items:

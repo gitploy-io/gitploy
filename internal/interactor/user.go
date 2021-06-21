@@ -10,6 +10,10 @@ func (i *Interactor) FindUserByHash(ctx context.Context, hash string) (*ent.User
 	return i.store.FindUserByHash(ctx, hash)
 }
 
+func (i *Interactor) FindUserWithChatUserByID(ctx context.Context, id string) (*ent.User, error) {
+	return i.store.FindUserWithChatUserByID(ctx, id)
+}
+
 func (i *Interactor) FindUserWithChatUserByChatUserID(ctx context.Context, id string) (*ent.User, error) {
 	return i.store.FindUserWithChatUserByChatUserID(ctx, id)
 }
