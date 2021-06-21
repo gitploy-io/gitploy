@@ -9,6 +9,7 @@ import (
 
 	"github.com/hanjunlee/gitploy/internal/server/api/v1/repos"
 	"github.com/hanjunlee/gitploy/internal/server/api/v1/sync"
+	"github.com/hanjunlee/gitploy/internal/server/api/v1/users"
 	mw "github.com/hanjunlee/gitploy/internal/server/middlewares"
 	s "github.com/hanjunlee/gitploy/internal/server/slack"
 	"github.com/hanjunlee/gitploy/internal/server/web"
@@ -62,6 +63,7 @@ type (
 		mw.Interactor
 		web.Interactor
 		repos.Interactor
+		users.Interactor
 	}
 )
 
@@ -127,6 +129,12 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 		repov1.GET("/:repoID/config", rm.Repo(), r.GetConfig)
 		repov1.PATCH("/:repoID/activate", rm.Repo(), rm.AdminPerm(), r.Activate)
 		repov1.PATCH("/:repoID/deactivate", rm.Repo(), rm.AdminPerm(), r.Deactivate)
+	}
+
+	userv1 := v1.Group("/users")
+	{
+		u := users.NewUser(c.Interactor)
+		userv1.GET("/me", u.Me)
 	}
 
 	// TODO: add webhook
