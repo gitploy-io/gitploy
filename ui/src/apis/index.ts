@@ -6,6 +6,7 @@ import { listCommits, getCommit, listStatuses } from './commits'
 import { listBranches, getBranch } from './branchs'
 import { listTags, getTag } from './tags'
 import { getMe } from "./users"
+import { checkSlack } from "./chat"
 
 export {
     sync,
@@ -24,5 +25,6 @@ export {
     getBranch,
     listTags,
     getTag,
-    getMe
+    getMe,
+    checkSlack
 }

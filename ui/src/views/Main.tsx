@@ -37,7 +37,7 @@ export default function Main(props: any) {
 
     const userMenu = <Menu style={{width: "250px"}}>
         <Menu.Item key="0">
-            <a target="_blank" rel="noopener noreferrer" href="/settings">Settings</a>
+            <a rel="noopener noreferrer" href="/settings">Settings</a>
         </Menu.Item>
     </Menu>
 

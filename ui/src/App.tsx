@@ -5,8 +5,9 @@ import {
   Route,
 } from "react-router-dom";
 
-import Home from './views/Home'
-import Repo from './views/Repo'
+import Home from "./views/Home"
+import Repo from "./views/Repo"
+import Settings from "./views/Settings"
 
 function App() {
   return (
@@ -15,6 +16,9 @@ function App() {
         <Switch>
           <Route path="/:namespace/:name">
             <Repo />
+          </Route>
+          <Route path="/settings">
+            <Settings />
           </Route>
           <Route path="/">
             <Home />
