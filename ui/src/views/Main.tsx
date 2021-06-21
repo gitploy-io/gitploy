@@ -62,7 +62,11 @@ export default function Main(props: any) {
             </Header>
             <Content style={{ padding: '0 50px' }}>
                 <Row>
-                    <Col span={10} offset={7}>
+                    <Col 
+                        span={22}
+                        offset={1}
+                        md={{span: 14, offset: 5}} 
+                        lg={{span: 10, offset: 7}}>
                         {content}
                     </Col>
                 </Row>
