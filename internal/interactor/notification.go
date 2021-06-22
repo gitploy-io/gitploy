@@ -94,22 +94,25 @@ func (i *Interactor) Subscribe(fn func(*ent.Notification)) {
 }
 
 // Notify enqueues a new notification for resource.
-func (i *Interactor) Notify(ctx context.Context, iface interface{}) (*ent.Notification, error) {
+func (i *Interactor) Publish(ctx context.Context, iface interface{}) error {
 	switch r := iface.(type) {
 	case *ent.Deployment:
 		return i.createDeploymentNotification(ctx, r)
 	}
 
-	return nil, fmt.Errorf("failed to notify")
+	return fmt.Errorf("failed to notify")
 }
 
-func (i *Interactor) createDeploymentNotification(ctx context.Context, d *ent.Deployment) (*ent.Notification, error) {
-	return i.store.CreateNotification(ctx, &ent.Notification{
+// createDeploymentNotification enqueues notifications for the deployer.
+func (i *Interactor) createDeploymentNotification(ctx context.Context, d *ent.Deployment) error {
+	_, err := i.store.CreateNotification(ctx, &ent.Notification{
 		Type:       notification.TypeDeployment,
 		ResourceID: d.ID,
 		Notified:   false,
 		UserID:     d.UserID,
 	})
+	return err
+}
 }
 
 func randint(min, max int64) int64 {

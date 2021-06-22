@@ -140,7 +140,7 @@ func (r *Repo) CreateDeployment(c *gin.Context) {
 		return
 	}
 
-	if _, err = r.i.Notify(ctx, d); err != nil {
+	if err = r.i.Publish(ctx, d); err != nil {
 		r.log.Warn("failed to notify the deployment.", zap.Error(err))
 	}
 
