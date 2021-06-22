@@ -18,11 +18,12 @@ const (
 
 func (i *Interactor) polling(stop <-chan struct{}) {
 	ctx := context.Background()
+	log := i.log.Named("polling")
 
 	// Subscribe events to notify by Chat.
 	i.events.SubscribeAsync(eventChat, func(cu *ent.ChatUser, n *ent.Notification) {
 		if err := i.notifyByChat(ctx, cu, n); err != nil {
-			i.log.Error("failed to notify.", zap.Error(err))
+			i.log.Error("failed to notify by chat.", zap.Error(err))
 		}
 	}, false)
 
@@ -40,7 +41,7 @@ L:
 		case t := <-ticker.C:
 			ns, err := i.store.ListNotificationsFromTime(ctx, t.Add(-time.Second*4))
 			if err != nil {
-				i.log.Named("polling").Error("failed to read notifications.", zap.Error(err))
+				log.Error("failed to read notifications.", zap.Error(err))
 				continue
 			}
 
@@ -50,7 +51,7 @@ L:
 				}
 
 				i.publish(ctx, n)
-				i.log.Named("polling").Debug("publish the notification.", zap.Int("id", n.ID))
+				i.log.Debug("publish the notification event.", zap.Int("notification_id", n.ID))
 			}
 		}
 	}
@@ -66,11 +67,11 @@ func (i *Interactor) publish(ctx context.Context, n *ent.Notification) error {
 	}
 
 	if cu := u.Edges.ChatUser; cu != nil {
-		i.events.Publish(eventStream, cu, n)
+		i.events.Publish(eventChat, cu, n)
 		n, _ = i.store.SetNotificationDone(ctx, n)
 	}
 
-	i.events.Publish(eventChat, u, n)
+	i.events.Publish(eventStream, u, n)
 	return nil
 }
 
@@ -113,8 +114,12 @@ func (i *Interactor) createDeploymentNotification(ctx context.Context, d *ent.De
 	return err
 }
 
-func (i *Interactor) Subscribe(fn func(u *ent.User, n *ent.Notification)) {
-	i.events.SubscribeAsync(eventStream, fn, false)
+func (i *Interactor) Subscribe(fn func(u *ent.User, n *ent.Notification)) error {
+	return i.events.SubscribeAsync(eventStream, fn, false)
+}
+
+func (i *Interactor) Unsubscribe(fn func(u *ent.User, n *ent.Notification)) error {
+	return i.events.Unsubscribe(eventStream, fn)
 }
 
 func randint(min, max int64) int64 {

@@ -8,6 +8,7 @@ import (
 	"golang.org/x/oauth2"
 
 	"github.com/hanjunlee/gitploy/internal/server/api/v1/repos"
+	"github.com/hanjunlee/gitploy/internal/server/api/v1/stream"
 	"github.com/hanjunlee/gitploy/internal/server/api/v1/sync"
 	"github.com/hanjunlee/gitploy/internal/server/api/v1/users"
 	mw "github.com/hanjunlee/gitploy/internal/server/middlewares"
@@ -64,6 +65,7 @@ type (
 		web.Interactor
 		repos.Interactor
 		users.Interactor
+		stream.Interactor
 	}
 )
 
@@ -135,6 +137,12 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 	{
 		u := users.NewUser(c.Interactor)
 		userv1.GET("/me", u.Me)
+	}
+
+	streamv1 := v1.Group("/stream")
+	{
+		s := stream.NewStream(c.Interactor)
+		streamv1.GET("/", s.GetNotification)
 	}
 
 	// TODO: add webhook
