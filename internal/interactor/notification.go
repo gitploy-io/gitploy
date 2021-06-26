@@ -12,23 +12,23 @@ import (
 )
 
 const (
-	eventStream       = "gitploy:stream"
-	eventNotification = "gitploy:notification"
+	eventStream = "gitploy:stream"
+	eventChat   = "gitploy:chat"
 )
 
 func (i *Interactor) polling(stop <-chan struct{}) {
 	ctx := context.Background()
+	log := i.log.Named("polling")
 
-	i.events.SubscribeAsync(eventNotification, func(n *ent.Notification) {
-		i.store.SetNotificationDone(ctx, n)
-
-		if err := i.notifyByChat(ctx, n); err != nil {
-			i.log.Error("failed to notify.", zap.Error(err))
+	// Subscribe events to notify by Chat.
+	i.events.SubscribeAsync(eventChat, func(cu *ent.ChatUser, n *ent.Notification) {
+		if err := i.notifyByChat(ctx, cu, n); err != nil {
+			i.log.Error("failed to notify by chat.", zap.Error(err))
 		}
 	}, false)
 
-	// polling with the random period to escape the conflict; 2s - 4s
-	ticker := time.NewTicker(time.Millisecond * 100 * time.Duration(randint(20, 40)))
+	// polling with the random period to escape the conflict; 3s - 4s
+	ticker := time.NewTicker(time.Millisecond * 100 * time.Duration(randint(30, 40)))
 
 L:
 	for {
@@ -41,7 +41,7 @@ L:
 		case t := <-ticker.C:
 			ns, err := i.store.ListNotificationsFromTime(ctx, t.Add(-time.Second*4))
 			if err != nil {
-				i.log.Named("polling").Error("failed to read notifications.", zap.Error(err))
+				log.Error("failed to read notifications.", zap.Error(err))
 				continue
 			}
 
@@ -50,66 +50,77 @@ L:
 					continue
 				}
 
-				i.publish(n)
-				i.log.Named("polling").Debug("publish the notification.", zap.Int("id", n.ID))
+				i.publish(ctx, n)
+				i.log.Debug("publish the notification event.", zap.Int("notification_id", n.ID))
 			}
 		}
 	}
 }
 
-// messageByChat notify by Chat if it is connected with Gitploy (e.g. Slack, Microsoft Teams).
-func (i *Interactor) notifyByChat(ctx context.Context, n *ent.Notification) error {
+// publish notification to Chat event if it is connected,
+// and it updates notified field true,
+// whereas if not connected, it publishs to stream without update.
+func (i *Interactor) publish(ctx context.Context, n *ent.Notification) error {
+	u, err := i.store.FindUserWithChatUserByID(ctx, n.UserID)
+	if err != nil {
+		return err
+	}
+
+	if cu := u.Edges.ChatUser; cu != nil {
+		i.events.Publish(eventChat, cu, n)
+		n, _ = i.store.SetNotificationDone(ctx, n)
+	}
+
+	i.events.Publish(eventStream, u, n)
+	i.store.SetNotificationDone(ctx, n)
+	return nil
+}
+
+func (i *Interactor) notifyByChat(ctx context.Context, cu *ent.ChatUser, n *ent.Notification) error {
 	switch n.Type {
 	case notification.TypeDeployment:
-		return i.notifyDeploymentByChat(ctx, n)
+		return i.notifyDeploymentByChat(ctx, cu, n)
 	default:
 		return nil
 	}
 }
 
-func (i *Interactor) notifyDeploymentByChat(ctx context.Context, n *ent.Notification) error {
-	u, err := i.store.FindUserWithChatUserByID(ctx, n.UserID)
-	if err != nil {
-		return err
-	}
-	if u.Edges.ChatUser == nil {
-		return nil
-	}
-
+func (i *Interactor) notifyDeploymentByChat(ctx context.Context, cu *ent.ChatUser, n *ent.Notification) error {
 	d, err := i.store.FindDeploymentWithEdgesByID(ctx, n.ID)
 	if err != nil {
 		return err
 	}
 
-	return i.chat.NotifyDeployment(ctx, u.Edges.ChatUser, d)
-}
-
-func (i *Interactor) publish(n *ent.Notification) {
-	i.events.Publish(eventStream, n)
-	i.events.Publish(eventNotification, n)
-}
-
-func (i *Interactor) Subscribe(fn func(*ent.Notification)) {
-	i.events.SubscribeAsync(eventStream, fn, false)
+	return i.chat.NotifyDeployment(ctx, cu, d)
 }
 
 // Notify enqueues a new notification for resource.
-func (i *Interactor) Notify(ctx context.Context, iface interface{}) (*ent.Notification, error) {
+func (i *Interactor) Publish(ctx context.Context, iface interface{}) error {
 	switch r := iface.(type) {
 	case *ent.Deployment:
 		return i.createDeploymentNotification(ctx, r)
 	}
 
-	return nil, fmt.Errorf("failed to notify")
+	return fmt.Errorf("failed to notify")
 }
 
-func (i *Interactor) createDeploymentNotification(ctx context.Context, d *ent.Deployment) (*ent.Notification, error) {
-	return i.store.CreateNotification(ctx, &ent.Notification{
+// createDeploymentNotification enqueues notifications for the deployer.
+func (i *Interactor) createDeploymentNotification(ctx context.Context, d *ent.Deployment) error {
+	_, err := i.store.CreateNotification(ctx, &ent.Notification{
 		Type:       notification.TypeDeployment,
 		ResourceID: d.ID,
 		Notified:   false,
 		UserID:     d.UserID,
 	})
+	return err
+}
+
+func (i *Interactor) Subscribe(fn func(u *ent.User, n *ent.Notification)) error {
+	return i.events.SubscribeAsync(eventStream, fn, false)
+}
+
+func (i *Interactor) Unsubscribe(fn func(u *ent.User, n *ent.Notification)) error {
+	return i.events.Unsubscribe(eventStream, fn)
 }
 
 func randint(min, max int64) int64 {

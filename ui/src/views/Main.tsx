@@ -2,6 +2,8 @@ import { useEffect } from 'react';
 import { shallowEqual } from 'react-redux';
 import { Layout, Menu, Row, Col, Result, Button, Avatar, Dropdown} from 'antd';
 
+import { Notification as NotificationData, NotificationType } from "../models"
+import { subscribeNotification } from "../apis"
 import { useAppSelector, useAppDispatch } from "../redux/hooks"
 import { init } from "../redux/main"
 
@@ -13,6 +15,16 @@ export default function Main(props: any) {
 
     useEffect(() => {
         dispatch(init())
+        const sse = subscribeNotification((n) => {
+            if (!n.notified) {
+                notify(n)
+            }
+        })
+
+        return () => {
+            console.log("close the stream.")
+            sse.close();
+        };
     }, [dispatch])
 
     let content: React.ReactElement
@@ -35,8 +47,13 @@ export default function Main(props: any) {
         content = props.children
     }
 
-    const userMenu = <Menu style={{width: "250px"}}>
+
+    const userMenu = <Menu style={{width: "200px"}}>
         <Menu.Item key="0">
+            <a rel="noopener noreferrer" href="/notifications">Notifications</a>
+        </Menu.Item>
+        <Menu.Divider />
+        <Menu.Item key="1">
             <a rel="noopener noreferrer" href="/settings">Settings</a>
         </Menu.Item>
     </Menu>
@@ -74,4 +91,34 @@ export default function Main(props: any) {
             <Footer style={{ textAlign: 'center' }}>Gitploy ©2021 Created by Gitploy.io </Footer>
         </Layout>
     )
+}
+
+function notify(n: NotificationData) {
+    if (!("Notification" in window)) {
+        console.log("This browser does not support desktop notification")
+    }
+
+    else if (Notification.permission === "granted") {
+        // To avoid duplicate notification, tag the notification with ID.
+        new Notification(convertToNotificationMessage(n), {
+            tag: `${n.id}`,
+        });
+    }
+    
+    else if (Notification.permission !== 'denied') {
+        Notification.requestPermission(function (permission) {
+          if (permission === "granted") {
+            new Notification(convertToNotificationMessage(n), {
+                tag: `${n.id}`
+            });
+          }
+        });
+    }
+}
+
+function convertToNotificationMessage(n: NotificationData): string {
+    switch (n.type) {
+        case NotificationType.Deployment:
+            return `New Deployment - #${n.resourceId}`
+    }
 }
