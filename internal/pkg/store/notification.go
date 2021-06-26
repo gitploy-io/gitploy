@@ -33,3 +33,26 @@ func (s *Store) SetNotificationDone(ctx context.Context, n *ent.Notification) (*
 		SetNotified(true).
 		Save(ctx)
 }
+
+func (s *Store) ListNotifications(ctx context.Context, u *ent.User, page, perPage int) ([]*ent.Notification, error) {
+	return s.c.Notification.
+		Query().
+		Where(
+			notification.UserID(u.ID),
+		).
+		Limit(perPage).
+		Offset(offset(page, perPage)).
+		Order(ent.Desc(notification.FieldCreatedAt)).
+		All(ctx)
+}
+
+func (s *Store) FindNotificationByID(ctx context.Context, id int) (*ent.Notification, error) {
+	return s.c.Notification.Get(ctx, id)
+}
+
+func (s *Store) SetNotificationChecked(ctx context.Context, n *ent.Notification) (*ent.Notification, error) {
+	return s.c.Notification.
+		UpdateOne(n).
+		SetChecked(true).
+		Save(ctx)
+}

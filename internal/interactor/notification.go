@@ -127,3 +127,15 @@ func randint(min, max int64) int64 {
 	rand.Seed(time.Now().UnixNano())
 	return rand.Int63n(max-min+1) + min
 }
+
+func (i *Interactor) ListNotifications(ctx context.Context, u *ent.User, page, perPage int) ([]*ent.Notification, error) {
+	return i.store.ListNotifications(ctx, u, page, perPage)
+}
+
+func (i *Interactor) FindNotificationByID(ctx context.Context, id int) (*ent.Notification, error) {
+	return i.store.FindNotificationByID(ctx, id)
+}
+
+func (i *Interactor) SetNotificationChecked(ctx context.Context, n *ent.Notification) (*ent.Notification, error) {
+	return i.store.SetNotificationChecked(ctx, n)
+}
