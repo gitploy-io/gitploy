@@ -11,9 +11,9 @@ import (
 
 type (
 	Interactor struct {
-		store Store
-		scm   SCM
-		chat  Chat
+		Store
+		SCM
+		Chat
 
 		// Notification events
 		stopCh chan struct{}
@@ -29,9 +29,9 @@ type (
 
 func NewInteractor(store Store, scm SCM, chat Chat) *Interactor {
 	i := &Interactor{
-		store:  store,
-		scm:    scm,
-		chat:   chat,
+		Store:  store,
+		SCM:    scm,
+		Chat:   chat,
 		stopCh: make(chan struct{}),
 		events: evbus.New(),
 		log:    zap.L().Named("interactor"),

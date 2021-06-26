@@ -39,7 +39,7 @@ L:
 				break L
 			}
 		case t := <-ticker.C:
-			ns, err := i.store.ListNotificationsFromTime(ctx, t.Add(-time.Second*4))
+			ns, err := i.ListNotificationsFromTime(ctx, t.Add(-time.Second*4))
 			if err != nil {
 				log.Error("failed to read notifications.", zap.Error(err))
 				continue
@@ -61,18 +61,18 @@ L:
 // and it updates notified field true,
 // whereas if not connected, it publishs to stream without update.
 func (i *Interactor) publish(ctx context.Context, n *ent.Notification) error {
-	u, err := i.store.FindUserWithChatUserByID(ctx, n.UserID)
+	u, err := i.FindUserWithChatUserByID(ctx, n.UserID)
 	if err != nil {
 		return err
 	}
 
 	if cu := u.Edges.ChatUser; cu != nil {
 		i.events.Publish(eventChat, cu, n)
-		n, _ = i.store.SetNotificationDone(ctx, n)
+		n, _ = i.SetNotificationDone(ctx, n)
 	}
 
 	i.events.Publish(eventStream, u, n)
-	i.store.SetNotificationDone(ctx, n)
+	i.SetNotificationDone(ctx, n)
 	return nil
 }
 
@@ -86,12 +86,12 @@ func (i *Interactor) notifyByChat(ctx context.Context, cu *ent.ChatUser, n *ent.
 }
 
 func (i *Interactor) notifyDeploymentByChat(ctx context.Context, cu *ent.ChatUser, n *ent.Notification) error {
-	d, err := i.store.FindDeploymentWithEdgesByID(ctx, n.ID)
+	d, err := i.FindDeploymentWithEdgesByID(ctx, n.ID)
 	if err != nil {
 		return err
 	}
 
-	return i.chat.NotifyDeployment(ctx, cu, d)
+	return i.NotifyDeployment(ctx, cu, d)
 }
 
 // Notify enqueues a new notification for resource.
@@ -106,7 +106,7 @@ func (i *Interactor) Publish(ctx context.Context, iface interface{}) error {
 
 // createDeploymentNotification enqueues notifications for the deployer.
 func (i *Interactor) createDeploymentNotification(ctx context.Context, d *ent.Deployment) error {
-	_, err := i.store.CreateNotification(ctx, &ent.Notification{
+	_, err := i.CreateNotification(ctx, &ent.Notification{
 		Type:       notification.TypeDeployment,
 		ResourceID: d.ID,
 		Notified:   false,
@@ -126,16 +126,4 @@ func (i *Interactor) Unsubscribe(fn func(u *ent.User, n *ent.Notification)) erro
 func randint(min, max int64) int64 {
 	rand.Seed(time.Now().UnixNano())
 	return rand.Int63n(max-min+1) + min
-}
-
-func (i *Interactor) ListNotifications(ctx context.Context, u *ent.User, page, perPage int) ([]*ent.Notification, error) {
-	return i.store.ListNotifications(ctx, u, page, perPage)
-}
-
-func (i *Interactor) FindNotificationByID(ctx context.Context, id int) (*ent.Notification, error) {
-	return i.store.FindNotificationByID(ctx, id)
-}
-
-func (i *Interactor) SetNotificationChecked(ctx context.Context, n *ent.Notification) (*ent.Notification, error) {
-	return i.store.SetNotificationChecked(ctx, n)
 }
