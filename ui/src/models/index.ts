@@ -5,6 +5,7 @@ import Commit, { Status, StatusState } from './Commit'
 import Branch from './Branch'
 import Tag from './Tag'
 import User, { ChatUser } from "./User"
+import Notification, { NotificationType } from "./Notification"
 import { HttpRequestError, HttpInternalServerError, HttpUnauthorizedError, HttpForbiddenError, HttpNotFoundError } from './errors'
 import { RequestStatus } from './Request'
 
@@ -19,7 +20,8 @@ export type {
     Branch,
     Tag,
     User,
-    ChatUser
+    ChatUser,
+    Notification,
 }
 
 export {
@@ -32,4 +34,5 @@ export {
     DeploymentType,
     StatusState,
     RequestStatus,
+    NotificationType,
 }
