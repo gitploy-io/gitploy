@@ -38,7 +38,7 @@ func (s *Slack) NotifyDeployment(ctx context.Context, cu *ent.ChatUser, d *ent.D
 						Type: slack.MBTSection,
 						Text: &slack.TextBlockObject{
 							Type: slack.MarkdownType,
-							Text: fmt.Sprintf("*%s* - *%s* deploy `%s` to *%s* environment. (status: `%s`)", fullname, u.Login, ref, d.Env, d.Status),
+							Text: fmt.Sprintf("*%s* - *%s* deploy `%s` to *%s* environment.", fullname, u.Login, ref, d.Env),
 						},
 					},
 				},
