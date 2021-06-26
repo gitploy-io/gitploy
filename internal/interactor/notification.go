@@ -72,6 +72,7 @@ func (i *Interactor) publish(ctx context.Context, n *ent.Notification) error {
 	}
 
 	i.events.Publish(eventStream, u, n)
+	i.store.SetNotificationDone(ctx, n)
 	return nil
 }
 

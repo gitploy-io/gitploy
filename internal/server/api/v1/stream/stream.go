@@ -1,8 +1,9 @@
 package stream
 
 import (
-	"io"
+	"math/rand"
 	"net/http"
+	"time"
 
 	"github.com/gin-contrib/sse"
 	"github.com/gin-gonic/gin"
@@ -30,14 +31,16 @@ func (s *Stream) GetNotification(c *gin.Context) {
 	v, _ := c.Get(gb.KeyUser)
 	me, _ := v.(*ent.User)
 
-	notifications := make(chan *ent.Notification, 100)
+	debugID := randstr()
+	s.log.Debug("create a stream.", zap.String("debug_id", debugID))
+
+	notifications := make(chan *ent.Notification, 10)
 
 	// subscribe notification events
 	// it'll unsubscribe after the connection is closed.
 	sub := func(u *ent.User, n *ent.Notification) {
 		if me.ID == u.ID {
 			notifications <- n
-			s.log.Debug("receive a new notification event.", zap.Int("id", n.ID))
 		}
 	}
 	if err := s.i.Subscribe(sub); err != nil {
@@ -52,19 +55,42 @@ func (s *Stream) GetNotification(c *gin.Context) {
 		}
 
 		close(notifications)
-		s.log.Debug("connect is closed.")
 	}()
 
-	c.Stream(func(w io.Writer) bool {
-		n, ok := <-notifications
-		if !ok {
-			return false
-		}
+	w := c.Writer
 
-		sse.Encode(w, sse.Event{
-			Event: "notification",
-			Data:  n,
-		})
-		return true
-	})
+L:
+	for {
+		select {
+		case <-w.CloseNotify():
+			s.log.Debug("stream canceled.", zap.String("debug_id", debugID))
+			break L
+		case <-time.After(time.Hour):
+			s.log.Debug("stream canceled.", zap.String("debug_id", debugID))
+			break L
+		case <-time.After(time.Second * 30):
+			c.Render(-1, sse.Event{
+				Event: "ping",
+				Data:  "ping",
+			})
+			w.Flush()
+		case n := <-notifications:
+			c.Render(-1, sse.Event{
+				Event: "notification",
+				Data:  n,
+			})
+			w.Flush()
+			s.log.Debug("server sent event.", zap.Int("notification_id", n.ID), zap.String("debug_id", debugID))
+		}
+	}
+}
+
+func randstr() string {
+	var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+
+	b := make([]rune, 8)
+	for i := range b {
+		b[i] = letterRunes[rand.Intn(len(letterRunes))]
+	}
+	return string(b)
 }
