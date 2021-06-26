@@ -4,29 +4,14 @@ import (
 	"context"
 
 	"github.com/hanjunlee/gitploy/ent"
-	"github.com/hanjunlee/gitploy/ent/chatuser"
 	"github.com/hanjunlee/gitploy/ent/user"
 )
-
-func (s *Store) FindChatUserByID(ctx context.Context, id string) (*ent.ChatUser, error) {
-	return s.c.ChatUser.Get(ctx, id)
-}
 
 func (s *Store) FindUserWithChatUserByID(ctx context.Context, id string) (*ent.User, error) {
 	return s.c.User.
 		Query().
 		Where(
 			user.IDEQ(id),
-		).
-		WithChatUser().
-		First(ctx)
-}
-
-func (s *Store) FindUserWithChatUserByChatUserID(ctx context.Context, id string) (*ent.User, error) {
-	return s.c.User.
-		Query().
-		Where(
-			user.HasChatUserWith(chatuser.IDEQ(id)),
 		).
 		WithChatUser().
 		First(ctx)

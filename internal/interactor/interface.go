@@ -13,11 +13,11 @@ type (
 		FindUserByID(ctx context.Context, id string) (*ent.User, error)
 		FindUserByHash(ctx context.Context, hash string) (*ent.User, error)
 		FindUserWithChatUserByID(ctx context.Context, id string) (*ent.User, error)
-		FindUserWithChatUserByChatUserID(ctx context.Context, id string) (*ent.User, error)
 		CreateUser(ctx context.Context, u *ent.User) (*ent.User, error)
 		UpdateUser(ctx context.Context, u *ent.User) (*ent.User, error)
 
 		FindChatUserByID(ctx context.Context, id string) (*ent.ChatUser, error)
+		FindChatUserWithUserByID(ctx context.Context, id string) (*ent.ChatUser, error)
 		CreateChatUser(ctx context.Context, u *ent.User, cu *ent.ChatUser) (*ent.ChatUser, error)
 		UpdateChatUser(ctx context.Context, u *ent.User, cu *ent.ChatUser) (*ent.ChatUser, error)
 

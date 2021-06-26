@@ -30,8 +30,9 @@ func init() {
 func (s *Slack) handleDeployCmd(c *gin.Context, cmd slack.SlashCommand) {
 	ctx := c.Request.Context()
 
-	u, err := s.i.FindUserWithChatUserByChatUserID(ctx, cmd.UserID)
-	if u.Edges.ChatUser == nil {
+	// user have to be exist if chat user is found.
+	cu, err := s.i.FindChatUserWithUserByID(ctx, cmd.UserID)
+	if ent.IsNotFound(err) {
 		responseMessage(cmd, fmt.Sprint("Slack is not connected with Gitploy."))
 		c.Status(http.StatusOK)
 		return
@@ -41,7 +42,7 @@ func (s *Slack) handleDeployCmd(c *gin.Context, cmd slack.SlashCommand) {
 		return
 	}
 
-	cu := u.Edges.ChatUser
+	u := cu.Edges.User
 	client := slack.New(cu.BotToken)
 
 	fullname := trimDeployCommandPrefix(cmd.Text)
@@ -113,9 +114,10 @@ func (s *Slack) interactDeploy(c *gin.Context, scb slack.InteractionCallback) {
 	ctx := c.Request.Context()
 
 	cb, _ := s.i.FindChatCallbackWithEdgesByID(ctx, scb.CallbackID)
-
 	cu := cb.Edges.ChatUser
-	u, _ := s.i.FindUserWithChatUserByChatUserID(ctx, cu.ID)
+
+	cu, _ = s.i.FindChatUserWithUserByID(ctx, cu.ID)
+	u := cu.Edges.User
 
 	d, err := s.i.Deploy(ctx, u, cb.Edges.Repo, &ent.Deployment{
 		Type: deployment.Type(scb.Submission["type"]),

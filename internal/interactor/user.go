@@ -14,10 +14,6 @@ func (i *Interactor) FindUserWithChatUserByID(ctx context.Context, id string) (*
 	return i.store.FindUserWithChatUserByID(ctx, id)
 }
 
-func (i *Interactor) FindUserWithChatUserByChatUserID(ctx context.Context, id string) (*ent.User, error) {
-	return i.store.FindUserWithChatUserByChatUserID(ctx, id)
-}
-
 func (i *Interactor) GetSCMUserByToken(ctx context.Context, token string) (*ent.User, error) {
 	return i.scm.GetUser(ctx, token)
 }
@@ -31,13 +27,4 @@ func (i *Interactor) SaveSCMUser(ctx context.Context, u *ent.User) (*ent.User, e
 	}
 
 	return i.store.UpdateUser(ctx, u)
-}
-
-func (i *Interactor) SaveChatUser(ctx context.Context, u *ent.User, cu *ent.ChatUser) (*ent.ChatUser, error) {
-	_, err := i.store.FindChatUserByID(ctx, cu.ID)
-	if ent.IsNotFound(err) {
-		return i.store.CreateChatUser(ctx, u, cu)
-	}
-
-	return i.store.UpdateChatUser(ctx, u, cu)
 }
