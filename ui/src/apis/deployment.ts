@@ -1,6 +1,6 @@
 import { StatusCodes } from 'http-status-codes'
 
-import { instance, headers } from './settings'
+import { instance, headers } from './setting'
 import { _fetch } from "./_base"
 import { Deployment, DeploymentType, DeploymentStatus, HttpRequestError } from '../models'
 import { Deployer } from '../models/Deployment'

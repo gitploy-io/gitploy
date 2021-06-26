@@ -1,4 +1,4 @@
-import { instance } from "./settings"
+import { instance } from "./setting"
 
 import { Notification as NotificationData, NotificationType } from "../models"
 

@@ -1,7 +1,7 @@
 import { StatusCodes } from 'http-status-codes'
 import { HttpForbiddenError } from '../models/errors'
 
-import { instance, headers } from './settings'
+import { instance, headers } from './setting'
 import { _fetch } from "./_base"
 import { Repo, RepoPayload } from '../models'
 

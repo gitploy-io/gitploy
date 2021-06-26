@@ -1,5 +1,5 @@
 import { _fetch } from "./_base"
-import { instance, headers } from "./settings"
+import { instance, headers } from "./setting"
 import { User, ChatUser } from "../models"
 
 const mapUser = (data: any): User => {
