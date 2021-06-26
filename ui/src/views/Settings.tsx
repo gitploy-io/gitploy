@@ -37,8 +37,8 @@ export default function Settings() {
                 <div style={{marginTop: "20px", marginBottom: "20px", padding: "16px 24px"}}>
                     <h2>Slack</h2>
                     {(connected)? 
-                        <Button href="/slack/" type="primary">CONNECT</Button> : 
-                        <Button href="#" type="primary" danger>DISCONNECTED</Button>}
+                        <Button href="#" type="primary" danger>DISCONNECTED</Button>:
+                        <Button href="/slack/" type="primary">CONNECT</Button>}
                 </div>:
                 null}
         </Main>
