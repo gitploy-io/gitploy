@@ -53,5 +53,6 @@ func (Notification) Indexes() []ent.Index {
 	return []ent.Index{
 		index.Fields("user_id"),
 		index.Fields("created_at"),
+		index.Fields("user_id", "created_at"),
 	}
 }
