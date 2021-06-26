@@ -107,6 +107,13 @@ func Notified(v bool) predicate.Notification {
 	})
 }
 
+// Checked applies equality check predicate on the "checked" field. It's identical to CheckedEQ.
+func Checked(v bool) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldChecked), v))
+	})
+}
+
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.Notification {
 	return predicate.Notification(func(s *sql.Selector) {
@@ -263,6 +270,20 @@ func NotifiedEQ(v bool) predicate.Notification {
 func NotifiedNEQ(v bool) predicate.Notification {
 	return predicate.Notification(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldNotified), v))
+	})
+}
+
+// CheckedEQ applies the EQ predicate on the "checked" field.
+func CheckedEQ(v bool) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldChecked), v))
+	})
+}
+
+// CheckedNEQ applies the NEQ predicate on the "checked" field.
+func CheckedNEQ(v bool) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldChecked), v))
 	})
 }
 

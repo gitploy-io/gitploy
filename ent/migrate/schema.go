@@ -137,7 +137,8 @@ var (
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "type", Type: field.TypeEnum, Enums: []string{"deployment"}, Default: "deployment"},
 		{Name: "resource_id", Type: field.TypeInt},
-		{Name: "notified", Type: field.TypeBool},
+		{Name: "notified", Type: field.TypeBool, Default: false},
+		{Name: "checked", Type: field.TypeBool, Default: false},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "user_id", Type: field.TypeString, Nullable: true},
@@ -150,7 +151,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "notifications_users_notification",
-				Columns:    []*schema.Column{NotificationsColumns[6]},
+				Columns:    []*schema.Column{NotificationsColumns[7]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -159,12 +160,12 @@ var (
 			{
 				Name:    "notification_user_id",
 				Unique:  false,
-				Columns: []*schema.Column{NotificationsColumns[6]},
+				Columns: []*schema.Column{NotificationsColumns[7]},
 			},
 			{
 				Name:    "notification_created_at",
 				Unique:  false,
-				Columns: []*schema.Column{NotificationsColumns[4]},
+				Columns: []*schema.Column{NotificationsColumns[5]},
 			},
 		},
 	}

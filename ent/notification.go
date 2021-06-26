@@ -23,6 +23,8 @@ type Notification struct {
 	ResourceID int `json:"resource_id,omitempty"`
 	// Notified holds the value of the "notified" field.
 	Notified bool `json:"notified,omitempty"`
+	// Checked holds the value of the "checked" field.
+	Checked bool `json:"checked,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -62,7 +64,7 @@ func (*Notification) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case notification.FieldNotified:
+		case notification.FieldNotified, notification.FieldChecked:
 			values[i] = new(sql.NullBool)
 		case notification.FieldID, notification.FieldResourceID:
 			values[i] = new(sql.NullInt64)
@@ -108,6 +110,12 @@ func (n *Notification) assignValues(columns []string, values []interface{}) erro
 				return fmt.Errorf("unexpected type %T for field notified", values[i])
 			} else if value.Valid {
 				n.Notified = value.Bool
+			}
+		case notification.FieldChecked:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field checked", values[i])
+			} else if value.Valid {
+				n.Checked = value.Bool
 			}
 		case notification.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -166,6 +174,8 @@ func (n *Notification) String() string {
 	builder.WriteString(fmt.Sprintf("%v", n.ResourceID))
 	builder.WriteString(", notified=")
 	builder.WriteString(fmt.Sprintf("%v", n.Notified))
+	builder.WriteString(", checked=")
+	builder.WriteString(fmt.Sprintf("%v", n.Checked))
 	builder.WriteString(", created_at=")
 	builder.WriteString(n.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", updated_at=")

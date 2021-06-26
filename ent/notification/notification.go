@@ -18,6 +18,8 @@ const (
 	FieldResourceID = "resource_id"
 	// FieldNotified holds the string denoting the notified field in the database.
 	FieldNotified = "notified"
+	// FieldChecked holds the string denoting the checked field in the database.
+	FieldChecked = "checked"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
@@ -43,6 +45,7 @@ var Columns = []string{
 	FieldType,
 	FieldResourceID,
 	FieldNotified,
+	FieldChecked,
 	FieldCreatedAt,
 	FieldUpdatedAt,
 	FieldUserID,
@@ -59,6 +62,10 @@ func ValidColumn(column string) bool {
 }
 
 var (
+	// DefaultNotified holds the default value on creation for the "notified" field.
+	DefaultNotified bool
+	// DefaultChecked holds the default value on creation for the "checked" field.
+	DefaultChecked bool
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
 	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.

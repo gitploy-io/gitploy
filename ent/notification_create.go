@@ -47,6 +47,28 @@ func (nc *NotificationCreate) SetNotified(b bool) *NotificationCreate {
 	return nc
 }
 
+// SetNillableNotified sets the "notified" field if the given value is not nil.
+func (nc *NotificationCreate) SetNillableNotified(b *bool) *NotificationCreate {
+	if b != nil {
+		nc.SetNotified(*b)
+	}
+	return nc
+}
+
+// SetChecked sets the "checked" field.
+func (nc *NotificationCreate) SetChecked(b bool) *NotificationCreate {
+	nc.mutation.SetChecked(b)
+	return nc
+}
+
+// SetNillableChecked sets the "checked" field if the given value is not nil.
+func (nc *NotificationCreate) SetNillableChecked(b *bool) *NotificationCreate {
+	if b != nil {
+		nc.SetChecked(*b)
+	}
+	return nc
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (nc *NotificationCreate) SetCreatedAt(t time.Time) *NotificationCreate {
 	nc.mutation.SetCreatedAt(t)
@@ -142,6 +164,14 @@ func (nc *NotificationCreate) defaults() {
 		v := notification.DefaultType
 		nc.mutation.SetType(v)
 	}
+	if _, ok := nc.mutation.Notified(); !ok {
+		v := notification.DefaultNotified
+		nc.mutation.SetNotified(v)
+	}
+	if _, ok := nc.mutation.Checked(); !ok {
+		v := notification.DefaultChecked
+		nc.mutation.SetChecked(v)
+	}
 	if _, ok := nc.mutation.CreatedAt(); !ok {
 		v := notification.DefaultCreatedAt()
 		nc.mutation.SetCreatedAt(v)
@@ -167,6 +197,9 @@ func (nc *NotificationCreate) check() error {
 	}
 	if _, ok := nc.mutation.Notified(); !ok {
 		return &ValidationError{Name: "notified", err: errors.New("ent: missing required field \"notified\"")}
+	}
+	if _, ok := nc.mutation.Checked(); !ok {
+		return &ValidationError{Name: "checked", err: errors.New("ent: missing required field \"checked\"")}
 	}
 	if _, ok := nc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New("ent: missing required field \"created_at\"")}
@@ -230,6 +263,14 @@ func (nc *NotificationCreate) createSpec() (*Notification, *sqlgraph.CreateSpec)
 			Column: notification.FieldNotified,
 		})
 		_node.Notified = value
+	}
+	if value, ok := nc.mutation.Checked(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: notification.FieldChecked,
+		})
+		_node.Checked = value
 	}
 	if value, ok := nc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

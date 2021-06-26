@@ -23,7 +23,12 @@ func (Notification) Fields() []ent.Field {
 			).
 			Default("deployment"),
 		field.Int("resource_id"),
-		field.Bool("notified"),
+		// notified means it is notified by Chat or browser,
+		// in meanwhile checked means the status is checked directly or not.
+		field.Bool("notified").
+			Default(false),
+		field.Bool("checked").
+			Default(false),
 		field.Time("created_at").
 			Default(time.Now),
 		field.Time("updated_at").
