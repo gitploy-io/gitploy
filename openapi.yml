@@ -610,6 +610,60 @@ paths:
           $ref: '#/components/responses/401Unauthorized'
         '500':
           $ref: '#/components/responses/500InternalError'
+  /notifications:
+    get:
+      tags:
+        - Notification
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+            description: The page number
+        - in: query
+          name: per_page
+          schema:
+            type: integer
+            default: 30
+            description: The item count per page
+      responses:
+        '200':
+          description: Notifications items
+          content:
+            application/json:
+              schema:
+               $ref: '#/components/schemas/Notifications'
+        '401': 
+          $ref: '#/components/responses/401Unauthorized'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+  /notifications/{notificationId}/check:
+    patch:
+      tags:
+        - Notification
+      parameters:
+        - in: path
+          name: notificationId
+          required: true
+          schema:
+            type: integer
+            description: The notification id.
+      responses:
+        '200':
+          description: Notifications items
+          content:
+            application/json:
+              schema:
+               $ref: '#/components/schemas/Notifications'
+        '401': 
+          $ref: '#/components/responses/401Unauthorized'
+        '403': 
+          $ref: '#/components/responses/403Forbidden'
+        '404': 
+          $ref: '#/components/responses/404NotFound'
+        '500':
+          $ref: '#/components/responses/500InternalError'
   
 security:
   - BearerAuth: []
@@ -776,6 +830,26 @@ components:
                 type: string
             wait_minute:
               type: integer
+    Notifications:
+      type: array
+      items:
+        $ref: '#/components/schemas/Notification'
+    Notification:
+      type: object
+      properties:
+        type:
+          type: string
+        resource_id:
+          type: number
+        notified:
+          type: boolean
+          description: notified means it is notified by Chat or browser
+        checked:
+          type: boolean
+        created_at:
+          type: string
+        updated_at:
+          type: string
     Error:
       type: object
       properties:

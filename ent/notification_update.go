@@ -62,6 +62,28 @@ func (nu *NotificationUpdate) SetNotified(b bool) *NotificationUpdate {
 	return nu
 }
 
+// SetNillableNotified sets the "notified" field if the given value is not nil.
+func (nu *NotificationUpdate) SetNillableNotified(b *bool) *NotificationUpdate {
+	if b != nil {
+		nu.SetNotified(*b)
+	}
+	return nu
+}
+
+// SetChecked sets the "checked" field.
+func (nu *NotificationUpdate) SetChecked(b bool) *NotificationUpdate {
+	nu.mutation.SetChecked(b)
+	return nu
+}
+
+// SetNillableChecked sets the "checked" field if the given value is not nil.
+func (nu *NotificationUpdate) SetNillableChecked(b *bool) *NotificationUpdate {
+	if b != nil {
+		nu.SetChecked(*b)
+	}
+	return nu
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (nu *NotificationUpdate) SetCreatedAt(t time.Time) *NotificationUpdate {
 	nu.mutation.SetCreatedAt(t)
@@ -229,6 +251,13 @@ func (nu *NotificationUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: notification.FieldNotified,
 		})
 	}
+	if value, ok := nu.mutation.Checked(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: notification.FieldChecked,
+		})
+	}
 	if value, ok := nu.mutation.CreatedAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
@@ -327,6 +356,28 @@ func (nuo *NotificationUpdateOne) AddResourceID(i int) *NotificationUpdateOne {
 // SetNotified sets the "notified" field.
 func (nuo *NotificationUpdateOne) SetNotified(b bool) *NotificationUpdateOne {
 	nuo.mutation.SetNotified(b)
+	return nuo
+}
+
+// SetNillableNotified sets the "notified" field if the given value is not nil.
+func (nuo *NotificationUpdateOne) SetNillableNotified(b *bool) *NotificationUpdateOne {
+	if b != nil {
+		nuo.SetNotified(*b)
+	}
+	return nuo
+}
+
+// SetChecked sets the "checked" field.
+func (nuo *NotificationUpdateOne) SetChecked(b bool) *NotificationUpdateOne {
+	nuo.mutation.SetChecked(b)
+	return nuo
+}
+
+// SetNillableChecked sets the "checked" field if the given value is not nil.
+func (nuo *NotificationUpdateOne) SetNillableChecked(b *bool) *NotificationUpdateOne {
+	if b != nil {
+		nuo.SetChecked(*b)
+	}
 	return nuo
 }
 
@@ -519,6 +570,13 @@ func (nuo *NotificationUpdateOne) sqlSave(ctx context.Context) (_node *Notificat
 			Type:   field.TypeBool,
 			Value:  value,
 			Column: notification.FieldNotified,
+		})
+	}
+	if value, ok := nuo.mutation.Checked(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: notification.FieldChecked,
 		})
 	}
 	if value, ok := nuo.mutation.CreatedAt(); ok {

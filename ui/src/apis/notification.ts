@@ -3,7 +3,7 @@ import { instance } from "./setting"
 import { Notification as NotificationData, NotificationType } from "../models"
 
 export const subscribeNotification = (cb: (n: NotificationData) => void) => {
-    const sse = new EventSource(`${instance}/api/v1/stream/`, {
+    const sse = new EventSource(`${instance}/api/v1/stream`, {
         withCredentials: true,
     })
 

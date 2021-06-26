@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"golang.org/x/oauth2"
 
+	"github.com/hanjunlee/gitploy/internal/server/api/v1/notifications"
 	"github.com/hanjunlee/gitploy/internal/server/api/v1/repos"
 	"github.com/hanjunlee/gitploy/internal/server/api/v1/stream"
 	"github.com/hanjunlee/gitploy/internal/server/api/v1/sync"
@@ -65,6 +66,7 @@ type (
 		web.Interactor
 		repos.Interactor
 		users.Interactor
+		notifications.Interactor
 		stream.Interactor
 	}
 )
@@ -89,8 +91,8 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 	root := r.Group("/")
 	{
 		w := web.NewWeb(newGithubOauthConfig(c), c.Interactor)
-		root.GET("/", w.Index)
-		root.GET("/signin", w.Signin)
+		root.GET("", w.Index)
+		root.GET("signin", w.Signin)
 	}
 
 	v1 := r.Group("/api/v1")
@@ -139,10 +141,17 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 		userv1.GET("/me", u.Me)
 	}
 
+	notiv1 := v1.Group("/notifications")
+	{
+		noti := notifications.NewNoti(c.Interactor)
+		notiv1.GET("", noti.ListNotifications)
+		notiv1.PATCH("/:notificationID/check", noti.SetNotificationChecked)
+	}
+
 	streamv1 := v1.Group("/stream")
 	{
 		s := stream.NewStream(c.Interactor)
-		streamv1.GET("/", s.GetNotification)
+		streamv1.GET("", s.GetNotification)
 	}
 
 	// TODO: add webhook
@@ -152,7 +161,7 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 		{
 			m := s.NewSlackMiddleware(c.ChatConfig.Secret)
 			slack := s.NewSlack(newSlackOauthConfig(c), c.Interactor)
-			slackapi.GET("/", slack.Index)
+			slackapi.GET("", slack.Index)
 			slackapi.GET("/check", slack.Check)
 			slackapi.GET("/signin", slack.SigninSlack)
 			slackapi.POST("/interact", m.Verify(), slack.Interact)

@@ -2492,6 +2492,7 @@ type NotificationMutation struct {
 	resource_id    *int
 	addresource_id *int
 	notified       *bool
+	checked        *bool
 	created_at     *time.Time
 	updated_at     *time.Time
 	clearedFields  map[string]struct{}
@@ -2709,6 +2710,42 @@ func (m *NotificationMutation) ResetNotified() {
 	m.notified = nil
 }
 
+// SetChecked sets the "checked" field.
+func (m *NotificationMutation) SetChecked(b bool) {
+	m.checked = &b
+}
+
+// Checked returns the value of the "checked" field in the mutation.
+func (m *NotificationMutation) Checked() (r bool, exists bool) {
+	v := m.checked
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldChecked returns the old "checked" field's value of the Notification entity.
+// If the Notification object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *NotificationMutation) OldChecked(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldChecked is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldChecked requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldChecked: %w", err)
+	}
+	return oldValue.Checked, nil
+}
+
+// ResetChecked resets all changes to the "checked" field.
+func (m *NotificationMutation) ResetChecked() {
+	m.checked = nil
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (m *NotificationMutation) SetCreatedAt(t time.Time) {
 	m.created_at = &t
@@ -2857,7 +2894,7 @@ func (m *NotificationMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *NotificationMutation) Fields() []string {
-	fields := make([]string, 0, 6)
+	fields := make([]string, 0, 7)
 	if m._type != nil {
 		fields = append(fields, notification.FieldType)
 	}
@@ -2866,6 +2903,9 @@ func (m *NotificationMutation) Fields() []string {
 	}
 	if m.notified != nil {
 		fields = append(fields, notification.FieldNotified)
+	}
+	if m.checked != nil {
+		fields = append(fields, notification.FieldChecked)
 	}
 	if m.created_at != nil {
 		fields = append(fields, notification.FieldCreatedAt)
@@ -2890,6 +2930,8 @@ func (m *NotificationMutation) Field(name string) (ent.Value, bool) {
 		return m.ResourceID()
 	case notification.FieldNotified:
 		return m.Notified()
+	case notification.FieldChecked:
+		return m.Checked()
 	case notification.FieldCreatedAt:
 		return m.CreatedAt()
 	case notification.FieldUpdatedAt:
@@ -2911,6 +2953,8 @@ func (m *NotificationMutation) OldField(ctx context.Context, name string) (ent.V
 		return m.OldResourceID(ctx)
 	case notification.FieldNotified:
 		return m.OldNotified(ctx)
+	case notification.FieldChecked:
+		return m.OldChecked(ctx)
 	case notification.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case notification.FieldUpdatedAt:
@@ -2946,6 +2990,13 @@ func (m *NotificationMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetNotified(v)
+		return nil
+	case notification.FieldChecked:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetChecked(v)
 		return nil
 	case notification.FieldCreatedAt:
 		v, ok := value.(time.Time)
@@ -3040,6 +3091,9 @@ func (m *NotificationMutation) ResetField(name string) error {
 		return nil
 	case notification.FieldNotified:
 		m.ResetNotified()
+		return nil
+	case notification.FieldChecked:
+		m.ResetChecked()
 		return nil
 	case notification.FieldCreatedAt:
 		m.ResetCreatedAt()
