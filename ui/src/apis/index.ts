@@ -1,13 +1,13 @@
 import { sync } from "./sync"
-import { listRepos, searchRepo, updateRepo, activateRepo, deactivateRepo } from "./repos"
-import { listDeployments, createDeployment } from './deployments'
+import { listRepos, searchRepo, updateRepo, activateRepo, deactivateRepo } from "./repo"
+import { listDeployments, createDeployment } from './deployment'
 import { getConfig } from './config'
-import { listCommits, getCommit, listStatuses } from './commits'
-import { listBranches, getBranch } from './branchs'
-import { listTags, getTag } from './tags'
-import { getMe } from "./users"
+import { listCommits, getCommit, listStatuses } from './commit'
+import { listBranches, getBranch } from './branch'
+import { listTags, getTag } from './tag'
+import { getMe } from "./user"
 import { checkSlack } from "./chat"
-import { subscribeNotification } from "./notifications"
+import { subscribeNotification } from "./notification"
 
 export {
     sync,

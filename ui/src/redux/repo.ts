@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit'
 import { message } from "antd"
 
-import { searchRepo, activateRepo } from "../apis/repos"
+import { searchRepo, activateRepo } from "../apis/repo"
 import { Repo, RequestStatus } from "../models"
 import { HttpForbiddenError } from '../models/errors'
 

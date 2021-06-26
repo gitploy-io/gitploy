@@ -1,6 +1,6 @@
 import { StatusCodes } from 'http-status-codes'
 
-import { instance, headers } from './settings'
+import { instance, headers } from './setting'
 import { _fetch } from "./_base"
 import { Config, Env, HttpNotFoundError } from '../models'
 

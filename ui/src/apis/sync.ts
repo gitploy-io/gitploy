@@ -1,4 +1,4 @@
-import { instance, headers } from "./settings"
+import { instance, headers } from "./setting"
 import { _fetch } from "./_base"
 
 export const sync = async () => {
