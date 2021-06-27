@@ -98,17 +98,18 @@ func (i *Interactor) notifyDeploymentByChat(ctx context.Context, cu *ent.ChatUse
 func (i *Interactor) Publish(ctx context.Context, iface interface{}) error {
 	switch r := iface.(type) {
 	case *ent.Deployment:
-		return i.createDeploymentNotification(ctx, r)
+		return i.publishDeploymentNotification(ctx, r)
 	}
 
 	return fmt.Errorf("failed to notify")
 }
 
-// createDeploymentNotification enqueues notifications for the deployer.
-func (i *Interactor) createDeploymentNotification(ctx context.Context, d *ent.Deployment) error {
+// publishDeploymentNotification enqueues notifications for the deployer.
+func (i *Interactor) publishDeploymentNotification(ctx context.Context, d *ent.Deployment) error {
 	_, err := i.CreateNotification(ctx, &ent.Notification{
 		Type:         notification.TypeDeployment,
 		UserID:       d.UserID,
+		RepoID:       d.RepoID,
 		DeploymentID: d.ID,
 	})
 	return err

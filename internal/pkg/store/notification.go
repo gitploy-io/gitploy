@@ -14,6 +14,8 @@ func (s *Store) ListNotificationsWithEdges(ctx context.Context, u *ent.User, pag
 		Where(
 			notification.UserID(u.ID),
 		).
+		WithUser().
+		WithRepo().
 		WithDeployment().
 		Limit(perPage).
 		Offset(offset(page, perPage)).
@@ -27,6 +29,8 @@ func (s *Store) ListNotificationsWithEdgesFromTime(ctx context.Context, t time.T
 		Where(
 			notification.CreatedAtGTE(t),
 		).
+		WithUser().
+		WithRepo().
 		WithDeployment().
 		All(ctx)
 }
@@ -36,7 +40,8 @@ func (s *Store) CreateNotification(ctx context.Context, n *ent.Notification) (*e
 		Create().
 		SetType(n.Type).
 		SetNotified(n.Notified).
-		SetUserID(n.UserID)
+		SetUserID(n.UserID).
+		SetRepoID(n.RepoID)
 
 	if n.Type == notification.TypeDeployment {
 		nc = nc.SetDeploymentID(n.DeploymentID)
