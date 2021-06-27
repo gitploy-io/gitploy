@@ -5,36 +5,6 @@ import { _fetch } from "./_base"
 import { Deployment, DeploymentType, DeploymentStatus, HttpRequestError } from '../models'
 import { Deployer } from '../models/Deployment'
 
-const mapDeploymentType = (t: string) => {
-    switch (t) {
-        case "commit":
-            return DeploymentType.Commit
-        case "branch":
-            return DeploymentType.Branch
-        case "tag":
-            return DeploymentType.Tag
-        default:
-            return DeploymentType.Commit
-    }
-}
-
-const mapDeploymentStatus = (s: string) => {
-    switch (s) {
-        case "waiting":
-            return DeploymentStatus.Waiting
-        case "created":
-            return DeploymentStatus.Created
-        case "running":
-            return DeploymentStatus.Running
-        case "success":
-            return DeploymentStatus.Success
-        case "failure":
-            return DeploymentStatus.Failure
-        default:
-            return DeploymentStatus.Waiting
-    }
-}
-
 export const listDeployments = async (repoId: string, env: string, status: string, page: number, perPage: number) => {
     let deployments:Deployment[]
 
@@ -43,26 +13,7 @@ export const listDeployments = async (repoId: string, env: string, status: strin
         credentials: 'same-origin',
     })
         .then(response => response.json())
-        .then(ds => ds.map((d: any): Deployment => {
-            const u = d.edges.user
-            const user: Deployer = {
-                id: u.id,
-                login: u.login,
-                avatar: u.avatar
-            }
-            return {
-                id: d.id,
-                uid: d.uid? d.uid : "",
-                type: mapDeploymentType(d.type),
-                ref: d.ref,
-                sha: d.sha? d.sha : "",
-                env: d.env,
-                status: mapDeploymentStatus(d.status),
-                createdAt: new Date(d.created_at),
-                updatedAt: new Date(d.updatedAt),
-                deployer: user,
-            }
-        }))
+        .then(ds => ds.map((d: any): Deployment => mapDataToDeployment(d)))
 
     return deployments
 }
@@ -81,5 +32,62 @@ export const createDeployment = async (repoId: string, type: DeploymentType = De
     })
     if (response.status !== StatusCodes.CREATED) {
         throw new HttpRequestError(response.status, "It has failed to deploy.")
+    }
+}
+
+export function mapDataToDeployment(d: any) {
+    let user: Deployer | null
+    if ("user" in d.edges) {
+        const ud = d.edges.user
+        user = {
+            id: ud.id,
+            login: ud.login,
+            avatar: ud.avatar
+        }
+    } else {
+        user = null
+    }
+
+    return {
+        id: d.id,
+        uid: d.uid? d.uid : "",
+        type: mapDeploymentType(d.type),
+        ref: d.ref,
+        sha: d.sha? d.sha : "",
+        env: d.env,
+        status: mapDeploymentStatus(d.status),
+        createdAt: new Date(d.created_at),
+        updatedAt: new Date(d.updatedAt),
+        deployer: user,
+    }
+}
+
+function mapDeploymentType(t: string) {
+    switch (t) {
+        case "commit":
+            return DeploymentType.Commit
+        case "branch":
+            return DeploymentType.Branch
+        case "tag":
+            return DeploymentType.Tag
+        default:
+            return DeploymentType.Commit
+    }
+}
+
+function mapDeploymentStatus(s: string) {
+    switch (s) {
+        case "waiting":
+            return DeploymentStatus.Waiting
+        case "created":
+            return DeploymentStatus.Created
+        case "running":
+            return DeploymentStatus.Running
+        case "success":
+            return DeploymentStatus.Success
+        case "failure":
+            return DeploymentStatus.Failure
+        default:
+            return DeploymentStatus.Waiting
     }
 }
