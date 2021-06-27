@@ -119,6 +119,9 @@ function notify(n: NotificationData) {
 function convertToNotificationMessage(n: NotificationData): string {
     switch (n.type) {
         case NotificationType.Deployment:
-            return `New Deployment - #${n.resourceId}`
+            if (n.deployment === null) {
+                return `${n.repo.namespace}/${n.repo.name} - Deployed at now.`
+            }
+            return `${n.repo.namespace}/${n.repo.name} - Deployed to ${n.deployment.env} environment.`
     }
 }

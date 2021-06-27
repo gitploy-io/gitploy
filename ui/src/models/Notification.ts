@@ -1,4 +1,5 @@
 import Deployment from "./Deployment"
+import Repo from "./Repo"
 
 export default interface Notification {
     id: number,
@@ -6,6 +7,7 @@ export default interface Notification {
     notified: boolean,
     createdAt: Date,
     updatedAt: Date,
+    repo: Repo,
     deployment: Deployment | null,
 }
 
