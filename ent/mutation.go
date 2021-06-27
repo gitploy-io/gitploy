@@ -2571,8 +2571,6 @@ type NotificationMutation struct {
 	typ               string
 	id                *int
 	_type             *notification.Type
-	resource_id       *int
-	addresource_id    *int
 	notified          *bool
 	checked           *bool
 	created_at        *time.Time
@@ -2700,62 +2698,6 @@ func (m *NotificationMutation) OldType(ctx context.Context) (v notification.Type
 // ResetType resets all changes to the "type" field.
 func (m *NotificationMutation) ResetType() {
 	m._type = nil
-}
-
-// SetResourceID sets the "resource_id" field.
-func (m *NotificationMutation) SetResourceID(i int) {
-	m.resource_id = &i
-	m.addresource_id = nil
-}
-
-// ResourceID returns the value of the "resource_id" field in the mutation.
-func (m *NotificationMutation) ResourceID() (r int, exists bool) {
-	v := m.resource_id
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldResourceID returns the old "resource_id" field's value of the Notification entity.
-// If the Notification object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *NotificationMutation) OldResourceID(ctx context.Context) (v int, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, fmt.Errorf("OldResourceID is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, fmt.Errorf("OldResourceID requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldResourceID: %w", err)
-	}
-	return oldValue.ResourceID, nil
-}
-
-// AddResourceID adds i to the "resource_id" field.
-func (m *NotificationMutation) AddResourceID(i int) {
-	if m.addresource_id != nil {
-		*m.addresource_id += i
-	} else {
-		m.addresource_id = &i
-	}
-}
-
-// AddedResourceID returns the value that was added to the "resource_id" field in this mutation.
-func (m *NotificationMutation) AddedResourceID() (r int, exists bool) {
-	v := m.addresource_id
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// ResetResourceID resets all changes to the "resource_id" field.
-func (m *NotificationMutation) ResetResourceID() {
-	m.resource_id = nil
-	m.addresource_id = nil
 }
 
 // SetNotified sets the "notified" field.
@@ -3053,12 +2995,9 @@ func (m *NotificationMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *NotificationMutation) Fields() []string {
-	fields := make([]string, 0, 8)
+	fields := make([]string, 0, 7)
 	if m._type != nil {
 		fields = append(fields, notification.FieldType)
-	}
-	if m.resource_id != nil {
-		fields = append(fields, notification.FieldResourceID)
 	}
 	if m.notified != nil {
 		fields = append(fields, notification.FieldNotified)
@@ -3088,8 +3027,6 @@ func (m *NotificationMutation) Field(name string) (ent.Value, bool) {
 	switch name {
 	case notification.FieldType:
 		return m.GetType()
-	case notification.FieldResourceID:
-		return m.ResourceID()
 	case notification.FieldNotified:
 		return m.Notified()
 	case notification.FieldChecked:
@@ -3113,8 +3050,6 @@ func (m *NotificationMutation) OldField(ctx context.Context, name string) (ent.V
 	switch name {
 	case notification.FieldType:
 		return m.OldType(ctx)
-	case notification.FieldResourceID:
-		return m.OldResourceID(ctx)
 	case notification.FieldNotified:
 		return m.OldNotified(ctx)
 	case notification.FieldChecked:
@@ -3142,13 +3077,6 @@ func (m *NotificationMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetType(v)
-		return nil
-	case notification.FieldResourceID:
-		v, ok := value.(int)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetResourceID(v)
 		return nil
 	case notification.FieldNotified:
 		v, ok := value.(bool)
@@ -3200,9 +3128,6 @@ func (m *NotificationMutation) SetField(name string, value ent.Value) error {
 // this mutation.
 func (m *NotificationMutation) AddedFields() []string {
 	var fields []string
-	if m.addresource_id != nil {
-		fields = append(fields, notification.FieldResourceID)
-	}
 	return fields
 }
 
@@ -3211,8 +3136,6 @@ func (m *NotificationMutation) AddedFields() []string {
 // was not set, or was not defined in the schema.
 func (m *NotificationMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
-	case notification.FieldResourceID:
-		return m.AddedResourceID()
 	}
 	return nil, false
 }
@@ -3222,13 +3145,6 @@ func (m *NotificationMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *NotificationMutation) AddField(name string, value ent.Value) error {
 	switch name {
-	case notification.FieldResourceID:
-		v, ok := value.(int)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddResourceID(v)
-		return nil
 	}
 	return fmt.Errorf("unknown Notification numeric field %s", name)
 }
@@ -3267,9 +3183,6 @@ func (m *NotificationMutation) ResetField(name string) error {
 	switch name {
 	case notification.FieldType:
 		m.ResetType()
-		return nil
-	case notification.FieldResourceID:
-		m.ResetResourceID()
 		return nil
 	case notification.FieldNotified:
 		m.ResetNotified()

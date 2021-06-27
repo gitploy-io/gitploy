@@ -36,12 +36,6 @@ func (nc *NotificationCreate) SetNillableType(n *notification.Type) *Notificatio
 	return nc
 }
 
-// SetResourceID sets the "resource_id" field.
-func (nc *NotificationCreate) SetResourceID(i int) *NotificationCreate {
-	nc.mutation.SetResourceID(i)
-	return nc
-}
-
 // SetNotified sets the "notified" field.
 func (nc *NotificationCreate) SetNotified(b bool) *NotificationCreate {
 	nc.mutation.SetNotified(b)
@@ -212,9 +206,6 @@ func (nc *NotificationCreate) check() error {
 			return &ValidationError{Name: "type", err: fmt.Errorf("ent: validator failed for field \"type\": %w", err)}
 		}
 	}
-	if _, ok := nc.mutation.ResourceID(); !ok {
-		return &ValidationError{Name: "resource_id", err: errors.New("ent: missing required field \"resource_id\"")}
-	}
 	if _, ok := nc.mutation.Notified(); !ok {
 		return &ValidationError{Name: "notified", err: errors.New("ent: missing required field \"notified\"")}
 	}
@@ -267,14 +258,6 @@ func (nc *NotificationCreate) createSpec() (*Notification, *sqlgraph.CreateSpec)
 			Column: notification.FieldType,
 		})
 		_node.Type = value
-	}
-	if value, ok := nc.mutation.ResourceID(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: notification.FieldResourceID,
-		})
-		_node.ResourceID = value
 	}
 	if value, ok := nc.mutation.Notified(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

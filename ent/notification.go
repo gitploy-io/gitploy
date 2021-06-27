@@ -20,8 +20,6 @@ type Notification struct {
 	ID int `json:"id,omitempty"`
 	// Type holds the value of the "type" field.
 	Type notification.Type `json:"type,omitempty"`
-	// ResourceID holds the value of the "resource_id" field.
-	ResourceID int `json:"resource_id,omitempty"`
 	// Notified holds the value of the "notified" field.
 	Notified bool `json:"notified,omitempty"`
 	// Checked holds the value of the "checked" field.
@@ -85,7 +83,7 @@ func (*Notification) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case notification.FieldNotified, notification.FieldChecked:
 			values[i] = new(sql.NullBool)
-		case notification.FieldID, notification.FieldResourceID, notification.FieldDeploymentID:
+		case notification.FieldID, notification.FieldDeploymentID:
 			values[i] = new(sql.NullInt64)
 		case notification.FieldType, notification.FieldUserID:
 			values[i] = new(sql.NullString)
@@ -117,12 +115,6 @@ func (n *Notification) assignValues(columns []string, values []interface{}) erro
 				return fmt.Errorf("unexpected type %T for field type", values[i])
 			} else if value.Valid {
 				n.Type = notification.Type(value.String)
-			}
-		case notification.FieldResourceID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field resource_id", values[i])
-			} else if value.Valid {
-				n.ResourceID = int(value.Int64)
 			}
 		case notification.FieldNotified:
 			if value, ok := values[i].(*sql.NullBool); !ok {
@@ -200,8 +192,6 @@ func (n *Notification) String() string {
 	builder.WriteString(fmt.Sprintf("id=%v", n.ID))
 	builder.WriteString(", type=")
 	builder.WriteString(fmt.Sprintf("%v", n.Type))
-	builder.WriteString(", resource_id=")
-	builder.WriteString(fmt.Sprintf("%v", n.ResourceID))
 	builder.WriteString(", notified=")
 	builder.WriteString(fmt.Sprintf("%v", n.Notified))
 	builder.WriteString(", checked=")

@@ -93,13 +93,6 @@ func IDLTE(id int) predicate.Notification {
 	})
 }
 
-// ResourceID applies equality check predicate on the "resource_id" field. It's identical to ResourceIDEQ.
-func ResourceID(v int) predicate.Notification {
-	return predicate.Notification(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldResourceID), v))
-	})
-}
-
 // Notified applies equality check predicate on the "notified" field. It's identical to NotifiedEQ.
 func Notified(v bool) predicate.Notification {
 	return predicate.Notification(func(s *sql.Selector) {
@@ -187,82 +180,6 @@ func TypeNotIn(vs ...Type) predicate.Notification {
 			return
 		}
 		s.Where(sql.NotIn(s.C(FieldType), v...))
-	})
-}
-
-// ResourceIDEQ applies the EQ predicate on the "resource_id" field.
-func ResourceIDEQ(v int) predicate.Notification {
-	return predicate.Notification(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldResourceID), v))
-	})
-}
-
-// ResourceIDNEQ applies the NEQ predicate on the "resource_id" field.
-func ResourceIDNEQ(v int) predicate.Notification {
-	return predicate.Notification(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldResourceID), v))
-	})
-}
-
-// ResourceIDIn applies the In predicate on the "resource_id" field.
-func ResourceIDIn(vs ...int) predicate.Notification {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Notification(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.In(s.C(FieldResourceID), v...))
-	})
-}
-
-// ResourceIDNotIn applies the NotIn predicate on the "resource_id" field.
-func ResourceIDNotIn(vs ...int) predicate.Notification {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Notification(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.NotIn(s.C(FieldResourceID), v...))
-	})
-}
-
-// ResourceIDGT applies the GT predicate on the "resource_id" field.
-func ResourceIDGT(v int) predicate.Notification {
-	return predicate.Notification(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldResourceID), v))
-	})
-}
-
-// ResourceIDGTE applies the GTE predicate on the "resource_id" field.
-func ResourceIDGTE(v int) predicate.Notification {
-	return predicate.Notification(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldResourceID), v))
-	})
-}
-
-// ResourceIDLT applies the LT predicate on the "resource_id" field.
-func ResourceIDLT(v int) predicate.Notification {
-	return predicate.Notification(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldResourceID), v))
-	})
-}
-
-// ResourceIDLTE applies the LTE predicate on the "resource_id" field.
-func ResourceIDLTE(v int) predicate.Notification {
-	return predicate.Notification(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldResourceID), v))
 	})
 }
 

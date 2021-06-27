@@ -14,8 +14,6 @@ const (
 	FieldID = "id"
 	// FieldType holds the string denoting the type field in the database.
 	FieldType = "type"
-	// FieldResourceID holds the string denoting the resource_id field in the database.
-	FieldResourceID = "resource_id"
 	// FieldNotified holds the string denoting the notified field in the database.
 	FieldNotified = "notified"
 	// FieldChecked holds the string denoting the checked field in the database.
@@ -54,7 +52,6 @@ const (
 var Columns = []string{
 	FieldID,
 	FieldType,
-	FieldResourceID,
 	FieldNotified,
 	FieldChecked,
 	FieldCreatedAt,

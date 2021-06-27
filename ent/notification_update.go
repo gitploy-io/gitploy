@@ -44,19 +44,6 @@ func (nu *NotificationUpdate) SetNillableType(n *notification.Type) *Notificatio
 	return nu
 }
 
-// SetResourceID sets the "resource_id" field.
-func (nu *NotificationUpdate) SetResourceID(i int) *NotificationUpdate {
-	nu.mutation.ResetResourceID()
-	nu.mutation.SetResourceID(i)
-	return nu
-}
-
-// AddResourceID adds i to the "resource_id" field.
-func (nu *NotificationUpdate) AddResourceID(i int) *NotificationUpdate {
-	nu.mutation.AddResourceID(i)
-	return nu
-}
-
 // SetNotified sets the "notified" field.
 func (nu *NotificationUpdate) SetNotified(b bool) *NotificationUpdate {
 	nu.mutation.SetNotified(b)
@@ -263,20 +250,6 @@ func (nu *NotificationUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: notification.FieldType,
 		})
 	}
-	if value, ok := nu.mutation.ResourceID(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: notification.FieldResourceID,
-		})
-	}
-	if value, ok := nu.mutation.AddedResourceID(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: notification.FieldResourceID,
-		})
-	}
 	if value, ok := nu.mutation.Notified(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeBool,
@@ -405,19 +378,6 @@ func (nuo *NotificationUpdateOne) SetNillableType(n *notification.Type) *Notific
 	if n != nil {
 		nuo.SetType(*n)
 	}
-	return nuo
-}
-
-// SetResourceID sets the "resource_id" field.
-func (nuo *NotificationUpdateOne) SetResourceID(i int) *NotificationUpdateOne {
-	nuo.mutation.ResetResourceID()
-	nuo.mutation.SetResourceID(i)
-	return nuo
-}
-
-// AddResourceID adds i to the "resource_id" field.
-func (nuo *NotificationUpdateOne) AddResourceID(i int) *NotificationUpdateOne {
-	nuo.mutation.AddResourceID(i)
 	return nuo
 }
 
@@ -649,20 +609,6 @@ func (nuo *NotificationUpdateOne) sqlSave(ctx context.Context) (_node *Notificat
 			Type:   field.TypeEnum,
 			Value:  value,
 			Column: notification.FieldType,
-		})
-	}
-	if value, ok := nuo.mutation.ResourceID(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: notification.FieldResourceID,
-		})
-	}
-	if value, ok := nuo.mutation.AddedResourceID(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: notification.FieldResourceID,
 		})
 	}
 	if value, ok := nuo.mutation.Notified(); ok {
