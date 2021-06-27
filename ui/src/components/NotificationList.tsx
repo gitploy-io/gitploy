@@ -16,15 +16,22 @@ export default function NotificationList(props: NotificationListProps) {
             renderItem={(n, idx) => {
                 return (<List.Item key={idx} style={(!n.checked)? uncheckedStyle : {}}>
                         <List.Item.Meta 
-                            title={<a href="/" onClick={() => {props.onClickNotificaiton(n)}}>
-                                New Deployment <br/> 
-                                </a>
-                            }
+                            title={<a href="/" 
+                                onClick={() => {props.onClickNotificaiton(n)}}>
+                                    {convertToNotificationTitle(n)} 
+                                </a>}
                             />
                         {convertToNotificationMessage(n)}
                     </List.Item>)
             }}>
         </List>)
+}
+
+function convertToNotificationTitle(n: Notification): string {
+    switch (n.type) {
+        case NotificationType.Deployment:
+            return `New Deployment #${n.id}`
+    }
 }
 
 function convertToNotificationMessage(n: Notification): string {
