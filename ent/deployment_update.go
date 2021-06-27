@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/hanjunlee/gitploy/ent/deployment"
+	"github.com/hanjunlee/gitploy/ent/notification"
 	"github.com/hanjunlee/gitploy/ent/predicate"
 	"github.com/hanjunlee/gitploy/ent/repo"
 	"github.com/hanjunlee/gitploy/ent/user"
@@ -159,6 +160,21 @@ func (du *DeploymentUpdate) SetRepo(r *Repo) *DeploymentUpdate {
 	return du.SetRepoID(r.ID)
 }
 
+// AddNotificationIDs adds the "notifications" edge to the Notification entity by IDs.
+func (du *DeploymentUpdate) AddNotificationIDs(ids ...int) *DeploymentUpdate {
+	du.mutation.AddNotificationIDs(ids...)
+	return du
+}
+
+// AddNotifications adds the "notifications" edges to the Notification entity.
+func (du *DeploymentUpdate) AddNotifications(n ...*Notification) *DeploymentUpdate {
+	ids := make([]int, len(n))
+	for i := range n {
+		ids[i] = n[i].ID
+	}
+	return du.AddNotificationIDs(ids...)
+}
+
 // Mutation returns the DeploymentMutation object of the builder.
 func (du *DeploymentUpdate) Mutation() *DeploymentMutation {
 	return du.mutation
@@ -174,6 +190,27 @@ func (du *DeploymentUpdate) ClearUser() *DeploymentUpdate {
 func (du *DeploymentUpdate) ClearRepo() *DeploymentUpdate {
 	du.mutation.ClearRepo()
 	return du
+}
+
+// ClearNotifications clears all "notifications" edges to the Notification entity.
+func (du *DeploymentUpdate) ClearNotifications() *DeploymentUpdate {
+	du.mutation.ClearNotifications()
+	return du
+}
+
+// RemoveNotificationIDs removes the "notifications" edge to Notification entities by IDs.
+func (du *DeploymentUpdate) RemoveNotificationIDs(ids ...int) *DeploymentUpdate {
+	du.mutation.RemoveNotificationIDs(ids...)
+	return du
+}
+
+// RemoveNotifications removes "notifications" edges to Notification entities.
+func (du *DeploymentUpdate) RemoveNotifications(n ...*Notification) *DeploymentUpdate {
+	ids := make([]int, len(n))
+	for i := range n {
+		ids[i] = n[i].ID
+	}
+	return du.RemoveNotificationIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -426,6 +463,60 @@ func (du *DeploymentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if du.mutation.NotificationsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   deployment.NotificationsTable,
+			Columns: []string{deployment.NotificationsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: notification.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := du.mutation.RemovedNotificationsIDs(); len(nodes) > 0 && !du.mutation.NotificationsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   deployment.NotificationsTable,
+			Columns: []string{deployment.NotificationsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: notification.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := du.mutation.NotificationsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   deployment.NotificationsTable,
+			Columns: []string{deployment.NotificationsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: notification.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, du.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{deployment.Label}
@@ -574,6 +665,21 @@ func (duo *DeploymentUpdateOne) SetRepo(r *Repo) *DeploymentUpdateOne {
 	return duo.SetRepoID(r.ID)
 }
 
+// AddNotificationIDs adds the "notifications" edge to the Notification entity by IDs.
+func (duo *DeploymentUpdateOne) AddNotificationIDs(ids ...int) *DeploymentUpdateOne {
+	duo.mutation.AddNotificationIDs(ids...)
+	return duo
+}
+
+// AddNotifications adds the "notifications" edges to the Notification entity.
+func (duo *DeploymentUpdateOne) AddNotifications(n ...*Notification) *DeploymentUpdateOne {
+	ids := make([]int, len(n))
+	for i := range n {
+		ids[i] = n[i].ID
+	}
+	return duo.AddNotificationIDs(ids...)
+}
+
 // Mutation returns the DeploymentMutation object of the builder.
 func (duo *DeploymentUpdateOne) Mutation() *DeploymentMutation {
 	return duo.mutation
@@ -589,6 +695,27 @@ func (duo *DeploymentUpdateOne) ClearUser() *DeploymentUpdateOne {
 func (duo *DeploymentUpdateOne) ClearRepo() *DeploymentUpdateOne {
 	duo.mutation.ClearRepo()
 	return duo
+}
+
+// ClearNotifications clears all "notifications" edges to the Notification entity.
+func (duo *DeploymentUpdateOne) ClearNotifications() *DeploymentUpdateOne {
+	duo.mutation.ClearNotifications()
+	return duo
+}
+
+// RemoveNotificationIDs removes the "notifications" edge to Notification entities by IDs.
+func (duo *DeploymentUpdateOne) RemoveNotificationIDs(ids ...int) *DeploymentUpdateOne {
+	duo.mutation.RemoveNotificationIDs(ids...)
+	return duo
+}
+
+// RemoveNotifications removes "notifications" edges to Notification entities.
+func (duo *DeploymentUpdateOne) RemoveNotifications(n ...*Notification) *DeploymentUpdateOne {
+	ids := make([]int, len(n))
+	for i := range n {
+		ids[i] = n[i].ID
+	}
+	return duo.RemoveNotificationIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -857,6 +984,60 @@ func (duo *DeploymentUpdateOne) sqlSave(ctx context.Context) (_node *Deployment,
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: repo.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if duo.mutation.NotificationsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   deployment.NotificationsTable,
+			Columns: []string{deployment.NotificationsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: notification.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := duo.mutation.RemovedNotificationsIDs(); len(nodes) > 0 && !duo.mutation.NotificationsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   deployment.NotificationsTable,
+			Columns: []string{deployment.NotificationsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: notification.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := duo.mutation.NotificationsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   deployment.NotificationsTable,
+			Columns: []string{deployment.NotificationsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: notification.FieldID,
 				},
 			},
 		}

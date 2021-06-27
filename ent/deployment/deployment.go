@@ -36,6 +36,8 @@ const (
 	EdgeUser = "user"
 	// EdgeRepo holds the string denoting the repo edge name in mutations.
 	EdgeRepo = "repo"
+	// EdgeNotifications holds the string denoting the notifications edge name in mutations.
+	EdgeNotifications = "notifications"
 	// Table holds the table name of the deployment in the database.
 	Table = "deployments"
 	// UserTable is the table the holds the user relation/edge.
@@ -52,6 +54,13 @@ const (
 	RepoInverseTable = "repos"
 	// RepoColumn is the table column denoting the repo relation/edge.
 	RepoColumn = "repo_id"
+	// NotificationsTable is the table the holds the notifications relation/edge.
+	NotificationsTable = "notifications"
+	// NotificationsInverseTable is the table name for the Notification entity.
+	// It exists in this package in order to avoid circular dependency with the "notification" package.
+	NotificationsInverseTable = "notifications"
+	// NotificationsColumn is the table column denoting the notifications relation/edge.
+	NotificationsColumn = "deployment_id"
 )
 
 // Columns holds all SQL columns for deployment fields.

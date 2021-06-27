@@ -14,8 +14,6 @@ const (
 	FieldID = "id"
 	// FieldType holds the string denoting the type field in the database.
 	FieldType = "type"
-	// FieldResourceID holds the string denoting the resource_id field in the database.
-	FieldResourceID = "resource_id"
 	// FieldNotified holds the string denoting the notified field in the database.
 	FieldNotified = "notified"
 	// FieldChecked holds the string denoting the checked field in the database.
@@ -26,8 +24,12 @@ const (
 	FieldUpdatedAt = "updated_at"
 	// FieldUserID holds the string denoting the user_id field in the database.
 	FieldUserID = "user_id"
+	// FieldDeploymentID holds the string denoting the deployment_id field in the database.
+	FieldDeploymentID = "deployment_id"
 	// EdgeUser holds the string denoting the user edge name in mutations.
 	EdgeUser = "user"
+	// EdgeDeployment holds the string denoting the deployment edge name in mutations.
+	EdgeDeployment = "deployment"
 	// Table holds the table name of the notification in the database.
 	Table = "notifications"
 	// UserTable is the table the holds the user relation/edge.
@@ -37,18 +39,25 @@ const (
 	UserInverseTable = "users"
 	// UserColumn is the table column denoting the user relation/edge.
 	UserColumn = "user_id"
+	// DeploymentTable is the table the holds the deployment relation/edge.
+	DeploymentTable = "notifications"
+	// DeploymentInverseTable is the table name for the Deployment entity.
+	// It exists in this package in order to avoid circular dependency with the "deployment" package.
+	DeploymentInverseTable = "deployments"
+	// DeploymentColumn is the table column denoting the deployment relation/edge.
+	DeploymentColumn = "deployment_id"
 )
 
 // Columns holds all SQL columns for notification fields.
 var Columns = []string{
 	FieldID,
 	FieldType,
-	FieldResourceID,
 	FieldNotified,
 	FieldChecked,
 	FieldCreatedAt,
 	FieldUpdatedAt,
 	FieldUserID,
+	FieldDeploymentID,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).

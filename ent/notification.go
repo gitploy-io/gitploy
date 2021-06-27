@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+	"github.com/hanjunlee/gitploy/ent/deployment"
 	"github.com/hanjunlee/gitploy/ent/notification"
 	"github.com/hanjunlee/gitploy/ent/user"
 )
@@ -19,8 +20,6 @@ type Notification struct {
 	ID int `json:"id,omitempty"`
 	// Type holds the value of the "type" field.
 	Type notification.Type `json:"type,omitempty"`
-	// ResourceID holds the value of the "resource_id" field.
-	ResourceID int `json:"resource_id,omitempty"`
 	// Notified holds the value of the "notified" field.
 	Notified bool `json:"notified,omitempty"`
 	// Checked holds the value of the "checked" field.
@@ -31,6 +30,8 @@ type Notification struct {
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// UserID holds the value of the "user_id" field.
 	UserID string `json:"user_id,omitempty"`
+	// DeploymentID holds the value of the "deployment_id" field.
+	DeploymentID int `json:"deployment_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the NotificationQuery when eager-loading is set.
 	Edges NotificationEdges `json:"edges"`
@@ -40,9 +41,11 @@ type Notification struct {
 type NotificationEdges struct {
 	// User holds the value of the user edge.
 	User *User `json:"user,omitempty"`
+	// Deployment holds the value of the deployment edge.
+	Deployment *Deployment `json:"deployment,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [1]bool
+	loadedTypes [2]bool
 }
 
 // UserOrErr returns the User value or an error if the edge
@@ -59,6 +62,20 @@ func (e NotificationEdges) UserOrErr() (*User, error) {
 	return nil, &NotLoadedError{edge: "user"}
 }
 
+// DeploymentOrErr returns the Deployment value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e NotificationEdges) DeploymentOrErr() (*Deployment, error) {
+	if e.loadedTypes[1] {
+		if e.Deployment == nil {
+			// The edge deployment was loaded in eager-loading,
+			// but was not found.
+			return nil, &NotFoundError{label: deployment.Label}
+		}
+		return e.Deployment, nil
+	}
+	return nil, &NotLoadedError{edge: "deployment"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*Notification) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
@@ -66,7 +83,7 @@ func (*Notification) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case notification.FieldNotified, notification.FieldChecked:
 			values[i] = new(sql.NullBool)
-		case notification.FieldID, notification.FieldResourceID:
+		case notification.FieldID, notification.FieldDeploymentID:
 			values[i] = new(sql.NullInt64)
 		case notification.FieldType, notification.FieldUserID:
 			values[i] = new(sql.NullString)
@@ -99,12 +116,6 @@ func (n *Notification) assignValues(columns []string, values []interface{}) erro
 			} else if value.Valid {
 				n.Type = notification.Type(value.String)
 			}
-		case notification.FieldResourceID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field resource_id", values[i])
-			} else if value.Valid {
-				n.ResourceID = int(value.Int64)
-			}
 		case notification.FieldNotified:
 			if value, ok := values[i].(*sql.NullBool); !ok {
 				return fmt.Errorf("unexpected type %T for field notified", values[i])
@@ -135,6 +146,12 @@ func (n *Notification) assignValues(columns []string, values []interface{}) erro
 			} else if value.Valid {
 				n.UserID = value.String
 			}
+		case notification.FieldDeploymentID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field deployment_id", values[i])
+			} else if value.Valid {
+				n.DeploymentID = int(value.Int64)
+			}
 		}
 	}
 	return nil
@@ -143,6 +160,11 @@ func (n *Notification) assignValues(columns []string, values []interface{}) erro
 // QueryUser queries the "user" edge of the Notification entity.
 func (n *Notification) QueryUser() *UserQuery {
 	return (&NotificationClient{config: n.config}).QueryUser(n)
+}
+
+// QueryDeployment queries the "deployment" edge of the Notification entity.
+func (n *Notification) QueryDeployment() *DeploymentQuery {
+	return (&NotificationClient{config: n.config}).QueryDeployment(n)
 }
 
 // Update returns a builder for updating this Notification.
@@ -170,8 +192,6 @@ func (n *Notification) String() string {
 	builder.WriteString(fmt.Sprintf("id=%v", n.ID))
 	builder.WriteString(", type=")
 	builder.WriteString(fmt.Sprintf("%v", n.Type))
-	builder.WriteString(", resource_id=")
-	builder.WriteString(fmt.Sprintf("%v", n.ResourceID))
 	builder.WriteString(", notified=")
 	builder.WriteString(fmt.Sprintf("%v", n.Notified))
 	builder.WriteString(", checked=")
@@ -182,6 +202,8 @@ func (n *Notification) String() string {
 	builder.WriteString(n.UpdatedAt.Format(time.ANSIC))
 	builder.WriteString(", user_id=")
 	builder.WriteString(n.UserID)
+	builder.WriteString(", deployment_id=")
+	builder.WriteString(fmt.Sprintf("%v", n.DeploymentID))
 	builder.WriteByte(')')
 	return builder.String()
 }

@@ -43,11 +43,11 @@ type (
 		FindChatCallbackWithEdgesByID(ctx context.Context, id string) (*ent.ChatCallback, error)
 		CloseChatCallback(ctx context.Context, cb *ent.ChatCallback) (*ent.ChatCallback, error)
 
-		ListNotifications(ctx context.Context, u *ent.User, page, perPage int) ([]*ent.Notification, error)
-		ListNotificationsFromTime(ctx context.Context, t time.Time) ([]*ent.Notification, error)
+		ListNotificationsWithEdges(ctx context.Context, u *ent.User, page, perPage int) ([]*ent.Notification, error)
+		ListNotificationsWithEdgesFromTime(ctx context.Context, t time.Time) ([]*ent.Notification, error)
 		FindNotificationByID(ctx context.Context, id int) (*ent.Notification, error)
 		CreateNotification(ctx context.Context, n *ent.Notification) (*ent.Notification, error)
-		SetNotificationDone(ctx context.Context, n *ent.Notification) (*ent.Notification, error)
+		SetNotificationNotified(ctx context.Context, n *ent.Notification) (*ent.Notification, error)
 		SetNotificationChecked(ctx context.Context, n *ent.Notification) (*ent.Notification, error)
 	}
 

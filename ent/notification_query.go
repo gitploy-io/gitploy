@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/hanjunlee/gitploy/ent/deployment"
 	"github.com/hanjunlee/gitploy/ent/notification"
 	"github.com/hanjunlee/gitploy/ent/predicate"
 	"github.com/hanjunlee/gitploy/ent/user"
@@ -26,7 +27,8 @@ type NotificationQuery struct {
 	fields     []string
 	predicates []predicate.Notification
 	// eager-loading edges.
-	withUser *UserQuery
+	withUser       *UserQuery
+	withDeployment *DeploymentQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -78,6 +80,28 @@ func (nq *NotificationQuery) QueryUser() *UserQuery {
 			sqlgraph.From(notification.Table, notification.FieldID, selector),
 			sqlgraph.To(user.Table, user.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, notification.UserTable, notification.UserColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(nq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryDeployment chains the current query on the "deployment" edge.
+func (nq *NotificationQuery) QueryDeployment() *DeploymentQuery {
+	query := &DeploymentQuery{config: nq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := nq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := nq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(notification.Table, notification.FieldID, selector),
+			sqlgraph.To(deployment.Table, deployment.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, notification.DeploymentTable, notification.DeploymentColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(nq.driver.Dialect(), step)
 		return fromU, nil
@@ -261,12 +285,13 @@ func (nq *NotificationQuery) Clone() *NotificationQuery {
 		return nil
 	}
 	return &NotificationQuery{
-		config:     nq.config,
-		limit:      nq.limit,
-		offset:     nq.offset,
-		order:      append([]OrderFunc{}, nq.order...),
-		predicates: append([]predicate.Notification{}, nq.predicates...),
-		withUser:   nq.withUser.Clone(),
+		config:         nq.config,
+		limit:          nq.limit,
+		offset:         nq.offset,
+		order:          append([]OrderFunc{}, nq.order...),
+		predicates:     append([]predicate.Notification{}, nq.predicates...),
+		withUser:       nq.withUser.Clone(),
+		withDeployment: nq.withDeployment.Clone(),
 		// clone intermediate query.
 		sql:  nq.sql.Clone(),
 		path: nq.path,
@@ -281,6 +306,17 @@ func (nq *NotificationQuery) WithUser(opts ...func(*UserQuery)) *NotificationQue
 		opt(query)
 	}
 	nq.withUser = query
+	return nq
+}
+
+// WithDeployment tells the query-builder to eager-load the nodes that are connected to
+// the "deployment" edge. The optional arguments are used to configure the query builder of the edge.
+func (nq *NotificationQuery) WithDeployment(opts ...func(*DeploymentQuery)) *NotificationQuery {
+	query := &DeploymentQuery{config: nq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	nq.withDeployment = query
 	return nq
 }
 
@@ -349,8 +385,9 @@ func (nq *NotificationQuery) sqlAll(ctx context.Context) ([]*Notification, error
 	var (
 		nodes       = []*Notification{}
 		_spec       = nq.querySpec()
-		loadedTypes = [1]bool{
+		loadedTypes = [2]bool{
 			nq.withUser != nil,
+			nq.withDeployment != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -395,6 +432,32 @@ func (nq *NotificationQuery) sqlAll(ctx context.Context) ([]*Notification, error
 			}
 			for i := range nodes {
 				nodes[i].Edges.User = n
+			}
+		}
+	}
+
+	if query := nq.withDeployment; query != nil {
+		ids := make([]int, 0, len(nodes))
+		nodeids := make(map[int][]*Notification)
+		for i := range nodes {
+			fk := nodes[i].DeploymentID
+			if _, ok := nodeids[fk]; !ok {
+				ids = append(ids, fk)
+			}
+			nodeids[fk] = append(nodeids[fk], nodes[i])
+		}
+		query.Where(deployment.IDIn(ids...))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			nodes, ok := nodeids[n.ID]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "deployment_id" returned %v`, n.ID)
+			}
+			for i := range nodes {
+				nodes[i].Edges.Deployment = n
 			}
 		}
 	}

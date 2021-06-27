@@ -39,7 +39,7 @@ L:
 				break L
 			}
 		case t := <-ticker.C:
-			ns, err := i.ListNotificationsFromTime(ctx, t.Add(-time.Second*4))
+			ns, err := i.ListNotificationsWithEdgesFromTime(ctx, t.Add(-time.Second*4))
 			if err != nil {
 				log.Error("failed to read notifications.", zap.Error(err))
 				continue
@@ -68,11 +68,11 @@ func (i *Interactor) publish(ctx context.Context, n *ent.Notification) error {
 
 	if cu := u.Edges.ChatUser; cu != nil {
 		i.events.Publish(eventChat, cu, n)
-		n, _ = i.SetNotificationDone(ctx, n)
+		n, _ = i.SetNotificationNotified(ctx, n)
 	}
 
 	i.events.Publish(eventStream, u, n)
-	i.SetNotificationDone(ctx, n)
+	i.SetNotificationNotified(ctx, n)
 	return nil
 }
 
@@ -86,7 +86,7 @@ func (i *Interactor) notifyByChat(ctx context.Context, cu *ent.ChatUser, n *ent.
 }
 
 func (i *Interactor) notifyDeploymentByChat(ctx context.Context, cu *ent.ChatUser, n *ent.Notification) error {
-	d, err := i.FindDeploymentWithEdgesByID(ctx, n.ID)
+	d, err := i.FindDeploymentWithEdgesByID(ctx, n.DeploymentID)
 	if err != nil {
 		return err
 	}
@@ -107,10 +107,9 @@ func (i *Interactor) Publish(ctx context.Context, iface interface{}) error {
 // createDeploymentNotification enqueues notifications for the deployer.
 func (i *Interactor) createDeploymentNotification(ctx context.Context, d *ent.Deployment) error {
 	_, err := i.CreateNotification(ctx, &ent.Notification{
-		Type:       notification.TypeDeployment,
-		ResourceID: d.ID,
-		Notified:   false,
-		UserID:     d.UserID,
+		Type:         notification.TypeDeployment,
+		UserID:       d.UserID,
+		DeploymentID: d.ID,
 	})
 	return err
 }

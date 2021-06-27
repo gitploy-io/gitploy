@@ -10,6 +10,7 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/hanjunlee/gitploy/ent/deployment"
 	"github.com/hanjunlee/gitploy/ent/notification"
 	"github.com/hanjunlee/gitploy/ent/user"
 )
@@ -32,12 +33,6 @@ func (nc *NotificationCreate) SetNillableType(n *notification.Type) *Notificatio
 	if n != nil {
 		nc.SetType(*n)
 	}
-	return nc
-}
-
-// SetResourceID sets the "resource_id" field.
-func (nc *NotificationCreate) SetResourceID(i int) *NotificationCreate {
-	nc.mutation.SetResourceID(i)
 	return nc
 }
 
@@ -103,9 +98,28 @@ func (nc *NotificationCreate) SetUserID(s string) *NotificationCreate {
 	return nc
 }
 
+// SetDeploymentID sets the "deployment_id" field.
+func (nc *NotificationCreate) SetDeploymentID(i int) *NotificationCreate {
+	nc.mutation.SetDeploymentID(i)
+	return nc
+}
+
+// SetNillableDeploymentID sets the "deployment_id" field if the given value is not nil.
+func (nc *NotificationCreate) SetNillableDeploymentID(i *int) *NotificationCreate {
+	if i != nil {
+		nc.SetDeploymentID(*i)
+	}
+	return nc
+}
+
 // SetUser sets the "user" edge to the User entity.
 func (nc *NotificationCreate) SetUser(u *User) *NotificationCreate {
 	return nc.SetUserID(u.ID)
+}
+
+// SetDeployment sets the "deployment" edge to the Deployment entity.
+func (nc *NotificationCreate) SetDeployment(d *Deployment) *NotificationCreate {
+	return nc.SetDeploymentID(d.ID)
 }
 
 // Mutation returns the NotificationMutation object of the builder.
@@ -192,9 +206,6 @@ func (nc *NotificationCreate) check() error {
 			return &ValidationError{Name: "type", err: fmt.Errorf("ent: validator failed for field \"type\": %w", err)}
 		}
 	}
-	if _, ok := nc.mutation.ResourceID(); !ok {
-		return &ValidationError{Name: "resource_id", err: errors.New("ent: missing required field \"resource_id\"")}
-	}
 	if _, ok := nc.mutation.Notified(); !ok {
 		return &ValidationError{Name: "notified", err: errors.New("ent: missing required field \"notified\"")}
 	}
@@ -248,14 +259,6 @@ func (nc *NotificationCreate) createSpec() (*Notification, *sqlgraph.CreateSpec)
 		})
 		_node.Type = value
 	}
-	if value, ok := nc.mutation.ResourceID(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: notification.FieldResourceID,
-		})
-		_node.ResourceID = value
-	}
 	if value, ok := nc.mutation.Notified(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeBool,
@@ -306,6 +309,26 @@ func (nc *NotificationCreate) createSpec() (*Notification, *sqlgraph.CreateSpec)
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.UserID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := nc.mutation.DeploymentIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   notification.DeploymentTable,
+			Columns: []string{notification.DeploymentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: deployment.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.DeploymentID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

@@ -8,42 +8,48 @@ import (
 	"github.com/hanjunlee/gitploy/ent/notification"
 )
 
-func (s *Store) ListNotificationsFromTime(ctx context.Context, t time.Time) ([]*ent.Notification, error) {
-	return s.c.Notification.
-		Query().
-		Where(
-			notification.CreatedAtGTE(t),
-		).
-		All(ctx)
-}
-
-func (s *Store) CreateNotification(ctx context.Context, n *ent.Notification) (*ent.Notification, error) {
-	return s.c.Notification.
-		Create().
-		SetType(n.Type).
-		SetResourceID(n.ResourceID).
-		SetNotified(n.Notified).
-		SetUserID(n.UserID).
-		Save(ctx)
-}
-
-func (s *Store) SetNotificationDone(ctx context.Context, n *ent.Notification) (*ent.Notification, error) {
-	return s.c.Notification.
-		UpdateOne(n).
-		SetNotified(true).
-		Save(ctx)
-}
-
-func (s *Store) ListNotifications(ctx context.Context, u *ent.User, page, perPage int) ([]*ent.Notification, error) {
+func (s *Store) ListNotificationsWithEdges(ctx context.Context, u *ent.User, page, perPage int) ([]*ent.Notification, error) {
 	return s.c.Notification.
 		Query().
 		Where(
 			notification.UserID(u.ID),
 		).
+		WithDeployment().
 		Limit(perPage).
 		Offset(offset(page, perPage)).
 		Order(ent.Desc(notification.FieldCreatedAt)).
 		All(ctx)
+}
+
+func (s *Store) ListNotificationsWithEdgesFromTime(ctx context.Context, t time.Time) ([]*ent.Notification, error) {
+	return s.c.Notification.
+		Query().
+		Where(
+			notification.CreatedAtGTE(t),
+		).
+		WithDeployment().
+		All(ctx)
+}
+
+func (s *Store) CreateNotification(ctx context.Context, n *ent.Notification) (*ent.Notification, error) {
+	nc := s.c.Notification.
+		Create().
+		SetType(n.Type).
+		SetNotified(n.Notified).
+		SetUserID(n.UserID)
+
+	if n.Type == notification.TypeDeployment {
+		nc = nc.SetDeploymentID(n.DeploymentID)
+	}
+
+	return nc.Save(ctx)
+}
+
+func (s *Store) SetNotificationNotified(ctx context.Context, n *ent.Notification) (*ent.Notification, error) {
+	return s.c.Notification.
+		UpdateOne(n).
+		SetNotified(true).
+		Save(ctx)
 }
 
 func (s *Store) FindNotificationByID(ctx context.Context, id int) (*ent.Notification, error) {

@@ -22,7 +22,6 @@ func (Notification) Fields() []ent.Field {
 				"deployment",
 			).
 			Default("deployment"),
-		field.Int("resource_id"),
 		// notified means it is notified by Chat or browser,
 		// in meanwhile checked means the status is checked directly or not.
 		field.Bool("notified").
@@ -35,6 +34,8 @@ func (Notification) Fields() []ent.Field {
 			Default(time.Now).
 			UpdateDefault(time.Now),
 		field.String("user_id"),
+		field.Int("deployment_id").
+			Optional(),
 	}
 }
 
@@ -45,6 +46,10 @@ func (Notification) Edges() []ent.Edge {
 			Ref("notification").
 			Field("user_id").
 			Required().
+			Unique(),
+		edge.From("deployment", Deployment.Type).
+			Ref("notifications").
+			Field("deployment_id").
 			Unique(),
 	}
 }

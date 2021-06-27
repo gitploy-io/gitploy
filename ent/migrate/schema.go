@@ -136,11 +136,11 @@ var (
 	NotificationsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "type", Type: field.TypeEnum, Enums: []string{"deployment"}, Default: "deployment"},
-		{Name: "resource_id", Type: field.TypeInt},
 		{Name: "notified", Type: field.TypeBool, Default: false},
 		{Name: "checked", Type: field.TypeBool, Default: false},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deployment_id", Type: field.TypeInt, Nullable: true},
 		{Name: "user_id", Type: field.TypeString, Nullable: true},
 	}
 	// NotificationsTable holds the schema information for the "notifications" table.
@@ -149,6 +149,12 @@ var (
 		Columns:    NotificationsColumns,
 		PrimaryKey: []*schema.Column{NotificationsColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "notifications_deployments_notifications",
+				Columns:    []*schema.Column{NotificationsColumns[6]},
+				RefColumns: []*schema.Column{DeploymentsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
 			{
 				Symbol:     "notifications_users_notification",
 				Columns:    []*schema.Column{NotificationsColumns[7]},
@@ -165,12 +171,12 @@ var (
 			{
 				Name:    "notification_created_at",
 				Unique:  false,
-				Columns: []*schema.Column{NotificationsColumns[5]},
+				Columns: []*schema.Column{NotificationsColumns[4]},
 			},
 			{
 				Name:    "notification_user_id_created_at",
 				Unique:  false,
-				Columns: []*schema.Column{NotificationsColumns[7], NotificationsColumns[5]},
+				Columns: []*schema.Column{NotificationsColumns[7], NotificationsColumns[4]},
 			},
 		},
 	}
@@ -276,7 +282,8 @@ func init() {
 	ChatUsersTable.ForeignKeys[0].RefTable = UsersTable
 	DeploymentsTable.ForeignKeys[0].RefTable = ReposTable
 	DeploymentsTable.ForeignKeys[1].RefTable = UsersTable
-	NotificationsTable.ForeignKeys[0].RefTable = UsersTable
+	NotificationsTable.ForeignKeys[0].RefTable = DeploymentsTable
+	NotificationsTable.ForeignKeys[1].RefTable = UsersTable
 	PermsTable.ForeignKeys[0].RefTable = ReposTable
 	PermsTable.ForeignKeys[1].RefTable = UsersTable
 }

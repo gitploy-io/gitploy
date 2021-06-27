@@ -4,6 +4,7 @@ package ent
 
 import (
 	"context"
+	"database/sql/driver"
 	"errors"
 	"fmt"
 	"math"
@@ -12,6 +13,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/hanjunlee/gitploy/ent/deployment"
+	"github.com/hanjunlee/gitploy/ent/notification"
 	"github.com/hanjunlee/gitploy/ent/predicate"
 	"github.com/hanjunlee/gitploy/ent/repo"
 	"github.com/hanjunlee/gitploy/ent/user"
@@ -27,8 +29,9 @@ type DeploymentQuery struct {
 	fields     []string
 	predicates []predicate.Deployment
 	// eager-loading edges.
-	withUser *UserQuery
-	withRepo *RepoQuery
+	withUser          *UserQuery
+	withRepo          *RepoQuery
+	withNotifications *NotificationQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -102,6 +105,28 @@ func (dq *DeploymentQuery) QueryRepo() *RepoQuery {
 			sqlgraph.From(deployment.Table, deployment.FieldID, selector),
 			sqlgraph.To(repo.Table, repo.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, deployment.RepoTable, deployment.RepoColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(dq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryNotifications chains the current query on the "notifications" edge.
+func (dq *DeploymentQuery) QueryNotifications() *NotificationQuery {
+	query := &NotificationQuery{config: dq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := dq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := dq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(deployment.Table, deployment.FieldID, selector),
+			sqlgraph.To(notification.Table, notification.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, deployment.NotificationsTable, deployment.NotificationsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(dq.driver.Dialect(), step)
 		return fromU, nil
@@ -285,13 +310,14 @@ func (dq *DeploymentQuery) Clone() *DeploymentQuery {
 		return nil
 	}
 	return &DeploymentQuery{
-		config:     dq.config,
-		limit:      dq.limit,
-		offset:     dq.offset,
-		order:      append([]OrderFunc{}, dq.order...),
-		predicates: append([]predicate.Deployment{}, dq.predicates...),
-		withUser:   dq.withUser.Clone(),
-		withRepo:   dq.withRepo.Clone(),
+		config:            dq.config,
+		limit:             dq.limit,
+		offset:            dq.offset,
+		order:             append([]OrderFunc{}, dq.order...),
+		predicates:        append([]predicate.Deployment{}, dq.predicates...),
+		withUser:          dq.withUser.Clone(),
+		withRepo:          dq.withRepo.Clone(),
+		withNotifications: dq.withNotifications.Clone(),
 		// clone intermediate query.
 		sql:  dq.sql.Clone(),
 		path: dq.path,
@@ -317,6 +343,17 @@ func (dq *DeploymentQuery) WithRepo(opts ...func(*RepoQuery)) *DeploymentQuery {
 		opt(query)
 	}
 	dq.withRepo = query
+	return dq
+}
+
+// WithNotifications tells the query-builder to eager-load the nodes that are connected to
+// the "notifications" edge. The optional arguments are used to configure the query builder of the edge.
+func (dq *DeploymentQuery) WithNotifications(opts ...func(*NotificationQuery)) *DeploymentQuery {
+	query := &NotificationQuery{config: dq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	dq.withNotifications = query
 	return dq
 }
 
@@ -385,9 +422,10 @@ func (dq *DeploymentQuery) sqlAll(ctx context.Context) ([]*Deployment, error) {
 	var (
 		nodes       = []*Deployment{}
 		_spec       = dq.querySpec()
-		loadedTypes = [2]bool{
+		loadedTypes = [3]bool{
 			dq.withUser != nil,
 			dq.withRepo != nil,
+			dq.withNotifications != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -459,6 +497,31 @@ func (dq *DeploymentQuery) sqlAll(ctx context.Context) ([]*Deployment, error) {
 			for i := range nodes {
 				nodes[i].Edges.Repo = n
 			}
+		}
+	}
+
+	if query := dq.withNotifications; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[int]*Deployment)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.Notifications = []*Notification{}
+		}
+		query.Where(predicate.Notification(func(s *sql.Selector) {
+			s.Where(sql.InValues(deployment.NotificationsColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.DeploymentID
+			node, ok := nodeids[fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "deployment_id" returned %v for node %v`, fk, n.ID)
+			}
+			node.Edges.Notifications = append(node.Edges.Notifications, n)
 		}
 	}
 
