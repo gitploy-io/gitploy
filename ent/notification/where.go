@@ -128,6 +128,13 @@ func UserID(v string) predicate.Notification {
 	})
 }
 
+// RepoID applies equality check predicate on the "repo_id" field. It's identical to RepoIDEQ.
+func RepoID(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldRepoID), v))
+	})
+}
+
 // DeploymentID applies equality check predicate on the "deployment_id" field. It's identical to DeploymentIDEQ.
 func DeploymentID(v int) predicate.Notification {
 	return predicate.Notification(func(s *sql.Selector) {
@@ -474,6 +481,117 @@ func UserIDContainsFold(v string) predicate.Notification {
 	})
 }
 
+// RepoIDEQ applies the EQ predicate on the "repo_id" field.
+func RepoIDEQ(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldRepoID), v))
+	})
+}
+
+// RepoIDNEQ applies the NEQ predicate on the "repo_id" field.
+func RepoIDNEQ(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldRepoID), v))
+	})
+}
+
+// RepoIDIn applies the In predicate on the "repo_id" field.
+func RepoIDIn(vs ...string) predicate.Notification {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Notification(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldRepoID), v...))
+	})
+}
+
+// RepoIDNotIn applies the NotIn predicate on the "repo_id" field.
+func RepoIDNotIn(vs ...string) predicate.Notification {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Notification(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldRepoID), v...))
+	})
+}
+
+// RepoIDGT applies the GT predicate on the "repo_id" field.
+func RepoIDGT(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldRepoID), v))
+	})
+}
+
+// RepoIDGTE applies the GTE predicate on the "repo_id" field.
+func RepoIDGTE(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldRepoID), v))
+	})
+}
+
+// RepoIDLT applies the LT predicate on the "repo_id" field.
+func RepoIDLT(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldRepoID), v))
+	})
+}
+
+// RepoIDLTE applies the LTE predicate on the "repo_id" field.
+func RepoIDLTE(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldRepoID), v))
+	})
+}
+
+// RepoIDContains applies the Contains predicate on the "repo_id" field.
+func RepoIDContains(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldRepoID), v))
+	})
+}
+
+// RepoIDHasPrefix applies the HasPrefix predicate on the "repo_id" field.
+func RepoIDHasPrefix(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldRepoID), v))
+	})
+}
+
+// RepoIDHasSuffix applies the HasSuffix predicate on the "repo_id" field.
+func RepoIDHasSuffix(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldRepoID), v))
+	})
+}
+
+// RepoIDEqualFold applies the EqualFold predicate on the "repo_id" field.
+func RepoIDEqualFold(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldRepoID), v))
+	})
+}
+
+// RepoIDContainsFold applies the ContainsFold predicate on the "repo_id" field.
+func RepoIDContainsFold(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldRepoID), v))
+	})
+}
+
 // DeploymentIDEQ applies the EQ predicate on the "deployment_id" field.
 func DeploymentIDEQ(v int) predicate.Notification {
 	return predicate.Notification(func(s *sql.Selector) {
@@ -555,6 +673,34 @@ func HasUserWith(preds ...predicate.User) predicate.Notification {
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(UserInverseTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, UserTable, UserColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasRepo applies the HasEdge predicate on the "repo" edge.
+func HasRepo() predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(RepoTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, RepoTable, RepoColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasRepoWith applies the HasEdge predicate on the "repo" edge with a given conditions (other predicates).
+func HasRepoWith(preds ...predicate.Repo) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(RepoInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, RepoTable, RepoColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/hanjunlee/gitploy/ent/deployment"
 	"github.com/hanjunlee/gitploy/ent/notification"
+	"github.com/hanjunlee/gitploy/ent/repo"
 	"github.com/hanjunlee/gitploy/ent/user"
 )
 
@@ -98,6 +99,12 @@ func (nc *NotificationCreate) SetUserID(s string) *NotificationCreate {
 	return nc
 }
 
+// SetRepoID sets the "repo_id" field.
+func (nc *NotificationCreate) SetRepoID(s string) *NotificationCreate {
+	nc.mutation.SetRepoID(s)
+	return nc
+}
+
 // SetDeploymentID sets the "deployment_id" field.
 func (nc *NotificationCreate) SetDeploymentID(i int) *NotificationCreate {
 	nc.mutation.SetDeploymentID(i)
@@ -115,6 +122,11 @@ func (nc *NotificationCreate) SetNillableDeploymentID(i *int) *NotificationCreat
 // SetUser sets the "user" edge to the User entity.
 func (nc *NotificationCreate) SetUser(u *User) *NotificationCreate {
 	return nc.SetUserID(u.ID)
+}
+
+// SetRepo sets the "repo" edge to the Repo entity.
+func (nc *NotificationCreate) SetRepo(r *Repo) *NotificationCreate {
+	return nc.SetRepoID(r.ID)
 }
 
 // SetDeployment sets the "deployment" edge to the Deployment entity.
@@ -221,8 +233,14 @@ func (nc *NotificationCreate) check() error {
 	if _, ok := nc.mutation.UserID(); !ok {
 		return &ValidationError{Name: "user_id", err: errors.New("ent: missing required field \"user_id\"")}
 	}
+	if _, ok := nc.mutation.RepoID(); !ok {
+		return &ValidationError{Name: "repo_id", err: errors.New("ent: missing required field \"repo_id\"")}
+	}
 	if _, ok := nc.mutation.UserID(); !ok {
 		return &ValidationError{Name: "user", err: errors.New("ent: missing required edge \"user\"")}
+	}
+	if _, ok := nc.mutation.RepoID(); !ok {
+		return &ValidationError{Name: "repo", err: errors.New("ent: missing required edge \"repo\"")}
 	}
 	return nil
 }
@@ -309,6 +327,26 @@ func (nc *NotificationCreate) createSpec() (*Notification, *sqlgraph.CreateSpec)
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.UserID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := nc.mutation.RepoIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   notification.RepoTable,
+			Columns: []string{notification.RepoColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: repo.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.RepoID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := nc.mutation.DeploymentIDs(); len(nodes) > 0 {

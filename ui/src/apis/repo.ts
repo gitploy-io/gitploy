@@ -5,7 +5,7 @@ import { instance, headers } from './setting'
 import { _fetch } from "./_base"
 import { Repo, RepoPayload } from '../models'
 
-const mapRepo = (r: any): Repo => {
+export const mapRepo = (r: any): Repo => {
     return {
         id: r.id,
         namespace: r.namespace,

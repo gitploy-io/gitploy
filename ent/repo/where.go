@@ -1141,6 +1141,34 @@ func HasChatCallbackWith(preds ...predicate.ChatCallback) predicate.Repo {
 	})
 }
 
+// HasNotifications applies the HasEdge predicate on the "notifications" edge.
+func HasNotifications() predicate.Repo {
+	return predicate.Repo(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(NotificationsTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, NotificationsTable, NotificationsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasNotificationsWith applies the HasEdge predicate on the "notifications" edge with a given conditions (other predicates).
+func HasNotificationsWith(preds ...predicate.Notification) predicate.Repo {
+	return predicate.Repo(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(NotificationsInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, NotificationsTable, NotificationsColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Repo) predicate.Repo {
 	return predicate.Repo(func(s *sql.Selector) {

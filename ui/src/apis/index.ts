@@ -7,7 +7,7 @@ import { listBranches, getBranch } from './branch'
 import { listTags, getTag } from './tag'
 import { getMe } from "./user"
 import { checkSlack } from "./chat"
-import { subscribeNotification } from "./notification"
+import { subscribeNotification, listNotifications, patchNotificationChecked } from "./notification"
 
 export {
     sync,
@@ -29,4 +29,6 @@ export {
     getMe,
     checkSlack,
     subscribeNotification, 
+    listNotifications,
+    patchNotificationChecked,
 }

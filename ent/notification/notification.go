@@ -24,10 +24,14 @@ const (
 	FieldUpdatedAt = "updated_at"
 	// FieldUserID holds the string denoting the user_id field in the database.
 	FieldUserID = "user_id"
+	// FieldRepoID holds the string denoting the repo_id field in the database.
+	FieldRepoID = "repo_id"
 	// FieldDeploymentID holds the string denoting the deployment_id field in the database.
 	FieldDeploymentID = "deployment_id"
 	// EdgeUser holds the string denoting the user edge name in mutations.
 	EdgeUser = "user"
+	// EdgeRepo holds the string denoting the repo edge name in mutations.
+	EdgeRepo = "repo"
 	// EdgeDeployment holds the string denoting the deployment edge name in mutations.
 	EdgeDeployment = "deployment"
 	// Table holds the table name of the notification in the database.
@@ -39,6 +43,13 @@ const (
 	UserInverseTable = "users"
 	// UserColumn is the table column denoting the user relation/edge.
 	UserColumn = "user_id"
+	// RepoTable is the table the holds the repo relation/edge.
+	RepoTable = "notifications"
+	// RepoInverseTable is the table name for the Repo entity.
+	// It exists in this package in order to avoid circular dependency with the "repo" package.
+	RepoInverseTable = "repos"
+	// RepoColumn is the table column denoting the repo relation/edge.
+	RepoColumn = "repo_id"
 	// DeploymentTable is the table the holds the deployment relation/edge.
 	DeploymentTable = "notifications"
 	// DeploymentInverseTable is the table name for the Deployment entity.
@@ -57,6 +68,7 @@ var Columns = []string{
 	FieldCreatedAt,
 	FieldUpdatedAt,
 	FieldUserID,
+	FieldRepoID,
 	FieldDeploymentID,
 }
 

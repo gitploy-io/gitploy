@@ -141,6 +141,7 @@ var (
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "deployment_id", Type: field.TypeInt, Nullable: true},
+		{Name: "repo_id", Type: field.TypeString, Nullable: true},
 		{Name: "user_id", Type: field.TypeString, Nullable: true},
 	}
 	// NotificationsTable holds the schema information for the "notifications" table.
@@ -156,8 +157,14 @@ var (
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "notifications_users_notification",
+				Symbol:     "notifications_repos_notifications",
 				Columns:    []*schema.Column{NotificationsColumns[7]},
+				RefColumns: []*schema.Column{ReposColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "notifications_users_notification",
+				Columns:    []*schema.Column{NotificationsColumns[8]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -166,7 +173,7 @@ var (
 			{
 				Name:    "notification_user_id",
 				Unique:  false,
-				Columns: []*schema.Column{NotificationsColumns[7]},
+				Columns: []*schema.Column{NotificationsColumns[8]},
 			},
 			{
 				Name:    "notification_created_at",
@@ -176,7 +183,7 @@ var (
 			{
 				Name:    "notification_user_id_created_at",
 				Unique:  false,
-				Columns: []*schema.Column{NotificationsColumns[7], NotificationsColumns[4]},
+				Columns: []*schema.Column{NotificationsColumns[8], NotificationsColumns[4]},
 			},
 		},
 	}
@@ -283,7 +290,8 @@ func init() {
 	DeploymentsTable.ForeignKeys[0].RefTable = ReposTable
 	DeploymentsTable.ForeignKeys[1].RefTable = UsersTable
 	NotificationsTable.ForeignKeys[0].RefTable = DeploymentsTable
-	NotificationsTable.ForeignKeys[1].RefTable = UsersTable
+	NotificationsTable.ForeignKeys[1].RefTable = ReposTable
+	NotificationsTable.ForeignKeys[2].RefTable = UsersTable
 	PermsTable.ForeignKeys[0].RefTable = ReposTable
 	PermsTable.ForeignKeys[1].RefTable = UsersTable
 }

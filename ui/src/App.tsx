@@ -1,8 +1,8 @@
 import './App.less'
 import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
+    BrowserRouter as Router,
+    Switch,
+    Route,
 } from "react-router-dom";
 
 import Home from "./views/Home"
@@ -10,23 +10,23 @@ import Repo from "./views/Repo"
 import Settings from "./views/Settings"
 
 function App() {
-  return (
-    <div className="App">
-      <Router>
-        <Switch>
-          <Route path="/:namespace/:name">
-            <Repo />
-          </Route>
-          <Route path="/settings">
-            <Settings />
-          </Route>
-          <Route path="/">
-            <Home />
-          </Route>
-        </Switch>
-      </Router>
-    </div>
-  );
+    return (
+        <div className="App">
+            <Router>
+                <Switch>
+                    <Route path="/:namespace/:name">
+                        <Repo />
+                    </Route>
+                    <Route path="/settings">
+                        <Settings />
+                    </Route>
+                    <Route path="/">
+                        <Home />
+                    </Route>
+                </Switch>
+            </Router>
+        </div>
+    );
 }
 
 export default App;
