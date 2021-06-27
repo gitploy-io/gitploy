@@ -5,6 +5,7 @@ export default interface Notification {
     id: number,
     type: NotificationType,
     notified: boolean,
+    checked: boolean,
     createdAt: Date,
     updatedAt: Date,
     repo: Repo,

@@ -1,4 +1,5 @@
-import { instance } from "./setting"
+import { instance, headers } from "./setting"
+import { _fetch } from "./_base"
 import { mapRepo } from "./repo"
 import { mapDataToDeployment } from "./deployment"
 import { Notification as NotificationData, NotificationType, Deployment } from "../models"
@@ -17,6 +18,29 @@ export const subscribeNotification = (cb: (n: NotificationData) => void) => {
     return sse
 }
 
+export const listNotifications = async (page: number, perPage: number) => {
+    const notifications  = await _fetch(`${instance}/api/v1/notifications`, {
+        headers,
+        credentials: "same-origin",
+    })
+        .then(res => res.json())
+        .then(data => data.map((n: any) => mapDataToNotification(n)))
+    
+    return notifications
+}
+
+export const patchNotificationChecked = async (id: number) => {
+    const notification  = await _fetch(`${instance}/api/v1/notifications/${id}/check`, {
+        headers,
+        credentials: "same-origin",
+        method: "PATCH"
+    })
+        .then(res => res.json())
+        .then(data => mapDataToNotification(data))
+
+    return notification
+}
+
 function mapDataToNotification(data: any): NotificationData {
     let type: NotificationType = NotificationType.Deployment
     var deployment: Deployment | null = null
@@ -30,6 +54,7 @@ function mapDataToNotification(data: any): NotificationData {
         id: data.id,
         type, 
         notified: data.notified,
+        checked: data.checked,
         createdAt: new Date(data.created_at),
         updatedAt: new Date(data.updated_at),
         repo: mapRepo(data.edges.repo),
