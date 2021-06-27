@@ -48,7 +48,3 @@ func (i *Interactor) deployToSCM(ctx context.Context, u *ent.User, re *ent.Repo,
 	// TODO: handling approval.
 	return nil, fmt.Errorf("Not implemented yet.")
 }
-
-func (i *Interactor) GetConfig(ctx context.Context, u *ent.User, r *ent.Repo) (*vo.Config, error) {
-	return i.GetConfig(ctx, u, r)
-}
