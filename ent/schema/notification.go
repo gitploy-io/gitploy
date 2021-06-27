@@ -35,6 +35,8 @@ func (Notification) Fields() []ent.Field {
 			Default(time.Now).
 			UpdateDefault(time.Now),
 		field.String("user_id"),
+		field.Int("deployment_id").
+			Optional(),
 	}
 }
 
@@ -45,6 +47,10 @@ func (Notification) Edges() []ent.Edge {
 			Ref("notification").
 			Field("user_id").
 			Required().
+			Unique(),
+		edge.From("deployment", Deployment.Type).
+			Ref("notifications").
+			Field("deployment_id").
 			Unique(),
 	}
 }

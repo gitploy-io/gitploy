@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/hanjunlee/gitploy/ent/deployment"
+	"github.com/hanjunlee/gitploy/ent/notification"
 	"github.com/hanjunlee/gitploy/ent/repo"
 	"github.com/hanjunlee/gitploy/ent/user"
 )
@@ -138,6 +139,21 @@ func (dc *DeploymentCreate) SetUser(u *User) *DeploymentCreate {
 // SetRepo sets the "repo" edge to the Repo entity.
 func (dc *DeploymentCreate) SetRepo(r *Repo) *DeploymentCreate {
 	return dc.SetRepoID(r.ID)
+}
+
+// AddNotificationIDs adds the "notifications" edge to the Notification entity by IDs.
+func (dc *DeploymentCreate) AddNotificationIDs(ids ...int) *DeploymentCreate {
+	dc.mutation.AddNotificationIDs(ids...)
+	return dc
+}
+
+// AddNotifications adds the "notifications" edges to the Notification entity.
+func (dc *DeploymentCreate) AddNotifications(n ...*Notification) *DeploymentCreate {
+	ids := make([]int, len(n))
+	for i := range n {
+		ids[i] = n[i].ID
+	}
+	return dc.AddNotificationIDs(ids...)
 }
 
 // Mutation returns the DeploymentMutation object of the builder.
@@ -381,6 +397,25 @@ func (dc *DeploymentCreate) createSpec() (*Deployment, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.RepoID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := dc.mutation.NotificationsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   deployment.NotificationsTable,
+			Columns: []string{deployment.NotificationsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: notification.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

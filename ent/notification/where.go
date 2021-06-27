@@ -135,6 +135,13 @@ func UserID(v string) predicate.Notification {
 	})
 }
 
+// DeploymentID applies equality check predicate on the "deployment_id" field. It's identical to DeploymentIDEQ.
+func DeploymentID(v int) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldDeploymentID), v))
+	})
+}
+
 // TypeEQ applies the EQ predicate on the "type" field.
 func TypeEQ(v Type) predicate.Notification {
 	return predicate.Notification(func(s *sql.Selector) {
@@ -550,6 +557,68 @@ func UserIDContainsFold(v string) predicate.Notification {
 	})
 }
 
+// DeploymentIDEQ applies the EQ predicate on the "deployment_id" field.
+func DeploymentIDEQ(v int) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldDeploymentID), v))
+	})
+}
+
+// DeploymentIDNEQ applies the NEQ predicate on the "deployment_id" field.
+func DeploymentIDNEQ(v int) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldDeploymentID), v))
+	})
+}
+
+// DeploymentIDIn applies the In predicate on the "deployment_id" field.
+func DeploymentIDIn(vs ...int) predicate.Notification {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Notification(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldDeploymentID), v...))
+	})
+}
+
+// DeploymentIDNotIn applies the NotIn predicate on the "deployment_id" field.
+func DeploymentIDNotIn(vs ...int) predicate.Notification {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Notification(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldDeploymentID), v...))
+	})
+}
+
+// DeploymentIDIsNil applies the IsNil predicate on the "deployment_id" field.
+func DeploymentIDIsNil() predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldDeploymentID)))
+	})
+}
+
+// DeploymentIDNotNil applies the NotNil predicate on the "deployment_id" field.
+func DeploymentIDNotNil() predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldDeploymentID)))
+	})
+}
+
 // HasUser applies the HasEdge predicate on the "user" edge.
 func HasUser() predicate.Notification {
 	return predicate.Notification(func(s *sql.Selector) {
@@ -569,6 +638,34 @@ func HasUserWith(preds ...predicate.User) predicate.Notification {
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(UserInverseTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, UserTable, UserColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasDeployment applies the HasEdge predicate on the "deployment" edge.
+func HasDeployment() predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(DeploymentTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, DeploymentTable, DeploymentColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasDeploymentWith applies the HasEdge predicate on the "deployment" edge with a given conditions (other predicates).
+func HasDeploymentWith(preds ...predicate.Deployment) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(DeploymentInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, DeploymentTable, DeploymentColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

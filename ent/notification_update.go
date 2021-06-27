@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/hanjunlee/gitploy/ent/deployment"
 	"github.com/hanjunlee/gitploy/ent/notification"
 	"github.com/hanjunlee/gitploy/ent/predicate"
 	"github.com/hanjunlee/gitploy/ent/user"
@@ -110,9 +111,35 @@ func (nu *NotificationUpdate) SetUserID(s string) *NotificationUpdate {
 	return nu
 }
 
+// SetDeploymentID sets the "deployment_id" field.
+func (nu *NotificationUpdate) SetDeploymentID(i int) *NotificationUpdate {
+	nu.mutation.ResetDeploymentID()
+	nu.mutation.SetDeploymentID(i)
+	return nu
+}
+
+// SetNillableDeploymentID sets the "deployment_id" field if the given value is not nil.
+func (nu *NotificationUpdate) SetNillableDeploymentID(i *int) *NotificationUpdate {
+	if i != nil {
+		nu.SetDeploymentID(*i)
+	}
+	return nu
+}
+
+// ClearDeploymentID clears the value of the "deployment_id" field.
+func (nu *NotificationUpdate) ClearDeploymentID() *NotificationUpdate {
+	nu.mutation.ClearDeploymentID()
+	return nu
+}
+
 // SetUser sets the "user" edge to the User entity.
 func (nu *NotificationUpdate) SetUser(u *User) *NotificationUpdate {
 	return nu.SetUserID(u.ID)
+}
+
+// SetDeployment sets the "deployment" edge to the Deployment entity.
+func (nu *NotificationUpdate) SetDeployment(d *Deployment) *NotificationUpdate {
+	return nu.SetDeploymentID(d.ID)
 }
 
 // Mutation returns the NotificationMutation object of the builder.
@@ -123,6 +150,12 @@ func (nu *NotificationUpdate) Mutation() *NotificationMutation {
 // ClearUser clears the "user" edge to the User entity.
 func (nu *NotificationUpdate) ClearUser() *NotificationUpdate {
 	nu.mutation.ClearUser()
+	return nu
+}
+
+// ClearDeployment clears the "deployment" edge to the Deployment entity.
+func (nu *NotificationUpdate) ClearDeployment() *NotificationUpdate {
+	nu.mutation.ClearDeployment()
 	return nu
 }
 
@@ -307,6 +340,41 @@ func (nu *NotificationUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if nu.mutation.DeploymentCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   notification.DeploymentTable,
+			Columns: []string{notification.DeploymentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: deployment.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := nu.mutation.DeploymentIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   notification.DeploymentTable,
+			Columns: []string{notification.DeploymentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: deployment.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, nu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{notification.Label}
@@ -407,9 +475,35 @@ func (nuo *NotificationUpdateOne) SetUserID(s string) *NotificationUpdateOne {
 	return nuo
 }
 
+// SetDeploymentID sets the "deployment_id" field.
+func (nuo *NotificationUpdateOne) SetDeploymentID(i int) *NotificationUpdateOne {
+	nuo.mutation.ResetDeploymentID()
+	nuo.mutation.SetDeploymentID(i)
+	return nuo
+}
+
+// SetNillableDeploymentID sets the "deployment_id" field if the given value is not nil.
+func (nuo *NotificationUpdateOne) SetNillableDeploymentID(i *int) *NotificationUpdateOne {
+	if i != nil {
+		nuo.SetDeploymentID(*i)
+	}
+	return nuo
+}
+
+// ClearDeploymentID clears the value of the "deployment_id" field.
+func (nuo *NotificationUpdateOne) ClearDeploymentID() *NotificationUpdateOne {
+	nuo.mutation.ClearDeploymentID()
+	return nuo
+}
+
 // SetUser sets the "user" edge to the User entity.
 func (nuo *NotificationUpdateOne) SetUser(u *User) *NotificationUpdateOne {
 	return nuo.SetUserID(u.ID)
+}
+
+// SetDeployment sets the "deployment" edge to the Deployment entity.
+func (nuo *NotificationUpdateOne) SetDeployment(d *Deployment) *NotificationUpdateOne {
+	return nuo.SetDeploymentID(d.ID)
 }
 
 // Mutation returns the NotificationMutation object of the builder.
@@ -420,6 +514,12 @@ func (nuo *NotificationUpdateOne) Mutation() *NotificationMutation {
 // ClearUser clears the "user" edge to the User entity.
 func (nuo *NotificationUpdateOne) ClearUser() *NotificationUpdateOne {
 	nuo.mutation.ClearUser()
+	return nuo
+}
+
+// ClearDeployment clears the "deployment" edge to the Deployment entity.
+func (nuo *NotificationUpdateOne) ClearDeployment() *NotificationUpdateOne {
+	nuo.mutation.ClearDeployment()
 	return nuo
 }
 
@@ -620,6 +720,41 @@ func (nuo *NotificationUpdateOne) sqlSave(ctx context.Context) (_node *Notificat
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: user.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if nuo.mutation.DeploymentCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   notification.DeploymentTable,
+			Columns: []string{notification.DeploymentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: deployment.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := nuo.mutation.DeploymentIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   notification.DeploymentTable,
+			Columns: []string{notification.DeploymentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: deployment.FieldID,
 				},
 			},
 		}

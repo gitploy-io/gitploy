@@ -141,6 +141,7 @@ var (
 		{Name: "checked", Type: field.TypeBool, Default: false},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deployment_id", Type: field.TypeInt, Nullable: true},
 		{Name: "user_id", Type: field.TypeString, Nullable: true},
 	}
 	// NotificationsTable holds the schema information for the "notifications" table.
@@ -150,8 +151,14 @@ var (
 		PrimaryKey: []*schema.Column{NotificationsColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "notifications_users_notification",
+				Symbol:     "notifications_deployments_notifications",
 				Columns:    []*schema.Column{NotificationsColumns[7]},
+				RefColumns: []*schema.Column{DeploymentsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "notifications_users_notification",
+				Columns:    []*schema.Column{NotificationsColumns[8]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -160,7 +167,7 @@ var (
 			{
 				Name:    "notification_user_id",
 				Unique:  false,
-				Columns: []*schema.Column{NotificationsColumns[7]},
+				Columns: []*schema.Column{NotificationsColumns[8]},
 			},
 			{
 				Name:    "notification_created_at",
@@ -170,7 +177,7 @@ var (
 			{
 				Name:    "notification_user_id_created_at",
 				Unique:  false,
-				Columns: []*schema.Column{NotificationsColumns[7], NotificationsColumns[5]},
+				Columns: []*schema.Column{NotificationsColumns[8], NotificationsColumns[5]},
 			},
 		},
 	}
@@ -276,7 +283,8 @@ func init() {
 	ChatUsersTable.ForeignKeys[0].RefTable = UsersTable
 	DeploymentsTable.ForeignKeys[0].RefTable = ReposTable
 	DeploymentsTable.ForeignKeys[1].RefTable = UsersTable
-	NotificationsTable.ForeignKeys[0].RefTable = UsersTable
+	NotificationsTable.ForeignKeys[0].RefTable = DeploymentsTable
+	NotificationsTable.ForeignKeys[1].RefTable = UsersTable
 	PermsTable.ForeignKeys[0].RefTable = ReposTable
 	PermsTable.ForeignKeys[1].RefTable = UsersTable
 }
