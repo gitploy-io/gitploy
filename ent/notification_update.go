@@ -14,6 +14,7 @@ import (
 	"github.com/hanjunlee/gitploy/ent/deployment"
 	"github.com/hanjunlee/gitploy/ent/notification"
 	"github.com/hanjunlee/gitploy/ent/predicate"
+	"github.com/hanjunlee/gitploy/ent/repo"
 	"github.com/hanjunlee/gitploy/ent/user"
 )
 
@@ -98,6 +99,12 @@ func (nu *NotificationUpdate) SetUserID(s string) *NotificationUpdate {
 	return nu
 }
 
+// SetRepoID sets the "repo_id" field.
+func (nu *NotificationUpdate) SetRepoID(s string) *NotificationUpdate {
+	nu.mutation.SetRepoID(s)
+	return nu
+}
+
 // SetDeploymentID sets the "deployment_id" field.
 func (nu *NotificationUpdate) SetDeploymentID(i int) *NotificationUpdate {
 	nu.mutation.ResetDeploymentID()
@@ -124,6 +131,11 @@ func (nu *NotificationUpdate) SetUser(u *User) *NotificationUpdate {
 	return nu.SetUserID(u.ID)
 }
 
+// SetRepo sets the "repo" edge to the Repo entity.
+func (nu *NotificationUpdate) SetRepo(r *Repo) *NotificationUpdate {
+	return nu.SetRepoID(r.ID)
+}
+
 // SetDeployment sets the "deployment" edge to the Deployment entity.
 func (nu *NotificationUpdate) SetDeployment(d *Deployment) *NotificationUpdate {
 	return nu.SetDeploymentID(d.ID)
@@ -137,6 +149,12 @@ func (nu *NotificationUpdate) Mutation() *NotificationMutation {
 // ClearUser clears the "user" edge to the User entity.
 func (nu *NotificationUpdate) ClearUser() *NotificationUpdate {
 	nu.mutation.ClearUser()
+	return nu
+}
+
+// ClearRepo clears the "repo" edge to the Repo entity.
+func (nu *NotificationUpdate) ClearRepo() *NotificationUpdate {
+	nu.mutation.ClearRepo()
 	return nu
 }
 
@@ -222,6 +240,9 @@ func (nu *NotificationUpdate) check() error {
 	if _, ok := nu.mutation.UserID(); nu.mutation.UserCleared() && !ok {
 		return errors.New("ent: clearing a required unique edge \"user\"")
 	}
+	if _, ok := nu.mutation.RepoID(); nu.mutation.RepoCleared() && !ok {
+		return errors.New("ent: clearing a required unique edge \"repo\"")
+	}
 	return nil
 }
 
@@ -305,6 +326,41 @@ func (nu *NotificationUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: user.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if nu.mutation.RepoCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   notification.RepoTable,
+			Columns: []string{notification.RepoColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: repo.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := nu.mutation.RepoIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   notification.RepoTable,
+			Columns: []string{notification.RepoColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: repo.FieldID,
 				},
 			},
 		}
@@ -435,6 +491,12 @@ func (nuo *NotificationUpdateOne) SetUserID(s string) *NotificationUpdateOne {
 	return nuo
 }
 
+// SetRepoID sets the "repo_id" field.
+func (nuo *NotificationUpdateOne) SetRepoID(s string) *NotificationUpdateOne {
+	nuo.mutation.SetRepoID(s)
+	return nuo
+}
+
 // SetDeploymentID sets the "deployment_id" field.
 func (nuo *NotificationUpdateOne) SetDeploymentID(i int) *NotificationUpdateOne {
 	nuo.mutation.ResetDeploymentID()
@@ -461,6 +523,11 @@ func (nuo *NotificationUpdateOne) SetUser(u *User) *NotificationUpdateOne {
 	return nuo.SetUserID(u.ID)
 }
 
+// SetRepo sets the "repo" edge to the Repo entity.
+func (nuo *NotificationUpdateOne) SetRepo(r *Repo) *NotificationUpdateOne {
+	return nuo.SetRepoID(r.ID)
+}
+
 // SetDeployment sets the "deployment" edge to the Deployment entity.
 func (nuo *NotificationUpdateOne) SetDeployment(d *Deployment) *NotificationUpdateOne {
 	return nuo.SetDeploymentID(d.ID)
@@ -474,6 +541,12 @@ func (nuo *NotificationUpdateOne) Mutation() *NotificationMutation {
 // ClearUser clears the "user" edge to the User entity.
 func (nuo *NotificationUpdateOne) ClearUser() *NotificationUpdateOne {
 	nuo.mutation.ClearUser()
+	return nuo
+}
+
+// ClearRepo clears the "repo" edge to the Repo entity.
+func (nuo *NotificationUpdateOne) ClearRepo() *NotificationUpdateOne {
+	nuo.mutation.ClearRepo()
 	return nuo
 }
 
@@ -565,6 +638,9 @@ func (nuo *NotificationUpdateOne) check() error {
 	}
 	if _, ok := nuo.mutation.UserID(); nuo.mutation.UserCleared() && !ok {
 		return errors.New("ent: clearing a required unique edge \"user\"")
+	}
+	if _, ok := nuo.mutation.RepoID(); nuo.mutation.RepoCleared() && !ok {
+		return errors.New("ent: clearing a required unique edge \"repo\"")
 	}
 	return nil
 }
@@ -666,6 +742,41 @@ func (nuo *NotificationUpdateOne) sqlSave(ctx context.Context) (_node *Notificat
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: user.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if nuo.mutation.RepoCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   notification.RepoTable,
+			Columns: []string{notification.RepoColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: repo.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := nuo.mutation.RepoIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   notification.RepoTable,
+			Columns: []string{notification.RepoColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: repo.FieldID,
 				},
 			},
 		}

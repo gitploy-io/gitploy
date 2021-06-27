@@ -37,6 +37,8 @@ const (
 	EdgeDeployments = "deployments"
 	// EdgeChatCallback holds the string denoting the chat_callback edge name in mutations.
 	EdgeChatCallback = "chat_callback"
+	// EdgeNotifications holds the string denoting the notifications edge name in mutations.
+	EdgeNotifications = "notifications"
 	// Table holds the table name of the repo in the database.
 	Table = "repos"
 	// PermsTable is the table the holds the perms relation/edge.
@@ -60,6 +62,13 @@ const (
 	ChatCallbackInverseTable = "chat_callbacks"
 	// ChatCallbackColumn is the table column denoting the chat_callback relation/edge.
 	ChatCallbackColumn = "repo_id"
+	// NotificationsTable is the table the holds the notifications relation/edge.
+	NotificationsTable = "notifications"
+	// NotificationsInverseTable is the table name for the Notification entity.
+	// It exists in this package in order to avoid circular dependency with the "notification" package.
+	NotificationsInverseTable = "notifications"
+	// NotificationsColumn is the table column denoting the notifications relation/edge.
+	NotificationsColumn = "repo_id"
 )
 
 // Columns holds all SQL columns for repo fields.

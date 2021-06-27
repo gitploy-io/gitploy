@@ -14,6 +14,7 @@ import (
 	"github.com/hanjunlee/gitploy/ent/deployment"
 	"github.com/hanjunlee/gitploy/ent/notification"
 	"github.com/hanjunlee/gitploy/ent/predicate"
+	"github.com/hanjunlee/gitploy/ent/repo"
 	"github.com/hanjunlee/gitploy/ent/user"
 )
 
@@ -28,6 +29,7 @@ type NotificationQuery struct {
 	predicates []predicate.Notification
 	// eager-loading edges.
 	withUser       *UserQuery
+	withRepo       *RepoQuery
 	withDeployment *DeploymentQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -80,6 +82,28 @@ func (nq *NotificationQuery) QueryUser() *UserQuery {
 			sqlgraph.From(notification.Table, notification.FieldID, selector),
 			sqlgraph.To(user.Table, user.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, notification.UserTable, notification.UserColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(nq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryRepo chains the current query on the "repo" edge.
+func (nq *NotificationQuery) QueryRepo() *RepoQuery {
+	query := &RepoQuery{config: nq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := nq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := nq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(notification.Table, notification.FieldID, selector),
+			sqlgraph.To(repo.Table, repo.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, notification.RepoTable, notification.RepoColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(nq.driver.Dialect(), step)
 		return fromU, nil
@@ -291,6 +315,7 @@ func (nq *NotificationQuery) Clone() *NotificationQuery {
 		order:          append([]OrderFunc{}, nq.order...),
 		predicates:     append([]predicate.Notification{}, nq.predicates...),
 		withUser:       nq.withUser.Clone(),
+		withRepo:       nq.withRepo.Clone(),
 		withDeployment: nq.withDeployment.Clone(),
 		// clone intermediate query.
 		sql:  nq.sql.Clone(),
@@ -306,6 +331,17 @@ func (nq *NotificationQuery) WithUser(opts ...func(*UserQuery)) *NotificationQue
 		opt(query)
 	}
 	nq.withUser = query
+	return nq
+}
+
+// WithRepo tells the query-builder to eager-load the nodes that are connected to
+// the "repo" edge. The optional arguments are used to configure the query builder of the edge.
+func (nq *NotificationQuery) WithRepo(opts ...func(*RepoQuery)) *NotificationQuery {
+	query := &RepoQuery{config: nq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	nq.withRepo = query
 	return nq
 }
 
@@ -385,8 +421,9 @@ func (nq *NotificationQuery) sqlAll(ctx context.Context) ([]*Notification, error
 	var (
 		nodes       = []*Notification{}
 		_spec       = nq.querySpec()
-		loadedTypes = [2]bool{
+		loadedTypes = [3]bool{
 			nq.withUser != nil,
+			nq.withRepo != nil,
 			nq.withDeployment != nil,
 		}
 	)
@@ -432,6 +469,32 @@ func (nq *NotificationQuery) sqlAll(ctx context.Context) ([]*Notification, error
 			}
 			for i := range nodes {
 				nodes[i].Edges.User = n
+			}
+		}
+	}
+
+	if query := nq.withRepo; query != nil {
+		ids := make([]string, 0, len(nodes))
+		nodeids := make(map[string][]*Notification)
+		for i := range nodes {
+			fk := nodes[i].RepoID
+			if _, ok := nodeids[fk]; !ok {
+				ids = append(ids, fk)
+			}
+			nodeids[fk] = append(nodeids[fk], nodes[i])
+		}
+		query.Where(repo.IDIn(ids...))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			nodes, ok := nodeids[n.ID]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "repo_id" returned %v`, n.ID)
+			}
+			for i := range nodes {
+				nodes[i].Edges.Repo = n
 			}
 		}
 	}

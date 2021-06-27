@@ -34,6 +34,7 @@ func (Notification) Fields() []ent.Field {
 			Default(time.Now).
 			UpdateDefault(time.Now),
 		field.String("user_id"),
+		field.String("repo_id"),
 		field.Int("deployment_id").
 			Optional(),
 	}
@@ -45,6 +46,11 @@ func (Notification) Edges() []ent.Edge {
 		edge.From("user", User.Type).
 			Ref("notification").
 			Field("user_id").
+			Required().
+			Unique(),
+		edge.From("repo", Repo.Type).
+			Ref("notifications").
+			Field("repo_id").
 			Required().
 			Unique(),
 		edge.From("deployment", Deployment.Type).

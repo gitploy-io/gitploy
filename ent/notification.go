@@ -10,6 +10,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/hanjunlee/gitploy/ent/deployment"
 	"github.com/hanjunlee/gitploy/ent/notification"
+	"github.com/hanjunlee/gitploy/ent/repo"
 	"github.com/hanjunlee/gitploy/ent/user"
 )
 
@@ -30,6 +31,8 @@ type Notification struct {
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// UserID holds the value of the "user_id" field.
 	UserID string `json:"user_id,omitempty"`
+	// RepoID holds the value of the "repo_id" field.
+	RepoID string `json:"repo_id,omitempty"`
 	// DeploymentID holds the value of the "deployment_id" field.
 	DeploymentID int `json:"deployment_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -41,11 +44,13 @@ type Notification struct {
 type NotificationEdges struct {
 	// User holds the value of the user edge.
 	User *User `json:"user,omitempty"`
+	// Repo holds the value of the repo edge.
+	Repo *Repo `json:"repo,omitempty"`
 	// Deployment holds the value of the deployment edge.
 	Deployment *Deployment `json:"deployment,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
+	loadedTypes [3]bool
 }
 
 // UserOrErr returns the User value or an error if the edge
@@ -62,10 +67,24 @@ func (e NotificationEdges) UserOrErr() (*User, error) {
 	return nil, &NotLoadedError{edge: "user"}
 }
 
+// RepoOrErr returns the Repo value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e NotificationEdges) RepoOrErr() (*Repo, error) {
+	if e.loadedTypes[1] {
+		if e.Repo == nil {
+			// The edge repo was loaded in eager-loading,
+			// but was not found.
+			return nil, &NotFoundError{label: repo.Label}
+		}
+		return e.Repo, nil
+	}
+	return nil, &NotLoadedError{edge: "repo"}
+}
+
 // DeploymentOrErr returns the Deployment value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e NotificationEdges) DeploymentOrErr() (*Deployment, error) {
-	if e.loadedTypes[1] {
+	if e.loadedTypes[2] {
 		if e.Deployment == nil {
 			// The edge deployment was loaded in eager-loading,
 			// but was not found.
@@ -85,7 +104,7 @@ func (*Notification) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(sql.NullBool)
 		case notification.FieldID, notification.FieldDeploymentID:
 			values[i] = new(sql.NullInt64)
-		case notification.FieldType, notification.FieldUserID:
+		case notification.FieldType, notification.FieldUserID, notification.FieldRepoID:
 			values[i] = new(sql.NullString)
 		case notification.FieldCreatedAt, notification.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -146,6 +165,12 @@ func (n *Notification) assignValues(columns []string, values []interface{}) erro
 			} else if value.Valid {
 				n.UserID = value.String
 			}
+		case notification.FieldRepoID:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field repo_id", values[i])
+			} else if value.Valid {
+				n.RepoID = value.String
+			}
 		case notification.FieldDeploymentID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field deployment_id", values[i])
@@ -160,6 +185,11 @@ func (n *Notification) assignValues(columns []string, values []interface{}) erro
 // QueryUser queries the "user" edge of the Notification entity.
 func (n *Notification) QueryUser() *UserQuery {
 	return (&NotificationClient{config: n.config}).QueryUser(n)
+}
+
+// QueryRepo queries the "repo" edge of the Notification entity.
+func (n *Notification) QueryRepo() *RepoQuery {
+	return (&NotificationClient{config: n.config}).QueryRepo(n)
 }
 
 // QueryDeployment queries the "deployment" edge of the Notification entity.
@@ -202,6 +232,8 @@ func (n *Notification) String() string {
 	builder.WriteString(n.UpdatedAt.Format(time.ANSIC))
 	builder.WriteString(", user_id=")
 	builder.WriteString(n.UserID)
+	builder.WriteString(", repo_id=")
+	builder.WriteString(n.RepoID)
 	builder.WriteString(", deployment_id=")
 	builder.WriteString(fmt.Sprintf("%v", n.DeploymentID))
 	builder.WriteByte(')')
