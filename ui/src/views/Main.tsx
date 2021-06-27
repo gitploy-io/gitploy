@@ -1,31 +1,59 @@
-import { useEffect } from 'react';
-import { shallowEqual } from 'react-redux';
-import { Layout, Menu, Row, Col, Result, Button, Avatar, Dropdown} from 'antd';
+import { useEffect, useState } from 'react'
+import { shallowEqual } from 'react-redux'
+import { Layout, Menu, Row, Col, Result, Button, Drawer, Avatar, Dropdown, Badge} from "antd"
+import { BellOutlined } from "@ant-design/icons"
 
 import { Notification as NotificationData, NotificationType } from "../models"
 import { subscribeNotification } from "../apis"
 import { useAppSelector, useAppDispatch } from "../redux/hooks"
-import { init } from "../redux/main"
+import { mainSlice, init, fetchNotifications, setNotificationChecked } from "../redux/main"
 
-const { Header, Content, Footer } = Layout;
+import NotificationList from "../components/NotificationList"
+
+const { actions } = mainSlice
+const { Header, Content, Footer } = Layout
 
 export default function Main(props: any) {
-    const { available, authorized, user } = useAppSelector(state => state.main, shallowEqual)
+    const { 
+        available, 
+        authorized, 
+        user,
+        notifications
+    } = useAppSelector(state => state.main, shallowEqual)
     const dispatch = useAppDispatch()
 
     useEffect(() => {
         dispatch(init())
+        dispatch(fetchNotifications())
+
+        // SSE(Server Sent Event) open a connection
+        // to stream a new notification.
         const sse = subscribeNotification((n) => {
             if (!n.notified) {
                 notify(n)
             }
+            dispatch(actions.addNotification(n))
         })
 
         return () => {
-            console.log("close the stream.")
             sse.close();
         };
     }, [dispatch])
+
+    // Drawer shows notifications.
+    const [ isNotificationsVisible, setNotificationsVisible ] = useState(false)
+
+    const showNotifications = () => {
+        setNotificationsVisible(true)
+    }
+
+    const onCloseNotifications = () => {
+        setNotificationsVisible(false)
+    }
+
+    const onClickNotificaiton = (n: NotificationData) => {
+        dispatch(setNotificationChecked(n))
+    }
 
     let content: React.ReactElement
     if (!available) {
@@ -47,17 +75,6 @@ export default function Main(props: any) {
         content = props.children
     }
 
-
-    const userMenu = <Menu style={{width: "200px"}}>
-        <Menu.Item key="0">
-            <a rel="noopener noreferrer" href="/notifications">Notifications</a>
-        </Menu.Item>
-        <Menu.Divider />
-        <Menu.Item key="1">
-            <a rel="noopener noreferrer" href="/settings">Settings</a>
-        </Menu.Item>
-    </Menu>
-
     return (
         <Layout className="layout">
             <Header>
@@ -69,9 +86,35 @@ export default function Main(props: any) {
                         </Menu>
                     </Col>
                     <Col span="8" style={{textAlign: "right"}}>
+                        {/* Notifications */}
+                        <Badge size="small" count={countUnchecked(notifications)}>
+                            <Button 
+                                type="primary" 
+                                shape="circle" 
+                                icon={<BellOutlined />}
+                                onClick={showNotifications}></Button>
+
+                            </Badge>
+                        <Drawer title="Notifications"
+                            placement="right"
+                            width={400}
+                            visible={isNotificationsVisible}
+                            onClose={onCloseNotifications}>
+                                <NotificationList 
+                                    notifications={notifications}
+                                    onClickNotificaiton={onClickNotificaiton}/>
+                        </Drawer>
+                        &nbsp; &nbsp;
+
+                        {/* Avatar */}
                         {(authorized) ? 
-                            <Dropdown overlay={userMenu}>
-                                <Avatar src={user?.avatar}/>
+                            <Dropdown overlay={
+                                <Menu style={{width: "200px"}}>
+                                    <Menu.Item key="0">
+                                        <a rel="noopener noreferrer" href="/settings">Settings</a>
+                                    </Menu.Item>
+                                </Menu> }>
+                                <Avatar  src={user?.avatar}/>
                             </ Dropdown>
                             : <a href="/" style={{color: "white"}}>Sign in</a>}
                     </Col>
@@ -120,8 +163,18 @@ function convertToNotificationMessage(n: NotificationData): string {
     switch (n.type) {
         case NotificationType.Deployment:
             if (n.deployment === null) {
-                return `${n.repo.namespace}/${n.repo.name} - Deployed at now.`
+                return `New Deployment\n ${n.repo.namespace}/${n.repo.name} - Deployed.`
             }
-            return `${n.repo.namespace}/${n.repo.name} - Deployed to ${n.deployment.env} environment.`
+            return `New Deployment\n ${n.repo.namespace}/${n.repo.name} - Deployed to ${n.deployment.env} environment.`
     }
+}
+
+function countUnchecked(notifications: NotificationData[]) {
+    var cnt = 0
+    notifications.forEach((n) => {
+        if (!n.checked) {
+            cnt++
+        }
+    })
+    return cnt
 }
