@@ -93,6 +93,13 @@ func IDLTE(id int) predicate.Deployment {
 	})
 }
 
+// Number applies equality check predicate on the "number" field. It's identical to NumberEQ.
+func Number(v int) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldNumber), v))
+	})
+}
+
 // UID applies equality check predicate on the "uid" field. It's identical to UIDEQ.
 func UID(v int64) predicate.Deployment {
 	return predicate.Deployment(func(s *sql.Selector) {
@@ -146,6 +153,82 @@ func UserID(v string) predicate.Deployment {
 func RepoID(v string) predicate.Deployment {
 	return predicate.Deployment(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldRepoID), v))
+	})
+}
+
+// NumberEQ applies the EQ predicate on the "number" field.
+func NumberEQ(v int) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldNumber), v))
+	})
+}
+
+// NumberNEQ applies the NEQ predicate on the "number" field.
+func NumberNEQ(v int) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldNumber), v))
+	})
+}
+
+// NumberIn applies the In predicate on the "number" field.
+func NumberIn(vs ...int) predicate.Deployment {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Deployment(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldNumber), v...))
+	})
+}
+
+// NumberNotIn applies the NotIn predicate on the "number" field.
+func NumberNotIn(vs ...int) predicate.Deployment {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Deployment(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldNumber), v...))
+	})
+}
+
+// NumberGT applies the GT predicate on the "number" field.
+func NumberGT(v int) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldNumber), v))
+	})
+}
+
+// NumberGTE applies the GTE predicate on the "number" field.
+func NumberGTE(v int) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldNumber), v))
+	})
+}
+
+// NumberLT applies the LT predicate on the "number" field.
+func NumberLT(v int) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldNumber), v))
+	})
+}
+
+// NumberLTE applies the LTE predicate on the "number" field.
+func NumberLTE(v int) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldNumber), v))
 	})
 }
 

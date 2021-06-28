@@ -31,6 +31,19 @@ func (du *DeploymentUpdate) Where(ps ...predicate.Deployment) *DeploymentUpdate 
 	return du
 }
 
+// SetNumber sets the "number" field.
+func (du *DeploymentUpdate) SetNumber(i int) *DeploymentUpdate {
+	du.mutation.ResetNumber()
+	du.mutation.SetNumber(i)
+	return du
+}
+
+// AddNumber adds i to the "number" field.
+func (du *DeploymentUpdate) AddNumber(i int) *DeploymentUpdate {
+	du.mutation.AddNumber(i)
+	return du
+}
+
 // SetUID sets the "uid" field.
 func (du *DeploymentUpdate) SetUID(i int64) *DeploymentUpdate {
 	du.mutation.ResetUID()
@@ -318,6 +331,20 @@ func (du *DeploymentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			}
 		}
 	}
+	if value, ok := du.mutation.Number(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: deployment.FieldNumber,
+		})
+	}
+	if value, ok := du.mutation.AddedNumber(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: deployment.FieldNumber,
+		})
+	}
 	if value, ok := du.mutation.UID(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeInt64,
@@ -534,6 +561,19 @@ type DeploymentUpdateOne struct {
 	fields   []string
 	hooks    []Hook
 	mutation *DeploymentMutation
+}
+
+// SetNumber sets the "number" field.
+func (duo *DeploymentUpdateOne) SetNumber(i int) *DeploymentUpdateOne {
+	duo.mutation.ResetNumber()
+	duo.mutation.SetNumber(i)
+	return duo
+}
+
+// AddNumber adds i to the "number" field.
+func (duo *DeploymentUpdateOne) AddNumber(i int) *DeploymentUpdateOne {
+	duo.mutation.AddNumber(i)
+	return duo
 }
 
 // SetUID sets the "uid" field.
@@ -846,6 +886,20 @@ func (duo *DeploymentUpdateOne) sqlSave(ctx context.Context) (_node *Deployment,
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := duo.mutation.Number(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: deployment.FieldNumber,
+		})
+	}
+	if value, ok := duo.mutation.AddedNumber(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: deployment.FieldNumber,
+		})
 	}
 	if value, ok := duo.mutation.UID(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{

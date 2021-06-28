@@ -50,11 +50,11 @@ func init() {
 	deploymentFields := schema.Deployment{}.Fields()
 	_ = deploymentFields
 	// deploymentDescCreatedAt is the schema descriptor for created_at field.
-	deploymentDescCreatedAt := deploymentFields[6].Descriptor()
+	deploymentDescCreatedAt := deploymentFields[7].Descriptor()
 	// deployment.DefaultCreatedAt holds the default value on creation for the created_at field.
 	deployment.DefaultCreatedAt = deploymentDescCreatedAt.Default.(func() time.Time)
 	// deploymentDescUpdatedAt is the schema descriptor for updated_at field.
-	deploymentDescUpdatedAt := deploymentFields[7].Descriptor()
+	deploymentDescUpdatedAt := deploymentFields[8].Descriptor()
 	// deployment.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	deployment.DefaultUpdatedAt = deploymentDescUpdatedAt.Default.(func() time.Time)
 	// deployment.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.

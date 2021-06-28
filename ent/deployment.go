@@ -18,6 +18,8 @@ type Deployment struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID int `json:"id,omitempty"`
+	// Number holds the value of the "number" field.
+	Number int `json:"number,omitempty"`
 	// UID holds the value of the "uid" field.
 	UID int64 `json:"uid,omitempty"`
 	// Type holds the value of the "type" field.
@@ -98,7 +100,7 @@ func (*Deployment) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case deployment.FieldID, deployment.FieldUID:
+		case deployment.FieldID, deployment.FieldNumber, deployment.FieldUID:
 			values[i] = new(sql.NullInt64)
 		case deployment.FieldType, deployment.FieldRef, deployment.FieldSha, deployment.FieldEnv, deployment.FieldStatus, deployment.FieldUserID, deployment.FieldRepoID:
 			values[i] = new(sql.NullString)
@@ -125,6 +127,12 @@ func (d *Deployment) assignValues(columns []string, values []interface{}) error 
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
 			d.ID = int(value.Int64)
+		case deployment.FieldNumber:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field number", values[i])
+			} else if value.Valid {
+				d.Number = int(value.Int64)
+			}
 		case deployment.FieldUID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field uid", values[i])
@@ -228,6 +236,8 @@ func (d *Deployment) String() string {
 	var builder strings.Builder
 	builder.WriteString("Deployment(")
 	builder.WriteString(fmt.Sprintf("id=%v", d.ID))
+	builder.WriteString(", number=")
+	builder.WriteString(fmt.Sprintf("%v", d.Number))
 	builder.WriteString(", uid=")
 	builder.WriteString(fmt.Sprintf("%v", d.UID))
 	builder.WriteString(", type=")

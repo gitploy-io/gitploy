@@ -363,12 +363,12 @@ func (dq *DeploymentQuery) WithNotifications(opts ...func(*NotificationQuery)) *
 // Example:
 //
 //	var v []struct {
-//		UID int64 `json:"uid,omitempty"`
+//		Number int `json:"number,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.Deployment.Query().
-//		GroupBy(deployment.FieldUID).
+//		GroupBy(deployment.FieldNumber).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 //
@@ -390,11 +390,11 @@ func (dq *DeploymentQuery) GroupBy(field string, fields ...string) *DeploymentGr
 // Example:
 //
 //	var v []struct {
-//		UID int64 `json:"uid,omitempty"`
+//		Number int `json:"number,omitempty"`
 //	}
 //
 //	client.Deployment.Query().
-//		Select(deployment.FieldUID).
+//		Select(deployment.FieldNumber).
 //		Scan(ctx, &v)
 //
 func (dq *DeploymentQuery) Select(field string, fields ...string) *DeploymentSelect {

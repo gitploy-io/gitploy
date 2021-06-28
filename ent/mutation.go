@@ -1537,6 +1537,8 @@ type DeploymentMutation struct {
 	op                   Op
 	typ                  string
 	id                   *int
+	number               *int
+	addnumber            *int
 	uid                  *int64
 	adduid               *int64
 	_type                *deployment.Type
@@ -1636,6 +1638,62 @@ func (m *DeploymentMutation) ID() (id int, exists bool) {
 		return
 	}
 	return *m.id, true
+}
+
+// SetNumber sets the "number" field.
+func (m *DeploymentMutation) SetNumber(i int) {
+	m.number = &i
+	m.addnumber = nil
+}
+
+// Number returns the value of the "number" field in the mutation.
+func (m *DeploymentMutation) Number() (r int, exists bool) {
+	v := m.number
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldNumber returns the old "number" field's value of the Deployment entity.
+// If the Deployment object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DeploymentMutation) OldNumber(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldNumber is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldNumber requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldNumber: %w", err)
+	}
+	return oldValue.Number, nil
+}
+
+// AddNumber adds i to the "number" field.
+func (m *DeploymentMutation) AddNumber(i int) {
+	if m.addnumber != nil {
+		*m.addnumber += i
+	} else {
+		m.addnumber = &i
+	}
+}
+
+// AddedNumber returns the value that was added to the "number" field in this mutation.
+func (m *DeploymentMutation) AddedNumber() (r int, exists bool) {
+	v := m.addnumber
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetNumber resets all changes to the "number" field.
+func (m *DeploymentMutation) ResetNumber() {
+	m.number = nil
+	m.addnumber = nil
 }
 
 // SetUID sets the "uid" field.
@@ -2164,7 +2222,10 @@ func (m *DeploymentMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *DeploymentMutation) Fields() []string {
-	fields := make([]string, 0, 10)
+	fields := make([]string, 0, 11)
+	if m.number != nil {
+		fields = append(fields, deployment.FieldNumber)
+	}
 	if m.uid != nil {
 		fields = append(fields, deployment.FieldUID)
 	}
@@ -2203,6 +2264,8 @@ func (m *DeploymentMutation) Fields() []string {
 // schema.
 func (m *DeploymentMutation) Field(name string) (ent.Value, bool) {
 	switch name {
+	case deployment.FieldNumber:
+		return m.Number()
 	case deployment.FieldUID:
 		return m.UID()
 	case deployment.FieldType:
@@ -2232,6 +2295,8 @@ func (m *DeploymentMutation) Field(name string) (ent.Value, bool) {
 // database failed.
 func (m *DeploymentMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
+	case deployment.FieldNumber:
+		return m.OldNumber(ctx)
 	case deployment.FieldUID:
 		return m.OldUID(ctx)
 	case deployment.FieldType:
@@ -2261,6 +2326,13 @@ func (m *DeploymentMutation) OldField(ctx context.Context, name string) (ent.Val
 // type.
 func (m *DeploymentMutation) SetField(name string, value ent.Value) error {
 	switch name {
+	case deployment.FieldNumber:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetNumber(v)
+		return nil
 	case deployment.FieldUID:
 		v, ok := value.(int64)
 		if !ok {
@@ -2339,6 +2411,9 @@ func (m *DeploymentMutation) SetField(name string, value ent.Value) error {
 // this mutation.
 func (m *DeploymentMutation) AddedFields() []string {
 	var fields []string
+	if m.addnumber != nil {
+		fields = append(fields, deployment.FieldNumber)
+	}
 	if m.adduid != nil {
 		fields = append(fields, deployment.FieldUID)
 	}
@@ -2350,6 +2425,8 @@ func (m *DeploymentMutation) AddedFields() []string {
 // was not set, or was not defined in the schema.
 func (m *DeploymentMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
+	case deployment.FieldNumber:
+		return m.AddedNumber()
 	case deployment.FieldUID:
 		return m.AddedUID()
 	}
@@ -2361,6 +2438,13 @@ func (m *DeploymentMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *DeploymentMutation) AddField(name string, value ent.Value) error {
 	switch name {
+	case deployment.FieldNumber:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddNumber(v)
+		return nil
 	case deployment.FieldUID:
 		v, ok := value.(int64)
 		if !ok {
@@ -2410,6 +2494,9 @@ func (m *DeploymentMutation) ClearField(name string) error {
 // It returns an error if the field is not defined in the schema.
 func (m *DeploymentMutation) ResetField(name string) error {
 	switch name {
+	case deployment.FieldNumber:
+		m.ResetNumber()
+		return nil
 	case deployment.FieldUID:
 		m.ResetUID()
 		return nil

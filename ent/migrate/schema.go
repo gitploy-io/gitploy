@@ -74,6 +74,7 @@ var (
 	// DeploymentsColumns holds the columns for the "deployments" table.
 	DeploymentsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "number", Type: field.TypeInt},
 		{Name: "uid", Type: field.TypeInt64, Nullable: true},
 		{Name: "type", Type: field.TypeEnum, Enums: []string{"commit", "branch", "tag"}, Default: "commit"},
 		{Name: "ref", Type: field.TypeString},
@@ -93,13 +94,13 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "deployments_repos_deployments",
-				Columns:    []*schema.Column{DeploymentsColumns[9]},
+				Columns:    []*schema.Column{DeploymentsColumns[10]},
 				RefColumns: []*schema.Column{ReposColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "deployments_users_deployments",
-				Columns:    []*schema.Column{DeploymentsColumns[10]},
+				Columns:    []*schema.Column{DeploymentsColumns[11]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -108,27 +109,32 @@ var (
 			{
 				Name:    "deployment_user_id",
 				Unique:  false,
-				Columns: []*schema.Column{DeploymentsColumns[10]},
+				Columns: []*schema.Column{DeploymentsColumns[11]},
 			},
 			{
 				Name:    "deployment_repo_id",
 				Unique:  false,
-				Columns: []*schema.Column{DeploymentsColumns[9]},
+				Columns: []*schema.Column{DeploymentsColumns[10]},
 			},
 			{
 				Name:    "deployment_repo_id_env_status_created_at",
 				Unique:  false,
-				Columns: []*schema.Column{DeploymentsColumns[9], DeploymentsColumns[5], DeploymentsColumns[6], DeploymentsColumns[7]},
+				Columns: []*schema.Column{DeploymentsColumns[10], DeploymentsColumns[6], DeploymentsColumns[7], DeploymentsColumns[8]},
 			},
 			{
 				Name:    "deployment_repo_id_env_created_at",
 				Unique:  false,
-				Columns: []*schema.Column{DeploymentsColumns[9], DeploymentsColumns[5], DeploymentsColumns[7]},
+				Columns: []*schema.Column{DeploymentsColumns[10], DeploymentsColumns[6], DeploymentsColumns[8]},
 			},
 			{
 				Name:    "deployment_repo_id_created_at",
 				Unique:  false,
-				Columns: []*schema.Column{DeploymentsColumns[9], DeploymentsColumns[7]},
+				Columns: []*schema.Column{DeploymentsColumns[10], DeploymentsColumns[8]},
+			},
+			{
+				Name:    "deployment_number_repo_id",
+				Unique:  true,
+				Columns: []*schema.Column{DeploymentsColumns[1], DeploymentsColumns[10]},
 			},
 		},
 	}
