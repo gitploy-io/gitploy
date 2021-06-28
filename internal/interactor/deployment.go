@@ -26,7 +26,7 @@ func (i *Interactor) Deploy(ctx context.Context, u *ent.User, re *ent.Repo, d *e
 
 	d, err = i.Store.CreateDeployment(ctx, u, re, d)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create a new deployment on the store: %w", err)
+		return nil, fmt.Errorf("failed to save a new deployment to the store: %w", err)
 	}
 
 	return i.deployToSCM(ctx, u, re, d, env)

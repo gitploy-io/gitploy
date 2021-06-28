@@ -12,6 +12,8 @@ const (
 	Label = "deployment"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
+	// FieldNumber holds the string denoting the number field in the database.
+	FieldNumber = "number"
 	// FieldUID holds the string denoting the uid field in the database.
 	FieldUID = "uid"
 	// FieldType holds the string denoting the type field in the database.
@@ -66,6 +68,7 @@ const (
 // Columns holds all SQL columns for deployment fields.
 var Columns = []string{
 	FieldID,
+	FieldNumber,
 	FieldUID,
 	FieldType,
 	FieldRef,

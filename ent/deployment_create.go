@@ -23,6 +23,12 @@ type DeploymentCreate struct {
 	hooks    []Hook
 }
 
+// SetNumber sets the "number" field.
+func (dc *DeploymentCreate) SetNumber(i int) *DeploymentCreate {
+	dc.mutation.SetNumber(i)
+	return dc
+}
+
 // SetUID sets the "uid" field.
 func (dc *DeploymentCreate) SetUID(i int64) *DeploymentCreate {
 	dc.mutation.SetUID(i)
@@ -228,6 +234,9 @@ func (dc *DeploymentCreate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (dc *DeploymentCreate) check() error {
+	if _, ok := dc.mutation.Number(); !ok {
+		return &ValidationError{Name: "number", err: errors.New("ent: missing required field \"number\"")}
+	}
 	if _, ok := dc.mutation.GetType(); !ok {
 		return &ValidationError{Name: "type", err: errors.New("ent: missing required field \"type\"")}
 	}
@@ -295,6 +304,14 @@ func (dc *DeploymentCreate) createSpec() (*Deployment, *sqlgraph.CreateSpec) {
 			},
 		}
 	)
+	if value, ok := dc.mutation.Number(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: deployment.FieldNumber,
+		})
+		_node.Number = value
+	}
 	if value, ok := dc.mutation.UID(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeInt64,
