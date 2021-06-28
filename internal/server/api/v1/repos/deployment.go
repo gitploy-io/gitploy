@@ -9,8 +9,8 @@ import (
 
 	"github.com/hanjunlee/gitploy/ent"
 	"github.com/hanjunlee/gitploy/ent/deployment"
-	errs "github.com/hanjunlee/gitploy/internal/errors"
 	gb "github.com/hanjunlee/gitploy/internal/server/global"
+	"github.com/hanjunlee/gitploy/vo"
 )
 
 type (
@@ -83,11 +83,11 @@ func (r *Repo) GetConfig(c *gin.Context) {
 	ctx := c.Request.Context()
 
 	config, err := r.i.GetConfig(ctx, u, re)
-	if errs.IsConfigNotFoundError(err) {
+	if vo.IsConfigNotFoundError(err) {
 		r.log.Warn("failed to find the config file.", zap.Error(err))
 		gb.ErrorResponse(c, http.StatusNotFound, "It has failed to find the configuraton file.")
 		return
-	} else if errs.IsConfigParseError(err) {
+	} else if vo.IsConfigParseError(err) {
 		r.log.Warn("failed to parse the config.", zap.Error(err))
 		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "It has failed to parse the configuraton file.")
 		return
@@ -121,15 +121,15 @@ func (r *Repo) CreateDeployment(c *gin.Context) {
 		Env:  p.Env,
 	})
 	if err != nil {
-		if errs.IsConfigNotFoundError(err) {
+		if vo.IsConfigNotFoundError(err) {
 			r.log.Warn("failed to get the config.", zap.Error(err))
 			gb.ErrorResponse(c, http.StatusUnprocessableEntity, "It has failed to find the configuraton file.")
 			return
-		} else if errs.IsConfigParseError(err) {
+		} else if vo.IsConfigParseError(err) {
 			r.log.Warn("failed to parse the config.", zap.Error(err))
 			gb.ErrorResponse(c, http.StatusUnprocessableEntity, "It has failed to parse the configuraton file.")
 			return
-		} else if errs.IsEnvNotFoundError(err) {
+		} else if vo.IsEnvNotFoundError(err) {
 			r.log.Warn("failed to get the env.", zap.Error(err))
 			gb.ErrorResponse(c, http.StatusUnprocessableEntity, "It has failed to get the env in the configuration file.")
 			return

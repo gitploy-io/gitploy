@@ -14,7 +14,6 @@ import (
 	"github.com/hanjunlee/gitploy/ent"
 	"github.com/hanjunlee/gitploy/ent/chatcallback"
 	"github.com/hanjunlee/gitploy/ent/deployment"
-	errs "github.com/hanjunlee/gitploy/internal/errors"
 	"github.com/hanjunlee/gitploy/vo"
 )
 
@@ -65,11 +64,11 @@ func (s *Slack) handleDeployCmd(c *gin.Context, cmd slack.SlashCommand) {
 	}
 
 	config, err := s.i.GetConfig(ctx, u, r)
-	if errs.IsConfigNotFoundError(err) {
+	if vo.IsConfigNotFoundError(err) {
 		responseMessage(cmd, "The config file is not found")
 		c.Status(http.StatusOK)
 		return
-	} else if errs.IsConfigParseError(err) {
+	} else if vo.IsConfigParseError(err) {
 		responseMessage(cmd, "The config file is invliad format.")
 		c.Status(http.StatusOK)
 		return

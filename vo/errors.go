@@ -1,4 +1,4 @@
-package errors
+package vo
 
 import (
 	"errors"
@@ -42,5 +42,18 @@ func (e *EnvNotFoundError) Error() string {
 
 func IsEnvNotFoundError(err error) bool {
 	var e *EnvNotFoundError
+	return errors.As(err, &e)
+}
+
+type RefNotFoundError struct {
+	Ref string
+}
+
+func (e *RefNotFoundError) Error() string {
+	return fmt.Sprintf("%s is not found.", e.Ref)
+}
+
+func IsRefNotFoundError(err error) bool {
+	var e *RefNotFoundError
 	return errors.As(err, &e)
 }

@@ -6,7 +6,6 @@ import (
 
 	"github.com/hanjunlee/gitploy/ent"
 	"github.com/hanjunlee/gitploy/ent/deployment"
-	errs "github.com/hanjunlee/gitploy/internal/errors"
 	"github.com/hanjunlee/gitploy/vo"
 )
 
@@ -17,7 +16,7 @@ func (i *Interactor) Deploy(ctx context.Context, u *ent.User, re *ent.Repo, d *e
 	}
 
 	if !c.HasEnv(d.Env) {
-		return nil, &errs.EnvNotFoundError{
+		return nil, &vo.EnvNotFoundError{
 			RepoName: re.Name,
 		}
 	}

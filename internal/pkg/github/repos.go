@@ -11,7 +11,6 @@ import (
 	"gopkg.in/yaml.v3"
 
 	"github.com/hanjunlee/gitploy/ent"
-	errs "github.com/hanjunlee/gitploy/internal/errors"
 	"github.com/hanjunlee/gitploy/vo"
 )
 
@@ -54,7 +53,7 @@ func (g *Github) GetCommit(ctx context.Context, u *ent.User, r *ent.Repo, sha st
 		GetCommit(ctx, r.Namespace, r.Name, sha)
 	// Github returns Unprocessable entity if the commit is not found.
 	if res.StatusCode == http.StatusNotFound || res.StatusCode == http.StatusUnprocessableEntity {
-		return nil, &errs.RefNotFoundError{
+		return nil, &vo.RefNotFoundError{
 			Ref: sha,
 		}
 	}
@@ -90,7 +89,7 @@ func (g *Github) ListCommitStatuses(ctx context.Context, u *ent.User, r *ent.Rep
 	})
 	// check-runs secures the commit is exist.
 	if res.StatusCode == http.StatusUnprocessableEntity {
-		return nil, &errs.RefNotFoundError{
+		return nil, &vo.RefNotFoundError{
 			Ref: sha,
 		}
 	}
@@ -135,7 +134,7 @@ func (g *Github) GetBranch(ctx context.Context, u *ent.User, r *ent.Repo, branch
 		Repositories.
 		GetBranch(ctx, r.Namespace, r.Name, branch)
 	if res.StatusCode == http.StatusNotFound {
-		return nil, &errs.RefNotFoundError{
+		return nil, &vo.RefNotFoundError{
 			Ref: branch,
 		}
 	}
@@ -216,7 +215,7 @@ func (g *Github) GetTag(ctx context.Context, u *ent.User, r *ent.Repo, tag strin
 	}
 
 	if q.Repository.Refs.TotalCount == 0 {
-		return nil, &errs.RefNotFoundError{
+		return nil, &vo.RefNotFoundError{
 			Ref: tag,
 		}
 	}
@@ -255,7 +254,7 @@ func (g *Github) GetConfig(ctx context.Context, u *ent.User, r *ent.Repo) (*vo.C
 		Repositories.
 		GetContents(ctx, r.Namespace, r.Name, r.ConfigPath, &github.RepositoryContentGetOptions{})
 	if res.StatusCode == http.StatusNotFound {
-		return nil, &errs.ConfigNotFoundError{
+		return nil, &vo.ConfigNotFoundError{
 			RepoName: r.Name,
 		}
 	} else if err != nil {
@@ -269,7 +268,7 @@ func (g *Github) GetConfig(ctx context.Context, u *ent.User, r *ent.Repo) (*vo.C
 
 	c := &vo.Config{}
 	if err := yaml.Unmarshal([]byte(content), c); err != nil {
-		return nil, &errs.ConfigParseError{
+		return nil, &vo.ConfigParseError{
 			RepoName: r.Name,
 			Err:      err,
 		}
