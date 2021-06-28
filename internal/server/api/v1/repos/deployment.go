@@ -133,6 +133,10 @@ func (r *Repo) CreateDeployment(c *gin.Context) {
 			r.log.Warn("failed to get the env.", zap.Error(err))
 			gb.ErrorResponse(c, http.StatusUnprocessableEntity, "It has failed to get the env in the configuration file.")
 			return
+		} else if ent.IsConstraintError(err) {
+			r.log.Warn("deployment number conflict.", zap.Error(err))
+			gb.ErrorResponse(c, http.StatusConflict, "The conflict occurs, please retry.")
+			return
 		}
 
 		r.log.Error("failed to deploy.", zap.Error(err))
