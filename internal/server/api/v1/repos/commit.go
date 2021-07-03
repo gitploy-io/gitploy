@@ -5,7 +5,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/hanjunlee/gitploy/ent"
-	errs "github.com/hanjunlee/gitploy/internal/errors"
 	gb "github.com/hanjunlee/gitploy/internal/server/global"
 	"github.com/hanjunlee/gitploy/vo"
 	"go.uber.org/zap"
@@ -50,7 +49,7 @@ func (r *Repo) GetCommit(c *gin.Context) {
 	repo := rv.(*ent.Repo)
 
 	commit, err := r.i.GetCommit(ctx, u, repo, sha)
-	if errs.IsRefNotFoundError(err) {
+	if vo.IsRefNotFoundError(err) {
 		r.log.Warn("The commit is not found.", zap.String("repo", repo.Name), zap.String("sha", sha), zap.Error(err))
 		gb.ErrorResponse(c, http.StatusNotFound, "The commit is not found.")
 		return
@@ -77,7 +76,7 @@ func (r *Repo) ListStatuses(c *gin.Context) {
 	repo := rv.(*ent.Repo)
 
 	ss, err := r.i.ListCommitStatuses(ctx, u, repo, sha)
-	if errs.IsRefNotFoundError(err) {
+	if vo.IsRefNotFoundError(err) {
 		r.log.Warn("The commit is not found.", zap.String("repo", repo.Name), zap.String("sha", sha), zap.Error(err))
 		gb.ErrorResponse(c, http.StatusNotFound, "The commit is not found.")
 		return
