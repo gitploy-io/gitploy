@@ -1,14 +1,30 @@
 package vo
 
+import (
+	"strconv"
+
+	"github.com/creasty/defaults"
+	"gopkg.in/yaml.v3"
+)
+
 type (
 	Config struct {
 		Envs []*Env `json:"envs" yaml:"envs"`
 	}
 
 	Env struct {
-		Name             string    `json:"name" yaml:"name"`
-		RequiredContexts []string  `json:"required_contexts" yaml:"required_contexts"`
-		Approval         *Approval `json:"approval" yaml:"approval"`
+		Name        string `json:"name" yaml:"name"`
+		Task        string `json:"task" yaml:"task" default:"deploy"`
+		Description string `json:"description" yaml:"description"`
+		// The type of auto_merge must be string to avoid
+		// that the value of auto_merge is always set true
+		// after processing defaults.Set
+		StrAutoMerge          string    `json:"auto_merge" yaml:"auto_merge"`
+		AutoMerge             bool      `default:"true"`
+		RequiredContexts      []string  `json:"required_contexts" yaml:"required_contexts"`
+		Payload               string    `json:"payload" yaml:"payload"`
+		ProductionEnvironment bool      `json:"production_environment" yaml:"production_environment"`
+		Approval              *Approval `json:"approval" yaml:"approval"`
 	}
 
 	Approval struct {
@@ -43,4 +59,26 @@ func (e *Env) HasApproval() bool {
 	}
 
 	return true
+}
+
+func UnmarshalYAML(content []byte, c *Config) error {
+	if err := yaml.Unmarshal([]byte(content), c); err != nil {
+		return err
+	}
+
+	if err := defaults.Set(c); err != nil {
+		return err
+	}
+
+	// Set default value manually.
+	for _, e := range c.Envs {
+		am, err := strconv.ParseBool(e.StrAutoMerge)
+		if err != nil {
+			continue
+		}
+
+		e.AutoMerge = am
+	}
+
+	return nil
 }
