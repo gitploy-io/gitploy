@@ -2,8 +2,8 @@ import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit'
 import { StatusCodes } from 'http-status-codes'
 import { message } from "antd"
 
-import { searchRepo, getConfig, listDeployments, createDeployment } from "../apis"
-import { Repo, Deployment, DeploymentStatus, RequestStatus, DeploymentType, HttpNotFoundError } from "../models"
+import { searchRepo, getConfig, listDeployments, rollbackDeployment } from "../apis"
+import { Repo, Deployment, DeploymentStatus, RequestStatus, HttpNotFoundError, HttpRequestError } from "../models"
 
 const page = 1
 const perPage = 100
@@ -68,7 +68,7 @@ export const fetchDeployments = createAsyncThunk<Deployment[], void, { state: {r
 export const rollback = createAsyncThunk<void, void, { state: {repoRollback: RepoRollbackState}}> (
     "repoRollback/deploy",
     async (_ , { getState, rejectWithValue, requestId }) => {
-        const { repo, env, deployment, deployId, deploying } = getState().repoRollback
+        const { repo, deployment, deployId, deploying } = getState().repoRollback
         if (repo === null) throw new Error("The repo is not set.")
         if (deployment === null) throw new Error("The deployment is null.")
 
@@ -77,14 +77,15 @@ export const rollback = createAsyncThunk<void, void, { state: {repoRollback: Rep
         }
 
         try {
-            if (deployment.type === DeploymentType.Branch || deployment.type === DeploymentType.Commit) {
-                await createDeployment(repo.id, DeploymentType.Commit, deployment.sha, env)
-            } else if (deployment.type === DeploymentType.Tag) {
-                await createDeployment(repo.id, DeploymentType.Tag, deployment.ref, env)
-            } 
+            await rollbackDeployment(repo.id, deployment.number)
             message.success("It starts to rollback.", 3)
             return
         } catch(e) {
+            if (e instanceof HttpRequestError && e.code === StatusCodes.CONFLICT) {
+                message.error("The rollback is conflicted, please retry.", 3)
+                return rejectWithValue(e)
+            }
+            
             message.error("It has failed to rollback.", 3)
             return rejectWithValue(e)
         }
