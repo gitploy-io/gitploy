@@ -233,10 +233,14 @@ func (g *Github) CreateDeployment(ctx context.Context, u *ent.User, r *ent.Repo,
 	gd, _, err := g.Client(ctx, u.Token).
 		Repositories.
 		CreateDeployment(ctx, r.Namespace, r.Name, &github.DeploymentRequest{
-			Ref:              github.String(d.Ref),
-			RequiredContexts: &e.RequiredContexts,
-			Environment:      github.String(d.Env),
-			Description:      github.String("Deployed by Gitploy."),
+			Ref:                   github.String(d.Ref),
+			Environment:           github.String(e.Name),
+			Task:                  github.String(e.Task),
+			Description:           github.String(e.Description),
+			AutoMerge:             github.Bool(e.AutoMerge),
+			RequiredContexts:      &e.RequiredContexts,
+			Payload:               github.String(e.Payload),
+			ProductionEnvironment: github.Bool(e.ProductionEnvironment),
 		})
 	if err != nil {
 		return nil, err
