@@ -22,13 +22,12 @@ export const apiMiddleware: Middleware = (api: MiddlewareAPI) => (
 ) => (action) => {
     if (!isRejectedWithValue(action)) {
         next(action)
+        return
     }
 
     if (action.payload instanceof HttpUnauthorizedError) {
         api.dispatch(mainSlice.actions.setAuthorized(false))
-    }
-
-    if (action.payload instanceof HttpInternalServerError) {
+    } else if (action.payload instanceof HttpInternalServerError) {
         api.dispatch(mainSlice.actions.setAvailable(false))
     }
 
