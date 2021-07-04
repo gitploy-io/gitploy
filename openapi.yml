@@ -533,41 +533,6 @@ paths:
         '500':
           $ref: '#/components/responses/500InternalError'
 
-  /repos/{repoId}/deployments/latest:
-    get:
-      tags:
-        - Repo
-      summary: Get latest deployments
-      parameters:
-        - in: path
-          name: repoId
-          required: true
-          schema:
-            type: integer
-            description: The repository id
-        - in: query
-          name: env
-          schema:
-            type: string
-            description: The target environment
-      responses:
-        '200':
-          description: Deployment 
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Deployment'
-        '400':
-          $ref: '#/components/responses/400BadRequest'
-        '401': 
-          $ref: '#/components/responses/401Unauthorized'
-        '403': 
-          $ref: '#/components/responses/403Forbidden'
-        '404': 
-          $ref: '#/components/responses/404NotFound'
-        '500':
-          $ref: '#/components/responses/500InternalError'
-
   /repos/{repoId}/deployments/{number}:
     get:
       tags:
