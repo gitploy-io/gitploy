@@ -32,7 +32,28 @@ export const createDeployment = async (repoId: string, type: DeploymentType = De
     })
     if (response.status !== StatusCodes.CREATED) {
         throw new HttpRequestError(response.status, "It has failed to deploy.")
+    } 
+
+    const deployment = response
+        .json()
+        .then(d => mapDataToDeployment(d))
+    return deployment
+}
+
+export const rollbackDeployment = async (repoId: string, number: number) => {
+    const response = await _fetch(`${instance}/api/v1/repos/${repoId}/deployments/${number}/rollback`, {
+        headers,
+        credentials: 'same-origin',
+        method: "POST",
+    })
+    if (response.status !== StatusCodes.CREATED) {
+        throw new HttpRequestError(response.status, "It has failed to rollback.")
     }
+
+    const deployment = response
+        .json()
+        .then(d => mapDataToDeployment(d))
+    return deployment
 }
 
 export function mapDataToDeployment(d: any) {
@@ -50,6 +71,7 @@ export function mapDataToDeployment(d: any) {
 
     return {
         id: d.id,
+        number: d.number,
         uid: d.uid? d.uid : "",
         type: mapDeploymentType(d.type),
         ref: d.ref,

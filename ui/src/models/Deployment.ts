@@ -1,5 +1,6 @@
 export default interface Deployment {
     id: number
+    number: number
     uid: number
     type: DeploymentType
     ref: string
