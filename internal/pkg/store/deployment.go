@@ -66,35 +66,31 @@ func (s *Store) FindLatestDeployment(ctx context.Context, r *ent.Repo, env strin
 		First(ctx)
 }
 
-// CreateDeployment always set the next number of deployment
-// when it creates.
-func (s *Store) CreateDeployment(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment) (*ent.Deployment, error) {
+// TODO: Lock deployments for the index which has repo_id.
+func (s *Store) GetNextDeploymentNumberOfRepo(ctx context.Context, d *ent.Deployment) (int, error) {
 	cnt, err := s.c.Deployment.Query().
 		Where(
-			deployment.RepoID(r.ID),
+			deployment.RepoID(d.RepoID),
 		).
 		Count(ctx)
 	if err != nil {
-		return nil, err
+		return 0, err
 	}
 
-	d, err = s.c.Deployment.Create().
-		SetNumber(cnt + 1).
+	return cnt + 1, nil
+}
+
+// CreateDeployment always set the next number of deployment
+// when it creates.
+func (s *Store) CreateDeployment(ctx context.Context, d *ent.Deployment) (*ent.Deployment, error) {
+	return s.c.Deployment.Create().
+		SetNumber(d.Number).
 		SetType(d.Type).
 		SetRef(d.Ref).
 		SetEnv(d.Env).
-		SetUserID(u.ID).
-		SetRepoID(r.ID).
+		SetUserID(d.UserID).
+		SetRepoID(d.RepoID).
 		Save(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	s.c.Repo.UpdateOneID(r.ID).
-		SetLatestDeployedAt(d.CreatedAt).
-		Save(ctx)
-
-	return d, nil
 }
 
 func (s *Store) UpdateDeployment(ctx context.Context, d *ent.Deployment) (*ent.Deployment, error) {

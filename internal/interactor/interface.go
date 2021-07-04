@@ -35,7 +35,8 @@ type (
 		ListDeployments(ctx context.Context, r *ent.Repo, env string, status string, page, perPage int) ([]*ent.Deployment, error)
 		FindDeploymentWithEdgesByID(ctx context.Context, id int) (*ent.Deployment, error)
 		FindLatestDeployment(ctx context.Context, r *ent.Repo, env string) (*ent.Deployment, error)
-		CreateDeployment(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment) (*ent.Deployment, error)
+		GetNextDeploymentNumberOfRepo(ctx context.Context, d *ent.Deployment) (int, error)
+		CreateDeployment(ctx context.Context, d *ent.Deployment) (*ent.Deployment, error)
 		UpdateDeployment(ctx context.Context, d *ent.Deployment) (*ent.Deployment, error)
 
 		CreateDeployChatCallback(ctx context.Context, cu *ent.ChatUser, repo *ent.Repo, cb *ent.ChatCallback) (*ent.ChatCallback, error)

@@ -134,12 +134,12 @@ func TestStore_ListDeployments(t *testing.T) {
 	})
 }
 
-func TestStore_CreateDeployment(t *testing.T) {
+func TestStore_GetNextDeploymentNumberOfRepo(t *testing.T) {
 	client := enttest.Open(t, "sqlite3", "file:ent?mode=memory&cache=shared&_fk=1")
 	defer client.Close()
 
 	ctx := context.Background()
-	r, err := client.Repo.Create().
+	_, err := client.Repo.Create().
 		SetID("1").
 		SetNamespace("octocat").
 		SetName("HelloWorld").
@@ -149,7 +149,7 @@ func TestStore_CreateDeployment(t *testing.T) {
 		return
 	}
 
-	u, err := client.User.Create().
+	_, err = client.User.Create().
 		SetID("1").
 		SetLogin("octocat").
 		SetToken("").
@@ -179,17 +179,16 @@ func TestStore_CreateDeployment(t *testing.T) {
 	s := NewStore(client)
 
 	t.Run("The next number is 2", func(tt *testing.T) {
-		d, err := s.CreateDeployment(ctx, u, r, &ent.Deployment{
-			Type: "branch",
-			Ref:  "main",
-			Env:  "prod",
+
+		num, err := s.GetNextDeploymentNumberOfRepo(ctx, &ent.Deployment{
+			RepoID: "1",
 		})
 		if err != nil {
 			t.Errorf("CreateDeployment return error: %s", err)
 		}
 
-		if d.Number != 2 {
-			t.Errorf("CreateDeployment = %d, 2", d.Number)
+		if num != 2 {
+			t.Errorf("CreateDeployment = %d, 2", num)
 		}
 	})
 }

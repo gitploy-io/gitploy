@@ -10,7 +10,13 @@ import (
 )
 
 func (i *Interactor) Deploy(ctx context.Context, u *ent.User, re *ent.Repo, d *ent.Deployment, env *vo.Env) (*ent.Deployment, error) {
-	d, err := i.Store.CreateDeployment(ctx, u, re, d)
+	d.UserID = u.ID
+	d.RepoID = re.ID
+
+	num, err := i.Store.GetNextDeploymentNumberOfRepo(ctx, d)
+	d.Number = num
+
+	d, err = i.Store.CreateDeployment(ctx, d)
 	if err != nil {
 		return nil, fmt.Errorf("failed to save a new deployment to the store: %w", err)
 	}
