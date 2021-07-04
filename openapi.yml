@@ -598,8 +598,10 @@ paths:
           $ref: '#/components/responses/403Forbidden'
         '404': 
           $ref: '#/components/responses/404NotFound'
+        '409':
+          $ref: '#/components/responses/409Conflict'
         '422':
-          description: The deployment payload or the configuration are invalid.
+          description: The deployment number or the configuration is invalid.
           $ref: '#/components/responses/422UnprocessableEntity'
         '500':
           $ref: '#/components/responses/500InternalError'
