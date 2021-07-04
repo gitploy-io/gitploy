@@ -43,61 +43,26 @@ func (r *Repo) ListDeployments(c *gin.Context) {
 	gb.Response(c, http.StatusOK, ds)
 }
 
-func (r *Repo) GetLatestDeployment(c *gin.Context) {
+func (r *Repo) GetDeploymentByNumber(c *gin.Context) {
 	var (
-		env = c.Query("env")
+		number = c.Param("number")
 	)
 
 	vr, _ := c.Get(KeyRepo)
 	re := vr.(*ent.Repo)
 
-	if env == "" {
-		r.log.Warn("\"env\" query is required.")
-		gb.ErrorResponse(c, http.StatusBadRequest, "\"env\" is not exist in the query.")
-		return
-	}
-
 	ctx := c.Request.Context()
 
-	d, err := r.i.FindLatestDeployment(ctx, re, env)
+	d, err := r.i.FindDeploymentWithEdgesOfRepoByNumber(ctx, re, atoi(number))
 	if ent.IsNotFound(err) {
-		r.log.Warn("the latest deployment is not found.", zap.String("repo", re.Name), zap.String("env", env))
-		gb.ErrorResponse(c, http.StatusNotFound, "the latest deployment is not found.")
-		return
+		r.log.Warn("the deployment is not found.", zap.Error(err))
+		gb.ErrorResponse(c, http.StatusNotFound, "The deployment is not found.")
 	} else if err != nil {
-		r.log.Error("failed to get the latest deployment.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to get the latest deployment.")
-		return
+		r.log.Error("failed to find deployment.", zap.Error(err))
+		gb.ErrorResponse(c, http.StatusNotFound, "It has failed to find the deployment.")
 	}
 
 	gb.Response(c, http.StatusOK, d)
-}
-
-func (r *Repo) GetConfig(c *gin.Context) {
-	vu, _ := c.Get(gb.KeyUser)
-	u := vu.(*ent.User)
-
-	vr, _ := c.Get(KeyRepo)
-	re := vr.(*ent.Repo)
-
-	ctx := c.Request.Context()
-
-	config, err := r.i.GetConfig(ctx, u, re)
-	if vo.IsConfigNotFoundError(err) {
-		r.log.Warn("failed to find the config file.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusNotFound, "It has failed to find the configuraton file.")
-		return
-	} else if vo.IsConfigParseError(err) {
-		r.log.Warn("failed to parse the config.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "It has failed to parse the configuraton file.")
-		return
-	} else if err != nil {
-		r.log.Error("failed to get the config file.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to get the config file.")
-		return
-	}
-
-	gb.Response(c, http.StatusOK, config)
 }
 
 func (r *Repo) CreateDeployment(c *gin.Context) {
@@ -156,4 +121,99 @@ func (r *Repo) CreateDeployment(c *gin.Context) {
 	}
 
 	gb.Response(c, http.StatusCreated, d)
+}
+
+func (r *Repo) RollbackDeployment(c *gin.Context) {
+	var (
+		number = c.Param("number")
+	)
+
+	vu, _ := c.Get(gb.KeyUser)
+	u := vu.(*ent.User)
+
+	vr, _ := c.Get(KeyRepo)
+	re := vr.(*ent.Repo)
+
+	ctx := c.Request.Context()
+
+	d, err := r.i.FindDeploymentWithEdgesOfRepoByNumber(ctx, re, atoi(number))
+	if ent.IsNotFound(err) {
+		r.log.Warn("the deployment is not found.", zap.Error(err))
+		gb.ErrorResponse(c, http.StatusNotFound, "The deployment is not found.")
+	}
+
+	cf, err := r.i.GetConfig(ctx, u, re)
+	if vo.IsConfigNotFoundError(err) {
+		r.log.Warn("failed to get the config.", zap.Error(err))
+		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "It has failed to find the configuraton file.")
+		return
+	} else if vo.IsConfigParseError(err) {
+		r.log.Warn("failed to parse the config.", zap.Error(err))
+		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "It has failed to parse the configuraton file.")
+		return
+	} else if err != nil {
+		r.log.Error("failed to get the configuration file.", zap.Error(err))
+		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to get the configuraton file.")
+		return
+	}
+
+	if !cf.HasEnv(d.Env) {
+		r.log.Warn("failed to get the env.", zap.Error(err))
+		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "It has failed to get the env in the configuration file.")
+		return
+	}
+
+	// Set auto_merge false to avoid the merge conflict.
+	env := cf.GetEnv(d.Env)
+	env.AutoMerge = false
+
+	d, err = r.i.Deploy(ctx, u, re,
+		&ent.Deployment{
+			Type: d.Type,
+			Ref:  d.Ref,
+			Env:  d.Env,
+		},
+		env)
+	if ent.IsConstraintError(err) {
+		r.log.Warn("deployment number conflict.", zap.Error(err))
+		gb.ErrorResponse(c, http.StatusConflict, "The conflict occurs, please retry.")
+		return
+	} else if err != nil {
+		r.log.Error("failed to deploy.", zap.Error(err))
+		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to deploy.")
+		return
+	}
+
+	if err = r.i.Publish(ctx, d); err != nil {
+		r.log.Warn("failed to notify the deployment.", zap.Error(err))
+	}
+
+	gb.Response(c, http.StatusCreated, d)
+}
+
+func (r *Repo) GetConfig(c *gin.Context) {
+	vu, _ := c.Get(gb.KeyUser)
+	u := vu.(*ent.User)
+
+	vr, _ := c.Get(KeyRepo)
+	re := vr.(*ent.Repo)
+
+	ctx := c.Request.Context()
+
+	config, err := r.i.GetConfig(ctx, u, re)
+	if vo.IsConfigNotFoundError(err) {
+		r.log.Warn("failed to find the config file.", zap.Error(err))
+		gb.ErrorResponse(c, http.StatusNotFound, "It has failed to find the configuraton file.")
+		return
+	} else if vo.IsConfigParseError(err) {
+		r.log.Warn("failed to parse the config.", zap.Error(err))
+		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "It has failed to parse the configuraton file.")
+		return
+	} else if err != nil {
+		r.log.Error("failed to get the config file.", zap.Error(err))
+		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to get the config file.")
+		return
+	}
+
+	gb.Response(c, http.StatusOK, config)
 }

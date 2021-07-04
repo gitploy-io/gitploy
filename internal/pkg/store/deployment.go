@@ -50,19 +50,17 @@ func (s *Store) FindDeploymentWithEdgesByID(ctx context.Context, id int) (*ent.D
 		First(ctx)
 }
 
-func (s *Store) FindLatestDeployment(ctx context.Context, r *ent.Repo, env string) (*ent.Deployment, error) {
+func (s *Store) FindDeploymentWithEdgesOfRepoByNumber(ctx context.Context, r *ent.Repo, number int) (*ent.Deployment, error) {
 	return s.c.Deployment.
 		Query().
 		Where(
-			deployment.EnvEQ(env),
-			deployment.HasRepoWith(repo.IDEQ(r.ID)),
+			deployment.And(
+				deployment.RepoID(r.ID),
+				deployment.NumberEQ(number),
+			),
 		).
-		Order(
-			ent.Desc(deployment.FieldCreatedAt),
-		).
-		WithUser(func(uq *ent.UserQuery) {
-			uq.Select("id", "login", "avatar")
-		}).
+		WithRepo().
+		WithUser().
 		First(ctx)
 }
 
