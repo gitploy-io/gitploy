@@ -10,7 +10,7 @@ paths:
     post:
       tags:
         - common
-      summary: Synchronize with SCM
+      summary: Synchronize with SCM.
       responses:
         '200':
           description: OK
@@ -22,7 +22,7 @@ paths:
     get:
       tags:
         - Repo
-      summary: List repositories the user can access
+      summary: List repositories the user can access.
       parameters:
         - in: query
           name: sort 
@@ -94,7 +94,7 @@ paths:
     get:
       tags:
         - Repo
-      summary: Get repository
+      summary: Get the repository.
       parameters:
         - in: path
           name: id
@@ -118,7 +118,7 @@ paths:
     patch:
       tags:
         - Repo
-      summary: Update config path.
+      summary: Update the config path of repository.
       requestBody:
         content:
           application/json:
@@ -141,7 +141,7 @@ paths:
     patch:
       tags:
         - Repo
-      summary: It create the webhook of the repo
+      summary: It activate the webhook of the repository.
       parameters:
         - in: path
           name: id
@@ -167,7 +167,7 @@ paths:
     patch:
       tags:
         - Repo
-      summary: It removes the webhook of the repo
+      summary: It deactivate the webhook of the repository.
       parameters:
         - in: path
           name: id
@@ -188,12 +188,11 @@ paths:
           $ref: '#/components/responses/403Forbidden'
         '500':
           $ref: '#/components/responses/500InternalError'
-
   /repos/{id}/commits:
     get:
       tags:
         - Repo
-      summary: List commits
+      summary: List commits of repository.
       parameters:
         - in: path
           name: id
@@ -238,7 +237,7 @@ paths:
     get:
       tags:
         - Repo
-      summary: List commits
+      summary: Get the commit of repository.
       parameters:
         - in: path
           name: id
@@ -271,7 +270,7 @@ paths:
     get:
       tags:
         - Repo
-      summary: List commits
+      summary: List statuses of the commit.
       parameters:
         - in: path
           name: id
@@ -309,7 +308,7 @@ paths:
     get:
       tags:
         - Repo
-      summary: List branches
+      summary: List branches of the repository.
       parameters:
         - in: path
           name: id
@@ -346,7 +345,7 @@ paths:
     get:
       tags:
         - Repo
-      summary: Return the branch
+      summary: Get the branch of repository.
       parameters:
         - in: path
           name: id
@@ -379,7 +378,7 @@ paths:
     get:
       tags:
         - Repo
-      summary: List tags
+      summary: List tags of the repository.
       parameters:
         - in: path
           name: id
@@ -416,7 +415,7 @@ paths:
     get:
       tags:
         - Repo
-      summary: Return the tag
+      summary: Get the tag of the repository.
       parameters:
         - in: path
           name: id
@@ -449,7 +448,7 @@ paths:
     get:
       tags:
         - Repo
-      summary: List deployments
+      summary: List deployments of repository.
       parameters:
         - in: path
           name: id
@@ -459,11 +458,13 @@ paths:
             description: The repository id
         - in: query
           name: env
+          description: Name for the target deployment environment.
           schema:
             type: string
             description: The target environment
         - in: query
           name: status
+          description: The status of deployment.
           schema:
             type: string
             description: The deployment status
@@ -497,7 +498,7 @@ paths:
     post:
       tags:
         - Repo
-      summary: Create a new deployment
+      summary: Create a new deployment.
       parameters:
         - in: path
           name: id
@@ -537,7 +538,7 @@ paths:
     get:
       tags:
         - Repo
-      summary: Get the deployments
+      summary: Get the deployments by the number.
       parameters:
         - in: path
           name: id
@@ -571,7 +572,7 @@ paths:
     post:
       tags:
         - Repo
-      summary: Rollback to the deployment.
+      summary: Rollback by the deployment.
       parameters:
         - in: path
           name: id
@@ -639,6 +640,7 @@ paths:
     get:
       tags:
         - User
+      summary: Get my information.
       responses:
         '200':
           description: Ok
@@ -654,6 +656,7 @@ paths:
     get:
       tags:
         - Notification
+      summary: List my notifications.
       parameters:
         - in: query
           name: page
@@ -678,13 +681,14 @@ paths:
           $ref: '#/components/responses/401Unauthorized'
         '500':
           $ref: '#/components/responses/500InternalError'
-  /notifications/{notificationId}/check:
+  /notifications/{id}/check:
     patch:
       tags:
         - Notification
+      summary: Set the notification checked.
       parameters:
         - in: path
-          name: notificationId
+          name: id
           required: true
           schema:
             type: integer
