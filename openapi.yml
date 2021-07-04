@@ -528,7 +528,7 @@ paths:
         '403': 
           $ref: '#/components/responses/403Forbidden'
         '422':
-          description: The configuration file is not valid.
+          description: The deployment payload or the configuration are invalid.
           $ref: '#/components/responses/422UnprocessableEntity'
         '500':
           $ref: '#/components/responses/500InternalError'
@@ -565,6 +565,77 @@ paths:
           $ref: '#/components/responses/403Forbidden'
         '404': 
           $ref: '#/components/responses/404NotFound'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+
+  /repos/{repoId}/deployments/{number}:
+    get:
+      tags:
+        - Repo
+      summary: Get the deployments
+      parameters:
+        - in: path
+          name: repoId
+          required: true
+          schema:
+            type: integer
+            description: The repository id
+        - in: path
+          name: number
+          required: true
+          schema:
+            type: integer
+            description: The deployment number.
+      responses:
+        '200':
+          description: Deployment 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Deployment'
+        '401': 
+          $ref: '#/components/responses/401Unauthorized'
+        '403': 
+          $ref: '#/components/responses/403Forbidden'
+        '404': 
+          $ref: '#/components/responses/404NotFound'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+
+  /repos/{repoId}/deployments/{number}/rollback:
+    post:
+      tags:
+        - Repo
+      summary: Rollback to the deployment.
+      parameters:
+        - in: path
+          name: repoId
+          required: true
+          schema:
+            type: integer
+            description: The repository id
+        - in: path
+          name: number
+          required: true
+          schema:
+            type: integer
+            description: The deployment number.
+      responses:
+        '201':
+          description: Rollbacked Deployment
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Deployment'
+        '401': 
+          $ref: '#/components/responses/401Unauthorized'
+        '403': 
+          $ref: '#/components/responses/403Forbidden'
+        '404': 
+          $ref: '#/components/responses/404NotFound'
+        '422':
+          description: The deployment payload or the configuration are invalid.
+          $ref: '#/components/responses/422UnprocessableEntity'
         '500':
           $ref: '#/components/responses/500InternalError'
 
@@ -807,6 +878,13 @@ components:
           type: string
         updated_at:
           type: string
+        edges:
+          type: object
+          properties:
+            user:
+              $ref: '#/components/schemas/User'
+            repo:
+              $ref: '#/components/schemas/Repository'
     Config:
       type: object
       properties:
