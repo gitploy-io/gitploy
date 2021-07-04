@@ -45,7 +45,7 @@ func (n *Noti) ListNotifications(c *gin.Context) {
 
 func (n *Noti) SetNotificationChecked(c *gin.Context) {
 	var (
-		id = c.Param("notificationID")
+		id = c.Param("id")
 	)
 	v, _ := c.Get(gb.KeyUser)
 	u, _ := v.(*ent.User)
