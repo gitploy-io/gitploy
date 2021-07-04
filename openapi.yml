@@ -90,14 +90,14 @@ paths:
           $ref: '#/components/responses/404NotFound'
         '500':
           $ref: '#/components/responses/500InternalError'
-  /repos/{repoId}:
+  /repos/{id}:
     get:
       tags:
         - Repo
       summary: Get repository
       parameters:
         - in: path
-          name: repoId
+          name: id
           required: true
           schema:
             type: integer
@@ -129,7 +129,7 @@ paths:
                   type: string
       parameters:
         - in: path
-          name: repoId
+          name: id
           required: true
           schema:
             type: integer
@@ -137,14 +137,14 @@ paths:
       responses:
         '200':
           description: Ok
-  /repos/{repoId}/activate:
+  /repos/{id}/activate:
     patch:
       tags:
         - Repo
       summary: It create the webhook of the repo
       parameters:
         - in: path
-          name: repoId
+          name: id
           required: true
           schema:
             type: integer
@@ -163,14 +163,14 @@ paths:
         '500':
           $ref: '#/components/responses/500InternalError'
 
-  /repos/{repoId}/deactivate:
+  /repos/{id}/deactivate:
     patch:
       tags:
         - Repo
       summary: It removes the webhook of the repo
       parameters:
         - in: path
-          name: repoId
+          name: id
           required: true
           schema:
             type: integer
@@ -189,14 +189,14 @@ paths:
         '500':
           $ref: '#/components/responses/500InternalError'
 
-  /repos/{repoId}/commits:
+  /repos/{id}/commits:
     get:
       tags:
         - Repo
       summary: List commits
       parameters:
         - in: path
-          name: repoId
+          name: id
           required: true
           schema:
             type: integer
@@ -234,14 +234,14 @@ paths:
           $ref: '#/components/responses/403Forbidden'
         '500':
           $ref: '#/components/responses/500InternalError'
-  /repos/{repoId}/commits/{sha}:
+  /repos/{id}/commits/{sha}:
     get:
       tags:
         - Repo
       summary: List commits
       parameters:
         - in: path
-          name: repoId
+          name: id
           required: true
           schema:
             type: integer
@@ -267,14 +267,14 @@ paths:
           $ref: '#/components/responses/404NotFound'
         '500':
           $ref: '#/components/responses/500InternalError'
-  /repos/{repoId}/commits/{sha}/statuses:
+  /repos/{id}/commits/{sha}/statuses:
     get:
       tags:
         - Repo
       summary: List commits
       parameters:
         - in: path
-          name: repoId
+          name: id
           required: true
           schema:
             type: integer
@@ -305,14 +305,14 @@ paths:
           $ref: '#/components/responses/404NotFound'
         '500':
           $ref: '#/components/responses/500InternalError'
-  /repos/{repoId}/branches:
+  /repos/{id}/branches:
     get:
       tags:
         - Repo
       summary: List branches
       parameters:
         - in: path
-          name: repoId
+          name: id
           required: true
           schema:
             type: integer
@@ -342,14 +342,14 @@ paths:
           $ref: '#/components/responses/403Forbidden'
         '500':
           $ref: '#/components/responses/500InternalError'
-  /repos/{repoId}/branches/{branch}:
+  /repos/{id}/branches/{branch}:
     get:
       tags:
         - Repo
       summary: Return the branch
       parameters:
         - in: path
-          name: repoId
+          name: id
           required: true
           schema:
             type: integer
@@ -375,14 +375,14 @@ paths:
           $ref: '#/components/responses/404NotFound'
         '500':
           $ref: '#/components/responses/500InternalError'
-  /repos/{repoId}/tags:
+  /repos/{id}/tags:
     get:
       tags:
         - Repo
       summary: List tags
       parameters:
         - in: path
-          name: repoId
+          name: id
           required: true
           schema:
             type: integer
@@ -412,14 +412,14 @@ paths:
           $ref: '#/components/responses/403Forbidden'
         '500':
           $ref: '#/components/responses/500InternalError'
-  /repos/{repoId}/tags/{tag}:
+  /repos/{id}/tags/{tag}:
     get:
       tags:
         - Repo
       summary: Return the tag
       parameters:
         - in: path
-          name: repoId
+          name: id
           required: true
           schema:
             type: integer
@@ -445,14 +445,14 @@ paths:
           $ref: '#/components/responses/404NotFound'
         '500':
           $ref: '#/components/responses/500InternalError'
-  /repos/{repoId}/deployments:
+  /repos/{id}/deployments:
     get:
       tags:
         - Repo
       summary: List deployments
       parameters:
         - in: path
-          name: repoId
+          name: id
           required: true
           schema:
             type: integer
@@ -500,7 +500,7 @@ paths:
       summary: Create a new deployment
       parameters:
         - in: path
-          name: repoId
+          name: id
           required: true
           schema:
             type: integer
@@ -533,14 +533,14 @@ paths:
         '500':
           $ref: '#/components/responses/500InternalError'
 
-  /repos/{repoId}/deployments/{number}:
+  /repos/{id}/deployments/{number}:
     get:
       tags:
         - Repo
       summary: Get the deployments
       parameters:
         - in: path
-          name: repoId
+          name: id
           required: true
           schema:
             type: integer
@@ -567,14 +567,14 @@ paths:
         '500':
           $ref: '#/components/responses/500InternalError'
 
-  /repos/{repoId}/deployments/{number}/rollback:
+  /repos/{id}/deployments/{number}/rollback:
     post:
       tags:
         - Repo
       summary: Rollback to the deployment.
       parameters:
         - in: path
-          name: repoId
+          name: id
           required: true
           schema:
             type: integer
@@ -606,14 +606,14 @@ paths:
         '500':
           $ref: '#/components/responses/500InternalError'
 
-  /repos/{repoId}/config:
+  /repos/{id}/config:
     get:
       tags:
         - Repo
       summary: Get the config file
       parameters:
         - in: path
-          name: repoId
+          name: id
           required: true
           schema:
             type: integer
