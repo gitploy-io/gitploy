@@ -31,7 +31,7 @@ func NewRepoMiddleware(i Interactor) *RepoMiddleware {
 func (rm *RepoMiddleware) Repo() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var (
-			repoID = c.Param("repoID")
+			repoID = c.Param("id")
 		)
 
 		v, _ := c.Get(gb.KeyUser)
@@ -57,7 +57,7 @@ func (rm *RepoMiddleware) Repo() gin.HandlerFunc {
 func (rm *RepoMiddleware) WritePerm() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var (
-			repoID = c.Param("repoID")
+			repoID = c.Param("id")
 		)
 
 		v, _ := c.Get(gb.KeyUser)
@@ -87,7 +87,7 @@ func (rm *RepoMiddleware) WritePerm() gin.HandlerFunc {
 func (rm *RepoMiddleware) AdminPerm() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var (
-			repoID = c.Param("repoID")
+			repoID = c.Param("id")
 		)
 
 		v, _ := c.Get(gb.KeyUser)
