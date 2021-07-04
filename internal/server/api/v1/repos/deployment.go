@@ -115,30 +115,37 @@ func (r *Repo) CreateDeployment(c *gin.Context) {
 
 	ctx := c.Request.Context()
 
+	cf, err := r.i.GetConfig(ctx, u, re)
+	if vo.IsConfigNotFoundError(err) {
+		r.log.Warn("failed to get the config.", zap.Error(err))
+		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "It has failed to find the configuraton file.")
+		return
+	} else if vo.IsConfigParseError(err) {
+		r.log.Warn("failed to parse the config.", zap.Error(err))
+		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "It has failed to parse the configuraton file.")
+		return
+	} else if err != nil {
+		r.log.Error("failed to get the configuration file.", zap.Error(err))
+		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to get the configuraton file.")
+		return
+	}
+
+	if !cf.HasEnv(p.Env) {
+		r.log.Warn("failed to get the env.", zap.Error(err))
+		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "It has failed to get the env in the configuration file.")
+		return
+	}
+
 	d, err := r.i.Deploy(ctx, u, re, &ent.Deployment{
 		Type: deployment.Type(p.Type),
 		Ref:  p.Ref,
 		Env:  p.Env,
-	})
-	if err != nil {
-		if vo.IsConfigNotFoundError(err) {
-			r.log.Warn("failed to get the config.", zap.Error(err))
-			gb.ErrorResponse(c, http.StatusUnprocessableEntity, "It has failed to find the configuraton file.")
-			return
-		} else if vo.IsConfigParseError(err) {
-			r.log.Warn("failed to parse the config.", zap.Error(err))
-			gb.ErrorResponse(c, http.StatusUnprocessableEntity, "It has failed to parse the configuraton file.")
-			return
-		} else if vo.IsEnvNotFoundError(err) {
-			r.log.Warn("failed to get the env.", zap.Error(err))
-			gb.ErrorResponse(c, http.StatusUnprocessableEntity, "It has failed to get the env in the configuration file.")
-			return
-		} else if ent.IsConstraintError(err) {
-			r.log.Warn("deployment number conflict.", zap.Error(err))
-			gb.ErrorResponse(c, http.StatusConflict, "The conflict occurs, please retry.")
-			return
-		}
-
+	}, cf.GetEnv(p.Env))
+	if ent.IsConstraintError(err) {
+		r.log.Warn("deployment number conflict.", zap.Error(err))
+		gb.ErrorResponse(c, http.StatusConflict, "The conflict occurs, please retry.")
+		return
+	} else if err != nil {
 		r.log.Error("failed to deploy.", zap.Error(err))
 		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to deploy.")
 		return

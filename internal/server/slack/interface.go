@@ -17,7 +17,7 @@ type (
 		FindChatCallbackByID(ctx context.Context, id string) (*ent.ChatCallback, error)
 		FindChatCallbackWithEdgesByID(ctx context.Context, id string) (*ent.ChatCallback, error)
 		CloseChatCallback(ctx context.Context, cb *ent.ChatCallback) (*ent.ChatCallback, error)
-		Deploy(ctx context.Context, u *ent.User, re *ent.Repo, d *ent.Deployment) (*ent.Deployment, error)
+		Deploy(ctx context.Context, u *ent.User, re *ent.Repo, d *ent.Deployment, env *vo.Env) (*ent.Deployment, error)
 		Publish(ctx context.Context, resource interface{}) error
 	}
 )

@@ -9,21 +9,8 @@ import (
 	"github.com/hanjunlee/gitploy/vo"
 )
 
-func (i *Interactor) Deploy(ctx context.Context, u *ent.User, re *ent.Repo, d *ent.Deployment) (*ent.Deployment, error) {
-	c, err := i.GetConfig(ctx, u, re)
-	if err != nil {
-		return nil, err
-	}
-
-	if !c.HasEnv(d.Env) {
-		return nil, &vo.EnvNotFoundError{
-			RepoName: re.Name,
-		}
-	}
-
-	env := c.GetEnv(d.Env)
-
-	d, err = i.Store.CreateDeployment(ctx, u, re, d)
+func (i *Interactor) Deploy(ctx context.Context, u *ent.User, re *ent.Repo, d *ent.Deployment, env *vo.Env) (*ent.Deployment, error) {
+	d, err := i.Store.CreateDeployment(ctx, u, re, d)
 	if err != nil {
 		return nil, fmt.Errorf("failed to save a new deployment to the store: %w", err)
 	}

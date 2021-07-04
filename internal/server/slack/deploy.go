@@ -110,19 +110,47 @@ func (s *Slack) handleDeployCmd(c *gin.Context, cmd slack.SlashCommand) {
 }
 
 func (s *Slack) interactDeploy(c *gin.Context, scb slack.InteractionCallback) {
+	var (
+		typ = scb.Submission["type"]
+		ref = scb.Submission["ref"]
+		env = scb.Submission["env"]
+	)
+
 	ctx := c.Request.Context()
 
 	cb, _ := s.i.FindChatCallbackWithEdgesByID(ctx, scb.CallbackID)
 	cu := cb.Edges.ChatUser
+	re := cb.Edges.Repo
 
 	cu, _ = s.i.FindChatUserWithUserByID(ctx, cu.ID)
 	u := cu.Edges.User
 
+	cf, err := s.i.GetConfig(ctx, u, re)
+	if vo.IsConfigNotFoundError(err) {
+		s.log.Warn("failed to get the config.", zap.Error(err))
+		c.Status(http.StatusUnprocessableEntity)
+		return
+	} else if vo.IsConfigParseError(err) {
+		s.log.Warn("failed to parse the config.", zap.Error(err))
+		c.Status(http.StatusUnprocessableEntity)
+		return
+	} else if err != nil {
+		s.log.Error("failed to get the configuration file.", zap.Error(err))
+		c.Status(http.StatusInternalServerError)
+		return
+	}
+
+	if !cf.HasEnv(env) {
+		s.log.Warn("failed to get the env.", zap.Error(err))
+		c.Status(http.StatusUnprocessableEntity)
+		return
+	}
+
 	d, err := s.i.Deploy(ctx, u, cb.Edges.Repo, &ent.Deployment{
-		Type: deployment.Type(scb.Submission["type"]),
-		Ref:  scb.Submission["ref"],
-		Env:  scb.Submission["env"],
-	})
+		Type: deployment.Type(typ),
+		Ref:  ref,
+		Env:  env,
+	}, cf.GetEnv(env))
 	if err != nil {
 		s.log.Error("failed to deploy.", zap.Error(err))
 		c.Status(http.StatusInternalServerError)
