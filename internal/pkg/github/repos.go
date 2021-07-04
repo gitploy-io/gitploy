@@ -8,7 +8,6 @@ import (
 
 	"github.com/google/go-github/v32/github"
 	graphql "github.com/shurcooL/githubv4"
-	"gopkg.in/yaml.v3"
 
 	"github.com/hanjunlee/gitploy/ent"
 	"github.com/hanjunlee/gitploy/vo"
@@ -271,7 +270,7 @@ func (g *Github) GetConfig(ctx context.Context, u *ent.User, r *ent.Repo) (*vo.C
 	}
 
 	c := &vo.Config{}
-	if err := yaml.Unmarshal([]byte(content), c); err != nil {
+	if err := vo.UnmarshalYAML([]byte(content), c); err != nil {
 		return nil, &vo.ConfigParseError{
 			RepoName: r.Name,
 			Err:      err,
