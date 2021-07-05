@@ -204,7 +204,7 @@ func (c *ChatCallbackClient) UpdateOne(cc *ChatCallback) *ChatCallbackUpdateOne 
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *ChatCallbackClient) UpdateOneID(id string) *ChatCallbackUpdateOne {
+func (c *ChatCallbackClient) UpdateOneID(id int) *ChatCallbackUpdateOne {
 	mutation := newChatCallbackMutation(c.config, OpUpdateOne, withChatCallbackID(id))
 	return &ChatCallbackUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
@@ -221,7 +221,7 @@ func (c *ChatCallbackClient) DeleteOne(cc *ChatCallback) *ChatCallbackDeleteOne 
 }
 
 // DeleteOneID returns a delete builder for the given id.
-func (c *ChatCallbackClient) DeleteOneID(id string) *ChatCallbackDeleteOne {
+func (c *ChatCallbackClient) DeleteOneID(id int) *ChatCallbackDeleteOne {
 	builder := c.Delete().Where(chatcallback.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
@@ -236,12 +236,12 @@ func (c *ChatCallbackClient) Query() *ChatCallbackQuery {
 }
 
 // Get returns a ChatCallback entity by its id.
-func (c *ChatCallbackClient) Get(ctx context.Context, id string) (*ChatCallback, error) {
+func (c *ChatCallbackClient) Get(ctx context.Context, id int) (*ChatCallback, error) {
 	return c.Query().Where(chatcallback.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *ChatCallbackClient) GetX(ctx context.Context, id string) *ChatCallback {
+func (c *ChatCallbackClient) GetX(ctx context.Context, id int) *ChatCallback {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)

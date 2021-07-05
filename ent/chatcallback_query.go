@@ -133,8 +133,8 @@ func (ccq *ChatCallbackQuery) FirstX(ctx context.Context) *ChatCallback {
 
 // FirstID returns the first ChatCallback ID from the query.
 // Returns a *NotFoundError when no ChatCallback ID was found.
-func (ccq *ChatCallbackQuery) FirstID(ctx context.Context) (id string, err error) {
-	var ids []string
+func (ccq *ChatCallbackQuery) FirstID(ctx context.Context) (id int, err error) {
+	var ids []int
 	if ids, err = ccq.Limit(1).IDs(ctx); err != nil {
 		return
 	}
@@ -146,7 +146,7 @@ func (ccq *ChatCallbackQuery) FirstID(ctx context.Context) (id string, err error
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (ccq *ChatCallbackQuery) FirstIDX(ctx context.Context) string {
+func (ccq *ChatCallbackQuery) FirstIDX(ctx context.Context) int {
 	id, err := ccq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -184,8 +184,8 @@ func (ccq *ChatCallbackQuery) OnlyX(ctx context.Context) *ChatCallback {
 // OnlyID is like Only, but returns the only ChatCallback ID in the query.
 // Returns a *NotSingularError when exactly one ChatCallback ID is not found.
 // Returns a *NotFoundError when no entities are found.
-func (ccq *ChatCallbackQuery) OnlyID(ctx context.Context) (id string, err error) {
-	var ids []string
+func (ccq *ChatCallbackQuery) OnlyID(ctx context.Context) (id int, err error) {
+	var ids []int
 	if ids, err = ccq.Limit(2).IDs(ctx); err != nil {
 		return
 	}
@@ -201,7 +201,7 @@ func (ccq *ChatCallbackQuery) OnlyID(ctx context.Context) (id string, err error)
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (ccq *ChatCallbackQuery) OnlyIDX(ctx context.Context) string {
+func (ccq *ChatCallbackQuery) OnlyIDX(ctx context.Context) int {
 	id, err := ccq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -227,8 +227,8 @@ func (ccq *ChatCallbackQuery) AllX(ctx context.Context) []*ChatCallback {
 }
 
 // IDs executes the query and returns a list of ChatCallback IDs.
-func (ccq *ChatCallbackQuery) IDs(ctx context.Context) ([]string, error) {
-	var ids []string
+func (ccq *ChatCallbackQuery) IDs(ctx context.Context) ([]int, error) {
+	var ids []int
 	if err := ccq.Select(chatcallback.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -236,7 +236,7 @@ func (ccq *ChatCallbackQuery) IDs(ctx context.Context) ([]string, error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (ccq *ChatCallbackQuery) IDsX(ctx context.Context) []string {
+func (ccq *ChatCallbackQuery) IDsX(ctx context.Context) []int {
 	ids, err := ccq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -484,7 +484,7 @@ func (ccq *ChatCallbackQuery) querySpec() *sqlgraph.QuerySpec {
 			Table:   chatcallback.Table,
 			Columns: chatcallback.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeString,
+				Type:   field.TypeInt,
 				Column: chatcallback.FieldID,
 			},
 		},

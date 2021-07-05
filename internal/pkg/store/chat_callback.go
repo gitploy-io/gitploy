@@ -10,7 +10,6 @@ import (
 func (s *Store) CreateDeployChatCallback(ctx context.Context, cu *ent.ChatUser, repo *ent.Repo, cb *ent.ChatCallback) (*ent.ChatCallback, error) {
 	return s.c.ChatCallback.
 		Create().
-		SetID(cb.ID).
 		SetState(cb.State).
 		SetType(cb.Type).
 		SetChatUser(cu).
@@ -18,16 +17,20 @@ func (s *Store) CreateDeployChatCallback(ctx context.Context, cu *ent.ChatUser, 
 		Save(ctx)
 }
 
-func (s *Store) FindChatCallbackByID(ctx context.Context, id string) (*ent.ChatCallback, error) {
-	return s.c.ChatCallback.
-		Get(ctx, id)
-}
-
-func (s *Store) FindChatCallbackWithEdgesByID(ctx context.Context, id string) (*ent.ChatCallback, error) {
+func (s *Store) FindChatCallbackByState(ctx context.Context, state string) (*ent.ChatCallback, error) {
 	return s.c.ChatCallback.
 		Query().
 		Where(
-			chatcallback.IDEQ(id),
+			chatcallback.StateEQ(state),
+		).
+		First(ctx)
+}
+
+func (s *Store) FindChatCallbackWithEdgesByState(ctx context.Context, state string) (*ent.ChatCallback, error) {
+	return s.c.ChatCallback.
+		Query().
+		Where(
+			chatcallback.StateEQ(state),
 		).
 		WithChatUser().
 		WithRepo().

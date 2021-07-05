@@ -17,7 +17,7 @@ import (
 type ChatCallback struct {
 	config `json:"-"`
 	// ID of the ent.
-	ID string `json:"id,omitempty"`
+	ID int `json:"id,omitempty"`
 	// State holds the value of the "state" field.
 	State string `json:"state,omitempty"`
 	// Type holds the value of the "type" field.
@@ -83,7 +83,9 @@ func (*ChatCallback) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case chatcallback.FieldIsOpened:
 			values[i] = new(sql.NullBool)
-		case chatcallback.FieldID, chatcallback.FieldState, chatcallback.FieldType, chatcallback.FieldChatUserID, chatcallback.FieldRepoID:
+		case chatcallback.FieldID:
+			values[i] = new(sql.NullInt64)
+		case chatcallback.FieldState, chatcallback.FieldType, chatcallback.FieldChatUserID, chatcallback.FieldRepoID:
 			values[i] = new(sql.NullString)
 		case chatcallback.FieldCreatedAt, chatcallback.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -103,11 +105,11 @@ func (cc *ChatCallback) assignValues(columns []string, values []interface{}) err
 	for i := range columns {
 		switch columns[i] {
 		case chatcallback.FieldID:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field id", values[i])
-			} else if value.Valid {
-				cc.ID = value.String
+			value, ok := values[i].(*sql.NullInt64)
+			if !ok {
+				return fmt.Errorf("unexpected type %T for field id", value)
 			}
+			cc.ID = int(value.Int64)
 		case chatcallback.FieldState:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field state", values[i])

@@ -22,15 +22,15 @@ func init() {
 	chatcallbackFields := schema.ChatCallback{}.Fields()
 	_ = chatcallbackFields
 	// chatcallbackDescIsOpened is the schema descriptor for is_opened field.
-	chatcallbackDescIsOpened := chatcallbackFields[3].Descriptor()
+	chatcallbackDescIsOpened := chatcallbackFields[2].Descriptor()
 	// chatcallback.DefaultIsOpened holds the default value on creation for the is_opened field.
 	chatcallback.DefaultIsOpened = chatcallbackDescIsOpened.Default.(bool)
 	// chatcallbackDescCreatedAt is the schema descriptor for created_at field.
-	chatcallbackDescCreatedAt := chatcallbackFields[4].Descriptor()
+	chatcallbackDescCreatedAt := chatcallbackFields[3].Descriptor()
 	// chatcallback.DefaultCreatedAt holds the default value on creation for the created_at field.
 	chatcallback.DefaultCreatedAt = chatcallbackDescCreatedAt.Default.(func() time.Time)
 	// chatcallbackDescUpdatedAt is the schema descriptor for updated_at field.
-	chatcallbackDescUpdatedAt := chatcallbackFields[5].Descriptor()
+	chatcallbackDescUpdatedAt := chatcallbackFields[4].Descriptor()
 	// chatcallback.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	chatcallback.DefaultUpdatedAt = chatcallbackDescUpdatedAt.Default.(func() time.Time)
 	// chatcallback.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.

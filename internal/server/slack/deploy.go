@@ -1,15 +1,11 @@
 package slack
 
 import (
+	"context"
 	"fmt"
-	"math/rand"
-	"net/http"
 	"strings"
-	"time"
 
-	"github.com/gin-gonic/gin"
 	"github.com/slack-go/slack"
-	"go.uber.org/zap"
 
 	"github.com/hanjunlee/gitploy/ent"
 	"github.com/hanjunlee/gitploy/ent/chatcallback"
@@ -17,28 +13,16 @@ import (
 	"github.com/hanjunlee/gitploy/vo"
 )
 
-const (
-	token = ""
-)
-
-func init() {
-	// Seed for randstr
-	rand.Seed(time.Now().UnixNano())
-}
-
-func (s *Slack) handleDeployCmd(c *gin.Context, cmd slack.SlashCommand) {
-	ctx := c.Request.Context()
-
+// handleDeployCmd handles deploy command: "/gitploy deploy OWNER/REPO".
+// It opens a dialog with fields to submit the payload for deployment.
+func (s *Slack) handleDeployCmd(ctx context.Context, cmd slack.SlashCommand) error {
 	// user have to be exist if chat user is found.
 	cu, err := s.i.FindChatUserWithUserByID(ctx, cmd.UserID)
 	if ent.IsNotFound(err) {
 		responseMessage(cmd, fmt.Sprint("Slack is not connected with Gitploy."))
-		c.Status(http.StatusOK)
-		return
+		return nil
 	} else if err != nil {
-		s.log.Error("failed to find the user.", zap.Error(err))
-		c.Status(http.StatusInternalServerError)
-		return
+		return err
 	}
 
 	u := cu.Edges.User
@@ -48,77 +32,61 @@ func (s *Slack) handleDeployCmd(c *gin.Context, cmd slack.SlashCommand) {
 	ns, n, err := parseFullName(fullname)
 	if err != nil {
 		responseMessage(cmd, fmt.Sprintf("`%s` is invalid format.", fullname))
-		c.Status(http.StatusOK)
-		return
+		return nil
 	}
 
 	r, err := s.i.FindRepoByNamespaceName(ctx, u, ns, n)
 	if ent.IsNotFound(err) {
 		responseMessage(cmd, fmt.Sprintf("The `%s` is not found.", fullname))
-		c.Status(http.StatusOK)
-		return
+		return nil
 	} else if err != nil {
-		s.log.Error("failed to find the repo.", zap.String("repo", fullname), zap.Error(err))
-		c.Status(http.StatusInternalServerError)
-		return
+		return fmt.Errorf("failed to find the repo: %w", err)
 	}
 
 	config, err := s.i.GetConfig(ctx, u, r)
 	if vo.IsConfigNotFoundError(err) {
-		responseMessage(cmd, "The config file is not found")
-		c.Status(http.StatusOK)
-		return
+		responseMessage(cmd, "The config file is not found.")
+		return nil
 	} else if vo.IsConfigParseError(err) {
 		responseMessage(cmd, "The config file is invliad format.")
-		c.Status(http.StatusOK)
-		return
+		return nil
 	} else if err != nil {
-		s.log.Error("failed to get the config file.", zap.String("repo", fullname), zap.Error(err))
-		c.Status(http.StatusInternalServerError)
-		return
+		return fmt.Errorf("failed to get the config: %w", err)
 	}
 
-	cb := randstr()
 	state := randstr()
 
-	err = client.OpenDialogContext(ctx, cmd.TriggerID, slack.Dialog{
-		CallbackID:     cb,
-		State:          state,
-		Title:          "Deploy",
-		SubmitLabel:    "Submit",
-		NotifyOnCancel: true,
-		Elements:       createDialogElement(config),
-	})
-	if err != nil {
-		s.log.Error("failed to open the dialog.", zap.Error(err))
-		c.Status(http.StatusInternalServerError)
-		return
-	}
-
-	_, err = s.i.CreateDeployChatCallback(ctx, cu, r, &ent.ChatCallback{
-		ID:    cb,
+	cb, err := s.i.CreateDeployChatCallback(ctx, cu, r, &ent.ChatCallback{
 		Type:  chatcallback.TypeDeploy,
 		State: state,
 	})
 	if err != nil {
-		s.log.Error("failed to create a new callback.", zap.Error(err))
-		c.Status(http.StatusInternalServerError)
-		return
+		return fmt.Errorf("failed to save the callback: %w", err)
 	}
 
-	c.Status(http.StatusOK)
+	err = client.OpenDialogContext(ctx, cmd.TriggerID, slack.Dialog{
+		CallbackID:     itoa(cb.ID),
+		State:          state,
+		Title:          "Deploy",
+		SubmitLabel:    "Submit",
+		NotifyOnCancel: true,
+		Elements:       createDeployDialogElement(config),
+	})
+	if err != nil {
+		return fmt.Errorf("failed to open a new dialog: %w", err)
+	}
+
+	return nil
 }
 
-func (s *Slack) interactDeploy(c *gin.Context, scb slack.InteractionCallback) {
+// interactDeploy deploy with the submitted payload.
+func (s *Slack) interactDeploy(ctx context.Context, scb slack.InteractionCallback, cb *ent.ChatCallback) error {
 	var (
 		typ = scb.Submission["type"]
 		ref = scb.Submission["ref"]
 		env = scb.Submission["env"]
 	)
 
-	ctx := c.Request.Context()
-
-	cb, _ := s.i.FindChatCallbackWithEdgesByID(ctx, scb.CallbackID)
 	cu := cb.Edges.ChatUser
 	re := cb.Edges.Repo
 
@@ -127,23 +95,18 @@ func (s *Slack) interactDeploy(c *gin.Context, scb slack.InteractionCallback) {
 
 	cf, err := s.i.GetConfig(ctx, u, re)
 	if vo.IsConfigNotFoundError(err) {
-		s.log.Warn("failed to get the config.", zap.Error(err))
-		c.Status(http.StatusUnprocessableEntity)
-		return
+		responseMessage(scb, "The configuration file is not found.")
+		return nil
 	} else if vo.IsConfigParseError(err) {
-		s.log.Warn("failed to parse the config.", zap.Error(err))
-		c.Status(http.StatusUnprocessableEntity)
-		return
+		responseMessage(scb, "The configuration file is invalid format.")
+		return nil
 	} else if err != nil {
-		s.log.Error("failed to get the configuration file.", zap.Error(err))
-		c.Status(http.StatusInternalServerError)
-		return
+		return fmt.Errorf("failed to get the config: %w", err)
 	}
 
 	if !cf.HasEnv(env) {
-		s.log.Warn("failed to get the env.", zap.Error(err))
-		c.Status(http.StatusUnprocessableEntity)
-		return
+		responseMessage(scb, "The configuration file is invalid format.")
+		return nil
 	}
 
 	d, err := s.i.Deploy(ctx, u, cb.Edges.Repo, &ent.Deployment{
@@ -152,17 +115,11 @@ func (s *Slack) interactDeploy(c *gin.Context, scb slack.InteractionCallback) {
 		Env:  env,
 	}, cf.GetEnv(env))
 	if err != nil {
-		s.log.Error("failed to deploy.", zap.Error(err))
-		c.Status(http.StatusInternalServerError)
-		return
+		return fmt.Errorf("failed to deploy: %w", err)
 	}
 
-	if err = s.i.Publish(ctx, d); err != nil {
-		s.log.Warn("failed to notify the deployment.", zap.Error(err))
-	}
-
-	s.log.Debug("deployed successfully.")
-	c.Status(http.StatusOK)
+	s.i.Publish(ctx, d)
+	return nil
 }
 
 func sendResponse(c *slack.Client, cmd slack.SlashCommand, message string) error {
@@ -183,7 +140,7 @@ func parseFullName(n string) (string, string, error) {
 	return namespaceName[0], namespaceName[1], nil
 }
 
-func createDialogElement(c *vo.Config) []slack.DialogElement {
+func createDeployDialogElement(c *vo.Config) []slack.DialogElement {
 	options := []slack.DialogSelectOption{}
 	for _, env := range c.Envs {
 		options = append(options, slack.DialogSelectOption{
@@ -195,7 +152,7 @@ func createDialogElement(c *vo.Config) []slack.DialogElement {
 	return []slack.DialogElement{
 		slack.DialogInputSelect{
 			DialogInput: slack.DialogInput{
-				Type:  "select",
+				Type:  slack.InputTypeSelect,
 				Label: "Environment",
 				Name:  "env",
 			},
@@ -203,7 +160,7 @@ func createDialogElement(c *vo.Config) []slack.DialogElement {
 		},
 		slack.DialogInputSelect{
 			DialogInput: slack.DialogInput{
-				Type:  "select",
+				Type:  slack.InputTypeSelect,
 				Label: "Type",
 				Name:  "type",
 			},
@@ -229,14 +186,4 @@ func createDialogElement(c *vo.Config) []slack.DialogElement {
 			Hint:  "E.g. Commit - 25a667d6, Branch - main, Tag - v0.1.2",
 		},
 	}
-}
-
-func randstr() string {
-	var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
-
-	b := make([]rune, 16)
-	for i := range b {
-		b[i] = letterRunes[rand.Intn(len(letterRunes))]
-	}
-	return string(b)
 }

@@ -1,7 +1,9 @@
 package slack
 
 import (
+	"math/rand"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -28,6 +30,8 @@ func NewSlack(c *oauth2.Config, i Interactor) *Slack {
 	}
 }
 
+// Cmd handles Slash command of Slack.
+// https://api.slack.com/interactivity/slash-commands
 func (s *Slack) Cmd(c *gin.Context) {
 	cmd, err := slack.SlashCommandParse(c.Request)
 	if err != nil {
@@ -37,22 +41,37 @@ func (s *Slack) Cmd(c *gin.Context) {
 	}
 
 	t := strings.TrimSpace(cmd.Text)
-	s.log.Debug("Parse Slack command.", zap.String("text", t))
 
+	var handleErr error
 	if strings.HasPrefix(t, "deploy ") {
-		s.handleDeployCmd(c, cmd)
+		handleErr = s.handleDeployCmd(c, cmd)
+	} else if strings.HasPrefix(t, "rollback ") {
+		handleErr = s.handleRollbackCmd(c, cmd)
 	} else if strings.HasPrefix(t, "help") {
 		s.handleHelpCmd(c, cmd)
 	} else {
 		s.handleHelpCmd(c, cmd)
 	}
+
+	if handleErr != nil {
+		s.log.Error("failed to handle the command: %s", zap.Error(err))
+		c.Status(http.StatusInternalServerError)
+		return
+	}
+
+	s.log.Debug("handling the command successfully.", zap.String("command", cmd.Command))
+	c.Status(http.StatusOK)
 }
 
 func (s *Slack) handleHelpCmd(c *gin.Context, cmd slack.SlashCommand) {
 	msg := strings.Join([]string{
-		"Below are the commands you can use: \n",
+		"Below are the commands you can use:",
+		"",
 		"*Deploy*",
-		"`/gitploy deploy OWNER/REPO` - Create a new deployment to OWNER/REPO",
+		"`/gitploy deploy OWNER/REPO` - Create a new deployment for OWNER/REPO.",
+		"",
+		"*Rollback*",
+		"`/gitploy rollback OWNER/REPO` - Rollback by the deployment for OWNER/REPO.",
 	}, "\n")
 	responseMessage(cmd, msg)
 }
@@ -75,6 +94,7 @@ func responseMessage(obj interface{}, message string) {
 	client.SendMessage(channelID, slack.MsgOptionText(message, true), slack.MsgOptionResponseURL(responseURL, "ephemeral"))
 }
 
+// Interact interacts interactive components (dialog, button).
 func (s *Slack) Interact(c *gin.Context) {
 	c.Request.ParseForm()
 	payload := c.Request.PostForm.Get("payload")
@@ -87,9 +107,18 @@ func (s *Slack) Interact(c *gin.Context) {
 		return
 	}
 
+	if scb.Type == slack.InteractionTypeDialogCancellation {
+		c.Status(http.StatusOK)
+		return
+	}
+
 	ctx := c.Request.Context()
 
-	cb, err := s.i.FindChatCallbackByID(ctx, scb.CallbackID)
+	// Trim backticked double quote for string type.
+	// https://github.com/slack-go/slack/issues/816
+	state := strings.Trim(scb.State, "\"")
+
+	cb, err := s.i.FindChatCallbackWithEdgesByState(ctx, state)
 	if ent.IsNotFound(err) {
 		responseMessage(scb, "The callback is not found. You can interact with Slack by only `/gitploy`.")
 		c.Status(http.StatusOK)
@@ -100,24 +129,45 @@ func (s *Slack) Interact(c *gin.Context) {
 		return
 	}
 
-	if state := strings.Trim(scb.State, "\""); state != cb.State {
-		responseMessage(scb, "The state is invalid. You can interact with Slack by only `/gitploy`.")
-		c.Status(http.StatusOK)
+	defer s.i.CloseChatCallback(ctx, cb)
+
+	var interactErr error
+	if scb.Type == slack.InteractionTypeDialogSubmission && cb.Type == chatcallback.TypeDeploy {
+		interactErr = s.interactDeploy(c, scb, cb)
+	} else if scb.Type == slack.InteractionTypeDialogSubmission && cb.Type == chatcallback.TypeRollback {
+		interactErr = s.interactRollback(c, scb, cb)
+	}
+
+	if interactErr != nil {
+		s.log.Error("failed to interact the component: %s", zap.Error(err))
+		c.Status(http.StatusInternalServerError)
 		return
 	}
 
-	defer s.i.CloseChatCallback(ctx, cb)
-
-	switch cb.Type {
-	case chatcallback.TypeDeploy:
-		s.log.Debug("interact with the deploy command.")
-		s.interactDeploy(c, scb)
-	}
-
+	s.log.Debug("interact the component successfully.", zap.String("type", string(cb.Type)))
 	c.Status(http.StatusOK)
 }
 
 // Check checks Slack is enabled.
 func (s *Slack) Check(c *gin.Context) {
 	c.Status(http.StatusOK)
+}
+
+func randstr() string {
+	var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+
+	b := make([]rune, 16)
+	for i := range b {
+		b[i] = letterRunes[rand.Intn(len(letterRunes))]
+	}
+	return string(b)
+}
+
+func atoi(a string) int {
+	i, _ := strconv.Atoi(a)
+	return i
+}
+
+func itoa(i int) string {
+	return strconv.Itoa(i)
 }

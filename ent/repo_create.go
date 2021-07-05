@@ -185,14 +185,14 @@ func (rc *RepoCreate) AddDeployments(d ...*Deployment) *RepoCreate {
 }
 
 // AddChatCallbackIDs adds the "chat_callback" edge to the ChatCallback entity by IDs.
-func (rc *RepoCreate) AddChatCallbackIDs(ids ...string) *RepoCreate {
+func (rc *RepoCreate) AddChatCallbackIDs(ids ...int) *RepoCreate {
 	rc.mutation.AddChatCallbackIDs(ids...)
 	return rc
 }
 
 // AddChatCallback adds the "chat_callback" edges to the ChatCallback entity.
 func (rc *RepoCreate) AddChatCallback(c ...*ChatCallback) *RepoCreate {
-	ids := make([]string, len(c))
+	ids := make([]int, len(c))
 	for i := range c {
 		ids[i] = c[i].ID
 	}
@@ -460,7 +460,7 @@ func (rc *RepoCreate) createSpec() (*Repo, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
+					Type:   field.TypeInt,
 					Column: chatcallback.FieldID,
 				},
 			},
