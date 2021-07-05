@@ -5,7 +5,6 @@ import (
 	"math/rand"
 	"net/http"
 	"strings"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/slack-go/slack"
@@ -16,15 +15,6 @@ import (
 	"github.com/hanjunlee/gitploy/ent/deployment"
 	"github.com/hanjunlee/gitploy/vo"
 )
-
-const (
-	token = ""
-)
-
-func init() {
-	// Seed for randstr
-	rand.Seed(time.Now().UnixNano())
-}
 
 func (s *Slack) handleDeployCmd(c *gin.Context, cmd slack.SlashCommand) {
 	ctx := c.Request.Context()
@@ -87,7 +77,7 @@ func (s *Slack) handleDeployCmd(c *gin.Context, cmd slack.SlashCommand) {
 		Title:          "Deploy",
 		SubmitLabel:    "Submit",
 		NotifyOnCancel: true,
-		Elements:       createDialogElement(config),
+		Elements:       createDeployDialogElement(config),
 	})
 	if err != nil {
 		s.log.Error("failed to open the dialog.", zap.Error(err))
@@ -183,7 +173,7 @@ func parseFullName(n string) (string, string, error) {
 	return namespaceName[0], namespaceName[1], nil
 }
 
-func createDialogElement(c *vo.Config) []slack.DialogElement {
+func createDeployDialogElement(c *vo.Config) []slack.DialogElement {
 	options := []slack.DialogSelectOption{}
 	for _, env := range c.Envs {
 		options = append(options, slack.DialogSelectOption{
@@ -195,7 +185,7 @@ func createDialogElement(c *vo.Config) []slack.DialogElement {
 	return []slack.DialogElement{
 		slack.DialogInputSelect{
 			DialogInput: slack.DialogInput{
-				Type:  "select",
+				Type:  slack.InputTypeSelect,
 				Label: "Environment",
 				Name:  "env",
 			},
@@ -203,7 +193,7 @@ func createDialogElement(c *vo.Config) []slack.DialogElement {
 		},
 		slack.DialogInputSelect{
 			DialogInput: slack.DialogInput{
-				Type:  "select",
+				Type:  slack.InputTypeSelect,
 				Label: "Type",
 				Name:  "type",
 			},

@@ -41,6 +41,8 @@ func (s *Slack) Cmd(c *gin.Context) {
 
 	if strings.HasPrefix(t, "deploy ") {
 		s.handleDeployCmd(c, cmd)
+	} else if strings.HasPrefix(t, "rollback ") {
+		s.handleRollbackCmd(c, cmd)
 	} else if strings.HasPrefix(t, "help") {
 		s.handleHelpCmd(c, cmd)
 	} else {
@@ -50,9 +52,13 @@ func (s *Slack) Cmd(c *gin.Context) {
 
 func (s *Slack) handleHelpCmd(c *gin.Context, cmd slack.SlashCommand) {
 	msg := strings.Join([]string{
-		"Below are the commands you can use: \n",
+		"Below are the commands you can use:",
+		"",
 		"*Deploy*",
-		"`/gitploy deploy OWNER/REPO` - Create a new deployment to OWNER/REPO",
+		"`/gitploy deploy OWNER/REPO` - Create a new deployment for OWNER/REPO.",
+		"",
+		"*Rollback*",
+		"`/gitploy rollback OWNER/REPO` - Rollback by the deployment for OWNER/REPO.",
 	}, "\n")
 	responseMessage(cmd, msg)
 }
