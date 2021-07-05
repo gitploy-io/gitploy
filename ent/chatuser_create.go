@@ -87,14 +87,14 @@ func (cuc *ChatUserCreate) SetID(s string) *ChatUserCreate {
 }
 
 // AddChatCallbackIDs adds the "chat_callback" edge to the ChatCallback entity by IDs.
-func (cuc *ChatUserCreate) AddChatCallbackIDs(ids ...string) *ChatUserCreate {
+func (cuc *ChatUserCreate) AddChatCallbackIDs(ids ...int) *ChatUserCreate {
 	cuc.mutation.AddChatCallbackIDs(ids...)
 	return cuc
 }
 
 // AddChatCallback adds the "chat_callback" edges to the ChatCallback entity.
 func (cuc *ChatUserCreate) AddChatCallback(c ...*ChatCallback) *ChatUserCreate {
-	ids := make([]string, len(c))
+	ids := make([]int, len(c))
 	for i := range c {
 		ids[i] = c[i].ID
 	}
@@ -280,7 +280,7 @@ func (cuc *ChatUserCreate) createSpec() (*ChatUser, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
+					Type:   field.TypeInt,
 					Column: chatcallback.FieldID,
 				},
 			},

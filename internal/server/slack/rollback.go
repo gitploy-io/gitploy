@@ -62,12 +62,19 @@ func (s *Slack) handleRollbackCmd(ctx context.Context, cmd slack.SlashCommand) e
 		return fmt.Errorf("failed to get the config: %w", err)
 	}
 
-	cb := randstr()
 	state := randstr()
 	as := s.getSucceedDeploymentAggregation(ctx, r, config)
 
+	cb, err := s.i.CreateDeployChatCallback(ctx, cu, r, &ent.ChatCallback{
+		Type:  chatcallback.TypeRollback,
+		State: state,
+	})
+	if err != nil {
+		return fmt.Errorf("failed to save the callback: %w", err)
+	}
+
 	err = client.OpenDialogContext(ctx, cmd.TriggerID, slack.Dialog{
-		CallbackID:     cb,
+		CallbackID:     itoa(cb.ID),
 		State:          state,
 		Title:          "Rollback",
 		SubmitLabel:    "Submit",
@@ -76,15 +83,6 @@ func (s *Slack) handleRollbackCmd(ctx context.Context, cmd slack.SlashCommand) e
 	})
 	if err != nil {
 		return fmt.Errorf("failed to open a new dialog: %w", err)
-	}
-
-	_, err = s.i.CreateDeployChatCallback(ctx, cu, r, &ent.ChatCallback{
-		ID:    cb,
-		Type:  chatcallback.TypeRollback,
-		State: state,
-	})
-	if err != nil {
-		return fmt.Errorf("failed to save the callback: %w", err)
 	}
 
 	return nil
@@ -108,12 +106,11 @@ func (s *Slack) getSucceedDeploymentAggregation(ctx context.Context, r *ent.Repo
 	return a
 }
 
-func (s *Slack) interactRollback(ctx context.Context, scb slack.InteractionCallback) error {
+func (s *Slack) interactRollback(ctx context.Context, scb slack.InteractionCallback, cb *ent.ChatCallback) error {
 	var (
 		id = scb.Submission["deployment_id"]
 	)
 
-	cb, _ := s.i.FindChatCallbackWithEdgesByID(ctx, scb.CallbackID)
 	cu := cb.Edges.ChatUser
 	re := cb.Edges.Repo
 

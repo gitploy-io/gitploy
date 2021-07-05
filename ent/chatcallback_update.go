@@ -214,7 +214,7 @@ func (ccu *ChatCallbackUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Table:   chatcallback.Table,
 			Columns: chatcallback.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeString,
+				Type:   field.TypeInt,
 				Column: chatcallback.FieldID,
 			},
 		},
@@ -541,7 +541,7 @@ func (ccuo *ChatCallbackUpdateOne) sqlSave(ctx context.Context) (_node *ChatCall
 			Table:   chatcallback.Table,
 			Columns: chatcallback.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeString,
+				Type:   field.TypeInt,
 				Column: chatcallback.FieldID,
 			},
 		},

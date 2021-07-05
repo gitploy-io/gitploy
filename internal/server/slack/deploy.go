@@ -54,11 +54,18 @@ func (s *Slack) handleDeployCmd(ctx context.Context, cmd slack.SlashCommand) err
 		return fmt.Errorf("failed to get the config: %w", err)
 	}
 
-	cb := randstr()
 	state := randstr()
 
+	cb, err := s.i.CreateDeployChatCallback(ctx, cu, r, &ent.ChatCallback{
+		Type:  chatcallback.TypeDeploy,
+		State: state,
+	})
+	if err != nil {
+		return fmt.Errorf("failed to save the callback: %w", err)
+	}
+
 	err = client.OpenDialogContext(ctx, cmd.TriggerID, slack.Dialog{
-		CallbackID:     cb,
+		CallbackID:     itoa(cb.ID),
 		State:          state,
 		Title:          "Deploy",
 		SubmitLabel:    "Submit",
@@ -69,27 +76,17 @@ func (s *Slack) handleDeployCmd(ctx context.Context, cmd slack.SlashCommand) err
 		return fmt.Errorf("failed to open a new dialog: %w", err)
 	}
 
-	_, err = s.i.CreateDeployChatCallback(ctx, cu, r, &ent.ChatCallback{
-		ID:    cb,
-		Type:  chatcallback.TypeDeploy,
-		State: state,
-	})
-	if err != nil {
-		return fmt.Errorf("failed to save the callback: %w", err)
-	}
-
 	return nil
 }
 
 // interactDeploy deploy with the submitted payload.
-func (s *Slack) interactDeploy(ctx context.Context, scb slack.InteractionCallback) error {
+func (s *Slack) interactDeploy(ctx context.Context, scb slack.InteractionCallback, cb *ent.ChatCallback) error {
 	var (
 		typ = scb.Submission["type"]
 		ref = scb.Submission["ref"]
 		env = scb.Submission["env"]
 	)
 
-	cb, _ := s.i.FindChatCallbackWithEdgesByID(ctx, scb.CallbackID)
 	cu := cb.Edges.ChatUser
 	re := cb.Edges.Repo
 

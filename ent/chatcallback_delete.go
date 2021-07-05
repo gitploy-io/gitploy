@@ -69,7 +69,7 @@ func (ccd *ChatCallbackDelete) sqlExec(ctx context.Context) (int, error) {
 		Node: &sqlgraph.NodeSpec{
 			Table: chatcallback.Table,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeString,
+				Type:   field.TypeInt,
 				Column: chatcallback.FieldID,
 			},
 		},

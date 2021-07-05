@@ -209,14 +209,14 @@ func (ru *RepoUpdate) AddDeployments(d ...*Deployment) *RepoUpdate {
 }
 
 // AddChatCallbackIDs adds the "chat_callback" edge to the ChatCallback entity by IDs.
-func (ru *RepoUpdate) AddChatCallbackIDs(ids ...string) *RepoUpdate {
+func (ru *RepoUpdate) AddChatCallbackIDs(ids ...int) *RepoUpdate {
 	ru.mutation.AddChatCallbackIDs(ids...)
 	return ru
 }
 
 // AddChatCallback adds the "chat_callback" edges to the ChatCallback entity.
 func (ru *RepoUpdate) AddChatCallback(c ...*ChatCallback) *RepoUpdate {
-	ids := make([]string, len(c))
+	ids := make([]int, len(c))
 	for i := range c {
 		ids[i] = c[i].ID
 	}
@@ -292,14 +292,14 @@ func (ru *RepoUpdate) ClearChatCallback() *RepoUpdate {
 }
 
 // RemoveChatCallbackIDs removes the "chat_callback" edge to ChatCallback entities by IDs.
-func (ru *RepoUpdate) RemoveChatCallbackIDs(ids ...string) *RepoUpdate {
+func (ru *RepoUpdate) RemoveChatCallbackIDs(ids ...int) *RepoUpdate {
 	ru.mutation.RemoveChatCallbackIDs(ids...)
 	return ru
 }
 
 // RemoveChatCallback removes "chat_callback" edges to ChatCallback entities.
 func (ru *RepoUpdate) RemoveChatCallback(c ...*ChatCallback) *RepoUpdate {
-	ids := make([]string, len(c))
+	ids := make([]int, len(c))
 	for i := range c {
 		ids[i] = c[i].ID
 	}
@@ -623,7 +623,7 @@ func (ru *RepoUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
+					Type:   field.TypeInt,
 					Column: chatcallback.FieldID,
 				},
 			},
@@ -639,7 +639,7 @@ func (ru *RepoUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
+					Type:   field.TypeInt,
 					Column: chatcallback.FieldID,
 				},
 			},
@@ -658,7 +658,7 @@ func (ru *RepoUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
+					Type:   field.TypeInt,
 					Column: chatcallback.FieldID,
 				},
 			},
@@ -919,14 +919,14 @@ func (ruo *RepoUpdateOne) AddDeployments(d ...*Deployment) *RepoUpdateOne {
 }
 
 // AddChatCallbackIDs adds the "chat_callback" edge to the ChatCallback entity by IDs.
-func (ruo *RepoUpdateOne) AddChatCallbackIDs(ids ...string) *RepoUpdateOne {
+func (ruo *RepoUpdateOne) AddChatCallbackIDs(ids ...int) *RepoUpdateOne {
 	ruo.mutation.AddChatCallbackIDs(ids...)
 	return ruo
 }
 
 // AddChatCallback adds the "chat_callback" edges to the ChatCallback entity.
 func (ruo *RepoUpdateOne) AddChatCallback(c ...*ChatCallback) *RepoUpdateOne {
-	ids := make([]string, len(c))
+	ids := make([]int, len(c))
 	for i := range c {
 		ids[i] = c[i].ID
 	}
@@ -1002,14 +1002,14 @@ func (ruo *RepoUpdateOne) ClearChatCallback() *RepoUpdateOne {
 }
 
 // RemoveChatCallbackIDs removes the "chat_callback" edge to ChatCallback entities by IDs.
-func (ruo *RepoUpdateOne) RemoveChatCallbackIDs(ids ...string) *RepoUpdateOne {
+func (ruo *RepoUpdateOne) RemoveChatCallbackIDs(ids ...int) *RepoUpdateOne {
 	ruo.mutation.RemoveChatCallbackIDs(ids...)
 	return ruo
 }
 
 // RemoveChatCallback removes "chat_callback" edges to ChatCallback entities.
 func (ruo *RepoUpdateOne) RemoveChatCallback(c ...*ChatCallback) *RepoUpdateOne {
-	ids := make([]string, len(c))
+	ids := make([]int, len(c))
 	for i := range c {
 		ids[i] = c[i].ID
 	}
@@ -1357,7 +1357,7 @@ func (ruo *RepoUpdateOne) sqlSave(ctx context.Context) (_node *Repo, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
+					Type:   field.TypeInt,
 					Column: chatcallback.FieldID,
 				},
 			},
@@ -1373,7 +1373,7 @@ func (ruo *RepoUpdateOne) sqlSave(ctx context.Context) (_node *Repo, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
+					Type:   field.TypeInt,
 					Column: chatcallback.FieldID,
 				},
 			},
@@ -1392,7 +1392,7 @@ func (ruo *RepoUpdateOne) sqlSave(ctx context.Context) (_node *Repo, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
+					Type:   field.TypeInt,
 					Column: chatcallback.FieldID,
 				},
 			},

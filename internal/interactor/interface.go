@@ -40,8 +40,8 @@ type (
 		UpdateDeployment(ctx context.Context, d *ent.Deployment) (*ent.Deployment, error)
 
 		CreateDeployChatCallback(ctx context.Context, cu *ent.ChatUser, repo *ent.Repo, cb *ent.ChatCallback) (*ent.ChatCallback, error)
-		FindChatCallbackByID(ctx context.Context, id string) (*ent.ChatCallback, error)
-		FindChatCallbackWithEdgesByID(ctx context.Context, id string) (*ent.ChatCallback, error)
+		FindChatCallbackByState(ctx context.Context, state string) (*ent.ChatCallback, error)
+		FindChatCallbackWithEdgesByState(ctx context.Context, state string) (*ent.ChatCallback, error)
 		CloseChatCallback(ctx context.Context, cb *ent.ChatCallback) (*ent.ChatCallback, error)
 
 		ListNotificationsWithEdges(ctx context.Context, u *ent.User, page, perPage int) ([]*ent.Notification, error)

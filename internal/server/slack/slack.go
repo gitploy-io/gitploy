@@ -107,9 +107,18 @@ func (s *Slack) Interact(c *gin.Context) {
 		return
 	}
 
+	if scb.Type == slack.InteractionTypeDialogCancellation {
+		c.Status(http.StatusOK)
+		return
+	}
+
 	ctx := c.Request.Context()
 
-	cb, err := s.i.FindChatCallbackByID(ctx, scb.CallbackID)
+	// Trim backticked double quote for string type.
+	// https://github.com/slack-go/slack/issues/816
+	state := strings.Trim(scb.State, "\"")
+
+	cb, err := s.i.FindChatCallbackWithEdgesByState(ctx, state)
 	if ent.IsNotFound(err) {
 		responseMessage(scb, "The callback is not found. You can interact with Slack by only `/gitploy`.")
 		c.Status(http.StatusOK)
@@ -124,9 +133,9 @@ func (s *Slack) Interact(c *gin.Context) {
 
 	var interactErr error
 	if scb.Type == slack.InteractionTypeDialogSubmission && cb.Type == chatcallback.TypeDeploy {
-		interactErr = s.interactDeploy(c, scb)
-	} else if scb.Type == slack.InteractionTypeDialogSubmission && cb.Type == chatcallback.TypeDeploy {
-		interactErr = s.interactRollback(c, scb)
+		interactErr = s.interactDeploy(c, scb, cb)
+	} else if scb.Type == slack.InteractionTypeDialogSubmission && cb.Type == chatcallback.TypeRollback {
+		interactErr = s.interactRollback(c, scb, cb)
 	}
 
 	if interactErr != nil {
@@ -134,6 +143,8 @@ func (s *Slack) Interact(c *gin.Context) {
 		c.Status(http.StatusInternalServerError)
 		return
 	}
+
+	s.log.Debug("interact the component successfully.", zap.String("type", string(cb.Type)))
 	c.Status(http.StatusOK)
 }
 
@@ -155,4 +166,8 @@ func randstr() string {
 func atoi(a string) int {
 	i, _ := strconv.Atoi(a)
 	return i
+}
+
+func itoa(i int) string {
+	return strconv.Itoa(i)
 }

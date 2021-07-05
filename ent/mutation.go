@@ -43,7 +43,7 @@ type ChatCallbackMutation struct {
 	config
 	op               Op
 	typ              string
-	id               *string
+	id               *int
 	state            *string
 	_type            *chatcallback.Type
 	is_opened        *bool
@@ -79,7 +79,7 @@ func newChatCallbackMutation(c config, op Op, opts ...chatcallbackOption) *ChatC
 }
 
 // withChatCallbackID sets the ID field of the mutation.
-func withChatCallbackID(id string) chatcallbackOption {
+func withChatCallbackID(id int) chatcallbackOption {
 	return func(m *ChatCallbackMutation) {
 		var (
 			err   error
@@ -129,15 +129,9 @@ func (m ChatCallbackMutation) Tx() (*Tx, error) {
 	return tx, nil
 }
 
-// SetID sets the value of the id field. Note that this
-// operation is only accepted on creation of ChatCallback entities.
-func (m *ChatCallbackMutation) SetID(id string) {
-	m.id = &id
-}
-
 // ID returns the ID value in the mutation. Note that the ID
 // is only available if it was provided to the builder.
-func (m *ChatCallbackMutation) ID() (id string, exists bool) {
+func (m *ChatCallbackMutation) ID() (id int, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -790,8 +784,8 @@ type ChatUserMutation struct {
 	created_at           *time.Time
 	updated_at           *time.Time
 	clearedFields        map[string]struct{}
-	chat_callback        map[string]struct{}
-	removedchat_callback map[string]struct{}
+	chat_callback        map[int]struct{}
+	removedchat_callback map[int]struct{}
 	clearedchat_callback bool
 	user                 *string
 	cleareduser          bool
@@ -1138,9 +1132,9 @@ func (m *ChatUserMutation) ResetUserID() {
 }
 
 // AddChatCallbackIDs adds the "chat_callback" edge to the ChatCallback entity by ids.
-func (m *ChatUserMutation) AddChatCallbackIDs(ids ...string) {
+func (m *ChatUserMutation) AddChatCallbackIDs(ids ...int) {
 	if m.chat_callback == nil {
-		m.chat_callback = make(map[string]struct{})
+		m.chat_callback = make(map[int]struct{})
 	}
 	for i := range ids {
 		m.chat_callback[ids[i]] = struct{}{}
@@ -1158,9 +1152,9 @@ func (m *ChatUserMutation) ChatCallbackCleared() bool {
 }
 
 // RemoveChatCallbackIDs removes the "chat_callback" edge to the ChatCallback entity by IDs.
-func (m *ChatUserMutation) RemoveChatCallbackIDs(ids ...string) {
+func (m *ChatUserMutation) RemoveChatCallbackIDs(ids ...int) {
 	if m.removedchat_callback == nil {
-		m.removedchat_callback = make(map[string]struct{})
+		m.removedchat_callback = make(map[int]struct{})
 	}
 	for i := range ids {
 		m.removedchat_callback[ids[i]] = struct{}{}
@@ -1168,7 +1162,7 @@ func (m *ChatUserMutation) RemoveChatCallbackIDs(ids ...string) {
 }
 
 // RemovedChatCallback returns the removed IDs of the "chat_callback" edge to the ChatCallback entity.
-func (m *ChatUserMutation) RemovedChatCallbackIDs() (ids []string) {
+func (m *ChatUserMutation) RemovedChatCallbackIDs() (ids []int) {
 	for id := range m.removedchat_callback {
 		ids = append(ids, id)
 	}
@@ -1176,7 +1170,7 @@ func (m *ChatUserMutation) RemovedChatCallbackIDs() (ids []string) {
 }
 
 // ChatCallbackIDs returns the "chat_callback" edge IDs in the mutation.
-func (m *ChatUserMutation) ChatCallbackIDs() (ids []string) {
+func (m *ChatUserMutation) ChatCallbackIDs() (ids []int) {
 	for id := range m.chat_callback {
 		ids = append(ids, id)
 	}
@@ -4227,8 +4221,8 @@ type RepoMutation struct {
 	deployments          map[int]struct{}
 	removeddeployments   map[int]struct{}
 	cleareddeployments   bool
-	chat_callback        map[string]struct{}
-	removedchat_callback map[string]struct{}
+	chat_callback        map[int]struct{}
+	removedchat_callback map[int]struct{}
 	clearedchat_callback bool
 	notifications        map[int]struct{}
 	removednotifications map[int]struct{}
@@ -4863,9 +4857,9 @@ func (m *RepoMutation) ResetDeployments() {
 }
 
 // AddChatCallbackIDs adds the "chat_callback" edge to the ChatCallback entity by ids.
-func (m *RepoMutation) AddChatCallbackIDs(ids ...string) {
+func (m *RepoMutation) AddChatCallbackIDs(ids ...int) {
 	if m.chat_callback == nil {
-		m.chat_callback = make(map[string]struct{})
+		m.chat_callback = make(map[int]struct{})
 	}
 	for i := range ids {
 		m.chat_callback[ids[i]] = struct{}{}
@@ -4883,9 +4877,9 @@ func (m *RepoMutation) ChatCallbackCleared() bool {
 }
 
 // RemoveChatCallbackIDs removes the "chat_callback" edge to the ChatCallback entity by IDs.
-func (m *RepoMutation) RemoveChatCallbackIDs(ids ...string) {
+func (m *RepoMutation) RemoveChatCallbackIDs(ids ...int) {
 	if m.removedchat_callback == nil {
-		m.removedchat_callback = make(map[string]struct{})
+		m.removedchat_callback = make(map[int]struct{})
 	}
 	for i := range ids {
 		m.removedchat_callback[ids[i]] = struct{}{}
@@ -4893,7 +4887,7 @@ func (m *RepoMutation) RemoveChatCallbackIDs(ids ...string) {
 }
 
 // RemovedChatCallback returns the removed IDs of the "chat_callback" edge to the ChatCallback entity.
-func (m *RepoMutation) RemovedChatCallbackIDs() (ids []string) {
+func (m *RepoMutation) RemovedChatCallbackIDs() (ids []int) {
 	for id := range m.removedchat_callback {
 		ids = append(ids, id)
 	}
@@ -4901,7 +4895,7 @@ func (m *RepoMutation) RemovedChatCallbackIDs() (ids []string) {
 }
 
 // ChatCallbackIDs returns the "chat_callback" edge IDs in the mutation.
-func (m *RepoMutation) ChatCallbackIDs() (ids []string) {
+func (m *RepoMutation) ChatCallbackIDs() (ids []int) {
 	for id := range m.chat_callback {
 		ids = append(ids, id)
 	}

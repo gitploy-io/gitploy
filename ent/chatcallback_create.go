@@ -96,12 +96,6 @@ func (ccc *ChatCallbackCreate) SetNillableRepoID(s *string) *ChatCallbackCreate 
 	return ccc
 }
 
-// SetID sets the "id" field.
-func (ccc *ChatCallbackCreate) SetID(s string) *ChatCallbackCreate {
-	ccc.mutation.SetID(s)
-	return ccc
-}
-
 // SetChatUser sets the "chat_user" edge to the ChatUser entity.
 func (ccc *ChatCallbackCreate) SetChatUser(c *ChatUser) *ChatCallbackCreate {
 	return ccc.SetChatUserID(c.ID)
@@ -217,6 +211,8 @@ func (ccc *ChatCallbackCreate) sqlSave(ctx context.Context) (*ChatCallback, erro
 		}
 		return nil, err
 	}
+	id := _spec.ID.Value.(int64)
+	_node.ID = int(id)
 	return _node, nil
 }
 
@@ -226,15 +222,11 @@ func (ccc *ChatCallbackCreate) createSpec() (*ChatCallback, *sqlgraph.CreateSpec
 		_spec = &sqlgraph.CreateSpec{
 			Table: chatcallback.Table,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeString,
+				Type:   field.TypeInt,
 				Column: chatcallback.FieldID,
 			},
 		}
 	)
-	if id, ok := ccc.mutation.ID(); ok {
-		_node.ID = id
-		_spec.ID.Value = id
-	}
 	if value, ok := ccc.mutation.State(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -358,6 +350,8 @@ func (cccb *ChatCallbackCreateBulk) Save(ctx context.Context) ([]*ChatCallback, 
 				if err != nil {
 					return nil, err
 				}
+				id := specs[i].ID.Value.(int64)
+				nodes[i].ID = int(id)
 				return nodes[i], nil
 			})
 			for i := len(builder.hooks) - 1; i >= 0; i-- {
