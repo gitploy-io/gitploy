@@ -41,17 +41,26 @@ func (s *Slack) Cmd(c *gin.Context) {
 	}
 
 	t := strings.TrimSpace(cmd.Text)
-	s.log.Debug("Parse Slack command.", zap.String("text", t))
 
+	var handleErr error
 	if strings.HasPrefix(t, "deploy ") {
-		s.handleDeployCmd(c, cmd)
+		handleErr = s.handleDeployCmd(c, cmd)
 	} else if strings.HasPrefix(t, "rollback ") {
-		s.handleRollbackCmd(c, cmd)
+		handleErr = s.handleRollbackCmd(c, cmd)
 	} else if strings.HasPrefix(t, "help") {
 		s.handleHelpCmd(c, cmd)
 	} else {
 		s.handleHelpCmd(c, cmd)
 	}
+
+	if handleErr != nil {
+		s.log.Error("failed to handle the command: %s", zap.Error(err))
+		c.Status(http.StatusInternalServerError)
+		return
+	}
+
+	s.log.Debug("handling the command successfully.", zap.String("command", cmd.Command))
+	c.Status(http.StatusOK)
 }
 
 func (s *Slack) handleHelpCmd(c *gin.Context, cmd slack.SlashCommand) {
@@ -85,6 +94,7 @@ func responseMessage(obj interface{}, message string) {
 	client.SendMessage(channelID, slack.MsgOptionText(message, true), slack.MsgOptionResponseURL(responseURL, "ephemeral"))
 }
 
+// Interact interacts interactive components (dialog, button).
 func (s *Slack) Interact(c *gin.Context) {
 	c.Request.ParseForm()
 	payload := c.Request.PostForm.Get("payload")
@@ -112,15 +122,18 @@ func (s *Slack) Interact(c *gin.Context) {
 
 	defer s.i.CloseChatCallback(ctx, cb)
 
-	switch cb.Type {
-	case chatcallback.TypeDeploy:
-		s.log.Debug("interact with the deploy command.")
-		s.interactDeploy(c, scb)
-	case chatcallback.TypeRollback:
-		s.log.Debug("interact with the rollback command.")
-		s.interactRollback(c, scb)
+	var interactErr error
+	if scb.Type == slack.InteractionTypeDialogSubmission && cb.Type == chatcallback.TypeDeploy {
+		interactErr = s.interactDeploy(c, scb)
+	} else if scb.Type == slack.InteractionTypeDialogSubmission && cb.Type == chatcallback.TypeDeploy {
+		interactErr = s.interactRollback(c, scb)
 	}
 
+	if interactErr != nil {
+		s.log.Error("failed to interact the component: %s", zap.Error(err))
+		c.Status(http.StatusInternalServerError)
+		return
+	}
 	c.Status(http.StatusOK)
 }
 
