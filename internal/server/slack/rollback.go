@@ -25,6 +25,8 @@ type (
 	}
 )
 
+// handleRollbackCmd handles rollback command: "/gitploy rollback OWNER/REPO".
+// It opens a dialog
 func (s *Slack) handleRollbackCmd(c *gin.Context, cmd slack.SlashCommand) {
 	ctx := c.Request.Context()
 
@@ -125,6 +127,73 @@ func (s *Slack) getSucceedDeploymentAggregation(ctx context.Context, r *ent.Repo
 	}
 
 	return a
+}
+
+func (s *Slack) interactRollback(c *gin.Context, scb slack.InteractionCallback) {
+	var (
+		id = scb.Submission["deployment_id"]
+	)
+
+	ctx := c.Request.Context()
+
+	cb, _ := s.i.FindChatCallbackWithEdgesByID(ctx, scb.CallbackID)
+	cu := cb.Edges.ChatUser
+	re := cb.Edges.Repo
+
+	cu, _ = s.i.FindChatUserWithUserByID(ctx, cu.ID)
+	u := cu.Edges.User
+
+	d, err := s.i.FindDeploymentWithEdgesByID(ctx, atoi(id))
+	if err != nil {
+		s.log.Error("failed to get the deployment.", zap.Int("id", atoi(id)))
+		c.Status(http.StatusInternalServerError)
+		return
+	}
+
+	cf, err := s.i.GetConfig(ctx, u, re)
+	if vo.IsConfigNotFoundError(err) {
+		s.log.Warn("failed to get the config.", zap.Error(err))
+		c.Status(http.StatusUnprocessableEntity)
+		return
+	} else if vo.IsConfigParseError(err) {
+		s.log.Warn("failed to parse the config.", zap.Error(err))
+		c.Status(http.StatusUnprocessableEntity)
+		return
+	} else if err != nil {
+		s.log.Error("failed to get the configuration file.", zap.Error(err))
+		c.Status(http.StatusInternalServerError)
+		return
+	}
+
+	if !cf.HasEnv(d.Env) {
+		s.log.Warn("failed to get the env.", zap.Error(err))
+		c.Status(http.StatusUnprocessableEntity)
+		return
+	}
+
+	// Set auto_merge false to avoid the merge conflict.
+	env := cf.GetEnv(d.Env)
+	env.AutoMerge = false
+
+	d, err = s.i.Deploy(ctx, u, cb.Edges.Repo,
+		&ent.Deployment{
+			Type: deployment.Type(d.Type),
+			Ref:  d.Ref,
+			Env:  d.Env,
+		},
+		env)
+	if err != nil {
+		s.log.Error("failed to rollback.", zap.Error(err))
+		c.Status(http.StatusInternalServerError)
+		return
+	}
+
+	if err = s.i.Publish(ctx, d); err != nil {
+		s.log.Warn("failed to notify the deployment.", zap.Error(err))
+	}
+
+	s.log.Debug("rollback successfully.")
+	c.Status(http.StatusOK)
 }
 
 func createRollbackDialogElement(as []*deploymentAggregation) []slack.DialogElement {

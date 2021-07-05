@@ -1,7 +1,9 @@
 package slack
 
 import (
+	"math/rand"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -28,6 +30,8 @@ func NewSlack(c *oauth2.Config, i Interactor) *Slack {
 	}
 }
 
+// Cmd handles Slash command of Slack.
+// https://api.slack.com/interactivity/slash-commands
 func (s *Slack) Cmd(c *gin.Context) {
 	cmd, err := slack.SlashCommandParse(c.Request)
 	if err != nil {
@@ -106,18 +110,15 @@ func (s *Slack) Interact(c *gin.Context) {
 		return
 	}
 
-	if state := strings.Trim(scb.State, "\""); state != cb.State {
-		responseMessage(scb, "The state is invalid. You can interact with Slack by only `/gitploy`.")
-		c.Status(http.StatusOK)
-		return
-	}
-
 	defer s.i.CloseChatCallback(ctx, cb)
 
 	switch cb.Type {
 	case chatcallback.TypeDeploy:
 		s.log.Debug("interact with the deploy command.")
 		s.interactDeploy(c, scb)
+	case chatcallback.TypeRollback:
+		s.log.Debug("interact with the rollback command.")
+		s.interactRollback(c, scb)
 	}
 
 	c.Status(http.StatusOK)
@@ -126,4 +127,19 @@ func (s *Slack) Interact(c *gin.Context) {
 // Check checks Slack is enabled.
 func (s *Slack) Check(c *gin.Context) {
 	c.Status(http.StatusOK)
+}
+
+func randstr() string {
+	var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+
+	b := make([]rune, 16)
+	for i := range b {
+		b[i] = letterRunes[rand.Intn(len(letterRunes))]
+	}
+	return string(b)
+}
+
+func atoi(a string) int {
+	i, _ := strconv.Atoi(a)
+	return i
 }

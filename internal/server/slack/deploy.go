@@ -2,7 +2,6 @@ package slack
 
 import (
 	"fmt"
-	"math/rand"
 	"net/http"
 	"strings"
 
@@ -16,6 +15,8 @@ import (
 	"github.com/hanjunlee/gitploy/vo"
 )
 
+// handleDeployCmd handles deploy command: "/gitploy deploy OWNER/REPO".
+// It opens a dialog with fields to submit the payload for deployment.
 func (s *Slack) handleDeployCmd(c *gin.Context, cmd slack.SlashCommand) {
 	ctx := c.Request.Context()
 
@@ -219,14 +220,4 @@ func createDeployDialogElement(c *vo.Config) []slack.DialogElement {
 			Hint:  "E.g. Commit - 25a667d6, Branch - main, Tag - v0.1.2",
 		},
 	}
-}
-
-func randstr() string {
-	var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
-
-	b := make([]rune, 16)
-	for i := range b {
-		b[i] = letterRunes[rand.Intn(len(letterRunes))]
-	}
-	return string(b)
 }
