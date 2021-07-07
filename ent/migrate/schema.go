@@ -8,6 +8,35 @@ import (
 )
 
 var (
+	// ApprovalsColumns holds the columns for the "approvals" table.
+	ApprovalsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "is_approved", Type: field.TypeBool, Default: false},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deployment_id", Type: field.TypeInt, Nullable: true},
+		{Name: "user_id", Type: field.TypeString, Nullable: true},
+	}
+	// ApprovalsTable holds the schema information for the "approvals" table.
+	ApprovalsTable = &schema.Table{
+		Name:       "approvals",
+		Columns:    ApprovalsColumns,
+		PrimaryKey: []*schema.Column{ApprovalsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "approvals_deployments_approvals",
+				Columns:    []*schema.Column{ApprovalsColumns[4]},
+				RefColumns: []*schema.Column{DeploymentsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "approvals_users_approvals",
+				Columns:    []*schema.Column{ApprovalsColumns[5]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+	}
 	// ChatCallbacksColumns holds the columns for the "chat_callbacks" table.
 	ChatCallbacksColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
@@ -81,6 +110,7 @@ var (
 		{Name: "sha", Type: field.TypeString, Nullable: true},
 		{Name: "env", Type: field.TypeString},
 		{Name: "status", Type: field.TypeEnum, Enums: []string{"waiting", "created", "running", "success", "failure"}, Default: "waiting"},
+		{Name: "required_approval_count", Type: field.TypeInt, Default: 0},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "repo_id", Type: field.TypeString, Nullable: true},
@@ -94,13 +124,13 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "deployments_repos_deployments",
-				Columns:    []*schema.Column{DeploymentsColumns[10]},
+				Columns:    []*schema.Column{DeploymentsColumns[11]},
 				RefColumns: []*schema.Column{ReposColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "deployments_users_deployments",
-				Columns:    []*schema.Column{DeploymentsColumns[11]},
+				Columns:    []*schema.Column{DeploymentsColumns[12]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -109,32 +139,32 @@ var (
 			{
 				Name:    "deployment_user_id",
 				Unique:  false,
-				Columns: []*schema.Column{DeploymentsColumns[11]},
+				Columns: []*schema.Column{DeploymentsColumns[12]},
 			},
 			{
 				Name:    "deployment_repo_id",
 				Unique:  false,
-				Columns: []*schema.Column{DeploymentsColumns[10]},
+				Columns: []*schema.Column{DeploymentsColumns[11]},
 			},
 			{
 				Name:    "deployment_repo_id_env_status_created_at",
 				Unique:  false,
-				Columns: []*schema.Column{DeploymentsColumns[10], DeploymentsColumns[6], DeploymentsColumns[7], DeploymentsColumns[8]},
+				Columns: []*schema.Column{DeploymentsColumns[11], DeploymentsColumns[6], DeploymentsColumns[7], DeploymentsColumns[9]},
 			},
 			{
 				Name:    "deployment_repo_id_env_created_at",
 				Unique:  false,
-				Columns: []*schema.Column{DeploymentsColumns[10], DeploymentsColumns[6], DeploymentsColumns[8]},
+				Columns: []*schema.Column{DeploymentsColumns[11], DeploymentsColumns[6], DeploymentsColumns[9]},
 			},
 			{
 				Name:    "deployment_repo_id_created_at",
 				Unique:  false,
-				Columns: []*schema.Column{DeploymentsColumns[10], DeploymentsColumns[8]},
+				Columns: []*schema.Column{DeploymentsColumns[11], DeploymentsColumns[9]},
 			},
 			{
 				Name:    "deployment_number_repo_id",
 				Unique:  true,
-				Columns: []*schema.Column{DeploymentsColumns[1], DeploymentsColumns[10]},
+				Columns: []*schema.Column{DeploymentsColumns[1], DeploymentsColumns[11]},
 			},
 		},
 	}
@@ -279,6 +309,7 @@ var (
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
+		ApprovalsTable,
 		ChatCallbacksTable,
 		ChatUsersTable,
 		DeploymentsTable,
@@ -290,6 +321,8 @@ var (
 )
 
 func init() {
+	ApprovalsTable.ForeignKeys[0].RefTable = DeploymentsTable
+	ApprovalsTable.ForeignKeys[1].RefTable = UsersTable
 	ChatCallbacksTable.ForeignKeys[0].RefTable = ChatUsersTable
 	ChatCallbacksTable.ForeignKeys[1].RefTable = ReposTable
 	ChatUsersTable.ForeignKeys[0].RefTable = UsersTable

@@ -26,6 +26,8 @@ const (
 	FieldEnv = "env"
 	// FieldStatus holds the string denoting the status field in the database.
 	FieldStatus = "status"
+	// FieldRequiredApprovalCount holds the string denoting the required_approval_count field in the database.
+	FieldRequiredApprovalCount = "required_approval_count"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
@@ -38,6 +40,8 @@ const (
 	EdgeUser = "user"
 	// EdgeRepo holds the string denoting the repo edge name in mutations.
 	EdgeRepo = "repo"
+	// EdgeApprovals holds the string denoting the approvals edge name in mutations.
+	EdgeApprovals = "approvals"
 	// EdgeNotifications holds the string denoting the notifications edge name in mutations.
 	EdgeNotifications = "notifications"
 	// Table holds the table name of the deployment in the database.
@@ -56,6 +60,13 @@ const (
 	RepoInverseTable = "repos"
 	// RepoColumn is the table column denoting the repo relation/edge.
 	RepoColumn = "repo_id"
+	// ApprovalsTable is the table the holds the approvals relation/edge.
+	ApprovalsTable = "approvals"
+	// ApprovalsInverseTable is the table name for the Approval entity.
+	// It exists in this package in order to avoid circular dependency with the "approval" package.
+	ApprovalsInverseTable = "approvals"
+	// ApprovalsColumn is the table column denoting the approvals relation/edge.
+	ApprovalsColumn = "deployment_id"
 	// NotificationsTable is the table the holds the notifications relation/edge.
 	NotificationsTable = "notifications"
 	// NotificationsInverseTable is the table name for the Notification entity.
@@ -75,6 +86,7 @@ var Columns = []string{
 	FieldSha,
 	FieldEnv,
 	FieldStatus,
+	FieldRequiredApprovalCount,
 	FieldCreatedAt,
 	FieldUpdatedAt,
 	FieldUserID,
@@ -92,6 +104,8 @@ func ValidColumn(column string) bool {
 }
 
 var (
+	// DefaultRequiredApprovalCount holds the default value on creation for the "required_approval_count" field.
+	DefaultRequiredApprovalCount int
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
 	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.

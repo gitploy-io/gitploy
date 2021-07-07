@@ -7,6 +7,51 @@ import (
 	"github.com/hanjunlee/gitploy/ent/user"
 )
 
+func (s *Store) FindUserByID(ctx context.Context, id string) (*ent.User, error) {
+	return s.c.User.Get(ctx, id)
+}
+
+func (s *Store) FindUserByHash(ctx context.Context, hash string) (*ent.User, error) {
+	return s.c.User.
+		Query().
+		Where(
+			user.HashEQ(hash),
+		).
+		Only(ctx)
+}
+
+func (s *Store) FindUserByLogin(ctx context.Context, login string) (*ent.User, error) {
+	return s.c.User.
+		Query().
+		Where(
+			user.LoginEQ(login),
+		).
+		Only(ctx)
+}
+
+func (s *Store) CreateUser(ctx context.Context, u *ent.User) (*ent.User, error) {
+	return s.c.User.Create().
+		SetID(u.ID).
+		SetLogin(u.Login).
+		SetAvatar(u.Avatar).
+		SetAdmin(u.Admin).
+		SetToken(u.Token).
+		SetRefresh(u.Refresh).
+		SetExpiry(u.Expiry).
+		Save(ctx)
+}
+
+func (s *Store) UpdateUser(ctx context.Context, u *ent.User) (*ent.User, error) {
+	return s.c.User.UpdateOneID(u.ID).
+		SetLogin(u.Login).
+		SetAvatar(u.Avatar).
+		SetAdmin(u.Admin).
+		SetToken(u.Token).
+		SetRefresh(u.Refresh).
+		SetExpiry(u.Expiry).
+		Save(ctx)
+}
+
 func (s *Store) FindUserWithChatUserByID(ctx context.Context, id string) (*ent.User, error) {
 	return s.c.User.
 		Query().
@@ -15,27 +60,4 @@ func (s *Store) FindUserWithChatUserByID(ctx context.Context, id string) (*ent.U
 		).
 		WithChatUser().
 		First(ctx)
-}
-
-func (s *Store) CreateChatUser(ctx context.Context, u *ent.User, cu *ent.ChatUser) (*ent.ChatUser, error) {
-	return s.c.ChatUser.
-		Create().
-		SetID(cu.ID).
-		SetToken(cu.Token).
-		SetBotToken(cu.BotToken).
-		SetRefresh(cu.Refresh).
-		SetExpiry(cu.Expiry).
-		SetUserID(u.ID).
-		Save(ctx)
-}
-
-func (s *Store) UpdateChatUser(ctx context.Context, u *ent.User, cu *ent.ChatUser) (*ent.ChatUser, error) {
-	return s.c.ChatUser.
-		UpdateOneID(cu.ID).
-		SetToken(cu.Token).
-		SetBotToken(cu.BotToken).
-		SetRefresh(cu.Refresh).
-		SetExpiry(cu.Expiry).
-		SetUserID(u.ID).
-		Save(ctx)
 }

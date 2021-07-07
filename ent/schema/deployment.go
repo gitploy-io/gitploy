@@ -40,6 +40,8 @@ func (Deployment) Fields() []ent.Field {
 				"failure",
 			).
 			Default("waiting"),
+		field.Int("required_approval_count").
+			Default(0),
 		field.Time("created_at").
 			Default(time.Now),
 		field.Time("updated_at").
@@ -64,6 +66,7 @@ func (Deployment) Edges() []ent.Edge {
 			Field("repo_id").
 			Unique().
 			Required(),
+		edge.To("approvals", Approval.Type),
 		edge.To("notifications", Notification.Type),
 	}
 }

@@ -5,6 +5,7 @@ package ent
 import (
 	"time"
 
+	"github.com/hanjunlee/gitploy/ent/approval"
 	"github.com/hanjunlee/gitploy/ent/chatcallback"
 	"github.com/hanjunlee/gitploy/ent/chatuser"
 	"github.com/hanjunlee/gitploy/ent/deployment"
@@ -19,6 +20,22 @@ import (
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	approvalFields := schema.Approval{}.Fields()
+	_ = approvalFields
+	// approvalDescIsApproved is the schema descriptor for is_approved field.
+	approvalDescIsApproved := approvalFields[0].Descriptor()
+	// approval.DefaultIsApproved holds the default value on creation for the is_approved field.
+	approval.DefaultIsApproved = approvalDescIsApproved.Default.(bool)
+	// approvalDescCreatedAt is the schema descriptor for created_at field.
+	approvalDescCreatedAt := approvalFields[1].Descriptor()
+	// approval.DefaultCreatedAt holds the default value on creation for the created_at field.
+	approval.DefaultCreatedAt = approvalDescCreatedAt.Default.(func() time.Time)
+	// approvalDescUpdatedAt is the schema descriptor for updated_at field.
+	approvalDescUpdatedAt := approvalFields[2].Descriptor()
+	// approval.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	approval.DefaultUpdatedAt = approvalDescUpdatedAt.Default.(func() time.Time)
+	// approval.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	approval.UpdateDefaultUpdatedAt = approvalDescUpdatedAt.UpdateDefault.(func() time.Time)
 	chatcallbackFields := schema.ChatCallback{}.Fields()
 	_ = chatcallbackFields
 	// chatcallbackDescIsOpened is the schema descriptor for is_opened field.
@@ -49,12 +66,16 @@ func init() {
 	chatuser.UpdateDefaultUpdatedAt = chatuserDescUpdatedAt.UpdateDefault.(func() time.Time)
 	deploymentFields := schema.Deployment{}.Fields()
 	_ = deploymentFields
+	// deploymentDescRequiredApprovalCount is the schema descriptor for required_approval_count field.
+	deploymentDescRequiredApprovalCount := deploymentFields[7].Descriptor()
+	// deployment.DefaultRequiredApprovalCount holds the default value on creation for the required_approval_count field.
+	deployment.DefaultRequiredApprovalCount = deploymentDescRequiredApprovalCount.Default.(int)
 	// deploymentDescCreatedAt is the schema descriptor for created_at field.
-	deploymentDescCreatedAt := deploymentFields[7].Descriptor()
+	deploymentDescCreatedAt := deploymentFields[8].Descriptor()
 	// deployment.DefaultCreatedAt holds the default value on creation for the created_at field.
 	deployment.DefaultCreatedAt = deploymentDescCreatedAt.Default.(func() time.Time)
 	// deploymentDescUpdatedAt is the schema descriptor for updated_at field.
-	deploymentDescUpdatedAt := deploymentFields[8].Descriptor()
+	deploymentDescUpdatedAt := deploymentFields[9].Descriptor()
 	// deployment.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	deployment.DefaultUpdatedAt = deploymentDescUpdatedAt.Default.(func() time.Time)
 	// deployment.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.

@@ -10,6 +10,7 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/hanjunlee/gitploy/ent/approval"
 	"github.com/hanjunlee/gitploy/ent/chatuser"
 	"github.com/hanjunlee/gitploy/ent/deployment"
 	"github.com/hanjunlee/gitploy/ent/notification"
@@ -185,6 +186,21 @@ func (uc *UserCreate) AddDeployments(d ...*Deployment) *UserCreate {
 		ids[i] = d[i].ID
 	}
 	return uc.AddDeploymentIDs(ids...)
+}
+
+// AddApprovalIDs adds the "approvals" edge to the Approval entity by IDs.
+func (uc *UserCreate) AddApprovalIDs(ids ...int) *UserCreate {
+	uc.mutation.AddApprovalIDs(ids...)
+	return uc
+}
+
+// AddApprovals adds the "approvals" edges to the Approval entity.
+func (uc *UserCreate) AddApprovals(a ...*Approval) *UserCreate {
+	ids := make([]int, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return uc.AddApprovalIDs(ids...)
 }
 
 // AddNotificationIDs adds the "notification" edge to the Notification entity by IDs.
@@ -456,6 +472,25 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
 					Column: deployment.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := uc.mutation.ApprovalsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.ApprovalsTable,
+			Columns: []string{user.ApprovalsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: approval.FieldID,
 				},
 			},
 		}
