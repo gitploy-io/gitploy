@@ -32,6 +32,8 @@ type Deployment struct {
 	Env string `json:"env,omitempty"`
 	// Status holds the value of the "status" field.
 	Status deployment.Status `json:"status,omitempty"`
+	// RequiredApprovalCount holds the value of the "required_approval_count" field.
+	RequiredApprovalCount int `json:"required_approval_count,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -111,7 +113,7 @@ func (*Deployment) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case deployment.FieldID, deployment.FieldNumber, deployment.FieldUID:
+		case deployment.FieldID, deployment.FieldNumber, deployment.FieldUID, deployment.FieldRequiredApprovalCount:
 			values[i] = new(sql.NullInt64)
 		case deployment.FieldType, deployment.FieldRef, deployment.FieldSha, deployment.FieldEnv, deployment.FieldStatus, deployment.FieldUserID, deployment.FieldRepoID:
 			values[i] = new(sql.NullString)
@@ -179,6 +181,12 @@ func (d *Deployment) assignValues(columns []string, values []interface{}) error 
 				return fmt.Errorf("unexpected type %T for field status", values[i])
 			} else if value.Valid {
 				d.Status = deployment.Status(value.String)
+			}
+		case deployment.FieldRequiredApprovalCount:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field required_approval_count", values[i])
+			} else if value.Valid {
+				d.RequiredApprovalCount = int(value.Int64)
 			}
 		case deployment.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -266,6 +274,8 @@ func (d *Deployment) String() string {
 	builder.WriteString(d.Env)
 	builder.WriteString(", status=")
 	builder.WriteString(fmt.Sprintf("%v", d.Status))
+	builder.WriteString(", required_approval_count=")
+	builder.WriteString(fmt.Sprintf("%v", d.RequiredApprovalCount))
 	builder.WriteString(", created_at=")
 	builder.WriteString(d.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", updated_at=")

@@ -132,6 +132,27 @@ func (du *DeploymentUpdate) SetNillableStatus(d *deployment.Status) *DeploymentU
 	return du
 }
 
+// SetRequiredApprovalCount sets the "required_approval_count" field.
+func (du *DeploymentUpdate) SetRequiredApprovalCount(i int) *DeploymentUpdate {
+	du.mutation.ResetRequiredApprovalCount()
+	du.mutation.SetRequiredApprovalCount(i)
+	return du
+}
+
+// SetNillableRequiredApprovalCount sets the "required_approval_count" field if the given value is not nil.
+func (du *DeploymentUpdate) SetNillableRequiredApprovalCount(i *int) *DeploymentUpdate {
+	if i != nil {
+		du.SetRequiredApprovalCount(*i)
+	}
+	return du
+}
+
+// AddRequiredApprovalCount adds i to the "required_approval_count" field.
+func (du *DeploymentUpdate) AddRequiredApprovalCount(i int) *DeploymentUpdate {
+	du.mutation.AddRequiredApprovalCount(i)
+	return du
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (du *DeploymentUpdate) SetCreatedAt(t time.Time) *DeploymentUpdate {
 	du.mutation.SetCreatedAt(t)
@@ -443,6 +464,20 @@ func (du *DeploymentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: deployment.FieldStatus,
 		})
 	}
+	if value, ok := du.mutation.RequiredApprovalCount(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: deployment.FieldRequiredApprovalCount,
+		})
+	}
+	if value, ok := du.mutation.AddedRequiredApprovalCount(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: deployment.FieldRequiredApprovalCount,
+		})
+	}
 	if value, ok := du.mutation.CreatedAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
@@ -751,6 +786,27 @@ func (duo *DeploymentUpdateOne) SetNillableStatus(d *deployment.Status) *Deploym
 	if d != nil {
 		duo.SetStatus(*d)
 	}
+	return duo
+}
+
+// SetRequiredApprovalCount sets the "required_approval_count" field.
+func (duo *DeploymentUpdateOne) SetRequiredApprovalCount(i int) *DeploymentUpdateOne {
+	duo.mutation.ResetRequiredApprovalCount()
+	duo.mutation.SetRequiredApprovalCount(i)
+	return duo
+}
+
+// SetNillableRequiredApprovalCount sets the "required_approval_count" field if the given value is not nil.
+func (duo *DeploymentUpdateOne) SetNillableRequiredApprovalCount(i *int) *DeploymentUpdateOne {
+	if i != nil {
+		duo.SetRequiredApprovalCount(*i)
+	}
+	return duo
+}
+
+// AddRequiredApprovalCount adds i to the "required_approval_count" field.
+func (duo *DeploymentUpdateOne) AddRequiredApprovalCount(i int) *DeploymentUpdateOne {
+	duo.mutation.AddRequiredApprovalCount(i)
 	return duo
 }
 
@@ -1087,6 +1143,20 @@ func (duo *DeploymentUpdateOne) sqlSave(ctx context.Context) (_node *Deployment,
 			Type:   field.TypeEnum,
 			Value:  value,
 			Column: deployment.FieldStatus,
+		})
+	}
+	if value, ok := duo.mutation.RequiredApprovalCount(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: deployment.FieldRequiredApprovalCount,
+		})
+	}
+	if value, ok := duo.mutation.AddedRequiredApprovalCount(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: deployment.FieldRequiredApprovalCount,
 		})
 	}
 	if value, ok := duo.mutation.CreatedAt(); ok {

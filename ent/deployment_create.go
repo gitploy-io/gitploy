@@ -98,6 +98,20 @@ func (dc *DeploymentCreate) SetNillableStatus(d *deployment.Status) *DeploymentC
 	return dc
 }
 
+// SetRequiredApprovalCount sets the "required_approval_count" field.
+func (dc *DeploymentCreate) SetRequiredApprovalCount(i int) *DeploymentCreate {
+	dc.mutation.SetRequiredApprovalCount(i)
+	return dc
+}
+
+// SetNillableRequiredApprovalCount sets the "required_approval_count" field if the given value is not nil.
+func (dc *DeploymentCreate) SetNillableRequiredApprovalCount(i *int) *DeploymentCreate {
+	if i != nil {
+		dc.SetRequiredApprovalCount(*i)
+	}
+	return dc
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (dc *DeploymentCreate) SetCreatedAt(t time.Time) *DeploymentCreate {
 	dc.mutation.SetCreatedAt(t)
@@ -238,6 +252,10 @@ func (dc *DeploymentCreate) defaults() {
 		v := deployment.DefaultStatus
 		dc.mutation.SetStatus(v)
 	}
+	if _, ok := dc.mutation.RequiredApprovalCount(); !ok {
+		v := deployment.DefaultRequiredApprovalCount
+		dc.mutation.SetRequiredApprovalCount(v)
+	}
 	if _, ok := dc.mutation.CreatedAt(); !ok {
 		v := deployment.DefaultCreatedAt()
 		dc.mutation.SetCreatedAt(v)
@@ -274,6 +292,9 @@ func (dc *DeploymentCreate) check() error {
 		if err := deployment.StatusValidator(v); err != nil {
 			return &ValidationError{Name: "status", err: fmt.Errorf("ent: validator failed for field \"status\": %w", err)}
 		}
+	}
+	if _, ok := dc.mutation.RequiredApprovalCount(); !ok {
+		return &ValidationError{Name: "required_approval_count", err: errors.New("ent: missing required field \"required_approval_count\"")}
 	}
 	if _, ok := dc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New("ent: missing required field \"created_at\"")}
@@ -375,6 +396,14 @@ func (dc *DeploymentCreate) createSpec() (*Deployment, *sqlgraph.CreateSpec) {
 			Column: deployment.FieldStatus,
 		})
 		_node.Status = value
+	}
+	if value, ok := dc.mutation.RequiredApprovalCount(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: deployment.FieldRequiredApprovalCount,
+		})
+		_node.RequiredApprovalCount = value
 	}
 	if value, ok := dc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

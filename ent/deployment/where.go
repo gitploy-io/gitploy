@@ -128,6 +128,13 @@ func Env(v string) predicate.Deployment {
 	})
 }
 
+// RequiredApprovalCount applies equality check predicate on the "required_approval_count" field. It's identical to RequiredApprovalCountEQ.
+func RequiredApprovalCount(v int) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldRequiredApprovalCount), v))
+	})
+}
+
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.Deployment {
 	return predicate.Deployment(func(s *sql.Selector) {
@@ -762,6 +769,82 @@ func StatusNotIn(vs ...Status) predicate.Deployment {
 			return
 		}
 		s.Where(sql.NotIn(s.C(FieldStatus), v...))
+	})
+}
+
+// RequiredApprovalCountEQ applies the EQ predicate on the "required_approval_count" field.
+func RequiredApprovalCountEQ(v int) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldRequiredApprovalCount), v))
+	})
+}
+
+// RequiredApprovalCountNEQ applies the NEQ predicate on the "required_approval_count" field.
+func RequiredApprovalCountNEQ(v int) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldRequiredApprovalCount), v))
+	})
+}
+
+// RequiredApprovalCountIn applies the In predicate on the "required_approval_count" field.
+func RequiredApprovalCountIn(vs ...int) predicate.Deployment {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Deployment(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldRequiredApprovalCount), v...))
+	})
+}
+
+// RequiredApprovalCountNotIn applies the NotIn predicate on the "required_approval_count" field.
+func RequiredApprovalCountNotIn(vs ...int) predicate.Deployment {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Deployment(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldRequiredApprovalCount), v...))
+	})
+}
+
+// RequiredApprovalCountGT applies the GT predicate on the "required_approval_count" field.
+func RequiredApprovalCountGT(v int) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldRequiredApprovalCount), v))
+	})
+}
+
+// RequiredApprovalCountGTE applies the GTE predicate on the "required_approval_count" field.
+func RequiredApprovalCountGTE(v int) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldRequiredApprovalCount), v))
+	})
+}
+
+// RequiredApprovalCountLT applies the LT predicate on the "required_approval_count" field.
+func RequiredApprovalCountLT(v int) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldRequiredApprovalCount), v))
+	})
+}
+
+// RequiredApprovalCountLTE applies the LTE predicate on the "required_approval_count" field.
+func RequiredApprovalCountLTE(v int) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldRequiredApprovalCount), v))
 	})
 }
 

@@ -2158,34 +2158,36 @@ func (m *ChatUserMutation) ResetEdge(name string) error {
 // DeploymentMutation represents an operation that mutates the Deployment nodes in the graph.
 type DeploymentMutation struct {
 	config
-	op                   Op
-	typ                  string
-	id                   *int
-	number               *int
-	addnumber            *int
-	uid                  *int64
-	adduid               *int64
-	_type                *deployment.Type
-	ref                  *string
-	sha                  *string
-	env                  *string
-	status               *deployment.Status
-	created_at           *time.Time
-	updated_at           *time.Time
-	clearedFields        map[string]struct{}
-	user                 *string
-	cleareduser          bool
-	repo                 *string
-	clearedrepo          bool
-	approvals            map[int]struct{}
-	removedapprovals     map[int]struct{}
-	clearedapprovals     bool
-	notifications        map[int]struct{}
-	removednotifications map[int]struct{}
-	clearednotifications bool
-	done                 bool
-	oldValue             func(context.Context) (*Deployment, error)
-	predicates           []predicate.Deployment
+	op                         Op
+	typ                        string
+	id                         *int
+	number                     *int
+	addnumber                  *int
+	uid                        *int64
+	adduid                     *int64
+	_type                      *deployment.Type
+	ref                        *string
+	sha                        *string
+	env                        *string
+	status                     *deployment.Status
+	required_approval_count    *int
+	addrequired_approval_count *int
+	created_at                 *time.Time
+	updated_at                 *time.Time
+	clearedFields              map[string]struct{}
+	user                       *string
+	cleareduser                bool
+	repo                       *string
+	clearedrepo                bool
+	approvals                  map[int]struct{}
+	removedapprovals           map[int]struct{}
+	clearedapprovals           bool
+	notifications              map[int]struct{}
+	removednotifications       map[int]struct{}
+	clearednotifications       bool
+	done                       bool
+	oldValue                   func(context.Context) (*Deployment, error)
+	predicates                 []predicate.Deployment
 }
 
 var _ ent.Mutation = (*DeploymentMutation)(nil)
@@ -2586,6 +2588,62 @@ func (m *DeploymentMutation) ResetStatus() {
 	m.status = nil
 }
 
+// SetRequiredApprovalCount sets the "required_approval_count" field.
+func (m *DeploymentMutation) SetRequiredApprovalCount(i int) {
+	m.required_approval_count = &i
+	m.addrequired_approval_count = nil
+}
+
+// RequiredApprovalCount returns the value of the "required_approval_count" field in the mutation.
+func (m *DeploymentMutation) RequiredApprovalCount() (r int, exists bool) {
+	v := m.required_approval_count
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRequiredApprovalCount returns the old "required_approval_count" field's value of the Deployment entity.
+// If the Deployment object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DeploymentMutation) OldRequiredApprovalCount(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldRequiredApprovalCount is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldRequiredApprovalCount requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRequiredApprovalCount: %w", err)
+	}
+	return oldValue.RequiredApprovalCount, nil
+}
+
+// AddRequiredApprovalCount adds i to the "required_approval_count" field.
+func (m *DeploymentMutation) AddRequiredApprovalCount(i int) {
+	if m.addrequired_approval_count != nil {
+		*m.addrequired_approval_count += i
+	} else {
+		m.addrequired_approval_count = &i
+	}
+}
+
+// AddedRequiredApprovalCount returns the value that was added to the "required_approval_count" field in this mutation.
+func (m *DeploymentMutation) AddedRequiredApprovalCount() (r int, exists bool) {
+	v := m.addrequired_approval_count
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetRequiredApprovalCount resets all changes to the "required_approval_count" field.
+func (m *DeploymentMutation) ResetRequiredApprovalCount() {
+	m.required_approval_count = nil
+	m.addrequired_approval_count = nil
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (m *DeploymentMutation) SetCreatedAt(t time.Time) {
 	m.created_at = &t
@@ -2902,7 +2960,7 @@ func (m *DeploymentMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *DeploymentMutation) Fields() []string {
-	fields := make([]string, 0, 11)
+	fields := make([]string, 0, 12)
 	if m.number != nil {
 		fields = append(fields, deployment.FieldNumber)
 	}
@@ -2923,6 +2981,9 @@ func (m *DeploymentMutation) Fields() []string {
 	}
 	if m.status != nil {
 		fields = append(fields, deployment.FieldStatus)
+	}
+	if m.required_approval_count != nil {
+		fields = append(fields, deployment.FieldRequiredApprovalCount)
 	}
 	if m.created_at != nil {
 		fields = append(fields, deployment.FieldCreatedAt)
@@ -2958,6 +3019,8 @@ func (m *DeploymentMutation) Field(name string) (ent.Value, bool) {
 		return m.Env()
 	case deployment.FieldStatus:
 		return m.Status()
+	case deployment.FieldRequiredApprovalCount:
+		return m.RequiredApprovalCount()
 	case deployment.FieldCreatedAt:
 		return m.CreatedAt()
 	case deployment.FieldUpdatedAt:
@@ -2989,6 +3052,8 @@ func (m *DeploymentMutation) OldField(ctx context.Context, name string) (ent.Val
 		return m.OldEnv(ctx)
 	case deployment.FieldStatus:
 		return m.OldStatus(ctx)
+	case deployment.FieldRequiredApprovalCount:
+		return m.OldRequiredApprovalCount(ctx)
 	case deployment.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case deployment.FieldUpdatedAt:
@@ -3055,6 +3120,13 @@ func (m *DeploymentMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetStatus(v)
 		return nil
+	case deployment.FieldRequiredApprovalCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRequiredApprovalCount(v)
+		return nil
 	case deployment.FieldCreatedAt:
 		v, ok := value.(time.Time)
 		if !ok {
@@ -3097,6 +3169,9 @@ func (m *DeploymentMutation) AddedFields() []string {
 	if m.adduid != nil {
 		fields = append(fields, deployment.FieldUID)
 	}
+	if m.addrequired_approval_count != nil {
+		fields = append(fields, deployment.FieldRequiredApprovalCount)
+	}
 	return fields
 }
 
@@ -3109,6 +3184,8 @@ func (m *DeploymentMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedNumber()
 	case deployment.FieldUID:
 		return m.AddedUID()
+	case deployment.FieldRequiredApprovalCount:
+		return m.AddedRequiredApprovalCount()
 	}
 	return nil, false
 }
@@ -3131,6 +3208,13 @@ func (m *DeploymentMutation) AddField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddUID(v)
+		return nil
+	case deployment.FieldRequiredApprovalCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddRequiredApprovalCount(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Deployment numeric field %s", name)
@@ -3194,6 +3278,9 @@ func (m *DeploymentMutation) ResetField(name string) error {
 		return nil
 	case deployment.FieldStatus:
 		m.ResetStatus()
+		return nil
+	case deployment.FieldRequiredApprovalCount:
+		m.ResetRequiredApprovalCount()
 		return nil
 	case deployment.FieldCreatedAt:
 		m.ResetCreatedAt()
