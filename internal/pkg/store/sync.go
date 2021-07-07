@@ -10,15 +10,6 @@ import (
 	"github.com/hanjunlee/gitploy/ent/user"
 )
 
-func (s *Store) FindUserByHash(ctx context.Context, hash string) (*ent.User, error) {
-	return s.c.User.
-		Query().
-		Where(
-			user.HashEQ(hash),
-		).
-		Only(ctx)
-}
-
 func (s *Store) SyncPerm(ctx context.Context, u *ent.User, rp *ent.Perm, sync time.Time) error {
 	return s.WithTx(ctx, func(tx *ent.Tx) error {
 		var (
