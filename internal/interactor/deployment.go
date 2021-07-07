@@ -36,8 +36,8 @@ func (i *Interactor) Deploy(ctx context.Context, u *ent.User, re *ent.Repo, d *e
 	d.RequiredApprovalCount = env.Approval.RequiredCount
 	d, _ = i.Store.UpdateDeployment(ctx, d)
 
-	// Automatically approved for timeout deployment.
-	// It deploy to SCM if the status of deployment is waiting.
+	// Automatically approved for deployment timeout,
+	// it deploys to SCM if a status of the deployment is waiting.
 	time.AfterFunc(time.Duration(env.Approval.WaitMinute)*time.Minute, func() {
 		ctx := context.Background()
 		log := i.log.Named("waiting")
