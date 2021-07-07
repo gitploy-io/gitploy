@@ -53,6 +53,7 @@ func (User) Edges() []ent.Edge {
 			Unique(),
 		edge.To("perms", Perm.Type),
 		edge.To("deployments", Deployment.Type),
+		edge.To("approvals", Approval.Type),
 		edge.To("notification", Notification.Type),
 	}
 }

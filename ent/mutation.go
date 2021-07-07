@@ -8,6 +8,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/hanjunlee/gitploy/ent/approval"
 	"github.com/hanjunlee/gitploy/ent/chatcallback"
 	"github.com/hanjunlee/gitploy/ent/chatuser"
 	"github.com/hanjunlee/gitploy/ent/deployment"
@@ -29,6 +30,7 @@ const (
 	OpUpdateOne = ent.OpUpdateOne
 
 	// Node types.
+	TypeApproval     = "Approval"
 	TypeChatCallback = "ChatCallback"
 	TypeChatUser     = "ChatUser"
 	TypeDeployment   = "Deployment"
@@ -37,6 +39,634 @@ const (
 	TypeRepo         = "Repo"
 	TypeUser         = "User"
 )
+
+// ApprovalMutation represents an operation that mutates the Approval nodes in the graph.
+type ApprovalMutation struct {
+	config
+	op                Op
+	typ               string
+	id                *int
+	is_approved       *bool
+	created_at        *time.Time
+	updated_at        *time.Time
+	clearedFields     map[string]struct{}
+	user              *string
+	cleareduser       bool
+	deployment        *int
+	cleareddeployment bool
+	done              bool
+	oldValue          func(context.Context) (*Approval, error)
+	predicates        []predicate.Approval
+}
+
+var _ ent.Mutation = (*ApprovalMutation)(nil)
+
+// approvalOption allows management of the mutation configuration using functional options.
+type approvalOption func(*ApprovalMutation)
+
+// newApprovalMutation creates new mutation for the Approval entity.
+func newApprovalMutation(c config, op Op, opts ...approvalOption) *ApprovalMutation {
+	m := &ApprovalMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeApproval,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withApprovalID sets the ID field of the mutation.
+func withApprovalID(id int) approvalOption {
+	return func(m *ApprovalMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *Approval
+		)
+		m.oldValue = func(ctx context.Context) (*Approval, error) {
+			once.Do(func() {
+				if m.done {
+					err = fmt.Errorf("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().Approval.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withApproval sets the old Approval of the mutation.
+func withApproval(node *Approval) approvalOption {
+	return func(m *ApprovalMutation) {
+		m.oldValue = func(context.Context) (*Approval, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m ApprovalMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m ApprovalMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, fmt.Errorf("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID
+// is only available if it was provided to the builder.
+func (m *ApprovalMutation) ID() (id int, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// SetIsApproved sets the "is_approved" field.
+func (m *ApprovalMutation) SetIsApproved(b bool) {
+	m.is_approved = &b
+}
+
+// IsApproved returns the value of the "is_approved" field in the mutation.
+func (m *ApprovalMutation) IsApproved() (r bool, exists bool) {
+	v := m.is_approved
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsApproved returns the old "is_approved" field's value of the Approval entity.
+// If the Approval object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ApprovalMutation) OldIsApproved(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldIsApproved is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldIsApproved requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsApproved: %w", err)
+	}
+	return oldValue.IsApproved, nil
+}
+
+// ResetIsApproved resets all changes to the "is_approved" field.
+func (m *ApprovalMutation) ResetIsApproved() {
+	m.is_approved = nil
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *ApprovalMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *ApprovalMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the Approval entity.
+// If the Approval object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ApprovalMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *ApprovalMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *ApprovalMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *ApprovalMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the Approval entity.
+// If the Approval object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ApprovalMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *ApprovalMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// SetUserID sets the "user_id" field.
+func (m *ApprovalMutation) SetUserID(s string) {
+	m.user = &s
+}
+
+// UserID returns the value of the "user_id" field in the mutation.
+func (m *ApprovalMutation) UserID() (r string, exists bool) {
+	v := m.user
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUserID returns the old "user_id" field's value of the Approval entity.
+// If the Approval object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ApprovalMutation) OldUserID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldUserID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldUserID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUserID: %w", err)
+	}
+	return oldValue.UserID, nil
+}
+
+// ClearUserID clears the value of the "user_id" field.
+func (m *ApprovalMutation) ClearUserID() {
+	m.user = nil
+	m.clearedFields[approval.FieldUserID] = struct{}{}
+}
+
+// UserIDCleared returns if the "user_id" field was cleared in this mutation.
+func (m *ApprovalMutation) UserIDCleared() bool {
+	_, ok := m.clearedFields[approval.FieldUserID]
+	return ok
+}
+
+// ResetUserID resets all changes to the "user_id" field.
+func (m *ApprovalMutation) ResetUserID() {
+	m.user = nil
+	delete(m.clearedFields, approval.FieldUserID)
+}
+
+// SetDeploymentID sets the "deployment_id" field.
+func (m *ApprovalMutation) SetDeploymentID(i int) {
+	m.deployment = &i
+}
+
+// DeploymentID returns the value of the "deployment_id" field in the mutation.
+func (m *ApprovalMutation) DeploymentID() (r int, exists bool) {
+	v := m.deployment
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeploymentID returns the old "deployment_id" field's value of the Approval entity.
+// If the Approval object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ApprovalMutation) OldDeploymentID(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldDeploymentID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldDeploymentID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeploymentID: %w", err)
+	}
+	return oldValue.DeploymentID, nil
+}
+
+// ResetDeploymentID resets all changes to the "deployment_id" field.
+func (m *ApprovalMutation) ResetDeploymentID() {
+	m.deployment = nil
+}
+
+// ClearUser clears the "user" edge to the User entity.
+func (m *ApprovalMutation) ClearUser() {
+	m.cleareduser = true
+}
+
+// UserCleared reports if the "user" edge to the User entity was cleared.
+func (m *ApprovalMutation) UserCleared() bool {
+	return m.UserIDCleared() || m.cleareduser
+}
+
+// UserIDs returns the "user" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// UserID instead. It exists only for internal usage by the builders.
+func (m *ApprovalMutation) UserIDs() (ids []string) {
+	if id := m.user; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetUser resets all changes to the "user" edge.
+func (m *ApprovalMutation) ResetUser() {
+	m.user = nil
+	m.cleareduser = false
+}
+
+// ClearDeployment clears the "deployment" edge to the Deployment entity.
+func (m *ApprovalMutation) ClearDeployment() {
+	m.cleareddeployment = true
+}
+
+// DeploymentCleared reports if the "deployment" edge to the Deployment entity was cleared.
+func (m *ApprovalMutation) DeploymentCleared() bool {
+	return m.cleareddeployment
+}
+
+// DeploymentIDs returns the "deployment" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// DeploymentID instead. It exists only for internal usage by the builders.
+func (m *ApprovalMutation) DeploymentIDs() (ids []int) {
+	if id := m.deployment; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetDeployment resets all changes to the "deployment" edge.
+func (m *ApprovalMutation) ResetDeployment() {
+	m.deployment = nil
+	m.cleareddeployment = false
+}
+
+// Op returns the operation name.
+func (m *ApprovalMutation) Op() Op {
+	return m.op
+}
+
+// Type returns the node type of this mutation (Approval).
+func (m *ApprovalMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *ApprovalMutation) Fields() []string {
+	fields := make([]string, 0, 5)
+	if m.is_approved != nil {
+		fields = append(fields, approval.FieldIsApproved)
+	}
+	if m.created_at != nil {
+		fields = append(fields, approval.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, approval.FieldUpdatedAt)
+	}
+	if m.user != nil {
+		fields = append(fields, approval.FieldUserID)
+	}
+	if m.deployment != nil {
+		fields = append(fields, approval.FieldDeploymentID)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *ApprovalMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case approval.FieldIsApproved:
+		return m.IsApproved()
+	case approval.FieldCreatedAt:
+		return m.CreatedAt()
+	case approval.FieldUpdatedAt:
+		return m.UpdatedAt()
+	case approval.FieldUserID:
+		return m.UserID()
+	case approval.FieldDeploymentID:
+		return m.DeploymentID()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *ApprovalMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case approval.FieldIsApproved:
+		return m.OldIsApproved(ctx)
+	case approval.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case approval.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	case approval.FieldUserID:
+		return m.OldUserID(ctx)
+	case approval.FieldDeploymentID:
+		return m.OldDeploymentID(ctx)
+	}
+	return nil, fmt.Errorf("unknown Approval field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ApprovalMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case approval.FieldIsApproved:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsApproved(v)
+		return nil
+	case approval.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case approval.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	case approval.FieldUserID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUserID(v)
+		return nil
+	case approval.FieldDeploymentID:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeploymentID(v)
+		return nil
+	}
+	return fmt.Errorf("unknown Approval field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *ApprovalMutation) AddedFields() []string {
+	var fields []string
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *ApprovalMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ApprovalMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown Approval numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *ApprovalMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(approval.FieldUserID) {
+		fields = append(fields, approval.FieldUserID)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *ApprovalMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *ApprovalMutation) ClearField(name string) error {
+	switch name {
+	case approval.FieldUserID:
+		m.ClearUserID()
+		return nil
+	}
+	return fmt.Errorf("unknown Approval nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *ApprovalMutation) ResetField(name string) error {
+	switch name {
+	case approval.FieldIsApproved:
+		m.ResetIsApproved()
+		return nil
+	case approval.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case approval.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	case approval.FieldUserID:
+		m.ResetUserID()
+		return nil
+	case approval.FieldDeploymentID:
+		m.ResetDeploymentID()
+		return nil
+	}
+	return fmt.Errorf("unknown Approval field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *ApprovalMutation) AddedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.user != nil {
+		edges = append(edges, approval.EdgeUser)
+	}
+	if m.deployment != nil {
+		edges = append(edges, approval.EdgeDeployment)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *ApprovalMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case approval.EdgeUser:
+		if id := m.user; id != nil {
+			return []ent.Value{*id}
+		}
+	case approval.EdgeDeployment:
+		if id := m.deployment; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *ApprovalMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 2)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *ApprovalMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	}
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *ApprovalMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.cleareduser {
+		edges = append(edges, approval.EdgeUser)
+	}
+	if m.cleareddeployment {
+		edges = append(edges, approval.EdgeDeployment)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *ApprovalMutation) EdgeCleared(name string) bool {
+	switch name {
+	case approval.EdgeUser:
+		return m.cleareduser
+	case approval.EdgeDeployment:
+		return m.cleareddeployment
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *ApprovalMutation) ClearEdge(name string) error {
+	switch name {
+	case approval.EdgeUser:
+		m.ClearUser()
+		return nil
+	case approval.EdgeDeployment:
+		m.ClearDeployment()
+		return nil
+	}
+	return fmt.Errorf("unknown Approval unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *ApprovalMutation) ResetEdge(name string) error {
+	switch name {
+	case approval.EdgeUser:
+		m.ResetUser()
+		return nil
+	case approval.EdgeDeployment:
+		m.ResetDeployment()
+		return nil
+	}
+	return fmt.Errorf("unknown Approval edge %s", name)
+}
 
 // ChatCallbackMutation represents an operation that mutates the ChatCallback nodes in the graph.
 type ChatCallbackMutation struct {
@@ -1547,6 +2177,9 @@ type DeploymentMutation struct {
 	cleareduser          bool
 	repo                 *string
 	clearedrepo          bool
+	approvals            map[int]struct{}
+	removedapprovals     map[int]struct{}
+	clearedapprovals     bool
 	notifications        map[int]struct{}
 	removednotifications map[int]struct{}
 	clearednotifications bool
@@ -2149,6 +2782,59 @@ func (m *DeploymentMutation) ResetRepo() {
 	m.clearedrepo = false
 }
 
+// AddApprovalIDs adds the "approvals" edge to the Approval entity by ids.
+func (m *DeploymentMutation) AddApprovalIDs(ids ...int) {
+	if m.approvals == nil {
+		m.approvals = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.approvals[ids[i]] = struct{}{}
+	}
+}
+
+// ClearApprovals clears the "approvals" edge to the Approval entity.
+func (m *DeploymentMutation) ClearApprovals() {
+	m.clearedapprovals = true
+}
+
+// ApprovalsCleared reports if the "approvals" edge to the Approval entity was cleared.
+func (m *DeploymentMutation) ApprovalsCleared() bool {
+	return m.clearedapprovals
+}
+
+// RemoveApprovalIDs removes the "approvals" edge to the Approval entity by IDs.
+func (m *DeploymentMutation) RemoveApprovalIDs(ids ...int) {
+	if m.removedapprovals == nil {
+		m.removedapprovals = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.removedapprovals[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedApprovals returns the removed IDs of the "approvals" edge to the Approval entity.
+func (m *DeploymentMutation) RemovedApprovalsIDs() (ids []int) {
+	for id := range m.removedapprovals {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ApprovalsIDs returns the "approvals" edge IDs in the mutation.
+func (m *DeploymentMutation) ApprovalsIDs() (ids []int) {
+	for id := range m.approvals {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetApprovals resets all changes to the "approvals" edge.
+func (m *DeploymentMutation) ResetApprovals() {
+	m.approvals = nil
+	m.clearedapprovals = false
+	m.removedapprovals = nil
+}
+
 // AddNotificationIDs adds the "notifications" edge to the Notification entity by ids.
 func (m *DeploymentMutation) AddNotificationIDs(ids ...int) {
 	if m.notifications == nil {
@@ -2527,12 +3213,15 @@ func (m *DeploymentMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *DeploymentMutation) AddedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.user != nil {
 		edges = append(edges, deployment.EdgeUser)
 	}
 	if m.repo != nil {
 		edges = append(edges, deployment.EdgeRepo)
+	}
+	if m.approvals != nil {
+		edges = append(edges, deployment.EdgeApprovals)
 	}
 	if m.notifications != nil {
 		edges = append(edges, deployment.EdgeNotifications)
@@ -2552,6 +3241,12 @@ func (m *DeploymentMutation) AddedIDs(name string) []ent.Value {
 		if id := m.repo; id != nil {
 			return []ent.Value{*id}
 		}
+	case deployment.EdgeApprovals:
+		ids := make([]ent.Value, 0, len(m.approvals))
+		for id := range m.approvals {
+			ids = append(ids, id)
+		}
+		return ids
 	case deployment.EdgeNotifications:
 		ids := make([]ent.Value, 0, len(m.notifications))
 		for id := range m.notifications {
@@ -2564,7 +3259,10 @@ func (m *DeploymentMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *DeploymentMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
+	if m.removedapprovals != nil {
+		edges = append(edges, deployment.EdgeApprovals)
+	}
 	if m.removednotifications != nil {
 		edges = append(edges, deployment.EdgeNotifications)
 	}
@@ -2575,6 +3273,12 @@ func (m *DeploymentMutation) RemovedEdges() []string {
 // the given name in this mutation.
 func (m *DeploymentMutation) RemovedIDs(name string) []ent.Value {
 	switch name {
+	case deployment.EdgeApprovals:
+		ids := make([]ent.Value, 0, len(m.removedapprovals))
+		for id := range m.removedapprovals {
+			ids = append(ids, id)
+		}
+		return ids
 	case deployment.EdgeNotifications:
 		ids := make([]ent.Value, 0, len(m.removednotifications))
 		for id := range m.removednotifications {
@@ -2587,12 +3291,15 @@ func (m *DeploymentMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *DeploymentMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.cleareduser {
 		edges = append(edges, deployment.EdgeUser)
 	}
 	if m.clearedrepo {
 		edges = append(edges, deployment.EdgeRepo)
+	}
+	if m.clearedapprovals {
+		edges = append(edges, deployment.EdgeApprovals)
 	}
 	if m.clearednotifications {
 		edges = append(edges, deployment.EdgeNotifications)
@@ -2608,6 +3315,8 @@ func (m *DeploymentMutation) EdgeCleared(name string) bool {
 		return m.cleareduser
 	case deployment.EdgeRepo:
 		return m.clearedrepo
+	case deployment.EdgeApprovals:
+		return m.clearedapprovals
 	case deployment.EdgeNotifications:
 		return m.clearednotifications
 	}
@@ -2637,6 +3346,9 @@ func (m *DeploymentMutation) ResetEdge(name string) error {
 		return nil
 	case deployment.EdgeRepo:
 		m.ResetRepo()
+		return nil
+	case deployment.EdgeApprovals:
+		m.ResetApprovals()
 		return nil
 	case deployment.EdgeNotifications:
 		m.ResetNotifications()
@@ -5455,6 +6167,9 @@ type UserMutation struct {
 	deployments         map[int]struct{}
 	removeddeployments  map[int]struct{}
 	cleareddeployments  bool
+	approvals           map[int]struct{}
+	removedapprovals    map[int]struct{}
+	clearedapprovals    bool
 	notification        map[int]struct{}
 	removednotification map[int]struct{}
 	clearednotification bool
@@ -6079,6 +6794,59 @@ func (m *UserMutation) ResetDeployments() {
 	m.removeddeployments = nil
 }
 
+// AddApprovalIDs adds the "approvals" edge to the Approval entity by ids.
+func (m *UserMutation) AddApprovalIDs(ids ...int) {
+	if m.approvals == nil {
+		m.approvals = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.approvals[ids[i]] = struct{}{}
+	}
+}
+
+// ClearApprovals clears the "approvals" edge to the Approval entity.
+func (m *UserMutation) ClearApprovals() {
+	m.clearedapprovals = true
+}
+
+// ApprovalsCleared reports if the "approvals" edge to the Approval entity was cleared.
+func (m *UserMutation) ApprovalsCleared() bool {
+	return m.clearedapprovals
+}
+
+// RemoveApprovalIDs removes the "approvals" edge to the Approval entity by IDs.
+func (m *UserMutation) RemoveApprovalIDs(ids ...int) {
+	if m.removedapprovals == nil {
+		m.removedapprovals = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.removedapprovals[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedApprovals returns the removed IDs of the "approvals" edge to the Approval entity.
+func (m *UserMutation) RemovedApprovalsIDs() (ids []int) {
+	for id := range m.removedapprovals {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ApprovalsIDs returns the "approvals" edge IDs in the mutation.
+func (m *UserMutation) ApprovalsIDs() (ids []int) {
+	for id := range m.approvals {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetApprovals resets all changes to the "approvals" edge.
+func (m *UserMutation) ResetApprovals() {
+	m.approvals = nil
+	m.clearedapprovals = false
+	m.removedapprovals = nil
+}
+
 // AddNotificationIDs adds the "notification" edge to the Notification entity by ids.
 func (m *UserMutation) AddNotificationIDs(ids ...int) {
 	if m.notification == nil {
@@ -6413,7 +7181,7 @@ func (m *UserMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *UserMutation) AddedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 5)
 	if m.chat_user != nil {
 		edges = append(edges, user.EdgeChatUser)
 	}
@@ -6422,6 +7190,9 @@ func (m *UserMutation) AddedEdges() []string {
 	}
 	if m.deployments != nil {
 		edges = append(edges, user.EdgeDeployments)
+	}
+	if m.approvals != nil {
+		edges = append(edges, user.EdgeApprovals)
 	}
 	if m.notification != nil {
 		edges = append(edges, user.EdgeNotification)
@@ -6449,6 +7220,12 @@ func (m *UserMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case user.EdgeApprovals:
+		ids := make([]ent.Value, 0, len(m.approvals))
+		for id := range m.approvals {
+			ids = append(ids, id)
+		}
+		return ids
 	case user.EdgeNotification:
 		ids := make([]ent.Value, 0, len(m.notification))
 		for id := range m.notification {
@@ -6461,12 +7238,15 @@ func (m *UserMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *UserMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 5)
 	if m.removedperms != nil {
 		edges = append(edges, user.EdgePerms)
 	}
 	if m.removeddeployments != nil {
 		edges = append(edges, user.EdgeDeployments)
+	}
+	if m.removedapprovals != nil {
+		edges = append(edges, user.EdgeApprovals)
 	}
 	if m.removednotification != nil {
 		edges = append(edges, user.EdgeNotification)
@@ -6490,6 +7270,12 @@ func (m *UserMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case user.EdgeApprovals:
+		ids := make([]ent.Value, 0, len(m.removedapprovals))
+		for id := range m.removedapprovals {
+			ids = append(ids, id)
+		}
+		return ids
 	case user.EdgeNotification:
 		ids := make([]ent.Value, 0, len(m.removednotification))
 		for id := range m.removednotification {
@@ -6502,7 +7288,7 @@ func (m *UserMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *UserMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 5)
 	if m.clearedchat_user {
 		edges = append(edges, user.EdgeChatUser)
 	}
@@ -6511,6 +7297,9 @@ func (m *UserMutation) ClearedEdges() []string {
 	}
 	if m.cleareddeployments {
 		edges = append(edges, user.EdgeDeployments)
+	}
+	if m.clearedapprovals {
+		edges = append(edges, user.EdgeApprovals)
 	}
 	if m.clearednotification {
 		edges = append(edges, user.EdgeNotification)
@@ -6528,6 +7317,8 @@ func (m *UserMutation) EdgeCleared(name string) bool {
 		return m.clearedperms
 	case user.EdgeDeployments:
 		return m.cleareddeployments
+	case user.EdgeApprovals:
+		return m.clearedapprovals
 	case user.EdgeNotification:
 		return m.clearednotification
 	}
@@ -6557,6 +7348,9 @@ func (m *UserMutation) ResetEdge(name string) error {
 		return nil
 	case user.EdgeDeployments:
 		m.ResetDeployments()
+		return nil
+	case user.EdgeApprovals:
+		m.ResetApprovals()
 		return nil
 	case user.EdgeNotification:
 		m.ResetNotification()

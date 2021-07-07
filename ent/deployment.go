@@ -51,11 +51,13 @@ type DeploymentEdges struct {
 	User *User `json:"user,omitempty"`
 	// Repo holds the value of the repo edge.
 	Repo *Repo `json:"repo,omitempty"`
+	// Approvals holds the value of the approvals edge.
+	Approvals []*Approval `json:"approvals,omitempty"`
 	// Notifications holds the value of the notifications edge.
 	Notifications []*Notification `json:"notifications,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [3]bool
+	loadedTypes [4]bool
 }
 
 // UserOrErr returns the User value or an error if the edge
@@ -86,10 +88,19 @@ func (e DeploymentEdges) RepoOrErr() (*Repo, error) {
 	return nil, &NotLoadedError{edge: "repo"}
 }
 
+// ApprovalsOrErr returns the Approvals value or an error if the edge
+// was not loaded in eager-loading.
+func (e DeploymentEdges) ApprovalsOrErr() ([]*Approval, error) {
+	if e.loadedTypes[2] {
+		return e.Approvals, nil
+	}
+	return nil, &NotLoadedError{edge: "approvals"}
+}
+
 // NotificationsOrErr returns the Notifications value or an error if the edge
 // was not loaded in eager-loading.
 func (e DeploymentEdges) NotificationsOrErr() ([]*Notification, error) {
-	if e.loadedTypes[2] {
+	if e.loadedTypes[3] {
 		return e.Notifications, nil
 	}
 	return nil, &NotLoadedError{edge: "notifications"}
@@ -206,6 +217,11 @@ func (d *Deployment) QueryUser() *UserQuery {
 // QueryRepo queries the "repo" edge of the Deployment entity.
 func (d *Deployment) QueryRepo() *RepoQuery {
 	return (&DeploymentClient{config: d.config}).QueryRepo(d)
+}
+
+// QueryApprovals queries the "approvals" edge of the Deployment entity.
+func (d *Deployment) QueryApprovals() *ApprovalQuery {
+	return (&DeploymentClient{config: d.config}).QueryApprovals(d)
 }
 
 // QueryNotifications queries the "notifications" edge of the Deployment entity.

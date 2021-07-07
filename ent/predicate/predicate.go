@@ -6,6 +6,9 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
+// Approval is the predicate function for approval builders.
+type Approval func(*sql.Selector)
+
 // ChatCallback is the predicate function for chatcallback builders.
 type ChatCallback func(*sql.Selector)
 

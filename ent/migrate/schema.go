@@ -8,6 +8,35 @@ import (
 )
 
 var (
+	// ApprovalsColumns holds the columns for the "approvals" table.
+	ApprovalsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "is_approved", Type: field.TypeBool, Default: false},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deployment_id", Type: field.TypeInt, Nullable: true},
+		{Name: "user_id", Type: field.TypeString, Nullable: true},
+	}
+	// ApprovalsTable holds the schema information for the "approvals" table.
+	ApprovalsTable = &schema.Table{
+		Name:       "approvals",
+		Columns:    ApprovalsColumns,
+		PrimaryKey: []*schema.Column{ApprovalsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "approvals_deployments_approvals",
+				Columns:    []*schema.Column{ApprovalsColumns[4]},
+				RefColumns: []*schema.Column{DeploymentsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "approvals_users_approvals",
+				Columns:    []*schema.Column{ApprovalsColumns[5]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+	}
 	// ChatCallbacksColumns holds the columns for the "chat_callbacks" table.
 	ChatCallbacksColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
@@ -279,6 +308,7 @@ var (
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
+		ApprovalsTable,
 		ChatCallbacksTable,
 		ChatUsersTable,
 		DeploymentsTable,
@@ -290,6 +320,8 @@ var (
 )
 
 func init() {
+	ApprovalsTable.ForeignKeys[0].RefTable = DeploymentsTable
+	ApprovalsTable.ForeignKeys[1].RefTable = UsersTable
 	ChatCallbacksTable.ForeignKeys[0].RefTable = ChatUsersTable
 	ChatCallbacksTable.ForeignKeys[1].RefTable = ReposTable
 	ChatUsersTable.ForeignKeys[0].RefTable = UsersTable

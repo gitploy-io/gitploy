@@ -24,6 +24,7 @@ type config struct {
 
 // hooks per client, for fast access.
 type hooks struct {
+	Approval     []ent.Hook
 	ChatCallback []ent.Hook
 	ChatUser     []ent.Hook
 	Deployment   []ent.Hook

@@ -64,6 +64,7 @@ func (Deployment) Edges() []ent.Edge {
 			Field("repo_id").
 			Unique().
 			Required(),
+		edge.To("approvals", Approval.Type),
 		edge.To("notifications", Notification.Type),
 	}
 }

@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/hanjunlee/gitploy/ent/approval"
 	"github.com/hanjunlee/gitploy/ent/deployment"
 	"github.com/hanjunlee/gitploy/ent/notification"
 	"github.com/hanjunlee/gitploy/ent/predicate"
@@ -173,6 +174,21 @@ func (du *DeploymentUpdate) SetRepo(r *Repo) *DeploymentUpdate {
 	return du.SetRepoID(r.ID)
 }
 
+// AddApprovalIDs adds the "approvals" edge to the Approval entity by IDs.
+func (du *DeploymentUpdate) AddApprovalIDs(ids ...int) *DeploymentUpdate {
+	du.mutation.AddApprovalIDs(ids...)
+	return du
+}
+
+// AddApprovals adds the "approvals" edges to the Approval entity.
+func (du *DeploymentUpdate) AddApprovals(a ...*Approval) *DeploymentUpdate {
+	ids := make([]int, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return du.AddApprovalIDs(ids...)
+}
+
 // AddNotificationIDs adds the "notifications" edge to the Notification entity by IDs.
 func (du *DeploymentUpdate) AddNotificationIDs(ids ...int) *DeploymentUpdate {
 	du.mutation.AddNotificationIDs(ids...)
@@ -203,6 +219,27 @@ func (du *DeploymentUpdate) ClearUser() *DeploymentUpdate {
 func (du *DeploymentUpdate) ClearRepo() *DeploymentUpdate {
 	du.mutation.ClearRepo()
 	return du
+}
+
+// ClearApprovals clears all "approvals" edges to the Approval entity.
+func (du *DeploymentUpdate) ClearApprovals() *DeploymentUpdate {
+	du.mutation.ClearApprovals()
+	return du
+}
+
+// RemoveApprovalIDs removes the "approvals" edge to Approval entities by IDs.
+func (du *DeploymentUpdate) RemoveApprovalIDs(ids ...int) *DeploymentUpdate {
+	du.mutation.RemoveApprovalIDs(ids...)
+	return du
+}
+
+// RemoveApprovals removes "approvals" edges to Approval entities.
+func (du *DeploymentUpdate) RemoveApprovals(a ...*Approval) *DeploymentUpdate {
+	ids := make([]int, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return du.RemoveApprovalIDs(ids...)
 }
 
 // ClearNotifications clears all "notifications" edges to the Notification entity.
@@ -490,6 +527,60 @@ func (du *DeploymentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if du.mutation.ApprovalsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   deployment.ApprovalsTable,
+			Columns: []string{deployment.ApprovalsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: approval.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := du.mutation.RemovedApprovalsIDs(); len(nodes) > 0 && !du.mutation.ApprovalsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   deployment.ApprovalsTable,
+			Columns: []string{deployment.ApprovalsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: approval.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := du.mutation.ApprovalsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   deployment.ApprovalsTable,
+			Columns: []string{deployment.ApprovalsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: approval.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if du.mutation.NotificationsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
@@ -705,6 +796,21 @@ func (duo *DeploymentUpdateOne) SetRepo(r *Repo) *DeploymentUpdateOne {
 	return duo.SetRepoID(r.ID)
 }
 
+// AddApprovalIDs adds the "approvals" edge to the Approval entity by IDs.
+func (duo *DeploymentUpdateOne) AddApprovalIDs(ids ...int) *DeploymentUpdateOne {
+	duo.mutation.AddApprovalIDs(ids...)
+	return duo
+}
+
+// AddApprovals adds the "approvals" edges to the Approval entity.
+func (duo *DeploymentUpdateOne) AddApprovals(a ...*Approval) *DeploymentUpdateOne {
+	ids := make([]int, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return duo.AddApprovalIDs(ids...)
+}
+
 // AddNotificationIDs adds the "notifications" edge to the Notification entity by IDs.
 func (duo *DeploymentUpdateOne) AddNotificationIDs(ids ...int) *DeploymentUpdateOne {
 	duo.mutation.AddNotificationIDs(ids...)
@@ -735,6 +841,27 @@ func (duo *DeploymentUpdateOne) ClearUser() *DeploymentUpdateOne {
 func (duo *DeploymentUpdateOne) ClearRepo() *DeploymentUpdateOne {
 	duo.mutation.ClearRepo()
 	return duo
+}
+
+// ClearApprovals clears all "approvals" edges to the Approval entity.
+func (duo *DeploymentUpdateOne) ClearApprovals() *DeploymentUpdateOne {
+	duo.mutation.ClearApprovals()
+	return duo
+}
+
+// RemoveApprovalIDs removes the "approvals" edge to Approval entities by IDs.
+func (duo *DeploymentUpdateOne) RemoveApprovalIDs(ids ...int) *DeploymentUpdateOne {
+	duo.mutation.RemoveApprovalIDs(ids...)
+	return duo
+}
+
+// RemoveApprovals removes "approvals" edges to Approval entities.
+func (duo *DeploymentUpdateOne) RemoveApprovals(a ...*Approval) *DeploymentUpdateOne {
+	ids := make([]int, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return duo.RemoveApprovalIDs(ids...)
 }
 
 // ClearNotifications clears all "notifications" edges to the Notification entity.
@@ -1038,6 +1165,60 @@ func (duo *DeploymentUpdateOne) sqlSave(ctx context.Context) (_node *Deployment,
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: repo.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if duo.mutation.ApprovalsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   deployment.ApprovalsTable,
+			Columns: []string{deployment.ApprovalsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: approval.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := duo.mutation.RemovedApprovalsIDs(); len(nodes) > 0 && !duo.mutation.ApprovalsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   deployment.ApprovalsTable,
+			Columns: []string{deployment.ApprovalsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: approval.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := duo.mutation.ApprovalsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   deployment.ApprovalsTable,
+			Columns: []string{deployment.ApprovalsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: approval.FieldID,
 				},
 			},
 		}
