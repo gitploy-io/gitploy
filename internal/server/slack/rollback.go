@@ -111,6 +111,14 @@ func (s *Slack) interactRollback(ctx context.Context, scb slack.InteractionCallb
 		id = scb.Submission["deployment_id"]
 	)
 
+	if cb.Edges.ChatUser == nil {
+		return fmt.Errorf("The chat_user edge is not found")
+	}
+
+	if cb.Edges.Repo == nil {
+		return fmt.Errorf("The repo edge is not found")
+	}
+
 	cu := cb.Edges.ChatUser
 	re := cb.Edges.Repo
 

@@ -13,8 +13,12 @@ import (
 func (s *Slack) NotifyDeployment(ctx context.Context, cu *ent.ChatUser, d *ent.Deployment) error {
 	const title = "New Deployment"
 
-	if d.Edges.User == nil || d.Edges.Repo == nil {
-		return fmt.Errorf("Edges are not found - user, repo.")
+	if d.Edges.User == nil {
+		return fmt.Errorf("The user edge is not found")
+	}
+
+	if d.Edges.Repo == nil {
+		return fmt.Errorf("The repo edge is not found")
 	}
 
 	u, r := d.Edges.User, d.Edges.Repo
