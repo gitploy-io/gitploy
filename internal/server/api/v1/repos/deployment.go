@@ -163,17 +163,11 @@ func (r *Repo) RollbackDeployment(c *gin.Context) {
 		return
 	}
 
-	// Set auto_merge false to avoid the merge conflict.
-	env := cf.GetEnv(d.Env)
-	env.AutoMerge = false
-
-	d, err = r.i.Deploy(ctx, u, re,
-		&ent.Deployment{
-			Type: d.Type,
-			Ref:  d.Ref,
-			Env:  d.Env,
-		},
-		env)
+	d, err = r.i.Rollback(ctx, u, re, &ent.Deployment{
+		Type: d.Type,
+		Ref:  d.Ref,
+		Env:  d.Env,
+	}, cf.GetEnv(d.Env))
 	if ent.IsConstraintError(err) {
 		r.log.Warn("deployment number conflict.", zap.Error(err))
 		gb.ErrorResponse(c, http.StatusConflict, "The conflict occurs, please retry.")
