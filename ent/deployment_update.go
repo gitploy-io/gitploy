@@ -153,6 +153,20 @@ func (du *DeploymentUpdate) AddRequiredApprovalCount(i int) *DeploymentUpdate {
 	return du
 }
 
+// SetAutoDeploy sets the "auto_deploy" field.
+func (du *DeploymentUpdate) SetAutoDeploy(b bool) *DeploymentUpdate {
+	du.mutation.SetAutoDeploy(b)
+	return du
+}
+
+// SetNillableAutoDeploy sets the "auto_deploy" field if the given value is not nil.
+func (du *DeploymentUpdate) SetNillableAutoDeploy(b *bool) *DeploymentUpdate {
+	if b != nil {
+		du.SetAutoDeploy(*b)
+	}
+	return du
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (du *DeploymentUpdate) SetCreatedAt(t time.Time) *DeploymentUpdate {
 	du.mutation.SetCreatedAt(t)
@@ -476,6 +490,13 @@ func (du *DeploymentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Type:   field.TypeInt,
 			Value:  value,
 			Column: deployment.FieldRequiredApprovalCount,
+		})
+	}
+	if value, ok := du.mutation.AutoDeploy(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: deployment.FieldAutoDeploy,
 		})
 	}
 	if value, ok := du.mutation.CreatedAt(); ok {
@@ -807,6 +828,20 @@ func (duo *DeploymentUpdateOne) SetNillableRequiredApprovalCount(i *int) *Deploy
 // AddRequiredApprovalCount adds i to the "required_approval_count" field.
 func (duo *DeploymentUpdateOne) AddRequiredApprovalCount(i int) *DeploymentUpdateOne {
 	duo.mutation.AddRequiredApprovalCount(i)
+	return duo
+}
+
+// SetAutoDeploy sets the "auto_deploy" field.
+func (duo *DeploymentUpdateOne) SetAutoDeploy(b bool) *DeploymentUpdateOne {
+	duo.mutation.SetAutoDeploy(b)
+	return duo
+}
+
+// SetNillableAutoDeploy sets the "auto_deploy" field if the given value is not nil.
+func (duo *DeploymentUpdateOne) SetNillableAutoDeploy(b *bool) *DeploymentUpdateOne {
+	if b != nil {
+		duo.SetAutoDeploy(*b)
+	}
 	return duo
 }
 
@@ -1157,6 +1192,13 @@ func (duo *DeploymentUpdateOne) sqlSave(ctx context.Context) (_node *Deployment,
 			Type:   field.TypeInt,
 			Value:  value,
 			Column: deployment.FieldRequiredApprovalCount,
+		})
+	}
+	if value, ok := duo.mutation.AutoDeploy(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: deployment.FieldAutoDeploy,
 		})
 	}
 	if value, ok := duo.mutation.CreatedAt(); ok {

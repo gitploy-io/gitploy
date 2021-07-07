@@ -135,6 +135,13 @@ func RequiredApprovalCount(v int) predicate.Deployment {
 	})
 }
 
+// AutoDeploy applies equality check predicate on the "auto_deploy" field. It's identical to AutoDeployEQ.
+func AutoDeploy(v bool) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldAutoDeploy), v))
+	})
+}
+
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.Deployment {
 	return predicate.Deployment(func(s *sql.Selector) {
@@ -845,6 +852,20 @@ func RequiredApprovalCountLT(v int) predicate.Deployment {
 func RequiredApprovalCountLTE(v int) predicate.Deployment {
 	return predicate.Deployment(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldRequiredApprovalCount), v))
+	})
+}
+
+// AutoDeployEQ applies the EQ predicate on the "auto_deploy" field.
+func AutoDeployEQ(v bool) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldAutoDeploy), v))
+	})
+}
+
+// AutoDeployNEQ applies the NEQ predicate on the "auto_deploy" field.
+func AutoDeployNEQ(v bool) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldAutoDeploy), v))
 	})
 }
 

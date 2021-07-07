@@ -16,8 +16,7 @@ envs:
       - github-action
     approval:
       approvers:
-        - hanjunlee
-      wait_minute: 60`
+        - hanjunlee`
 		c := &Config{}
 
 		err := UnmarshalYAML([]byte(s), c)
@@ -37,8 +36,7 @@ envs:
 					Payload:               "",
 					ProductionEnvironment: false,
 					Approval: &Approval{
-						Approvers:  []string{"hanjunlee"},
-						WaitMinute: 60,
+						Approvers: []string{"hanjunlee"},
 					},
 				},
 			},
@@ -57,8 +55,7 @@ envs:
       - github-action
     approval:
       approvers:
-        - hanjunlee
-      wait_minute: 60`
+        - hanjunlee`
 		c := &Config{}
 
 		err := UnmarshalYAML([]byte(s), c)
@@ -79,8 +76,7 @@ envs:
 					Payload:               "",
 					ProductionEnvironment: false,
 					Approval: &Approval{
-						Approvers:  []string{"hanjunlee"},
-						WaitMinute: 60,
+						Approvers: []string{"hanjunlee"},
 					},
 				},
 			},

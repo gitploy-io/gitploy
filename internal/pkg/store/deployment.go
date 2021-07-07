@@ -87,6 +87,7 @@ func (s *Store) CreateDeployment(ctx context.Context, d *ent.Deployment) (*ent.D
 		SetRef(d.Ref).
 		SetEnv(d.Env).
 		SetRequiredApprovalCount(d.RequiredApprovalCount).
+		SetAutoDeploy(d.AutoDeploy).
 		SetUserID(d.UserID).
 		SetRepoID(d.RepoID).
 		Save(ctx)
@@ -100,6 +101,7 @@ func (s *Store) UpdateDeployment(ctx context.Context, d *ent.Deployment) (*ent.D
 		SetSha(d.Sha).
 		SetEnv(d.Env).
 		SetRequiredApprovalCount(d.RequiredApprovalCount).
+		SetAutoDeploy(d.AutoDeploy).
 		SetStatus(d.Status).
 		Save(ctx)
 }

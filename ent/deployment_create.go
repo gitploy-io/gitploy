@@ -112,6 +112,20 @@ func (dc *DeploymentCreate) SetNillableRequiredApprovalCount(i *int) *Deployment
 	return dc
 }
 
+// SetAutoDeploy sets the "auto_deploy" field.
+func (dc *DeploymentCreate) SetAutoDeploy(b bool) *DeploymentCreate {
+	dc.mutation.SetAutoDeploy(b)
+	return dc
+}
+
+// SetNillableAutoDeploy sets the "auto_deploy" field if the given value is not nil.
+func (dc *DeploymentCreate) SetNillableAutoDeploy(b *bool) *DeploymentCreate {
+	if b != nil {
+		dc.SetAutoDeploy(*b)
+	}
+	return dc
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (dc *DeploymentCreate) SetCreatedAt(t time.Time) *DeploymentCreate {
 	dc.mutation.SetCreatedAt(t)
@@ -256,6 +270,10 @@ func (dc *DeploymentCreate) defaults() {
 		v := deployment.DefaultRequiredApprovalCount
 		dc.mutation.SetRequiredApprovalCount(v)
 	}
+	if _, ok := dc.mutation.AutoDeploy(); !ok {
+		v := deployment.DefaultAutoDeploy
+		dc.mutation.SetAutoDeploy(v)
+	}
 	if _, ok := dc.mutation.CreatedAt(); !ok {
 		v := deployment.DefaultCreatedAt()
 		dc.mutation.SetCreatedAt(v)
@@ -295,6 +313,9 @@ func (dc *DeploymentCreate) check() error {
 	}
 	if _, ok := dc.mutation.RequiredApprovalCount(); !ok {
 		return &ValidationError{Name: "required_approval_count", err: errors.New("ent: missing required field \"required_approval_count\"")}
+	}
+	if _, ok := dc.mutation.AutoDeploy(); !ok {
+		return &ValidationError{Name: "auto_deploy", err: errors.New("ent: missing required field \"auto_deploy\"")}
 	}
 	if _, ok := dc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New("ent: missing required field \"created_at\"")}
@@ -404,6 +425,14 @@ func (dc *DeploymentCreate) createSpec() (*Deployment, *sqlgraph.CreateSpec) {
 			Column: deployment.FieldRequiredApprovalCount,
 		})
 		_node.RequiredApprovalCount = value
+	}
+	if value, ok := dc.mutation.AutoDeploy(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: deployment.FieldAutoDeploy,
+		})
+		_node.AutoDeploy = value
 	}
 	if value, ok := dc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
