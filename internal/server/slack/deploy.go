@@ -87,6 +87,14 @@ func (s *Slack) interactDeploy(ctx context.Context, scb slack.InteractionCallbac
 		env = scb.Submission["env"]
 	)
 
+	if cb.Edges.ChatUser == nil {
+		return fmt.Errorf("The chat_user edge is not found")
+	}
+
+	if cb.Edges.Repo == nil {
+		return fmt.Errorf("The repo edge is not found")
+	}
+
 	cu := cb.Edges.ChatUser
 	re := cb.Edges.Repo
 
