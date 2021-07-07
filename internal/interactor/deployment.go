@@ -38,7 +38,10 @@ func (i *Interactor) Deploy(ctx context.Context, u *ent.User, re *ent.Repo, d *e
 
 	// Automatically approved for deployment timeout,
 	// it deploys to SCM if a status of the deployment is waiting.
-	time.AfterFunc(time.Duration(env.Approval.WaitMinute)*time.Minute, func() {
+	t := time.NewTimer(time.Duration(env.Approval.WaitMinute) * time.Minute)
+	go func() {
+		<-t.C
+
 		ctx := context.Background()
 		log := i.log.Named("waiting")
 
@@ -57,7 +60,7 @@ func (i *Interactor) Deploy(ctx context.Context, u *ent.User, re *ent.Repo, d *e
 			log.Error("failed to deploy to SCM.", zap.Error(err))
 			return
 		}
-	})
+	}()
 
 	return d, nil
 }
