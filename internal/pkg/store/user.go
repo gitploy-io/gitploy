@@ -20,6 +20,15 @@ func (s *Store) FindUserByHash(ctx context.Context, hash string) (*ent.User, err
 		Only(ctx)
 }
 
+func (s *Store) FindUserByLogin(ctx context.Context, login string) (*ent.User, error) {
+	return s.c.User.
+		Query().
+		Where(
+			user.LoginEQ(login),
+		).
+		Only(ctx)
+}
+
 func (s *Store) CreateUser(ctx context.Context, u *ent.User) (*ent.User, error) {
 	return s.c.User.Create().
 		SetID(u.ID).
