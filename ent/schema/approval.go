@@ -45,3 +45,7 @@ func (Approval) Edges() []ent.Edge {
 			Required(),
 	}
 }
+
+func (Approval) Index() []ent.Index {
+	return []ent.Index{}
+}

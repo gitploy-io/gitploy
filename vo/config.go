@@ -13,23 +13,25 @@ type (
 	}
 
 	Env struct {
-		Name        string `json:"name" yaml:"name"`
-		Task        string `json:"task" yaml:"task" default:"deploy"`
-		Description string `json:"description" yaml:"description"`
-		// The type of auto_merge must be string to avoid
-		// that the value of auto_merge is always set true
-		// after processing defaults.Set
-		StrAutoMerge          string    `json:"auto_merge" yaml:"auto_merge"`
+		Name                  string    `json:"name" yaml:"name"`
+		Task                  string    `json:"task" yaml:"task" default:"deploy"`
+		Description           string    `json:"description" yaml:"description"`
 		AutoMerge             bool      `default:"true"`
 		RequiredContexts      []string  `json:"required_contexts" yaml:"required_contexts"`
 		Payload               string    `json:"payload" yaml:"payload"`
 		ProductionEnvironment bool      `json:"production_environment" yaml:"production_environment"`
 		Approval              *Approval `json:"approval" yaml:"approval"`
+
+		// The type of auto_merge must be string to avoid
+		// that the value of auto_merge is always set true
+		// after processing defaults.Set
+		StrAutoMerge string `json:"auto_merge" yaml:"auto_merge"`
 	}
 
 	Approval struct {
-		Approvers  []string `json:"approvers" yaml:"approvers"`
-		WaitMinute int      `json:"wait_minute" yaml:"wait_minute"`
+		Approvers     []string `json:"approvers" yaml:"approvers"`
+		RequiredCount int      `json:"required_count" yaml:"required_count"`
+		WaitMinute    int      `json:"wait_minute" yaml:"wait_minute"`
 	}
 )
 
