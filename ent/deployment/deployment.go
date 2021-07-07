@@ -28,6 +28,8 @@ const (
 	FieldStatus = "status"
 	// FieldRequiredApprovalCount holds the string denoting the required_approval_count field in the database.
 	FieldRequiredApprovalCount = "required_approval_count"
+	// FieldAutoDeploy holds the string denoting the auto_deploy field in the database.
+	FieldAutoDeploy = "auto_deploy"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
@@ -87,6 +89,7 @@ var Columns = []string{
 	FieldEnv,
 	FieldStatus,
 	FieldRequiredApprovalCount,
+	FieldAutoDeploy,
 	FieldCreatedAt,
 	FieldUpdatedAt,
 	FieldUserID,
@@ -106,6 +109,8 @@ func ValidColumn(column string) bool {
 var (
 	// DefaultRequiredApprovalCount holds the default value on creation for the "required_approval_count" field.
 	DefaultRequiredApprovalCount int
+	// DefaultAutoDeploy holds the default value on creation for the "auto_deploy" field.
+	DefaultAutoDeploy bool
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
 	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.

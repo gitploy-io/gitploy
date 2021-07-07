@@ -3,9 +3,6 @@ package interactor
 import (
 	"context"
 	"fmt"
-	"time"
-
-	"go.uber.org/zap"
 
 	"github.com/hanjunlee/gitploy/ent"
 	"github.com/hanjunlee/gitploy/ent/deployment"
@@ -34,33 +31,8 @@ func (i *Interactor) Deploy(ctx context.Context, u *ent.User, re *ent.Repo, d *e
 	}
 
 	d.RequiredApprovalCount = env.Approval.RequiredCount
+	d.AutoDeploy = env.Approval.AutoDeploy
 	d, _ = i.Store.UpdateDeployment(ctx, d)
-
-	// Automatically approved for deployment timeout,
-	// it deploys to SCM if a status of the deployment is waiting.
-	t := time.NewTimer(time.Duration(env.Approval.WaitMinute) * time.Minute)
-	go func() {
-		<-t.C
-
-		ctx := context.Background()
-		log := i.log.Named("waiting")
-
-		d, err := i.FindDeploymentWithEdgesByID(ctx, d.ID)
-		if err != nil {
-			log.Error("failed to find the deployment.", zap.Int("deployment_id", d.ID))
-			return
-		}
-
-		if d.Status != deployment.StatusWaiting {
-			log.Debug("the deployment already processed.")
-			return
-		}
-
-		if _, err = i.deployToSCM(ctx, u, re, d, env); err != nil {
-			log.Error("failed to deploy to SCM.", zap.Error(err))
-			return
-		}
-	}()
 
 	return d, nil
 }

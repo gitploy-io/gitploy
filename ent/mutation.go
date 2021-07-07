@@ -2172,6 +2172,7 @@ type DeploymentMutation struct {
 	status                     *deployment.Status
 	required_approval_count    *int
 	addrequired_approval_count *int
+	auto_deploy                *bool
 	created_at                 *time.Time
 	updated_at                 *time.Time
 	clearedFields              map[string]struct{}
@@ -2644,6 +2645,42 @@ func (m *DeploymentMutation) ResetRequiredApprovalCount() {
 	m.addrequired_approval_count = nil
 }
 
+// SetAutoDeploy sets the "auto_deploy" field.
+func (m *DeploymentMutation) SetAutoDeploy(b bool) {
+	m.auto_deploy = &b
+}
+
+// AutoDeploy returns the value of the "auto_deploy" field in the mutation.
+func (m *DeploymentMutation) AutoDeploy() (r bool, exists bool) {
+	v := m.auto_deploy
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAutoDeploy returns the old "auto_deploy" field's value of the Deployment entity.
+// If the Deployment object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DeploymentMutation) OldAutoDeploy(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldAutoDeploy is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldAutoDeploy requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAutoDeploy: %w", err)
+	}
+	return oldValue.AutoDeploy, nil
+}
+
+// ResetAutoDeploy resets all changes to the "auto_deploy" field.
+func (m *DeploymentMutation) ResetAutoDeploy() {
+	m.auto_deploy = nil
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (m *DeploymentMutation) SetCreatedAt(t time.Time) {
 	m.created_at = &t
@@ -2960,7 +2997,7 @@ func (m *DeploymentMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *DeploymentMutation) Fields() []string {
-	fields := make([]string, 0, 12)
+	fields := make([]string, 0, 13)
 	if m.number != nil {
 		fields = append(fields, deployment.FieldNumber)
 	}
@@ -2984,6 +3021,9 @@ func (m *DeploymentMutation) Fields() []string {
 	}
 	if m.required_approval_count != nil {
 		fields = append(fields, deployment.FieldRequiredApprovalCount)
+	}
+	if m.auto_deploy != nil {
+		fields = append(fields, deployment.FieldAutoDeploy)
 	}
 	if m.created_at != nil {
 		fields = append(fields, deployment.FieldCreatedAt)
@@ -3021,6 +3061,8 @@ func (m *DeploymentMutation) Field(name string) (ent.Value, bool) {
 		return m.Status()
 	case deployment.FieldRequiredApprovalCount:
 		return m.RequiredApprovalCount()
+	case deployment.FieldAutoDeploy:
+		return m.AutoDeploy()
 	case deployment.FieldCreatedAt:
 		return m.CreatedAt()
 	case deployment.FieldUpdatedAt:
@@ -3054,6 +3096,8 @@ func (m *DeploymentMutation) OldField(ctx context.Context, name string) (ent.Val
 		return m.OldStatus(ctx)
 	case deployment.FieldRequiredApprovalCount:
 		return m.OldRequiredApprovalCount(ctx)
+	case deployment.FieldAutoDeploy:
+		return m.OldAutoDeploy(ctx)
 	case deployment.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case deployment.FieldUpdatedAt:
@@ -3126,6 +3170,13 @@ func (m *DeploymentMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetRequiredApprovalCount(v)
+		return nil
+	case deployment.FieldAutoDeploy:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAutoDeploy(v)
 		return nil
 	case deployment.FieldCreatedAt:
 		v, ok := value.(time.Time)
@@ -3281,6 +3332,9 @@ func (m *DeploymentMutation) ResetField(name string) error {
 		return nil
 	case deployment.FieldRequiredApprovalCount:
 		m.ResetRequiredApprovalCount()
+		return nil
+	case deployment.FieldAutoDeploy:
+		m.ResetAutoDeploy()
 		return nil
 	case deployment.FieldCreatedAt:
 		m.ResetCreatedAt()

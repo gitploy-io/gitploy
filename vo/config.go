@@ -31,7 +31,7 @@ type (
 	Approval struct {
 		Approvers     []string `json:"approvers" yaml:"approvers"`
 		RequiredCount int      `json:"required_count" yaml:"required_count"`
-		WaitMinute    int      `json:"wait_minute" yaml:"wait_minute" default:"10"`
+		AutoDeploy    bool     `json:"auto_deploy" yaml:"auto_deploy"`
 	}
 )
 
