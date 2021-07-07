@@ -65,7 +65,27 @@ func (i *Interactor) Deploy(ctx context.Context, u *ent.User, re *ent.Repo, d *e
 	return d, nil
 }
 
-// TODO: Rollback command.
+func (i *Interactor) Rollback(ctx context.Context, u *ent.User, re *ent.Repo, d *ent.Deployment, env *vo.Env) (*ent.Deployment, error) {
+	d.UserID = u.ID
+	d.RepoID = re.ID
+
+	num, err := i.Store.GetNextDeploymentNumberOfRepo(ctx, d)
+	d.Number = num
+
+	d, err = i.Store.CreateDeployment(ctx, d)
+	if err != nil {
+		return nil, fmt.Errorf("failed to save a new deployment to the store: %w", err)
+	}
+
+	// Rollback configures it can deploy the ref without any constraints.
+	// 1) Set auto_merge false to avoid the merge conflict.
+	// 2) Set required_contexts empty to skip the verfication.
+	env.Task = "rollback"
+	env.AutoMerge = false
+	env.RequiredContexts = []string{}
+
+	return i.deployToSCM(ctx, u, re, d, env)
+}
 
 func (i *Interactor) deployToSCM(ctx context.Context, u *ent.User, re *ent.Repo, od *ent.Deployment, e *vo.Env) (*ent.Deployment, error) {
 	nd, err := i.SCM.CreateDeployment(ctx, u, re, od, e)

@@ -146,17 +146,11 @@ func (s *Slack) interactRollback(ctx context.Context, scb slack.InteractionCallb
 		return nil
 	}
 
-	// Set auto_merge false to avoid the merge conflict.
-	env := cf.GetEnv(d.Env)
-	env.AutoMerge = false
-
-	d, err = s.i.Deploy(ctx, u, cb.Edges.Repo,
-		&ent.Deployment{
-			Type: deployment.Type(d.Type),
-			Ref:  d.Ref,
-			Env:  d.Env,
-		},
-		env)
+	d, err = s.i.Rollback(ctx, u, cb.Edges.Repo, &ent.Deployment{
+		Type: deployment.Type(d.Type),
+		Ref:  d.Ref,
+		Env:  d.Env,
+	}, cf.GetEnv(d.Env))
 	if err != nil {
 		return fmt.Errorf("failed to deploy: %w", err)
 	}
