@@ -486,7 +486,6 @@ paths:
           $ref: '#/components/responses/422UnprocessableEntity'
         '500':
           $ref: '#/components/responses/500InternalError'
-
   /repos/{id}/deployments/{number}:
     get:
       tags:
@@ -512,6 +511,151 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Deployment'
+        '401': 
+          $ref: '#/components/responses/401Unauthorized'
+        '403': 
+          $ref: '#/components/responses/403Forbidden'
+        '404': 
+          $ref: '#/components/responses/404NotFound'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+    patch: 
+      tags:
+        - Repo
+      summary: Deploy to SCM if a status of the deployment is waiting.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            description: The repository id
+        - in: path
+          name: number
+          required: true
+          schema:
+            type: integer
+            description: The deployment number.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status: 
+                  type: string
+                  default: created
+      responses:
+        '200':
+          description: Deployment 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Deployment'
+        '401': 
+          $ref: '#/components/responses/401Unauthorized'
+        '403': 
+          $ref: '#/components/responses/403Forbidden'
+        '404': 
+          $ref: '#/components/responses/404NotFound'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+  /repos/{id}/deployments/{number}/approvals:
+    get:
+      tags:
+        - Repo
+      summary: List approvals for the deployment.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            description: The repository id
+        - in: path
+          name: number
+          required: true
+          schema:
+            type: integer
+            description: The deployment number.
+      responses:
+        '200':
+          description: List of approval
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Approvals'
+        '401': 
+          $ref: '#/components/responses/401Unauthorized'
+        '403': 
+          $ref: '#/components/responses/403Forbidden'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+  /repos/{id}/deployments/{number}/approval:
+    get:
+      tags:
+        - Repo
+      summary: Get the approval of user for the deployment.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            description: The repository id
+        - in: path
+          name: number
+          required: true
+          schema:
+            type: integer
+            description: The deployment number.
+      responses:
+        '200':
+          description: Approval
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Approval'
+        '401': 
+          $ref: '#/components/responses/401Unauthorized'
+        '403': 
+          $ref: '#/components/responses/403Forbidden'
+        '404': 
+          $ref: '#/components/responses/404NotFound'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+    patch:
+      tags:
+        - Repo
+      summary: Approve (or Decline) for the approval.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            description: The repository id
+        - in: path
+          name: number
+          required: true
+          schema:
+            type: integer
+            description: The deployment number.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                is_approved:
+                  type: boolean
+      responses:
+        '200':
+          description: Approval
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Approval'
         '401': 
           $ref: '#/components/responses/401Unauthorized'
         '403': 
@@ -842,6 +986,28 @@ components:
                 type: string
             wait_minute:
               type: integer
+    Approvals:
+      type: array
+      items:
+        $ref: '#/components/schemas/Approval'
+    Approval:
+      type: object
+      properties:
+        id:
+          type: integer
+        is_approved:
+          type: boolean
+        created_at:
+          type: string
+        updated_at:
+          type: string
+        edges:
+          type: object
+          properties:
+            user:
+              $ref: '#/components/schemas/User'
+            deployment:
+              $ref: '#/components/schemas/Deployment'
     Notifications:
       type: array
       items:
