@@ -104,12 +104,12 @@ var (
 	DeploymentsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "number", Type: field.TypeInt},
-		{Name: "uid", Type: field.TypeInt64, Nullable: true},
 		{Name: "type", Type: field.TypeEnum, Enums: []string{"commit", "branch", "tag"}, Default: "commit"},
 		{Name: "ref", Type: field.TypeString},
-		{Name: "sha", Type: field.TypeString, Nullable: true},
+		{Name: "sha", Type: field.TypeString},
 		{Name: "env", Type: field.TypeString},
 		{Name: "status", Type: field.TypeEnum, Enums: []string{"waiting", "created", "running", "success", "failure"}, Default: "waiting"},
+		{Name: "uid", Type: field.TypeInt64, Nullable: true},
 		{Name: "required_approval_count", Type: field.TypeInt, Default: 0},
 		{Name: "auto_deploy", Type: field.TypeBool, Default: false},
 		{Name: "created_at", Type: field.TypeTime},
@@ -150,12 +150,12 @@ var (
 			{
 				Name:    "deployment_repo_id_env_status_created_at",
 				Unique:  false,
-				Columns: []*schema.Column{DeploymentsColumns[12], DeploymentsColumns[6], DeploymentsColumns[7], DeploymentsColumns[10]},
+				Columns: []*schema.Column{DeploymentsColumns[12], DeploymentsColumns[5], DeploymentsColumns[6], DeploymentsColumns[10]},
 			},
 			{
 				Name:    "deployment_repo_id_env_created_at",
 				Unique:  false,
-				Columns: []*schema.Column{DeploymentsColumns[12], DeploymentsColumns[6], DeploymentsColumns[10]},
+				Columns: []*schema.Column{DeploymentsColumns[12], DeploymentsColumns[5], DeploymentsColumns[10]},
 			},
 			{
 				Name:    "deployment_repo_id_created_at",

@@ -2163,13 +2163,13 @@ type DeploymentMutation struct {
 	id                         *int
 	number                     *int
 	addnumber                  *int
-	uid                        *int64
-	adduid                     *int64
 	_type                      *deployment.Type
 	ref                        *string
 	sha                        *string
 	env                        *string
 	status                     *deployment.Status
+	uid                        *int64
+	adduid                     *int64
 	required_approval_count    *int
 	addrequired_approval_count *int
 	auto_deploy                *bool
@@ -2326,76 +2326,6 @@ func (m *DeploymentMutation) ResetNumber() {
 	m.addnumber = nil
 }
 
-// SetUID sets the "uid" field.
-func (m *DeploymentMutation) SetUID(i int64) {
-	m.uid = &i
-	m.adduid = nil
-}
-
-// UID returns the value of the "uid" field in the mutation.
-func (m *DeploymentMutation) UID() (r int64, exists bool) {
-	v := m.uid
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldUID returns the old "uid" field's value of the Deployment entity.
-// If the Deployment object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *DeploymentMutation) OldUID(ctx context.Context) (v int64, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, fmt.Errorf("OldUID is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, fmt.Errorf("OldUID requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldUID: %w", err)
-	}
-	return oldValue.UID, nil
-}
-
-// AddUID adds i to the "uid" field.
-func (m *DeploymentMutation) AddUID(i int64) {
-	if m.adduid != nil {
-		*m.adduid += i
-	} else {
-		m.adduid = &i
-	}
-}
-
-// AddedUID returns the value that was added to the "uid" field in this mutation.
-func (m *DeploymentMutation) AddedUID() (r int64, exists bool) {
-	v := m.adduid
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// ClearUID clears the value of the "uid" field.
-func (m *DeploymentMutation) ClearUID() {
-	m.uid = nil
-	m.adduid = nil
-	m.clearedFields[deployment.FieldUID] = struct{}{}
-}
-
-// UIDCleared returns if the "uid" field was cleared in this mutation.
-func (m *DeploymentMutation) UIDCleared() bool {
-	_, ok := m.clearedFields[deployment.FieldUID]
-	return ok
-}
-
-// ResetUID resets all changes to the "uid" field.
-func (m *DeploymentMutation) ResetUID() {
-	m.uid = nil
-	m.adduid = nil
-	delete(m.clearedFields, deployment.FieldUID)
-}
-
 // SetType sets the "type" field.
 func (m *DeploymentMutation) SetType(d deployment.Type) {
 	m._type = &d
@@ -2499,22 +2429,9 @@ func (m *DeploymentMutation) OldSha(ctx context.Context) (v string, err error) {
 	return oldValue.Sha, nil
 }
 
-// ClearSha clears the value of the "sha" field.
-func (m *DeploymentMutation) ClearSha() {
-	m.sha = nil
-	m.clearedFields[deployment.FieldSha] = struct{}{}
-}
-
-// ShaCleared returns if the "sha" field was cleared in this mutation.
-func (m *DeploymentMutation) ShaCleared() bool {
-	_, ok := m.clearedFields[deployment.FieldSha]
-	return ok
-}
-
 // ResetSha resets all changes to the "sha" field.
 func (m *DeploymentMutation) ResetSha() {
 	m.sha = nil
-	delete(m.clearedFields, deployment.FieldSha)
 }
 
 // SetEnv sets the "env" field.
@@ -2587,6 +2504,76 @@ func (m *DeploymentMutation) OldStatus(ctx context.Context) (v deployment.Status
 // ResetStatus resets all changes to the "status" field.
 func (m *DeploymentMutation) ResetStatus() {
 	m.status = nil
+}
+
+// SetUID sets the "uid" field.
+func (m *DeploymentMutation) SetUID(i int64) {
+	m.uid = &i
+	m.adduid = nil
+}
+
+// UID returns the value of the "uid" field in the mutation.
+func (m *DeploymentMutation) UID() (r int64, exists bool) {
+	v := m.uid
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUID returns the old "uid" field's value of the Deployment entity.
+// If the Deployment object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DeploymentMutation) OldUID(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldUID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldUID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUID: %w", err)
+	}
+	return oldValue.UID, nil
+}
+
+// AddUID adds i to the "uid" field.
+func (m *DeploymentMutation) AddUID(i int64) {
+	if m.adduid != nil {
+		*m.adduid += i
+	} else {
+		m.adduid = &i
+	}
+}
+
+// AddedUID returns the value that was added to the "uid" field in this mutation.
+func (m *DeploymentMutation) AddedUID() (r int64, exists bool) {
+	v := m.adduid
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearUID clears the value of the "uid" field.
+func (m *DeploymentMutation) ClearUID() {
+	m.uid = nil
+	m.adduid = nil
+	m.clearedFields[deployment.FieldUID] = struct{}{}
+}
+
+// UIDCleared returns if the "uid" field was cleared in this mutation.
+func (m *DeploymentMutation) UIDCleared() bool {
+	_, ok := m.clearedFields[deployment.FieldUID]
+	return ok
+}
+
+// ResetUID resets all changes to the "uid" field.
+func (m *DeploymentMutation) ResetUID() {
+	m.uid = nil
+	m.adduid = nil
+	delete(m.clearedFields, deployment.FieldUID)
 }
 
 // SetRequiredApprovalCount sets the "required_approval_count" field.
@@ -3001,9 +2988,6 @@ func (m *DeploymentMutation) Fields() []string {
 	if m.number != nil {
 		fields = append(fields, deployment.FieldNumber)
 	}
-	if m.uid != nil {
-		fields = append(fields, deployment.FieldUID)
-	}
 	if m._type != nil {
 		fields = append(fields, deployment.FieldType)
 	}
@@ -3018,6 +3002,9 @@ func (m *DeploymentMutation) Fields() []string {
 	}
 	if m.status != nil {
 		fields = append(fields, deployment.FieldStatus)
+	}
+	if m.uid != nil {
+		fields = append(fields, deployment.FieldUID)
 	}
 	if m.required_approval_count != nil {
 		fields = append(fields, deployment.FieldRequiredApprovalCount)
@@ -3047,8 +3034,6 @@ func (m *DeploymentMutation) Field(name string) (ent.Value, bool) {
 	switch name {
 	case deployment.FieldNumber:
 		return m.Number()
-	case deployment.FieldUID:
-		return m.UID()
 	case deployment.FieldType:
 		return m.GetType()
 	case deployment.FieldRef:
@@ -3059,6 +3044,8 @@ func (m *DeploymentMutation) Field(name string) (ent.Value, bool) {
 		return m.Env()
 	case deployment.FieldStatus:
 		return m.Status()
+	case deployment.FieldUID:
+		return m.UID()
 	case deployment.FieldRequiredApprovalCount:
 		return m.RequiredApprovalCount()
 	case deployment.FieldAutoDeploy:
@@ -3082,8 +3069,6 @@ func (m *DeploymentMutation) OldField(ctx context.Context, name string) (ent.Val
 	switch name {
 	case deployment.FieldNumber:
 		return m.OldNumber(ctx)
-	case deployment.FieldUID:
-		return m.OldUID(ctx)
 	case deployment.FieldType:
 		return m.OldType(ctx)
 	case deployment.FieldRef:
@@ -3094,6 +3079,8 @@ func (m *DeploymentMutation) OldField(ctx context.Context, name string) (ent.Val
 		return m.OldEnv(ctx)
 	case deployment.FieldStatus:
 		return m.OldStatus(ctx)
+	case deployment.FieldUID:
+		return m.OldUID(ctx)
 	case deployment.FieldRequiredApprovalCount:
 		return m.OldRequiredApprovalCount(ctx)
 	case deployment.FieldAutoDeploy:
@@ -3121,13 +3108,6 @@ func (m *DeploymentMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetNumber(v)
-		return nil
-	case deployment.FieldUID:
-		v, ok := value.(int64)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetUID(v)
 		return nil
 	case deployment.FieldType:
 		v, ok := value.(deployment.Type)
@@ -3163,6 +3143,13 @@ func (m *DeploymentMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetStatus(v)
+		return nil
+	case deployment.FieldUID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUID(v)
 		return nil
 	case deployment.FieldRequiredApprovalCount:
 		v, ok := value.(int)
@@ -3278,9 +3265,6 @@ func (m *DeploymentMutation) ClearedFields() []string {
 	if m.FieldCleared(deployment.FieldUID) {
 		fields = append(fields, deployment.FieldUID)
 	}
-	if m.FieldCleared(deployment.FieldSha) {
-		fields = append(fields, deployment.FieldSha)
-	}
 	return fields
 }
 
@@ -3298,9 +3282,6 @@ func (m *DeploymentMutation) ClearField(name string) error {
 	case deployment.FieldUID:
 		m.ClearUID()
 		return nil
-	case deployment.FieldSha:
-		m.ClearSha()
-		return nil
 	}
 	return fmt.Errorf("unknown Deployment nullable field %s", name)
 }
@@ -3311,9 +3292,6 @@ func (m *DeploymentMutation) ResetField(name string) error {
 	switch name {
 	case deployment.FieldNumber:
 		m.ResetNumber()
-		return nil
-	case deployment.FieldUID:
-		m.ResetUID()
 		return nil
 	case deployment.FieldType:
 		m.ResetType()
@@ -3329,6 +3307,9 @@ func (m *DeploymentMutation) ResetField(name string) error {
 		return nil
 	case deployment.FieldStatus:
 		m.ResetStatus()
+		return nil
+	case deployment.FieldUID:
+		m.ResetUID()
 		return nil
 	case deployment.FieldRequiredApprovalCount:
 		m.ResetRequiredApprovalCount()

@@ -30,20 +30,6 @@ func (dc *DeploymentCreate) SetNumber(i int) *DeploymentCreate {
 	return dc
 }
 
-// SetUID sets the "uid" field.
-func (dc *DeploymentCreate) SetUID(i int64) *DeploymentCreate {
-	dc.mutation.SetUID(i)
-	return dc
-}
-
-// SetNillableUID sets the "uid" field if the given value is not nil.
-func (dc *DeploymentCreate) SetNillableUID(i *int64) *DeploymentCreate {
-	if i != nil {
-		dc.SetUID(*i)
-	}
-	return dc
-}
-
 // SetType sets the "type" field.
 func (dc *DeploymentCreate) SetType(d deployment.Type) *DeploymentCreate {
 	dc.mutation.SetType(d)
@@ -70,14 +56,6 @@ func (dc *DeploymentCreate) SetSha(s string) *DeploymentCreate {
 	return dc
 }
 
-// SetNillableSha sets the "sha" field if the given value is not nil.
-func (dc *DeploymentCreate) SetNillableSha(s *string) *DeploymentCreate {
-	if s != nil {
-		dc.SetSha(*s)
-	}
-	return dc
-}
-
 // SetEnv sets the "env" field.
 func (dc *DeploymentCreate) SetEnv(s string) *DeploymentCreate {
 	dc.mutation.SetEnv(s)
@@ -94,6 +72,20 @@ func (dc *DeploymentCreate) SetStatus(d deployment.Status) *DeploymentCreate {
 func (dc *DeploymentCreate) SetNillableStatus(d *deployment.Status) *DeploymentCreate {
 	if d != nil {
 		dc.SetStatus(*d)
+	}
+	return dc
+}
+
+// SetUID sets the "uid" field.
+func (dc *DeploymentCreate) SetUID(i int64) *DeploymentCreate {
+	dc.mutation.SetUID(i)
+	return dc
+}
+
+// SetNillableUID sets the "uid" field if the given value is not nil.
+func (dc *DeploymentCreate) SetNillableUID(i *int64) *DeploymentCreate {
+	if i != nil {
+		dc.SetUID(*i)
 	}
 	return dc
 }
@@ -300,6 +292,9 @@ func (dc *DeploymentCreate) check() error {
 	if _, ok := dc.mutation.Ref(); !ok {
 		return &ValidationError{Name: "ref", err: errors.New("ent: missing required field \"ref\"")}
 	}
+	if _, ok := dc.mutation.Sha(); !ok {
+		return &ValidationError{Name: "sha", err: errors.New("ent: missing required field \"sha\"")}
+	}
 	if _, ok := dc.mutation.Env(); !ok {
 		return &ValidationError{Name: "env", err: errors.New("ent: missing required field \"env\"")}
 	}
@@ -370,14 +365,6 @@ func (dc *DeploymentCreate) createSpec() (*Deployment, *sqlgraph.CreateSpec) {
 		})
 		_node.Number = value
 	}
-	if value, ok := dc.mutation.UID(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt64,
-			Value:  value,
-			Column: deployment.FieldUID,
-		})
-		_node.UID = value
-	}
 	if value, ok := dc.mutation.GetType(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeEnum,
@@ -417,6 +404,14 @@ func (dc *DeploymentCreate) createSpec() (*Deployment, *sqlgraph.CreateSpec) {
 			Column: deployment.FieldStatus,
 		})
 		_node.Status = value
+	}
+	if value, ok := dc.mutation.UID(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt64,
+			Value:  value,
+			Column: deployment.FieldUID,
+		})
+		_node.UID = value
 	}
 	if value, ok := dc.mutation.RequiredApprovalCount(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

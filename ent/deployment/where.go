@@ -100,13 +100,6 @@ func Number(v int) predicate.Deployment {
 	})
 }
 
-// UID applies equality check predicate on the "uid" field. It's identical to UIDEQ.
-func UID(v int64) predicate.Deployment {
-	return predicate.Deployment(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldUID), v))
-	})
-}
-
 // Ref applies equality check predicate on the "ref" field. It's identical to RefEQ.
 func Ref(v string) predicate.Deployment {
 	return predicate.Deployment(func(s *sql.Selector) {
@@ -125,6 +118,13 @@ func Sha(v string) predicate.Deployment {
 func Env(v string) predicate.Deployment {
 	return predicate.Deployment(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldEnv), v))
+	})
+}
+
+// UID applies equality check predicate on the "uid" field. It's identical to UIDEQ.
+func UID(v int64) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldUID), v))
 	})
 }
 
@@ -243,96 +243,6 @@ func NumberLT(v int) predicate.Deployment {
 func NumberLTE(v int) predicate.Deployment {
 	return predicate.Deployment(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldNumber), v))
-	})
-}
-
-// UIDEQ applies the EQ predicate on the "uid" field.
-func UIDEQ(v int64) predicate.Deployment {
-	return predicate.Deployment(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldUID), v))
-	})
-}
-
-// UIDNEQ applies the NEQ predicate on the "uid" field.
-func UIDNEQ(v int64) predicate.Deployment {
-	return predicate.Deployment(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldUID), v))
-	})
-}
-
-// UIDIn applies the In predicate on the "uid" field.
-func UIDIn(vs ...int64) predicate.Deployment {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Deployment(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.In(s.C(FieldUID), v...))
-	})
-}
-
-// UIDNotIn applies the NotIn predicate on the "uid" field.
-func UIDNotIn(vs ...int64) predicate.Deployment {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Deployment(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.NotIn(s.C(FieldUID), v...))
-	})
-}
-
-// UIDGT applies the GT predicate on the "uid" field.
-func UIDGT(v int64) predicate.Deployment {
-	return predicate.Deployment(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldUID), v))
-	})
-}
-
-// UIDGTE applies the GTE predicate on the "uid" field.
-func UIDGTE(v int64) predicate.Deployment {
-	return predicate.Deployment(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldUID), v))
-	})
-}
-
-// UIDLT applies the LT predicate on the "uid" field.
-func UIDLT(v int64) predicate.Deployment {
-	return predicate.Deployment(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldUID), v))
-	})
-}
-
-// UIDLTE applies the LTE predicate on the "uid" field.
-func UIDLTE(v int64) predicate.Deployment {
-	return predicate.Deployment(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldUID), v))
-	})
-}
-
-// UIDIsNil applies the IsNil predicate on the "uid" field.
-func UIDIsNil() predicate.Deployment {
-	return predicate.Deployment(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldUID)))
-	})
-}
-
-// UIDNotNil applies the NotNil predicate on the "uid" field.
-func UIDNotNil() predicate.Deployment {
-	return predicate.Deployment(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldUID)))
 	})
 }
 
@@ -592,20 +502,6 @@ func ShaHasSuffix(v string) predicate.Deployment {
 	})
 }
 
-// ShaIsNil applies the IsNil predicate on the "sha" field.
-func ShaIsNil() predicate.Deployment {
-	return predicate.Deployment(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldSha)))
-	})
-}
-
-// ShaNotNil applies the NotNil predicate on the "sha" field.
-func ShaNotNil() predicate.Deployment {
-	return predicate.Deployment(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldSha)))
-	})
-}
-
 // ShaEqualFold applies the EqualFold predicate on the "sha" field.
 func ShaEqualFold(v string) predicate.Deployment {
 	return predicate.Deployment(func(s *sql.Selector) {
@@ -776,6 +672,96 @@ func StatusNotIn(vs ...Status) predicate.Deployment {
 			return
 		}
 		s.Where(sql.NotIn(s.C(FieldStatus), v...))
+	})
+}
+
+// UIDEQ applies the EQ predicate on the "uid" field.
+func UIDEQ(v int64) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldUID), v))
+	})
+}
+
+// UIDNEQ applies the NEQ predicate on the "uid" field.
+func UIDNEQ(v int64) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldUID), v))
+	})
+}
+
+// UIDIn applies the In predicate on the "uid" field.
+func UIDIn(vs ...int64) predicate.Deployment {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Deployment(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldUID), v...))
+	})
+}
+
+// UIDNotIn applies the NotIn predicate on the "uid" field.
+func UIDNotIn(vs ...int64) predicate.Deployment {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Deployment(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldUID), v...))
+	})
+}
+
+// UIDGT applies the GT predicate on the "uid" field.
+func UIDGT(v int64) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldUID), v))
+	})
+}
+
+// UIDGTE applies the GTE predicate on the "uid" field.
+func UIDGTE(v int64) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldUID), v))
+	})
+}
+
+// UIDLT applies the LT predicate on the "uid" field.
+func UIDLT(v int64) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldUID), v))
+	})
+}
+
+// UIDLTE applies the LTE predicate on the "uid" field.
+func UIDLTE(v int64) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldUID), v))
+	})
+}
+
+// UIDIsNil applies the IsNil predicate on the "uid" field.
+func UIDIsNil() predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldUID)))
+	})
+}
+
+// UIDNotNil applies the NotNil predicate on the "uid" field.
+func UIDNotNil() predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldUID)))
 	})
 }
 

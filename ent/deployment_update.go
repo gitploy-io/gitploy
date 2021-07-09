@@ -45,33 +45,6 @@ func (du *DeploymentUpdate) AddNumber(i int) *DeploymentUpdate {
 	return du
 }
 
-// SetUID sets the "uid" field.
-func (du *DeploymentUpdate) SetUID(i int64) *DeploymentUpdate {
-	du.mutation.ResetUID()
-	du.mutation.SetUID(i)
-	return du
-}
-
-// SetNillableUID sets the "uid" field if the given value is not nil.
-func (du *DeploymentUpdate) SetNillableUID(i *int64) *DeploymentUpdate {
-	if i != nil {
-		du.SetUID(*i)
-	}
-	return du
-}
-
-// AddUID adds i to the "uid" field.
-func (du *DeploymentUpdate) AddUID(i int64) *DeploymentUpdate {
-	du.mutation.AddUID(i)
-	return du
-}
-
-// ClearUID clears the value of the "uid" field.
-func (du *DeploymentUpdate) ClearUID() *DeploymentUpdate {
-	du.mutation.ClearUID()
-	return du
-}
-
 // SetType sets the "type" field.
 func (du *DeploymentUpdate) SetType(d deployment.Type) *DeploymentUpdate {
 	du.mutation.SetType(d)
@@ -98,20 +71,6 @@ func (du *DeploymentUpdate) SetSha(s string) *DeploymentUpdate {
 	return du
 }
 
-// SetNillableSha sets the "sha" field if the given value is not nil.
-func (du *DeploymentUpdate) SetNillableSha(s *string) *DeploymentUpdate {
-	if s != nil {
-		du.SetSha(*s)
-	}
-	return du
-}
-
-// ClearSha clears the value of the "sha" field.
-func (du *DeploymentUpdate) ClearSha() *DeploymentUpdate {
-	du.mutation.ClearSha()
-	return du
-}
-
 // SetEnv sets the "env" field.
 func (du *DeploymentUpdate) SetEnv(s string) *DeploymentUpdate {
 	du.mutation.SetEnv(s)
@@ -129,6 +88,33 @@ func (du *DeploymentUpdate) SetNillableStatus(d *deployment.Status) *DeploymentU
 	if d != nil {
 		du.SetStatus(*d)
 	}
+	return du
+}
+
+// SetUID sets the "uid" field.
+func (du *DeploymentUpdate) SetUID(i int64) *DeploymentUpdate {
+	du.mutation.ResetUID()
+	du.mutation.SetUID(i)
+	return du
+}
+
+// SetNillableUID sets the "uid" field if the given value is not nil.
+func (du *DeploymentUpdate) SetNillableUID(i *int64) *DeploymentUpdate {
+	if i != nil {
+		du.SetUID(*i)
+	}
+	return du
+}
+
+// AddUID adds i to the "uid" field.
+func (du *DeploymentUpdate) AddUID(i int64) *DeploymentUpdate {
+	du.mutation.AddUID(i)
+	return du
+}
+
+// ClearUID clears the value of the "uid" field.
+func (du *DeploymentUpdate) ClearUID() *DeploymentUpdate {
+	du.mutation.ClearUID()
 	return du
 }
 
@@ -417,26 +403,6 @@ func (du *DeploymentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: deployment.FieldNumber,
 		})
 	}
-	if value, ok := du.mutation.UID(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt64,
-			Value:  value,
-			Column: deployment.FieldUID,
-		})
-	}
-	if value, ok := du.mutation.AddedUID(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt64,
-			Value:  value,
-			Column: deployment.FieldUID,
-		})
-	}
-	if du.mutation.UIDCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt64,
-			Column: deployment.FieldUID,
-		})
-	}
 	if value, ok := du.mutation.GetType(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeEnum,
@@ -458,12 +424,6 @@ func (du *DeploymentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: deployment.FieldSha,
 		})
 	}
-	if du.mutation.ShaCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: deployment.FieldSha,
-		})
-	}
 	if value, ok := du.mutation.Env(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -476,6 +436,26 @@ func (du *DeploymentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Type:   field.TypeEnum,
 			Value:  value,
 			Column: deployment.FieldStatus,
+		})
+	}
+	if value, ok := du.mutation.UID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt64,
+			Value:  value,
+			Column: deployment.FieldUID,
+		})
+	}
+	if value, ok := du.mutation.AddedUID(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt64,
+			Value:  value,
+			Column: deployment.FieldUID,
+		})
+	}
+	if du.mutation.UIDCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt64,
+			Column: deployment.FieldUID,
 		})
 	}
 	if value, ok := du.mutation.RequiredApprovalCount(); ok {
@@ -723,33 +703,6 @@ func (duo *DeploymentUpdateOne) AddNumber(i int) *DeploymentUpdateOne {
 	return duo
 }
 
-// SetUID sets the "uid" field.
-func (duo *DeploymentUpdateOne) SetUID(i int64) *DeploymentUpdateOne {
-	duo.mutation.ResetUID()
-	duo.mutation.SetUID(i)
-	return duo
-}
-
-// SetNillableUID sets the "uid" field if the given value is not nil.
-func (duo *DeploymentUpdateOne) SetNillableUID(i *int64) *DeploymentUpdateOne {
-	if i != nil {
-		duo.SetUID(*i)
-	}
-	return duo
-}
-
-// AddUID adds i to the "uid" field.
-func (duo *DeploymentUpdateOne) AddUID(i int64) *DeploymentUpdateOne {
-	duo.mutation.AddUID(i)
-	return duo
-}
-
-// ClearUID clears the value of the "uid" field.
-func (duo *DeploymentUpdateOne) ClearUID() *DeploymentUpdateOne {
-	duo.mutation.ClearUID()
-	return duo
-}
-
 // SetType sets the "type" field.
 func (duo *DeploymentUpdateOne) SetType(d deployment.Type) *DeploymentUpdateOne {
 	duo.mutation.SetType(d)
@@ -776,20 +729,6 @@ func (duo *DeploymentUpdateOne) SetSha(s string) *DeploymentUpdateOne {
 	return duo
 }
 
-// SetNillableSha sets the "sha" field if the given value is not nil.
-func (duo *DeploymentUpdateOne) SetNillableSha(s *string) *DeploymentUpdateOne {
-	if s != nil {
-		duo.SetSha(*s)
-	}
-	return duo
-}
-
-// ClearSha clears the value of the "sha" field.
-func (duo *DeploymentUpdateOne) ClearSha() *DeploymentUpdateOne {
-	duo.mutation.ClearSha()
-	return duo
-}
-
 // SetEnv sets the "env" field.
 func (duo *DeploymentUpdateOne) SetEnv(s string) *DeploymentUpdateOne {
 	duo.mutation.SetEnv(s)
@@ -807,6 +746,33 @@ func (duo *DeploymentUpdateOne) SetNillableStatus(d *deployment.Status) *Deploym
 	if d != nil {
 		duo.SetStatus(*d)
 	}
+	return duo
+}
+
+// SetUID sets the "uid" field.
+func (duo *DeploymentUpdateOne) SetUID(i int64) *DeploymentUpdateOne {
+	duo.mutation.ResetUID()
+	duo.mutation.SetUID(i)
+	return duo
+}
+
+// SetNillableUID sets the "uid" field if the given value is not nil.
+func (duo *DeploymentUpdateOne) SetNillableUID(i *int64) *DeploymentUpdateOne {
+	if i != nil {
+		duo.SetUID(*i)
+	}
+	return duo
+}
+
+// AddUID adds i to the "uid" field.
+func (duo *DeploymentUpdateOne) AddUID(i int64) *DeploymentUpdateOne {
+	duo.mutation.AddUID(i)
+	return duo
+}
+
+// ClearUID clears the value of the "uid" field.
+func (duo *DeploymentUpdateOne) ClearUID() *DeploymentUpdateOne {
+	duo.mutation.ClearUID()
 	return duo
 }
 
@@ -1119,26 +1085,6 @@ func (duo *DeploymentUpdateOne) sqlSave(ctx context.Context) (_node *Deployment,
 			Column: deployment.FieldNumber,
 		})
 	}
-	if value, ok := duo.mutation.UID(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt64,
-			Value:  value,
-			Column: deployment.FieldUID,
-		})
-	}
-	if value, ok := duo.mutation.AddedUID(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt64,
-			Value:  value,
-			Column: deployment.FieldUID,
-		})
-	}
-	if duo.mutation.UIDCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt64,
-			Column: deployment.FieldUID,
-		})
-	}
 	if value, ok := duo.mutation.GetType(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeEnum,
@@ -1160,12 +1106,6 @@ func (duo *DeploymentUpdateOne) sqlSave(ctx context.Context) (_node *Deployment,
 			Column: deployment.FieldSha,
 		})
 	}
-	if duo.mutation.ShaCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: deployment.FieldSha,
-		})
-	}
 	if value, ok := duo.mutation.Env(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -1178,6 +1118,26 @@ func (duo *DeploymentUpdateOne) sqlSave(ctx context.Context) (_node *Deployment,
 			Type:   field.TypeEnum,
 			Value:  value,
 			Column: deployment.FieldStatus,
+		})
+	}
+	if value, ok := duo.mutation.UID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt64,
+			Value:  value,
+			Column: deployment.FieldUID,
+		})
+	}
+	if value, ok := duo.mutation.AddedUID(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt64,
+			Value:  value,
+			Column: deployment.FieldUID,
+		})
+	}
+	if duo.mutation.UIDCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt64,
+			Column: deployment.FieldUID,
 		})
 	}
 	if value, ok := duo.mutation.RequiredApprovalCount(); ok {
