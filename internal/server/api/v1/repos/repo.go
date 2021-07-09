@@ -27,6 +27,7 @@ type (
 
 	RepoPayload struct {
 		ConfigPath string `json:"config_path"`
+		Active     bool   `json:"active"`
 	}
 )
 
@@ -71,21 +72,50 @@ func (r *Repo) ListRepos(c *gin.Context) {
 }
 
 func (r *Repo) UpdateRepo(c *gin.Context) {
+	ctx := c.Request.Context()
+
+	v, _ := c.Get(gb.KeyUser)
+	u := v.(*ent.User)
+
 	rv, _ := c.Get(KeyRepo)
 	re := rv.(*ent.Repo)
 
 	p := &RepoPayload{}
+	var err error
 	if err := c.ShouldBindBodyWith(p, binding.JSON); err != nil {
 		gb.ErrorResponse(c, http.StatusBadRequest, "It has failed to bind the body")
 		return
 	}
 
-	ctx := c.Request.Context()
+	// Activate (or Deactivate) the repository:
+	// Create a new webhook when it activates the repository,
+	// in contrast it remove the webhook when it deactivates.
+	if p.Active && !re.Active {
+		if re, err = r.i.ActivateRepo(ctx, u, re, &vo.WebhookConfig{
+			URL:         r.WebhookURL,
+			Secret:      r.WebhookSecret,
+			InsecureSSL: isSecure(r.WebhookURL),
+		}); err != nil {
+			r.log.Error("failed to activate the repo", zap.Error(err))
+			gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to activate the repository.")
+			return
+		}
+	} else if !p.Active && re.Active {
+		if re, err = r.i.DeactivateRepo(ctx, u, re); err != nil {
+			r.log.Error("failed to deactivate the repo.", zap.Error(err))
+			gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to deactivate the repository.")
+			return
+		}
+	}
 
-	var err error
-	if re, err = r.i.PatchRepo(ctx, re, p); err != nil {
-		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to update the repository.")
-		return
+	if re.ConfigPath != p.ConfigPath {
+		re.ConfigPath = p.ConfigPath
+
+		if re, err = r.i.UpdateRepo(ctx, re); err != nil {
+			r.log.Error("failed to update the repo", zap.Error(err))
+			gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to update the repository.")
+			return
+		}
 	}
 
 	gb.Response(c, http.StatusOK, re)
@@ -127,48 +157,6 @@ func (r *Repo) GetRepoByNamespaceName(c *gin.Context) {
 func atoi(s string) int {
 	i, _ := strconv.Atoi(s)
 	return i
-}
-
-func (r *Repo) Activate(c *gin.Context) {
-	uv, _ := c.Get(gb.KeyUser)
-	u, _ := uv.(*ent.User)
-
-	rv, _ := c.Get(KeyRepo)
-	re, _ := rv.(*ent.Repo)
-
-	ctx := c.Request.Context()
-
-	re, err := r.i.ActivateRepo(ctx, u, re, &vo.WebhookConfig{
-		URL:         r.WebhookURL,
-		Secret:      r.WebhookSecret,
-		InsecureSSL: isSecure(r.WebhookURL),
-	})
-	if err != nil {
-		r.log.Error("failed to activate the repo.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to activate.")
-		return
-	}
-
-	gb.Response(c, http.StatusOK, re)
-}
-
-func (r *Repo) Deactivate(c *gin.Context) {
-	uv, _ := c.Get(gb.KeyUser)
-	u, _ := uv.(*ent.User)
-
-	rv, _ := c.Get(KeyRepo)
-	re, _ := rv.(*ent.Repo)
-
-	ctx := c.Request.Context()
-
-	re, err := r.i.DeactivateRepo(ctx, u, re)
-	if err != nil {
-		r.log.Error("failed to deactivate the repo.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to deactivate the repo.")
-		return
-	}
-
-	gb.Response(c, http.StatusOK, re)
 }
 
 func isSecure(raw string) bool {
