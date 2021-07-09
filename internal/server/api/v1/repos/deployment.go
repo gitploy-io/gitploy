@@ -1,6 +1,8 @@
 package repos
 
 import (
+	"context"
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -66,11 +68,7 @@ func (r *Repo) GetDeploymentByNumber(c *gin.Context) {
 }
 
 func (r *Repo) CreateDeployment(c *gin.Context) {
-	vu, _ := c.Get(gb.KeyUser)
-	u := vu.(*ent.User)
-
-	vr, _ := c.Get(KeyRepo)
-	re := vr.(*ent.Repo)
+	ctx := c.Request.Context()
 
 	p := &deploymentPayload{}
 	if err := c.ShouldBindBodyWith(p, binding.JSON); err != nil {
@@ -78,7 +76,11 @@ func (r *Repo) CreateDeployment(c *gin.Context) {
 		return
 	}
 
-	ctx := c.Request.Context()
+	vu, _ := c.Get(gb.KeyUser)
+	u := vu.(*ent.User)
+
+	vr, _ := c.Get(KeyRepo)
+	re := vr.(*ent.Repo)
 
 	cf, err := r.i.GetConfig(ctx, u, re)
 	if vo.IsConfigNotFoundError(err) {
@@ -101,10 +103,31 @@ func (r *Repo) CreateDeployment(c *gin.Context) {
 		return
 	}
 
+	// Prepare to deploy:
+	// 1) commit SHA.
+	// 2) next deployment number.
+	var (
+		sha    string
+		number int
+	)
+	if sha, err = r.getCommitSha(ctx, u, re, p.Type, p.Ref); err != nil {
+		r.log.Error("failed to get the commit sha.", zap.Error(err))
+		gb.ErrorResponse(c, http.StatusInternalServerError, "The Ref is invalid.")
+		return
+	}
+
+	if number, err = r.i.GetNextDeploymentNumberOfRepo(ctx, re); err != nil {
+		r.log.Error("failed to get the next deployment number.", zap.Error(err))
+		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to the next deployment number.")
+		return
+	}
+
 	d, err := r.i.Deploy(ctx, u, re, &ent.Deployment{
-		Type: deployment.Type(p.Type),
-		Ref:  p.Ref,
-		Env:  p.Env,
+		Number: number,
+		Type:   deployment.Type(p.Type),
+		Ref:    p.Ref,
+		Sha:    sha,
+		Env:    p.Env,
 	}, cf.GetEnv(p.Env))
 	if ent.IsConstraintError(err) {
 		r.log.Warn("deployment number conflict.", zap.Error(err))
@@ -124,6 +147,8 @@ func (r *Repo) CreateDeployment(c *gin.Context) {
 }
 
 func (r *Repo) RollbackDeployment(c *gin.Context) {
+	ctx := c.Request.Context()
+
 	var (
 		number = c.Param("number")
 	)
@@ -133,8 +158,6 @@ func (r *Repo) RollbackDeployment(c *gin.Context) {
 
 	vr, _ := c.Get(KeyRepo)
 	re := vr.(*ent.Repo)
-
-	ctx := c.Request.Context()
 
 	d, err := r.i.FindDeploymentWithEdgesOfRepoByNumber(ctx, re, atoi(number))
 	if ent.IsNotFound(err) {
@@ -163,10 +186,24 @@ func (r *Repo) RollbackDeployment(c *gin.Context) {
 		return
 	}
 
+	// Prepare to rollback:
+	// 1) next deployment number.
+	var (
+		next int
+	)
+
+	if next, err = r.i.GetNextDeploymentNumberOfRepo(ctx, re); err != nil {
+		r.log.Error("failed to get the next deployment number.", zap.Error(err))
+		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to the next deployment number.")
+		return
+	}
+
 	d, err = r.i.Rollback(ctx, u, re, &ent.Deployment{
-		Type: d.Type,
-		Ref:  d.Ref,
-		Env:  d.Env,
+		Number: next,
+		Type:   d.Type,
+		Ref:    d.Ref,
+		Sha:    d.Sha,
+		Env:    d.Env,
 	}, cf.GetEnv(d.Env))
 	if ent.IsConstraintError(err) {
 		r.log.Warn("deployment number conflict.", zap.Error(err))
@@ -210,4 +247,26 @@ func (r *Repo) GetConfig(c *gin.Context) {
 	}
 
 	gb.Response(c, http.StatusOK, config)
+}
+
+func (r *Repo) getCommitSha(ctx context.Context, u *ent.User, re *ent.Repo, typ, ref string) (string, error) {
+	if typ == "commit" {
+		return ref, nil
+	} else if typ == "branch" {
+		b, err := r.i.GetBranch(ctx, u, re, ref)
+		if err != nil {
+			return "", err
+		}
+
+		return b.CommitSha, nil
+	} else if typ == "tag" {
+		t, err := r.i.GetTag(ctx, u, re, ref)
+		if err != nil {
+			return "", err
+		}
+
+		return t.CommitSha, nil
+	}
+
+	return "", fmt.Errorf("Type must be one of commit, branch, tag.")
 }

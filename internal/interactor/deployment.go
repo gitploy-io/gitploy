@@ -13,10 +13,7 @@ func (i *Interactor) Deploy(ctx context.Context, u *ent.User, re *ent.Repo, d *e
 	d.UserID = u.ID
 	d.RepoID = re.ID
 
-	num, err := i.Store.GetNextDeploymentNumberOfRepo(ctx, d)
-	d.Number = num
-
-	d, err = i.Store.CreateDeployment(ctx, d)
+	d, err := i.Store.CreateDeployment(ctx, d)
 	if err != nil {
 		return nil, fmt.Errorf("failed to save a new deployment to the store: %w", err)
 	}
@@ -41,10 +38,7 @@ func (i *Interactor) Rollback(ctx context.Context, u *ent.User, re *ent.Repo, d 
 	d.UserID = u.ID
 	d.RepoID = re.ID
 
-	num, err := i.Store.GetNextDeploymentNumberOfRepo(ctx, d)
-	d.Number = num
-
-	d, err = i.Store.CreateDeployment(ctx, d)
+	d, err := i.Store.CreateDeployment(ctx, d)
 	if err != nil {
 		return nil, fmt.Errorf("failed to save a new deployment to the store: %w", err)
 	}
@@ -59,16 +53,18 @@ func (i *Interactor) Rollback(ctx context.Context, u *ent.User, re *ent.Repo, d 
 	return i.deployToSCM(ctx, u, re, d, env)
 }
 
-func (i *Interactor) deployToSCM(ctx context.Context, u *ent.User, re *ent.Repo, od *ent.Deployment, e *vo.Env) (*ent.Deployment, error) {
-	nd, err := i.SCM.CreateDeployment(ctx, u, re, od, e)
+func (i *Interactor) deployToSCM(ctx context.Context, u *ent.User, re *ent.Repo, d *ent.Deployment, e *vo.Env) (*ent.Deployment, error) {
+	uid, err := i.SCM.CreateDeployment(ctx, u, re, d, e)
 	if err != nil {
-		od.Status = deployment.StatusFailure
-		i.UpdateDeployment(ctx, od)
+		d.Status = deployment.StatusFailure
+		i.UpdateDeployment(ctx, d)
 		return nil, err
 	}
 
-	nd.Status = deployment.StatusCreated
-	return i.UpdateDeployment(ctx, nd)
+	d.UID = uid
+	d.Status = deployment.StatusCreated
+
+	return i.UpdateDeployment(ctx, d)
 }
 
 func (i *Interactor) requestApprovals(ctx context.Context, d *ent.Deployment, approvers []string) ([]*ent.Approval, error) {

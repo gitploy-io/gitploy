@@ -117,10 +117,27 @@ func (s *Slack) interactDeploy(ctx context.Context, scb slack.InteractionCallbac
 		return nil
 	}
 
+	// Prepare to deploy:
+	// 1) commit SHA.
+	// 2) next deployment number.
+	var (
+		sha    string
+		number int
+	)
+	if sha, err = s.getCommitSha(ctx, u, re, typ, ref); err != nil {
+		return fmt.Errorf("invalid ref: %w", err)
+	}
+
+	if number, err = s.i.GetNextDeploymentNumberOfRepo(ctx, re); err != nil {
+		return fmt.Errorf("failed to get the next deployment number: %w", err)
+	}
+
 	d, err := s.i.Deploy(ctx, u, cb.Edges.Repo, &ent.Deployment{
-		Type: deployment.Type(typ),
-		Ref:  ref,
-		Env:  env,
+		Number: number,
+		Type:   deployment.Type(typ),
+		Ref:    ref,
+		Sha:    sha,
+		Env:    env,
 	}, cf.GetEnv(env))
 	if err != nil {
 		return fmt.Errorf("failed to deploy: %w", err)
@@ -194,4 +211,26 @@ func createDeployDialogElement(c *vo.Config) []slack.DialogElement {
 			Hint:  "E.g. Commit - 25a667d6, Branch - main, Tag - v0.1.2",
 		},
 	}
+}
+
+func (s *Slack) getCommitSha(ctx context.Context, u *ent.User, re *ent.Repo, typ, ref string) (string, error) {
+	if typ == "commit" {
+		return ref, nil
+	} else if typ == "branch" {
+		b, err := s.i.GetBranch(ctx, u, re, ref)
+		if err != nil {
+			return "", err
+		}
+
+		return b.CommitSha, nil
+	} else if typ == "tag" {
+		t, err := s.i.GetTag(ctx, u, re, ref)
+		if err != nil {
+			return "", err
+		}
+
+		return t.CommitSha, nil
+	}
+
+	return "", fmt.Errorf("Type must be one of commit, branch, tag.")
 }

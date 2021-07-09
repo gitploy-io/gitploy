@@ -180,8 +180,8 @@ func TestStore_GetNextDeploymentNumberOfRepo(t *testing.T) {
 
 	t.Run("The next number is 2", func(tt *testing.T) {
 
-		num, err := s.GetNextDeploymentNumberOfRepo(ctx, &ent.Deployment{
-			RepoID: "1",
+		num, err := s.GetNextDeploymentNumberOfRepo(ctx, &ent.Repo{
+			ID: "1",
 		})
 		if err != nil {
 			t.Errorf("CreateDeployment return error: %s", err)

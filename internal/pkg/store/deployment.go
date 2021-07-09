@@ -65,10 +65,10 @@ func (s *Store) FindDeploymentWithEdgesOfRepoByNumber(ctx context.Context, r *en
 }
 
 // TODO: Lock deployments for the index which has repo_id.
-func (s *Store) GetNextDeploymentNumberOfRepo(ctx context.Context, d *ent.Deployment) (int, error) {
+func (s *Store) GetNextDeploymentNumberOfRepo(ctx context.Context, r *ent.Repo) (int, error) {
 	cnt, err := s.c.Deployment.Query().
 		Where(
-			deployment.RepoID(d.RepoID),
+			deployment.RepoID(r.ID),
 		).
 		Count(ctx)
 	if err != nil {
@@ -85,6 +85,7 @@ func (s *Store) CreateDeployment(ctx context.Context, d *ent.Deployment) (*ent.D
 		SetNumber(d.Number).
 		SetType(d.Type).
 		SetRef(d.Ref).
+		SetSha(d.Sha).
 		SetEnv(d.Env).
 		SetRequiredApprovalCount(d.RequiredApprovalCount).
 		SetAutoDeploy(d.AutoDeploy).
