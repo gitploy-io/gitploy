@@ -18,25 +18,25 @@ type User struct {
 	// ID of the ent.
 	ID string `json:"id,omitempty"`
 	// Login holds the value of the "login" field.
-	Login string `json:"login,omitempty"`
+	Login string `json:"login"`
 	// Avatar holds the value of the "avatar" field.
-	Avatar string `json:"avatar,omitempty"`
+	Avatar string `json:"avatar"`
 	// Admin holds the value of the "admin" field.
-	Admin bool `json:"admin,omitempty"`
+	Admin bool `json:"admin"`
 	// Token holds the value of the "token" field.
-	Token string `json:"token,omitempty"`
+	Token string `json:"token"`
 	// Refresh holds the value of the "refresh" field.
-	Refresh string `json:"refresh,omitempty"`
+	Refresh string `json:"refresh"`
 	// Expiry holds the value of the "expiry" field.
-	Expiry time.Time `json:"expiry,omitempty"`
+	Expiry time.Time `json:"expiry"`
 	// Hash holds the value of the "hash" field.
-	Hash string `json:"hash,omitempty"`
+	Hash string `json:"hash"`
 	// SyncedAt holds the value of the "synced_at" field.
-	SyncedAt time.Time `json:"synced_at,omitempty"`
+	SyncedAt time.Time `json:"synced_at"`
 	// CreatedAt holds the value of the "created_at" field.
-	CreatedAt time.Time `json:"created_at,omitempty"`
+	CreatedAt time.Time `json:"created_at"`
 	// UpdatedAt holds the value of the "updated_at" field.
-	UpdatedAt time.Time `json:"updated_at,omitempty"`
+	UpdatedAt time.Time `json:"updated_at"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the UserQuery when eager-loading is set.
 	Edges UserEdges `json:"edges"`

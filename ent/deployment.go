@@ -19,31 +19,31 @@ type Deployment struct {
 	// ID of the ent.
 	ID int `json:"id,omitempty"`
 	// Number holds the value of the "number" field.
-	Number int `json:"number,omitempty"`
+	Number int `json:"number"`
 	// Type holds the value of the "type" field.
-	Type deployment.Type `json:"type,omitempty"`
+	Type deployment.Type `json:"type"`
 	// Ref holds the value of the "ref" field.
-	Ref string `json:"ref,omitempty"`
+	Ref string `json:"ref"`
 	// Sha holds the value of the "sha" field.
-	Sha string `json:"sha,omitempty"`
+	Sha string `json:"sha"`
 	// Env holds the value of the "env" field.
-	Env string `json:"env,omitempty"`
+	Env string `json:"env"`
 	// Status holds the value of the "status" field.
-	Status deployment.Status `json:"status,omitempty"`
+	Status deployment.Status `json:"status"`
 	// UID holds the value of the "uid" field.
-	UID int64 `json:"uid,omitempty"`
+	UID int64 `json:"uid"`
 	// RequiredApprovalCount holds the value of the "required_approval_count" field.
-	RequiredApprovalCount int `json:"required_approval_count,omitempty"`
+	RequiredApprovalCount int `json:"required_approval_count"`
 	// AutoDeploy holds the value of the "auto_deploy" field.
-	AutoDeploy bool `json:"auto_deploy,omitempty"`
+	AutoDeploy bool `json:"auto_deploy"`
 	// CreatedAt holds the value of the "created_at" field.
-	CreatedAt time.Time `json:"created_at,omitempty"`
+	CreatedAt time.Time `json:"created_at"`
 	// UpdatedAt holds the value of the "updated_at" field.
-	UpdatedAt time.Time `json:"updated_at,omitempty"`
+	UpdatedAt time.Time `json:"updated_at"`
 	// UserID holds the value of the "user_id" field.
-	UserID string `json:"user_id,omitempty"`
+	UserID string `json:"user_id"`
 	// RepoID holds the value of the "repo_id" field.
-	RepoID string `json:"repo_id,omitempty"`
+	RepoID string `json:"repo_id"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the DeploymentQuery when eager-loading is set.
 	Edges DeploymentEdges `json:"edges"`

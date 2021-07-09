@@ -5,6 +5,5 @@ package runtime
 // The schema-stitching logic is generated in github.com/hanjunlee/gitploy/ent/runtime.go
 
 const (
-	Version = "v0.8.0"                                          // Version of ent codegen.
-	Sum     = "h1:xirrW//1oda7pp0bz+XssSOv4/C3nmgYQOxjIfljFt8=" // Sum of ent codegen.
+	Version = "(devel)" // Version of ent codegen.
 )

@@ -19,19 +19,19 @@ type ChatCallback struct {
 	// ID of the ent.
 	ID int `json:"id,omitempty"`
 	// State holds the value of the "state" field.
-	State string `json:"state,omitempty"`
+	State string `json:"state"`
 	// Type holds the value of the "type" field.
-	Type chatcallback.Type `json:"type,omitempty"`
+	Type chatcallback.Type `json:"type"`
 	// IsOpened holds the value of the "is_opened" field.
-	IsOpened bool `json:"is_opened,omitempty"`
+	IsOpened bool `json:"is_opened"`
 	// CreatedAt holds the value of the "created_at" field.
-	CreatedAt time.Time `json:"created_at,omitempty"`
+	CreatedAt time.Time `json:"created_at"`
 	// UpdatedAt holds the value of the "updated_at" field.
-	UpdatedAt time.Time `json:"updated_at,omitempty"`
+	UpdatedAt time.Time `json:"updated_at"`
 	// ChatUserID holds the value of the "chat_user_id" field.
-	ChatUserID string `json:"chat_user_id,omitempty"`
+	ChatUserID string `json:"chat_user_id"`
 	// RepoID holds the value of the "repo_id" field.
-	RepoID string `json:"repo_id,omitempty"`
+	RepoID string `json:"repo_id"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the ChatCallbackQuery when eager-loading is set.
 	Edges ChatCallbackEdges `json:"edges"`

@@ -17,25 +17,25 @@ type Repo struct {
 	// ID of the ent.
 	ID string `json:"id,omitempty"`
 	// Namespace holds the value of the "namespace" field.
-	Namespace string `json:"namespace,omitempty"`
+	Namespace string `json:"namespace"`
 	// Name holds the value of the "name" field.
-	Name string `json:"name,omitempty"`
+	Name string `json:"name"`
 	// Description holds the value of the "description" field.
-	Description string `json:"description,omitempty"`
+	Description string `json:"description"`
 	// ConfigPath holds the value of the "config_path" field.
-	ConfigPath string `json:"config_path,omitempty"`
+	ConfigPath string `json:"config_path"`
 	// Active holds the value of the "active" field.
-	Active bool `json:"active,omitempty"`
+	Active bool `json:"active"`
 	// WebhookID holds the value of the "webhook_id" field.
-	WebhookID int64 `json:"webhook_id,omitempty"`
+	WebhookID int64 `json:"webhook_id"`
 	// SyncedAt holds the value of the "synced_at" field.
-	SyncedAt time.Time `json:"synced_at,omitempty"`
+	SyncedAt time.Time `json:"synced_at"`
 	// CreatedAt holds the value of the "created_at" field.
-	CreatedAt time.Time `json:"created_at,omitempty"`
+	CreatedAt time.Time `json:"created_at"`
 	// UpdatedAt holds the value of the "updated_at" field.
-	UpdatedAt time.Time `json:"updated_at,omitempty"`
+	UpdatedAt time.Time `json:"updated_at"`
 	// LatestDeployedAt holds the value of the "latest_deployed_at" field.
-	LatestDeployedAt time.Time `json:"latest_deployed_at,omitempty"`
+	LatestDeployedAt time.Time `json:"latest_deployed_at"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the RepoQuery when eager-loading is set.
 	Edges RepoEdges `json:"edges"`

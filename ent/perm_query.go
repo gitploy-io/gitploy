@@ -326,7 +326,7 @@ func (pq *PermQuery) WithRepo(opts ...func(*RepoQuery)) *PermQuery {
 // Example:
 //
 //	var v []struct {
-//		RepoPerm perm.RepoPerm `json:"repo_perm,omitempty"`
+//		RepoPerm perm.RepoPerm `json:"repo_perm"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
@@ -353,7 +353,7 @@ func (pq *PermQuery) GroupBy(field string, fields ...string) *PermGroupBy {
 // Example:
 //
 //	var v []struct {
-//		RepoPerm perm.RepoPerm `json:"repo_perm,omitempty"`
+//		RepoPerm perm.RepoPerm `json:"repo_perm"`
 //	}
 //
 //	client.Perm.Query().

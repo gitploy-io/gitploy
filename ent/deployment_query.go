@@ -399,7 +399,7 @@ func (dq *DeploymentQuery) WithNotifications(opts ...func(*NotificationQuery)) *
 // Example:
 //
 //	var v []struct {
-//		Number int `json:"number,omitempty"`
+//		Number int `json:"number"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
@@ -426,7 +426,7 @@ func (dq *DeploymentQuery) GroupBy(field string, fields ...string) *DeploymentGr
 // Example:
 //
 //	var v []struct {
-//		Number int `json:"number,omitempty"`
+//		Number int `json:"number"`
 //	}
 //
 //	client.Deployment.Query().

@@ -327,7 +327,7 @@ func (cuq *ChatUserQuery) WithUser(opts ...func(*UserQuery)) *ChatUserQuery {
 // Example:
 //
 //	var v []struct {
-//		Token string `json:"token,omitempty"`
+//		Token string `json:"token"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
@@ -354,7 +354,7 @@ func (cuq *ChatUserQuery) GroupBy(field string, fields ...string) *ChatUserGroup
 // Example:
 //
 //	var v []struct {
-//		Token string `json:"token,omitempty"`
+//		Token string `json:"token"`
 //	}
 //
 //	client.ChatUser.Query().

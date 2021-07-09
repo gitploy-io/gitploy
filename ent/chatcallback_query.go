@@ -326,7 +326,7 @@ func (ccq *ChatCallbackQuery) WithRepo(opts ...func(*RepoQuery)) *ChatCallbackQu
 // Example:
 //
 //	var v []struct {
-//		State string `json:"state,omitempty"`
+//		State string `json:"state"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
@@ -353,7 +353,7 @@ func (ccq *ChatCallbackQuery) GroupBy(field string, fields ...string) *ChatCallb
 // Example:
 //
 //	var v []struct {
-//		State string `json:"state,omitempty"`
+//		State string `json:"state"`
 //	}
 //
 //	client.ChatCallback.Query().

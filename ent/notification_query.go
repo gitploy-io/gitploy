@@ -362,7 +362,7 @@ func (nq *NotificationQuery) WithDeployment(opts ...func(*DeploymentQuery)) *Not
 // Example:
 //
 //	var v []struct {
-//		Type notification.Type `json:"type,omitempty"`
+//		Type notification.Type `json:"type"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
@@ -389,7 +389,7 @@ func (nq *NotificationQuery) GroupBy(field string, fields ...string) *Notificati
 // Example:
 //
 //	var v []struct {
-//		Type notification.Type `json:"type,omitempty"`
+//		Type notification.Type `json:"type"`
 //	}
 //
 //	client.Notification.Query().

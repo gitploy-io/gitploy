@@ -19,17 +19,17 @@ type Perm struct {
 	// ID of the ent.
 	ID int `json:"id,omitempty"`
 	// RepoPerm holds the value of the "repo_perm" field.
-	RepoPerm perm.RepoPerm `json:"repo_perm,omitempty"`
+	RepoPerm perm.RepoPerm `json:"repo_perm"`
 	// SyncedAt holds the value of the "synced_at" field.
-	SyncedAt time.Time `json:"synced_at,omitempty"`
+	SyncedAt time.Time `json:"synced_at"`
 	// CreatedAt holds the value of the "created_at" field.
-	CreatedAt time.Time `json:"created_at,omitempty"`
+	CreatedAt time.Time `json:"created_at"`
 	// UpdatedAt holds the value of the "updated_at" field.
-	UpdatedAt time.Time `json:"updated_at,omitempty"`
+	UpdatedAt time.Time `json:"updated_at"`
 	// UserID holds the value of the "user_id" field.
-	UserID string `json:"user_id,omitempty"`
+	UserID string `json:"user_id"`
 	// RepoID holds the value of the "repo_id" field.
-	RepoID string `json:"repo_id,omitempty"`
+	RepoID string `json:"repo_id"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the PermQuery when eager-loading is set.
 	Edges PermEdges `json:"edges"`

@@ -326,7 +326,7 @@ func (aq *ApprovalQuery) WithDeployment(opts ...func(*DeploymentQuery)) *Approva
 // Example:
 //
 //	var v []struct {
-//		IsApproved bool `json:"is_approved,omitempty"`
+//		IsApproved bool `json:"is_approved"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
@@ -353,7 +353,7 @@ func (aq *ApprovalQuery) GroupBy(field string, fields ...string) *ApprovalGroupB
 // Example:
 //
 //	var v []struct {
-//		IsApproved bool `json:"is_approved,omitempty"`
+//		IsApproved bool `json:"is_approved"`
 //	}
 //
 //	client.Approval.Query().
