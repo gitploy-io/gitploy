@@ -39,7 +39,7 @@ export const save = createAsyncThunk<Repo, RepoPayload, { state: {repoSettings: 
         }
 
         try {
-            const nr = await updateRepo(repo.id, payload)
+            const nr = await updateRepo(repo, payload)
             message.success("Success to save.", 3)
             return nr
         } catch(e) {
@@ -56,7 +56,7 @@ export const deactivate = createAsyncThunk<Repo, void, { state: {repoSettings: R
         if (repo === null) throw new Error("There is no repo.")
 
         try {
-            const nr = await deactivateRepo(repo.id)
+            const nr = await deactivateRepo(repo)
             window.location.reload()
             return nr
         } catch(e) {

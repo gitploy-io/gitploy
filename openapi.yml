@@ -118,7 +118,8 @@ paths:
     patch:
       tags:
         - Repo
-      summary: Update the config path of repository.
+      summary: Update the repository.
+      description: Basically patch the respository field. And it creates a new webhook when it activates.
       requestBody:
         content:
           application/json:
@@ -127,6 +128,9 @@ paths:
               properties:
                 config_path:
                   type: string
+                  default: deploy.yml
+                active:
+                  type: boolean
       parameters:
         - in: path
           name: id
@@ -137,57 +141,6 @@ paths:
       responses:
         '200':
           description: Ok
-  /repos/{id}/activate:
-    patch:
-      tags:
-        - Repo
-      summary: It activate the webhook of the repository.
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: integer
-            description: The repository id
-      responses:
-        '200':
-          description: Repository
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Repository'
-        '401': 
-          $ref: '#/components/responses/401Unauthorized'
-        '403': 
-          $ref: '#/components/responses/403Forbidden'
-        '500':
-          $ref: '#/components/responses/500InternalError'
-
-  /repos/{id}/deactivate:
-    patch:
-      tags:
-        - Repo
-      summary: It deactivate the webhook of the repository.
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: integer
-            description: The repository id
-      responses:
-        '200':
-          description: Repository
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Repository'
-        '401': 
-          $ref: '#/components/responses/401Unauthorized'
-        '403': 
-          $ref: '#/components/responses/403Forbidden'
-        '500':
-          $ref: '#/components/responses/500InternalError'
   /repos/{id}/commits:
     get:
       tags:

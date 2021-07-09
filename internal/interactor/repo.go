@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/hanjunlee/gitploy/ent"
-	reposv1 "github.com/hanjunlee/gitploy/internal/server/api/v1/repos"
 	"github.com/hanjunlee/gitploy/vo"
 )
 
@@ -25,11 +24,6 @@ func (i *Interactor) FindRepoByID(ctx context.Context, u *ent.User, id string) (
 
 func (i *Interactor) FindPermByRepoID(ctx context.Context, u *ent.User, repoID string) (*ent.Perm, error) {
 	return i.Store.FindPerm(ctx, u, repoID)
-}
-
-func (i *Interactor) PatchRepo(ctx context.Context, r *ent.Repo, p *reposv1.RepoPayload) (*ent.Repo, error) {
-	r.ConfigPath = p.ConfigPath
-	return i.Store.UpdateRepo(ctx, r)
 }
 
 func (i *Interactor) ActivateRepo(ctx context.Context, u *ent.User, r *ent.Repo, c *vo.WebhookConfig) (*ent.Repo, error) {

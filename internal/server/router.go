@@ -132,8 +132,6 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 		repov1.GET("/:id/deployments/:number", rm.Repo(), r.GetDeploymentByNumber)
 		repov1.POST("/:id/deployments/:number/rollback", rm.Repo(), r.RollbackDeployment)
 		repov1.GET("/:id/config", rm.Repo(), r.GetConfig)
-		repov1.PATCH("/:id/activate", rm.Repo(), rm.AdminPerm(), r.Activate)
-		repov1.PATCH("/:id/deactivate", rm.Repo(), rm.AdminPerm(), r.Deactivate)
 	}
 
 	userv1 := v1.Group("/users")

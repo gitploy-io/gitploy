@@ -42,11 +42,12 @@ export const searchRepo = async (namespace: string, name: string) => {
     return repo
 }
 
-export const updateRepo = async (id: string, payload: RepoPayload) => {
+export const updateRepo = async (repo: Repo, payload: RepoPayload) => {
     const body = {
-        "config_path": payload.configPath
+        "config_path": payload.configPath,
+        "active": repo.active
     }
-    const repo = await _fetch(`${instance}/api/v1/repos/${id}`, {
+    repo = await _fetch(`${instance}/api/v1/repos/${repo.id}`, {
         headers,
         credentials: 'same-origin',
         method: "PATCH",
@@ -58,35 +59,45 @@ export const updateRepo = async (id: string, payload: RepoPayload) => {
     return repo
 }
 
-export const activateRepo = async (id: string) => {
-    const response = await _fetch(`${instance}/api/v1/repos/${id}/activate`, {
+export const activateRepo = async (repo: Repo) => {
+    const body = {
+        "config_path": repo.configPath,
+        "active": true,
+    }
+    const response = await _fetch(`${instance}/api/v1/repos/${repo.id}`, {
         headers,
         credentials: 'same-origin',
         method: "PATCH",
+        body: JSON.stringify(body)
     })
 
     if (response.status === StatusCodes.FORBIDDEN) {
         throw new HttpForbiddenError("Only admin permssion can access.")
     }
 
-    const repo = await response
+    repo = await response
         .json()
         .then((r:any) => mapRepo(r))
     return repo
 }
 
-export const deactivateRepo = async (id: string) => {
-    const response = await _fetch(`${instance}/api/v1/repos/${id}/deactivate`, {
+export const deactivateRepo = async (repo: Repo) => {
+    const body = {
+        "config_path": repo.configPath,
+        "active": false,
+    }
+    const response = await _fetch(`${instance}/api/v1/repos/${repo.id}`, {
         headers,
         credentials: 'same-origin',
         method: "PATCH",
+        body: JSON.stringify(body)
     })
 
     if (response.status === StatusCodes.FORBIDDEN) {
         throw new HttpForbiddenError("Only admin permssion can access.")
     }
 
-    const repo = await response
+    repo = await response
         .json()
         .then((r:any) => mapRepo(r))
     return repo
