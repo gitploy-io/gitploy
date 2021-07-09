@@ -634,7 +634,7 @@ paths:
           $ref: '#/components/responses/401Unauthorized'
         '500':
           $ref: '#/components/responses/500InternalError'
-  /notifications/{id}/check:
+  /notifications/{id}:
     patch:
       tags:
         - Notification
@@ -646,6 +646,14 @@ paths:
           schema:
             type: integer
             description: The notification id.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                checked:
+                  type: boolean
       responses:
         '200':
           description: Notifications items

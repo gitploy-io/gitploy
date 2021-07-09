@@ -10,6 +10,6 @@ type (
 	Interactor interface {
 		ListNotificationsWithEdges(ctx context.Context, u *ent.User, page, perPage int) ([]*ent.Notification, error)
 		FindNotificationByID(ctx context.Context, id int) (*ent.Notification, error)
-		SetNotificationChecked(ctx context.Context, n *ent.Notification) (*ent.Notification, error)
+		UpdateNotification(ctx context.Context, n *ent.Notification) (*ent.Notification, error)
 	}
 )

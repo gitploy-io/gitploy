@@ -76,6 +76,11 @@ func (i *Interactor) publish(ctx context.Context, n *ent.Notification) error {
 	return nil
 }
 
+func (i *Interactor) SetNotificationNotified(ctx context.Context, n *ent.Notification) (*ent.Notification, error) {
+	n.Notified = true
+	return i.UpdateNotification(ctx, n)
+}
+
 func (i *Interactor) notifyByChat(ctx context.Context, cu *ent.ChatUser, n *ent.Notification) error {
 	switch n.Type {
 	case notification.TypeDeployment:

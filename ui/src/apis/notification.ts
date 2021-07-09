@@ -19,7 +19,7 @@ export const subscribeNotification = (cb: (n: NotificationData) => void) => {
 }
 
 export const listNotifications = async (page: number, perPage: number) => {
-    const notifications  = await _fetch(`${instance}/api/v1/notifications`, {
+    const notifications  = await _fetch(`${instance}/api/v1/notifications?page=${page}&per_page=${perPage}`, {
         headers,
         credentials: "same-origin",
     })
@@ -30,10 +30,14 @@ export const listNotifications = async (page: number, perPage: number) => {
 }
 
 export const patchNotificationChecked = async (id: number) => {
-    const notification  = await _fetch(`${instance}/api/v1/notifications/${id}/check`, {
+    const body = {
+        checked: true
+    }
+    const notification  = await _fetch(`${instance}/api/v1/notifications/${id}`, {
         headers,
         credentials: "same-origin",
-        method: "PATCH"
+        method: "PATCH",
+        body: JSON.stringify(body)
     })
         .then(res => res.json())
         .then(data => mapDataToNotification(data))

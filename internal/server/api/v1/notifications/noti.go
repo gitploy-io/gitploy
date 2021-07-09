@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 	"go.uber.org/zap"
 
 	"github.com/hanjunlee/gitploy/ent"
@@ -15,6 +16,10 @@ type (
 	Noti struct {
 		i   Interactor
 		log *zap.Logger
+	}
+
+	notiPayload struct {
+		Checked bool `json:"checked"`
 	}
 )
 
@@ -43,14 +48,22 @@ func (n *Noti) ListNotifications(c *gin.Context) {
 	gb.Response(c, http.StatusOK, ns)
 }
 
-func (n *Noti) SetNotificationChecked(c *gin.Context) {
+func (n *Noti) UpdateNotification(c *gin.Context) {
+	ctx := c.Request.Context()
+
 	var (
 		id = c.Param("id")
 	)
+
 	v, _ := c.Get(gb.KeyUser)
 	u, _ := v.(*ent.User)
 
-	ctx := c.Request.Context()
+	p := &notiPayload{}
+	var err error
+	if err := c.ShouldBindBodyWith(p, binding.JSON); err != nil {
+		gb.ErrorResponse(c, http.StatusBadRequest, "It has failed to bind the body")
+		return
+	}
 
 	nf, err := n.i.FindNotificationByID(ctx, atoi(id))
 	if ent.IsNotFound(err) {
@@ -66,9 +79,12 @@ func (n *Noti) SetNotificationChecked(c *gin.Context) {
 		return
 	}
 
-	if nf, err = n.i.SetNotificationChecked(ctx, nf); err != nil {
-		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to set the notification checked.")
-		return
+	if nf.Checked != p.Checked {
+		nf.Checked = p.Checked
+		if nf, err = n.i.UpdateNotification(ctx, nf); err != nil {
+			gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to update the notification.")
+			return
+		}
 	}
 
 	gb.Response(c, http.StatusOK, nf)

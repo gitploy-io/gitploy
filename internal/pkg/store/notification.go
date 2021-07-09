@@ -35,6 +35,10 @@ func (s *Store) ListNotificationsWithEdgesFromTime(ctx context.Context, t time.T
 		All(ctx)
 }
 
+func (s *Store) FindNotificationByID(ctx context.Context, id int) (*ent.Notification, error) {
+	return s.c.Notification.Get(ctx, id)
+}
+
 func (s *Store) CreateNotification(ctx context.Context, n *ent.Notification) (*ent.Notification, error) {
 	nc := s.c.Notification.
 		Create().
@@ -50,20 +54,10 @@ func (s *Store) CreateNotification(ctx context.Context, n *ent.Notification) (*e
 	return nc.Save(ctx)
 }
 
-func (s *Store) SetNotificationNotified(ctx context.Context, n *ent.Notification) (*ent.Notification, error) {
+func (s *Store) UpdateNotification(ctx context.Context, n *ent.Notification) (*ent.Notification, error) {
 	return s.c.Notification.
 		UpdateOne(n).
-		SetNotified(true).
-		Save(ctx)
-}
-
-func (s *Store) FindNotificationByID(ctx context.Context, id int) (*ent.Notification, error) {
-	return s.c.Notification.Get(ctx, id)
-}
-
-func (s *Store) SetNotificationChecked(ctx context.Context, n *ent.Notification) (*ent.Notification, error) {
-	return s.c.Notification.
-		UpdateOne(n).
-		SetChecked(true).
+		SetNotified(n.Notified).
+		SetChecked(n.Checked).
 		Save(ctx)
 }
