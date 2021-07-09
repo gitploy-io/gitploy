@@ -399,7 +399,7 @@ func (rq *RepoQuery) WithNotifications(opts ...func(*NotificationQuery)) *RepoQu
 // Example:
 //
 //	var v []struct {
-//		Namespace string `json:"namespace,omitempty"`
+//		Namespace string `json:"namespace"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
@@ -426,7 +426,7 @@ func (rq *RepoQuery) GroupBy(field string, fields ...string) *RepoGroupBy {
 // Example:
 //
 //	var v []struct {
-//		Namespace string `json:"namespace,omitempty"`
+//		Namespace string `json:"namespace"`
 //	}
 //
 //	client.Repo.Query().

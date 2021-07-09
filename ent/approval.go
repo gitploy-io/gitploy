@@ -19,15 +19,15 @@ type Approval struct {
 	// ID of the ent.
 	ID int `json:"id,omitempty"`
 	// IsApproved holds the value of the "is_approved" field.
-	IsApproved bool `json:"is_approved,omitempty"`
+	IsApproved bool `json:"is_approved"`
 	// CreatedAt holds the value of the "created_at" field.
-	CreatedAt time.Time `json:"created_at,omitempty"`
+	CreatedAt time.Time `json:"created_at"`
 	// UpdatedAt holds the value of the "updated_at" field.
-	UpdatedAt time.Time `json:"updated_at,omitempty"`
+	UpdatedAt time.Time `json:"updated_at"`
 	// UserID holds the value of the "user_id" field.
-	UserID string `json:"user_id,omitempty"`
+	UserID string `json:"user_id"`
 	// DeploymentID holds the value of the "deployment_id" field.
-	DeploymentID int `json:"deployment_id,omitempty"`
+	DeploymentID int `json:"deployment_id"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the ApprovalQuery when eager-loading is set.
 	Edges ApprovalEdges `json:"edges"`

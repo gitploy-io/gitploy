@@ -18,19 +18,19 @@ type ChatUser struct {
 	// ID of the ent.
 	ID string `json:"id,omitempty"`
 	// Token holds the value of the "token" field.
-	Token string `json:"token,omitempty"`
+	Token string `json:"token"`
 	// Refresh holds the value of the "refresh" field.
-	Refresh string `json:"refresh,omitempty"`
+	Refresh string `json:"refresh"`
 	// Expiry holds the value of the "expiry" field.
-	Expiry time.Time `json:"expiry,omitempty"`
+	Expiry time.Time `json:"expiry"`
 	// BotToken holds the value of the "bot_token" field.
-	BotToken string `json:"bot_token,omitempty"`
+	BotToken string `json:"bot_token"`
 	// CreatedAt holds the value of the "created_at" field.
-	CreatedAt time.Time `json:"created_at,omitempty"`
+	CreatedAt time.Time `json:"created_at"`
 	// UpdatedAt holds the value of the "updated_at" field.
-	UpdatedAt time.Time `json:"updated_at,omitempty"`
+	UpdatedAt time.Time `json:"updated_at"`
 	// UserID holds the value of the "user_id" field.
-	UserID string `json:"user_id,omitempty"`
+	UserID string `json:"user_id"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the ChatUserQuery when eager-loading is set.
 	Edges ChatUserEdges `json:"edges"`

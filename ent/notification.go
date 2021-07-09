@@ -20,21 +20,21 @@ type Notification struct {
 	// ID of the ent.
 	ID int `json:"id,omitempty"`
 	// Type holds the value of the "type" field.
-	Type notification.Type `json:"type,omitempty"`
+	Type notification.Type `json:"type"`
 	// Notified holds the value of the "notified" field.
-	Notified bool `json:"notified,omitempty"`
+	Notified bool `json:"notified"`
 	// Checked holds the value of the "checked" field.
-	Checked bool `json:"checked,omitempty"`
+	Checked bool `json:"checked"`
 	// CreatedAt holds the value of the "created_at" field.
-	CreatedAt time.Time `json:"created_at,omitempty"`
+	CreatedAt time.Time `json:"created_at"`
 	// UpdatedAt holds the value of the "updated_at" field.
-	UpdatedAt time.Time `json:"updated_at,omitempty"`
+	UpdatedAt time.Time `json:"updated_at"`
 	// UserID holds the value of the "user_id" field.
-	UserID string `json:"user_id,omitempty"`
+	UserID string `json:"user_id"`
 	// RepoID holds the value of the "repo_id" field.
-	RepoID string `json:"repo_id,omitempty"`
+	RepoID string `json:"repo_id"`
 	// DeploymentID holds the value of the "deployment_id" field.
-	DeploymentID int `json:"deployment_id,omitempty"`
+	DeploymentID int `json:"deployment_id"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the NotificationQuery when eager-loading is set.
 	Edges NotificationEdges `json:"edges"`

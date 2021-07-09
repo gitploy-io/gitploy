@@ -435,7 +435,7 @@ func (uq *UserQuery) WithNotification(opts ...func(*NotificationQuery)) *UserQue
 // Example:
 //
 //	var v []struct {
-//		Login string `json:"login,omitempty"`
+//		Login string `json:"login"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
@@ -462,7 +462,7 @@ func (uq *UserQuery) GroupBy(field string, fields ...string) *UserGroupBy {
 // Example:
 //
 //	var v []struct {
-//		Login string `json:"login,omitempty"`
+//		Login string `json:"login"`
 //	}
 //
 //	client.User.Query().
