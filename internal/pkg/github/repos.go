@@ -228,7 +228,7 @@ func (g *Github) GetTag(ctx context.Context, u *ent.User, r *ent.Repo, tag strin
 	return t, nil
 }
 
-func (g *Github) CreateDeployment(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, e *vo.Env) (*ent.Deployment, error) {
+func (g *Github) CreateDeployment(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, e *vo.Env) (int64, error) {
 	gd, _, err := g.Client(ctx, u.Token).
 		Repositories.
 		CreateDeployment(ctx, r.Namespace, r.Name, &github.DeploymentRequest{
@@ -242,14 +242,10 @@ func (g *Github) CreateDeployment(ctx context.Context, u *ent.User, r *ent.Repo,
 			ProductionEnvironment: github.Bool(e.ProductionEnvironment),
 		})
 	if err != nil {
-		return nil, err
+		return 0, err
 	}
 
-	// Update UID and SHA
-	d.UID = *gd.ID
-	d.Sha = *gd.SHA
-
-	return d, nil
+	return *gd.ID, nil
 }
 
 func (g *Github) GetConfig(ctx context.Context, u *ent.User, r *ent.Repo) (*vo.Config, error) {

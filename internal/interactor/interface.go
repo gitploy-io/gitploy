@@ -36,7 +36,7 @@ type (
 		ListDeployments(ctx context.Context, r *ent.Repo, env string, status string, page, perPage int) ([]*ent.Deployment, error)
 		FindDeploymentWithEdgesByID(ctx context.Context, id int) (*ent.Deployment, error)
 		FindDeploymentWithEdgesOfRepoByNumber(ctx context.Context, r *ent.Repo, number int) (*ent.Deployment, error)
-		GetNextDeploymentNumberOfRepo(ctx context.Context, d *ent.Deployment) (int, error)
+		GetNextDeploymentNumberOfRepo(ctx context.Context, r *ent.Repo) (int, error)
 		CreateDeployment(ctx context.Context, d *ent.Deployment) (*ent.Deployment, error)
 		UpdateDeployment(ctx context.Context, d *ent.Deployment) (*ent.Deployment, error)
 
@@ -57,10 +57,11 @@ type (
 
 	SCM interface {
 		GetUser(ctx context.Context, token string) (*ent.User, error)
+		// TODO: fix type of return value to prevent using the ent package.
 		GetAllPermsWithRepo(ctx context.Context, token string) ([]*ent.Perm, error)
 
 		// SCM returns the deployment with UID and SHA.
-		CreateDeployment(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, e *vo.Env) (*ent.Deployment, error)
+		CreateDeployment(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, e *vo.Env) (int64, error)
 		GetConfig(ctx context.Context, u *ent.User, r *ent.Repo) (*vo.Config, error)
 
 		CreateWebhook(ctx context.Context, u *ent.User, r *ent.Repo, c *vo.WebhookConfig) (int64, error)

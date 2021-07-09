@@ -20,8 +20,6 @@ type Deployment struct {
 	ID int `json:"id,omitempty"`
 	// Number holds the value of the "number" field.
 	Number int `json:"number,omitempty"`
-	// UID holds the value of the "uid" field.
-	UID int64 `json:"uid,omitempty"`
 	// Type holds the value of the "type" field.
 	Type deployment.Type `json:"type,omitempty"`
 	// Ref holds the value of the "ref" field.
@@ -32,6 +30,8 @@ type Deployment struct {
 	Env string `json:"env,omitempty"`
 	// Status holds the value of the "status" field.
 	Status deployment.Status `json:"status,omitempty"`
+	// UID holds the value of the "uid" field.
+	UID int64 `json:"uid,omitempty"`
 	// RequiredApprovalCount holds the value of the "required_approval_count" field.
 	RequiredApprovalCount int `json:"required_approval_count,omitempty"`
 	// AutoDeploy holds the value of the "auto_deploy" field.
@@ -150,12 +150,6 @@ func (d *Deployment) assignValues(columns []string, values []interface{}) error 
 			} else if value.Valid {
 				d.Number = int(value.Int64)
 			}
-		case deployment.FieldUID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field uid", values[i])
-			} else if value.Valid {
-				d.UID = value.Int64
-			}
 		case deployment.FieldType:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field type", values[i])
@@ -185,6 +179,12 @@ func (d *Deployment) assignValues(columns []string, values []interface{}) error 
 				return fmt.Errorf("unexpected type %T for field status", values[i])
 			} else if value.Valid {
 				d.Status = deployment.Status(value.String)
+			}
+		case deployment.FieldUID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field uid", values[i])
+			} else if value.Valid {
+				d.UID = value.Int64
 			}
 		case deployment.FieldRequiredApprovalCount:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -272,8 +272,6 @@ func (d *Deployment) String() string {
 	builder.WriteString(fmt.Sprintf("id=%v", d.ID))
 	builder.WriteString(", number=")
 	builder.WriteString(fmt.Sprintf("%v", d.Number))
-	builder.WriteString(", uid=")
-	builder.WriteString(fmt.Sprintf("%v", d.UID))
 	builder.WriteString(", type=")
 	builder.WriteString(fmt.Sprintf("%v", d.Type))
 	builder.WriteString(", ref=")
@@ -284,6 +282,8 @@ func (d *Deployment) String() string {
 	builder.WriteString(d.Env)
 	builder.WriteString(", status=")
 	builder.WriteString(fmt.Sprintf("%v", d.Status))
+	builder.WriteString(", uid=")
+	builder.WriteString(fmt.Sprintf("%v", d.UID))
 	builder.WriteString(", required_approval_count=")
 	builder.WriteString(fmt.Sprintf("%v", d.RequiredApprovalCount))
 	builder.WriteString(", auto_deploy=")

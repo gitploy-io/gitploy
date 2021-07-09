@@ -43,6 +43,7 @@ func TestStore_ListDeployments(t *testing.T) {
 		SetType(deployment.TypeBranch).
 		SetNumber(1).
 		SetRef("main").
+		SetSha("7e555a2").
 		SetEnv("local").
 		SetUserID("1").
 		SetRepoID("1").
@@ -57,6 +58,7 @@ func TestStore_ListDeployments(t *testing.T) {
 		SetType(deployment.TypeBranch).
 		SetNumber(2).
 		SetRef("main").
+		SetSha("a20052a").
 		SetEnv("dev").
 		SetUserID("1").
 		SetRepoID("1").
@@ -70,6 +72,7 @@ func TestStore_ListDeployments(t *testing.T) {
 		SetType(deployment.TypeBranch).
 		SetNumber(3).
 		SetRef("branch").
+		SetSha("7e555a2").
 		SetEnv("staging").
 		SetUserID("1").
 		SetRepoID("1").
@@ -166,6 +169,7 @@ func TestStore_GetNextDeploymentNumberOfRepo(t *testing.T) {
 		SetNumber(1).
 		SetType("branch").
 		SetRef("main").
+		SetSha("7e555a2").
 		SetEnv("local").
 		SetUserID("1").
 		SetRepoID("1").
@@ -178,10 +182,32 @@ func TestStore_GetNextDeploymentNumberOfRepo(t *testing.T) {
 
 	s := NewStore(client)
 
+	t.Run("The next number must to be 0 for first deployment", func(tt *testing.T) {
+		_, err := client.Repo.Create().
+			SetID("2").
+			SetNamespace("octocat").
+			SetName("Goodbye").
+			Save(ctx)
+		if err != nil {
+			t.Fatalf("failed to create a new repo: %s", err)
+		}
+
+		num, err := s.GetNextDeploymentNumberOfRepo(ctx, &ent.Repo{
+			ID: "2",
+		})
+		if err != nil {
+			t.Errorf("CreateDeployment return error: %s", err)
+		}
+
+		if num != 0 {
+			t.Errorf("CreateDeployment = %d, 0", num)
+		}
+	})
+
 	t.Run("The next number is 2", func(tt *testing.T) {
 
-		num, err := s.GetNextDeploymentNumberOfRepo(ctx, &ent.Deployment{
-			RepoID: "1",
+		num, err := s.GetNextDeploymentNumberOfRepo(ctx, &ent.Repo{
+			ID: "1",
 		})
 		if err != nil {
 			t.Errorf("CreateDeployment return error: %s", err)

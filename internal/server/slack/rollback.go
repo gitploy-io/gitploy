@@ -146,10 +146,22 @@ func (s *Slack) interactRollback(ctx context.Context, scb slack.InteractionCallb
 		return nil
 	}
 
+	// Prepare to rollback:
+	// 1) next deployment number.
+	var (
+		next int
+	)
+
+	if next, err = s.i.GetNextDeploymentNumberOfRepo(ctx, re); err != nil {
+		return fmt.Errorf("failed to get the next deployment number: %w", err)
+	}
+
 	d, err = s.i.Rollback(ctx, u, cb.Edges.Repo, &ent.Deployment{
-		Type: deployment.Type(d.Type),
-		Ref:  d.Ref,
-		Env:  d.Env,
+		Number: next,
+		Type:   deployment.Type(d.Type),
+		Ref:    d.Ref,
+		Sha:    d.Sha,
+		Env:    d.Env,
 	}, cf.GetEnv(d.Env))
 	if err != nil {
 		return fmt.Errorf("failed to deploy: %w", err)

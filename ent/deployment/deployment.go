@@ -14,8 +14,6 @@ const (
 	FieldID = "id"
 	// FieldNumber holds the string denoting the number field in the database.
 	FieldNumber = "number"
-	// FieldUID holds the string denoting the uid field in the database.
-	FieldUID = "uid"
 	// FieldType holds the string denoting the type field in the database.
 	FieldType = "type"
 	// FieldRef holds the string denoting the ref field in the database.
@@ -26,6 +24,8 @@ const (
 	FieldEnv = "env"
 	// FieldStatus holds the string denoting the status field in the database.
 	FieldStatus = "status"
+	// FieldUID holds the string denoting the uid field in the database.
+	FieldUID = "uid"
 	// FieldRequiredApprovalCount holds the string denoting the required_approval_count field in the database.
 	FieldRequiredApprovalCount = "required_approval_count"
 	// FieldAutoDeploy holds the string denoting the auto_deploy field in the database.
@@ -82,12 +82,12 @@ const (
 var Columns = []string{
 	FieldID,
 	FieldNumber,
-	FieldUID,
 	FieldType,
 	FieldRef,
 	FieldSha,
 	FieldEnv,
 	FieldStatus,
+	FieldUID,
 	FieldRequiredApprovalCount,
 	FieldAutoDeploy,
 	FieldCreatedAt,

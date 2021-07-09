@@ -18,8 +18,6 @@ type Deployment struct {
 func (Deployment) Fields() []ent.Field {
 	return []ent.Field{
 		field.Int("number"),
-		field.Int64("uid").
-			Optional(),
 		field.Enum("type").
 			Values(
 				"commit",
@@ -28,8 +26,7 @@ func (Deployment) Fields() []ent.Field {
 			).
 			Default("commit"),
 		field.String("ref"),
-		field.String("sha").
-			Optional(),
+		field.String("sha"),
 		field.String("env"),
 		field.Enum("status").
 			Values(
@@ -40,6 +37,10 @@ func (Deployment) Fields() []ent.Field {
 				"failure",
 			).
 			Default("waiting"),
+		// UID is determined from SCM.
+		// The waiting status can not have UID.
+		field.Int64("uid").
+			Optional(),
 		field.Int("required_approval_count").
 			Default(0),
 		field.Bool("auto_deploy").
