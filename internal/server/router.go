@@ -144,7 +144,7 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 	{
 		noti := notifications.NewNoti(c.Interactor)
 		notiv1.GET("", noti.ListNotifications)
-		notiv1.PATCH("/:id/check", noti.SetNotificationChecked)
+		notiv1.PATCH("/:id", noti.UpdateNotification)
 	}
 
 	streamv1 := v1.Group("/stream")

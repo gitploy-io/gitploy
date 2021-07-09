@@ -51,8 +51,7 @@ type (
 		ListNotificationsWithEdgesFromTime(ctx context.Context, t time.Time) ([]*ent.Notification, error)
 		FindNotificationByID(ctx context.Context, id int) (*ent.Notification, error)
 		CreateNotification(ctx context.Context, n *ent.Notification) (*ent.Notification, error)
-		SetNotificationNotified(ctx context.Context, n *ent.Notification) (*ent.Notification, error)
-		SetNotificationChecked(ctx context.Context, n *ent.Notification) (*ent.Notification, error)
+		UpdateNotification(ctx context.Context, n *ent.Notification) (*ent.Notification, error)
 	}
 
 	SCM interface {
