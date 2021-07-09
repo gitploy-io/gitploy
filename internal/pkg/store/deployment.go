@@ -66,16 +66,27 @@ func (s *Store) FindDeploymentWithEdgesOfRepoByNumber(ctx context.Context, r *en
 
 // TODO: Lock deployments for the index which has repo_id.
 func (s *Store) GetNextDeploymentNumberOfRepo(ctx context.Context, r *ent.Repo) (int, error) {
-	cnt, err := s.c.Deployment.Query().
+	var v []struct {
+		RepoID string `json:"repo_id"`
+		Max    int    `json:"max"`
+	}
+	err := s.c.Deployment.Query().
 		Where(
 			deployment.RepoID(r.ID),
 		).
-		Count(ctx)
+		GroupBy(deployment.FieldRepoID).
+		Aggregate(ent.Max(deployment.FieldNumber)).
+		Scan(ctx, &v)
 	if err != nil {
 		return 0, err
 	}
 
-	return cnt + 1, nil
+	max := 0
+	if len(v) != 0 {
+		max = v[0].Max + 1
+	}
+
+	return max, nil
 }
 
 // CreateDeployment always set the next number of deployment
