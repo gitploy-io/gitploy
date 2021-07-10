@@ -17,25 +17,17 @@ export default function ActivityLogs(props: ActivityLogsProps) {
             {props.deployments.map((d, idx) => {
                 const dot = (d.status === DeploymentStatus.Running) ? <SyncOutlined spin /> : null
                 const ref = (d.type === DeploymentType.Commit)? d.sha.substr(0, 7) : d.ref
-                let description: React.ReactElement
+                let description: React.ReactElement = <p></p>
 
                 if (d.deployer) {
                     description = <p>
-                        Deployed by <Avatar size="small" src={d.deployer.avatar} /> <Text strong>{d.deployer.login}</Text> {moment(d.createdAt).fromNow()}  
-                        <br/>
-                        {(d.repo)? 
-                            <a href={`/${d.repo.namespace}/${d.repo.name}/deployments/${d.number}`}>• View detail</a>:
-                            null}
+                        Deployed by &nbsp;
+                        <Avatar size="small" src={d.deployer.avatar} /> &nbsp;
+                        <Text strong>{d.deployer.login}</Text> &nbsp;
+                        {moment(d.createdAt).fromNow()} &nbsp;
+                        <Badge color={getStatusColor(d.status)}text={d.status}/>
                     </p>
-                } else {
-                    description = <p>
-                        Deployed {moment(d.createdAt).fromNow()}
-                        <br/>
-                        {(d.repo)? 
-                            <a href={`/${d.repo.namespace}/${d.repo.name}/deployments/${d.number}`}>• View detail</a>:
-                            null}
-                    </p>
-                }
+                } 
 
                 return <Timeline.Item key={idx} color={getStatusColor(d.status)} dot={dot}>
                     <p>
@@ -43,7 +35,9 @@ export default function ActivityLogs(props: ActivityLogsProps) {
                         {(d.status !== DeploymentStatus.Failure) 
                             ? <Text code>{ref}</Text>
                             : null}&nbsp;
-                        <Badge color={getStatusColor(d.status)} text={d.status}/>
+                        {(d.repo)? 
+                            <a href={`/${d.repo.namespace}/${d.repo.name}/deployments/${d.number}`}>• View detail</a>:
+                            null}
                     </p>
                     {description}
                     
