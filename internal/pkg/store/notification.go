@@ -8,7 +8,7 @@ import (
 	"github.com/hanjunlee/gitploy/ent/notification"
 )
 
-func (s *Store) ListNotificationsWithEdges(ctx context.Context, u *ent.User, page, perPage int) ([]*ent.Notification, error) {
+func (s *Store) ListNotifications(ctx context.Context, u *ent.User, page, perPage int) ([]*ent.Notification, error) {
 	return s.c.Notification.
 		Query().
 		Where(
@@ -23,7 +23,7 @@ func (s *Store) ListNotificationsWithEdges(ctx context.Context, u *ent.User, pag
 		All(ctx)
 }
 
-func (s *Store) ListNotificationsWithEdgesFromTime(ctx context.Context, t time.Time) ([]*ent.Notification, error) {
+func (s *Store) ListNotificationsFromTime(ctx context.Context, t time.Time) ([]*ent.Notification, error) {
 	return s.c.Notification.
 		Query().
 		Where(

@@ -47,8 +47,8 @@ type (
 		CreateApproval(ctx context.Context, a *ent.Approval) (*ent.Approval, error)
 		UpdateApproval(ctx context.Context, a *ent.Approval) (*ent.Approval, error)
 
-		ListNotificationsWithEdges(ctx context.Context, u *ent.User, page, perPage int) ([]*ent.Notification, error)
-		ListNotificationsWithEdgesFromTime(ctx context.Context, t time.Time) ([]*ent.Notification, error)
+		ListNotifications(ctx context.Context, u *ent.User, page, perPage int) ([]*ent.Notification, error)
+		ListNotificationsFromTime(ctx context.Context, t time.Time) ([]*ent.Notification, error)
 		FindNotificationByID(ctx context.Context, id int) (*ent.Notification, error)
 		CreateNotification(ctx context.Context, n *ent.Notification) (*ent.Notification, error)
 		UpdateNotification(ctx context.Context, n *ent.Notification) (*ent.Notification, error)

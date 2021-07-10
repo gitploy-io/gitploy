@@ -39,7 +39,7 @@ L:
 				break L
 			}
 		case t := <-ticker.C:
-			ns, err := i.ListNotificationsWithEdgesFromTime(ctx, t.Add(-time.Second*4))
+			ns, err := i.ListNotificationsFromTime(ctx, t.Add(-time.Second*4))
 			if err != nil {
 				log.Error("failed to read notifications.", zap.Error(err))
 				continue
