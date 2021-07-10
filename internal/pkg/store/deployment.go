@@ -39,7 +39,7 @@ func (s *Store) ListDeployments(ctx context.Context, r *ent.Repo, env string, st
 		All(ctx)
 }
 
-func (s *Store) FindDeploymentWithEdgesByID(ctx context.Context, id int) (*ent.Deployment, error) {
+func (s *Store) FindDeploymentByID(ctx context.Context, id int) (*ent.Deployment, error) {
 	return s.c.Deployment.
 		Query().
 		Where(
@@ -50,7 +50,7 @@ func (s *Store) FindDeploymentWithEdgesByID(ctx context.Context, id int) (*ent.D
 		First(ctx)
 }
 
-func (s *Store) FindDeploymentWithEdgesOfRepoByNumber(ctx context.Context, r *ent.Repo, number int) (*ent.Deployment, error) {
+func (s *Store) FindDeploymentOfRepoByNumber(ctx context.Context, r *ent.Repo, number int) (*ent.Deployment, error) {
 	return s.c.Deployment.
 		Query().
 		Where(

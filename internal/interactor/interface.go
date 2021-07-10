@@ -13,12 +13,10 @@ type (
 		FindUserByID(ctx context.Context, id string) (*ent.User, error)
 		FindUserByHash(ctx context.Context, hash string) (*ent.User, error)
 		FindUserByLogin(ctx context.Context, login string) (*ent.User, error)
-		FindUserWithChatUserByID(ctx context.Context, id string) (*ent.User, error)
 		CreateUser(ctx context.Context, u *ent.User) (*ent.User, error)
 		UpdateUser(ctx context.Context, u *ent.User) (*ent.User, error)
 
 		FindChatUserByID(ctx context.Context, id string) (*ent.ChatUser, error)
-		FindChatUserWithUserByID(ctx context.Context, id string) (*ent.ChatUser, error)
 		CreateChatUser(ctx context.Context, u *ent.User, cu *ent.ChatUser) (*ent.ChatUser, error)
 		UpdateChatUser(ctx context.Context, u *ent.User, cu *ent.ChatUser) (*ent.ChatUser, error)
 
@@ -34,15 +32,14 @@ type (
 		SyncPerm(ctx context.Context, user *ent.User, perm *ent.Perm, sync time.Time) error
 
 		ListDeployments(ctx context.Context, r *ent.Repo, env string, status string, page, perPage int) ([]*ent.Deployment, error)
-		FindDeploymentWithEdgesByID(ctx context.Context, id int) (*ent.Deployment, error)
-		FindDeploymentWithEdgesOfRepoByNumber(ctx context.Context, r *ent.Repo, number int) (*ent.Deployment, error)
+		FindDeploymentByID(ctx context.Context, id int) (*ent.Deployment, error)
+		FindDeploymentOfRepoByNumber(ctx context.Context, r *ent.Repo, number int) (*ent.Deployment, error)
 		GetNextDeploymentNumberOfRepo(ctx context.Context, r *ent.Repo) (int, error)
 		CreateDeployment(ctx context.Context, d *ent.Deployment) (*ent.Deployment, error)
 		UpdateDeployment(ctx context.Context, d *ent.Deployment) (*ent.Deployment, error)
 
 		CreateDeployChatCallback(ctx context.Context, cu *ent.ChatUser, repo *ent.Repo, cb *ent.ChatCallback) (*ent.ChatCallback, error)
 		FindChatCallbackByState(ctx context.Context, state string) (*ent.ChatCallback, error)
-		FindChatCallbackWithEdgesByState(ctx context.Context, state string) (*ent.ChatCallback, error)
 		CloseChatCallback(ctx context.Context, cb *ent.ChatCallback) (*ent.ChatCallback, error)
 
 		ListApprovals(ctx context.Context, d *ent.Deployment) ([]*ent.Approval, error)
@@ -50,8 +47,8 @@ type (
 		CreateApproval(ctx context.Context, a *ent.Approval) (*ent.Approval, error)
 		UpdateApproval(ctx context.Context, a *ent.Approval) (*ent.Approval, error)
 
-		ListNotificationsWithEdges(ctx context.Context, u *ent.User, page, perPage int) ([]*ent.Notification, error)
-		ListNotificationsWithEdgesFromTime(ctx context.Context, t time.Time) ([]*ent.Notification, error)
+		ListNotifications(ctx context.Context, u *ent.User, page, perPage int) ([]*ent.Notification, error)
+		ListNotificationsFromTime(ctx context.Context, t time.Time) ([]*ent.Notification, error)
 		FindNotificationByID(ctx context.Context, id int) (*ent.Notification, error)
 		CreateNotification(ctx context.Context, n *ent.Notification) (*ent.Notification, error)
 		UpdateNotification(ctx context.Context, n *ent.Notification) (*ent.Notification, error)

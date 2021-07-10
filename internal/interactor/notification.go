@@ -39,7 +39,7 @@ L:
 				break L
 			}
 		case t := <-ticker.C:
-			ns, err := i.ListNotificationsWithEdgesFromTime(ctx, t.Add(-time.Second*4))
+			ns, err := i.ListNotificationsFromTime(ctx, t.Add(-time.Second*4))
 			if err != nil {
 				log.Error("failed to read notifications.", zap.Error(err))
 				continue
@@ -61,7 +61,7 @@ L:
 // and it updates notified field true,
 // whereas if not connected, it publishs to stream without update.
 func (i *Interactor) publish(ctx context.Context, n *ent.Notification) error {
-	u, err := i.FindUserWithChatUserByID(ctx, n.UserID)
+	u, err := i.FindUserByID(ctx, n.UserID)
 	if err != nil {
 		return err
 	}
@@ -91,7 +91,7 @@ func (i *Interactor) notifyByChat(ctx context.Context, cu *ent.ChatUser, n *ent.
 }
 
 func (i *Interactor) notifyDeploymentByChat(ctx context.Context, cu *ent.ChatUser, n *ent.Notification) error {
-	d, err := i.FindDeploymentWithEdgesByID(ctx, n.DeploymentID)
+	d, err := i.FindDeploymentByID(ctx, n.DeploymentID)
 	if err != nil {
 		return err
 	}

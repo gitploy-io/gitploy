@@ -25,7 +25,7 @@ type (
 // handleRollbackCmd handles rollback command: "/gitploy rollback OWNER/REPO".
 func (s *Slack) handleRollbackCmd(ctx context.Context, cmd slack.SlashCommand) error {
 	// user have to be exist if chat user is found.
-	cu, err := s.i.FindChatUserWithUserByID(ctx, cmd.UserID)
+	cu, err := s.i.FindChatUserByID(ctx, cmd.UserID)
 	if ent.IsNotFound(err) {
 		responseMessage(cmd, fmt.Sprint("Slack is not connected with Gitploy."))
 		return nil
@@ -122,10 +122,10 @@ func (s *Slack) interactRollback(ctx context.Context, scb slack.InteractionCallb
 	cu := cb.Edges.ChatUser
 	re := cb.Edges.Repo
 
-	cu, _ = s.i.FindChatUserWithUserByID(ctx, cu.ID)
+	cu, _ = s.i.FindChatUserByID(ctx, cu.ID)
 	u := cu.Edges.User
 
-	d, err := s.i.FindDeploymentWithEdgesByID(ctx, atoi(id))
+	d, err := s.i.FindDeploymentByID(ctx, atoi(id))
 	if err != nil {
 		return fmt.Errorf("failed to find the deployment: %w", err)
 	}

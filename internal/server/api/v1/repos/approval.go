@@ -27,7 +27,7 @@ func (r *Repo) ListApprovals(c *gin.Context) {
 	vr, _ := c.Get(KeyRepo)
 	re := vr.(*ent.Repo)
 
-	d, err := r.i.FindDeploymentWithEdgesOfRepoByNumber(ctx, re, atoi(number))
+	d, err := r.i.FindDeploymentOfRepoByNumber(ctx, re, atoi(number))
 	if ent.IsNotFound(err) {
 		r.log.Warn("The deployment is not found.", zap.Error(err))
 		gb.ErrorResponse(c, http.StatusNotFound, "The deployment is not found.")
@@ -61,7 +61,7 @@ func (r *Repo) GetApproval(c *gin.Context) {
 	vr, _ := c.Get(KeyRepo)
 	re := vr.(*ent.Repo)
 
-	d, err := r.i.FindDeploymentWithEdgesOfRepoByNumber(ctx, re, atoi(number))
+	d, err := r.i.FindDeploymentOfRepoByNumber(ctx, re, atoi(number))
 	if ent.IsNotFound(err) {
 		r.log.Warn("The deployment is not found.", zap.Error(err))
 		gb.ErrorResponse(c, http.StatusNotFound, "The deployment is not found.")
@@ -106,7 +106,7 @@ func (r *Repo) UpdateApproval(c *gin.Context) {
 	vr, _ := c.Get(KeyRepo)
 	re := vr.(*ent.Repo)
 
-	d, err := r.i.FindDeploymentWithEdgesOfRepoByNumber(ctx, re, atoi(number))
+	d, err := r.i.FindDeploymentOfRepoByNumber(ctx, re, atoi(number))
 	if ent.IsNotFound(err) {
 		r.log.Warn("The deployment is not found.", zap.Error(err))
 		gb.ErrorResponse(c, http.StatusNotFound, "The deployment is not found.")

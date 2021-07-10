@@ -55,7 +55,7 @@ func (r *Repo) GetDeploymentByNumber(c *gin.Context) {
 
 	ctx := c.Request.Context()
 
-	d, err := r.i.FindDeploymentWithEdgesOfRepoByNumber(ctx, re, atoi(number))
+	d, err := r.i.FindDeploymentOfRepoByNumber(ctx, re, atoi(number))
 	if ent.IsNotFound(err) {
 		r.log.Warn("the deployment is not found.", zap.Error(err))
 		gb.ErrorResponse(c, http.StatusNotFound, "The deployment is not found.")
@@ -159,7 +159,7 @@ func (r *Repo) RollbackDeployment(c *gin.Context) {
 	vr, _ := c.Get(KeyRepo)
 	re := vr.(*ent.Repo)
 
-	d, err := r.i.FindDeploymentWithEdgesOfRepoByNumber(ctx, re, atoi(number))
+	d, err := r.i.FindDeploymentOfRepoByNumber(ctx, re, atoi(number))
 	if ent.IsNotFound(err) {
 		r.log.Warn("the deployment is not found.", zap.Error(err))
 		gb.ErrorResponse(c, http.StatusNotFound, "The deployment is not found.")

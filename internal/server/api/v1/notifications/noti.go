@@ -39,7 +39,7 @@ func (n *Noti) ListNotifications(c *gin.Context) {
 	u, _ := v.(*ent.User)
 
 	ctx := c.Request.Context()
-	ns, err := n.i.ListNotificationsWithEdges(ctx, u, atoi(page), atoi(perPage))
+	ns, err := n.i.ListNotifications(ctx, u, atoi(page), atoi(perPage))
 	if err != nil {
 		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to list notifications.")
 		return

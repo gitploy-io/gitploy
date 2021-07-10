@@ -17,7 +17,7 @@ import (
 // It opens a dialog with fields to submit the payload for deployment.
 func (s *Slack) handleDeployCmd(ctx context.Context, cmd slack.SlashCommand) error {
 	// user have to be exist if chat user is found.
-	cu, err := s.i.FindChatUserWithUserByID(ctx, cmd.UserID)
+	cu, err := s.i.FindChatUserByID(ctx, cmd.UserID)
 	if ent.IsNotFound(err) {
 		responseMessage(cmd, fmt.Sprint("Slack is not connected with Gitploy."))
 		return nil
@@ -98,7 +98,7 @@ func (s *Slack) interactDeploy(ctx context.Context, scb slack.InteractionCallbac
 	cu := cb.Edges.ChatUser
 	re := cb.Edges.Repo
 
-	cu, _ = s.i.FindChatUserWithUserByID(ctx, cu.ID)
+	cu, _ = s.i.FindChatUserByID(ctx, cu.ID)
 	u := cu.Edges.User
 
 	cf, err := s.i.GetConfig(ctx, u, re)
