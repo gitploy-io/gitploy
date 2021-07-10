@@ -45,7 +45,10 @@ type (
 		FindChatCallbackWithEdgesByState(ctx context.Context, state string) (*ent.ChatCallback, error)
 		CloseChatCallback(ctx context.Context, cb *ent.ChatCallback) (*ent.ChatCallback, error)
 
+		ListApprovals(ctx context.Context, d *ent.Deployment) ([]*ent.Approval, error)
+		GetApprovalOfUser(ctx context.Context, d *ent.Deployment, u *ent.User) (*ent.Approval, error)
 		CreateApproval(ctx context.Context, a *ent.Approval) (*ent.Approval, error)
+		UpdateApproval(ctx context.Context, a *ent.Approval) (*ent.Approval, error)
 
 		ListNotificationsWithEdges(ctx context.Context, u *ent.User, page, perPage int) ([]*ent.Notification, error)
 		ListNotificationsWithEdgesFromTime(ctx context.Context, t time.Time) ([]*ent.Notification, error)

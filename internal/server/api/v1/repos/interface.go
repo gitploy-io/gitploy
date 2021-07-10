@@ -25,6 +25,10 @@ type (
 		Rollback(ctx context.Context, u *ent.User, re *ent.Repo, d *ent.Deployment, env *vo.Env) (*ent.Deployment, error)
 		GetConfig(ctx context.Context, u *ent.User, r *ent.Repo) (*vo.Config, error)
 
+		ListApprovals(ctx context.Context, d *ent.Deployment) ([]*ent.Approval, error)
+		GetApprovalOfUser(ctx context.Context, d *ent.Deployment, u *ent.User) (*ent.Approval, error)
+		UpdateApproval(ctx context.Context, a *ent.Approval) (*ent.Approval, error)
+
 		ListCommits(ctx context.Context, u *ent.User, r *ent.Repo, branch string, page, perPage int) ([]*vo.Commit, error)
 		GetCommit(ctx context.Context, u *ent.User, r *ent.Repo, sha string) (*vo.Commit, error)
 		ListCommitStatuses(ctx context.Context, u *ent.User, r *ent.Repo, sha string) ([]*vo.Status, error)
