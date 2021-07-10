@@ -3,12 +3,14 @@ import Repo from './Repo'
 export default interface Deployment {
     id: number
     number: number
-    uid: number
     type: DeploymentType
     ref: string
     sha: string
     env: string
     status: DeploymentStatus
+    uid: number
+    requiredApprovalCount: number
+    autoDeploy: boolean
     createdAt: Date
     updatedAt: Date
     deployer: Deployer | null

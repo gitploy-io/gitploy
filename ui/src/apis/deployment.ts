@@ -20,6 +20,17 @@ export const listDeployments = async (repoId: string, env: string, status: strin
     return deployments
 }
 
+export const getDeployment = async (id: string, number: number) => {
+    const deployment = await _fetch(`${instance}/api/v1/repos/${id}/deployments/${number}`, {
+        headers,
+        credentials: 'same-origin',
+    })
+        .then(response => response.json())
+        .then(data => mapDataToDeployment(data))
+
+    return deployment
+}
+
 export const createDeployment = async (repoId: string, type: DeploymentType = DeploymentType.Commit, ref: string, env: string) => {
     const body = JSON.stringify({
         type,
@@ -58,7 +69,7 @@ export const rollbackDeployment = async (repoId: string, number: number) => {
     return deployment
 }
 
-export function mapDataToDeployment(d: any) {
+export function mapDataToDeployment(d: any): Deployment {
     let deployer: Deployer | null = null
     let repo: Repo | null = null
 
@@ -83,8 +94,10 @@ export function mapDataToDeployment(d: any) {
         ref: d.ref,
         sha: d.sha,
         env: d.env,
-        uid: d.uid? d.uid : "",
         status: mapDeploymentStatus(d.status),
+        uid: d.uid? d.uid : "",
+        requiredApprovalCount: d.required_approval_count,
+        autoDeploy: d.auto_deploy,
         createdAt: new Date(d.created_at),
         updatedAt: new Date(d.updatedAt),
         deployer,

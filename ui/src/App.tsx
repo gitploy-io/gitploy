@@ -7,6 +7,7 @@ import {
 
 import Home from "./views/Home"
 import Repo from "./views/Repo"
+import Deployment from "./views/Deployment"
 import Settings from "./views/Settings"
 
 function App() {
@@ -14,6 +15,9 @@ function App() {
         <div className="App">
             <Router>
                 <Switch>
+                    <Route path="/:namespace/:name/deployments/:number">
+                        <Deployment />
+                    </Route>
                     <Route path="/:namespace/:name">
                         <Repo />
                     </Route>

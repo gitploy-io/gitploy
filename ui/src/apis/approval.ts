@@ -19,6 +19,7 @@ export const mapDataToApproval = (data: any): Approval => {
     }
 
     return  {
+        id: data.id,
         isApproved: data.is_approved,
         createdAt: new Date(data.created_at),
         updatedAt: new Date(data.updated_at),
@@ -37,8 +38,8 @@ export const listApprovals = async (id: string, number: number) => {
         throw new HttpNotFoundError("There is no requested approval.")
     }
 
-    const approvals: Approval[] = await res.json().
-        then(data => data.map((d:any): Approval => mapDataToApproval(d)))
+    const approvals: Approval[] = await res.json()
+        .then(data => data.map((d:any): Approval => mapDataToApproval(d)))
 
     return approvals
 }
@@ -53,8 +54,8 @@ export const getApproval = async (id: string, number: number) => {
         throw new HttpNotFoundError("There is no requested approval.")
     }
 
-    const approval = await res.json().
-        then(data => mapDataToApproval(data))
+    const approval = await res.json()
+        .then(data => mapDataToApproval(data))
     return approval
 }
 
@@ -73,8 +74,8 @@ export const setApprovalApproved = async (id: string, number: number) => {
         throw new HttpNotFoundError("There is no requested approval.")
     }
 
-    const approval = await res.json().
-        then(data => mapDataToApproval(data))
+    const approval = await res.json()
+        .then(data => mapDataToApproval(data))
     return approval
 }
 
@@ -93,7 +94,7 @@ export const setApprovalDeclined = async (id: string, number: number) => {
         throw new HttpNotFoundError("There is no requested approval.")
     }
 
-    const approval = await res.json().
-        then(data => mapDataToApproval(data))
+    const approval = await res.json()
+        .then(data => mapDataToApproval(data))
     return approval
 }
