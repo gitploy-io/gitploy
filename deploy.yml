@@ -1,2 +1,6 @@
 envs:
   - name: local
+    approval:
+      approvers: 
+        - hanjunlee
+      required_count: 0
