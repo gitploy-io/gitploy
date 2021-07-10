@@ -17,7 +17,7 @@ export default function ActivityLogs(props: ActivityLogsProps) {
             {props.deployments.map((d, idx) => {
                 const dot = (d.status === DeploymentStatus.Running) ? <SyncOutlined spin /> : null
                 const ref = (d.type === DeploymentType.Commit)? d.sha.substr(0, 7) : d.ref
-                let description: React.ReactElement = <p></p>
+                let description: React.ReactElement 
 
                 if (d.deployer) {
                     description = <p>
@@ -27,7 +27,16 @@ export default function ActivityLogs(props: ActivityLogsProps) {
                         {moment(d.createdAt).fromNow()} &nbsp;
                         <Badge color={getStatusColor(d.status)}text={d.status}/>
                     </p>
-                } 
+                } else {
+                    // deployer is removed by admin.
+                    description = <p>
+                        Deployed by &nbsp;
+                        <Avatar size="small">U</Avatar>&nbsp;
+                        {moment(d.createdAt).fromNow()} &nbsp;
+                        <Badge color={getStatusColor(d.status)}text={d.status}/>
+                    </p>
+
+                }
 
                 return <Timeline.Item key={idx} color={getStatusColor(d.status)} dot={dot}>
                     <p>
