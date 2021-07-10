@@ -125,7 +125,7 @@ func (s *Slack) interactRollback(ctx context.Context, scb slack.InteractionCallb
 	cu, _ = s.i.FindChatUserByID(ctx, cu.ID)
 	u := cu.Edges.User
 
-	d, err := s.i.FindDeploymentWithEdgesByID(ctx, atoi(id))
+	d, err := s.i.FindDeploymentByID(ctx, atoi(id))
 	if err != nil {
 		return fmt.Errorf("failed to find the deployment: %w", err)
 	}

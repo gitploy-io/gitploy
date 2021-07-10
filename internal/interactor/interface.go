@@ -32,8 +32,8 @@ type (
 		SyncPerm(ctx context.Context, user *ent.User, perm *ent.Perm, sync time.Time) error
 
 		ListDeployments(ctx context.Context, r *ent.Repo, env string, status string, page, perPage int) ([]*ent.Deployment, error)
-		FindDeploymentWithEdgesByID(ctx context.Context, id int) (*ent.Deployment, error)
-		FindDeploymentWithEdgesOfRepoByNumber(ctx context.Context, r *ent.Repo, number int) (*ent.Deployment, error)
+		FindDeploymentByID(ctx context.Context, id int) (*ent.Deployment, error)
+		FindDeploymentOfRepoByNumber(ctx context.Context, r *ent.Repo, number int) (*ent.Deployment, error)
 		GetNextDeploymentNumberOfRepo(ctx context.Context, r *ent.Repo) (int, error)
 		CreateDeployment(ctx context.Context, d *ent.Deployment) (*ent.Deployment, error)
 		UpdateDeployment(ctx context.Context, d *ent.Deployment) (*ent.Deployment, error)

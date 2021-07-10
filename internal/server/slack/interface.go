@@ -20,7 +20,7 @@ type (
 		CloseChatCallback(ctx context.Context, cb *ent.ChatCallback) (*ent.ChatCallback, error)
 
 		ListDeployments(ctx context.Context, r *ent.Repo, env string, status string, page, perPage int) ([]*ent.Deployment, error)
-		FindDeploymentWithEdgesByID(ctx context.Context, id int) (*ent.Deployment, error)
+		FindDeploymentByID(ctx context.Context, id int) (*ent.Deployment, error)
 		GetNextDeploymentNumberOfRepo(ctx context.Context, r *ent.Repo) (int, error)
 		Deploy(ctx context.Context, u *ent.User, re *ent.Repo, d *ent.Deployment, env *vo.Env) (*ent.Deployment, error)
 		Rollback(ctx context.Context, u *ent.User, re *ent.Repo, d *ent.Deployment, env *vo.Env) (*ent.Deployment, error)

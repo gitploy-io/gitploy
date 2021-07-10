@@ -91,7 +91,7 @@ func (i *Interactor) notifyByChat(ctx context.Context, cu *ent.ChatUser, n *ent.
 }
 
 func (i *Interactor) notifyDeploymentByChat(ctx context.Context, cu *ent.ChatUser, n *ent.Notification) error {
-	d, err := i.FindDeploymentWithEdgesByID(ctx, n.DeploymentID)
+	d, err := i.FindDeploymentByID(ctx, n.DeploymentID)
 	if err != nil {
 		return err
 	}
