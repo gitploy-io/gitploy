@@ -7,8 +7,18 @@ import (
 	"github.com/hanjunlee/gitploy/ent/user"
 )
 
+// FindUserByID return the user with chat_user,
+// but it returns nil if chat_user is not found.
+//
+// Note that add new indexes if you need to more edges.
 func (s *Store) FindUserByID(ctx context.Context, id string) (*ent.User, error) {
-	return s.c.User.Get(ctx, id)
+	return s.c.User.
+		Query().
+		Where(
+			user.IDEQ(id),
+		).
+		WithChatUser().
+		First(ctx)
 }
 
 func (s *Store) FindUserByHash(ctx context.Context, hash string) (*ent.User, error) {
@@ -17,6 +27,7 @@ func (s *Store) FindUserByHash(ctx context.Context, hash string) (*ent.User, err
 		Where(
 			user.HashEQ(hash),
 		).
+		WithChatUser().
 		Only(ctx)
 }
 
@@ -26,6 +37,7 @@ func (s *Store) FindUserByLogin(ctx context.Context, login string) (*ent.User, e
 		Where(
 			user.LoginEQ(login),
 		).
+		WithChatUser().
 		Only(ctx)
 }
 
@@ -50,14 +62,4 @@ func (s *Store) UpdateUser(ctx context.Context, u *ent.User) (*ent.User, error) 
 		SetRefresh(u.Refresh).
 		SetExpiry(u.Expiry).
 		Save(ctx)
-}
-
-func (s *Store) FindUserWithChatUserByID(ctx context.Context, id string) (*ent.User, error) {
-	return s.c.User.
-		Query().
-		Where(
-			user.IDEQ(id),
-		).
-		WithChatUser().
-		First(ctx)
 }

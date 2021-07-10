@@ -51,7 +51,7 @@ func (u *User) Me(c *gin.Context) {
 
 	ctx := c.Request.Context()
 
-	uv, err := u.i.FindUserWithChatUserByID(ctx, uv.ID)
+	uv, err := u.i.FindUserByID(ctx, uv.ID)
 	if err != nil {
 		u.log.Error("failed to find the user.", zap.Error(err))
 		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to find the user.")

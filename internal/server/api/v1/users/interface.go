@@ -8,6 +8,6 @@ import (
 
 type (
 	Interactor interface {
-		FindUserWithChatUserByID(ctx context.Context, id string) (*ent.User, error)
+		FindUserByID(ctx context.Context, id string) (*ent.User, error)
 	}
 )

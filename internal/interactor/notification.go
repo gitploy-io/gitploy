@@ -61,7 +61,7 @@ L:
 // and it updates notified field true,
 // whereas if not connected, it publishs to stream without update.
 func (i *Interactor) publish(ctx context.Context, n *ent.Notification) error {
-	u, err := i.FindUserWithChatUserByID(ctx, n.UserID)
+	u, err := i.FindUserByID(ctx, n.UserID)
 	if err != nil {
 		return err
 	}

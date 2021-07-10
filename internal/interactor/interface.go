@@ -13,7 +13,6 @@ type (
 		FindUserByID(ctx context.Context, id string) (*ent.User, error)
 		FindUserByHash(ctx context.Context, hash string) (*ent.User, error)
 		FindUserByLogin(ctx context.Context, login string) (*ent.User, error)
-		FindUserWithChatUserByID(ctx context.Context, id string) (*ent.User, error)
 		CreateUser(ctx context.Context, u *ent.User) (*ent.User, error)
 		UpdateUser(ctx context.Context, u *ent.User) (*ent.User, error)
 
