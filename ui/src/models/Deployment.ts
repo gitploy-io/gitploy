@@ -1,3 +1,5 @@
+import Repo from './Repo'
+
 export default interface Deployment {
     id: number
     number: number
@@ -10,6 +12,7 @@ export default interface Deployment {
     createdAt: Date
     updatedAt: Date
     deployer: Deployer | null
+    repo: Repo | null
 }
 
 export interface Deployer {

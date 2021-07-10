@@ -4,6 +4,8 @@ import { instance, headers } from './setting'
 import { _fetch } from "./_base"
 import { Deployment, DeploymentType, DeploymentStatus, HttpRequestError } from '../models'
 import { Deployer } from '../models/Deployment'
+import Repo from '../models/Repo'
+import { mapRepo } from './repo'
 
 export const listDeployments = async (repoId: string, env: string, status: string, page: number, perPage: number) => {
     let deployments:Deployment[]
@@ -57,30 +59,36 @@ export const rollbackDeployment = async (repoId: string, number: number) => {
 }
 
 export function mapDataToDeployment(d: any) {
-    let user: Deployer | null
+    let deployer: Deployer | null = null
+    let repo: Repo | null = null
+
     if ("user" in d.edges) {
         const ud = d.edges.user
-        user = {
+        deployer = {
             id: ud.id,
             login: ud.login,
             avatar: ud.avatar
         }
-    } else {
-        user = null
+    }
+
+    if ("repo" in d.edges) {
+        const rd = d.edges.repo
+        repo = mapRepo(rd) 
     }
 
     return {
         id: d.id,
         number: d.number,
-        uid: d.uid? d.uid : "",
         type: mapDeploymentType(d.type),
         ref: d.ref,
-        sha: d.sha? d.sha : "",
+        sha: d.sha,
         env: d.env,
+        uid: d.uid? d.uid : "",
         status: mapDeploymentStatus(d.status),
         createdAt: new Date(d.created_at),
         updatedAt: new Date(d.updatedAt),
-        deployer: user,
+        deployer,
+        repo,
     }
 }
 

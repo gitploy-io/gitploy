@@ -22,15 +22,29 @@ export default function ActivityLogs(props: ActivityLogsProps) {
                 if (d.deployer) {
                     description = <p>
                         Deployed by <Avatar size="small" src={d.deployer.avatar} /> <Text strong>{d.deployer.login}</Text> {moment(d.createdAt).fromNow()}  
+                        <br/>
+                        {(d.repo)? 
+                            <a href={`/${d.repo.namespace}/${d.repo.name}/deployments/${d.number}`}>• View detail</a>:
+                            null}
                     </p>
                 } else {
                     description = <p>
                         Deployed {moment(d.createdAt).fromNow()}
+                        <br/>
+                        {(d.repo)? 
+                            <a href={`/${d.repo.namespace}/${d.repo.name}/deployments/${d.number}`}>• View detail</a>:
+                            null}
                     </p>
                 }
 
                 return <Timeline.Item key={idx} color={getStatusColor(d.status)} dot={dot}>
-                    <p><Text strong>{d.env}</Text> <Text code>{ref}</Text> <Badge color={getStatusColor(d.status)} text={d.status}/></p>
+                    <p>
+                        <Text strong>{d.env}</Text>&nbsp;
+                        {(d.status !== DeploymentStatus.Failure) 
+                            ? <Text code>{ref}</Text>
+                            : null}&nbsp;
+                        <Badge color={getStatusColor(d.status)} text={d.status}/>
+                    </p>
                     {description}
                     
                 </Timeline.Item>
