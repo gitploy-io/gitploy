@@ -17,20 +17,37 @@ export default function ActivityLogs(props: ActivityLogsProps) {
             {props.deployments.map((d, idx) => {
                 const dot = (d.status === DeploymentStatus.Running) ? <SyncOutlined spin /> : null
                 const ref = (d.type === DeploymentType.Commit)? d.sha.substr(0, 7) : d.ref
-                let description: React.ReactElement
+                let description: React.ReactElement 
 
                 if (d.deployer) {
                     description = <p>
-                        Deployed by <Avatar size="small" src={d.deployer.avatar} /> <Text strong>{d.deployer.login}</Text> {moment(d.createdAt).fromNow()}  
+                        Deployed by &nbsp;
+                        <Avatar size="small" src={d.deployer.avatar} /> &nbsp;
+                        <Text strong>{d.deployer.login}</Text> &nbsp;
+                        {moment(d.createdAt).fromNow()} &nbsp;
+                        <Badge color={getStatusColor(d.status)}text={d.status}/>
                     </p>
                 } else {
+                    // deployer is removed by admin.
                     description = <p>
-                        Deployed {moment(d.createdAt).fromNow()}
+                        Deployed by &nbsp;
+                        <Avatar size="small">U</Avatar>&nbsp;
+                        {moment(d.createdAt).fromNow()} &nbsp;
+                        <Badge color={getStatusColor(d.status)}text={d.status}/>
                     </p>
+
                 }
 
                 return <Timeline.Item key={idx} color={getStatusColor(d.status)} dot={dot}>
-                    <p><Text strong>{d.env}</Text> <Text code>{ref}</Text> <Badge color={getStatusColor(d.status)} text={d.status}/></p>
+                    <p>
+                        <Text strong>{d.env}</Text>&nbsp;
+                        {(d.status !== DeploymentStatus.Failure) 
+                            ? <Text code>{ref}</Text>
+                            : null}&nbsp;
+                        {(d.repo)? 
+                            <a href={`/${d.repo.namespace}/${d.repo.name}/deployments/${d.number}`}>• View detail</a>:
+                            null}
+                    </p>
                     {description}
                     
                 </Timeline.Item>

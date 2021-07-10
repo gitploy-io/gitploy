@@ -8,6 +8,7 @@ import { repoDeploySlice } from './repoDeploy'
 import { repoRollbackSlice } from './repoRollback'
 import { repoSettingsSlice } from "./repoSettings"
 import { settingsSlice } from "./settings"
+import { deploymentSlice } from "./deployment"
 
 export const store =  configureStore({
   reducer: {
@@ -19,6 +20,7 @@ export const store =  configureStore({
     repoRollback: repoRollbackSlice.reducer,
     repoSettings: repoSettingsSlice.reducer,
     settings: settingsSlice.reducer,
+    deployment: deploymentSlice.reducer,
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware({
     serializableCheck: false

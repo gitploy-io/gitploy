@@ -2,7 +2,7 @@ import { _fetch } from "./_base"
 import { instance, headers } from "./setting"
 import { User, ChatUser } from "../models"
 
-const mapUser = (data: any): User => {
+export const mapUser = (data: any): User => {
     let cu:ChatUser | null
     if (data.edges.chat_user) {
         const chat_user = data.edges.chat_user

@@ -32,7 +32,7 @@ export const activate = createAsyncThunk<Repo, void, { state: {repo: RepoState} 
         if (repo === null) throw new Error("There is no repo.")
 
         try {
-            const nr =  await activateRepo(repo.id)
+            const nr =  await activateRepo(repo)
             return nr
         } catch(e) {
             if (e instanceof HttpForbiddenError) {

@@ -1,12 +1,13 @@
 import { sync } from "./sync"
 import { listRepos, searchRepo, updateRepo, activateRepo, deactivateRepo } from "./repo"
-import { listDeployments, createDeployment, rollbackDeployment } from './deployment'
+import { listDeployments, getDeployment ,createDeployment, rollbackDeployment } from './deployment'
 import { getConfig } from './config'
 import { listCommits, getCommit, listStatuses } from './commit'
 import { listBranches, getBranch } from './branch'
 import { listTags, getTag } from './tag'
 import { getMe } from "./user"
 import { checkSlack } from "./chat"
+import { listApprovals, getApproval, setApprovalApproved, setApprovalDeclined } from "./approval"
 import { subscribeNotification, listNotifications, patchNotificationChecked } from "./notification"
 
 export {
@@ -17,6 +18,7 @@ export {
     activateRepo,
     deactivateRepo,
     listDeployments,
+    getDeployment,
     createDeployment,
     rollbackDeployment,
     getConfig,
@@ -29,6 +31,10 @@ export {
     getTag,
     getMe,
     checkSlack,
+    listApprovals,
+    getApproval,
+    setApprovalApproved,
+    setApprovalDeclined,
     subscribeNotification, 
     listNotifications,
     patchNotificationChecked,
