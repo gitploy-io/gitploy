@@ -17,7 +17,6 @@ type (
 		UpdateUser(ctx context.Context, u *ent.User) (*ent.User, error)
 
 		FindChatUserByID(ctx context.Context, id string) (*ent.ChatUser, error)
-		FindChatUserWithUserByID(ctx context.Context, id string) (*ent.ChatUser, error)
 		CreateChatUser(ctx context.Context, u *ent.User, cu *ent.ChatUser) (*ent.ChatUser, error)
 		UpdateChatUser(ctx context.Context, u *ent.User, cu *ent.ChatUser) (*ent.ChatUser, error)
 

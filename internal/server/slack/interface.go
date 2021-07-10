@@ -9,7 +9,7 @@ import (
 
 type (
 	Interactor interface {
-		FindChatUserWithUserByID(ctx context.Context, id string) (*ent.ChatUser, error)
+		FindChatUserByID(ctx context.Context, id string) (*ent.ChatUser, error)
 		SaveChatUser(ctx context.Context, u *ent.User, cu *ent.ChatUser) (*ent.ChatUser, error)
 
 		FindRepoByNamespaceName(ctx context.Context, u *ent.User, namespace, name string) (*ent.Repo, error)
