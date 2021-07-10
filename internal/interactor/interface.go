@@ -40,7 +40,6 @@ type (
 
 		CreateDeployChatCallback(ctx context.Context, cu *ent.ChatUser, repo *ent.Repo, cb *ent.ChatCallback) (*ent.ChatCallback, error)
 		FindChatCallbackByState(ctx context.Context, state string) (*ent.ChatCallback, error)
-		FindChatCallbackWithEdgesByState(ctx context.Context, state string) (*ent.ChatCallback, error)
 		CloseChatCallback(ctx context.Context, cb *ent.ChatCallback) (*ent.ChatCallback, error)
 
 		ListApprovals(ctx context.Context, d *ent.Deployment) ([]*ent.Approval, error)

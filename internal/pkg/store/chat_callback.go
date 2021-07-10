@@ -23,15 +23,6 @@ func (s *Store) FindChatCallbackByState(ctx context.Context, state string) (*ent
 		Where(
 			chatcallback.StateEQ(state),
 		).
-		First(ctx)
-}
-
-func (s *Store) FindChatCallbackWithEdgesByState(ctx context.Context, state string) (*ent.ChatCallback, error) {
-	return s.c.ChatCallback.
-		Query().
-		Where(
-			chatcallback.StateEQ(state),
-		).
 		WithChatUser().
 		WithRepo().
 		First(ctx)

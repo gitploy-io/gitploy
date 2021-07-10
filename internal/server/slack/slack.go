@@ -118,7 +118,7 @@ func (s *Slack) Interact(c *gin.Context) {
 	// https://github.com/slack-go/slack/issues/816
 	state := strings.Trim(scb.State, "\"")
 
-	cb, err := s.i.FindChatCallbackWithEdgesByState(ctx, state)
+	cb, err := s.i.FindChatCallbackByState(ctx, state)
 	if ent.IsNotFound(err) {
 		responseMessage(scb, "The callback is not found. You can interact with Slack by only `/gitploy`.")
 		c.Status(http.StatusOK)
