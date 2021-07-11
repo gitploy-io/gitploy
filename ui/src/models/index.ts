@@ -7,7 +7,15 @@ import Tag from './Tag'
 import User, { ChatUser } from "./User"
 import Approval from "./Approval"
 import Notification, { NotificationType } from "./Notification"
-import { HttpRequestError, HttpInternalServerError, HttpUnauthorizedError, HttpForbiddenError, HttpNotFoundError } from './errors'
+import { 
+    HttpRequestError, 
+    HttpInternalServerError, 
+    HttpUnauthorizedError, 
+    HttpForbiddenError, 
+    HttpNotFoundError, 
+    HttpConflictError,
+    HttpUnprocessableEntityError 
+} from './errors'
 import { RequestStatus } from './Request'
 
 export type {
@@ -32,6 +40,8 @@ export {
     HttpUnauthorizedError,
     HttpForbiddenError,
     HttpNotFoundError,
+    HttpConflictError,
+    HttpUnprocessableEntityError,
     DeploymentStatus,
     DeploymentType,
     StatusState,

@@ -2,7 +2,7 @@ import { StatusCodes } from 'http-status-codes'
 
 import { instance, headers } from './setting'
 import { _fetch } from "./_base"
-import { Deployment, DeploymentType, DeploymentStatus, HttpRequestError } from '../models'
+import { Deployment, DeploymentType, DeploymentStatus, HttpRequestError, HttpUnprocessableEntityError } from '../models'
 import { Deployer } from '../models/Deployment'
 import Repo from '../models/Repo'
 import { mapRepo } from './repo'
@@ -45,6 +45,27 @@ export const createDeployment = async (repoId: string, type: DeploymentType = De
     })
     if (response.status !== StatusCodes.CREATED) {
         throw new HttpRequestError(response.status, "It has failed to deploy.")
+    } 
+
+    const deployment = response
+        .json()
+        .then(d => mapDataToDeployment(d))
+    return deployment
+}
+
+export const updateDeploymentStatusCreated = async (id: string, number: number) => {
+    const body = JSON.stringify({
+        status: "created"
+    })
+    const response = await _fetch(`${instance}/api/v1/repos/${id}/deployments/${number}`, {
+        headers,
+        credentials: 'same-origin',
+        method: "PATCH",
+        body: body,
+    })
+    if (response.status === StatusCodes.UNPROCESSABLE_ENTITY) {
+        const { message } = await response.json()
+        throw new HttpUnprocessableEntityError(message)
     } 
 
     const deployment = response

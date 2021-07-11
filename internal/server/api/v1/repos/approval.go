@@ -129,6 +129,7 @@ func (r *Repo) UpdateApproval(c *gin.Context) {
 	}
 
 	if p.IsApproved != a.IsApproved {
+		a.IsApproved = p.IsApproved
 		if a, err = r.i.UpdateApproval(ctx, a); err != nil {
 			r.log.Error("failed to update the approval.", zap.Error(err))
 			gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to update the approval.")

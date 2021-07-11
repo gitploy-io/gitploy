@@ -4,7 +4,16 @@ import { shallowEqual } from 'react-redux'
 import { useParams } from "react-router-dom"
 
 import { useAppSelector, useAppDispatch } from "../redux/hooks"
-import { init, deploymentSlice, fetchDeployment, fetchApprovals, fetchMyApproval } from "../redux/deployment"
+import { 
+    init, 
+    deploymentSlice, 
+    fetchDeployment, 
+    fetchApprovals, 
+    fetchMyApproval,
+    deployToSCM,
+    approve,
+    decline,
+} from "../redux/deployment"
 import { Deployment, DeploymentStatus, Approval } from "../models"
 
 import Main from "./Main"
@@ -39,6 +48,18 @@ export default function DeploymentView() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [dispatch])
 
+    const onClickDeploy = () => {
+        dispatch(deployToSCM())
+    }
+
+    const onClickApprove = () => {
+        dispatch(approve())
+    }
+
+    const onClickDecline = () => {
+        dispatch(decline())
+    }
+
     const onBack = () => {
         window.location.href = `/${namespace}/${name}`
     }
@@ -55,13 +76,13 @@ export default function DeploymentView() {
 
     // buttons
     const deployBtn = isDeployable(deployment, approvals)? 
-        <Button type="primary">Deploy</Button>:
+        <Button type="primary" onClick={onClickDeploy}>Deploy</Button>:
         <Button type="primary" disabled>Deploy</Button>
-    const approvalDropdown = (isDeployable(deployment, approvals) && hasRequestedApproval(myApproval))?
+    const approvalDropdown = (hasRequestedApproval(myApproval))?
         <ApprovalDropdown 
             key="approval" 
-            onClickApprove={() => console.log("approve")}
-            onClickDecline={() => console.log("decline")}/>:
+            onClickApprove={onClickApprove}
+            onClickDecline={onClickDecline}/>:
         null
 
     return (
@@ -104,14 +125,21 @@ export default function DeploymentView() {
                         <Col span="4" style={styleFieldName}>Deployer:&nbsp;&nbsp;</Col>
                         <Col> 
                             {(deployment.deployer !== null)?
-                                 <Text ><Avatar size="small" src={deployment.deployer.avatar} />&nbsp; {deployment.deployer.login}</Text> :
+                                 <Text ><Avatar size="small" src={deployment.deployer.avatar} /> {deployment.deployer.login}</Text> :
                                 <Avatar size="small" >U</Avatar> }
                         </Col>
                     </Row>
+                    {/* Approvals */}
                     {(approvals.length !== 0) ?
-                    <Row style={styleField}>
+                        <Row style={styleField}>
                             <Col span="4" style={styleFieldName}>Approvers:&nbsp;&nbsp;</Col>
                             <Col><ApprovalList approvals={approvals}/></Col>
+                        </Row> :
+                        null}
+                    {(approvals.length !== 0) ?
+                        <Row style={styleField}>
+                            <Col span="4" style={styleFieldName}>Required Count:&nbsp;&nbsp;</Col>
+                            <Col>{deployment.requiredApprovalCount}</Col>
                         </Row> :
                         null}
                     <Row style={styleField}>

@@ -39,3 +39,19 @@ export class HttpNotFoundError extends HttpRequestError {
         Object.setPrototypeOf(this, HttpNotFoundError.prototype)
     }
 }
+
+export class HttpConflictError extends HttpRequestError {
+    constructor(public m: string) {
+        super(StatusCodes.CONFLICT, m)
+
+        Object.setPrototypeOf(this, HttpConflictError.prototype)
+    }
+}
+
+export class HttpUnprocessableEntityError extends HttpRequestError {
+    constructor(public m: string) {
+        super(StatusCodes.UNPROCESSABLE_ENTITY, m)
+
+        Object.setPrototypeOf(this, HttpUnprocessableEntityError.prototype)
+    }
+}
