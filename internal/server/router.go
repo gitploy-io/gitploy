@@ -130,10 +130,11 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 		repov1.GET("/:id/deployments", rm.Repo(), r.ListDeployments)
 		repov1.POST("/:id/deployments", rm.Repo(), r.CreateDeployment)
 		repov1.GET("/:id/deployments/:number", rm.Repo(), r.GetDeploymentByNumber)
+		repov1.PATCH("/:id/deployments/:number", rm.Repo(), r.UpdateDeployment)
+		repov1.POST("/:id/deployments/:number/rollback", rm.Repo(), r.RollbackDeployment)
 		repov1.GET("/:id/deployments/:number/approvals", rm.Repo(), r.ListApprovals)
 		repov1.GET("/:id/deployments/:number/approval", rm.Repo(), r.GetApproval)
 		repov1.PATCH("/:id/deployments/:number/approval", rm.Repo(), r.UpdateApproval)
-		repov1.POST("/:id/deployments/:number/rollback", rm.Repo(), r.RollbackDeployment)
 		repov1.GET("/:id/config", rm.Repo(), r.GetConfig)
 	}
 
