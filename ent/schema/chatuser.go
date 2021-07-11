@@ -18,10 +18,13 @@ type ChatUser struct {
 func (ChatUser) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("id"),
-		field.String("token"),
-		field.String("refresh"),
+		field.String("token").
+			Sensitive(),
+		field.String("refresh").
+			Sensitive(),
 		field.Time("expiry"),
-		field.String("bot_token"),
+		field.String("bot_token").
+			Sensitive(),
 		field.Time("created_at").
 			Default(time.Now),
 		field.Time("updated_at").

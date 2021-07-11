@@ -18,13 +18,13 @@ type ChatUser struct {
 	// ID of the ent.
 	ID string `json:"id,omitempty"`
 	// Token holds the value of the "token" field.
-	Token string `json:"token"`
+	Token string `json:"-"`
 	// Refresh holds the value of the "refresh" field.
-	Refresh string `json:"refresh"`
+	Refresh string `json:"-"`
 	// Expiry holds the value of the "expiry" field.
 	Expiry time.Time `json:"expiry"`
 	// BotToken holds the value of the "bot_token" field.
-	BotToken string `json:"bot_token"`
+	BotToken string `json:"-"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -180,14 +180,11 @@ func (cu *ChatUser) String() string {
 	var builder strings.Builder
 	builder.WriteString("ChatUser(")
 	builder.WriteString(fmt.Sprintf("id=%v", cu.ID))
-	builder.WriteString(", token=")
-	builder.WriteString(cu.Token)
-	builder.WriteString(", refresh=")
-	builder.WriteString(cu.Refresh)
+	builder.WriteString(", token=<sensitive>")
+	builder.WriteString(", refresh=<sensitive>")
 	builder.WriteString(", expiry=")
 	builder.WriteString(cu.Expiry.Format(time.ANSIC))
-	builder.WriteString(", bot_token=")
-	builder.WriteString(cu.BotToken)
+	builder.WriteString(", bot_token=<sensitive>")
 	builder.WriteString(", created_at=")
 	builder.WriteString(cu.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", updated_at=")
