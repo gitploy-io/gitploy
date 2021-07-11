@@ -1,15 +1,17 @@
-import { Breadcrumb, PageHeader, Row, Col, Typography, Avatar, Badge } from "antd"
+import { useEffect } from "react"
+import { Breadcrumb, PageHeader, Row, Col, Typography, Avatar, Button, } from "antd"
 import { shallowEqual } from 'react-redux'
 import { useParams } from "react-router-dom"
 
 import { useAppSelector, useAppDispatch } from "../redux/hooks"
 import { init, deploymentSlice, fetchDeployment, fetchApprovals, fetchMyApproval } from "../redux/deployment"
-import { DeploymentStatus } from "../models"
+import { Deployment, DeploymentStatus, Approval } from "../models"
 
 import Main from "./Main"
 import ApprovalList from "../components/ApprovalList"
+import ApprovalDropdown from "../components/ApprovalDropdown"
 import Spin from "../components/Spin"
-import { useEffect } from "react"
+import DeploymentStatusBadge from "../components/DeploymentStatusBadge"
 
 const { Text } = Typography
 const { actions } = deploymentSlice
@@ -20,9 +22,9 @@ interface Params {
     number: string
 }
 
-export default function Deployment() {
+export default function DeploymentView() {
     let { namespace, name, number } = useParams<Params>()
-    const { deployment, approvals } = useAppSelector(state => state.deployment, shallowEqual )
+    const { deployment, approvals, myApproval } = useAppSelector(state => state.deployment, shallowEqual )
     const dispatch = useAppDispatch()
 
     useEffect(() => {
@@ -48,10 +50,19 @@ export default function Deployment() {
     }
 
     // styles 
-    const styleField: React.CSSProperties = { marginTop: "10px" }
+    const styleField: React.CSSProperties = { marginTop: "15px" }
     const styleFieldName: React.CSSProperties = { textAlign: "right"}
 
-    const deployer = deployment.deployer
+    // buttons
+    const deployBtn = isDeployable(deployment, approvals)? 
+        <Button type="primary">Deploy</Button>:
+        <Button type="primary" disabled>Deploy</Button>
+    const approvalDropdown = (isDeployable(deployment, approvals) && hasRequestedApproval(myApproval))?
+        <ApprovalDropdown 
+            key="approval" 
+            onClickApprove={() => console.log("approve")}
+            onClickDecline={() => console.log("decline")}/>:
+        null
 
     return (
         <Main>
@@ -70,6 +81,9 @@ export default function Deployment() {
                             <Breadcrumb.Item>Deployments</Breadcrumb.Item>
                             <Breadcrumb.Item>{number}</Breadcrumb.Item>
                         </Breadcrumb>}
+                    extra={[
+                        approvalDropdown,
+                    ]}
                     onBack={onBack} />
             </div>
             <div style={{marginTop: "20px", marginBottom: "30px"}}>
@@ -84,16 +98,13 @@ export default function Deployment() {
                     </Row>
                     <Row style={styleField}>
                         <Col span="4" style={styleFieldName}>Status:&nbsp;&nbsp;</Col>
-                        <Col>
-                            {/* TODO: add a new component - DeploymentStatusBadge */}
-                            <Badge color={getStatusColor(deployment.status)}text={deployment.status}/>
-                        </Col>
+                        <Col><DeploymentStatusBadge deployment={deployment}/></Col>
                     </Row>
                     <Row style={styleField}>
                         <Col span="4" style={styleFieldName}>Deployer:&nbsp;&nbsp;</Col>
                         <Col> 
-                            {(deployer !== null)?
-                                 <Text ><Avatar size="small" src={deployer.avatar} /> {deployer.login}</Text> :
+                            {(deployment.deployer !== null)?
+                                 <Text ><Avatar size="small" src={deployment.deployer.avatar} />&nbsp; {deployment.deployer.login}</Text> :
                                 <Avatar size="small" >U</Avatar> }
                         </Col>
                     </Row>
@@ -103,26 +114,32 @@ export default function Deployment() {
                             <Col><ApprovalList approvals={approvals}/></Col>
                         </Row> :
                         null}
+                    <Row style={styleField}>
+                        <Col span="4" style={styleFieldName}></Col>
+                        <Col>{deployBtn}</Col>
+                    </Row>
                 </div>
             </div>
         </Main>
     )
 }
 
-// https://ant.design/components/timeline/#Timeline.Item
-const getStatusColor = (status: DeploymentStatus) => {
-    switch (status) {
-        case DeploymentStatus.Waiting:
-            return "gray"
-        case DeploymentStatus.Created:
-            return "purple"
-        case DeploymentStatus.Running:
-            return "purple"
-        case DeploymentStatus.Success:
-            return "green"
-        case DeploymentStatus.Failure:
-            return "red"
-        default:
-            return "gray"
+function isDeployable(deployment: Deployment, approvals: Approval[]): boolean {
+    if (deployment.status !== DeploymentStatus.Waiting) {
+        return false
     }
+
+    // requiredApprovalCount have to be equal or greater than approved.
+    var approved = 0
+    approvals.forEach((approval) => {
+        if (approval.isApproved) {
+            approved++
+        }
+    })
+
+    return approved >= deployment.requiredApprovalCount
+}
+
+function hasRequestedApproval(approval: Approval | null): boolean {
+    return approval !== null
 }
