@@ -72,7 +72,7 @@ func (r *Repo) GetApproval(c *gin.Context) {
 		return
 	}
 
-	a, err := r.i.GetApprovalOfUser(ctx, d, u)
+	a, err := r.i.FindApprovalOfUser(ctx, d, u)
 	if ent.IsNotFound(err) {
 		r.log.Warn("The approval is not found.", zap.Error(err))
 		gb.ErrorResponse(c, http.StatusNotFound, "The approval is not found.")
@@ -117,7 +117,7 @@ func (r *Repo) UpdateApproval(c *gin.Context) {
 		return
 	}
 
-	a, err := r.i.GetApprovalOfUser(ctx, d, u)
+	a, err := r.i.FindApprovalOfUser(ctx, d, u)
 	if ent.IsNotFound(err) {
 		r.log.Warn("The approval is not found.", zap.Error(err))
 		gb.ErrorResponse(c, http.StatusNotFound, "The approval is not found.")
@@ -129,11 +129,18 @@ func (r *Repo) UpdateApproval(c *gin.Context) {
 	}
 
 	if p.IsApproved != a.IsApproved {
+		a.IsApproved = p.IsApproved
 		if a, err = r.i.UpdateApproval(ctx, a); err != nil {
 			r.log.Error("failed to update the approval.", zap.Error(err))
 			gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to update the approval.")
 			return
 		}
+
+	}
+
+	// Get the approval with edges
+	if ae, _ := r.i.FindApprovalOfUser(ctx, d, u); ae != nil {
+		a = ae
 	}
 
 	gb.Response(c, http.StatusOK, a)

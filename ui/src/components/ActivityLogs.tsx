@@ -46,7 +46,7 @@ export default function ActivityLogs(props: ActivityLogsProps) {
                             ? <Text code>{ref}</Text>
                             : null}&nbsp;
                         {(d.repo)? 
-                            <a href={`/${d.repo.namespace}/${d.repo.name}/deployments/${d.number}`}>• View detail</a>:
+                            <a href={`/${d.repo.namespace}/${d.repo.name}/deployments/${d.number}`}>• View detail #{d.number}</a>:
                             null}
                     </p>
                     {description}

@@ -18,7 +18,7 @@ func (s *Store) ListApprovals(ctx context.Context, d *ent.Deployment) ([]*ent.Ap
 		All(ctx)
 }
 
-func (s *Store) GetApprovalOfUser(ctx context.Context, d *ent.Deployment, u *ent.User) (*ent.Approval, error) {
+func (s *Store) FindApprovalOfUser(ctx context.Context, d *ent.Deployment, u *ent.User) (*ent.Approval, error) {
 	return s.c.Approval.
 		Query().
 		Where(
