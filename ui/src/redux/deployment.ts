@@ -1,31 +1,27 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit'
 
-import { Repo, Deployment, DeploymentStatus, Approval, HttpNotFoundError } from "../models"
+import { Repo, Deployment, Approval, RequestStatus, HttpNotFoundError } from "../models"
 import { searchRepo, getDeployment, listApprovals, getApproval } from "../apis"
 
 interface DeploymentState {
     repo: Repo | null
     number: number
     deployment: Deployment | null
-    isDeployed: boolean
+    deploying: RequestStatus
 
     // approvals is requested approvals.
     approvals: Approval[]
     // myApproval exist if user have requested.
     myApproval: Approval | null
-    // isApproved is the state which could be deployed:
-    // requiredApprovalCount is equal or greater than approved.
-    isApproved: boolean
 }
 
 const initialState: DeploymentState = {
     repo: null,
     number: 0,
     deployment: null,
-    isDeployed: false,
+    deploying: RequestStatus.Idle,
     approvals: [],
     myApproval: null,
-    isApproved: false
 }
 
 export const init = createAsyncThunk<Repo, {namespace: string, name: string}, { state: {deployment: DeploymentState} }>(
@@ -103,10 +99,6 @@ export const deploymentSlice = createSlice({
             .addCase(fetchDeployment.fulfilled, (state, action) => {
                 const deployment = action.payload
                 state.deployment = deployment
-
-                if (deployment.status !== DeploymentStatus.Waiting) {
-                    state.isDeployed = true
-                }
             })
 
             .addCase(fetchApprovals.fulfilled, (state, action) => {

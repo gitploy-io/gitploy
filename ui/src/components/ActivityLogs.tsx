@@ -1,4 +1,4 @@
-import { Timeline, Typography, Avatar, Badge } from 'antd'
+import { Timeline, Typography, Avatar } from 'antd'
 import { SyncOutlined } from '@ant-design/icons'
 import moment from "moment"
 
