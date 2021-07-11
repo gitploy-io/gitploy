@@ -110,19 +110,19 @@ export default function DeploymentView() {
             <div style={{marginTop: "20px", marginBottom: "30px"}}>
                 <div>
                     <Row style={styleField}>
-                        <Col span="4" style={styleFieldName}>Target:&nbsp;&nbsp;</Col>
+                        <Col span="5" style={styleFieldName}>Target:&nbsp;&nbsp;</Col>
                         <Col><Text>{deployment.env}</Text></Col>
                     </Row>
                     <Row style={styleField}>
-                        <Col span="4" style={styleFieldName}>Ref:&nbsp;&nbsp;</Col>
+                        <Col span="5" style={styleFieldName}>Ref:&nbsp;&nbsp;</Col>
                         <Col><Text code>{deployment.ref}</Text></Col>
                     </Row>
                     <Row style={styleField}>
-                        <Col span="4" style={styleFieldName}>Status:&nbsp;&nbsp;</Col>
+                        <Col span="5" style={styleFieldName}>Status:&nbsp;&nbsp;</Col>
                         <Col><DeploymentStatusBadge deployment={deployment}/></Col>
                     </Row>
                     <Row style={styleField}>
-                        <Col span="4" style={styleFieldName}>Deployer:&nbsp;&nbsp;</Col>
+                        <Col span="5" style={styleFieldName}>Deployer:&nbsp;&nbsp;</Col>
                         <Col> 
                             {(deployment.deployer !== null)?
                                  <Text ><Avatar size="small" src={deployment.deployer.avatar} /> {deployment.deployer.login}</Text> :
@@ -132,18 +132,18 @@ export default function DeploymentView() {
                     {/* Approvals */}
                     {(approvals.length !== 0) ?
                         <Row style={styleField}>
-                            <Col span="4" style={styleFieldName}>Approvers:&nbsp;&nbsp;</Col>
+                            <Col span="5" style={styleFieldName}>Approvers:&nbsp;&nbsp;</Col>
                             <Col><ApprovalList approvals={approvals}/></Col>
                         </Row> :
                         null}
                     {(approvals.length !== 0) ?
                         <Row style={styleField}>
-                            <Col span="4" style={styleFieldName}>Required Count:&nbsp;&nbsp;</Col>
+                            <Col span="5" style={styleFieldName}>Required:&nbsp;&nbsp;</Col>
                             <Col>{deployment.requiredApprovalCount}</Col>
                         </Row> :
                         null}
                     <Row style={styleField}>
-                        <Col span="4" style={styleFieldName}></Col>
+                        <Col span="5" style={styleFieldName}></Col>
                         <Col>{deployBtn}</Col>
                     </Row>
                 </div>

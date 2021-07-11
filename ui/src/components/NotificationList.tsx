@@ -16,8 +16,10 @@ export default function NotificationList(props: NotificationListProps) {
             renderItem={(n, idx) => {
                 return (<List.Item key={idx} style={(!n.checked)? uncheckedStyle : {}}>
                         <List.Item.Meta 
-                            title={<a href="/" 
-                                onClick={() => {props.onClickNotificaiton(n)}}>
+                            title={
+                                <a 
+                                    href={convertToNotificationLink(n)}
+                                    onClick={() => {props.onClickNotificaiton(n)}}>
                                     {convertToNotificationTitle(n)} 
                                 </a>}
                             />
@@ -27,10 +29,30 @@ export default function NotificationList(props: NotificationListProps) {
         </List>)
 }
 
+function convertToNotificationLink(n: Notification): string {
+    switch (n.type) {
+        case NotificationType.Deployment:
+            if (n.deployment === null) {
+                throw new Error("The notification must have a deployment.")
+            }
+
+            const repo = n.repo
+            const deployment = n.deployment
+
+            return `/${repo.namespace}/${repo.name}/deployments/${deployment.number}`
+    }
+}
+
 function convertToNotificationTitle(n: Notification): string {
     switch (n.type) {
         case NotificationType.Deployment:
-            return `New Deployment #${n.id}`
+            if (n.deployment === null) {
+                throw new Error("The notification must have a deployment.")
+            }
+
+            const deployment = n.deployment
+
+            return `New Deployment #${deployment.number}`
     }
 }
 
