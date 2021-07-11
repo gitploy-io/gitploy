@@ -147,6 +147,11 @@ func (r *Repo) CreateDeployment(c *gin.Context) {
 		r.log.Warn("failed to notify the deployment.", zap.Error(err))
 	}
 
+	// Get the deployment with edges.
+	if de, _ := r.i.FindDeploymentByID(ctx, d.ID); de != nil {
+		d = de
+	}
+
 	gb.Response(c, http.StatusCreated, d)
 }
 
@@ -210,6 +215,11 @@ func (r *Repo) UpdateDeployment(c *gin.Context) {
 			gb.ErrorResponse(c, http.StatusUnprocessableEntity, "It has failed to deploy to SCM.")
 			return
 		}
+	}
+
+	// Get the deployment with edges.
+	if de, _ := r.i.FindDeploymentByID(ctx, d.ID); de != nil {
+		d = de
 	}
 
 	gb.Response(c, http.StatusOK, d)
@@ -286,6 +296,11 @@ func (r *Repo) RollbackDeployment(c *gin.Context) {
 
 	if err = r.i.Publish(ctx, d); err != nil {
 		r.log.Warn("failed to notify the deployment.", zap.Error(err))
+	}
+
+	// Get the deployment with edges.
+	if de, _ := r.i.FindDeploymentByID(ctx, d.ID); de != nil {
+		d = de
 	}
 
 	gb.Response(c, http.StatusCreated, d)
