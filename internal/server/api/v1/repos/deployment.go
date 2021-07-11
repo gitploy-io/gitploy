@@ -16,10 +16,14 @@ import (
 )
 
 type (
-	deploymentPayload struct {
+	deploymentPostPayload struct {
 		Type string `json:"type"`
 		Ref  string `json:"ref"`
 		Env  string `json:"env"`
+	}
+
+	deploymentPatchPayload struct {
+		Status string `json:"status"`
 	}
 )
 
@@ -70,7 +74,7 @@ func (r *Repo) GetDeploymentByNumber(c *gin.Context) {
 func (r *Repo) CreateDeployment(c *gin.Context) {
 	ctx := c.Request.Context()
 
-	p := &deploymentPayload{}
+	p := &deploymentPostPayload{}
 	if err := c.ShouldBindBodyWith(p, binding.JSON); err != nil {
 		gb.ErrorResponse(c, http.StatusBadRequest, "It has failed to bind the payload.")
 		return
@@ -144,6 +148,71 @@ func (r *Repo) CreateDeployment(c *gin.Context) {
 	}
 
 	gb.Response(c, http.StatusCreated, d)
+}
+
+func (r *Repo) UpdateDeployment(c *gin.Context) {
+	ctx := c.Request.Context()
+
+	var (
+		number = c.Param("number")
+	)
+
+	p := &deploymentPatchPayload{}
+	if err := c.ShouldBindBodyWith(p, binding.JSON); err != nil {
+		gb.ErrorResponse(c, http.StatusBadRequest, "It has failed to bind the payload.")
+		return
+	}
+
+	vu, _ := c.Get(gb.KeyUser)
+	u := vu.(*ent.User)
+
+	vr, _ := c.Get(KeyRepo)
+	re := vr.(*ent.Repo)
+
+	d, err := r.i.FindDeploymentOfRepoByNumber(ctx, re, atoi(number))
+	if ent.IsNotFound(err) {
+		r.log.Warn("the deployment is not found.", zap.Error(err))
+		gb.ErrorResponse(c, http.StatusNotFound, "The deployment is not found.")
+	}
+
+	cf, err := r.i.GetConfig(ctx, u, re)
+	if vo.IsConfigNotFoundError(err) {
+		r.log.Warn("failed to get the config.", zap.Error(err))
+		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "It has failed to find the configuraton file.")
+		return
+	} else if vo.IsConfigParseError(err) {
+		r.log.Warn("failed to parse the config.", zap.Error(err))
+		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "It has failed to parse the configuraton file.")
+		return
+	} else if err != nil {
+		r.log.Error("failed to get the configuration file.", zap.Error(err))
+		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to get the configuraton file.")
+		return
+	}
+
+	if !cf.HasEnv(d.Env) {
+		r.log.Warn("failed to get the env.", zap.Error(err))
+		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "It has failed to get the env in the configuration file.")
+		return
+	}
+
+	if p.Status == string(deployment.StatusCreated) && d.Status == deployment.StatusWaiting {
+		// Check the deployment is approved:
+		// Approved >= Required Approval Count
+		if !r.i.IsApproved(ctx, d) {
+			r.log.Warn("The deployment is not approved yet.", zap.Int("deployment_id", d.ID))
+			gb.ErrorResponse(c, http.StatusUnprocessableEntity, "It is not approved yet.")
+			return
+		}
+
+		if d, err = r.i.DeployToSCM(ctx, u, re, d, cf.GetEnv(d.Env)); err != nil {
+			r.log.Error("failed to deploy to SCM.", zap.Error(err))
+			gb.ErrorResponse(c, http.StatusUnprocessableEntity, "It has failed to deploy to SCM.")
+			return
+		}
+	}
+
+	gb.Response(c, http.StatusOK, d)
 }
 
 func (r *Repo) RollbackDeployment(c *gin.Context) {

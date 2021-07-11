@@ -53,6 +53,23 @@ func (i *Interactor) Rollback(ctx context.Context, u *ent.User, re *ent.Repo, d 
 	return i.deployToSCM(ctx, u, re, d, env)
 }
 
+func (i *Interactor) IsApproved(ctx context.Context, d *ent.Deployment) bool {
+	as, _ := i.ListApprovals(ctx, d)
+
+	approved := 0
+	for _, a := range as {
+		if a.IsApproved {
+			approved = approved + 1
+		}
+	}
+
+	return approved >= d.RequiredApprovalCount
+}
+
+func (i *Interactor) DeployToSCM(ctx context.Context, u *ent.User, re *ent.Repo, d *ent.Deployment, env *vo.Env) (*ent.Deployment, error) {
+	return i.deployToSCM(ctx, u, re, d, env)
+}
+
 func (i *Interactor) deployToSCM(ctx context.Context, u *ent.User, re *ent.Repo, d *ent.Deployment, e *vo.Env) (*ent.Deployment, error) {
 	uid, err := i.SCM.CreateDeployment(ctx, u, re, d, e)
 	if err != nil {
