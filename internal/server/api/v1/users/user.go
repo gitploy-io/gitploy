@@ -2,7 +2,6 @@ package users
 
 import (
 	"net/http"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
@@ -15,26 +14,6 @@ type (
 	User struct {
 		i   Interactor
 		log *zap.Logger
-	}
-
-	userData struct {
-		ID        string        `json:"id,omitempty"`
-		Login     string        `json:"login,omitempty"`
-		Avatar    string        `json:"avatar,omitempty"`
-		Admin     bool          `json:"admin"`
-		CreatedAt time.Time     `json:"created_at,omitempty"`
-		UpdatedAt time.Time     `json:"updated_at,omitempty"`
-		Edges     userEdgesData `json:"edges"`
-	}
-
-	userEdgesData struct {
-		ChatUserData *chatUserData `json:"chat_user,omitempty"`
-	}
-
-	chatUserData struct {
-		ID        string    `json:"id,omitempty"`
-		CreatedAt time.Time `json:"created_at,omitempty"`
-		UpdatedAt time.Time `json:"updated_at,omitempty"`
 	}
 )
 
@@ -58,28 +37,5 @@ func (u *User) Me(c *gin.Context) {
 		return
 	}
 
-	gb.Response(c, http.StatusOK, mapUserToUserData(uv))
-}
-
-func mapUserToUserData(u *ent.User) *userData {
-	var cud *chatUserData
-	if cu := u.Edges.ChatUser; cu != nil {
-		cud = &chatUserData{
-			ID:        cu.ID,
-			CreatedAt: cu.CreatedAt,
-			UpdatedAt: cu.UpdatedAt,
-		}
-	}
-
-	return &userData{
-		ID:        u.ID,
-		Login:     u.Login,
-		Avatar:    u.Avatar,
-		Admin:     u.Admin,
-		CreatedAt: u.CreatedAt,
-		UpdatedAt: u.UpdatedAt,
-		Edges: userEdgesData{
-			ChatUserData: cud,
-		},
-	}
+	gb.Response(c, http.StatusOK, uv)
 }

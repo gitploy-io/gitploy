@@ -24,13 +24,13 @@ type User struct {
 	// Admin holds the value of the "admin" field.
 	Admin bool `json:"admin"`
 	// Token holds the value of the "token" field.
-	Token string `json:"token"`
+	Token string `json:"-"`
 	// Refresh holds the value of the "refresh" field.
-	Refresh string `json:"refresh"`
+	Refresh string `json:"-"`
 	// Expiry holds the value of the "expiry" field.
 	Expiry time.Time `json:"expiry"`
 	// Hash holds the value of the "hash" field.
-	Hash string `json:"hash"`
+	Hash string `json:"-"`
 	// SyncedAt holds the value of the "synced_at" field.
 	SyncedAt time.Time `json:"synced_at"`
 	// CreatedAt holds the value of the "created_at" field.
@@ -260,14 +260,11 @@ func (u *User) String() string {
 	builder.WriteString(u.Avatar)
 	builder.WriteString(", admin=")
 	builder.WriteString(fmt.Sprintf("%v", u.Admin))
-	builder.WriteString(", token=")
-	builder.WriteString(u.Token)
-	builder.WriteString(", refresh=")
-	builder.WriteString(u.Refresh)
+	builder.WriteString(", token=<sensitive>")
+	builder.WriteString(", refresh=<sensitive>")
 	builder.WriteString(", expiry=")
 	builder.WriteString(u.Expiry.Format(time.ANSIC))
-	builder.WriteString(", hash=")
-	builder.WriteString(u.Hash)
+	builder.WriteString(", hash=<sensitive>")
 	builder.WriteString(", synced_at=")
 	builder.WriteString(u.SyncedAt.Format(time.ANSIC))
 	builder.WriteString(", created_at=")

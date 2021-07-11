@@ -1,8 +1,7 @@
 package schema
 
 import (
-	"crypto/rand"
-	"encoding/base64"
+	"math/rand"
 	"time"
 
 	"entgo.io/ent"
@@ -25,17 +24,23 @@ func (User) Fields() []ent.Field {
 			Optional(),
 		field.Bool("admin").
 			Default(false),
-		field.String("token"),
-		field.String("refresh"),
+		field.String("token").
+			Sensitive(),
+		field.String("refresh").
+			Sensitive(),
 		field.Time("expiry"),
 		field.String("hash").
 			Immutable().
 			Unique().
 			DefaultFunc(func() string {
-				b := make([]byte, 16)
-				rand.Read(b)
-				return base64.URLEncoding.EncodeToString(b)
-			}),
+				var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+				b := make([]rune, 16)
+				for i := range b {
+					b[i] = letterRunes[rand.Intn(len(letterRunes))]
+				}
+				return string(b)
+			}).
+			Sensitive(),
 		field.Time("synced_at").
 			Optional(),
 		field.Time("created_at").
