@@ -1,3 +1,4 @@
+import { useEffect } from "react"
 import { Breadcrumb, PageHeader, Row, Col, Typography, Avatar, Badge } from "antd"
 import { shallowEqual } from 'react-redux'
 import { useParams } from "react-router-dom"
@@ -9,7 +10,7 @@ import { DeploymentStatus } from "../models"
 import Main from "./Main"
 import ApprovalList from "../components/ApprovalList"
 import Spin from "../components/Spin"
-import { useEffect } from "react"
+import DeploymentStatusBadge from "../components/DeploymentStatusBadge"
 
 const { Text } = Typography
 const { actions } = deploymentSlice
@@ -84,10 +85,7 @@ export default function Deployment() {
                     </Row>
                     <Row style={styleField}>
                         <Col span="4" style={styleFieldName}>Status:&nbsp;&nbsp;</Col>
-                        <Col>
-                            {/* TODO: add a new component - DeploymentStatusBadge */}
-                            <Badge color={getStatusColor(deployment.status)}text={deployment.status}/>
-                        </Col>
+                        <Col><DeploymentStatusBadge deployment={deployment}/></Col>
                     </Row>
                     <Row style={styleField}>
                         <Col span="4" style={styleFieldName}>Deployer:&nbsp;&nbsp;</Col>
@@ -107,22 +105,4 @@ export default function Deployment() {
             </div>
         </Main>
     )
-}
-
-// https://ant.design/components/timeline/#Timeline.Item
-const getStatusColor = (status: DeploymentStatus) => {
-    switch (status) {
-        case DeploymentStatus.Waiting:
-            return "gray"
-        case DeploymentStatus.Created:
-            return "purple"
-        case DeploymentStatus.Running:
-            return "purple"
-        case DeploymentStatus.Success:
-            return "green"
-        case DeploymentStatus.Failure:
-            return "red"
-        default:
-            return "gray"
-    }
 }

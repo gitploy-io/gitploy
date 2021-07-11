@@ -2,7 +2,8 @@ import { Timeline, Typography, Avatar, Badge } from 'antd'
 import { SyncOutlined } from '@ant-design/icons'
 import moment from "moment"
 
-import { Deployment, DeploymentType, DeploymentStatus } from '../models'
+import { Deployment, DeploymentType, DeploymentStatus } from "../models"
+import DeploymentStatusBadge from "./DeploymentStatusBadge"
 
 const { Text } = Typography
 
@@ -25,7 +26,7 @@ export default function ActivityLogs(props: ActivityLogsProps) {
                         <Avatar size="small" src={d.deployer.avatar} /> &nbsp;
                         <Text strong>{d.deployer.login}</Text> &nbsp;
                         {moment(d.createdAt).fromNow()} &nbsp;
-                        <Badge color={getStatusColor(d.status)}text={d.status}/>
+                        <DeploymentStatusBadge deployment={d}/>
                     </p>
                 } else {
                     // deployer is removed by admin.
@@ -33,7 +34,7 @@ export default function ActivityLogs(props: ActivityLogsProps) {
                         Deployed by &nbsp;
                         <Avatar size="small">U</Avatar>&nbsp;
                         {moment(d.createdAt).fromNow()} &nbsp;
-                        <Badge color={getStatusColor(d.status)}text={d.status}/>
+                        <DeploymentStatusBadge deployment={d}/>
                     </p>
 
                 }
