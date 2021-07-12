@@ -79,12 +79,13 @@ func (Deployment) Indexes() []ent.Index {
 	return []ent.Index{
 		index.Fields("user_id"),
 		index.Fields("repo_id"),
-		// It is returned with ordered by created_at field.
-		index.Fields("repo_id", "env", "status", "created_at"),
+		// Basically deployments are ordered by created_at field.
 		index.Fields("repo_id", "env", "created_at"),
 		index.Fields("repo_id", "created_at"),
 		// The deployment number is unique for the repo.
 		index.Fields("number", "repo_id").
 			Unique(),
+		// Find by UID when the hook is coming.
+		index.Fields("uid"),
 	}
 }

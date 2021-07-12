@@ -148,11 +148,6 @@ var (
 				Columns: []*schema.Column{DeploymentsColumns[12]},
 			},
 			{
-				Name:    "deployment_repo_id_env_status_created_at",
-				Unique:  false,
-				Columns: []*schema.Column{DeploymentsColumns[12], DeploymentsColumns[5], DeploymentsColumns[6], DeploymentsColumns[10]},
-			},
-			{
 				Name:    "deployment_repo_id_env_created_at",
 				Unique:  false,
 				Columns: []*schema.Column{DeploymentsColumns[12], DeploymentsColumns[5], DeploymentsColumns[10]},
@@ -166,6 +161,11 @@ var (
 				Name:    "deployment_number_repo_id",
 				Unique:  true,
 				Columns: []*schema.Column{DeploymentsColumns[1], DeploymentsColumns[12]},
+			},
+			{
+				Name:    "deployment_uid",
+				Unique:  false,
+				Columns: []*schema.Column{DeploymentsColumns[7]},
 			},
 		},
 	}
