@@ -17,6 +17,8 @@ type DeploymentStatus struct {
 func (DeploymentStatus) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("status"),
+		field.String("description").
+			Optional(),
 		field.String("log_url").
 			Optional(),
 		field.Time("created_at").

@@ -173,6 +173,7 @@ var (
 	DeploymentStatusColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "status", Type: field.TypeString},
+		{Name: "description", Type: field.TypeString, Nullable: true},
 		{Name: "log_url", Type: field.TypeString, Nullable: true},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
@@ -186,7 +187,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "deployment_status_deployments_deployment_statuses",
-				Columns:    []*schema.Column{DeploymentStatusColumns[5]},
+				Columns:    []*schema.Column{DeploymentStatusColumns[6]},
 				RefColumns: []*schema.Column{DeploymentsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},

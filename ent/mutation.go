@@ -3570,6 +3570,7 @@ type DeploymentStatusMutation struct {
 	typ               string
 	id                *int
 	status            *string
+	description       *string
 	log_url           *string
 	created_at        *time.Time
 	updated_at        *time.Time
@@ -3694,6 +3695,55 @@ func (m *DeploymentStatusMutation) OldStatus(ctx context.Context) (v string, err
 // ResetStatus resets all changes to the "status" field.
 func (m *DeploymentStatusMutation) ResetStatus() {
 	m.status = nil
+}
+
+// SetDescription sets the "description" field.
+func (m *DeploymentStatusMutation) SetDescription(s string) {
+	m.description = &s
+}
+
+// Description returns the value of the "description" field in the mutation.
+func (m *DeploymentStatusMutation) Description() (r string, exists bool) {
+	v := m.description
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDescription returns the old "description" field's value of the DeploymentStatus entity.
+// If the DeploymentStatus object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DeploymentStatusMutation) OldDescription(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldDescription is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldDescription requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDescription: %w", err)
+	}
+	return oldValue.Description, nil
+}
+
+// ClearDescription clears the value of the "description" field.
+func (m *DeploymentStatusMutation) ClearDescription() {
+	m.description = nil
+	m.clearedFields[deploymentstatus.FieldDescription] = struct{}{}
+}
+
+// DescriptionCleared returns if the "description" field was cleared in this mutation.
+func (m *DeploymentStatusMutation) DescriptionCleared() bool {
+	_, ok := m.clearedFields[deploymentstatus.FieldDescription]
+	return ok
+}
+
+// ResetDescription resets all changes to the "description" field.
+func (m *DeploymentStatusMutation) ResetDescription() {
+	m.description = nil
+	delete(m.clearedFields, deploymentstatus.FieldDescription)
 }
 
 // SetLogURL sets the "log_url" field.
@@ -3893,9 +3943,12 @@ func (m *DeploymentStatusMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *DeploymentStatusMutation) Fields() []string {
-	fields := make([]string, 0, 5)
+	fields := make([]string, 0, 6)
 	if m.status != nil {
 		fields = append(fields, deploymentstatus.FieldStatus)
+	}
+	if m.description != nil {
+		fields = append(fields, deploymentstatus.FieldDescription)
 	}
 	if m.log_url != nil {
 		fields = append(fields, deploymentstatus.FieldLogURL)
@@ -3919,6 +3972,8 @@ func (m *DeploymentStatusMutation) Field(name string) (ent.Value, bool) {
 	switch name {
 	case deploymentstatus.FieldStatus:
 		return m.Status()
+	case deploymentstatus.FieldDescription:
+		return m.Description()
 	case deploymentstatus.FieldLogURL:
 		return m.LogURL()
 	case deploymentstatus.FieldCreatedAt:
@@ -3938,6 +3993,8 @@ func (m *DeploymentStatusMutation) OldField(ctx context.Context, name string) (e
 	switch name {
 	case deploymentstatus.FieldStatus:
 		return m.OldStatus(ctx)
+	case deploymentstatus.FieldDescription:
+		return m.OldDescription(ctx)
 	case deploymentstatus.FieldLogURL:
 		return m.OldLogURL(ctx)
 	case deploymentstatus.FieldCreatedAt:
@@ -3961,6 +4018,13 @@ func (m *DeploymentStatusMutation) SetField(name string, value ent.Value) error 
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetStatus(v)
+		return nil
+	case deploymentstatus.FieldDescription:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDescription(v)
 		return nil
 	case deploymentstatus.FieldLogURL:
 		v, ok := value.(string)
@@ -4023,6 +4087,9 @@ func (m *DeploymentStatusMutation) AddField(name string, value ent.Value) error 
 // mutation.
 func (m *DeploymentStatusMutation) ClearedFields() []string {
 	var fields []string
+	if m.FieldCleared(deploymentstatus.FieldDescription) {
+		fields = append(fields, deploymentstatus.FieldDescription)
+	}
 	if m.FieldCleared(deploymentstatus.FieldLogURL) {
 		fields = append(fields, deploymentstatus.FieldLogURL)
 	}
@@ -4040,6 +4107,9 @@ func (m *DeploymentStatusMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *DeploymentStatusMutation) ClearField(name string) error {
 	switch name {
+	case deploymentstatus.FieldDescription:
+		m.ClearDescription()
+		return nil
 	case deploymentstatus.FieldLogURL:
 		m.ClearLogURL()
 		return nil
@@ -4053,6 +4123,9 @@ func (m *DeploymentStatusMutation) ResetField(name string) error {
 	switch name {
 	case deploymentstatus.FieldStatus:
 		m.ResetStatus()
+		return nil
+	case deploymentstatus.FieldDescription:
+		m.ResetDescription()
 		return nil
 	case deploymentstatus.FieldLogURL:
 		m.ResetLogURL()

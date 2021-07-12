@@ -27,6 +27,20 @@ func (dsc *DeploymentStatusCreate) SetStatus(s string) *DeploymentStatusCreate {
 	return dsc
 }
 
+// SetDescription sets the "description" field.
+func (dsc *DeploymentStatusCreate) SetDescription(s string) *DeploymentStatusCreate {
+	dsc.mutation.SetDescription(s)
+	return dsc
+}
+
+// SetNillableDescription sets the "description" field if the given value is not nil.
+func (dsc *DeploymentStatusCreate) SetNillableDescription(s *string) *DeploymentStatusCreate {
+	if s != nil {
+		dsc.SetDescription(*s)
+	}
+	return dsc
+}
+
 // SetLogURL sets the "log_url" field.
 func (dsc *DeploymentStatusCreate) SetLogURL(s string) *DeploymentStatusCreate {
 	dsc.mutation.SetLogURL(s)
@@ -193,6 +207,14 @@ func (dsc *DeploymentStatusCreate) createSpec() (*DeploymentStatus, *sqlgraph.Cr
 			Column: deploymentstatus.FieldStatus,
 		})
 		_node.Status = value
+	}
+	if value, ok := dsc.mutation.Description(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: deploymentstatus.FieldDescription,
+		})
+		_node.Description = value
 	}
 	if value, ok := dsc.mutation.LogURL(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

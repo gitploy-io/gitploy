@@ -35,6 +35,26 @@ func (dsu *DeploymentStatusUpdate) SetStatus(s string) *DeploymentStatusUpdate {
 	return dsu
 }
 
+// SetDescription sets the "description" field.
+func (dsu *DeploymentStatusUpdate) SetDescription(s string) *DeploymentStatusUpdate {
+	dsu.mutation.SetDescription(s)
+	return dsu
+}
+
+// SetNillableDescription sets the "description" field if the given value is not nil.
+func (dsu *DeploymentStatusUpdate) SetNillableDescription(s *string) *DeploymentStatusUpdate {
+	if s != nil {
+		dsu.SetDescription(*s)
+	}
+	return dsu
+}
+
+// ClearDescription clears the value of the "description" field.
+func (dsu *DeploymentStatusUpdate) ClearDescription() *DeploymentStatusUpdate {
+	dsu.mutation.ClearDescription()
+	return dsu
+}
+
 // SetLogURL sets the "log_url" field.
 func (dsu *DeploymentStatusUpdate) SetLogURL(s string) *DeploymentStatusUpdate {
 	dsu.mutation.SetLogURL(s)
@@ -197,6 +217,19 @@ func (dsu *DeploymentStatusUpdate) sqlSave(ctx context.Context) (n int, err erro
 			Column: deploymentstatus.FieldStatus,
 		})
 	}
+	if value, ok := dsu.mutation.Description(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: deploymentstatus.FieldDescription,
+		})
+	}
+	if dsu.mutation.DescriptionCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: deploymentstatus.FieldDescription,
+		})
+	}
 	if value, ok := dsu.mutation.LogURL(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -281,6 +314,26 @@ type DeploymentStatusUpdateOne struct {
 // SetStatus sets the "status" field.
 func (dsuo *DeploymentStatusUpdateOne) SetStatus(s string) *DeploymentStatusUpdateOne {
 	dsuo.mutation.SetStatus(s)
+	return dsuo
+}
+
+// SetDescription sets the "description" field.
+func (dsuo *DeploymentStatusUpdateOne) SetDescription(s string) *DeploymentStatusUpdateOne {
+	dsuo.mutation.SetDescription(s)
+	return dsuo
+}
+
+// SetNillableDescription sets the "description" field if the given value is not nil.
+func (dsuo *DeploymentStatusUpdateOne) SetNillableDescription(s *string) *DeploymentStatusUpdateOne {
+	if s != nil {
+		dsuo.SetDescription(*s)
+	}
+	return dsuo
+}
+
+// ClearDescription clears the value of the "description" field.
+func (dsuo *DeploymentStatusUpdateOne) ClearDescription() *DeploymentStatusUpdateOne {
+	dsuo.mutation.ClearDescription()
 	return dsuo
 }
 
@@ -468,6 +521,19 @@ func (dsuo *DeploymentStatusUpdateOne) sqlSave(ctx context.Context) (_node *Depl
 			Type:   field.TypeString,
 			Value:  value,
 			Column: deploymentstatus.FieldStatus,
+		})
+	}
+	if value, ok := dsuo.mutation.Description(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: deploymentstatus.FieldDescription,
+		})
+	}
+	if dsuo.mutation.DescriptionCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: deploymentstatus.FieldDescription,
 		})
 	}
 	if value, ok := dsuo.mutation.LogURL(); ok {

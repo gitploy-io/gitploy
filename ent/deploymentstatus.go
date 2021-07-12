@@ -19,6 +19,8 @@ type DeploymentStatus struct {
 	ID int `json:"id,omitempty"`
 	// Status holds the value of the "status" field.
 	Status string `json:"status"`
+	// Description holds the value of the "description" field.
+	Description string `json:"description"`
 	// LogURL holds the value of the "log_url" field.
 	LogURL string `json:"log_url"`
 	// CreatedAt holds the value of the "created_at" field.
@@ -62,7 +64,7 @@ func (*DeploymentStatus) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case deploymentstatus.FieldID, deploymentstatus.FieldDeploymentID:
 			values[i] = new(sql.NullInt64)
-		case deploymentstatus.FieldStatus, deploymentstatus.FieldLogURL:
+		case deploymentstatus.FieldStatus, deploymentstatus.FieldDescription, deploymentstatus.FieldLogURL:
 			values[i] = new(sql.NullString)
 		case deploymentstatus.FieldCreatedAt, deploymentstatus.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -92,6 +94,12 @@ func (ds *DeploymentStatus) assignValues(columns []string, values []interface{})
 				return fmt.Errorf("unexpected type %T for field status", values[i])
 			} else if value.Valid {
 				ds.Status = value.String
+			}
+		case deploymentstatus.FieldDescription:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field description", values[i])
+			} else if value.Valid {
+				ds.Description = value.String
 			}
 		case deploymentstatus.FieldLogURL:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -152,6 +160,8 @@ func (ds *DeploymentStatus) String() string {
 	builder.WriteString(fmt.Sprintf("id=%v", ds.ID))
 	builder.WriteString(", status=")
 	builder.WriteString(ds.Status)
+	builder.WriteString(", description=")
+	builder.WriteString(ds.Description)
 	builder.WriteString(", log_url=")
 	builder.WriteString(ds.LogURL)
 	builder.WriteString(", created_at=")
