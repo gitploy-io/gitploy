@@ -13,6 +13,7 @@ import (
 	"github.com/hanjunlee/gitploy/ent/chatcallback"
 	"github.com/hanjunlee/gitploy/ent/chatuser"
 	"github.com/hanjunlee/gitploy/ent/deployment"
+	"github.com/hanjunlee/gitploy/ent/deploymentstatus"
 	"github.com/hanjunlee/gitploy/ent/notification"
 	"github.com/hanjunlee/gitploy/ent/perm"
 	"github.com/hanjunlee/gitploy/ent/repo"
@@ -36,6 +37,8 @@ type Client struct {
 	ChatUser *ChatUserClient
 	// Deployment is the client for interacting with the Deployment builders.
 	Deployment *DeploymentClient
+	// DeploymentStatus is the client for interacting with the DeploymentStatus builders.
+	DeploymentStatus *DeploymentStatusClient
 	// Notification is the client for interacting with the Notification builders.
 	Notification *NotificationClient
 	// Perm is the client for interacting with the Perm builders.
@@ -61,6 +64,7 @@ func (c *Client) init() {
 	c.ChatCallback = NewChatCallbackClient(c.config)
 	c.ChatUser = NewChatUserClient(c.config)
 	c.Deployment = NewDeploymentClient(c.config)
+	c.DeploymentStatus = NewDeploymentStatusClient(c.config)
 	c.Notification = NewNotificationClient(c.config)
 	c.Perm = NewPermClient(c.config)
 	c.Repo = NewRepoClient(c.config)
@@ -96,16 +100,17 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:          ctx,
-		config:       cfg,
-		Approval:     NewApprovalClient(cfg),
-		ChatCallback: NewChatCallbackClient(cfg),
-		ChatUser:     NewChatUserClient(cfg),
-		Deployment:   NewDeploymentClient(cfg),
-		Notification: NewNotificationClient(cfg),
-		Perm:         NewPermClient(cfg),
-		Repo:         NewRepoClient(cfg),
-		User:         NewUserClient(cfg),
+		ctx:              ctx,
+		config:           cfg,
+		Approval:         NewApprovalClient(cfg),
+		ChatCallback:     NewChatCallbackClient(cfg),
+		ChatUser:         NewChatUserClient(cfg),
+		Deployment:       NewDeploymentClient(cfg),
+		DeploymentStatus: NewDeploymentStatusClient(cfg),
+		Notification:     NewNotificationClient(cfg),
+		Perm:             NewPermClient(cfg),
+		Repo:             NewRepoClient(cfg),
+		User:             NewUserClient(cfg),
 	}, nil
 }
 
@@ -123,15 +128,16 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		config:       cfg,
-		Approval:     NewApprovalClient(cfg),
-		ChatCallback: NewChatCallbackClient(cfg),
-		ChatUser:     NewChatUserClient(cfg),
-		Deployment:   NewDeploymentClient(cfg),
-		Notification: NewNotificationClient(cfg),
-		Perm:         NewPermClient(cfg),
-		Repo:         NewRepoClient(cfg),
-		User:         NewUserClient(cfg),
+		config:           cfg,
+		Approval:         NewApprovalClient(cfg),
+		ChatCallback:     NewChatCallbackClient(cfg),
+		ChatUser:         NewChatUserClient(cfg),
+		Deployment:       NewDeploymentClient(cfg),
+		DeploymentStatus: NewDeploymentStatusClient(cfg),
+		Notification:     NewNotificationClient(cfg),
+		Perm:             NewPermClient(cfg),
+		Repo:             NewRepoClient(cfg),
+		User:             NewUserClient(cfg),
 	}, nil
 }
 
@@ -165,6 +171,7 @@ func (c *Client) Use(hooks ...Hook) {
 	c.ChatCallback.Use(hooks...)
 	c.ChatUser.Use(hooks...)
 	c.Deployment.Use(hooks...)
+	c.DeploymentStatus.Use(hooks...)
 	c.Notification.Use(hooks...)
 	c.Perm.Use(hooks...)
 	c.Repo.Use(hooks...)
@@ -686,9 +693,131 @@ func (c *DeploymentClient) QueryNotifications(d *Deployment) *NotificationQuery 
 	return query
 }
 
+// QueryDeploymentStatuses queries the deployment_statuses edge of a Deployment.
+func (c *DeploymentClient) QueryDeploymentStatuses(d *Deployment) *DeploymentStatusQuery {
+	query := &DeploymentStatusQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := d.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(deployment.Table, deployment.FieldID, id),
+			sqlgraph.To(deploymentstatus.Table, deploymentstatus.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, deployment.DeploymentStatusesTable, deployment.DeploymentStatusesColumn),
+		)
+		fromV = sqlgraph.Neighbors(d.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *DeploymentClient) Hooks() []Hook {
 	return c.hooks.Deployment
+}
+
+// DeploymentStatusClient is a client for the DeploymentStatus schema.
+type DeploymentStatusClient struct {
+	config
+}
+
+// NewDeploymentStatusClient returns a client for the DeploymentStatus from the given config.
+func NewDeploymentStatusClient(c config) *DeploymentStatusClient {
+	return &DeploymentStatusClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `deploymentstatus.Hooks(f(g(h())))`.
+func (c *DeploymentStatusClient) Use(hooks ...Hook) {
+	c.hooks.DeploymentStatus = append(c.hooks.DeploymentStatus, hooks...)
+}
+
+// Create returns a create builder for DeploymentStatus.
+func (c *DeploymentStatusClient) Create() *DeploymentStatusCreate {
+	mutation := newDeploymentStatusMutation(c.config, OpCreate)
+	return &DeploymentStatusCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of DeploymentStatus entities.
+func (c *DeploymentStatusClient) CreateBulk(builders ...*DeploymentStatusCreate) *DeploymentStatusCreateBulk {
+	return &DeploymentStatusCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for DeploymentStatus.
+func (c *DeploymentStatusClient) Update() *DeploymentStatusUpdate {
+	mutation := newDeploymentStatusMutation(c.config, OpUpdate)
+	return &DeploymentStatusUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *DeploymentStatusClient) UpdateOne(ds *DeploymentStatus) *DeploymentStatusUpdateOne {
+	mutation := newDeploymentStatusMutation(c.config, OpUpdateOne, withDeploymentStatus(ds))
+	return &DeploymentStatusUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *DeploymentStatusClient) UpdateOneID(id int) *DeploymentStatusUpdateOne {
+	mutation := newDeploymentStatusMutation(c.config, OpUpdateOne, withDeploymentStatusID(id))
+	return &DeploymentStatusUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for DeploymentStatus.
+func (c *DeploymentStatusClient) Delete() *DeploymentStatusDelete {
+	mutation := newDeploymentStatusMutation(c.config, OpDelete)
+	return &DeploymentStatusDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *DeploymentStatusClient) DeleteOne(ds *DeploymentStatus) *DeploymentStatusDeleteOne {
+	return c.DeleteOneID(ds.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *DeploymentStatusClient) DeleteOneID(id int) *DeploymentStatusDeleteOne {
+	builder := c.Delete().Where(deploymentstatus.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &DeploymentStatusDeleteOne{builder}
+}
+
+// Query returns a query builder for DeploymentStatus.
+func (c *DeploymentStatusClient) Query() *DeploymentStatusQuery {
+	return &DeploymentStatusQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a DeploymentStatus entity by its id.
+func (c *DeploymentStatusClient) Get(ctx context.Context, id int) (*DeploymentStatus, error) {
+	return c.Query().Where(deploymentstatus.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *DeploymentStatusClient) GetX(ctx context.Context, id int) *DeploymentStatus {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryDeployment queries the deployment edge of a DeploymentStatus.
+func (c *DeploymentStatusClient) QueryDeployment(ds *DeploymentStatus) *DeploymentQuery {
+	query := &DeploymentQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := ds.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(deploymentstatus.Table, deploymentstatus.FieldID, id),
+			sqlgraph.To(deployment.Table, deployment.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, deploymentstatus.DeploymentTable, deploymentstatus.DeploymentColumn),
+		)
+		fromV = sqlgraph.Neighbors(ds.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *DeploymentStatusClient) Hooks() []Hook {
+	return c.hooks.DeploymentStatus
 }
 
 // NotificationClient is a client for the Notification schema.

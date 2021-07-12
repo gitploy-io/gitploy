@@ -9,6 +9,7 @@ import (
 	"github.com/hanjunlee/gitploy/ent/chatcallback"
 	"github.com/hanjunlee/gitploy/ent/chatuser"
 	"github.com/hanjunlee/gitploy/ent/deployment"
+	"github.com/hanjunlee/gitploy/ent/deploymentstatus"
 	"github.com/hanjunlee/gitploy/ent/notification"
 	"github.com/hanjunlee/gitploy/ent/perm"
 	"github.com/hanjunlee/gitploy/ent/repo"
@@ -84,6 +85,18 @@ func init() {
 	deployment.DefaultUpdatedAt = deploymentDescUpdatedAt.Default.(func() time.Time)
 	// deployment.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	deployment.UpdateDefaultUpdatedAt = deploymentDescUpdatedAt.UpdateDefault.(func() time.Time)
+	deploymentstatusFields := schema.DeploymentStatus{}.Fields()
+	_ = deploymentstatusFields
+	// deploymentstatusDescCreatedAt is the schema descriptor for created_at field.
+	deploymentstatusDescCreatedAt := deploymentstatusFields[2].Descriptor()
+	// deploymentstatus.DefaultCreatedAt holds the default value on creation for the created_at field.
+	deploymentstatus.DefaultCreatedAt = deploymentstatusDescCreatedAt.Default.(func() time.Time)
+	// deploymentstatusDescUpdatedAt is the schema descriptor for updated_at field.
+	deploymentstatusDescUpdatedAt := deploymentstatusFields[3].Descriptor()
+	// deploymentstatus.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	deploymentstatus.DefaultUpdatedAt = deploymentstatusDescUpdatedAt.Default.(func() time.Time)
+	// deploymentstatus.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	deploymentstatus.UpdateDefaultUpdatedAt = deploymentstatusDescUpdatedAt.UpdateDefault.(func() time.Time)
 	notificationFields := schema.Notification{}.Fields()
 	_ = notificationFields
 	// notificationDescNotified is the schema descriptor for notified field.

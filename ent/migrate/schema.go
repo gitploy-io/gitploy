@@ -169,6 +169,29 @@ var (
 			},
 		},
 	}
+	// DeploymentStatusColumns holds the columns for the "deployment_status" table.
+	DeploymentStatusColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "status", Type: field.TypeString},
+		{Name: "log_url", Type: field.TypeString, Nullable: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deployment_id", Type: field.TypeInt, Nullable: true},
+	}
+	// DeploymentStatusTable holds the schema information for the "deployment_status" table.
+	DeploymentStatusTable = &schema.Table{
+		Name:       "deployment_status",
+		Columns:    DeploymentStatusColumns,
+		PrimaryKey: []*schema.Column{DeploymentStatusColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "deployment_status_deployments_deployment_statuses",
+				Columns:    []*schema.Column{DeploymentStatusColumns[5]},
+				RefColumns: []*schema.Column{DeploymentsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+	}
 	// NotificationsColumns holds the columns for the "notifications" table.
 	NotificationsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
@@ -314,6 +337,7 @@ var (
 		ChatCallbacksTable,
 		ChatUsersTable,
 		DeploymentsTable,
+		DeploymentStatusTable,
 		NotificationsTable,
 		PermsTable,
 		ReposTable,
@@ -329,6 +353,7 @@ func init() {
 	ChatUsersTable.ForeignKeys[0].RefTable = UsersTable
 	DeploymentsTable.ForeignKeys[0].RefTable = ReposTable
 	DeploymentsTable.ForeignKeys[1].RefTable = UsersTable
+	DeploymentStatusTable.ForeignKeys[0].RefTable = DeploymentsTable
 	NotificationsTable.ForeignKeys[0].RefTable = DeploymentsTable
 	NotificationsTable.ForeignKeys[1].RefTable = ReposTable
 	NotificationsTable.ForeignKeys[2].RefTable = UsersTable

@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/hanjunlee/gitploy/ent/approval"
 	"github.com/hanjunlee/gitploy/ent/deployment"
+	"github.com/hanjunlee/gitploy/ent/deploymentstatus"
 	"github.com/hanjunlee/gitploy/ent/notification"
 	"github.com/hanjunlee/gitploy/ent/repo"
 	"github.com/hanjunlee/gitploy/ent/user"
@@ -196,6 +197,21 @@ func (dc *DeploymentCreate) AddNotifications(n ...*Notification) *DeploymentCrea
 		ids[i] = n[i].ID
 	}
 	return dc.AddNotificationIDs(ids...)
+}
+
+// AddDeploymentStatusIDs adds the "deployment_statuses" edge to the DeploymentStatus entity by IDs.
+func (dc *DeploymentCreate) AddDeploymentStatusIDs(ids ...int) *DeploymentCreate {
+	dc.mutation.AddDeploymentStatusIDs(ids...)
+	return dc
+}
+
+// AddDeploymentStatuses adds the "deployment_statuses" edges to the DeploymentStatus entity.
+func (dc *DeploymentCreate) AddDeploymentStatuses(d ...*DeploymentStatus) *DeploymentCreate {
+	ids := make([]int, len(d))
+	for i := range d {
+		ids[i] = d[i].ID
+	}
+	return dc.AddDeploymentStatusIDs(ids...)
 }
 
 // Mutation returns the DeploymentMutation object of the builder.
@@ -515,6 +531,25 @@ func (dc *DeploymentCreate) createSpec() (*Deployment, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
 					Column: notification.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := dc.mutation.DeploymentStatusesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   deployment.DeploymentStatusesTable,
+			Columns: []string{deployment.DeploymentStatusesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: deploymentstatus.FieldID,
 				},
 			},
 		}
