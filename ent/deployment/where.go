@@ -1341,6 +1341,34 @@ func HasNotificationsWith(preds ...predicate.Notification) predicate.Deployment 
 	})
 }
 
+// HasDeploymentStatuses applies the HasEdge predicate on the "deployment_statuses" edge.
+func HasDeploymentStatuses() predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(DeploymentStatusesTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, DeploymentStatusesTable, DeploymentStatusesColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasDeploymentStatusesWith applies the HasEdge predicate on the "deployment_statuses" edge with a given conditions (other predicates).
+func HasDeploymentStatusesWith(preds ...predicate.DeploymentStatus) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(DeploymentStatusesInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, DeploymentStatusesTable, DeploymentStatusesColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Deployment) predicate.Deployment {
 	return predicate.Deployment(func(s *sql.Selector) {

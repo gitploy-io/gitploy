@@ -59,9 +59,11 @@ type DeploymentEdges struct {
 	Approvals []*Approval `json:"approvals,omitempty"`
 	// Notifications holds the value of the notifications edge.
 	Notifications []*Notification `json:"notifications,omitempty"`
+	// DeploymentStatuses holds the value of the deployment_statuses edge.
+	DeploymentStatuses []*DeploymentStatus `json:"deployment_statuses,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [4]bool
+	loadedTypes [5]bool
 }
 
 // UserOrErr returns the User value or an error if the edge
@@ -108,6 +110,15 @@ func (e DeploymentEdges) NotificationsOrErr() ([]*Notification, error) {
 		return e.Notifications, nil
 	}
 	return nil, &NotLoadedError{edge: "notifications"}
+}
+
+// DeploymentStatusesOrErr returns the DeploymentStatuses value or an error if the edge
+// was not loaded in eager-loading.
+func (e DeploymentEdges) DeploymentStatusesOrErr() ([]*DeploymentStatus, error) {
+	if e.loadedTypes[4] {
+		return e.DeploymentStatuses, nil
+	}
+	return nil, &NotLoadedError{edge: "deployment_statuses"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -245,6 +256,11 @@ func (d *Deployment) QueryApprovals() *ApprovalQuery {
 // QueryNotifications queries the "notifications" edge of the Deployment entity.
 func (d *Deployment) QueryNotifications() *NotificationQuery {
 	return (&DeploymentClient{config: d.config}).QueryNotifications(d)
+}
+
+// QueryDeploymentStatuses queries the "deployment_statuses" edge of the Deployment entity.
+func (d *Deployment) QueryDeploymentStatuses() *DeploymentStatusQuery {
+	return (&DeploymentClient{config: d.config}).QueryDeploymentStatuses(d)
 }
 
 // Update returns a builder for updating this Deployment.

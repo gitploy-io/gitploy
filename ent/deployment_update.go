@@ -13,6 +13,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/hanjunlee/gitploy/ent/approval"
 	"github.com/hanjunlee/gitploy/ent/deployment"
+	"github.com/hanjunlee/gitploy/ent/deploymentstatus"
 	"github.com/hanjunlee/gitploy/ent/notification"
 	"github.com/hanjunlee/gitploy/ent/predicate"
 	"github.com/hanjunlee/gitploy/ent/repo"
@@ -225,6 +226,21 @@ func (du *DeploymentUpdate) AddNotifications(n ...*Notification) *DeploymentUpda
 	return du.AddNotificationIDs(ids...)
 }
 
+// AddDeploymentStatusIDs adds the "deployment_statuses" edge to the DeploymentStatus entity by IDs.
+func (du *DeploymentUpdate) AddDeploymentStatusIDs(ids ...int) *DeploymentUpdate {
+	du.mutation.AddDeploymentStatusIDs(ids...)
+	return du
+}
+
+// AddDeploymentStatuses adds the "deployment_statuses" edges to the DeploymentStatus entity.
+func (du *DeploymentUpdate) AddDeploymentStatuses(d ...*DeploymentStatus) *DeploymentUpdate {
+	ids := make([]int, len(d))
+	for i := range d {
+		ids[i] = d[i].ID
+	}
+	return du.AddDeploymentStatusIDs(ids...)
+}
+
 // Mutation returns the DeploymentMutation object of the builder.
 func (du *DeploymentUpdate) Mutation() *DeploymentMutation {
 	return du.mutation
@@ -282,6 +298,27 @@ func (du *DeploymentUpdate) RemoveNotifications(n ...*Notification) *DeploymentU
 		ids[i] = n[i].ID
 	}
 	return du.RemoveNotificationIDs(ids...)
+}
+
+// ClearDeploymentStatuses clears all "deployment_statuses" edges to the DeploymentStatus entity.
+func (du *DeploymentUpdate) ClearDeploymentStatuses() *DeploymentUpdate {
+	du.mutation.ClearDeploymentStatuses()
+	return du
+}
+
+// RemoveDeploymentStatusIDs removes the "deployment_statuses" edge to DeploymentStatus entities by IDs.
+func (du *DeploymentUpdate) RemoveDeploymentStatusIDs(ids ...int) *DeploymentUpdate {
+	du.mutation.RemoveDeploymentStatusIDs(ids...)
+	return du
+}
+
+// RemoveDeploymentStatuses removes "deployment_statuses" edges to DeploymentStatus entities.
+func (du *DeploymentUpdate) RemoveDeploymentStatuses(d ...*DeploymentStatus) *DeploymentUpdate {
+	ids := make([]int, len(d))
+	for i := range d {
+		ids[i] = d[i].ID
+	}
+	return du.RemoveDeploymentStatusIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -671,6 +708,60 @@ func (du *DeploymentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if du.mutation.DeploymentStatusesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   deployment.DeploymentStatusesTable,
+			Columns: []string{deployment.DeploymentStatusesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: deploymentstatus.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := du.mutation.RemovedDeploymentStatusesIDs(); len(nodes) > 0 && !du.mutation.DeploymentStatusesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   deployment.DeploymentStatusesTable,
+			Columns: []string{deployment.DeploymentStatusesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: deploymentstatus.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := du.mutation.DeploymentStatusesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   deployment.DeploymentStatusesTable,
+			Columns: []string{deployment.DeploymentStatusesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: deploymentstatus.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, du.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{deployment.Label}
@@ -883,6 +974,21 @@ func (duo *DeploymentUpdateOne) AddNotifications(n ...*Notification) *Deployment
 	return duo.AddNotificationIDs(ids...)
 }
 
+// AddDeploymentStatusIDs adds the "deployment_statuses" edge to the DeploymentStatus entity by IDs.
+func (duo *DeploymentUpdateOne) AddDeploymentStatusIDs(ids ...int) *DeploymentUpdateOne {
+	duo.mutation.AddDeploymentStatusIDs(ids...)
+	return duo
+}
+
+// AddDeploymentStatuses adds the "deployment_statuses" edges to the DeploymentStatus entity.
+func (duo *DeploymentUpdateOne) AddDeploymentStatuses(d ...*DeploymentStatus) *DeploymentUpdateOne {
+	ids := make([]int, len(d))
+	for i := range d {
+		ids[i] = d[i].ID
+	}
+	return duo.AddDeploymentStatusIDs(ids...)
+}
+
 // Mutation returns the DeploymentMutation object of the builder.
 func (duo *DeploymentUpdateOne) Mutation() *DeploymentMutation {
 	return duo.mutation
@@ -940,6 +1046,27 @@ func (duo *DeploymentUpdateOne) RemoveNotifications(n ...*Notification) *Deploym
 		ids[i] = n[i].ID
 	}
 	return duo.RemoveNotificationIDs(ids...)
+}
+
+// ClearDeploymentStatuses clears all "deployment_statuses" edges to the DeploymentStatus entity.
+func (duo *DeploymentUpdateOne) ClearDeploymentStatuses() *DeploymentUpdateOne {
+	duo.mutation.ClearDeploymentStatuses()
+	return duo
+}
+
+// RemoveDeploymentStatusIDs removes the "deployment_statuses" edge to DeploymentStatus entities by IDs.
+func (duo *DeploymentUpdateOne) RemoveDeploymentStatusIDs(ids ...int) *DeploymentUpdateOne {
+	duo.mutation.RemoveDeploymentStatusIDs(ids...)
+	return duo
+}
+
+// RemoveDeploymentStatuses removes "deployment_statuses" edges to DeploymentStatus entities.
+func (duo *DeploymentUpdateOne) RemoveDeploymentStatuses(d ...*DeploymentStatus) *DeploymentUpdateOne {
+	ids := make([]int, len(d))
+	for i := range d {
+		ids[i] = d[i].ID
+	}
+	return duo.RemoveDeploymentStatusIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -1345,6 +1472,60 @@ func (duo *DeploymentUpdateOne) sqlSave(ctx context.Context) (_node *Deployment,
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
 					Column: notification.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if duo.mutation.DeploymentStatusesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   deployment.DeploymentStatusesTable,
+			Columns: []string{deployment.DeploymentStatusesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: deploymentstatus.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := duo.mutation.RemovedDeploymentStatusesIDs(); len(nodes) > 0 && !duo.mutation.DeploymentStatusesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   deployment.DeploymentStatusesTable,
+			Columns: []string{deployment.DeploymentStatusesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: deploymentstatus.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := duo.mutation.DeploymentStatusesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   deployment.DeploymentStatusesTable,
+			Columns: []string{deployment.DeploymentStatusesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: deploymentstatus.FieldID,
 				},
 			},
 		}

@@ -7,6 +7,7 @@ import (
 	"github.com/hanjunlee/gitploy/ent"
 	"github.com/hanjunlee/gitploy/ent/deployment"
 	"github.com/hanjunlee/gitploy/vo"
+	"go.uber.org/zap"
 )
 
 func (i *Interactor) Deploy(ctx context.Context, u *ent.User, re *ent.Repo, d *ent.Deployment, env *vo.Env) (*ent.Deployment, error) {
@@ -74,14 +75,32 @@ func (i *Interactor) deployToSCM(ctx context.Context, u *ent.User, re *ent.Repo,
 	uid, err := i.SCM.CreateDeployment(ctx, u, re, d, e)
 	if err != nil {
 		d.Status = deployment.StatusFailure
-		i.UpdateDeployment(ctx, d)
+		if _, err := i.UpdateDeployment(ctx, d); err != nil {
+			i.log.Error("failed to update the deployment.", zap.Error(err))
+			return nil, err
+		}
+
+		i.CreateDeploymentStatus(ctx, &ent.DeploymentStatus{
+			Status:       string(deployment.StatusFailure),
+			Description:  "Gitploy failed to create a deployment.",
+			DeploymentID: d.ID,
+		})
 		return nil, err
 	}
 
 	d.UID = uid
 	d.Status = deployment.StatusCreated
+	if _, err := i.UpdateDeployment(ctx, d); err != nil {
+		i.log.Error("failed to update the deployment.", zap.Error(err))
+		return d, nil
+	}
 
-	return i.UpdateDeployment(ctx, d)
+	i.CreateDeploymentStatus(ctx, &ent.DeploymentStatus{
+		Status:       string(deployment.StatusCreated),
+		Description:  "Gitploy creates a new deployment.",
+		DeploymentID: d.ID,
+	})
+	return d, nil
 }
 
 func (i *Interactor) requestApprovals(ctx context.Context, d *ent.Deployment, approvers []string) ([]*ent.Approval, error) {
@@ -94,6 +113,7 @@ func (i *Interactor) requestApprovals(ctx context.Context, d *ent.Deployment, ap
 		} else if err != nil {
 			d.Status = deployment.StatusFailure
 			i.UpdateDeployment(ctx, d)
+
 			return nil, fmt.Errorf("failed to get the user: %w", err)
 		}
 

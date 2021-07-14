@@ -65,6 +65,17 @@ func (s *Store) FindDeploymentOfRepoByNumber(ctx context.Context, r *ent.Repo, n
 		First(ctx)
 }
 
+func (s *Store) FindDeploymentByUID(ctx context.Context, uid int64) (*ent.Deployment, error) {
+	return s.c.Deployment.
+		Query().
+		Where(
+			deployment.UIDEQ(uid),
+		).
+		WithRepo().
+		WithUser().
+		First(ctx)
+}
+
 // TODO: Lock deployments for the index which has repo_id.
 func (s *Store) GetNextDeploymentNumberOfRepo(ctx context.Context, r *ent.Repo) (int, error) {
 	var v []struct {
