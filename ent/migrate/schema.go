@@ -192,6 +192,13 @@ var (
 				OnDelete:   schema.SetNull,
 			},
 		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "deploymentstatus_deployment_id",
+				Unique:  false,
+				Columns: []*schema.Column{DeploymentStatusColumns[6]},
+			},
+		},
 	}
 	// NotificationsColumns holds the columns for the "notifications" table.
 	NotificationsColumns = []*schema.Column{

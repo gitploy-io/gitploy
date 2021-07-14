@@ -6,6 +6,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
+	"entgo.io/ent/schema/index"
 )
 
 // DeploymentStatus holds the schema definition for the DeploymentStatus entity.
@@ -40,5 +41,11 @@ func (DeploymentStatus) Edges() []ent.Edge {
 			Field("deployment_id").
 			Unique().
 			Required(),
+	}
+}
+
+func (DeploymentStatus) Indexes() []ent.Index {
+	return []ent.Index{
+		index.Fields("deployment_id"),
 	}
 }
