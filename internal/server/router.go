@@ -12,6 +12,7 @@ import (
 	"github.com/hanjunlee/gitploy/internal/server/api/v1/stream"
 	"github.com/hanjunlee/gitploy/internal/server/api/v1/sync"
 	"github.com/hanjunlee/gitploy/internal/server/api/v1/users"
+	"github.com/hanjunlee/gitploy/internal/server/hooks"
 	mw "github.com/hanjunlee/gitploy/internal/server/middlewares"
 	s "github.com/hanjunlee/gitploy/internal/server/slack"
 	"github.com/hanjunlee/gitploy/internal/server/web"
@@ -68,6 +69,7 @@ type (
 		users.Interactor
 		notifications.Interactor
 		stream.Interactor
+		hooks.Interactor
 	}
 )
 
@@ -157,7 +159,14 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 		streamv1.GET("", s.GetNotification)
 	}
 
-	// TODO: add webhook
+	hooksapi := r.Group("/hooks")
+	{
+		hc := &hooks.ConfigHooks{
+			WebhookSecret: c.WebhookSecret,
+		}
+		h := hooks.NewHooks(hc, c.Interactor)
+		hooksapi.POST("", h.HandleHook)
+	}
 
 	if isSlackEnabled(c) {
 		slackapi := r.Group("/slack")
