@@ -10,7 +10,7 @@ import (
 	"github.com/hanjunlee/gitploy/ent/user"
 )
 
-func (s *Store) ListRepos(ctx context.Context, u *ent.User, q string, page, perPage int) ([]*ent.Repo, error) {
+func (s *Store) ListReposOfUser(ctx context.Context, u *ent.User, q string, page, perPage int) ([]*ent.Repo, error) {
 	return s.c.Repo.
 		Query().
 		Where(
@@ -28,7 +28,7 @@ func (s *Store) ListRepos(ctx context.Context, u *ent.User, q string, page, perP
 		All(ctx)
 }
 
-func (s *Store) ListSortedRepos(ctx context.Context, u *ent.User, q string, page, perPage int) ([]*ent.Repo, error) {
+func (s *Store) ListSortedReposOfUser(ctx context.Context, u *ent.User, q string, page, perPage int) ([]*ent.Repo, error) {
 	return s.c.Repo.
 		Query().
 		Where(

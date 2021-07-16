@@ -61,7 +61,7 @@ func (r *Repo) ListRepos(c *gin.Context) {
 		return
 	}
 
-	repos, err = r.i.ListRepos(ctx, u, sorted, q, atoi(page), atoi(perPage))
+	repos, err = r.i.ListReposOfUser(ctx, u, sorted, q, atoi(page), atoi(perPage))
 	if err != nil {
 		r.log.Error("failed to list repositories.", zap.Error(err))
 		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to list repositories.")

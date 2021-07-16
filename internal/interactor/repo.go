@@ -8,11 +8,11 @@ import (
 	"github.com/hanjunlee/gitploy/vo"
 )
 
-func (i *Interactor) ListRepos(ctx context.Context, u *ent.User, sorted bool, q string, page, perPage int) (repos []*ent.Repo, err error) {
+func (i *Interactor) ListReposOfUser(ctx context.Context, u *ent.User, sorted bool, q string, page, perPage int) (repos []*ent.Repo, err error) {
 	if sorted {
-		repos, err = i.ListSortedRepos(ctx, u, q, page, perPage)
+		repos, err = i.Store.ListSortedReposOfUser(ctx, u, q, page, perPage)
 	} else {
-		repos, err = i.Store.ListRepos(ctx, u, q, page, perPage)
+		repos, err = i.Store.ListReposOfUser(ctx, u, q, page, perPage)
 	}
 
 	return repos, err
