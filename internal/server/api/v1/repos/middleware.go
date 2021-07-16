@@ -57,7 +57,7 @@ func (rm *RepoMiddleware) Repo() gin.HandlerFunc {
 			return
 		} else if err != nil {
 			rm.log.Error("failed to get the repository.", zap.String("repoID", id), zap.Error(err))
-			gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to get the repository.")
+			gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to get the permission.")
 			return
 		}
 
@@ -94,7 +94,7 @@ func (rm *RepoMiddleware) WritePerm() gin.HandlerFunc {
 			return
 		} else if err != nil {
 			rm.log.Error("failed to get the repository.", zap.String("repo_id", id), zap.Error(err))
-			gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to get the repository.")
+			gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to get the permission.")
 			return
 		}
 
@@ -137,7 +137,7 @@ func (rm *RepoMiddleware) AdminPerm() gin.HandlerFunc {
 			return
 		} else if err != nil {
 			rm.log.Error("failed to get the repository.", zap.String("repo_id", id), zap.Error(err))
-			gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to get the repository.")
+			gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to get the permission.")
 			return
 		}
 

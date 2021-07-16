@@ -139,15 +139,24 @@ func (r *Repo) GetRepoByNamespaceName(c *gin.Context) {
 
 	ctx := c.Request.Context()
 
-	repo, err := r.i.FindRepoByNamespaceName(ctx, u, namespace, name)
+	repo, err := r.i.FindRepoByNamespaceName(ctx, namespace, name)
 	if ent.IsNotFound(err) {
 		r.log.Error("failed to access the repo.", zap.String("repo", name), zap.Error(err))
 		gb.ErrorResponse(c, http.StatusNotFound, "It has failed to search the repo.")
 		return
-
 	} else if err != nil {
 		r.log.Error("failed to get the repository.", zap.String("repo", name), zap.Error(err))
 		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to get the repository.")
+		return
+	}
+
+	if _, err = r.i.FindPermOfRepo(ctx, repo, u); ent.IsNotFound(err) {
+		r.log.Error("denied to access the repo.", zap.String("repo_id", repo.ID), zap.Error(err))
+		gb.ErrorResponse(c, http.StatusForbidden, "It has denied to access the repo.")
+		return
+	} else if err != nil {
+		r.log.Error("failed to get the repository.", zap.String("repo_id", repo.ID), zap.Error(err))
+		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to get the permission.")
 		return
 	}
 

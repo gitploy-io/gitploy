@@ -58,14 +58,13 @@ func (s *Store) FindRepoByID(ctx context.Context, id string) (*ent.Repo, error) 
 	return s.c.Repo.Get(ctx, id)
 }
 
-func (s *Store) FindRepoByNamespaceName(ctx context.Context, u *ent.User, namespace, name string) (*ent.Repo, error) {
+func (s *Store) FindRepoByNamespaceName(ctx context.Context, namespace, name string) (*ent.Repo, error) {
 	r, err := s.c.Repo.
 		Query().
 		Where(
 			repo.And(
 				repo.NamespaceEQ(namespace),
 				repo.NameEQ(name),
-				repo.HasPermsWith(perm.HasUserWith(user.IDEQ(u.ID))),
 			),
 		).
 		Only(ctx)
