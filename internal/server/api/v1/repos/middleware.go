@@ -28,7 +28,7 @@ func NewRepoMiddleware(i Interactor) *RepoMiddleware {
 	}
 }
 
-func (rm *RepoMiddleware) Repo() gin.HandlerFunc {
+func (rm *RepoMiddleware) ReadPerm() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		ctx := c.Request.Context()
 
