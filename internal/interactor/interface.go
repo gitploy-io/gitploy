@@ -28,7 +28,7 @@ type (
 		Activate(ctx context.Context, r *ent.Repo) (*ent.Repo, error)
 		Deactivate(ctx context.Context, r *ent.Repo) (*ent.Repo, error)
 
-		FindPerm(ctx context.Context, u *ent.User, repoID string) (*ent.Perm, error)
+		FindPermOfRepo(ctx context.Context, r *ent.Repo, u *ent.User) (*ent.Perm, error)
 		SyncPerm(ctx context.Context, user *ent.User, perm *ent.Perm, sync time.Time) error
 
 		ListDeployments(ctx context.Context, r *ent.Repo, env string, status string, page, perPage int) ([]*ent.Deployment, error)

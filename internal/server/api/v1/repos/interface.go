@@ -9,7 +9,7 @@ import (
 
 type (
 	Interactor interface {
-		FindPermByRepoID(ctx context.Context, u *ent.User, repoID string) (*ent.Perm, error)
+		FindPermOfRepo(ctx context.Context, r *ent.Repo, u *ent.User) (*ent.Perm, error)
 
 		FindRepoByID(ctx context.Context, u *ent.User, id string) (*ent.Repo, error)
 		ListRepos(ctx context.Context, u *ent.User, sorted bool, q string, page, perPage int) ([]*ent.Repo, error)

@@ -22,10 +22,6 @@ func (i *Interactor) FindRepoByID(ctx context.Context, u *ent.User, id string) (
 	return i.Store.FindRepo(ctx, u, id)
 }
 
-func (i *Interactor) FindPermByRepoID(ctx context.Context, u *ent.User, repoID string) (*ent.Perm, error) {
-	return i.Store.FindPerm(ctx, u, repoID)
-}
-
 func (i *Interactor) ActivateRepo(ctx context.Context, u *ent.User, r *ent.Repo, c *vo.WebhookConfig) (*ent.Repo, error) {
 	hid, err := i.CreateWebhook(ctx, u, r, c)
 	if err != nil {

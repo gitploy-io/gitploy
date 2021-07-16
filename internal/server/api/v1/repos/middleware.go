@@ -56,6 +56,8 @@ func (rm *RepoMiddleware) Repo() gin.HandlerFunc {
 
 func (rm *RepoMiddleware) WritePerm() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		ctx := c.Request.Context()
+
 		var (
 			repoID = c.Param("id")
 		)
@@ -63,9 +65,14 @@ func (rm *RepoMiddleware) WritePerm() gin.HandlerFunc {
 		v, _ := c.Get(gb.KeyUser)
 		u := v.(*ent.User)
 
-		ctx := c.Request.Context()
+		if _, ok := c.Get(KeyRepo); !ok {
+			rm.Repo()
+		}
 
-		p, err := rm.i.FindPermByRepoID(ctx, u, repoID)
+		v, _ = c.Get(KeyRepo)
+		r := v.(*ent.Repo)
+
+		p, err := rm.i.FindPermOfRepo(ctx, r, u)
 		if ent.IsNotFound(err) {
 			rm.log.Error("denied to access the repo.", zap.String("repoID", repoID), zap.Error(err))
 			gb.ErrorResponse(c, http.StatusForbidden, "It has denied to access the repo.")
@@ -86,6 +93,8 @@ func (rm *RepoMiddleware) WritePerm() gin.HandlerFunc {
 
 func (rm *RepoMiddleware) AdminPerm() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		ctx := c.Request.Context()
+
 		var (
 			repoID = c.Param("id")
 		)
@@ -93,9 +102,14 @@ func (rm *RepoMiddleware) AdminPerm() gin.HandlerFunc {
 		v, _ := c.Get(gb.KeyUser)
 		u := v.(*ent.User)
 
-		ctx := c.Request.Context()
+		if _, ok := c.Get(KeyRepo); !ok {
+			rm.Repo()
+		}
 
-		p, err := rm.i.FindPermByRepoID(ctx, u, repoID)
+		v, _ = c.Get(KeyRepo)
+		r := v.(*ent.Repo)
+
+		p, err := rm.i.FindPermOfRepo(ctx, r, u)
 		if ent.IsNotFound(err) {
 			rm.log.Error("denied to access the repo.", zap.String("repoID", repoID), zap.Error(err))
 			gb.ErrorResponse(c, http.StatusForbidden, "It has denied to access the repo.")
