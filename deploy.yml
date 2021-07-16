@@ -4,3 +4,6 @@ envs:
       approvers: 
         - hanjunlee
       required_count: 0
+
+approvers:
+  - hanjunlee
