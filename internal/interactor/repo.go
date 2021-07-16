@@ -8,22 +8,14 @@ import (
 	"github.com/hanjunlee/gitploy/vo"
 )
 
-func (i *Interactor) ListRepos(ctx context.Context, u *ent.User, sorted bool, q string, page, perPage int) (repos []*ent.Repo, err error) {
+func (i *Interactor) ListReposOfUser(ctx context.Context, u *ent.User, sorted bool, q string, page, perPage int) (repos []*ent.Repo, err error) {
 	if sorted {
-		repos, err = i.ListSortedRepos(ctx, u, q, page, perPage)
+		repos, err = i.Store.ListSortedReposOfUser(ctx, u, q, page, perPage)
 	} else {
-		repos, err = i.Store.ListRepos(ctx, u, q, page, perPage)
+		repos, err = i.Store.ListReposOfUser(ctx, u, q, page, perPage)
 	}
 
 	return repos, err
-}
-
-func (i *Interactor) FindRepoByID(ctx context.Context, u *ent.User, id string) (*ent.Repo, error) {
-	return i.Store.FindRepo(ctx, u, id)
-}
-
-func (i *Interactor) FindPermByRepoID(ctx context.Context, u *ent.User, repoID string) (*ent.Perm, error) {
-	return i.Store.FindPerm(ctx, u, repoID)
 }
 
 func (i *Interactor) ActivateRepo(ctx context.Context, u *ent.User, r *ent.Repo, c *vo.WebhookConfig) (*ent.Repo, error) {

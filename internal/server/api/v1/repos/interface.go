@@ -9,11 +9,11 @@ import (
 
 type (
 	Interactor interface {
-		FindPermByRepoID(ctx context.Context, u *ent.User, repoID string) (*ent.Perm, error)
+		FindPermOfRepo(ctx context.Context, r *ent.Repo, u *ent.User) (*ent.Perm, error)
 
-		FindRepoByID(ctx context.Context, u *ent.User, id string) (*ent.Repo, error)
-		ListRepos(ctx context.Context, u *ent.User, sorted bool, q string, page, perPage int) ([]*ent.Repo, error)
-		FindRepoByNamespaceName(ctx context.Context, u *ent.User, namespace, name string) (*ent.Repo, error)
+		FindRepoByID(ctx context.Context, id string) (*ent.Repo, error)
+		ListReposOfUser(ctx context.Context, u *ent.User, sorted bool, q string, page, perPage int) ([]*ent.Repo, error)
+		FindRepoByNamespaceName(ctx context.Context, namespace, name string) (*ent.Repo, error)
 		UpdateRepo(ctx context.Context, r *ent.Repo) (*ent.Repo, error)
 		ActivateRepo(ctx context.Context, u *ent.User, r *ent.Repo, c *vo.WebhookConfig) (*ent.Repo, error)
 		DeactivateRepo(ctx context.Context, u *ent.User, r *ent.Repo) (*ent.Repo, error)

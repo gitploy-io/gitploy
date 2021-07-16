@@ -30,86 +30,123 @@ func NewRepoMiddleware(i Interactor) *RepoMiddleware {
 
 func (rm *RepoMiddleware) Repo() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		ctx := c.Request.Context()
+
 		var (
-			repoID = c.Param("id")
+			id = c.Param("id")
 		)
 
 		v, _ := c.Get(gb.KeyUser)
 		u := v.(*ent.User)
 
-		ctx := c.Request.Context()
-
-		repo, err := rm.i.FindRepoByID(ctx, u, repoID)
+		r, err := rm.i.FindRepoByID(ctx, id)
 		if ent.IsNotFound(err) {
-			rm.log.Error("denied to access the repo.", zap.String("repoID", repoID), zap.Error(err))
-			gb.ErrorResponse(c, http.StatusForbidden, "It has denied to access the repo.")
+			rm.log.Error("the repo is not found.", zap.String("repo_id", id), zap.Error(err))
+			gb.ErrorResponse(c, http.StatusNotFound, "The repository is not found.")
 			return
 		} else if err != nil {
-			rm.log.Error("failed to get the repository.", zap.String("repoID", repoID), zap.Error(err))
+			rm.log.Error("failed to get the repository.", zap.String("repo_id", id), zap.Error(err))
 			gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to get the repository.")
 			return
 		}
 
-		c.Set(KeyRepo, repo)
+		_, err = rm.i.FindPermOfRepo(ctx, r, u)
+		if ent.IsNotFound(err) {
+			rm.log.Error("denied to access the repo.", zap.String("repo_id", id), zap.Error(err))
+			gb.ErrorResponse(c, http.StatusForbidden, "It has denied to access the repo.")
+			return
+		} else if err != nil {
+			rm.log.Error("failed to get the repository.", zap.String("repoID", id), zap.Error(err))
+			gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to get the permission.")
+			return
+		}
+
+		c.Set(KeyRepo, r)
 	}
 }
 
 func (rm *RepoMiddleware) WritePerm() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		ctx := c.Request.Context()
+
 		var (
-			repoID = c.Param("id")
+			id = c.Param("id")
 		)
 
 		v, _ := c.Get(gb.KeyUser)
 		u := v.(*ent.User)
 
-		ctx := c.Request.Context()
-
-		p, err := rm.i.FindPermByRepoID(ctx, u, repoID)
+		r, err := rm.i.FindRepoByID(ctx, id)
 		if ent.IsNotFound(err) {
-			rm.log.Error("denied to access the repo.", zap.String("repoID", repoID), zap.Error(err))
-			gb.ErrorResponse(c, http.StatusForbidden, "It has denied to access the repo.")
+			rm.log.Error("the repo is not found.", zap.String("repo_id", id), zap.Error(err))
+			gb.ErrorResponse(c, http.StatusNotFound, "The repository is not found.")
 			return
 		} else if err != nil {
-			rm.log.Error("failed to get the repository.", zap.String("repoID", repoID), zap.Error(err))
+			rm.log.Error("failed to get the repository.", zap.String("repo_id", id), zap.Error(err))
 			gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to get the repository.")
 			return
 		}
 
+		p, err := rm.i.FindPermOfRepo(ctx, r, u)
+		if ent.IsNotFound(err) {
+			rm.log.Error("denied to access the repo.", zap.String("repo_id", id), zap.Error(err))
+			gb.ErrorResponse(c, http.StatusForbidden, "It has denied to access the repo.")
+			return
+		} else if err != nil {
+			rm.log.Error("failed to get the repository.", zap.String("repo_id", id), zap.Error(err))
+			gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to get the permission.")
+			return
+		}
+
 		if !(p.RepoPerm == perm.RepoPermWrite || p.RepoPerm == perm.RepoPermAdmin) {
-			rm.log.Warn("denied to access the repo.", zap.String("repoID", repoID), zap.Error(err))
+			rm.log.Warn("denied to access the repo.", zap.String("repo_id", id), zap.Error(err))
 			gb.ErrorResponse(c, http.StatusForbidden, "It has denied to access the repo, only write permission can access.")
 			return
 		}
+
+		c.Set(KeyRepo, r)
 	}
 }
 
 func (rm *RepoMiddleware) AdminPerm() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		ctx := c.Request.Context()
+
 		var (
-			repoID = c.Param("id")
+			id = c.Param("id")
 		)
 
 		v, _ := c.Get(gb.KeyUser)
 		u := v.(*ent.User)
 
-		ctx := c.Request.Context()
-
-		p, err := rm.i.FindPermByRepoID(ctx, u, repoID)
+		r, err := rm.i.FindRepoByID(ctx, id)
 		if ent.IsNotFound(err) {
-			rm.log.Error("denied to access the repo.", zap.String("repoID", repoID), zap.Error(err))
-			gb.ErrorResponse(c, http.StatusForbidden, "It has denied to access the repo.")
+			rm.log.Error("the repo is not found.", zap.String("repo_id", id), zap.Error(err))
+			gb.ErrorResponse(c, http.StatusNotFound, "The repository is not found.")
 			return
 		} else if err != nil {
-			rm.log.Error("failed to get the repository.", zap.String("repoID", repoID), zap.Error(err))
+			rm.log.Error("failed to get the repository.", zap.String("repo_id", id), zap.Error(err))
 			gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to get the repository.")
 			return
 		}
 
+		p, err := rm.i.FindPermOfRepo(ctx, r, u)
+		if ent.IsNotFound(err) {
+			rm.log.Error("denied to access the repo.", zap.String("repo_id", id), zap.Error(err))
+			gb.ErrorResponse(c, http.StatusForbidden, "It has denied to access the repo.")
+			return
+		} else if err != nil {
+			rm.log.Error("failed to get the repository.", zap.String("repo_id", id), zap.Error(err))
+			gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to get the permission.")
+			return
+		}
+
 		if p.RepoPerm != perm.RepoPermAdmin {
-			rm.log.Warn("denied to access the repo.", zap.String("repoID", repoID), zap.Error(err))
+			rm.log.Warn("denied to access the repo.", zap.String("repo_id", id), zap.Error(err))
 			gb.ErrorResponse(c, http.StatusForbidden, "It has denied to access the repo, only admin permission can access.")
 			return
 		}
+
+		c.Set(KeyRepo, r)
 	}
 }

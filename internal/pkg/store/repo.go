@@ -10,7 +10,7 @@ import (
 	"github.com/hanjunlee/gitploy/ent/user"
 )
 
-func (s *Store) ListRepos(ctx context.Context, u *ent.User, q string, page, perPage int) ([]*ent.Repo, error) {
+func (s *Store) ListReposOfUser(ctx context.Context, u *ent.User, q string, page, perPage int) ([]*ent.Repo, error) {
 	return s.c.Repo.
 		Query().
 		Where(
@@ -28,7 +28,7 @@ func (s *Store) ListRepos(ctx context.Context, u *ent.User, q string, page, perP
 		All(ctx)
 }
 
-func (s *Store) ListSortedRepos(ctx context.Context, u *ent.User, q string, page, perPage int) ([]*ent.Repo, error) {
+func (s *Store) ListSortedReposOfUser(ctx context.Context, u *ent.User, q string, page, perPage int) ([]*ent.Repo, error) {
 	return s.c.Repo.
 		Query().
 		Where(
@@ -54,32 +54,17 @@ func (s *Store) UpdateRepo(ctx context.Context, r *ent.Repo) (*ent.Repo, error) 
 		Save(ctx)
 }
 
-func (s *Store) FindRepo(ctx context.Context, u *ent.User, id string) (*ent.Repo, error) {
-	p, err := s.c.Perm.
-		Query().
-		Where(
-			perm.And(
-				perm.HasUserWith(user.IDEQ(u.ID)),
-				perm.HasRepoWith(repo.IDEQ(id)),
-			),
-		).
-		WithRepo().
-		Only(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	return p.Edges.Repo, nil
+func (s *Store) FindRepoByID(ctx context.Context, id string) (*ent.Repo, error) {
+	return s.c.Repo.Get(ctx, id)
 }
 
-func (s *Store) FindRepoByNamespaceName(ctx context.Context, u *ent.User, namespace, name string) (*ent.Repo, error) {
+func (s *Store) FindRepoByNamespaceName(ctx context.Context, namespace, name string) (*ent.Repo, error) {
 	r, err := s.c.Repo.
 		Query().
 		Where(
 			repo.And(
 				repo.NamespaceEQ(namespace),
 				repo.NameEQ(name),
-				repo.HasPermsWith(perm.HasUserWith(user.IDEQ(u.ID))),
 			),
 		).
 		Only(ctx)
@@ -88,18 +73,6 @@ func (s *Store) FindRepoByNamespaceName(ctx context.Context, u *ent.User, namesp
 	}
 
 	return r, nil
-}
-
-func (s *Store) FindPerm(ctx context.Context, u *ent.User, repoID string) (*ent.Perm, error) {
-	return s.c.Perm.
-		Query().
-		Where(
-			perm.And(
-				perm.HasUserWith(user.IDEQ(u.ID)),
-				perm.HasRepoWith(repo.IDEQ(repoID)),
-			),
-		).
-		Only(ctx)
 }
 
 func (s *Store) Activate(ctx context.Context, r *ent.Repo) (*ent.Repo, error) {

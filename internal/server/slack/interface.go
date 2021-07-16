@@ -12,7 +12,9 @@ type (
 		FindChatUserByID(ctx context.Context, id string) (*ent.ChatUser, error)
 		SaveChatUser(ctx context.Context, u *ent.User, cu *ent.ChatUser) (*ent.ChatUser, error)
 
-		FindRepoByNamespaceName(ctx context.Context, u *ent.User, namespace, name string) (*ent.Repo, error)
+		FindPermOfRepo(ctx context.Context, r *ent.Repo, u *ent.User) (*ent.Perm, error)
+
+		FindRepoByNamespaceName(ctx context.Context, namespace, name string) (*ent.Repo, error)
 
 		CreateDeployChatCallback(ctx context.Context, cu *ent.ChatUser, repo *ent.Repo, cb *ent.ChatCallback) (*ent.ChatCallback, error)
 		FindChatCallbackByState(ctx context.Context, state string) (*ent.ChatCallback, error)

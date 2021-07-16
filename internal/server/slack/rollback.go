@@ -43,12 +43,19 @@ func (s *Slack) handleRollbackCmd(ctx context.Context, cmd slack.SlashCommand) e
 		return nil
 	}
 
-	r, err := s.i.FindRepoByNamespaceName(ctx, u, ns, n)
+	r, err := s.i.FindRepoByNamespaceName(ctx, ns, n)
 	if ent.IsNotFound(err) {
 		responseMessage(cmd, fmt.Sprintf("The `%s` is not found.", fullname))
 		return nil
 	} else if err != nil {
 		return fmt.Errorf("failed to find the repo: %w", err)
+	}
+
+	if _, err := s.i.FindPermOfRepo(ctx, r, u); ent.IsNotFound(err) {
+		responseMessage(cmd, fmt.Sprintf("You don't have the permission for the `%s` repository", fullname))
+		return nil
+	} else if err != nil {
+		return fmt.Errorf("failed to find the permission: %w", err)
 	}
 
 	config, err := s.i.GetConfig(ctx, u, r)

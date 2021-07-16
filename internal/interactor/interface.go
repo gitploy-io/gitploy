@@ -20,15 +20,15 @@ type (
 		CreateChatUser(ctx context.Context, u *ent.User, cu *ent.ChatUser) (*ent.ChatUser, error)
 		UpdateChatUser(ctx context.Context, u *ent.User, cu *ent.ChatUser) (*ent.ChatUser, error)
 
-		ListRepos(ctx context.Context, u *ent.User, q string, page, perPage int) ([]*ent.Repo, error)
-		ListSortedRepos(ctx context.Context, u *ent.User, q string, page, perPage int) ([]*ent.Repo, error)
-		FindRepo(ctx context.Context, u *ent.User, id string) (*ent.Repo, error)
-		FindRepoByNamespaceName(ctx context.Context, u *ent.User, namespace, name string) (*ent.Repo, error)
+		ListReposOfUser(ctx context.Context, u *ent.User, q string, page, perPage int) ([]*ent.Repo, error)
+		ListSortedReposOfUser(ctx context.Context, u *ent.User, q string, page, perPage int) ([]*ent.Repo, error)
+		FindRepoByID(ctx context.Context, id string) (*ent.Repo, error)
+		FindRepoByNamespaceName(ctx context.Context, namespace, name string) (*ent.Repo, error)
 		UpdateRepo(ctx context.Context, r *ent.Repo) (*ent.Repo, error)
 		Activate(ctx context.Context, r *ent.Repo) (*ent.Repo, error)
 		Deactivate(ctx context.Context, r *ent.Repo) (*ent.Repo, error)
 
-		FindPerm(ctx context.Context, u *ent.User, repoID string) (*ent.Perm, error)
+		FindPermOfRepo(ctx context.Context, r *ent.Repo, u *ent.User) (*ent.Perm, error)
 		SyncPerm(ctx context.Context, user *ent.User, perm *ent.Perm, sync time.Time) error
 
 		ListDeployments(ctx context.Context, r *ent.Repo, env string, status string, page, perPage int) ([]*ent.Deployment, error)
