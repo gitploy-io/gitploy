@@ -54,22 +54,8 @@ func (s *Store) UpdateRepo(ctx context.Context, r *ent.Repo) (*ent.Repo, error) 
 		Save(ctx)
 }
 
-func (s *Store) FindRepo(ctx context.Context, u *ent.User, id string) (*ent.Repo, error) {
-	p, err := s.c.Perm.
-		Query().
-		Where(
-			perm.And(
-				perm.HasUserWith(user.IDEQ(u.ID)),
-				perm.HasRepoWith(repo.IDEQ(id)),
-			),
-		).
-		WithRepo().
-		Only(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	return p.Edges.Repo, nil
+func (s *Store) FindRepoByID(ctx context.Context, id string) (*ent.Repo, error) {
+	return s.c.Repo.Get(ctx, id)
 }
 
 func (s *Store) FindRepoByNamespaceName(ctx context.Context, u *ent.User, namespace, name string) (*ent.Repo, error) {
@@ -88,18 +74,6 @@ func (s *Store) FindRepoByNamespaceName(ctx context.Context, u *ent.User, namesp
 	}
 
 	return r, nil
-}
-
-func (s *Store) FindPermOfRepo(ctx context.Context, r *ent.Repo, u *ent.User) (*ent.Perm, error) {
-	return s.c.Perm.
-		Query().
-		Where(
-			perm.And(
-				perm.HasUserWith(user.IDEQ(u.ID)),
-				perm.HasRepoWith(repo.IDEQ(r.ID)),
-			),
-		).
-		Only(ctx)
 }
 
 func (s *Store) Activate(ctx context.Context, r *ent.Repo) (*ent.Repo, error) {

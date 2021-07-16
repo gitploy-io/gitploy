@@ -11,7 +11,7 @@ type (
 	Interactor interface {
 		FindPermOfRepo(ctx context.Context, r *ent.Repo, u *ent.User) (*ent.Perm, error)
 
-		FindRepoByID(ctx context.Context, u *ent.User, id string) (*ent.Repo, error)
+		FindRepoByID(ctx context.Context, id string) (*ent.Repo, error)
 		ListReposOfUser(ctx context.Context, u *ent.User, sorted bool, q string, page, perPage int) ([]*ent.Repo, error)
 		FindRepoByNamespaceName(ctx context.Context, u *ent.User, namespace, name string) (*ent.Repo, error)
 		UpdateRepo(ctx context.Context, r *ent.Repo) (*ent.Repo, error)

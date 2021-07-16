@@ -22,7 +22,7 @@ type (
 
 		ListReposOfUser(ctx context.Context, u *ent.User, q string, page, perPage int) ([]*ent.Repo, error)
 		ListSortedReposOfUser(ctx context.Context, u *ent.User, q string, page, perPage int) ([]*ent.Repo, error)
-		FindRepo(ctx context.Context, u *ent.User, id string) (*ent.Repo, error)
+		FindRepoByID(ctx context.Context, id string) (*ent.Repo, error)
 		FindRepoByNamespaceName(ctx context.Context, u *ent.User, namespace, name string) (*ent.Repo, error)
 		UpdateRepo(ctx context.Context, r *ent.Repo) (*ent.Repo, error)
 		Activate(ctx context.Context, r *ent.Repo) (*ent.Repo, error)

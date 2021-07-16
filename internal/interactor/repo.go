@@ -18,10 +18,6 @@ func (i *Interactor) ListReposOfUser(ctx context.Context, u *ent.User, sorted bo
 	return repos, err
 }
 
-func (i *Interactor) FindRepoByID(ctx context.Context, u *ent.User, id string) (*ent.Repo, error) {
-	return i.Store.FindRepo(ctx, u, id)
-}
-
 func (i *Interactor) ActivateRepo(ctx context.Context, u *ent.User, r *ent.Repo, c *vo.WebhookConfig) (*ent.Repo, error) {
 	hid, err := i.CreateWebhook(ctx, u, r, c)
 	if err != nil {
