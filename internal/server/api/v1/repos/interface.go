@@ -32,9 +32,11 @@ type (
 		GetConfig(ctx context.Context, u *ent.User, r *ent.Repo) (*vo.Config, error)
 
 		ListApprovals(ctx context.Context, d *ent.Deployment) ([]*ent.Approval, error)
+		FindApprovalByID(ctx context.Context, id int) (*ent.Approval, error)
 		FindApprovalOfUser(ctx context.Context, d *ent.Deployment, u *ent.User) (*ent.Approval, error)
 		CreateApproval(ctx context.Context, a *ent.Approval) (*ent.Approval, error)
 		UpdateApproval(ctx context.Context, a *ent.Approval) (*ent.Approval, error)
+		DeleteApproval(ctx context.Context, a *ent.Approval) error
 
 		ListCommits(ctx context.Context, u *ent.User, r *ent.Repo, branch string, page, perPage int) ([]*vo.Commit, error)
 		GetCommit(ctx context.Context, u *ent.User, r *ent.Repo, sha string) (*vo.Commit, error)

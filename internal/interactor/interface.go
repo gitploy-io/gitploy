@@ -47,9 +47,11 @@ type (
 		CloseChatCallback(ctx context.Context, cb *ent.ChatCallback) (*ent.ChatCallback, error)
 
 		ListApprovals(ctx context.Context, d *ent.Deployment) ([]*ent.Approval, error)
+		FindApprovalByID(ctx context.Context, id int) (*ent.Approval, error)
 		FindApprovalOfUser(ctx context.Context, d *ent.Deployment, u *ent.User) (*ent.Approval, error)
 		CreateApproval(ctx context.Context, a *ent.Approval) (*ent.Approval, error)
 		UpdateApproval(ctx context.Context, a *ent.Approval) (*ent.Approval, error)
+		DeleteApproval(ctx context.Context, a *ent.Approval) error
 
 		ListNotifications(ctx context.Context, u *ent.User, page, perPage int) ([]*ent.Notification, error)
 		ListNotificationsFromTime(ctx context.Context, t time.Time) ([]*ent.Notification, error)

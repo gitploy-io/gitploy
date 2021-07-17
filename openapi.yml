@@ -750,6 +750,74 @@ paths:
           $ref: '#/components/responses/404NotFound'
         '500':
           $ref: '#/components/responses/500InternalError'
+  # Only permitted users can access to Approval API.
+  /repos/{id}/approvals/{aid}:
+    get:
+      tags:
+        - Repo
+      summary: Get the approval.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            description: The repository id.
+        - in: path
+          name: aid
+          required: true
+          schema:
+            type: number
+            description: The apporval id.
+      responses:
+        '200':
+          description: Approval 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Approval'
+        '401': 
+          $ref: '#/components/responses/401Unauthorized'
+        '403': 
+          $ref: '#/components/responses/403Forbidden'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+    delete:
+      tags:
+        - Repo
+      summary: Delete the approval.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            description: The repository id.
+        - in: path
+          name: number
+          required: true
+          schema:
+            type: integer
+            description: The deployment number.
+        - in: path
+          name: aid
+          required: true
+          schema:
+            type: number
+            description: The apporval id.
+      responses:
+        '200':
+          description: Approval deleted
+        '401': 
+          $ref: '#/components/responses/401Unauthorized'
+        '403': 
+          $ref: '#/components/responses/403Forbidden'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '500':
+          $ref: '#/components/responses/500InternalError'
   /repos/{id}/perms:
     get:
       tags:
