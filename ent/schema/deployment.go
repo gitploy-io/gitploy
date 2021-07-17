@@ -43,8 +43,6 @@ func (Deployment) Fields() []ent.Field {
 			Optional(),
 		field.Int("required_approval_count").
 			Default(0),
-		field.Bool("auto_deploy").
-			Default(false),
 		field.Time("created_at").
 			Default(time.Now),
 		field.Time("updated_at").

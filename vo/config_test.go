@@ -15,8 +15,7 @@ envs:
     required_contexts:
       - github-action
     approval:
-      approvers:
-        - hanjunlee`
+      enabled: true`
 		c := &Config{}
 
 		err := UnmarshalYAML([]byte(s), c)
@@ -36,7 +35,7 @@ envs:
 					Payload:               "",
 					ProductionEnvironment: false,
 					Approval: &Approval{
-						Approvers: []string{"hanjunlee"},
+						Enabled: true,
 					},
 				},
 			},
@@ -54,8 +53,8 @@ envs:
     required_contexts:
       - github-action
     approval:
-      approvers:
-        - hanjunlee`
+	  enabled: true
+	  required_count: 1`
 		c := &Config{}
 
 		err := UnmarshalYAML([]byte(s), c)
@@ -76,7 +75,8 @@ envs:
 					Payload:               "",
 					ProductionEnvironment: false,
 					Approval: &Approval{
-						Approvers: []string{"hanjunlee"},
+						Enabled:       true,
+						RequiredCount: 1,
 					},
 				},
 			},
