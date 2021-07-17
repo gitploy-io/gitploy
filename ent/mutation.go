@@ -5341,22 +5341,9 @@ func (m *PermMutation) OldUserID(ctx context.Context) (v string, err error) {
 	return oldValue.UserID, nil
 }
 
-// ClearUserID clears the value of the "user_id" field.
-func (m *PermMutation) ClearUserID() {
-	m.user = nil
-	m.clearedFields[perm.FieldUserID] = struct{}{}
-}
-
-// UserIDCleared returns if the "user_id" field was cleared in this mutation.
-func (m *PermMutation) UserIDCleared() bool {
-	_, ok := m.clearedFields[perm.FieldUserID]
-	return ok
-}
-
 // ResetUserID resets all changes to the "user_id" field.
 func (m *PermMutation) ResetUserID() {
 	m.user = nil
-	delete(m.clearedFields, perm.FieldUserID)
 }
 
 // SetRepoID sets the "repo_id" field.
@@ -5390,22 +5377,9 @@ func (m *PermMutation) OldRepoID(ctx context.Context) (v string, err error) {
 	return oldValue.RepoID, nil
 }
 
-// ClearRepoID clears the value of the "repo_id" field.
-func (m *PermMutation) ClearRepoID() {
-	m.repo = nil
-	m.clearedFields[perm.FieldRepoID] = struct{}{}
-}
-
-// RepoIDCleared returns if the "repo_id" field was cleared in this mutation.
-func (m *PermMutation) RepoIDCleared() bool {
-	_, ok := m.clearedFields[perm.FieldRepoID]
-	return ok
-}
-
 // ResetRepoID resets all changes to the "repo_id" field.
 func (m *PermMutation) ResetRepoID() {
 	m.repo = nil
-	delete(m.clearedFields, perm.FieldRepoID)
 }
 
 // ClearUser clears the "user" edge to the User entity.
@@ -5415,7 +5389,7 @@ func (m *PermMutation) ClearUser() {
 
 // UserCleared reports if the "user" edge to the User entity was cleared.
 func (m *PermMutation) UserCleared() bool {
-	return m.UserIDCleared() || m.cleareduser
+	return m.cleareduser
 }
 
 // UserIDs returns the "user" edge IDs in the mutation.
@@ -5441,7 +5415,7 @@ func (m *PermMutation) ClearRepo() {
 
 // RepoCleared reports if the "repo" edge to the Repo entity was cleared.
 func (m *PermMutation) RepoCleared() bool {
-	return m.RepoIDCleared() || m.clearedrepo
+	return m.clearedrepo
 }
 
 // RepoIDs returns the "repo" edge IDs in the mutation.
@@ -5618,12 +5592,6 @@ func (m *PermMutation) ClearedFields() []string {
 	if m.FieldCleared(perm.FieldSyncedAt) {
 		fields = append(fields, perm.FieldSyncedAt)
 	}
-	if m.FieldCleared(perm.FieldUserID) {
-		fields = append(fields, perm.FieldUserID)
-	}
-	if m.FieldCleared(perm.FieldRepoID) {
-		fields = append(fields, perm.FieldRepoID)
-	}
 	return fields
 }
 
@@ -5640,12 +5608,6 @@ func (m *PermMutation) ClearField(name string) error {
 	switch name {
 	case perm.FieldSyncedAt:
 		m.ClearSyncedAt()
-		return nil
-	case perm.FieldUserID:
-		m.ClearUserID()
-		return nil
-	case perm.FieldRepoID:
-		m.ClearRepoID()
 		return nil
 	}
 	return fmt.Errorf("unknown Perm nullable field %s", name)

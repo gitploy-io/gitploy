@@ -515,20 +515,6 @@ func UserIDHasSuffix(v string) predicate.Perm {
 	})
 }
 
-// UserIDIsNil applies the IsNil predicate on the "user_id" field.
-func UserIDIsNil() predicate.Perm {
-	return predicate.Perm(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldUserID)))
-	})
-}
-
-// UserIDNotNil applies the NotNil predicate on the "user_id" field.
-func UserIDNotNil() predicate.Perm {
-	return predicate.Perm(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldUserID)))
-	})
-}
-
 // UserIDEqualFold applies the EqualFold predicate on the "user_id" field.
 func UserIDEqualFold(v string) predicate.Perm {
 	return predicate.Perm(func(s *sql.Selector) {
@@ -637,20 +623,6 @@ func RepoIDHasPrefix(v string) predicate.Perm {
 func RepoIDHasSuffix(v string) predicate.Perm {
 	return predicate.Perm(func(s *sql.Selector) {
 		s.Where(sql.HasSuffix(s.C(FieldRepoID), v))
-	})
-}
-
-// RepoIDIsNil applies the IsNil predicate on the "repo_id" field.
-func RepoIDIsNil() predicate.Perm {
-	return predicate.Perm(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldRepoID)))
-	})
-}
-
-// RepoIDNotNil applies the NotNil predicate on the "repo_id" field.
-func RepoIDNotNil() predicate.Perm {
-	return predicate.Perm(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldRepoID)))
 	})
 }
 

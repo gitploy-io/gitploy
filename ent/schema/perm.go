@@ -32,10 +32,8 @@ func (Perm) Fields() []ent.Field {
 			Default(time.Now).
 			UpdateDefault(time.Now),
 		// Edges
-		field.String("user_id").
-			Optional(),
-		field.String("repo_id").
-			Optional(),
+		field.String("user_id"),
+		field.String("repo_id"),
 	}
 }
 
@@ -45,11 +43,13 @@ func (Perm) Edges() []ent.Edge {
 		edge.From("user", User.Type).
 			Ref("perms").
 			Field("user_id").
-			Unique(),
+			Unique().
+			Required(),
 		edge.From("repo", Repo.Type).
 			Ref("perms").
 			Field("repo_id").
-			Unique(),
+			Unique().
+			Required(),
 	}
 }
 
