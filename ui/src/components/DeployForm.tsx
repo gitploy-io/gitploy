@@ -1,3 +1,4 @@
+import { useState } from "react"
 import { Form, Select, Radio, Button } from 'antd'
 
 import { Branch, Commit, Tag, DeploymentType, StatusState } from '../models'
@@ -10,7 +11,6 @@ export type Option = Op
 interface DeployFormProps {
     envs: string[]
     onSelectEnv(env: string): void
-    type: DeploymentType | null
     onChangeType(type: DeploymentType): void
     branches: Branch[]
     onSelectBranch(branch: Branch): void
@@ -29,6 +29,8 @@ interface DeployFormProps {
 }
 
 export default function DeployForm(props: DeployFormProps) {
+    const [ deploymentType, setDeploymentType ] = useState<DeploymentType | null>(null) 
+
     const layout = {
       labelCol: { span: 5},
       wrapperCol: { span: 16 },
@@ -98,6 +100,7 @@ export default function DeployForm(props: DeployFormProps) {
                 type = DeploymentType.Commit
         }
 
+        setDeploymentType(type)
         props.onChangeType(type)
     }
 
@@ -180,10 +183,10 @@ export default function DeployForm(props: DeployFormProps) {
             <Form.Item
                 label="Branch"
                 {...selectLayout}
-                style={(isBranchVisible(props.type)? {}: styleHide)}>
+                style={(isBranchVisible(deploymentType)? {}: styleHide)}>
                 <Form.Item
                     name="branch"
-                    rules={[{required: isBranchVisible(props.type)}]}
+                    rules={[{required: isBranchVisible(deploymentType)}]}
                     noStyle>
                         <CreatableSelect 
                             options={props.branches.map(branch => mapBranchToOption(branch))}
@@ -192,17 +195,17 @@ export default function DeployForm(props: DeployFormProps) {
                             placeholder="Select branch"
                             style={styleWidthForCheck}/>
                 </Form.Item>
-                <span style={(isBranchCheckVisible(props.type)? {}: styleHide)}>
+                <span style={(isBranchCheckVisible(deploymentType)? {}: styleHide)}>
                     &nbsp; <StatusStateIcon state={props.branchCheck} /> 
                 </span>
             </Form.Item>
             <Form.Item
                 label="Commit"
                 {...layout}
-                style={(isCommitVisible(props.type)? {}: styleHide)}>
+                style={(isCommitVisible(deploymentType)? {}: styleHide)}>
                 <Form.Item
                     name="commit"
-                    rules={[{required: isCommitVisible(props.type)}]}
+                    rules={[{required: isCommitVisible(deploymentType)}]}
                     noStyle>
                         <CreatableSelect 
                             options={props.commits.map(commit => mapCommitToOption(commit))}
@@ -211,17 +214,17 @@ export default function DeployForm(props: DeployFormProps) {
                             placeholder="Select commit"
                             style={styleWidthForCheck}/>
                 </Form.Item>
-                <span style={(isCommitCheckVisible(props.type)? {}: styleHide)}>
+                <span style={(isCommitCheckVisible(deploymentType)? {}: styleHide)}>
                     &nbsp; <StatusStateIcon state={props.commitCheck} /> 
                 </span>
             </Form.Item>
             <Form.Item
                 label="Tag"
                 {...selectLayout}
-                style={(isTagVisible(props.type)? {}: styleHide)}>
+                style={(isTagVisible(deploymentType)? {}: styleHide)}>
                 <Form.Item
                     name="tag"
-                    rules={[{required: isTagVisible(props.type)}]}
+                    rules={[{required: isTagVisible(deploymentType)}]}
                     noStyle>
                         <CreatableSelect 
                             options={props.tags.map(tag => mapTagToOption(tag))}
@@ -230,7 +233,7 @@ export default function DeployForm(props: DeployFormProps) {
                             placeholder="Select commit"
                             style={styleWidthForCheck}/>
                 </Form.Item>
-                <span style={(isTagCheckVisible(props.type)? {}: styleHide)}>
+                <span style={(isTagCheckVisible(deploymentType)? {}: styleHide)}>
                     &nbsp; <StatusStateIcon state={props.tagCheck} /> 
                 </span>
             </Form.Item>

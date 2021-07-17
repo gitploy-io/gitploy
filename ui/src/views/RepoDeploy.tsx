@@ -35,7 +35,6 @@ export default function RepoDeploy() {
     const { 
         hasConfig, 
         envs, 
-        type, 
         branches, 
         branchCheck,
         commits, 
@@ -127,7 +126,6 @@ export default function RepoDeploy() {
                 <DeployForm 
                     envs={envs}
                     onSelectEnv={onSelectEnv}
-                    type={type}
                     onChangeType={onChangeType}
                     branches={branches}
                     onSelectBranch={onSelectBranch}
