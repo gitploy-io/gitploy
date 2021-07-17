@@ -28,6 +28,7 @@ type (
 		Activate(ctx context.Context, r *ent.Repo) (*ent.Repo, error)
 		Deactivate(ctx context.Context, r *ent.Repo) (*ent.Repo, error)
 
+		ListPermsOfRepo(ctx context.Context, r *ent.Repo, q string, page, perPage int) ([]*ent.Perm, error)
 		FindPermOfRepo(ctx context.Context, r *ent.Repo, u *ent.User) (*ent.Perm, error)
 		SyncPerm(ctx context.Context, user *ent.User, perm *ent.Perm, sync time.Time) error
 

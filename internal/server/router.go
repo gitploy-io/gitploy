@@ -137,6 +137,7 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 		repov1.GET("/:id/deployments/:number/approvals", rm.ReadPerm(), r.ListApprovals)
 		repov1.GET("/:id/deployments/:number/approval", rm.ReadPerm(), r.GetApproval)
 		repov1.PATCH("/:id/deployments/:number/approval", rm.ReadPerm(), r.UpdateApproval)
+		repov1.GET("/:id/perms", rm.ReadPerm(), r.ListPerms)
 		repov1.GET("/:id/config", rm.ReadPerm(), r.GetConfig)
 	}
 

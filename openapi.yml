@@ -709,6 +709,44 @@ paths:
           $ref: '#/components/responses/404NotFound'
         '500':
           $ref: '#/components/responses/500InternalError'
+  /repos/{id}/perms:
+    get:
+      tags:
+        - Repo
+      summary: Get permissions for the repository
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            description: The repository id.
+        - in: query
+          name: q
+          schema:
+            type: string
+            description: Search perms by login.
+        - in: query
+          name: page
+          schema:
+            type: number
+        - in: query
+          name: per_page
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Perms
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Perms'
+        '401': 
+          $ref: '#/components/responses/401Unauthorized'
+        '403': 
+          $ref: '#/components/responses/403Forbidden'
+        '500':
+          $ref: '#/components/responses/500InternalError'
   /repos/{id}/config:
     get:
       tags:
@@ -883,6 +921,30 @@ components:
           type: string
         latest_deployed_at:
           type: string
+    Perms:
+      type: array
+      items:
+        $ref: '#/components/schemas/Perm'
+    Perm:
+      type: object
+      properties:
+        id:
+          type: number
+        repo_perm:
+          type: string
+        synced_at:
+          type: string
+        created_at:
+          type: string
+        updated_at:
+          type: string
+        edges:
+          type: object
+          properties:
+            user:
+              $ref: '#/components/schemas/User'
+            repo:
+              $ref: '#/components/schemas/Repository'
     Commits:
       type: array
       items:
