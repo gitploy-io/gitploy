@@ -23,11 +23,6 @@ func (i *Interactor) Deploy(ctx context.Context, u *ent.User, re *ent.Repo, d *e
 		return i.deployToSCM(ctx, u, re, d, env)
 	}
 
-	_, err = i.requestApprovals(ctx, d, env.Approval.Approvers)
-	if err != nil {
-		return nil, err
-	}
-
 	d.RequiredApprovalCount = env.Approval.RequiredCount
 	d.AutoDeploy = env.Approval.AutoDeploy
 	d, _ = i.Store.UpdateDeployment(ctx, d)
@@ -101,34 +96,4 @@ func (i *Interactor) deployToSCM(ctx context.Context, u *ent.User, re *ent.Repo,
 		DeploymentID: d.ID,
 	})
 	return d, nil
-}
-
-func (i *Interactor) requestApprovals(ctx context.Context, d *ent.Deployment, approvers []string) ([]*ent.Approval, error) {
-	approvals := []*ent.Approval{}
-
-	for _, ar := range approvers {
-		u, err := i.FindUserByLogin(ctx, ar)
-		if ent.IsNotFound(err) {
-			continue
-		} else if err != nil {
-			d.Status = deployment.StatusFailure
-			i.UpdateDeployment(ctx, d)
-
-			return nil, fmt.Errorf("failed to get the user: %w", err)
-		}
-
-		a, err := i.CreateApproval(ctx, &ent.Approval{
-			UserID:       u.ID,
-			DeploymentID: d.ID,
-		})
-		if err != nil {
-			d.Status = deployment.StatusFailure
-			i.UpdateDeployment(ctx, d)
-			return nil, fmt.Errorf("failed to request a approval: %w", err)
-		}
-
-		approvals = append(approvals, a)
-	}
-
-	return approvals, nil
 }
