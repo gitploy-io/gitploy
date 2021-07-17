@@ -751,6 +751,7 @@ paths:
         '500':
           $ref: '#/components/responses/500InternalError'
   # Only permitted users can access to Approval API.
+  # To be under repository protects to access without permissions.
   /repos/{id}/approvals/{aid}:
     get:
       tags:
