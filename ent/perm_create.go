@@ -84,25 +84,9 @@ func (pc *PermCreate) SetUserID(s string) *PermCreate {
 	return pc
 }
 
-// SetNillableUserID sets the "user_id" field if the given value is not nil.
-func (pc *PermCreate) SetNillableUserID(s *string) *PermCreate {
-	if s != nil {
-		pc.SetUserID(*s)
-	}
-	return pc
-}
-
 // SetRepoID sets the "repo_id" field.
 func (pc *PermCreate) SetRepoID(s string) *PermCreate {
 	pc.mutation.SetRepoID(s)
-	return pc
-}
-
-// SetNillableRepoID sets the "repo_id" field if the given value is not nil.
-func (pc *PermCreate) SetNillableRepoID(s *string) *PermCreate {
-	if s != nil {
-		pc.SetRepoID(*s)
-	}
 	return pc
 }
 
@@ -197,6 +181,18 @@ func (pc *PermCreate) check() error {
 	}
 	if _, ok := pc.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New("ent: missing required field \"updated_at\"")}
+	}
+	if _, ok := pc.mutation.UserID(); !ok {
+		return &ValidationError{Name: "user_id", err: errors.New("ent: missing required field \"user_id\"")}
+	}
+	if _, ok := pc.mutation.RepoID(); !ok {
+		return &ValidationError{Name: "repo_id", err: errors.New("ent: missing required field \"repo_id\"")}
+	}
+	if _, ok := pc.mutation.UserID(); !ok {
+		return &ValidationError{Name: "user", err: errors.New("ent: missing required edge \"user\"")}
+	}
+	if _, ok := pc.mutation.RepoID(); !ok {
+		return &ValidationError{Name: "repo", err: errors.New("ent: missing required edge \"repo\"")}
 	}
 	return nil
 }

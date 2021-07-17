@@ -18,6 +18,17 @@ func (s *Store) ListApprovals(ctx context.Context, d *ent.Deployment) ([]*ent.Ap
 		All(ctx)
 }
 
+func (s *Store) FindApprovalByID(ctx context.Context, id int) (*ent.Approval, error) {
+	return s.c.Approval.
+		Query().
+		Where(
+			approval.IDEQ(id),
+		).
+		WithUser().
+		WithDeployment().
+		First(ctx)
+}
+
 func (s *Store) FindApprovalOfUser(ctx context.Context, d *ent.Deployment, u *ent.User) (*ent.Approval, error) {
 	return s.c.Approval.
 		Query().
@@ -45,4 +56,10 @@ func (s *Store) UpdateApproval(ctx context.Context, a *ent.Approval) (*ent.Appro
 		UpdateOne(a).
 		SetIsApproved(a.IsApproved).
 		Save(ctx)
+}
+
+func (s *Store) DeleteApproval(ctx context.Context, a *ent.Approval) error {
+	return s.c.Approval.
+		DeleteOne(a).
+		Exec(ctx)
 }

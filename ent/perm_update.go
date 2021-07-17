@@ -4,6 +4,7 @@ package ent
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -89,37 +90,9 @@ func (pu *PermUpdate) SetUserID(s string) *PermUpdate {
 	return pu
 }
 
-// SetNillableUserID sets the "user_id" field if the given value is not nil.
-func (pu *PermUpdate) SetNillableUserID(s *string) *PermUpdate {
-	if s != nil {
-		pu.SetUserID(*s)
-	}
-	return pu
-}
-
-// ClearUserID clears the value of the "user_id" field.
-func (pu *PermUpdate) ClearUserID() *PermUpdate {
-	pu.mutation.ClearUserID()
-	return pu
-}
-
 // SetRepoID sets the "repo_id" field.
 func (pu *PermUpdate) SetRepoID(s string) *PermUpdate {
 	pu.mutation.SetRepoID(s)
-	return pu
-}
-
-// SetNillableRepoID sets the "repo_id" field if the given value is not nil.
-func (pu *PermUpdate) SetNillableRepoID(s *string) *PermUpdate {
-	if s != nil {
-		pu.SetRepoID(*s)
-	}
-	return pu
-}
-
-// ClearRepoID clears the value of the "repo_id" field.
-func (pu *PermUpdate) ClearRepoID() *PermUpdate {
-	pu.mutation.ClearRepoID()
 	return pu
 }
 
@@ -222,6 +195,12 @@ func (pu *PermUpdate) check() error {
 		if err := perm.RepoPermValidator(v); err != nil {
 			return &ValidationError{Name: "repo_perm", err: fmt.Errorf("ent: validator failed for field \"repo_perm\": %w", err)}
 		}
+	}
+	if _, ok := pu.mutation.UserID(); pu.mutation.UserCleared() && !ok {
+		return errors.New("ent: clearing a required unique edge \"user\"")
+	}
+	if _, ok := pu.mutation.RepoID(); pu.mutation.RepoCleared() && !ok {
+		return errors.New("ent: clearing a required unique edge \"repo\"")
 	}
 	return nil
 }
@@ -427,37 +406,9 @@ func (puo *PermUpdateOne) SetUserID(s string) *PermUpdateOne {
 	return puo
 }
 
-// SetNillableUserID sets the "user_id" field if the given value is not nil.
-func (puo *PermUpdateOne) SetNillableUserID(s *string) *PermUpdateOne {
-	if s != nil {
-		puo.SetUserID(*s)
-	}
-	return puo
-}
-
-// ClearUserID clears the value of the "user_id" field.
-func (puo *PermUpdateOne) ClearUserID() *PermUpdateOne {
-	puo.mutation.ClearUserID()
-	return puo
-}
-
 // SetRepoID sets the "repo_id" field.
 func (puo *PermUpdateOne) SetRepoID(s string) *PermUpdateOne {
 	puo.mutation.SetRepoID(s)
-	return puo
-}
-
-// SetNillableRepoID sets the "repo_id" field if the given value is not nil.
-func (puo *PermUpdateOne) SetNillableRepoID(s *string) *PermUpdateOne {
-	if s != nil {
-		puo.SetRepoID(*s)
-	}
-	return puo
-}
-
-// ClearRepoID clears the value of the "repo_id" field.
-func (puo *PermUpdateOne) ClearRepoID() *PermUpdateOne {
-	puo.mutation.ClearRepoID()
 	return puo
 }
 
@@ -567,6 +518,12 @@ func (puo *PermUpdateOne) check() error {
 		if err := perm.RepoPermValidator(v); err != nil {
 			return &ValidationError{Name: "repo_perm", err: fmt.Errorf("ent: validator failed for field \"repo_perm\": %w", err)}
 		}
+	}
+	if _, ok := puo.mutation.UserID(); puo.mutation.UserCleared() && !ok {
+		return errors.New("ent: clearing a required unique edge \"user\"")
+	}
+	if _, ok := puo.mutation.RepoID(); puo.mutation.RepoCleared() && !ok {
+		return errors.New("ent: clearing a required unique edge \"repo\"")
 	}
 	return nil
 }

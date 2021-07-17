@@ -9,10 +9,13 @@ import (
 
 type (
 	Interactor interface {
+		FindUserByID(ctx context.Context, id string) (*ent.User, error)
+
+		ListPermsOfRepo(ctx context.Context, r *ent.Repo, q string, page, perPage int) ([]*ent.Perm, error)
 		FindPermOfRepo(ctx context.Context, r *ent.Repo, u *ent.User) (*ent.Perm, error)
 
-		FindRepoByID(ctx context.Context, id string) (*ent.Repo, error)
 		ListReposOfUser(ctx context.Context, u *ent.User, sorted bool, q string, page, perPage int) ([]*ent.Repo, error)
+		FindRepoByID(ctx context.Context, id string) (*ent.Repo, error)
 		FindRepoByNamespaceName(ctx context.Context, namespace, name string) (*ent.Repo, error)
 		UpdateRepo(ctx context.Context, r *ent.Repo) (*ent.Repo, error)
 		ActivateRepo(ctx context.Context, u *ent.User, r *ent.Repo, c *vo.WebhookConfig) (*ent.Repo, error)
@@ -29,8 +32,11 @@ type (
 		GetConfig(ctx context.Context, u *ent.User, r *ent.Repo) (*vo.Config, error)
 
 		ListApprovals(ctx context.Context, d *ent.Deployment) ([]*ent.Approval, error)
+		FindApprovalByID(ctx context.Context, id int) (*ent.Approval, error)
 		FindApprovalOfUser(ctx context.Context, d *ent.Deployment, u *ent.User) (*ent.Approval, error)
+		CreateApproval(ctx context.Context, a *ent.Approval) (*ent.Approval, error)
 		UpdateApproval(ctx context.Context, a *ent.Approval) (*ent.Approval, error)
+		DeleteApproval(ctx context.Context, a *ent.Approval) error
 
 		ListCommits(ctx context.Context, u *ent.User, r *ent.Repo, branch string, page, perPage int) ([]*vo.Commit, error)
 		GetCommit(ctx context.Context, u *ent.User, r *ent.Repo, sha string) (*vo.Commit, error)
