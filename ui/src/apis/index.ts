@@ -1,5 +1,6 @@
 import { sync } from "./sync"
 import { listRepos, searchRepo, updateRepo, activateRepo, deactivateRepo } from "./repo"
+import { listPerms } from "./perm"
 import { listDeployments, getDeployment ,createDeployment, updateDeploymentStatusCreated, rollbackDeployment } from './deployment'
 import { getConfig } from './config'
 import { listCommits, getCommit, listStatuses } from './commit'
@@ -17,6 +18,7 @@ export {
     updateRepo,
     activateRepo,
     deactivateRepo,
+    listPerms,
     listDeployments,
     getDeployment,
     createDeployment,

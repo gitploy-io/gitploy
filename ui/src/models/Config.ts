@@ -5,4 +5,5 @@ export default interface Config  {
 export interface Env {
     name: string
     requiredContexts: string[]
+    approvalEnabled: boolean
 }

@@ -1,9 +1,10 @@
 import Repo, { RepoPayload } from './Repo'
-import Deployment, { DeploymentStatus, DeploymentType } from './Deployment'
-import Config, { Env } from './Config'
-import Commit, { Status, StatusState } from './Commit'
-import Branch from './Branch'
-import Tag from './Tag'
+import Perm from "./Perm"
+import Deployment, { DeploymentStatus, DeploymentType } from "./Deployment"
+import Config, { Env } from "./Config"
+import Commit, { Status, StatusState } from "./Commit"
+import Branch from "./Branch"
+import Tag from "./Tag"
 import User, { ChatUser } from "./User"
 import Approval from "./Approval"
 import Notification, { NotificationType } from "./Notification"
@@ -21,6 +22,7 @@ import { RequestStatus } from './Request'
 export type {
     Repo,
     RepoPayload,
+    Perm,
     Deployment,
     Config,
     Env,
