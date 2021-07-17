@@ -295,6 +295,11 @@ var (
 				Unique:  false,
 				Columns: []*schema.Column{PermsColumns[5]},
 			},
+			{
+				Name:    "perm_repo_id_user_id",
+				Unique:  false,
+				Columns: []*schema.Column{PermsColumns[5], PermsColumns[6]},
+			},
 		},
 	}
 	// ReposColumns holds the columns for the "repos" table.
