@@ -9,6 +9,8 @@ import (
 
 type (
 	Interactor interface {
+		FindUserByID(ctx context.Context, id string) (*ent.User, error)
+
 		ListPermsOfRepo(ctx context.Context, r *ent.Repo, q string, page, perPage int) ([]*ent.Perm, error)
 		FindPermOfRepo(ctx context.Context, r *ent.Repo, u *ent.User) (*ent.Perm, error)
 
@@ -31,6 +33,7 @@ type (
 
 		ListApprovals(ctx context.Context, d *ent.Deployment) ([]*ent.Approval, error)
 		FindApprovalOfUser(ctx context.Context, d *ent.Deployment, u *ent.User) (*ent.Approval, error)
+		CreateApproval(ctx context.Context, a *ent.Approval) (*ent.Approval, error)
 		UpdateApproval(ctx context.Context, a *ent.Approval) (*ent.Approval, error)
 
 		ListCommits(ctx context.Context, u *ent.User, r *ent.Repo, branch string, page, perPage int) ([]*vo.Commit, error)

@@ -602,7 +602,6 @@ paths:
           $ref: '#/components/responses/422UnprocessableEntity'
         '500':
           $ref: '#/components/responses/500InternalError'
-
   /repos/{id}/deployments/{number}/approvals:
     get:
       tags:
@@ -632,6 +631,48 @@ paths:
           $ref: '#/components/responses/401Unauthorized'
         '403': 
           $ref: '#/components/responses/403Forbidden'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+    post:
+      tags:
+        - Repo
+      summary: Create a new approval.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            description: The repository id
+        - in: path
+          name: number
+          required: true
+          schema:
+            type: integer
+            description: The deployment number.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_id:
+                  type: string
+      responses:
+        '201':
+          description: Approval created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Approval'
+        '401': 
+          $ref: '#/components/responses/401Unauthorized'
+        '403': 
+          $ref: '#/components/responses/403Forbidden'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '422':
+          $ref: '#/components/responses/422UnprocessableEntity'
         '500':
           $ref: '#/components/responses/500InternalError'
   /repos/{id}/deployments/{number}/approval:
