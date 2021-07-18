@@ -2172,6 +2172,8 @@ type DeploymentMutation struct {
 	status                     *deployment.Status
 	uid                        *int64
 	adduid                     *int64
+	is_rollback                *bool
+	is_approval_enabled        *bool
 	required_approval_count    *int
 	addrequired_approval_count *int
 	created_at                 *time.Time
@@ -2578,6 +2580,78 @@ func (m *DeploymentMutation) ResetUID() {
 	m.uid = nil
 	m.adduid = nil
 	delete(m.clearedFields, deployment.FieldUID)
+}
+
+// SetIsRollback sets the "is_rollback" field.
+func (m *DeploymentMutation) SetIsRollback(b bool) {
+	m.is_rollback = &b
+}
+
+// IsRollback returns the value of the "is_rollback" field in the mutation.
+func (m *DeploymentMutation) IsRollback() (r bool, exists bool) {
+	v := m.is_rollback
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsRollback returns the old "is_rollback" field's value of the Deployment entity.
+// If the Deployment object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DeploymentMutation) OldIsRollback(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldIsRollback is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldIsRollback requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsRollback: %w", err)
+	}
+	return oldValue.IsRollback, nil
+}
+
+// ResetIsRollback resets all changes to the "is_rollback" field.
+func (m *DeploymentMutation) ResetIsRollback() {
+	m.is_rollback = nil
+}
+
+// SetIsApprovalEnabled sets the "is_approval_enabled" field.
+func (m *DeploymentMutation) SetIsApprovalEnabled(b bool) {
+	m.is_approval_enabled = &b
+}
+
+// IsApprovalEnabled returns the value of the "is_approval_enabled" field in the mutation.
+func (m *DeploymentMutation) IsApprovalEnabled() (r bool, exists bool) {
+	v := m.is_approval_enabled
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsApprovalEnabled returns the old "is_approval_enabled" field's value of the Deployment entity.
+// If the Deployment object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DeploymentMutation) OldIsApprovalEnabled(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldIsApprovalEnabled is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldIsApprovalEnabled requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsApprovalEnabled: %w", err)
+	}
+	return oldValue.IsApprovalEnabled, nil
+}
+
+// ResetIsApprovalEnabled resets all changes to the "is_approval_enabled" field.
+func (m *DeploymentMutation) ResetIsApprovalEnabled() {
+	m.is_approval_enabled = nil
 }
 
 // SetRequiredApprovalCount sets the "required_approval_count" field.
@@ -3005,7 +3079,7 @@ func (m *DeploymentMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *DeploymentMutation) Fields() []string {
-	fields := make([]string, 0, 12)
+	fields := make([]string, 0, 14)
 	if m.number != nil {
 		fields = append(fields, deployment.FieldNumber)
 	}
@@ -3026,6 +3100,12 @@ func (m *DeploymentMutation) Fields() []string {
 	}
 	if m.uid != nil {
 		fields = append(fields, deployment.FieldUID)
+	}
+	if m.is_rollback != nil {
+		fields = append(fields, deployment.FieldIsRollback)
+	}
+	if m.is_approval_enabled != nil {
+		fields = append(fields, deployment.FieldIsApprovalEnabled)
 	}
 	if m.required_approval_count != nil {
 		fields = append(fields, deployment.FieldRequiredApprovalCount)
@@ -3064,6 +3144,10 @@ func (m *DeploymentMutation) Field(name string) (ent.Value, bool) {
 		return m.Status()
 	case deployment.FieldUID:
 		return m.UID()
+	case deployment.FieldIsRollback:
+		return m.IsRollback()
+	case deployment.FieldIsApprovalEnabled:
+		return m.IsApprovalEnabled()
 	case deployment.FieldRequiredApprovalCount:
 		return m.RequiredApprovalCount()
 	case deployment.FieldCreatedAt:
@@ -3097,6 +3181,10 @@ func (m *DeploymentMutation) OldField(ctx context.Context, name string) (ent.Val
 		return m.OldStatus(ctx)
 	case deployment.FieldUID:
 		return m.OldUID(ctx)
+	case deployment.FieldIsRollback:
+		return m.OldIsRollback(ctx)
+	case deployment.FieldIsApprovalEnabled:
+		return m.OldIsApprovalEnabled(ctx)
 	case deployment.FieldRequiredApprovalCount:
 		return m.OldRequiredApprovalCount(ctx)
 	case deployment.FieldCreatedAt:
@@ -3164,6 +3252,20 @@ func (m *DeploymentMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetUID(v)
+		return nil
+	case deployment.FieldIsRollback:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsRollback(v)
+		return nil
+	case deployment.FieldIsApprovalEnabled:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsApprovalEnabled(v)
 		return nil
 	case deployment.FieldRequiredApprovalCount:
 		v, ok := value.(int)
@@ -3317,6 +3419,12 @@ func (m *DeploymentMutation) ResetField(name string) error {
 		return nil
 	case deployment.FieldUID:
 		m.ResetUID()
+		return nil
+	case deployment.FieldIsRollback:
+		m.ResetIsRollback()
+		return nil
+	case deployment.FieldIsApprovalEnabled:
+		m.ResetIsApprovalEnabled()
 		return nil
 	case deployment.FieldRequiredApprovalCount:
 		m.ResetRequiredApprovalCount()

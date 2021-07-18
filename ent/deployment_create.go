@@ -91,6 +91,34 @@ func (dc *DeploymentCreate) SetNillableUID(i *int64) *DeploymentCreate {
 	return dc
 }
 
+// SetIsRollback sets the "is_rollback" field.
+func (dc *DeploymentCreate) SetIsRollback(b bool) *DeploymentCreate {
+	dc.mutation.SetIsRollback(b)
+	return dc
+}
+
+// SetNillableIsRollback sets the "is_rollback" field if the given value is not nil.
+func (dc *DeploymentCreate) SetNillableIsRollback(b *bool) *DeploymentCreate {
+	if b != nil {
+		dc.SetIsRollback(*b)
+	}
+	return dc
+}
+
+// SetIsApprovalEnabled sets the "is_approval_enabled" field.
+func (dc *DeploymentCreate) SetIsApprovalEnabled(b bool) *DeploymentCreate {
+	dc.mutation.SetIsApprovalEnabled(b)
+	return dc
+}
+
+// SetNillableIsApprovalEnabled sets the "is_approval_enabled" field if the given value is not nil.
+func (dc *DeploymentCreate) SetNillableIsApprovalEnabled(b *bool) *DeploymentCreate {
+	if b != nil {
+		dc.SetIsApprovalEnabled(*b)
+	}
+	return dc
+}
+
 // SetRequiredApprovalCount sets the "required_approval_count" field.
 func (dc *DeploymentCreate) SetRequiredApprovalCount(i int) *DeploymentCreate {
 	dc.mutation.SetRequiredApprovalCount(i)
@@ -260,6 +288,14 @@ func (dc *DeploymentCreate) defaults() {
 		v := deployment.DefaultStatus
 		dc.mutation.SetStatus(v)
 	}
+	if _, ok := dc.mutation.IsRollback(); !ok {
+		v := deployment.DefaultIsRollback
+		dc.mutation.SetIsRollback(v)
+	}
+	if _, ok := dc.mutation.IsApprovalEnabled(); !ok {
+		v := deployment.DefaultIsApprovalEnabled
+		dc.mutation.SetIsApprovalEnabled(v)
+	}
 	if _, ok := dc.mutation.RequiredApprovalCount(); !ok {
 		v := deployment.DefaultRequiredApprovalCount
 		dc.mutation.SetRequiredApprovalCount(v)
@@ -303,6 +339,12 @@ func (dc *DeploymentCreate) check() error {
 		if err := deployment.StatusValidator(v); err != nil {
 			return &ValidationError{Name: "status", err: fmt.Errorf("ent: validator failed for field \"status\": %w", err)}
 		}
+	}
+	if _, ok := dc.mutation.IsRollback(); !ok {
+		return &ValidationError{Name: "is_rollback", err: errors.New("ent: missing required field \"is_rollback\"")}
+	}
+	if _, ok := dc.mutation.IsApprovalEnabled(); !ok {
+		return &ValidationError{Name: "is_approval_enabled", err: errors.New("ent: missing required field \"is_approval_enabled\"")}
 	}
 	if _, ok := dc.mutation.RequiredApprovalCount(); !ok {
 		return &ValidationError{Name: "required_approval_count", err: errors.New("ent: missing required field \"required_approval_count\"")}
@@ -407,6 +449,22 @@ func (dc *DeploymentCreate) createSpec() (*Deployment, *sqlgraph.CreateSpec) {
 			Column: deployment.FieldUID,
 		})
 		_node.UID = value
+	}
+	if value, ok := dc.mutation.IsRollback(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: deployment.FieldIsRollback,
+		})
+		_node.IsRollback = value
+	}
+	if value, ok := dc.mutation.IsApprovalEnabled(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: deployment.FieldIsApprovalEnabled,
+		})
+		_node.IsApprovalEnabled = value
 	}
 	if value, ok := dc.mutation.RequiredApprovalCount(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

@@ -119,6 +119,34 @@ func (du *DeploymentUpdate) ClearUID() *DeploymentUpdate {
 	return du
 }
 
+// SetIsRollback sets the "is_rollback" field.
+func (du *DeploymentUpdate) SetIsRollback(b bool) *DeploymentUpdate {
+	du.mutation.SetIsRollback(b)
+	return du
+}
+
+// SetNillableIsRollback sets the "is_rollback" field if the given value is not nil.
+func (du *DeploymentUpdate) SetNillableIsRollback(b *bool) *DeploymentUpdate {
+	if b != nil {
+		du.SetIsRollback(*b)
+	}
+	return du
+}
+
+// SetIsApprovalEnabled sets the "is_approval_enabled" field.
+func (du *DeploymentUpdate) SetIsApprovalEnabled(b bool) *DeploymentUpdate {
+	du.mutation.SetIsApprovalEnabled(b)
+	return du
+}
+
+// SetNillableIsApprovalEnabled sets the "is_approval_enabled" field if the given value is not nil.
+func (du *DeploymentUpdate) SetNillableIsApprovalEnabled(b *bool) *DeploymentUpdate {
+	if b != nil {
+		du.SetIsApprovalEnabled(*b)
+	}
+	return du
+}
+
 // SetRequiredApprovalCount sets the "required_approval_count" field.
 func (du *DeploymentUpdate) SetRequiredApprovalCount(i int) *DeploymentUpdate {
 	du.mutation.ResetRequiredApprovalCount()
@@ -479,6 +507,20 @@ func (du *DeploymentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeInt64,
 			Column: deployment.FieldUID,
+		})
+	}
+	if value, ok := du.mutation.IsRollback(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: deployment.FieldIsRollback,
+		})
+	}
+	if value, ok := du.mutation.IsApprovalEnabled(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: deployment.FieldIsApprovalEnabled,
 		})
 	}
 	if value, ok := du.mutation.RequiredApprovalCount(); ok {
@@ -843,6 +885,34 @@ func (duo *DeploymentUpdateOne) AddUID(i int64) *DeploymentUpdateOne {
 // ClearUID clears the value of the "uid" field.
 func (duo *DeploymentUpdateOne) ClearUID() *DeploymentUpdateOne {
 	duo.mutation.ClearUID()
+	return duo
+}
+
+// SetIsRollback sets the "is_rollback" field.
+func (duo *DeploymentUpdateOne) SetIsRollback(b bool) *DeploymentUpdateOne {
+	duo.mutation.SetIsRollback(b)
+	return duo
+}
+
+// SetNillableIsRollback sets the "is_rollback" field if the given value is not nil.
+func (duo *DeploymentUpdateOne) SetNillableIsRollback(b *bool) *DeploymentUpdateOne {
+	if b != nil {
+		duo.SetIsRollback(*b)
+	}
+	return duo
+}
+
+// SetIsApprovalEnabled sets the "is_approval_enabled" field.
+func (duo *DeploymentUpdateOne) SetIsApprovalEnabled(b bool) *DeploymentUpdateOne {
+	duo.mutation.SetIsApprovalEnabled(b)
+	return duo
+}
+
+// SetNillableIsApprovalEnabled sets the "is_approval_enabled" field if the given value is not nil.
+func (duo *DeploymentUpdateOne) SetNillableIsApprovalEnabled(b *bool) *DeploymentUpdateOne {
+	if b != nil {
+		duo.SetIsApprovalEnabled(*b)
+	}
 	return duo
 }
 
@@ -1230,6 +1300,20 @@ func (duo *DeploymentUpdateOne) sqlSave(ctx context.Context) (_node *Deployment,
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeInt64,
 			Column: deployment.FieldUID,
+		})
+	}
+	if value, ok := duo.mutation.IsRollback(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: deployment.FieldIsRollback,
+		})
+	}
+	if value, ok := duo.mutation.IsApprovalEnabled(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: deployment.FieldIsApprovalEnabled,
 		})
 	}
 	if value, ok := duo.mutation.RequiredApprovalCount(); ok {

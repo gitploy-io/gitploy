@@ -26,6 +26,10 @@ const (
 	FieldStatus = "status"
 	// FieldUID holds the string denoting the uid field in the database.
 	FieldUID = "uid"
+	// FieldIsRollback holds the string denoting the is_rollback field in the database.
+	FieldIsRollback = "is_rollback"
+	// FieldIsApprovalEnabled holds the string denoting the is_approval_enabled field in the database.
+	FieldIsApprovalEnabled = "is_approval_enabled"
 	// FieldRequiredApprovalCount holds the string denoting the required_approval_count field in the database.
 	FieldRequiredApprovalCount = "required_approval_count"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
@@ -95,6 +99,8 @@ var Columns = []string{
 	FieldEnv,
 	FieldStatus,
 	FieldUID,
+	FieldIsRollback,
+	FieldIsApprovalEnabled,
 	FieldRequiredApprovalCount,
 	FieldCreatedAt,
 	FieldUpdatedAt,
@@ -113,6 +119,10 @@ func ValidColumn(column string) bool {
 }
 
 var (
+	// DefaultIsRollback holds the default value on creation for the "is_rollback" field.
+	DefaultIsRollback bool
+	// DefaultIsApprovalEnabled holds the default value on creation for the "is_approval_enabled" field.
+	DefaultIsApprovalEnabled bool
 	// DefaultRequiredApprovalCount holds the default value on creation for the "required_approval_count" field.
 	DefaultRequiredApprovalCount int
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
