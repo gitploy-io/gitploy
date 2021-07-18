@@ -1,5 +1,6 @@
 import { sync } from "./sync"
 import { listRepos, searchRepo, updateRepo, activateRepo, deactivateRepo } from "./repo"
+import { listPerms } from "./perm"
 import { listDeployments, getDeployment ,createDeployment, updateDeploymentStatusCreated, rollbackDeployment } from './deployment'
 import { getConfig } from './config'
 import { listCommits, getCommit, listStatuses } from './commit'
@@ -7,7 +8,7 @@ import { listBranches, getBranch } from './branch'
 import { listTags, getTag } from './tag'
 import { getMe } from "./user"
 import { checkSlack } from "./chat"
-import { listApprovals, getApproval, setApprovalApproved, setApprovalDeclined } from "./approval"
+import { listApprovals, getMyApproval, createApproval, deleteApproval, setApprovalApproved, setApprovalDeclined } from "./approval"
 import { subscribeNotification, listNotifications, patchNotificationChecked } from "./notification"
 
 export {
@@ -17,6 +18,7 @@ export {
     updateRepo,
     activateRepo,
     deactivateRepo,
+    listPerms,
     listDeployments,
     getDeployment,
     createDeployment,
@@ -33,7 +35,9 @@ export {
     getMe,
     checkSlack,
     listApprovals,
-    getApproval,
+    createApproval,
+    deleteApproval,
+    getMyApproval,
     setApprovalApproved,
     setApprovalDeclined,
     subscribeNotification, 

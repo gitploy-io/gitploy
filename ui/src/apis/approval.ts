@@ -4,7 +4,14 @@ import { instance, headers } from './setting'
 import { _fetch } from "./_base"
 import { mapUser } from "./user"
 import { mapDataToDeployment } from "./deployment"
-import { User, Deployment, Approval, HttpNotFoundError } from '../models'
+import { 
+    Repo,
+    User, 
+    Deployment, 
+    Approval, 
+    HttpNotFoundError,
+    HttpUnprocessableEntityError
+ } from '../models'
 
 export const mapDataToApproval = (data: any): Approval => {
     let user: User | null = null
@@ -44,7 +51,42 @@ export const listApprovals = async (id: string, number: number) => {
     return approvals
 }
 
-export const getApproval = async (id: string, number: number) => {
+export const createApproval = async (repo: Repo, deployment: Deployment, approver: User) => {
+    const body = {
+        user_id: approver.id
+    }
+    const res = await _fetch(`${instance}/api/v1/repos/${repo.id}/deployments/${deployment.number}/approvals`, {
+        credentials: "same-origin",
+        headers,
+        method: "POST",
+        body: JSON.stringify(body),
+    })
+
+    if (res.status === StatusCodes.UNPROCESSABLE_ENTITY) {
+        const message = await res.json().then(data => data.message)
+        throw new HttpUnprocessableEntityError(message)
+    }
+
+    const approval: Approval = await res.json()
+        .then(data => mapDataToApproval(data))
+
+    return approval
+}
+
+export const deleteApproval = async (repo: Repo, approval: Approval) => {
+    const res = await _fetch(`${instance}/api/v1/repos/${repo.id}/approvals/${approval.id}`, {
+        credentials: "same-origin",
+        headers,
+        method: "DELETE",
+    })
+
+    if (res.status === StatusCodes.NOT_FOUND) {
+        const message = await res.json().then(data => data.message)
+        throw new HttpUnprocessableEntityError(message)
+    }
+}
+
+export const getMyApproval = async (id: string, number: number) => {
     const res = await _fetch(`${instance}/api/v1/repos/${id}/deployments/${number}/approval`, {
         credentials: "same-origin",
         headers,

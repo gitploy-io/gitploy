@@ -34,8 +34,6 @@ type Deployment struct {
 	UID int64 `json:"uid"`
 	// RequiredApprovalCount holds the value of the "required_approval_count" field.
 	RequiredApprovalCount int `json:"required_approval_count"`
-	// AutoDeploy holds the value of the "auto_deploy" field.
-	AutoDeploy bool `json:"auto_deploy"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -126,8 +124,6 @@ func (*Deployment) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case deployment.FieldAutoDeploy:
-			values[i] = new(sql.NullBool)
 		case deployment.FieldID, deployment.FieldNumber, deployment.FieldUID, deployment.FieldRequiredApprovalCount:
 			values[i] = new(sql.NullInt64)
 		case deployment.FieldType, deployment.FieldRef, deployment.FieldSha, deployment.FieldEnv, deployment.FieldStatus, deployment.FieldUserID, deployment.FieldRepoID:
@@ -202,12 +198,6 @@ func (d *Deployment) assignValues(columns []string, values []interface{}) error 
 				return fmt.Errorf("unexpected type %T for field required_approval_count", values[i])
 			} else if value.Valid {
 				d.RequiredApprovalCount = int(value.Int64)
-			}
-		case deployment.FieldAutoDeploy:
-			if value, ok := values[i].(*sql.NullBool); !ok {
-				return fmt.Errorf("unexpected type %T for field auto_deploy", values[i])
-			} else if value.Valid {
-				d.AutoDeploy = value.Bool
 			}
 		case deployment.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -302,8 +292,6 @@ func (d *Deployment) String() string {
 	builder.WriteString(fmt.Sprintf("%v", d.UID))
 	builder.WriteString(", required_approval_count=")
 	builder.WriteString(fmt.Sprintf("%v", d.RequiredApprovalCount))
-	builder.WriteString(", auto_deploy=")
-	builder.WriteString(fmt.Sprintf("%v", d.AutoDeploy))
 	builder.WriteString(", created_at=")
 	builder.WriteString(d.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", updated_at=")

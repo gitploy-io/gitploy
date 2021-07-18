@@ -17,16 +17,17 @@ export const getConfig = async (repoId: string) => {
     }
 
     conf = await response.json()
-        .then(c => mapConfig(c))
+        .then(c => mapDataToConfig(c))
 
     return conf
 }
 
-function mapConfig(c: any) {
-    const envs: Env[] = c.envs.map((e: any) => {
+function mapDataToConfig(data: any) {
+    const envs: Env[] = data.envs.map((e: any) => {
         return {
             name: e.name,
-            requiredContexts: e.required_contexts
+            requiredContexts: e.required_contexts,
+            approvalEnabled: e.approval? e.approval.enabled : false,
         }
     })
     return {

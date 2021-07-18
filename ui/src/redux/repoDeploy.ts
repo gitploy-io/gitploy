@@ -1,10 +1,22 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit'
-import { StatusCodes } from 'http-status-codes'
 import { message } from "antd"
 
-import { Repo, Branch, Commit, StatusState, DeploymentType, Tag, RequestStatus, HttpNotFoundError } from '../models'
+import { 
+    User, 
+    Repo, 
+    Deployment,
+    Branch, 
+    Commit, 
+    Tag, 
+    Config,
+    StatusState, 
+    DeploymentType, 
+    RequestStatus, 
+    HttpNotFoundError 
+} from '../models'
 import { 
     searchRepo, 
+    listPerms,
     getConfig, 
     listBranches, 
     getBranch, 
@@ -13,7 +25,9 @@ import {
     listStatuses, 
     listTags, 
     getTag, 
-    createDeployment } from '../apis'
+    createDeployment,
+    createApproval,
+} from '../apis'
 
 // fetch all at the first page.
 const firstPage = 1
@@ -22,6 +36,7 @@ const perPage = 100
 interface RepoDeployState {
     repo: Repo | null
     hasConfig: boolean
+    config: Config | null
     env: string
     envs: string[]
     type: DeploymentType | null
@@ -34,6 +49,14 @@ interface RepoDeployState {
     tag: Tag | null
     tagCheck: StatusState
     tags: Tag[]
+    /**
+     * Approval selecter.
+     * approvalEnabled - The approvers field is displayed when it is enabled.
+     * approvers - selected approvers from candidates.
+    */
+    approvalEnabled: boolean,
+    approvers: User[]
+    candidates: User[]
     deploying: RequestStatus
     deployId: string
 }
@@ -41,6 +64,7 @@ interface RepoDeployState {
 const initialState: RepoDeployState = {
     repo: null,
     hasConfig: true,
+    config: null,
     env: "",
     envs: [],
     type: null,
@@ -53,6 +77,9 @@ const initialState: RepoDeployState = {
     tag: null,
     tagCheck: StatusState.Null,
     tags: [],
+    approvalEnabled: false,
+    approvers: [],
+    candidates: [],
     deploying: RequestStatus.Idle,
     deployId: "",
 }
@@ -65,15 +92,15 @@ export const init = createAsyncThunk<Repo, {namespace: string, name: string}, { 
     },
 )
 
-export const fetchEnvs = createAsyncThunk<string[], void, { state: {repoDeploy: RepoDeployState} }>(
-    "repoDeploy/fetchEnvs", 
+export const fetchConfig = createAsyncThunk<Config, void, { state: {repoDeploy: RepoDeployState} }>(
+    "repoDeploy/fetchConfig", 
     async (_, { getState, rejectWithValue } ) => {
         const { repo } = getState().repoDeploy
         if (repo === null) throw new Error("The repo is not set.")
 
         try {
             const config = await getConfig(repo.id)
-            return config.envs.map(e =>  e.name)
+            return config
         } catch (e) {
             return rejectWithValue(e)
         }
@@ -207,10 +234,30 @@ export const addTagManually = createAsyncThunk<Tag, string, { state: {repoDeploy
     }
 )
 
+export const searchCandidates = createAsyncThunk<User[], string, { state: {repoDeploy: RepoDeployState }}>(
+    "repoDeploy/searchCandidates",
+    async (q, { getState, rejectWithValue }) => {
+        const { repo } = getState().repoDeploy
+        if (repo === null) {
+            throw new Error("The repo is not set.")
+        }
+
+        try {
+            const perms = await listPerms(repo, q)
+            const candidates = perms.map((p) => {
+                return p.user
+            })
+            return candidates
+        } catch(e) {
+            return rejectWithValue(e)
+        }
+    }
+)
+
 export const deploy = createAsyncThunk<void, void, { state: {repoDeploy: RepoDeployState}}> (
     "repoDeploy/deploy",
     async (_ , { getState, rejectWithValue, requestId }) => {
-        const { repo, env, type, branch, commit, tag, deploying, deployId } = getState().repoDeploy
+        const { repo, env, type, branch, commit, tag, approvalEnabled, approvers, deploying, deployId } = getState().repoDeploy
         if (repo === null) {
             throw new Error("The repo is not set.")
         }
@@ -219,16 +266,24 @@ export const deploy = createAsyncThunk<void, void, { state: {repoDeploy: RepoDep
         }
 
         try {
+            let deployment: Deployment
             if (type === DeploymentType.Commit && commit !== null) {
-                await createDeployment(repo.id, type, commit.sha, env)
+                deployment = await createDeployment(repo.id, type, commit.sha, env)
             } else if (type === DeploymentType.Branch && branch !== null) {
-                await createDeployment(repo.id, type, branch.name, env)
+                deployment = await createDeployment(repo.id, type, branch.name, env)
             } else if (type === DeploymentType.Tag && tag !== null) {
-                await createDeployment(repo.id, type, tag.name, env)
+                deployment = await createDeployment(repo.id, type, tag.name, env)
             } 
 
+            if (!approvalEnabled) {
+                message.success("It starts to deploy.", 3)
+                return
+            }
+
+            approvers.forEach(async (approver) => {
+                await createApproval(repo, deployment, approver)
+            })
             message.success("It starts to deploy.", 3)
-            return
         } catch(e) {
             message.error("It has failed to deploy.", 3)
             return rejectWithValue(e)
@@ -241,7 +296,17 @@ export const repoDeploySlice = createSlice({
     initialState,
     reducers: {
         setEnv: (state, action: PayloadAction<string>) => {
-            state.env = action.payload
+            const name = action.payload
+            state.env = name
+
+            if (state.config === null) {
+                return
+            }
+
+            const env = state.config.envs.find(env => env.name === name)
+            if (env !== undefined) {
+                state.approvalEnabled = env.approvalEnabled
+            }
         },
         setType: (state, action: PayloadAction<DeploymentType>) => {
             state.type = action.payload
@@ -255,19 +320,37 @@ export const repoDeploySlice = createSlice({
         setTag: (state, action: PayloadAction<Tag>) => {
             state.tag = action.payload
         },
+        addApprover: (state, action: PayloadAction<User>) => {
+            const candidate = action.payload
+
+            // Check already exist or not.
+            const approver = state.approvers.find(approver => approver.id === candidate.id)
+            if (approver !== undefined) {
+                return
+            }
+
+            state.approvers.push(candidate)
+        },
+        deleteApprover: (state, action: PayloadAction<User>) => {
+            const candidate = action.payload
+
+            const approvers = state.approvers.filter(approver => approver.id !== candidate.id)
+            state.approvers = approvers
+        },
     },
     extraReducers: builder => {
         builder
             .addCase(init.fulfilled, (state, action) => {
                 state.repo = action.payload
             })
-            .addCase(fetchEnvs.fulfilled, (state, action) => {
-                state.envs = action.payload
+            .addCase(fetchConfig.fulfilled, (state, action) => {
+                const config = action.payload
+                state.envs = config.envs.map(e => e.name)
+                state.config = config
+                state.hasConfig = true
             })
-            .addCase(fetchEnvs.rejected, (state, action: PayloadAction<unknown> | PayloadAction<typeof HttpNotFoundError>) => {
-                if (action.payload instanceof HttpNotFoundError && action.payload.code === StatusCodes.NOT_FOUND) {
-                    state.hasConfig = false
-                }
+            .addCase(fetchConfig.rejected, (state) => {
+                state.hasConfig = false
             })
             .addCase(fetchBranches.fulfilled, (state, action) => {
                 state.branches = action.payload
@@ -295,6 +378,12 @@ export const repoDeploySlice = createSlice({
             })
             .addCase(addTagManually.fulfilled, (state, action) => {
                 state.tags.unshift(action.payload)
+            })
+            .addCase(searchCandidates.pending, (state) => {
+                state.candidates = []
+            })
+            .addCase(searchCandidates.fulfilled, (state, action) => {
+                state.candidates = action.payload
             })
             .addCase(deploy.pending, (state, action) => {
                 if (state.deploying === RequestStatus.Idle) {

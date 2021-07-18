@@ -1,5 +1,5 @@
-import { Divider, Avatar } from "antd"
-import { CheckCircleTwoTone, MinusCircleOutlined } from "@ant-design/icons"
+import { Avatar } from "antd"
+import { CheckOutlined } from "@ant-design/icons"
 
 import { Approval } from "../models"
 
@@ -15,18 +15,14 @@ export default function ApprovalList(props: ApprovalListProps) {
                 const avatar = (user !== null)? 
                     <span><Avatar size="small" src={user.avatar}/> {user.login}</span> : 
                     <Avatar size="small">U</Avatar>
-                const divider = (idx !== props.approvals.length - 1)?
-                    <Divider type="vertical" />:
-                    null
                 const icon = (a.isApproved)?
-                    <CheckCircleTwoTone twoToneColor="#52c41a" />:
-                    <MinusCircleOutlined />
+                    <CheckOutlined style={{color: "green"}}/>:
+                    <span className="ant-badge-status-dot" style={{background: "gray"}}></span>
 
                 return (
                     <div key={idx}>
-                        {avatar}&nbsp;
-                        {icon}
-                        {divider}
+                        {icon}&nbsp;&nbsp;&nbsp;
+                        {avatar}
                     </div>)
             })}
         </div>

@@ -29,9 +29,8 @@ type (
 	}
 
 	Approval struct {
-		Approvers     []string `json:"approvers" yaml:"approvers"`
-		RequiredCount int      `json:"required_count" yaml:"required_count"`
-		AutoDeploy    bool     `json:"auto_deploy" yaml:"auto_deploy"`
+		Enabled       bool `json:"enabled" yaml:"enabled"`
+		RequiredCount int  `json:"required_count" yaml:"required_count"`
 	}
 )
 

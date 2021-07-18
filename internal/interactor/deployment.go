@@ -24,7 +24,6 @@ func (i *Interactor) Deploy(ctx context.Context, u *ent.User, re *ent.Repo, d *e
 	}
 
 	d.RequiredApprovalCount = env.Approval.RequiredCount
-	d.AutoDeploy = env.Approval.AutoDeploy
 	d, _ = i.Store.UpdateDeployment(ctx, d)
 
 	return d, nil

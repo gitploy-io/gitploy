@@ -3,11 +3,11 @@ import { PageHeader, Result, Button } from "antd";
 import { shallowEqual } from "react-redux";
 
 import { useAppSelector, useAppDispatch } from "../redux/hooks"
-import { DeploymentType, Branch, Commit, Tag, RequestStatus } from "../models";
+import { User,DeploymentType, Branch, Commit, Tag, RequestStatus } from "../models";
 import { fetchDeployments } from "../redux/repoHome";
 import { 
     init, 
-    fetchEnvs, 
+    fetchConfig, 
     repoDeploySlice, 
     fetchBranches, 
     checkBranch,
@@ -18,6 +18,7 @@ import {
     fetchTags, 
     checkTag,
     addTagManually, 
+    searchCandidates,
     deploy} from "../redux/repoDeploy"
 
 import DeployForm, {Option} from "../components/DeployForm"
@@ -35,20 +36,21 @@ export default function RepoDeploy() {
     const { 
         hasConfig, 
         envs, 
-        type, 
         branches, 
         branchCheck,
         commits, 
         commitCheck,
         tags, 
         tagCheck,
+        approvalEnabled,
+        candidates,
         deploying } = useAppSelector(state => state.repoDeploy, shallowEqual)
     const dispatch = useAppDispatch()
 
     useEffect(() => {
         const f = async () => {
             await dispatch(init({namespace, name}))
-            await dispatch(fetchEnvs())
+            await dispatch(fetchConfig())
             await dispatch(fetchBranches())
             await dispatch(fetchTags())
         }
@@ -92,6 +94,18 @@ export default function RepoDeploy() {
         dispatch(addTagManually(option.value))
     }
 
+    const onSearchCandidates = (login: string) => {
+        dispatch(searchCandidates(login))
+    }
+
+    const onSelectCandidate = (candidate: User) => {
+        dispatch(actions.addApprover(candidate))
+    }
+
+    const onDeselectCandidate = (candidate: User) => {
+        dispatch(actions.deleteApprover(candidate))
+    }
+
     const onClickDeploy = () => {
         const f = async () => {
             await dispatch(deploy())
@@ -127,7 +141,6 @@ export default function RepoDeploy() {
                 <DeployForm 
                     envs={envs}
                     onSelectEnv={onSelectEnv}
-                    type={type}
                     onChangeType={onChangeType}
                     branches={branches}
                     onSelectBranch={onSelectBranch}
@@ -142,7 +155,13 @@ export default function RepoDeploy() {
                     onClickAddTag={onClickAddTag}
                     tagCheck={tagCheck}
                     deploying={deploying === RequestStatus.Pending}
-                    onClickDeploy={onClickDeploy} />
+                    onClickDeploy={onClickDeploy} 
+                    approvalEnabled={approvalEnabled}
+                    candidates={candidates}
+                    onSearchCandidates={onSearchCandidates}
+                    onSelectCandidate={onSelectCandidate}
+                    onDeselectCandidate={onDeselectCandidate}
+                />
             </div>
         </div>
     )

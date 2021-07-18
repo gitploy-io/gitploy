@@ -1,5 +1,5 @@
 import { useEffect } from "react"
-import { Breadcrumb, PageHeader, Row, Col, Typography, Avatar, Button, } from "antd"
+import { Breadcrumb, PageHeader, Row, Col, Typography, Avatar, Button } from "antd"
 import { shallowEqual } from 'react-redux'
 import { useParams } from "react-router-dom"
 
@@ -11,13 +11,17 @@ import {
     fetchApprovals, 
     fetchMyApproval,
     deployToSCM,
+    searchCandidates,
+    createApproval,
+    deleteApproval,
     approve,
     decline,
 } from "../redux/deployment"
-import { Deployment, DeploymentStatus, Approval } from "../models"
+import { User, Deployment, DeploymentStatus, Approval } from "../models"
 
 import Main from "./Main"
 import ApprovalList from "../components/ApprovalList"
+import ApproversSearch from "../components/ApproversSearch"
 import ApprovalDropdown from "../components/ApprovalDropdown"
 import Spin from "../components/Spin"
 import DeploymentStatusBadge from "../components/DeploymentStatusBadge"
@@ -33,7 +37,7 @@ interface Params {
 
 export default function DeploymentView() {
     let { namespace, name, number } = useParams<Params>()
-    const { deployment, approvals, myApproval } = useAppSelector(state => state.deployment, shallowEqual )
+    const { deployment, approvals, candidates, myApproval } = useAppSelector(state => state.deployment, shallowEqual )
     const dispatch = useAppDispatch()
 
     useEffect(() => {
@@ -47,6 +51,13 @@ export default function DeploymentView() {
         f()
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [dispatch])
+
+    const approvers: User[] = []
+    approvals.forEach(approval => {
+        if (approval.user !== null) {
+            approvers.push(approval.user)
+        }
+    })
 
     const onClickDeploy = () => {
         dispatch(deployToSCM())
@@ -64,6 +75,26 @@ export default function DeploymentView() {
         window.location.href = `/${namespace}/${name}`
     }
 
+    const onSearchCandidates = (login: string) => {
+        dispatch(searchCandidates(login))
+    }
+
+    const onSelectCandidate = (id: string) => {
+        const approval = approvals.find(a => a.user?.id === id) 
+
+        if (approval !== undefined) {
+            dispatch(deleteApproval(approval))
+            return
+        }
+
+        const candidate = candidates.find(c => c.id === id)
+        if (candidate === undefined) {
+            throw new Error("The candidate is not found")
+        }
+
+        dispatch(createApproval(candidate))
+    }
+
     if (deployment === null) {
         return <Main>
             <div style={{textAlign: "center", marginTop: "100px"}}><Spin /></div>
@@ -71,7 +102,7 @@ export default function DeploymentView() {
     }
 
     // styles 
-    const styleField: React.CSSProperties = { marginTop: "15px" }
+    const styleField: React.CSSProperties = { marginTop: "18px" }
     const styleFieldName: React.CSSProperties = { textAlign: "right"}
 
     // buttons
@@ -107,46 +138,63 @@ export default function DeploymentView() {
                     ]}
                     onBack={onBack} />
             </div>
+            {/* TODO: support mobile view */}
             <div style={{marginTop: "20px", marginBottom: "30px"}}>
-                <div>
-                    <Row style={styleField}>
-                        <Col span="5" style={styleFieldName}>Target:&nbsp;&nbsp;</Col>
-                        <Col><Text>{deployment.env}</Text></Col>
-                    </Row>
-                    <Row style={styleField}>
-                        <Col span="5" style={styleFieldName}>Ref:&nbsp;&nbsp;</Col>
-                        <Col><Text code>{deployment.ref}</Text></Col>
-                    </Row>
-                    <Row style={styleField}>
-                        <Col span="5" style={styleFieldName}>Status:&nbsp;&nbsp;</Col>
-                        <Col><DeploymentStatusBadge deployment={deployment}/></Col>
-                    </Row>
-                    <Row style={styleField}>
-                        <Col span="5" style={styleFieldName}>Deployer:&nbsp;&nbsp;</Col>
-                        <Col> 
-                            {(deployment.deployer !== null)?
-                                 <Text ><Avatar size="small" src={deployment.deployer.avatar} /> {deployment.deployer.login}</Text> :
-                                <Avatar size="small" >U</Avatar> }
-                        </Col>
-                    </Row>
-                    {/* Approvals */}
-                    {(approvals.length !== 0) ?
+                <Row>
+                    <Col span="18">
+                        <Row >
+                            <Col span="6" style={styleFieldName}>Target:&nbsp;&nbsp;</Col>
+                            <Col><Text>{deployment.env}</Text></Col>
+                        </Row>
                         <Row style={styleField}>
-                            <Col span="5" style={styleFieldName}>Approvers:&nbsp;&nbsp;</Col>
-                            <Col><ApprovalList approvals={approvals}/></Col>
-                        </Row> :
-                        null}
-                    {(approvals.length !== 0) ?
+                            <Col span="6" style={styleFieldName}>Ref:&nbsp;&nbsp;</Col>
+                            <Col><Text code>{deployment.ref}</Text></Col>
+                        </Row>
                         <Row style={styleField}>
-                            <Col span="5" style={styleFieldName}>Required:&nbsp;&nbsp;</Col>
-                            <Col>{deployment.requiredApprovalCount}</Col>
-                        </Row> :
-                        null}
-                    <Row style={styleField}>
-                        <Col span="5" style={styleFieldName}></Col>
-                        <Col>{deployBtn}</Col>
-                    </Row>
-                </div>
+                            <Col span="6" style={styleFieldName}>Status:&nbsp;&nbsp;</Col>
+                            <Col><DeploymentStatusBadge deployment={deployment}/></Col>
+                        </Row>
+                        <Row style={styleField}>
+                            <Col span="6" style={styleFieldName}>Deployer:&nbsp;&nbsp;</Col>
+                            <Col> 
+                                {(deployment.deployer !== null)?
+                                     <Text ><Avatar size="small" src={deployment.deployer.avatar} /> {deployment.deployer.login}</Text> :
+                                    <Avatar size="small" >U</Avatar> }
+                            </Col>
+                        </Row>
+                        {(approvals.length !== 0) ?
+                            <Row style={styleField}>
+                                <Col span="6" style={styleFieldName}>Required Approval:&nbsp;&nbsp;</Col>
+                                <Col>{deployment.requiredApprovalCount}</Col>
+                            </Row> :
+                            null}
+                        <Row style={styleField}>
+                            <Col span="6" style={styleFieldName}></Col>
+                            <Col>{deployBtn}</Col>
+                        </Row>
+                    </Col>
+                    <Col span="6">
+                        <div>
+                            <div style={{paddingLeft: "5px"}}>
+                                <Text strong>Approvers</Text>
+                            </div>
+                            <div style={{marginTop: "5px"}}>
+                                <ApproversSearch
+                                    style={{width: "100%"}}
+                                    value="Select Approvers"
+                                    approvers={approvers}
+                                    candidates={candidates}
+                                    onSearchCandidates={onSearchCandidates}
+                                    onSelectCandidate={onSelectCandidate} />
+                            </div>
+                            <div style={{marginTop: "10px", paddingLeft: "5px"}}>
+                                {(approvals.length !== 0) ?
+                                    <ApprovalList approvals={approvals}/>:
+                                    <Text type="secondary"> No approvers </Text>}
+                            </div>
+                        </div>
+                    </Col>
+                </Row>
             </div>
         </Main>
     )
