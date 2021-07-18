@@ -7,7 +7,7 @@ import { useAppDispatch, useAppSelector } from "../redux/hooks"
 import { fetchDeployments as refreshDeployments } from "../redux/repoHome";
 import { repoRollbackSlice, init, fetchConfig, fetchDeployments, searchCandidates, rollback } from "../redux/repoRollback"
 
-import { Deployment, RequestStatus } from '../models'
+import { User, Deployment, RequestStatus } from '../models'
 import RollbackForm from "../components/RollbackForm";
 
 const { actions } = repoRollbackSlice
@@ -50,12 +50,12 @@ export default function RepoHome() {
         dispatch(searchCandidates(login))
     }
 
-    const onSelectCandidate = (id: string) => {
-        dispatch(actions.addApprover(id))
+    const onSelectCandidate = (candidate: User) => {
+        dispatch(actions.addApprover(candidate))
     }
 
-    const onDeselectCandidate = (id: string) => {
-        dispatch(actions.deleteApprover(id))
+    const onDeselectCandidate = (candidate: User) => {
+        dispatch(actions.deleteApprover(candidate))
     }
 
     const onClickRollback = () => {

@@ -320,26 +320,21 @@ export const repoDeploySlice = createSlice({
         setTag: (state, action: PayloadAction<Tag>) => {
             state.tag = action.payload
         },
-        addApprover: (state, action: PayloadAction<string>) => {
-            const userId = action.payload
-
-            const candidate = state.candidates.find(candidate => candidate.id === userId)
-            if (candidate === undefined) {
-                return
-            }
+        addApprover: (state, action: PayloadAction<User>) => {
+            const candidate = action.payload
 
             // Check already exist or not.
-            const approver = state.approvers.find(approver => approver.id === userId)
+            const approver = state.approvers.find(approver => approver.id === candidate.id)
             if (approver !== undefined) {
                 return
             }
 
             state.approvers.push(candidate)
         },
-        deleteApprover: (state, action: PayloadAction<string>) => {
-            const userId = action.payload
+        deleteApprover: (state, action: PayloadAction<User>) => {
+            const candidate = action.payload
 
-            const approvers = state.approvers.filter(approver => approver.id !== userId)
+            const approvers = state.approvers.filter(approver => approver.id !== candidate.id)
             state.approvers = approvers
         },
     },

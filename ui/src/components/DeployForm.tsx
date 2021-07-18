@@ -30,8 +30,8 @@ interface DeployFormProps {
     // properties for approvers.
     approvalEnabled: boolean
     candidates: User[]
-    onSelectCandidate(id: string): void
-    onDeselectCandidate(id: string): void
+    onSelectCandidate(candidate: User): void
+    onDeselectCandidate(candidate: User): void
     onSearchCandidates(login: string): void
 }
 

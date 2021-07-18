@@ -3,7 +3,7 @@ import { PageHeader, Result, Button } from "antd";
 import { shallowEqual } from "react-redux";
 
 import { useAppSelector, useAppDispatch } from "../redux/hooks"
-import { DeploymentType, Branch, Commit, Tag, RequestStatus } from "../models";
+import { User,DeploymentType, Branch, Commit, Tag, RequestStatus } from "../models";
 import { fetchDeployments } from "../redux/repoHome";
 import { 
     init, 
@@ -98,12 +98,12 @@ export default function RepoDeploy() {
         dispatch(searchCandidates(login))
     }
 
-    const onSelectCandidate = (id: string) => {
-        dispatch(actions.addApprover(id))
+    const onSelectCandidate = (candidate: User) => {
+        dispatch(actions.addApprover(candidate))
     }
 
-    const onDeselectCandidate = (id: string) => {
-        dispatch(actions.deleteApprover(id))
+    const onDeselectCandidate = (candidate: User) => {
+        dispatch(actions.deleteApprover(candidate))
     }
 
     const onClickDeploy = () => {
