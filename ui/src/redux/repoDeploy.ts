@@ -4,6 +4,7 @@ import { message } from "antd"
 import { 
     User, 
     Repo, 
+    Deployment,
     Branch, 
     Commit, 
     Tag, 
@@ -11,7 +12,8 @@ import {
     StatusState, 
     DeploymentType, 
     RequestStatus, 
-    HttpNotFoundError } from '../models'
+    HttpNotFoundError 
+} from '../models'
 import { 
     searchRepo, 
     listPerms,
@@ -23,7 +25,9 @@ import {
     listStatuses, 
     listTags, 
     getTag, 
-    createDeployment } from '../apis'
+    createDeployment,
+    createApproval,
+} from '../apis'
 
 // fetch all at the first page.
 const firstPage = 1
@@ -253,7 +257,7 @@ export const searchCandidates = createAsyncThunk<User[], string, { state: {repoD
 export const deploy = createAsyncThunk<void, void, { state: {repoDeploy: RepoDeployState}}> (
     "repoDeploy/deploy",
     async (_ , { getState, rejectWithValue, requestId }) => {
-        const { repo, env, type, branch, commit, tag, deploying, deployId } = getState().repoDeploy
+        const { repo, env, type, branch, commit, tag, approvalEnabled, approvers, deploying, deployId } = getState().repoDeploy
         if (repo === null) {
             throw new Error("The repo is not set.")
         }
@@ -262,16 +266,24 @@ export const deploy = createAsyncThunk<void, void, { state: {repoDeploy: RepoDep
         }
 
         try {
+            let deployment: Deployment
             if (type === DeploymentType.Commit && commit !== null) {
-                await createDeployment(repo.id, type, commit.sha, env)
+                deployment = await createDeployment(repo.id, type, commit.sha, env)
             } else if (type === DeploymentType.Branch && branch !== null) {
-                await createDeployment(repo.id, type, branch.name, env)
+                deployment = await createDeployment(repo.id, type, branch.name, env)
             } else if (type === DeploymentType.Tag && tag !== null) {
-                await createDeployment(repo.id, type, tag.name, env)
+                deployment = await createDeployment(repo.id, type, tag.name, env)
             } 
 
+            if (!approvalEnabled) {
+                message.success("It starts to deploy.", 3)
+                return
+            }
+
+            approvers.forEach(async (approver) => {
+                await createApproval(repo, deployment, approver)
+            })
             message.success("It starts to deploy.", 3)
-            return
         } catch(e) {
             message.error("It has failed to deploy.", 3)
             return rejectWithValue(e)

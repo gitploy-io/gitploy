@@ -4,7 +4,14 @@ import { instance, headers } from './setting'
 import { _fetch } from "./_base"
 import { mapUser } from "./user"
 import { mapDataToDeployment } from "./deployment"
-import { User, Deployment, Approval, HttpNotFoundError } from '../models'
+import { 
+    Repo,
+    User, 
+    Deployment, 
+    Approval, 
+    HttpNotFoundError,
+    HttpUnprocessableEntityError
+ } from '../models'
 
 export const mapDataToApproval = (data: any): Approval => {
     let user: User | null = null
@@ -42,6 +49,28 @@ export const listApprovals = async (id: string, number: number) => {
         .then(data => data.map((d:any): Approval => mapDataToApproval(d)))
 
     return approvals
+}
+
+export const createApproval = async (repo: Repo, deployment: Deployment, approver: User) => {
+    const body = {
+        user_id: approver.id
+    }
+    const res = await _fetch(`${instance}/api/v1/repos/${repo.id}/deployments/${deployment.number}/approvals`, {
+        credentials: "same-origin",
+        headers,
+        method: "POST",
+        body: JSON.stringify(body),
+    })
+
+    if (res.status === StatusCodes.UNPROCESSABLE_ENTITY) {
+        const message = await res.json().then(data => data.message)
+        throw new HttpUnprocessableEntityError(message)
+    }
+
+    const approval: Approval = await res.json()
+        .then(data => mapDataToApproval(data))
+
+    return approval
 }
 
 export const getApproval = async (id: string, number: number) => {

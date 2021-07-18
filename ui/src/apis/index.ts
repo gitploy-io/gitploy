@@ -8,7 +8,7 @@ import { listBranches, getBranch } from './branch'
 import { listTags, getTag } from './tag'
 import { getMe } from "./user"
 import { checkSlack } from "./chat"
-import { listApprovals, getApproval, setApprovalApproved, setApprovalDeclined } from "./approval"
+import { listApprovals, getApproval, createApproval, setApprovalApproved, setApprovalDeclined } from "./approval"
 import { subscribeNotification, listNotifications, patchNotificationChecked } from "./notification"
 
 export {
@@ -35,6 +35,7 @@ export {
     getMe,
     checkSlack,
     listApprovals,
+    createApproval,
     getApproval,
     setApprovalApproved,
     setApprovalDeclined,
