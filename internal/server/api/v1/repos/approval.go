@@ -153,12 +153,19 @@ func (r *Repo) CreateApproval(c *gin.Context) {
 		return
 	}
 
+	// TODO: Lock for the approval of user.
+	if a, _ := r.i.FindApprovalOfUser(ctx, d, u); a != nil {
+		r.log.Warn("It already has same approval.", zap.Error(err))
+		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "It already has same approval.")
+		return
+	}
+
 	ap, err := r.i.CreateApproval(ctx, &ent.Approval{
 		UserID:       approver.ID,
 		DeploymentID: d.ID,
 	})
 	if err != nil {
-		r.log.Error("failed to request a approval.", zap.Error(err))
+		r.log.Error("It has failed to request a approval.", zap.Error(err))
 		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to request a approval.")
 		return
 	}
