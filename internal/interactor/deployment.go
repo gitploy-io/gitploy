@@ -19,10 +19,11 @@ func (i *Interactor) Deploy(ctx context.Context, u *ent.User, re *ent.Repo, d *e
 		return nil, fmt.Errorf("failed to save a new deployment to the store: %w", err)
 	}
 
-	if !env.HasApproval() {
+	if !env.IsApprovalEabled() {
 		return i.deployToSCM(ctx, u, re, d, env)
 	}
 
+	d.IsApprovalEnabled = true
 	d.RequiredApprovalCount = env.Approval.RequiredCount
 	d, _ = i.Store.UpdateDeployment(ctx, d)
 
@@ -32,20 +33,22 @@ func (i *Interactor) Deploy(ctx context.Context, u *ent.User, re *ent.Repo, d *e
 func (i *Interactor) Rollback(ctx context.Context, u *ent.User, re *ent.Repo, d *ent.Deployment, env *vo.Env) (*ent.Deployment, error) {
 	d.UserID = u.ID
 	d.RepoID = re.ID
+	d.IsRollback = true
 
 	d, err := i.Store.CreateDeployment(ctx, d)
 	if err != nil {
 		return nil, fmt.Errorf("failed to save a new deployment to the store: %w", err)
 	}
 
-	// Rollback configures it can deploy the ref without any constraints.
-	// 1) Set auto_merge false to avoid the merge conflict.
-	// 2) Set required_contexts empty to skip the verfication.
-	env.Task = "rollback"
-	env.AutoMerge = false
-	env.RequiredContexts = []string{}
+	if !env.IsApprovalEabled() {
+		return i.deployToSCM(ctx, u, re, d, env)
+	}
 
-	return i.deployToSCM(ctx, u, re, d, env)
+	d.IsApprovalEnabled = true
+	d.RequiredApprovalCount = env.Approval.RequiredCount
+	d, _ = i.Store.UpdateDeployment(ctx, d)
+
+	return d, nil
 }
 
 func (i *Interactor) IsApproved(ctx context.Context, d *ent.Deployment) bool {
@@ -66,6 +69,15 @@ func (i *Interactor) DeployToSCM(ctx context.Context, u *ent.User, re *ent.Repo,
 }
 
 func (i *Interactor) deployToSCM(ctx context.Context, u *ent.User, re *ent.Repo, d *ent.Deployment, e *vo.Env) (*ent.Deployment, error) {
+	if d.IsRollback {
+		// Rollback configures it can deploy the ref without any constraints.
+		// 1) Set auto_merge false to avoid the merge conflict.
+		// 2) Set required_contexts empty to skip the verfication.
+		e.Task = "rollback"
+		e.AutoMerge = false
+		e.RequiredContexts = []string{}
+	}
+
 	uid, err := i.SCM.CreateDeployment(ctx, u, re, d, e)
 	if err != nil {
 		d.Status = deployment.StatusFailure
