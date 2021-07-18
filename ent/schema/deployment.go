@@ -41,6 +41,10 @@ func (Deployment) Fields() []ent.Field {
 		// The waiting status can not have UID.
 		field.Int64("uid").
 			Optional(),
+		field.Bool("is_rollback").
+			Default(false),
+		field.Bool("is_approval_enabled").
+			Default(false),
 		field.Int("required_approval_count").
 			Default(0),
 		field.Time("created_at").

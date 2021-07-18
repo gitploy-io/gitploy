@@ -32,6 +32,10 @@ type Deployment struct {
 	Status deployment.Status `json:"status"`
 	// UID holds the value of the "uid" field.
 	UID int64 `json:"uid"`
+	// IsRollback holds the value of the "is_rollback" field.
+	IsRollback bool `json:"is_rollback"`
+	// IsApprovalEnabled holds the value of the "is_approval_enabled" field.
+	IsApprovalEnabled bool `json:"is_approval_enabled"`
 	// RequiredApprovalCount holds the value of the "required_approval_count" field.
 	RequiredApprovalCount int `json:"required_approval_count"`
 	// CreatedAt holds the value of the "created_at" field.
@@ -124,6 +128,8 @@ func (*Deployment) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
+		case deployment.FieldIsRollback, deployment.FieldIsApprovalEnabled:
+			values[i] = new(sql.NullBool)
 		case deployment.FieldID, deployment.FieldNumber, deployment.FieldUID, deployment.FieldRequiredApprovalCount:
 			values[i] = new(sql.NullInt64)
 		case deployment.FieldType, deployment.FieldRef, deployment.FieldSha, deployment.FieldEnv, deployment.FieldStatus, deployment.FieldUserID, deployment.FieldRepoID:
@@ -192,6 +198,18 @@ func (d *Deployment) assignValues(columns []string, values []interface{}) error 
 				return fmt.Errorf("unexpected type %T for field uid", values[i])
 			} else if value.Valid {
 				d.UID = value.Int64
+			}
+		case deployment.FieldIsRollback:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field is_rollback", values[i])
+			} else if value.Valid {
+				d.IsRollback = value.Bool
+			}
+		case deployment.FieldIsApprovalEnabled:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field is_approval_enabled", values[i])
+			} else if value.Valid {
+				d.IsApprovalEnabled = value.Bool
 			}
 		case deployment.FieldRequiredApprovalCount:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -290,6 +308,10 @@ func (d *Deployment) String() string {
 	builder.WriteString(fmt.Sprintf("%v", d.Status))
 	builder.WriteString(", uid=")
 	builder.WriteString(fmt.Sprintf("%v", d.UID))
+	builder.WriteString(", is_rollback=")
+	builder.WriteString(fmt.Sprintf("%v", d.IsRollback))
+	builder.WriteString(", is_approval_enabled=")
+	builder.WriteString(fmt.Sprintf("%v", d.IsApprovalEnabled))
 	builder.WriteString(", required_approval_count=")
 	builder.WriteString(fmt.Sprintf("%v", d.RequiredApprovalCount))
 	builder.WriteString(", created_at=")

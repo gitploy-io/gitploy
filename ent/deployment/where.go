@@ -128,6 +128,20 @@ func UID(v int64) predicate.Deployment {
 	})
 }
 
+// IsRollback applies equality check predicate on the "is_rollback" field. It's identical to IsRollbackEQ.
+func IsRollback(v bool) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldIsRollback), v))
+	})
+}
+
+// IsApprovalEnabled applies equality check predicate on the "is_approval_enabled" field. It's identical to IsApprovalEnabledEQ.
+func IsApprovalEnabled(v bool) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldIsApprovalEnabled), v))
+	})
+}
+
 // RequiredApprovalCount applies equality check predicate on the "required_approval_count" field. It's identical to RequiredApprovalCountEQ.
 func RequiredApprovalCount(v int) predicate.Deployment {
 	return predicate.Deployment(func(s *sql.Selector) {
@@ -755,6 +769,34 @@ func UIDIsNil() predicate.Deployment {
 func UIDNotNil() predicate.Deployment {
 	return predicate.Deployment(func(s *sql.Selector) {
 		s.Where(sql.NotNull(s.C(FieldUID)))
+	})
+}
+
+// IsRollbackEQ applies the EQ predicate on the "is_rollback" field.
+func IsRollbackEQ(v bool) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldIsRollback), v))
+	})
+}
+
+// IsRollbackNEQ applies the NEQ predicate on the "is_rollback" field.
+func IsRollbackNEQ(v bool) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldIsRollback), v))
+	})
+}
+
+// IsApprovalEnabledEQ applies the EQ predicate on the "is_approval_enabled" field.
+func IsApprovalEnabledEQ(v bool) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldIsApprovalEnabled), v))
+	})
+}
+
+// IsApprovalEnabledNEQ applies the NEQ predicate on the "is_approval_enabled" field.
+func IsApprovalEnabledNEQ(v bool) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldIsApprovalEnabled), v))
 	})
 }
 

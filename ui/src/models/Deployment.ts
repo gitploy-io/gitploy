@@ -9,6 +9,8 @@ export default interface Deployment {
     env: string
     status: DeploymentStatus
     uid: number
+    isRollback: boolean 
+    isApprovalEanbled: boolean
     requiredApprovalCount: number
     autoDeploy: boolean
     createdAt: Date
