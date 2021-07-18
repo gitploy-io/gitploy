@@ -136,7 +136,7 @@ export const searchCandidates = createAsyncThunk<User[], string, { state: {deplo
 export const createApproval = createAsyncThunk<Approval, User, { state: {deployment: DeploymentState }}>(
     "deployment/createApprover",
     async (candidate, { getState, rejectWithValue }) => {
-        const { repo, deployment, approvals } = getState().deployment
+        const { repo, deployment } = getState().deployment
         if (repo === null) {
             throw new Error("The repo is not set.")
         }
@@ -157,7 +157,7 @@ export const createApproval = createAsyncThunk<Approval, User, { state: {deploym
 export const deleteApproval = createAsyncThunk<Approval, Approval, { state: {deployment: DeploymentState }}>(
     "deployment/deleteApprover",
     async (approval, { getState, rejectWithValue }) => {
-        const { repo, approvals } = getState().deployment
+        const { repo } = getState().deployment
         if (repo === null) {
             throw new Error("The repo is not set.")
         }

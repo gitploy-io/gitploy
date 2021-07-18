@@ -53,7 +53,7 @@ export default function ApproversSelect(props: ApproversSelectProps) {
                                 <Avatar size="small" src={candidate.avatar}/>&nbsp;
                                 {candidate.login}&nbsp;
                                 {(checked) ? 
-                                    <CheckOutlined style={{color: "green"}}/> :
+                                    <CheckOutlined style={{color: "purple"}}/> :
                                     null}
                             </span>
                         </Select.Option>

@@ -5,7 +5,7 @@ import { shallowEqual } from "react-redux";
 
 import { useAppDispatch, useAppSelector } from "../redux/hooks"
 import { fetchDeployments as refreshDeployments } from "../redux/repoHome";
-import { repoRollbackSlice, init, fetchEnvs, fetchDeployments, rollback } from "../redux/repoRollback"
+import { repoRollbackSlice, init, fetchConfig, fetchDeployments, searchCandidates, rollback } from "../redux/repoRollback"
 
 import { Deployment, RequestStatus } from '../models'
 import RollbackForm from "../components/RollbackForm";
@@ -22,6 +22,8 @@ export default function RepoHome() {
     const {
         hasConfig,
         envs,
+        approvalEnabled,
+        candidates,
         deployments, 
         deploying } = useAppSelector(state => state.repoRollback, shallowEqual)
     const dispatch = useAppDispatch()
@@ -29,7 +31,7 @@ export default function RepoHome() {
     useEffect(() => {
         const f = async () => {
             await dispatch(init({namespace, name}))
-            await dispatch(fetchEnvs())
+            await dispatch(fetchConfig())
         }
         f()
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -42,6 +44,18 @@ export default function RepoHome() {
 
     const onSelectDeployment = (deployment: Deployment) => {
         dispatch(actions.setDeployment(deployment))
+    }
+
+    const onSearchCandidates = (login: string) => {
+        dispatch(searchCandidates(login))
+    }
+
+    const onSelectCandidate = (id: string) => {
+        dispatch(actions.addApprover(id))
+    }
+
+    const onDeselectCandidate = (id: string) => {
+        dispatch(actions.deleteApprover(id))
     }
 
     const onClickRollback = () => {
@@ -80,7 +94,12 @@ export default function RepoHome() {
                     deployments={deployments}
                     onSelectDeployment={onSelectDeployment}
                     onClickRollback={onClickRollback}
-                    deploying={deploying === RequestStatus.Pending} />
+                    deploying={deploying === RequestStatus.Pending} 
+                    approvalEnabled={approvalEnabled}
+                    candidates={candidates}
+                    onSearchCandidates={onSearchCandidates}
+                    onSelectCandidate={onSelectCandidate}
+                    onDeselectCandidate={onDeselectCandidate} />
             </div>
         </div>
     )

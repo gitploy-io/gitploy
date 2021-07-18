@@ -235,7 +235,7 @@ export const addTagManually = createAsyncThunk<Tag, string, { state: {repoDeploy
 )
 
 export const searchCandidates = createAsyncThunk<User[], string, { state: {repoDeploy: RepoDeployState }}>(
-    "repoDeploy/fetchCandidates",
+    "repoDeploy/searchCandidates",
     async (q, { getState, rejectWithValue }) => {
         const { repo } = getState().repoDeploy
         if (repo === null) {
@@ -383,6 +383,9 @@ export const repoDeploySlice = createSlice({
             })
             .addCase(addTagManually.fulfilled, (state, action) => {
                 state.tags.unshift(action.payload)
+            })
+            .addCase(searchCandidates.pending, (state) => {
+                state.candidates = []
             })
             .addCase(searchCandidates.fulfilled, (state, action) => {
                 state.candidates = action.payload
