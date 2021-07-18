@@ -245,13 +245,6 @@ func (r *Repo) DeleteApproval(c *gin.Context) {
 		aid = c.Param("aid")
 	)
 
-	p := &approvalPostPayload{}
-	if err := c.ShouldBindBodyWith(p, binding.JSON); err != nil {
-		r.log.Warn("failed to bind the payload.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusBadRequest, "It has failed to bind the payload.")
-		return
-	}
-
 	ap, err := r.i.FindApprovalByID(ctx, atoi(aid))
 	if ent.IsNotFound(err) {
 		r.log.Warn("The approval is not found.", zap.Error(err))

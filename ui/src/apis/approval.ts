@@ -73,7 +73,20 @@ export const createApproval = async (repo: Repo, deployment: Deployment, approve
     return approval
 }
 
-export const getApproval = async (id: string, number: number) => {
+export const deleteApproval = async (repo: Repo, approval: Approval) => {
+    const res = await _fetch(`${instance}/api/v1/repos/${repo.id}/approvals/${approval.id}`, {
+        credentials: "same-origin",
+        headers,
+        method: "DELETE",
+    })
+
+    if (res.status === StatusCodes.NOT_FOUND) {
+        const message = await res.json().then(data => data.message)
+        throw new HttpUnprocessableEntityError(message)
+    }
+}
+
+export const getMyApproval = async (id: string, number: number) => {
     const res = await _fetch(`${instance}/api/v1/repos/${id}/deployments/${number}/approval`, {
         credentials: "same-origin",
         headers,

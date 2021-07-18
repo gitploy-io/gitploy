@@ -1,8 +1,27 @@
 import { message } from "antd"
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit'
 
-import { Repo, Deployment, Approval, RequestStatus, HttpNotFoundError, HttpUnprocessableEntityError } from "../models"
-import { searchRepo, getDeployment, updateDeploymentStatusCreated, listApprovals, getApproval, setApprovalApproved, setApprovalDeclined } from "../apis"
+import { 
+    User,
+    Repo, 
+    Deployment, 
+    Approval, 
+    RequestStatus, 
+    HttpNotFoundError, 
+    HttpUnprocessableEntityError 
+} from "../models"
+import { 
+    searchRepo, 
+    getDeployment, 
+    updateDeploymentStatusCreated, 
+    listPerms,
+    listApprovals, 
+    createApproval as _createApproval,
+    deleteApproval as _deleteApproval,
+    getMyApproval, 
+    setApprovalApproved, 
+    setApprovalDeclined 
+} from "../apis"
 
 interface DeploymentState {
     repo: Repo | null
@@ -13,6 +32,7 @@ interface DeploymentState {
 
     // approvals is requested approvals.
     approvals: Approval[]
+    candidates: User[]
     // myApproval exist if user have requested.
     myApproval: Approval | null
 }
@@ -24,6 +44,7 @@ const initialState: DeploymentState = {
     deploying: RequestStatus.Idle,
     deployId: "",
     approvals: [],
+    candidates: [],
     myApproval: null,
 }
 
@@ -64,6 +85,8 @@ export const deployToSCM = createAsyncThunk<Deployment, void, { state: {deployme
 
         try {
             const deployment = await updateDeploymentStatusCreated(repo.id, number)
+            message.info(`Deploy successfully.`)
+
             return deployment
         } catch(e) { 
             if (e instanceof HttpUnprocessableEntityError) {
@@ -90,6 +113,64 @@ export const fetchApprovals = createAsyncThunk<Approval[], void, { state: {deplo
     },
 )
 
+export const searchCandidates = createAsyncThunk<User[], string, { state: {deployment: DeploymentState }}>(
+    "deployment/fetchCandidates",
+    async (q, { getState, rejectWithValue }) => {
+        const { repo } = getState().deployment
+        if (repo === null) {
+            throw new Error("The repo is not set.")
+        }
+
+        try {
+            const perms = await listPerms(repo, q)
+            const candidates = perms.map((p) => {
+                return p.user
+            })
+            return candidates
+        } catch(e) {
+            return rejectWithValue(e)
+        }
+    }
+)
+
+export const createApproval = createAsyncThunk<Approval, User, { state: {deployment: DeploymentState }}>(
+    "deployment/createApprover",
+    async (candidate, { getState, rejectWithValue }) => {
+        const { repo, deployment, approvals } = getState().deployment
+        if (repo === null) {
+            throw new Error("The repo is not set.")
+        }
+        if (deployment === null) {
+            throw new Error("The deployment is not set.")
+        }
+
+        try {
+            const approval = await _createApproval(repo, deployment, candidate)
+            return approval
+        } catch(e) {
+            return rejectWithValue(e)
+        }
+    }
+)
+
+
+export const deleteApproval = createAsyncThunk<Approval, Approval, { state: {deployment: DeploymentState }}>(
+    "deployment/deleteApprover",
+    async (approval, { getState, rejectWithValue }) => {
+        const { repo, approvals } = getState().deployment
+        if (repo === null) {
+            throw new Error("The repo is not set.")
+        }
+
+        try {
+            await _deleteApproval(repo, approval)
+            return approval
+        } catch(e) {
+            return rejectWithValue(e)
+        }
+    }
+)
+
 export const fetchMyApproval = createAsyncThunk<Approval, void, { state: {deployment: DeploymentState} }>(
     'deployment/fetchMyApproval', 
     async (_, { getState, rejectWithValue } ) => {
@@ -97,7 +178,7 @@ export const fetchMyApproval = createAsyncThunk<Approval, void, { state: {deploy
         if (repo === null) throw new Error("There is no repo.")
 
         try {
-            const approval = await getApproval(repo.id, number)
+            const approval = await getMyApproval(repo.id, number)
             return approval
         } catch(e) { 
             if (e instanceof HttpNotFoundError ) {
@@ -176,6 +257,23 @@ export const deploymentSlice = createSlice({
 
             .addCase(fetchApprovals.fulfilled, (state, action) => {
                 state.approvals = action.payload
+            })
+
+            .addCase(searchCandidates.pending, (state) => {
+                state.candidates = []
+            })
+
+            .addCase(searchCandidates.fulfilled, (state, action) => {
+                state.candidates = action.payload
+            })
+
+            .addCase(createApproval.fulfilled, (state, action) => {
+                state.approvals.push(action.payload)
+            })
+
+            .addCase(deleteApproval.fulfilled, (state, action) => {
+                const approval = action.payload
+                state.approvals = state.approvals.filter(a => a.id !== approval.id)
             })
 
             .addCase(fetchMyApproval.fulfilled, (state, action) => {
