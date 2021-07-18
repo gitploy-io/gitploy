@@ -117,6 +117,8 @@ export function mapDataToDeployment(d: any): Deployment {
         env: d.env,
         status: mapDeploymentStatus(d.status),
         uid: d.uid? d.uid : "",
+        isRollback: d.is_rollback,
+        isApprovalEanbled: d.is_approval_enabled,
         requiredApprovalCount: d.required_approval_count,
         autoDeploy: d.auto_deploy,
         createdAt: new Date(d.created_at),

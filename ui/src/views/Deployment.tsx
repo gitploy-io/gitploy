@@ -162,7 +162,7 @@ export default function DeploymentView() {
                                     <Avatar size="small" >U</Avatar> }
                             </Col>
                         </Row>
-                        {(approvals.length !== 0) ?
+                        {(deployment.isApprovalEanbled) ?
                             <Row style={styleField}>
                                 <Col span="6" style={styleFieldName}>Required Approval:&nbsp;&nbsp;</Col>
                                 <Col>{deployment.requiredApprovalCount}</Col>
@@ -174,25 +174,26 @@ export default function DeploymentView() {
                         </Row>
                     </Col>
                     <Col span="6">
-                        <div>
-                            <div style={{paddingLeft: "5px"}}>
-                                <Text strong>Approvers</Text>
-                            </div>
-                            <div style={{marginTop: "5px"}}>
-                                <ApproversSearch
-                                    style={{width: "100%"}}
-                                    value="Select Approvers"
-                                    approvers={approvers}
-                                    candidates={candidates}
-                                    onSearchCandidates={onSearchCandidates}
-                                    onSelectCandidate={onSelectCandidate} />
-                            </div>
-                            <div style={{marginTop: "10px", paddingLeft: "5px"}}>
-                                {(approvals.length !== 0) ?
-                                    <ApprovalList approvals={approvals}/>:
-                                    <Text type="secondary"> No approvers </Text>}
-                            </div>
-                        </div>
+                        {(deployment.isApprovalEanbled) ? 
+                            <div>
+                                <div style={{paddingLeft: "5px"}}>
+                                    <Text strong>Approvers</Text>
+                                </div>
+                                <div style={{marginTop: "5px"}}>
+                                    <ApproversSearch
+                                        style={{width: "100%"}}
+                                        value="Select Approvers"
+                                        approvers={approvers}
+                                        candidates={candidates}
+                                        onSearchCandidates={onSearchCandidates}
+                                        onSelectCandidate={onSelectCandidate} />
+                                </div>
+                                <div style={{marginTop: "10px", paddingLeft: "5px"}}>
+                                    {(approvals.length !== 0) ?
+                                        <ApprovalList approvals={approvals}/>:
+                                        <Text type="secondary"> No approvers </Text>}
+                                </div>
+                            </div> : null}
                     </Col>
                 </Row>
             </div>
