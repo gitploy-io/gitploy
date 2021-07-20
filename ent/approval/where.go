@@ -391,20 +391,6 @@ func UserIDHasSuffix(v string) predicate.Approval {
 	})
 }
 
-// UserIDIsNil applies the IsNil predicate on the "user_id" field.
-func UserIDIsNil() predicate.Approval {
-	return predicate.Approval(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldUserID)))
-	})
-}
-
-// UserIDNotNil applies the NotNil predicate on the "user_id" field.
-func UserIDNotNil() predicate.Approval {
-	return predicate.Approval(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldUserID)))
-	})
-}
-
 // UserIDEqualFold applies the EqualFold predicate on the "user_id" field.
 func UserIDEqualFold(v string) predicate.Approval {
 	return predicate.Approval(func(s *sql.Selector) {

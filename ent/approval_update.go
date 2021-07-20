@@ -70,20 +70,6 @@ func (au *ApprovalUpdate) SetUserID(s string) *ApprovalUpdate {
 	return au
 }
 
-// SetNillableUserID sets the "user_id" field if the given value is not nil.
-func (au *ApprovalUpdate) SetNillableUserID(s *string) *ApprovalUpdate {
-	if s != nil {
-		au.SetUserID(*s)
-	}
-	return au
-}
-
-// ClearUserID clears the value of the "user_id" field.
-func (au *ApprovalUpdate) ClearUserID() *ApprovalUpdate {
-	au.mutation.ClearUserID()
-	return au
-}
-
 // SetDeploymentID sets the "deployment_id" field.
 func (au *ApprovalUpdate) SetDeploymentID(i int) *ApprovalUpdate {
 	au.mutation.ResetDeploymentID()
@@ -186,6 +172,9 @@ func (au *ApprovalUpdate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (au *ApprovalUpdate) check() error {
+	if _, ok := au.mutation.UserID(); au.mutation.UserCleared() && !ok {
+		return errors.New("ent: clearing a required unique edge \"user\"")
+	}
 	if _, ok := au.mutation.DeploymentID(); au.mutation.DeploymentCleared() && !ok {
 		return errors.New("ent: clearing a required unique edge \"deployment\"")
 	}
@@ -360,20 +349,6 @@ func (auo *ApprovalUpdateOne) SetUserID(s string) *ApprovalUpdateOne {
 	return auo
 }
 
-// SetNillableUserID sets the "user_id" field if the given value is not nil.
-func (auo *ApprovalUpdateOne) SetNillableUserID(s *string) *ApprovalUpdateOne {
-	if s != nil {
-		auo.SetUserID(*s)
-	}
-	return auo
-}
-
-// ClearUserID clears the value of the "user_id" field.
-func (auo *ApprovalUpdateOne) ClearUserID() *ApprovalUpdateOne {
-	auo.mutation.ClearUserID()
-	return auo
-}
-
 // SetDeploymentID sets the "deployment_id" field.
 func (auo *ApprovalUpdateOne) SetDeploymentID(i int) *ApprovalUpdateOne {
 	auo.mutation.ResetDeploymentID()
@@ -483,6 +458,9 @@ func (auo *ApprovalUpdateOne) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (auo *ApprovalUpdateOne) check() error {
+	if _, ok := auo.mutation.UserID(); auo.mutation.UserCleared() && !ok {
+		return errors.New("ent: clearing a required unique edge \"user\"")
+	}
 	if _, ok := auo.mutation.DeploymentID(); auo.mutation.DeploymentCleared() && !ok {
 		return errors.New("ent: clearing a required unique edge \"deployment\"")
 	}
