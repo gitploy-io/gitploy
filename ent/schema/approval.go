@@ -6,6 +6,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
+	"entgo.io/ent/schema/index"
 )
 
 // Approval holds the schema definition for the Approval entity.
@@ -24,9 +25,7 @@ func (Approval) Fields() []ent.Field {
 			Default(time.Now).
 			UpdateDefault(time.Now),
 		// Edges
-		// user_id is null if the user is deleted.
-		field.String("user_id").
-			Optional(),
+		field.String("user_id"),
 		field.Int("deployment_id"),
 	}
 }
@@ -37,7 +36,8 @@ func (Approval) Edges() []ent.Edge {
 		edge.From("user", User.Type).
 			Ref("approvals").
 			Field("user_id").
-			Unique(),
+			Unique().
+			Required(),
 		edge.From("deployment", Deployment.Type).
 			Ref("approvals").
 			Field("deployment_id").
@@ -47,5 +47,8 @@ func (Approval) Edges() []ent.Edge {
 }
 
 func (Approval) Index() []ent.Index {
-	return []ent.Index{}
+	return []ent.Index{
+		index.Fields("deployment_id", "user_id").
+			Unique(),
+	}
 }

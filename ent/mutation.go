@@ -279,22 +279,9 @@ func (m *ApprovalMutation) OldUserID(ctx context.Context) (v string, err error) 
 	return oldValue.UserID, nil
 }
 
-// ClearUserID clears the value of the "user_id" field.
-func (m *ApprovalMutation) ClearUserID() {
-	m.user = nil
-	m.clearedFields[approval.FieldUserID] = struct{}{}
-}
-
-// UserIDCleared returns if the "user_id" field was cleared in this mutation.
-func (m *ApprovalMutation) UserIDCleared() bool {
-	_, ok := m.clearedFields[approval.FieldUserID]
-	return ok
-}
-
 // ResetUserID resets all changes to the "user_id" field.
 func (m *ApprovalMutation) ResetUserID() {
 	m.user = nil
-	delete(m.clearedFields, approval.FieldUserID)
 }
 
 // SetDeploymentID sets the "deployment_id" field.
@@ -340,7 +327,7 @@ func (m *ApprovalMutation) ClearUser() {
 
 // UserCleared reports if the "user" edge to the User entity was cleared.
 func (m *ApprovalMutation) UserCleared() bool {
-	return m.UserIDCleared() || m.cleareduser
+	return m.cleareduser
 }
 
 // UserIDs returns the "user" edge IDs in the mutation.
@@ -528,11 +515,7 @@ func (m *ApprovalMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *ApprovalMutation) ClearedFields() []string {
-	var fields []string
-	if m.FieldCleared(approval.FieldUserID) {
-		fields = append(fields, approval.FieldUserID)
-	}
-	return fields
+	return nil
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -545,11 +528,6 @@ func (m *ApprovalMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *ApprovalMutation) ClearField(name string) error {
-	switch name {
-	case approval.FieldUserID:
-		m.ClearUserID()
-		return nil
-	}
 	return fmt.Errorf("unknown Approval nullable field %s", name)
 }
 

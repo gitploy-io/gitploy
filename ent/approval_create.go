@@ -70,14 +70,6 @@ func (ac *ApprovalCreate) SetUserID(s string) *ApprovalCreate {
 	return ac
 }
 
-// SetNillableUserID sets the "user_id" field if the given value is not nil.
-func (ac *ApprovalCreate) SetNillableUserID(s *string) *ApprovalCreate {
-	if s != nil {
-		ac.SetUserID(*s)
-	}
-	return ac
-}
-
 // SetDeploymentID sets the "deployment_id" field.
 func (ac *ApprovalCreate) SetDeploymentID(i int) *ApprovalCreate {
 	ac.mutation.SetDeploymentID(i)
@@ -171,8 +163,14 @@ func (ac *ApprovalCreate) check() error {
 	if _, ok := ac.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New("ent: missing required field \"updated_at\"")}
 	}
+	if _, ok := ac.mutation.UserID(); !ok {
+		return &ValidationError{Name: "user_id", err: errors.New("ent: missing required field \"user_id\"")}
+	}
 	if _, ok := ac.mutation.DeploymentID(); !ok {
 		return &ValidationError{Name: "deployment_id", err: errors.New("ent: missing required field \"deployment_id\"")}
+	}
+	if _, ok := ac.mutation.UserID(); !ok {
+		return &ValidationError{Name: "user", err: errors.New("ent: missing required edge \"user\"")}
 	}
 	if _, ok := ac.mutation.DeploymentID(); !ok {
 		return &ValidationError{Name: "deployment", err: errors.New("ent: missing required edge \"deployment\"")}
