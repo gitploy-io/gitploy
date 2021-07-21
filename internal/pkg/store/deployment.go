@@ -48,6 +48,7 @@ func (s *Store) FindDeploymentByID(ctx context.Context, id int) (*ent.Deployment
 		).
 		WithRepo().
 		WithUser().
+		WithDeploymentStatuses().
 		First(ctx)
 }
 
@@ -62,6 +63,7 @@ func (s *Store) FindDeploymentOfRepoByNumber(ctx context.Context, r *ent.Repo, n
 		).
 		WithRepo().
 		WithUser().
+		WithDeploymentStatuses().
 		First(ctx)
 }
 
@@ -73,6 +75,7 @@ func (s *Store) FindDeploymentByUID(ctx context.Context, uid int64) (*ent.Deploy
 		).
 		WithRepo().
 		WithUser().
+		WithDeploymentStatuses().
 		First(ctx)
 }
 
