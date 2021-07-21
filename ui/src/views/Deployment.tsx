@@ -17,14 +17,21 @@ import {
     approve,
     decline,
 } from "../redux/deployment"
-import { User, Deployment, LastDeploymentStatus, Approval } from "../models"
+import { 
+    User, 
+    Deployment, 
+    DeploymentType,
+    LastDeploymentStatus, 
+    Approval 
+} from "../models"
 
 import Main from "./Main"
 import ApprovalList from "../components/ApprovalList"
 import ApproversSearch from "../components/ApproversSearch"
 import ApprovalDropdown from "../components/ApprovalDropdown"
 import Spin from "../components/Spin"
-import DeploymentStatusBadge from "../components/DeploymentStatusBadge"
+// import DeploymentStatusBadge from "../components/DeploymentStatusBadge"
+import DeploymentStatusSteps from "../components/DeploymentStatusSteps"
 
 const { Text } = Typography
 const { actions } = deploymentSlice
@@ -148,11 +155,15 @@ export default function DeploymentView() {
                         </Row>
                         <Row style={styleField}>
                             <Col span="6" style={styleFieldName}>Ref:&nbsp;&nbsp;</Col>
-                            <Col><Text code>{deployment.ref}</Text></Col>
+                            <Col>
+                                <Text code>
+                                    {(deployment.type === DeploymentType.Commit)? deployment.ref.substr(0, 7) : deployment.ref}
+                                </Text>
+                            </Col>
                         </Row>
                         <Row style={styleField}>
                             <Col span="6" style={styleFieldName}>Status:&nbsp;&nbsp;</Col>
-                            <Col><DeploymentStatusBadge deployment={deployment}/></Col>
+                            <Col><DeploymentStatusSteps deployment={deployment}/></Col>
                         </Row>
                         <Row style={styleField}>
                             <Col span="6" style={styleFieldName}>Deployer:&nbsp;&nbsp;</Col>

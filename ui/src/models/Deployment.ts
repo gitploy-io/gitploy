@@ -17,6 +17,7 @@ export default interface Deployment {
     updatedAt: Date
     deployer: Deployer | null
     repo: Repo | null
+    statuses: DeploymentStatus[]
 }
 
 export interface Deployer {
@@ -37,4 +38,13 @@ export enum LastDeploymentStatus {
     Running = "running",
     Success = "success",
     Failure = "failure"
+}
+
+export interface DeploymentStatus {
+    id: number
+    status: string
+    description: string
+    logUrl: string
+    createdAt: string
+    updatedAt: string
 }
