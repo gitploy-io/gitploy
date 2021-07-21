@@ -25,8 +25,7 @@ export default function DeploymentStatusSteps(props: DeploymentStatusStepsProps)
                 const title = (!!status.logUrl) ?
                     <a href={status.logUrl}>{status.status}</a> :
                     <span>{status.status}</span>
-                return (
-                    <Step 
+                return (<Step 
                         key={idx}
                         style={{width: "120px"}}
                         status="finish"
@@ -37,13 +36,13 @@ export default function DeploymentStatusSteps(props: DeploymentStatusStepsProps)
                         title={<Popover content={status.description}>
                                 {title}
                             </Popover>}
-                        />
-                )
+                        />)
             })}
         </Steps>
     )
 }
 
+// The deployment status has arbitrary status because it is decided by SCM.
 const guessColor = (status: string) => {
     switch (status) {
         case "success":
