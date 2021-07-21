@@ -1,6 +1,6 @@
 import Repo, { RepoPayload } from './Repo'
 import Perm from "./Perm"
-import Deployment, { DeploymentStatus, DeploymentType } from "./Deployment"
+import Deployment, { LastDeploymentStatus, DeploymentType } from "./Deployment"
 import Config, { Env } from "./Config"
 import Commit, { Status, StatusState } from "./Commit"
 import Branch from "./Branch"
@@ -44,7 +44,7 @@ export {
     HttpNotFoundError,
     HttpConflictError,
     HttpUnprocessableEntityError,
-    DeploymentStatus,
+    LastDeploymentStatus,
     DeploymentType,
     StatusState,
     RequestStatus,

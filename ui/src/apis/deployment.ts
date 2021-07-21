@@ -2,7 +2,7 @@ import { StatusCodes } from 'http-status-codes'
 
 import { instance, headers } from './setting'
 import { _fetch } from "./_base"
-import { Deployment, DeploymentType, DeploymentStatus, HttpRequestError, HttpUnprocessableEntityError } from '../models'
+import { Deployment, DeploymentType, LastDeploymentStatus, HttpRequestError, HttpUnprocessableEntityError } from '../models'
 import { Deployer } from '../models/Deployment'
 import Repo from '../models/Repo'
 import { mapRepo } from './repo'
@@ -144,16 +144,16 @@ function mapDeploymentType(t: string) {
 function mapDeploymentStatus(s: string) {
     switch (s) {
         case "waiting":
-            return DeploymentStatus.Waiting
+            return LastDeploymentStatus.Waiting
         case "created":
-            return DeploymentStatus.Created
+            return LastDeploymentStatus.Created
         case "running":
-            return DeploymentStatus.Running
+            return LastDeploymentStatus.Running
         case "success":
-            return DeploymentStatus.Success
+            return LastDeploymentStatus.Success
         case "failure":
-            return DeploymentStatus.Failure
+            return LastDeploymentStatus.Failure
         default:
-            return DeploymentStatus.Waiting
+            return LastDeploymentStatus.Waiting
     }
 }

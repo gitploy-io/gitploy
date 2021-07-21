@@ -7,7 +7,7 @@ export default interface Deployment {
     ref: string
     sha: string
     env: string
-    status: DeploymentStatus
+    status: LastDeploymentStatus
     uid: number
     isRollback: boolean 
     isApprovalEanbled: boolean
@@ -31,7 +31,7 @@ export enum DeploymentType {
     Tag = "tag"
 }
 
-export enum DeploymentStatus {
+export enum LastDeploymentStatus {
     Waiting = "waiting",
     Created = "created",
     Running = "running",

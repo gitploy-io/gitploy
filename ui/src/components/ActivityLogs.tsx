@@ -2,7 +2,7 @@ import { Timeline, Typography, Avatar } from 'antd'
 import { SyncOutlined } from '@ant-design/icons'
 import moment from "moment"
 
-import { Deployment, DeploymentType, DeploymentStatus } from "../models"
+import { Deployment, DeploymentType, LastDeploymentStatus } from "../models"
 import DeploymentStatusBadge from "./DeploymentStatusBadge"
 
 const { Text } = Typography
@@ -16,7 +16,7 @@ export default function ActivityLogs(props: ActivityLogsProps) {
     return (
         <Timeline>
             {props.deployments.map((d, idx) => {
-                const dot = (d.status === DeploymentStatus.Running) ? <SyncOutlined spin /> : null
+                const dot = (d.status === LastDeploymentStatus.Running) ? <SyncOutlined spin /> : null
                 const ref = (d.type === DeploymentType.Commit)? d.sha.substr(0, 7) : d.ref
                 let description: React.ReactElement 
 
@@ -42,7 +42,7 @@ export default function ActivityLogs(props: ActivityLogsProps) {
                 return <Timeline.Item key={idx} color={getStatusColor(d.status)} dot={dot}>
                     <p>
                         <Text strong>{d.env}</Text>&nbsp;
-                        {(d.status !== DeploymentStatus.Failure) 
+                        {(d.status !== LastDeploymentStatus.Failure) 
                             ? <Text code>{ref}</Text>
                             : null}&nbsp;
                         {(d.repo)? 
@@ -58,17 +58,17 @@ export default function ActivityLogs(props: ActivityLogsProps) {
 }
 
 // https://ant.design/components/timeline/#Timeline.Item
-const getStatusColor = (status: DeploymentStatus) => {
+const getStatusColor = (status: LastDeploymentStatus) => {
     switch (status) {
-        case DeploymentStatus.Waiting:
+        case LastDeploymentStatus.Waiting:
             return "gray"
-        case DeploymentStatus.Created:
+        case LastDeploymentStatus.Created:
             return "purple"
-        case DeploymentStatus.Running:
+        case LastDeploymentStatus.Running:
             return "purple"
-        case DeploymentStatus.Success:
+        case LastDeploymentStatus.Success:
             return "green"
-        case DeploymentStatus.Failure:
+        case LastDeploymentStatus.Failure:
             return "red"
         default:
             return "gray"

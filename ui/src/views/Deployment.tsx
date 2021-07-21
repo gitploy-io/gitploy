@@ -17,7 +17,7 @@ import {
     approve,
     decline,
 } from "../redux/deployment"
-import { User, Deployment, DeploymentStatus, Approval } from "../models"
+import { User, Deployment, LastDeploymentStatus, Approval } from "../models"
 
 import Main from "./Main"
 import ApprovalList from "../components/ApprovalList"
@@ -202,7 +202,7 @@ export default function DeploymentView() {
 }
 
 function isDeployable(deployment: Deployment, approvals: Approval[]): boolean {
-    if (deployment.status !== DeploymentStatus.Waiting) {
+    if (deployment.status !== LastDeploymentStatus.Waiting) {
         return false
     }
 
