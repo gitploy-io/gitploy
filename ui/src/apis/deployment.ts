@@ -2,7 +2,14 @@ import { StatusCodes } from 'http-status-codes'
 
 import { instance, headers } from './setting'
 import { _fetch } from "./_base"
-import { Deployment, DeploymentType, DeploymentStatus, HttpRequestError, HttpUnprocessableEntityError } from '../models'
+import { 
+    Deployment, 
+    DeploymentType, 
+    DeploymentStatus,
+    LastDeploymentStatus, 
+    HttpRequestError, 
+    HttpUnprocessableEntityError 
+} from '../models'
 import { Deployer } from '../models/Deployment'
 import Repo from '../models/Repo'
 import { mapRepo } from './repo'
@@ -93,6 +100,7 @@ export const rollbackDeployment = async (repoId: string, number: number) => {
 export function mapDataToDeployment(d: any): Deployment {
     let deployer: Deployer | null = null
     let repo: Repo | null = null
+    let statuses: DeploymentStatus[] = []
 
     if ("user" in d.edges) {
         const ud = d.edges.user
@@ -104,8 +112,12 @@ export function mapDataToDeployment(d: any): Deployment {
     }
 
     if ("repo" in d.edges) {
-        const rd = d.edges.repo
-        repo = mapRepo(rd) 
+        repo = mapRepo(d.edges.repo) 
+    }
+
+    if ("deployment_statuses" in d.edges) {
+        statuses =  d.edges.deployment_statuses
+            .map((data: any) => mapDataToDeploymentStatus(data))
     }
 
     return {
@@ -115,7 +127,7 @@ export function mapDataToDeployment(d: any): Deployment {
         ref: d.ref,
         sha: d.sha,
         env: d.env,
-        status: mapDeploymentStatus(d.status),
+        lastStatus: mapLastDeploymentStatus(d.status),
         uid: d.uid? d.uid : "",
         isRollback: d.is_rollback,
         isApprovalEanbled: d.is_approval_enabled,
@@ -125,6 +137,7 @@ export function mapDataToDeployment(d: any): Deployment {
         updatedAt: new Date(d.updatedAt),
         deployer,
         repo,
+        statuses,
     }
 }
 
@@ -141,19 +154,30 @@ function mapDeploymentType(t: string) {
     }
 }
 
-function mapDeploymentStatus(s: string) {
+function mapLastDeploymentStatus(s: string) {
     switch (s) {
         case "waiting":
-            return DeploymentStatus.Waiting
+            return LastDeploymentStatus.Waiting
         case "created":
-            return DeploymentStatus.Created
+            return LastDeploymentStatus.Created
         case "running":
-            return DeploymentStatus.Running
+            return LastDeploymentStatus.Running
         case "success":
-            return DeploymentStatus.Success
+            return LastDeploymentStatus.Success
         case "failure":
-            return DeploymentStatus.Failure
+            return LastDeploymentStatus.Failure
         default:
-            return DeploymentStatus.Waiting
+            return LastDeploymentStatus.Waiting
+    }
+}
+
+function mapDataToDeploymentStatus(data: any): DeploymentStatus {
+    return {
+        id: data.id,
+        status: data.status,
+        description: data.description,
+        logUrl: data.log_url,
+        createdAt: data.created_at,
+        updatedAt: data.updated_at,
     }
 }

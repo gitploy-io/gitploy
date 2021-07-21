@@ -1,6 +1,6 @@
 import { Badge } from "antd"
 
-import { Deployment, DeploymentStatus } from "../models"
+import { Deployment, LastDeploymentStatus } from "../models"
 
 interface DeploymentStatusBadgeProps {
     deployment: Deployment
@@ -9,22 +9,22 @@ interface DeploymentStatusBadgeProps {
 export default function DeploymentStatusBadge(props: DeploymentStatusBadgeProps) {
     const deployment = props.deployment
     return (
-        <Badge color={getStatusColor(deployment.status)}text={deployment.status}/>
+        <Badge color={getStatusColor(deployment.lastStatus)}text={deployment.lastStatus}/>
     )
 }
 
 // https://ant.design/components/timeline/#Timeline.Item
-const getStatusColor = (status: DeploymentStatus) => {
+const getStatusColor = (status: LastDeploymentStatus) => {
     switch (status) {
-        case DeploymentStatus.Waiting:
+        case LastDeploymentStatus.Waiting:
             return "gray"
-        case DeploymentStatus.Created:
+        case LastDeploymentStatus.Created:
             return "purple"
-        case DeploymentStatus.Running:
+        case LastDeploymentStatus.Running:
             return "purple"
-        case DeploymentStatus.Success:
+        case LastDeploymentStatus.Success:
             return "green"
-        case DeploymentStatus.Failure:
+        case LastDeploymentStatus.Failure:
             return "red"
         default:
             return "gray"
