@@ -1,6 +1,7 @@
 import { Steps, Popover, Badge } from "antd"
 
-import { Deployment, LastDeploymentStatus } from "../models"
+import { Deployment } from "../models"
+import DeploymentStatusBadge from "./DeploymentStatusBadge"
 
 const { Step } = Steps
 
@@ -11,17 +12,13 @@ interface DeploymentStatusStepsProps {
 export default function DeploymentStatusSteps(props: DeploymentStatusStepsProps) {
     if (props.deployment.statuses.length === 0) {
         return (
-            <Steps size="small" progressDot>
-                <Step 
-                    title={props.deployment.status} 
-                    status={(props.deployment.status === LastDeploymentStatus.Failure)? "error" : "process"}/>
-            </Steps>
+            <DeploymentStatusBadge deployment={props.deployment}/>
         )
     }
 
     return  (
         <Steps 
-            current={2}
+            current={props.deployment.statuses.length - 1}
             size="small" 
             responsive>
             {props.deployment.statuses.map((status, idx) => {
@@ -34,9 +31,9 @@ export default function DeploymentStatusSteps(props: DeploymentStatusStepsProps)
                         style={{width: "120px"}}
                         status="finish"
                         icon={<Badge 
-                                    color="purple" 
-                                    style={{position: "relative", top:"-4px"}}/>
-                                }
+                                color={guessColor(status.status)} 
+                                style={{position: "relative", top:"-4px"}}
+                                />}
                         title={<Popover content={status.description}>
                                 {title}
                             </Popover>}
@@ -45,4 +42,15 @@ export default function DeploymentStatusSteps(props: DeploymentStatusStepsProps)
             })}
         </Steps>
     )
+}
+
+const guessColor = (status: string) => {
+    switch (status) {
+        case "success":
+            return "green"
+        case "failure":
+            return "red"
+        default:
+            return "purple"
+    }
 }
