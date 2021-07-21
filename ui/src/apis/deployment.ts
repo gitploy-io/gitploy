@@ -127,7 +127,7 @@ export function mapDataToDeployment(d: any): Deployment {
         ref: d.ref,
         sha: d.sha,
         env: d.env,
-        status: mapLastDeploymentStatus(d.status),
+        lastStatus: mapLastDeploymentStatus(d.status),
         uid: d.uid? d.uid : "",
         isRollback: d.is_rollback,
         isApprovalEanbled: d.is_approval_enabled,

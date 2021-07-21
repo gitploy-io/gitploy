@@ -213,7 +213,7 @@ export default function DeploymentView() {
 }
 
 function isDeployable(deployment: Deployment, approvals: Approval[]): boolean {
-    if (deployment.status !== LastDeploymentStatus.Waiting) {
+    if (deployment.lastStatus !== LastDeploymentStatus.Waiting) {
         return false
     }
 

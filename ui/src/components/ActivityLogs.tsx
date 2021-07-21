@@ -16,7 +16,7 @@ export default function ActivityLogs(props: ActivityLogsProps) {
     return (
         <Timeline>
             {props.deployments.map((d, idx) => {
-                const dot = (d.status === LastDeploymentStatus.Running) ? <SyncOutlined spin /> : null
+                const dot = (d.lastStatus === LastDeploymentStatus.Running) ? <SyncOutlined spin /> : null
                 const ref = (d.type === DeploymentType.Commit)? d.sha.substr(0, 7) : d.ref
                 let description: React.ReactElement 
 
@@ -39,10 +39,10 @@ export default function ActivityLogs(props: ActivityLogsProps) {
 
                 }
 
-                return <Timeline.Item key={idx} color={getStatusColor(d.status)} dot={dot}>
+                return <Timeline.Item key={idx} color={getStatusColor(d.lastStatus)} dot={dot}>
                     <p>
                         <Text strong>{d.env}</Text>&nbsp;
-                        {(d.status !== LastDeploymentStatus.Failure) 
+                        {(d.lastStatus !== LastDeploymentStatus.Failure) 
                             ? <Text code>{ref}</Text>
                             : null}&nbsp;
                         {(d.repo)? 
