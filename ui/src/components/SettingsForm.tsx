@@ -8,7 +8,7 @@ export interface SettingsFormProps {
     onClickDeactivate(): void
 }
 
-export default function SettingForm(props: SettingsFormProps) {
+export default function SettingForm(props: SettingsFormProps): JSX.Element {
     const layout = {
       labelCol: { span: 5},
       wrapperCol: { span: 12 },

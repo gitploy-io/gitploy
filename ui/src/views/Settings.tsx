@@ -7,7 +7,7 @@ import { fetchMe, checkSlack } from "../redux/settings"
 
 import Main from "./Main"
 
-export default function Settings() {
+export default function Settings(): JSX.Element {
     const { user, isSlackEnabled } = useAppSelector(state => state.settings, shallowEqual)
     const dispatch = useAppDispatch()
 
@@ -17,10 +17,10 @@ export default function Settings() {
             await dispatch(checkSlack())
         }
         f()
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line 
     }, [dispatch])
 
-    let connected = (user?.chatUser)? true : false
+    const connected = (user?.chatUser)? true : false
 
 
     return (

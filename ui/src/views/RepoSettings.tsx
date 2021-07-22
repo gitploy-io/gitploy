@@ -15,8 +15,8 @@ interface Params {
     name: string
 }
 
-export default function RepoSettings() {
-    let { namespace, name } = useParams<Params>()
+export default function RepoSettings(): JSX.Element {
+    const { namespace, name } = useParams<Params>()
     const { repo, saving } = useAppSelector(state => state.repoSettings, shallowEqual)
     const dispatch = useAppDispatch()
 
@@ -25,7 +25,7 @@ export default function RepoSettings() {
             await dispatch(init({namespace, name}))
         }
         f()
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line
     }, [dispatch])
 
     const onClickSave = (payload: RepoPayload) => {

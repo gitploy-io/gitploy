@@ -5,7 +5,7 @@ interface ApprovalDropdownProps {
     onClickDecline(): void
 }
 
-export default function ApprovalDropdown(props: ApprovalDropdownProps) {
+export default function ApprovalDropdown(props: ApprovalDropdownProps): JSX.Element {
     return (
         <Dropdown overlay={<Menu>
                 <Menu.Item key="0">

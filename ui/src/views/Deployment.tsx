@@ -42,8 +42,8 @@ interface Params {
     number: string
 }
 
-export default function DeploymentView() {
-    let { namespace, name, number } = useParams<Params>()
+export default function DeploymentView(): JSX.Element {
+    const { namespace, name, number } = useParams<Params>()
     const { deployment, approvals, candidates, myApproval } = useAppSelector(state => state.deployment, shallowEqual )
     const dispatch = useAppDispatch()
 
@@ -56,7 +56,7 @@ export default function DeploymentView() {
             await dispatch(fetchMyApproval())
         }
         f()
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line 
     }, [dispatch])
 
     const approvers: User[] = []
@@ -218,7 +218,7 @@ function isDeployable(deployment: Deployment, approvals: Approval[]): boolean {
     }
 
     // requiredApprovalCount have to be equal or greater than approved.
-    var approved = 0
+    let approved = 0
     approvals.forEach((approval) => {
         if (approval.isApproved) {
             approved++

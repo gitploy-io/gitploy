@@ -13,13 +13,13 @@ export interface Option {
     value: string
 }
 
-export default function CreatableSelect(props: CreatableSelectProps) {
+export default function CreatableSelect(props: CreatableSelectProps): JSX.Element {
     const initOption = {label: "", value: ""}
     const [item, setItem] = useState<Option>(initOption)
 
     // Clone Select props only
     // https://stackoverflow.com/questions/34698905/how-can-i-clone-a-javascript-object-except-for-one-key
-    const {options, onSelectOption, onClickAddItem, ...selectProps} = props
+    const {options, onSelectOption, onClickAddItem, ...selectProps} = props // eslint-disable-line
 
     const _onChangeItem = (e: any) => {
         const value = e.target.value
@@ -56,7 +56,6 @@ export default function CreatableSelect(props: CreatableSelectProps) {
                         onChange={_onChangeItem}
                         placeholder="Add item manually"
                         bordered={false} />
-                    {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
                     <a
                         style={{ flex: 'none', padding: '4px', display: 'block', cursor: 'pointer' }} 
                         onClick={_onClickAddItem}>

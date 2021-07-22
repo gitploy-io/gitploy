@@ -61,7 +61,7 @@ const initialState: RepoRollbackState = {
 
 export const init = createAsyncThunk<Repo, {namespace: string, name: string}, { state: {repoRollback: RepoRollbackState} }>(
     'repoRollback/init', 
-    async (params, _ ) => {
+    async (params) => {
         const repo = await searchRepo(params.namespace, params.name)
         return repo
     },

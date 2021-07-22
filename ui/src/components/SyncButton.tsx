@@ -6,7 +6,7 @@ export interface SyncButtonProps {
     onClickSync(): void
 }
 
-export default function SyncButton(props: SyncButtonProps) {
+export default function SyncButton(props: SyncButtonProps): JSX.Element {
     return (
         <Button
             loading={props.loading}

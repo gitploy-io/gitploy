@@ -15,8 +15,8 @@ const mapDataToPerm = (data: any): Perm => {
     }
 }
 
-export const listPerms = async (repo: Repo, q: string, page: number = 1, perPage: number = 30) => {
-    const perms: Perm[] = await _fetch(`${instance}/api/v1/repos/${repo.id}/perms?q=${q}`, {
+export const listPerms = async (repo: Repo, q: string, page = 1, perPage = 30): Promise<Perm[]> => {
+    const perms: Perm[] = await _fetch(`${instance}/api/v1/repos/${repo.id}/perms?q=${q}&page=${page}&per_page=${perPage}`, {
         headers,
         credentials: "same-origin"
     })

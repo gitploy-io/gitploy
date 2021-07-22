@@ -2,7 +2,7 @@ import { _fetch } from "./_base"
 import { instance, headers } from "./setting"
 import { StatusCodes } from "http-status-codes"
 
-export const checkSlack = async () => {
+export const checkSlack = async (): Promise<boolean> => {
     const res = await _fetch(`${instance}/slack/check`, {
         headers,
         credentials: "same-origin",

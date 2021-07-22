@@ -6,7 +6,7 @@ interface StatusStateIconProps {
 	state: StatusState
 }
 
-export default function StatusStateIcon(props: StatusStateIconProps) {
+export default function StatusStateIcon(props: StatusStateIconProps): JSX.Element {
 	const { state } = props
 	if (state === StatusState.Pending) {
 		return <ClockCircleTwoTone twoToneColor="#d9d9d9"/>

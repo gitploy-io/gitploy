@@ -8,7 +8,7 @@ interface NotificationListProps {
     onClickNotificaiton(n: Notification): void
 }
 
-export default function NotificationList(props: NotificationListProps) {
+export default function NotificationList(props: NotificationListProps): JSX.Element {
     const uncheckedStyle: React.CSSProperties = { backgroundColor: "#efdbff" }
 
     return ( <List size="small"
@@ -30,27 +30,27 @@ export default function NotificationList(props: NotificationListProps) {
 }
 
 function convertToNotificationLink(n: Notification): string {
+    const repo = n.repo
+    const deployment = n.deployment
+    if (deployment === null) {
+        throw new Error("The notification must have a deployment.")
+    }
+
     switch (n.type) {
         case NotificationType.Deployment:
-            if (n.deployment === null) {
-                throw new Error("The notification must have a deployment.")
-            }
-
-            const repo = n.repo
-            const deployment = n.deployment
 
             return `/${repo.namespace}/${repo.name}/deployments/${deployment.number}`
     }
 }
 
 function convertToNotificationTitle(n: Notification): string {
+    const deployment = n.deployment
+    if (deployment === null) {
+        throw new Error("The notification must have a deployment.")
+    }
+
     switch (n.type) {
         case NotificationType.Deployment:
-            if (n.deployment === null) {
-                throw new Error("The notification must have a deployment.")
-            }
-
-            const deployment = n.deployment
 
             return `New Deployment #${deployment.number}`
     }

@@ -24,8 +24,8 @@ interface Params {
     name: string
 }
 
-export default function Repo() {
-    let { namespace, name } = useParams<Params>()
+export default function Repo(): JSX.Element {
+    const { namespace, name } = useParams<Params>()
     const { key, repo } = useAppSelector(state => state.repo, shallowEqual)
     const dispatch = useAppDispatch()
 
@@ -34,7 +34,7 @@ export default function Repo() {
             await dispatch(init({namespace, name}))
         }
         f()
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line
     }, [dispatch])
 
     const onClickMenu = (e: any) => {

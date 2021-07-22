@@ -4,7 +4,7 @@ import { instance, headers } from './setting'
 import { _fetch } from "./_base"
 import { Branch, HttpNotFoundError } from '../models'
 
-export const listBranches = async (repoId: string, page: number = 1, perPage: number = 30) => {
+export const listBranches = async (repoId: string, page = 1, perPage = 30): Promise<Branch[]> => {
     const branches: Branch[] = await _fetch(`${instance}/api/v1/repos/${repoId}/branches?page=${page}&per_page=${perPage}`, {
         headers,
         credentials: "same-origin",
@@ -20,7 +20,7 @@ export const listBranches = async (repoId: string, page: number = 1, perPage: nu
     return branches
 }
 
-export const getBranch = async (repoId: string, name: string) => {
+export const getBranch = async (repoId: string, name: string): Promise<Branch> => {
     const response = await _fetch(`${instance}/api/v1/repos/${repoId}/branches/${name}`, {
         headers,
         credentials: "same-origin",

@@ -35,7 +35,7 @@ interface DeployFormProps {
     onSearchCandidates(login: string): void
 }
 
-export default function DeployForm(props: DeployFormProps) {
+export default function DeployForm(props: DeployFormProps): JSX.Element {
     const [ deploymentType, setDeploymentType ] = useState<DeploymentType | null>(null) 
 
     const layout = {
@@ -153,7 +153,7 @@ export default function DeployForm(props: DeployFormProps) {
         props.onSelectTag(tag)
     }
 
-    const onClickFinish = (values: any) => {
+    const onClickFinish = () => {
         props.onClickDeploy()
     }
 

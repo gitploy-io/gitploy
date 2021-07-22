@@ -4,7 +4,7 @@ export interface ActivateButtonProps {
     onClickActivate(): void
 }
 
-export default function ActivateButton(props: ActivateButtonProps) {
+export default function ActivateButton(props: ActivateButtonProps): JSX.Element {
     return (
         <Result
             title="Activate your repository"

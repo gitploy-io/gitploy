@@ -5,6 +5,7 @@ import { instance, headers } from './setting'
 import { _fetch } from "./_base"
 import { Repo, RepoPayload } from '../models'
 
+// eslint-disable-next-line
 export const mapRepo = (r: any): Repo => {
     return {
         id: r.id,
@@ -20,7 +21,7 @@ export const mapRepo = (r: any): Repo => {
     }
 }
 
-export const listRepos = async (q: string, page: number = 1, perPage: number = 30) => {
+export const listRepos = async (q: string, page = 1, perPage = 30): Promise<Repo[]> => {
     const repos = await _fetch(`${instance}/api/v1/repos?q=${q}&page=${page}&per_page=${perPage}`, {
         headers,
         credentials: 'same-origin',
@@ -31,7 +32,7 @@ export const listRepos = async (q: string, page: number = 1, perPage: number = 3
     return repos
 }
 
-export const searchRepo = async (namespace: string, name: string) => {
+export const searchRepo = async (namespace: string, name: string): Promise<Repo> => {
     const repo = await _fetch(`${instance}/api/v1/repos/search?namespace=${namespace}&name=${name}`, {
         headers,
         credentials: 'same-origin',
@@ -42,7 +43,7 @@ export const searchRepo = async (namespace: string, name: string) => {
     return repo
 }
 
-export const updateRepo = async (repo: Repo, payload: RepoPayload) => {
+export const updateRepo = async (repo: Repo, payload: RepoPayload): Promise<Repo> => {
     const body = {
         "config_path": payload.configPath,
         "active": repo.active
@@ -59,7 +60,7 @@ export const updateRepo = async (repo: Repo, payload: RepoPayload) => {
     return repo
 }
 
-export const activateRepo = async (repo: Repo) => {
+export const activateRepo = async (repo: Repo): Promise<Repo> => {
     const body = {
         "config_path": repo.configPath,
         "active": true,
@@ -81,7 +82,7 @@ export const activateRepo = async (repo: Repo) => {
     return repo
 }
 
-export const deactivateRepo = async (repo: Repo) => {
+export const deactivateRepo = async (repo: Repo): Promise<Repo> => {
     const body = {
         "config_path": repo.configPath,
         "active": false,

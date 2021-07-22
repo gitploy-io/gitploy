@@ -50,7 +50,7 @@ const initialState: DeploymentState = {
 
 export const init = createAsyncThunk<Repo, {namespace: string, name: string}, { state: {deployment: DeploymentState} }>(
     'deployment/init', 
-    async (params, _ ) => {
+    async (params) => {
         const repo = await searchRepo(params.namespace, params.name)
         return repo
     },

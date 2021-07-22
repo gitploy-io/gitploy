@@ -2,6 +2,7 @@ import { _fetch } from "./_base"
 import { instance, headers } from "./setting"
 import { User, ChatUser } from "../models"
 
+// eslint-disable-next-line
 export const mapUser = (data: any): User => {
     let cu:ChatUser | null
     if (data.edges.chat_user) {
@@ -27,7 +28,7 @@ export const mapUser = (data: any): User => {
     }
 }
 
-export const getMe = async () => {
+export const getMe = async (): Promise<User> => {
     const user:User = await _fetch(`${instance}/api/v1/users/me`, {
         headers,
         credentials: "same-origin",

@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit"
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
 import { message } from "antd"
 
 import { searchRepo, updateRepo, deactivateRepo } from "../apis"
@@ -20,7 +20,7 @@ const initialState: RepoSettingsState = {
 
 export const init = createAsyncThunk<Repo, {namespace: string, name: string}, { state: {repoSettings: RepoSettingsState} }>(
     'repoSettings/init', 
-    async (params, _ ) => {
+    async (params) => {
         const repo = await searchRepo(params.namespace, params.name)
         return repo
     },
@@ -102,7 +102,7 @@ export const repoSettingsSlice = createSlice({
             .addCase(deactivate.fulfilled, (state) => {
                 state.deactivating = RequestStatus.Idle
             })
-            .addCase(deactivate.rejected, (state, action: PayloadAction<unknown> | PayloadAction<HttpForbiddenError>) => {
+            .addCase(deactivate.rejected, (state) => {
                 state.deactivating = RequestStatus.Idle
             })
     }

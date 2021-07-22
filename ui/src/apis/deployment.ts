@@ -14,10 +14,8 @@ import { Deployer } from '../models/Deployment'
 import Repo from '../models/Repo'
 import { mapRepo } from './repo'
 
-export const listDeployments = async (repoId: string, env: string, status: string, page: number, perPage: number) => {
-    let deployments:Deployment[]
-
-    deployments = await _fetch(`${instance}/api/v1/repos/${repoId}/deployments?env=${env}&status=${status}&page=${page}&per_page=${perPage}`, {
+export const listDeployments = async (repoId: string, env: string, status: string, page: number, perPage: number): Promise<Deployment[]> => {
+    const deployments: Deployment[] = await _fetch(`${instance}/api/v1/repos/${repoId}/deployments?env=${env}&status=${status}&page=${page}&per_page=${perPage}`, {
         headers,
         credentials: 'same-origin',
     })
@@ -27,7 +25,7 @@ export const listDeployments = async (repoId: string, env: string, status: strin
     return deployments
 }
 
-export const getDeployment = async (id: string, number: number) => {
+export const getDeployment = async (id: string, number: number): Promise<Deployment> => {
     const deployment = await _fetch(`${instance}/api/v1/repos/${id}/deployments/${number}`, {
         headers,
         credentials: 'same-origin',
@@ -38,7 +36,7 @@ export const getDeployment = async (id: string, number: number) => {
     return deployment
 }
 
-export const createDeployment = async (repoId: string, type: DeploymentType = DeploymentType.Commit, ref: string, env: string) => {
+export const createDeployment = async (repoId: string, type: DeploymentType = DeploymentType.Commit, ref: string, env: string): Promise<Deployment> => {
     const body = JSON.stringify({
         type,
         ref,
@@ -60,7 +58,7 @@ export const createDeployment = async (repoId: string, type: DeploymentType = De
     return deployment
 }
 
-export const updateDeploymentStatusCreated = async (id: string, number: number) => {
+export const updateDeploymentStatusCreated = async (id: string, number: number): Promise<Deployment> => {
     const body = JSON.stringify({
         status: "created"
     })
@@ -81,7 +79,7 @@ export const updateDeploymentStatusCreated = async (id: string, number: number) 
     return deployment
 }
 
-export const rollbackDeployment = async (repoId: string, number: number) => {
+export const rollbackDeployment = async (repoId: string, number: number): Promise<Deployment> => {
     const response = await _fetch(`${instance}/api/v1/repos/${repoId}/deployments/${number}/rollback`, {
         headers,
         credentials: 'same-origin',
@@ -97,6 +95,7 @@ export const rollbackDeployment = async (repoId: string, number: number) => {
     return deployment
 }
 
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export function mapDataToDeployment(d: any): Deployment {
     let deployer: Deployer | null = null
     let repo: Repo | null = null

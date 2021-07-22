@@ -4,7 +4,7 @@ import { mapRepo } from "./repo"
 import { mapDataToDeployment } from "./deployment"
 import { Notification as NotificationData, NotificationType, Deployment } from "../models"
 
-export const subscribeNotification = (cb: (n: NotificationData) => void) => {
+export const subscribeNotification = (cb: (n: NotificationData) => void): EventSource => {
     const sse = new EventSource(`${instance}/api/v1/stream`, {
         withCredentials: true,
     })
@@ -18,8 +18,8 @@ export const subscribeNotification = (cb: (n: NotificationData) => void) => {
     return sse
 }
 
-export const listNotifications = async (page: number, perPage: number) => {
-    const notifications  = await _fetch(`${instance}/api/v1/notifications?page=${page}&per_page=${perPage}`, {
+export const listNotifications = async (page: number, perPage: number): Promise<NotificationData[]> => {
+    const notifications: NotificationData[]  = await _fetch(`${instance}/api/v1/notifications?page=${page}&per_page=${perPage}`, {
         headers,
         credentials: "same-origin",
     })
@@ -29,7 +29,7 @@ export const listNotifications = async (page: number, perPage: number) => {
     return notifications
 }
 
-export const patchNotificationChecked = async (id: number) => {
+export const patchNotificationChecked = async (id: number): Promise<NotificationData>=> {
     const body = {
         checked: true
     }
@@ -47,7 +47,7 @@ export const patchNotificationChecked = async (id: number) => {
 
 function mapDataToNotification(data: any): NotificationData {
     let type: NotificationType = NotificationType.Deployment
-    var deployment: Deployment | null = null
+    let deployment: Deployment | null = null
 
     if (data.type === "deployment") {
         type = NotificationType.Deployment

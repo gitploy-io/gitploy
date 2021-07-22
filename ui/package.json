@@ -30,7 +30,8 @@
     "start": "craco start",
     "build": "craco build",
     "test": "craco test",
-    "eject": "craco eject"
+    "eject": "craco eject",
+    "lint": "npx eslint . --ext .ts,.tsx"
   },
   "eslintConfig": {
     "extends": [

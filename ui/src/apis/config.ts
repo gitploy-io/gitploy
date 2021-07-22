@@ -4,9 +4,7 @@ import { instance, headers } from './setting'
 import { _fetch } from "./_base"
 import { Config, Env, HttpNotFoundError } from '../models'
 
-export const getConfig = async (repoId: string) => {
-    let conf: Config
-
+export const getConfig = async (repoId: string): Promise<Config> => {
     const response = await _fetch(`${instance}/api/v1/repos/${repoId}/config`, {
         headers,
         credentials: "same-origin",
@@ -16,7 +14,7 @@ export const getConfig = async (repoId: string) => {
         throw new HttpNotFoundError(message)
     }
 
-    conf = await response.json()
+    const conf = await response.json()
         .then(c => mapDataToConfig(c))
 
     return conf
