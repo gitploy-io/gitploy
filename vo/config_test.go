@@ -53,8 +53,8 @@ envs:
     required_contexts:
       - github-action
     approval:
-	  enabled: true
-	  required_count: 1`
+      enabled: true
+      required_count: 1`
 		c := &Config{}
 
 		err := UnmarshalYAML([]byte(s), c)

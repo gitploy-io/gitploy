@@ -31,6 +31,6 @@ jobs:
         with:
           go-version: '1.15'
       - 
-        run: go test ./...
+        run: go test -cpu 4 ./...
         env:
           GIN_MODE: release
