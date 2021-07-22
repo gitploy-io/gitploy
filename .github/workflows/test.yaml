@@ -7,7 +7,7 @@ on:
   pull_request:
 
 jobs:
-  go-lint:
+  go-test:
     name: go lint
     runs-on: ubuntu-latest
     steps:
@@ -19,13 +19,6 @@ jobs:
         with:
           version: v1.41
           args: -D errcheck --timeout 2m
-
-  go-test:
-    name: go test
-    runs-on: ubuntu-latest
-    steps:
-      - 
-        uses: actions/checkout@v2
       - 
         uses: actions/setup-go@v1
         with:
