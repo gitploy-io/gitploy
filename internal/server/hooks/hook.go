@@ -26,7 +26,6 @@ type (
 )
 
 const (
-	headerGithubEvent     = "X-GitHub-Event"
 	headerGithubDelivery  = "X-GitHub-Delivery"
 	headerGithubSignature = "X-Hub-Signature-256"
 )

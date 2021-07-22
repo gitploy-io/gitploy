@@ -24,7 +24,7 @@ type ConfigParseError struct {
 }
 
 func (e *ConfigParseError) Error() string {
-	return fmt.Sprintf("failed to parse the config file.")
+	return "failed to parse the config file."
 }
 
 func IsConfigParseError(err error) bool {
@@ -37,7 +37,7 @@ type EnvNotFoundError struct {
 }
 
 func (e *EnvNotFoundError) Error() string {
-	return fmt.Sprintf("failed to get the env.")
+	return "failed to get the env."
 }
 
 func IsEnvNotFoundError(err error) bool {

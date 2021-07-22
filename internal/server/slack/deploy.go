@@ -19,7 +19,7 @@ func (s *Slack) handleDeployCmd(ctx context.Context, cmd slack.SlashCommand) err
 	// user have to be exist if chat user is found.
 	cu, err := s.i.FindChatUserByID(ctx, cmd.UserID)
 	if ent.IsNotFound(err) {
-		responseMessage(cmd, fmt.Sprint("Slack is not connected with Gitploy."))
+		responseMessage(cmd, "Slack is not connected with Gitploy.")
 		return nil
 	} else if err != nil {
 		return err
@@ -152,11 +152,6 @@ func (s *Slack) interactDeploy(ctx context.Context, scb slack.InteractionCallbac
 
 	s.i.Publish(ctx, d)
 	return nil
-}
-
-func sendResponse(c *slack.Client, cmd slack.SlashCommand, message string) error {
-	_, _, _, err := c.SendMessage(cmd.ChannelID, slack.MsgOptionText(message, true), slack.MsgOptionResponseURL(cmd.ResponseURL, "ephemeral"))
-	return err
 }
 
 func trimDeployCommandPrefix(txt string) string {

@@ -96,7 +96,6 @@ func (s *Slack) SigninSlack(c *gin.Context) {
 
 	// TODO: redirect to settings page.
 	c.Redirect(http.StatusFound, "/")
-	return
 }
 
 func (s *Slack) exchangeSlackCode(ctx context.Context, code string) (*SlackTokenResponse, error) {
