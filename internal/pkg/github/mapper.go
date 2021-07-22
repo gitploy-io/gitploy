@@ -78,16 +78,14 @@ func mapGithubStatusToStatus(s *github.RepoStatus) *vo.Status {
 	switch *s.State {
 	case "pending":
 		state = vo.StatusStatePending
-		break
 	case "failure":
 		state = vo.StatusStateFailure
-		break
 	case "error":
 		state = vo.StatusStateFailure
-		break
 	case "success":
 		state = vo.StatusStateSuccess
-		break
+	default:
+		state = vo.StatusStatePending
 	}
 
 	return &vo.Status{
@@ -107,16 +105,12 @@ func mapGithubCheckRunToStatus(c *github.CheckRun) *vo.Status {
 	switch *c.Conclusion {
 	case "failure":
 		state = vo.StatusStateFailure
-		break
 	case "cancelled":
 		state = vo.StatusStateFailure
-		break
 	case "timed_out":
 		state = vo.StatusStateFailure
-		break
 	case "success":
 		state = vo.StatusStateSuccess
-		break
 	default:
 		state = vo.StatusStatePending
 	}

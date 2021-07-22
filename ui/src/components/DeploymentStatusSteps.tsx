@@ -9,7 +9,7 @@ interface DeploymentStatusStepsProps {
     deployment: Deployment
 }
 
-export default function DeploymentStatusSteps(props: DeploymentStatusStepsProps) {
+export default function DeploymentStatusSteps(props: DeploymentStatusStepsProps): JSX.Element {
     if (props.deployment.statuses.length === 0) {
         return (
             <DeploymentStatusBadge deployment={props.deployment}/>
@@ -22,7 +22,7 @@ export default function DeploymentStatusSteps(props: DeploymentStatusStepsProps)
             size="small" 
             responsive>
             {props.deployment.statuses.map((status, idx) => {
-                const title = (!!status.logUrl) ?
+                const title = (status.logUrl) ?
                     <a href={status.logUrl}>{status.status}</a> :
                     <span>{status.status}</span>
                 return (<Step 

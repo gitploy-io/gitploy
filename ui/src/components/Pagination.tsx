@@ -7,7 +7,7 @@ interface PaginationProps {
     onClickNext(): void
 }
 
-export default function Pagination(props: PaginationProps) {
+export default function Pagination(props: PaginationProps): JSX.Element {
     const isFirst = props.page <= 1
 
     return (

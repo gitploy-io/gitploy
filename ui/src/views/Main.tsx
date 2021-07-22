@@ -13,7 +13,8 @@ import NotificationList from "../components/NotificationList"
 const { actions } = mainSlice
 const { Header, Content, Footer } = Layout
 
-export default function Main(props: any) {
+// eslint-disable-next-line
+export default function Main(props: any) { 
     const { 
         available, 
         authorized, 
@@ -170,7 +171,7 @@ function convertToNotificationMessage(n: NotificationData): string {
 }
 
 function countUnchecked(notifications: NotificationData[]) {
-    var cnt = 0
+    let cnt = 0
     notifications.forEach((n) => {
         if (!n.checked) {
             cnt++

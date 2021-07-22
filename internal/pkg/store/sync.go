@@ -20,7 +20,7 @@ func (s *Store) SyncPerm(ctx context.Context, u *ent.User, rp *ent.Perm, sync ti
 
 		// Synchronize remote repositories.
 		remote = rp.Edges.Repo
-		local, err = tx.Repo.Get(ctx, remote.ID)
+		_, err = tx.Repo.Get(ctx, remote.ID)
 		if ent.IsNotFound(err) {
 			local, _ = tx.Repo.Create().
 				SetID(remote.ID).

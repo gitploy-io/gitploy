@@ -14,12 +14,12 @@ export interface ApproversSelectProps extends SelectProps<string>{
     onSearchCandidates(login: string): void
 }
 
-export default function ApproversSelect(props: ApproversSelectProps) {
+export default function ApproversSelect(props: ApproversSelectProps): JSX.Element {
     const [ searching, setSearching ] = React.useState<boolean>(false)
 
     // Clone Select props only
     // https://stackoverflow.com/questions/34698905/how-can-i-clone-a-javascript-object-except-for-one-key
-    const {candidates, onSelectCandidate, onSearchCandidates, ...selectProps} = props
+    const {candidates, onSelectCandidate, onSearchCandidates, ...selectProps} = props // eslint-disable-line
 
     // debounce search action.
     const onSearch = debounce((login: string) => {

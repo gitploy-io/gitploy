@@ -18,7 +18,7 @@ interface RollbackFormProps {
     onSearchCandidates(login: string): void
 }
 
-export default function RollbackForm(props: RollbackFormProps) {
+export default function RollbackForm(props: RollbackFormProps): JSX.Element {
     const layout = {
       labelCol: { span: 5},
       wrapperCol: { span: 16 },
@@ -40,7 +40,7 @@ export default function RollbackForm(props: RollbackFormProps) {
         props.onSelectDeployment(deployment)
     }
     
-    const onFinish = (values: any) => {
+    const onFinish = () => {
         props.onClickRollback()
     }
 

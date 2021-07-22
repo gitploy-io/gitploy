@@ -13,6 +13,7 @@ import {
     HttpUnprocessableEntityError
  } from '../models'
 
+// eslint-disable-next-line
 export const mapDataToApproval = (data: any): Approval => {
     let user: User | null = null
     let deployment: Deployment | null = null
@@ -35,7 +36,7 @@ export const mapDataToApproval = (data: any): Approval => {
     }
 }
 
-export const listApprovals = async (id: string, number: number) => {
+export const listApprovals = async (id: string, number: number): Promise<Approval[]> => {
     const res = await _fetch(`${instance}/api/v1/repos/${id}/deployments/${number}/approvals`, {
         credentials: "same-origin",
         headers,
@@ -51,7 +52,7 @@ export const listApprovals = async (id: string, number: number) => {
     return approvals
 }
 
-export const createApproval = async (repo: Repo, deployment: Deployment, approver: User) => {
+export const createApproval = async (repo: Repo, deployment: Deployment, approver: User): Promise<Approval> => {
     const body = {
         user_id: approver.id
     }
@@ -73,7 +74,7 @@ export const createApproval = async (repo: Repo, deployment: Deployment, approve
     return approval
 }
 
-export const deleteApproval = async (repo: Repo, approval: Approval) => {
+export const deleteApproval = async (repo: Repo, approval: Approval): Promise<void> => {
     const res = await _fetch(`${instance}/api/v1/repos/${repo.id}/approvals/${approval.id}`, {
         credentials: "same-origin",
         headers,
@@ -86,7 +87,7 @@ export const deleteApproval = async (repo: Repo, approval: Approval) => {
     }
 }
 
-export const getMyApproval = async (id: string, number: number) => {
+export const getMyApproval = async (id: string, number: number): Promise<Approval> => {
     const res = await _fetch(`${instance}/api/v1/repos/${id}/deployments/${number}/approval`, {
         credentials: "same-origin",
         headers,
@@ -101,7 +102,7 @@ export const getMyApproval = async (id: string, number: number) => {
     return approval
 }
 
-export const setApprovalApproved = async (id: string, number: number) => {
+export const setApprovalApproved = async (id: string, number: number): Promise<Approval> => {
     const body = {
         is_approved: true,
     }
@@ -121,7 +122,7 @@ export const setApprovalApproved = async (id: string, number: number) => {
     return approval
 }
 
-export const setApprovalDeclined = async (id: string, number: number) => {
+export const setApprovalDeclined = async (id: string, number: number): Promise<Approval> => {
     const body = {
         is_approved: false,
     }

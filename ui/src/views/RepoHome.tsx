@@ -18,8 +18,8 @@ interface Params {
     name: string
 }
 
-export default function RepoHome() {
-    let { namespace, name } = useParams<Params>()
+export default function RepoHome(): JSX.Element {
+    const { namespace, name } = useParams<Params>()
     const {
         loading,
         deployments,
@@ -35,7 +35,7 @@ export default function RepoHome() {
             await dispatch(fetchDeployments())
         }
         f()
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line
     }, [dispatch])
 
     const isLast = deployments.length < perPage

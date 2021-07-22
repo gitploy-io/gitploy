@@ -11,7 +11,7 @@ interface ActivityLogsProps {
     deployments: Deployment[]
 }
 
-export default function ActivityLogs(props: ActivityLogsProps) {
+export default function ActivityLogs(props: ActivityLogsProps): JSX.Element {
 
     return (
         <Timeline>

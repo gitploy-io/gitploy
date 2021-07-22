@@ -1,7 +1,7 @@
 import { StatusCodes } from "http-status-codes"
 import { HttpInternalServerError, HttpUnauthorizedError } from "../models/errors"
 
-export const _fetch = async (input: RequestInfo, init?: RequestInit) => {
+export const _fetch = async (input: RequestInfo, init?: RequestInit): Promise<Response>  => {
     const response = await fetch(input, init)
     
     if (response.status === StatusCodes.INTERNAL_SERVER_ERROR) {

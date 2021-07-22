@@ -8,7 +8,7 @@ export interface RepoListProps {
 }
 
 export default class RepoList extends Component<RepoListProps> {
-    render() {
+    render(): JSX.Element {
         return (
             <List
                 itemLayout="horizontal"

@@ -4,7 +4,7 @@ import { instance, headers } from './setting'
 import { _fetch } from "./_base"
 import { Commit, Status, HttpNotFoundError, StatusState } from '../models'
 
-export const listCommits = async (repoId: string, branch: string, page: number = 1, perPage: number = 30) => {
+export const listCommits = async (repoId: string, branch: string, page = 1, perPage = 30): Promise<Commit[]> => {
     const commits: Commit[] = await _fetch(`${instance}/api/v1/repos/${repoId}/commits?branch=${branch}&page=${page}&per_page=${perPage}`, {
         headers,
         credentials: "same-origin",
@@ -21,7 +21,7 @@ export const listCommits = async (repoId: string, branch: string, page: number =
     return commits
 }
 
-export const getCommit = async (repoId: string, sha: string) => {
+export const getCommit = async (repoId: string, sha: string): Promise<Commit> => {
     const response = await _fetch(`${instance}/api/v1/repos/${repoId}/commits/${sha}`, {
         headers,
         credentials: "same-origin",
@@ -53,7 +53,7 @@ const mapStatusState = (state: string) => {
     return StatusState.Pending
 }
 
-export const listStatuses = async (repoId: string, sha: string) => {
+export const listStatuses = async (repoId: string, sha: string): Promise<{state: StatusState, statuses: Status[]}> => {
     const response = await _fetch(`${instance}/api/v1/repos/${repoId}/commits/${sha}/statuses`, {
         headers,
         credentials: "same-origin",

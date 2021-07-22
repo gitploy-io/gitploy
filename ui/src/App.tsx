@@ -10,7 +10,7 @@ import Repo from "./views/Repo"
 import Deployment from "./views/Deployment"
 import Settings from "./views/Settings"
 
-function App() {
+function App(): JSX.Element {
     return (
         <div className="App">
             <Router>

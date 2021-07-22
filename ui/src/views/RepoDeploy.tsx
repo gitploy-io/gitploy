@@ -31,8 +31,8 @@ interface Params {
     name: string
 }
 
-export default function RepoDeploy() {
-    let { namespace, name } = useParams<Params>()
+export default function RepoDeploy(): JSX.Element {
+    const { namespace, name } = useParams<Params>()
     const { 
         hasConfig, 
         envs, 
@@ -55,7 +55,7 @@ export default function RepoDeploy() {
             await dispatch(fetchTags())
         }
         f()
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line 
     }, [dispatch])
 
     const onSelectEnv = (env: string) => {

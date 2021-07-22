@@ -27,7 +27,7 @@ func (s *Slack) handleRollbackCmd(ctx context.Context, cmd slack.SlashCommand) e
 	// user have to be exist if chat user is found.
 	cu, err := s.i.FindChatUserByID(ctx, cmd.UserID)
 	if ent.IsNotFound(err) {
-		responseMessage(cmd, fmt.Sprint("Slack is not connected with Gitploy."))
+		responseMessage(cmd, "Slack is not connected with Gitploy.")
 		return nil
 	} else if err != nil {
 		return err

@@ -7,7 +7,7 @@ interface ApprovalListProps {
     approvals: Approval[]
 }
 
-export default function ApprovalList(props: ApprovalListProps) {
+export default function ApprovalList(props: ApprovalListProps): JSX.Element {
     return (
         <div>
             {props.approvals.map((a, idx) => {

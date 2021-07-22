@@ -170,8 +170,5 @@ func atoi(s string) int {
 
 func isSecure(raw string) bool {
 	u, _ := url.Parse(raw)
-	if u.Scheme == "https" {
-		return true
-	}
-	return false
+	return u.Scheme == "https"
 }
