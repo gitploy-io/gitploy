@@ -8,7 +8,7 @@ on:
 
 jobs:
   go-test:
-    name: go lint
+    name: go test
     runs-on: ubuntu-latest
     steps:
       - 
@@ -27,3 +27,18 @@ jobs:
         run: go test -cpu 4 ./...
         env:
           GIN_MODE: release
+
+  react-test:
+    name: react test
+    runs-on: ubuntu-latest
+    steps:
+      - 
+        uses: actions/checkout@v2
+      - 
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14.17.0'
+      - 
+        run: npm install
+      - 
+        run: npm run lint
