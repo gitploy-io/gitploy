@@ -3,6 +3,7 @@
 package approval
 
 import (
+	"fmt"
 	"time"
 )
 
@@ -13,6 +14,8 @@ const (
 	FieldID = "id"
 	// FieldIsApproved holds the string denoting the is_approved field in the database.
 	FieldIsApproved = "is_approved"
+	// FieldStatus holds the string denoting the status field in the database.
+	FieldStatus = "status"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
@@ -47,6 +50,7 @@ const (
 var Columns = []string{
 	FieldID,
 	FieldIsApproved,
+	FieldStatus,
 	FieldCreatedAt,
 	FieldUpdatedAt,
 	FieldUserID,
@@ -73,3 +77,30 @@ var (
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
 	UpdateDefaultUpdatedAt func() time.Time
 )
+
+// Status defines the type for the "status" enum field.
+type Status string
+
+// StatusPending is the default value of the Status enum.
+const DefaultStatus = StatusPending
+
+// Status values.
+const (
+	StatusPending  Status = "pending"
+	StatusDeclined Status = "declined"
+	StatusApproved Status = "approved"
+)
+
+func (s Status) String() string {
+	return string(s)
+}
+
+// StatusValidator is a validator for the "status" field enum values. It is called by the builders before save.
+func StatusValidator(s Status) error {
+	switch s {
+	case StatusPending, StatusDeclined, StatusApproved:
+		return nil
+	default:
+		return fmt.Errorf("approval: invalid enum value for status field: %q", s)
+	}
+}

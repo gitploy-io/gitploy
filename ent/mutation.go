@@ -49,6 +49,7 @@ type ApprovalMutation struct {
 	typ               string
 	id                *int
 	is_approved       *bool
+	status            *approval.Status
 	created_at        *time.Time
 	updated_at        *time.Time
 	clearedFields     map[string]struct{}
@@ -174,6 +175,42 @@ func (m *ApprovalMutation) OldIsApproved(ctx context.Context) (v bool, err error
 // ResetIsApproved resets all changes to the "is_approved" field.
 func (m *ApprovalMutation) ResetIsApproved() {
 	m.is_approved = nil
+}
+
+// SetStatus sets the "status" field.
+func (m *ApprovalMutation) SetStatus(a approval.Status) {
+	m.status = &a
+}
+
+// Status returns the value of the "status" field in the mutation.
+func (m *ApprovalMutation) Status() (r approval.Status, exists bool) {
+	v := m.status
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldStatus returns the old "status" field's value of the Approval entity.
+// If the Approval object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ApprovalMutation) OldStatus(ctx context.Context) (v approval.Status, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldStatus is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldStatus requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldStatus: %w", err)
+	}
+	return oldValue.Status, nil
+}
+
+// ResetStatus resets all changes to the "status" field.
+func (m *ApprovalMutation) ResetStatus() {
+	m.status = nil
 }
 
 // SetCreatedAt sets the "created_at" field.
@@ -386,9 +423,12 @@ func (m *ApprovalMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ApprovalMutation) Fields() []string {
-	fields := make([]string, 0, 5)
+	fields := make([]string, 0, 6)
 	if m.is_approved != nil {
 		fields = append(fields, approval.FieldIsApproved)
+	}
+	if m.status != nil {
+		fields = append(fields, approval.FieldStatus)
 	}
 	if m.created_at != nil {
 		fields = append(fields, approval.FieldCreatedAt)
@@ -412,6 +452,8 @@ func (m *ApprovalMutation) Field(name string) (ent.Value, bool) {
 	switch name {
 	case approval.FieldIsApproved:
 		return m.IsApproved()
+	case approval.FieldStatus:
+		return m.Status()
 	case approval.FieldCreatedAt:
 		return m.CreatedAt()
 	case approval.FieldUpdatedAt:
@@ -431,6 +473,8 @@ func (m *ApprovalMutation) OldField(ctx context.Context, name string) (ent.Value
 	switch name {
 	case approval.FieldIsApproved:
 		return m.OldIsApproved(ctx)
+	case approval.FieldStatus:
+		return m.OldStatus(ctx)
 	case approval.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case approval.FieldUpdatedAt:
@@ -454,6 +498,13 @@ func (m *ApprovalMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetIsApproved(v)
+		return nil
+	case approval.FieldStatus:
+		v, ok := value.(approval.Status)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetStatus(v)
 		return nil
 	case approval.FieldCreatedAt:
 		v, ok := value.(time.Time)
@@ -537,6 +588,9 @@ func (m *ApprovalMutation) ResetField(name string) error {
 	switch name {
 	case approval.FieldIsApproved:
 		m.ResetIsApproved()
+		return nil
+	case approval.FieldStatus:
+		m.ResetStatus()
 		return nil
 	case approval.FieldCreatedAt:
 		m.ResetCreatedAt()

@@ -44,6 +44,20 @@ func (au *ApprovalUpdate) SetNillableIsApproved(b *bool) *ApprovalUpdate {
 	return au
 }
 
+// SetStatus sets the "status" field.
+func (au *ApprovalUpdate) SetStatus(a approval.Status) *ApprovalUpdate {
+	au.mutation.SetStatus(a)
+	return au
+}
+
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (au *ApprovalUpdate) SetNillableStatus(a *approval.Status) *ApprovalUpdate {
+	if a != nil {
+		au.SetStatus(*a)
+	}
+	return au
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (au *ApprovalUpdate) SetCreatedAt(t time.Time) *ApprovalUpdate {
 	au.mutation.SetCreatedAt(t)
@@ -172,6 +186,11 @@ func (au *ApprovalUpdate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (au *ApprovalUpdate) check() error {
+	if v, ok := au.mutation.Status(); ok {
+		if err := approval.StatusValidator(v); err != nil {
+			return &ValidationError{Name: "status", err: fmt.Errorf("ent: validator failed for field \"status\": %w", err)}
+		}
+	}
 	if _, ok := au.mutation.UserID(); au.mutation.UserCleared() && !ok {
 		return errors.New("ent: clearing a required unique edge \"user\"")
 	}
@@ -204,6 +223,13 @@ func (au *ApprovalUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Type:   field.TypeBool,
 			Value:  value,
 			Column: approval.FieldIsApproved,
+		})
+	}
+	if value, ok := au.mutation.Status(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeEnum,
+			Value:  value,
+			Column: approval.FieldStatus,
 		})
 	}
 	if value, ok := au.mutation.CreatedAt(); ok {
@@ -319,6 +345,20 @@ func (auo *ApprovalUpdateOne) SetIsApproved(b bool) *ApprovalUpdateOne {
 func (auo *ApprovalUpdateOne) SetNillableIsApproved(b *bool) *ApprovalUpdateOne {
 	if b != nil {
 		auo.SetIsApproved(*b)
+	}
+	return auo
+}
+
+// SetStatus sets the "status" field.
+func (auo *ApprovalUpdateOne) SetStatus(a approval.Status) *ApprovalUpdateOne {
+	auo.mutation.SetStatus(a)
+	return auo
+}
+
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (auo *ApprovalUpdateOne) SetNillableStatus(a *approval.Status) *ApprovalUpdateOne {
+	if a != nil {
+		auo.SetStatus(*a)
 	}
 	return auo
 }
@@ -458,6 +498,11 @@ func (auo *ApprovalUpdateOne) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (auo *ApprovalUpdateOne) check() error {
+	if v, ok := auo.mutation.Status(); ok {
+		if err := approval.StatusValidator(v); err != nil {
+			return &ValidationError{Name: "status", err: fmt.Errorf("ent: validator failed for field \"status\": %w", err)}
+		}
+	}
 	if _, ok := auo.mutation.UserID(); auo.mutation.UserCleared() && !ok {
 		return errors.New("ent: clearing a required unique edge \"user\"")
 	}
@@ -507,6 +552,13 @@ func (auo *ApprovalUpdateOne) sqlSave(ctx context.Context) (_node *Approval, err
 			Type:   field.TypeBool,
 			Value:  value,
 			Column: approval.FieldIsApproved,
+		})
+	}
+	if value, ok := auo.mutation.Status(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeEnum,
+			Value:  value,
+			Column: approval.FieldStatus,
 		})
 	}
 	if value, ok := auo.mutation.CreatedAt(); ok {

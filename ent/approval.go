@@ -20,6 +20,8 @@ type Approval struct {
 	ID int `json:"id,omitempty"`
 	// IsApproved holds the value of the "is_approved" field.
 	IsApproved bool `json:"is_approved"`
+	// Status holds the value of the "status" field.
+	Status approval.Status `json:"status"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -81,7 +83,7 @@ func (*Approval) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(sql.NullBool)
 		case approval.FieldID, approval.FieldDeploymentID:
 			values[i] = new(sql.NullInt64)
-		case approval.FieldUserID:
+		case approval.FieldStatus, approval.FieldUserID:
 			values[i] = new(sql.NullString)
 		case approval.FieldCreatedAt, approval.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -111,6 +113,12 @@ func (a *Approval) assignValues(columns []string, values []interface{}) error {
 				return fmt.Errorf("unexpected type %T for field is_approved", values[i])
 			} else if value.Valid {
 				a.IsApproved = value.Bool
+			}
+		case approval.FieldStatus:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field status", values[i])
+			} else if value.Valid {
+				a.Status = approval.Status(value.String)
 			}
 		case approval.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -176,6 +184,8 @@ func (a *Approval) String() string {
 	builder.WriteString(fmt.Sprintf("id=%v", a.ID))
 	builder.WriteString(", is_approved=")
 	builder.WriteString(fmt.Sprintf("%v", a.IsApproved))
+	builder.WriteString(", status=")
+	builder.WriteString(fmt.Sprintf("%v", a.Status))
 	builder.WriteString(", created_at=")
 	builder.WriteString(a.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", updated_at=")

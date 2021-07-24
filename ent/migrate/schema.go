@@ -12,6 +12,7 @@ var (
 	ApprovalsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "is_approved", Type: field.TypeBool, Default: false},
+		{Name: "status", Type: field.TypeEnum, Enums: []string{"pending", "declined", "approved"}, Default: "pending"},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "deployment_id", Type: field.TypeInt, Nullable: true},
@@ -25,13 +26,13 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "approvals_deployments_approvals",
-				Columns:    []*schema.Column{ApprovalsColumns[4]},
+				Columns:    []*schema.Column{ApprovalsColumns[5]},
 				RefColumns: []*schema.Column{DeploymentsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "approvals_users_approvals",
-				Columns:    []*schema.Column{ApprovalsColumns[5]},
+				Columns:    []*schema.Column{ApprovalsColumns[6]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},

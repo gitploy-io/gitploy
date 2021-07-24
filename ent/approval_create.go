@@ -36,6 +36,20 @@ func (ac *ApprovalCreate) SetNillableIsApproved(b *bool) *ApprovalCreate {
 	return ac
 }
 
+// SetStatus sets the "status" field.
+func (ac *ApprovalCreate) SetStatus(a approval.Status) *ApprovalCreate {
+	ac.mutation.SetStatus(a)
+	return ac
+}
+
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (ac *ApprovalCreate) SetNillableStatus(a *approval.Status) *ApprovalCreate {
+	if a != nil {
+		ac.SetStatus(*a)
+	}
+	return ac
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (ac *ApprovalCreate) SetCreatedAt(t time.Time) *ApprovalCreate {
 	ac.mutation.SetCreatedAt(t)
@@ -142,6 +156,10 @@ func (ac *ApprovalCreate) defaults() {
 		v := approval.DefaultIsApproved
 		ac.mutation.SetIsApproved(v)
 	}
+	if _, ok := ac.mutation.Status(); !ok {
+		v := approval.DefaultStatus
+		ac.mutation.SetStatus(v)
+	}
 	if _, ok := ac.mutation.CreatedAt(); !ok {
 		v := approval.DefaultCreatedAt()
 		ac.mutation.SetCreatedAt(v)
@@ -156,6 +174,14 @@ func (ac *ApprovalCreate) defaults() {
 func (ac *ApprovalCreate) check() error {
 	if _, ok := ac.mutation.IsApproved(); !ok {
 		return &ValidationError{Name: "is_approved", err: errors.New("ent: missing required field \"is_approved\"")}
+	}
+	if _, ok := ac.mutation.Status(); !ok {
+		return &ValidationError{Name: "status", err: errors.New("ent: missing required field \"status\"")}
+	}
+	if v, ok := ac.mutation.Status(); ok {
+		if err := approval.StatusValidator(v); err != nil {
+			return &ValidationError{Name: "status", err: fmt.Errorf("ent: validator failed for field \"status\": %w", err)}
+		}
 	}
 	if _, ok := ac.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New("ent: missing required field \"created_at\"")}
@@ -209,6 +235,14 @@ func (ac *ApprovalCreate) createSpec() (*Approval, *sqlgraph.CreateSpec) {
 			Column: approval.FieldIsApproved,
 		})
 		_node.IsApproved = value
+	}
+	if value, ok := ac.mutation.Status(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeEnum,
+			Value:  value,
+			Column: approval.FieldStatus,
+		})
+		_node.Status = value
 	}
 	if value, ok := ac.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

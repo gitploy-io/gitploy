@@ -19,6 +19,13 @@ func (Approval) Fields() []ent.Field {
 	return []ent.Field{
 		field.Bool("is_approved").
 			Default(false),
+		field.Enum("status").
+			Values(
+				"pending",
+				"declined",
+				"approved",
+			).
+			Default("pending"),
 		field.Time("created_at").
 			Default(time.Now),
 		field.Time("updated_at").
