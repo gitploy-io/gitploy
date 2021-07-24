@@ -2,7 +2,7 @@ import { StatusCodes } from 'http-status-codes'
 
 import { instance, headers } from './setting'
 import { _fetch } from "./_base"
-import { mapUser } from "./user"
+import { mapDataToUser } from "./user"
 import { mapDataToDeployment } from "./deployment"
 import { 
     Repo,
@@ -19,7 +19,7 @@ export const mapDataToApproval = (data: any): Approval => {
     let deployment: Deployment | null = null
 
     if ("user" in data.edges) {
-        user = mapUser(data.edges.user)
+        user = mapDataToUser(data.edges.user)
     }
 
     if ("deployment" in data.edges) {

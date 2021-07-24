@@ -1,5 +1,5 @@
 import { useEffect } from "react"
-import { Breadcrumb, PageHeader, Row, Col, Typography, Avatar, Button } from "antd"
+import { Breadcrumb, PageHeader, Row, Col } from "antd"
 import { shallowEqual } from 'react-redux'
 import { useParams } from "react-router-dom"
 
@@ -20,20 +20,17 @@ import {
 import { 
     User, 
     Deployment, 
-    DeploymentType,
     LastDeploymentStatus, 
-    Approval 
+    Approval,
+    RequestStatus
 } from "../models"
 
 import Main from "./Main"
-import ApprovalList from "../components/ApprovalList"
-import ApproversSearch from "../components/ApproversSearch"
+import ApproversSelector from "../components/ApproversSelector"
 import ApprovalDropdown from "../components/ApprovalDropdown"
 import Spin from "../components/Spin"
-// import DeploymentStatusBadge from "../components/DeploymentStatusBadge"
-import DeploymentStatusSteps from "../components/DeploymentStatusSteps"
+import DeployConfirm from "../components/DeployConfirm"
 
-const { Text } = Typography
 const { actions } = deploymentSlice
 
 interface Params {
@@ -44,7 +41,13 @@ interface Params {
 
 export default function DeploymentView(): JSX.Element {
     const { namespace, name, number } = useParams<Params>()
-    const { deployment, approvals, candidates, myApproval } = useAppSelector(state => state.deployment, shallowEqual )
+    const { 
+        deployment, 
+        deploying,
+        approvals, 
+        candidates, 
+        myApproval 
+    } = useAppSelector(state => state.deployment, shallowEqual )
     const dispatch = useAppDispatch()
 
     useEffect(() => {
@@ -108,14 +111,7 @@ export default function DeploymentView(): JSX.Element {
         </Main>
     }
 
-    // styles 
-    const styleField: React.CSSProperties = { marginTop: "18px" }
-    const styleFieldName: React.CSSProperties = { textAlign: "right"}
-
     // buttons
-    const deployBtn = isDeployable(deployment, approvals)? 
-        <Button type="primary" onClick={onClickDeploy}>Deploy</Button>:
-        <Button type="primary" disabled>Deploy</Button>
     const approvalDropdown = (hasRequestedApproval(myApproval))?
         <ApprovalDropdown 
             key="approval" 
@@ -149,62 +145,23 @@ export default function DeploymentView(): JSX.Element {
             <div style={{marginTop: "20px", marginBottom: "30px"}}>
                 <Row>
                     <Col span="18">
-                        <Row >
-                            <Col span="6" style={styleFieldName}>Target:&nbsp;&nbsp;</Col>
-                            <Col><Text>{deployment.env}</Text></Col>
-                        </Row>
-                        <Row style={styleField}>
-                            <Col span="6" style={styleFieldName}>Ref:&nbsp;&nbsp;</Col>
-                            <Col>
-                                <Text code>
-                                    {(deployment.type === DeploymentType.Commit)? deployment.ref.substr(0, 7) : deployment.ref}
-                                </Text>
-                            </Col>
-                        </Row>
-                        <Row style={styleField}>
-                            <Col span="6" style={styleFieldName}>Status:&nbsp;&nbsp;</Col>
-                            <Col><DeploymentStatusSteps deployment={deployment}/></Col>
-                        </Row>
-                        <Row style={styleField}>
-                            <Col span="6" style={styleFieldName}>Deployer:&nbsp;&nbsp;</Col>
-                            <Col> 
-                                {(deployment.deployer !== null)?
-                                     <Text ><Avatar size="small" src={deployment.deployer.avatar} /> {deployment.deployer.login}</Text> :
-                                    <Avatar size="small" >U</Avatar> }
-                            </Col>
-                        </Row>
-                        {(deployment.isApprovalEanbled) ?
-                            <Row style={styleField}>
-                                <Col span="6" style={styleFieldName}>Required Approval:&nbsp;&nbsp;</Col>
-                                <Col>{deployment.requiredApprovalCount}</Col>
-                            </Row> :
-                            null}
-                        <Row style={styleField}>
-                            <Col span="6" style={styleFieldName}></Col>
-                            <Col>{deployBtn}</Col>
-                        </Row>
+                        <DeployConfirm 
+                            isDeployable={isDeployable(deployment, approvals)}
+                            deploying={RequestStatus.Pending === deploying}
+                            deployment={deployment}
+                            onClickDeploy={onClickDeploy}
+                        />
                     </Col>
                     <Col span="6">
                         {(deployment.isApprovalEanbled) ? 
-                            <div>
-                                <div style={{paddingLeft: "5px"}}>
-                                    <Text strong>Approvers</Text>
-                                </div>
-                                <div style={{marginTop: "5px"}}>
-                                    <ApproversSearch
-                                        style={{width: "100%"}}
-                                        value="Select Approvers"
-                                        approvers={approvers}
-                                        candidates={candidates}
-                                        onSearchCandidates={onSearchCandidates}
-                                        onSelectCandidate={onSelectCandidate} />
-                                </div>
-                                <div style={{marginTop: "10px", paddingLeft: "5px"}}>
-                                    {(approvals.length !== 0) ?
-                                        <ApprovalList approvals={approvals}/>:
-                                        <Text type="secondary"> No approvers </Text>}
-                                </div>
-                            </div> : null}
+                            <ApproversSelector 
+                                approvers={approvers}
+                                candidates={candidates}
+                                approvals={approvals}
+                                onSearchCandidates={onSearchCandidates}
+                                onSelectCandidate={onSelectCandidate}
+                            /> :
+                            null}
                     </Col>
                 </Row>
             </div>

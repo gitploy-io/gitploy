@@ -2,8 +2,25 @@ import { _fetch } from "./_base"
 import { instance, headers } from "./setting"
 import { User, ChatUser } from "../models"
 
-// eslint-disable-next-line
-export const mapUser = (data: any): User => {
+export interface UserData {
+    id: string
+    login: string
+    avatar: string
+    admin: boolean
+    created_at: string
+    updated_at: string
+    edges: {
+        chat_user: ChatUserData
+    }
+}
+
+interface ChatUserData {
+    id: string
+    created_at: string
+    updated_at: string
+}
+
+export const mapDataToUser = (data: UserData): User => {
     let cu:ChatUser | null
     if (data.edges.chat_user) {
         const chat_user = data.edges.chat_user
@@ -34,7 +51,7 @@ export const getMe = async (): Promise<User> => {
         credentials: "same-origin",
     })
         .then(response => response.json())
-        .then(data => (mapUser(data)))
+        .then(data => (mapDataToUser(data)))
 
     return user
 }

@@ -1,17 +1,28 @@
 import { instance, headers } from './setting'
 import { _fetch } from "./_base"
-import { mapUser } from "./user"
-import { mapRepo } from "./repo"
+import { mapDataToUser, UserData } from "./user"
+import { mapDataToRepo, RepoData } from "./repo"
 import { Repo, Perm } from '../models'
 
-const mapDataToPerm = (data: any): Perm => {
+interface PermData{
+    repo_perm: string
+    synced_at: string
+    created_at: string
+    updated_at: string
+    edges: {
+        user: UserData,
+        repo: RepoData,
+    }
+}
+
+const mapDataToPerm = (data: PermData): Perm => {
     return {
         repoPerm: data.repo_perm,
         syncedAt: new Date(data.synced_at),
         createdAt: new Date(data.created_at),
         updatedAt: new Date(data.updated_at),
-        user: mapUser(data.edges.user),
-        repo: mapRepo(data.edges.repo),
+        user: mapDataToUser(data.edges.user),
+        repo: mapDataToRepo(data.edges.repo),
     }
 }
 

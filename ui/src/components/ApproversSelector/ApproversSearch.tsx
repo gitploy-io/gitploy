@@ -3,7 +3,7 @@ import { Select, SelectProps, Avatar, Spin } from "antd"
 import { CheckOutlined } from "@ant-design/icons"
 import debounce from "lodash.debounce"
 
-import { User } from "../models"
+import { User } from "../../models"
 
 export interface ApproversSelectProps extends SelectProps<string>{
     approvers: User[]
