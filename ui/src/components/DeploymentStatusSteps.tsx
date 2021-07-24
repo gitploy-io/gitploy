@@ -1,4 +1,4 @@
-import { Steps, Popover, Badge } from "antd"
+import { Steps, Popover } from "antd"
 
 import { Deployment } from "../models"
 import DeploymentStatusBadge from "./DeploymentStatusBadge"
@@ -27,12 +27,9 @@ export default function DeploymentStatusSteps(props: DeploymentStatusStepsProps)
                     <span>{status.status}</span>
                 return (<Step 
                         key={idx}
-                        style={{width: "120px"}}
+                        style={{width: "100px"}}
                         status="finish"
-                        icon={<Badge 
-                                color={guessColor(status.status)} 
-                                style={{position: "relative", top:"-4px"}}
-                                />}
+                        icon={<span>•</span>}
                         title={<Popover content={status.description}>
                                 {title}
                             </Popover>}
@@ -40,16 +37,4 @@ export default function DeploymentStatusSteps(props: DeploymentStatusStepsProps)
             })}
         </Steps>
     )
-}
-
-// The deployment status has arbitrary status because it is decided by SCM.
-const guessColor = (status: string) => {
-    switch (status) {
-        case "success":
-            return "green"
-        case "failure":
-            return "red"
-        default:
-            return "purple"
-    }
 }
