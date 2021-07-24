@@ -1,5 +1,5 @@
 import { useEffect } from "react"
-import { Breadcrumb, PageHeader, Row, Col, Typography } from "antd"
+import { Breadcrumb, PageHeader, Row, Col } from "antd"
 import { shallowEqual } from 'react-redux'
 import { useParams } from "react-router-dom"
 
@@ -26,13 +26,11 @@ import {
 } from "../models"
 
 import Main from "./Main"
-import ApprovalList from "../components/ApprovalList"
-import ApproversSearch from "../components/ApproversSearch"
+import ApproversSelector from "../components/ApproversSelector"
 import ApprovalDropdown from "../components/ApprovalDropdown"
 import Spin from "../components/Spin"
 import DeployConfirm from "../components/DeployConfirm"
 
-const { Text } = Typography
 const { actions } = deploymentSlice
 
 interface Params {
@@ -156,25 +154,14 @@ export default function DeploymentView(): JSX.Element {
                     </Col>
                     <Col span="6">
                         {(deployment.isApprovalEanbled) ? 
-                            <div>
-                                <div style={{paddingLeft: "5px"}}>
-                                    <Text strong>Approvers</Text>
-                                </div>
-                                <div style={{marginTop: "5px"}}>
-                                    <ApproversSearch
-                                        style={{width: "100%"}}
-                                        value="Select Approvers"
-                                        approvers={approvers}
-                                        candidates={candidates}
-                                        onSearchCandidates={onSearchCandidates}
-                                        onSelectCandidate={onSelectCandidate} />
-                                </div>
-                                <div style={{marginTop: "10px", paddingLeft: "5px"}}>
-                                    {(approvals.length !== 0) ?
-                                        <ApprovalList approvals={approvals}/>:
-                                        <Text type="secondary"> No approvers </Text>}
-                                </div>
-                            </div> : null}
+                            <ApproversSelector 
+                                approvers={approvers}
+                                candidates={candidates}
+                                approvals={approvals}
+                                onSearchCandidates={onSearchCandidates}
+                                onSelectCandidate={onSelectCandidate}
+                            /> :
+                            null}
                     </Col>
                 </Row>
             </div>

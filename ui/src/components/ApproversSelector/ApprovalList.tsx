@@ -1,9 +1,9 @@
 import { Avatar } from "antd"
 import { CheckOutlined } from "@ant-design/icons"
 
-import { Approval } from "../models"
+import { Approval } from "../../models"
 
-interface ApprovalListProps {
+export interface ApprovalListProps {
     approvals: Approval[]
 }
 
