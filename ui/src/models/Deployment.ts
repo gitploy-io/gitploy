@@ -1,4 +1,5 @@
-import Repo from './Repo'
+import User from "./User"
+import Repo from "./Repo"
 
 export default interface Deployment {
     id: number
@@ -12,18 +13,11 @@ export default interface Deployment {
     isRollback: boolean 
     isApprovalEanbled: boolean
     requiredApprovalCount: number
-    autoDeploy: boolean
     createdAt: Date
     updatedAt: Date
-    deployer: Deployer | null
+    deployer: User | null
     repo: Repo | null
     statuses: DeploymentStatus[]
-}
-
-export interface Deployer {
-    id: string
-    login: string
-    avatar: string
 }
 
 export enum DeploymentType {

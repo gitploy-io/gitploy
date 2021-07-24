@@ -4,19 +4,27 @@ import { instance, headers } from './setting'
 import { _fetch } from "./_base"
 import { Commit, Status, HttpNotFoundError, StatusState } from '../models'
 
+interface CommitData {
+    sha: string
+    message: string
+    is_pull_request: boolean
+}
+
+const mapDataToCommit = (data: CommitData): Commit => {
+    return {
+        sha: data.sha,
+        message: data.message,
+        isPullRequest: data.is_pull_request
+    }
+}
+
 export const listCommits = async (repoId: string, branch: string, page = 1, perPage = 30): Promise<Commit[]> => {
     const commits: Commit[] = await _fetch(`${instance}/api/v1/repos/${repoId}/commits?branch=${branch}&page=${page}&per_page=${perPage}`, {
         headers,
         credentials: "same-origin",
     })
         .then(response => response.json())
-        .then(commits => commits.map((c: any): Commit => {
-            return {
-                sha: c.sha,
-                message: c.message,
-                isPullRequest: c.is_pull_request,
-            } 
-        }))
+        .then(commits => commits.map((c: CommitData) => mapDataToCommit(c)))
     
     return commits
 }
@@ -33,11 +41,7 @@ export const getCommit = async (repoId: string, sha: string): Promise<Commit> =>
 
     const commit: Commit = await response
         .json()
-        .then(c => ({
-            sha: c.sha,
-            message: c.message,
-            isPullRequest: c.is_pull_request
-        }))
+        .then((c: CommitData) => mapDataToCommit(c))
     
     return commit
 }

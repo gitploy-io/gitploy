@@ -1,6 +1,6 @@
 import { instance, headers } from "./setting"
 import { _fetch } from "./_base"
-import { mapRepo } from "./repo"
+import { mapDataToRepo } from "./repo"
 import { mapDataToDeployment } from "./deployment"
 import { Notification as NotificationData, NotificationType, Deployment } from "../models"
 
@@ -61,7 +61,7 @@ function mapDataToNotification(data: any): NotificationData {
         checked: data.checked,
         createdAt: new Date(data.created_at),
         updatedAt: new Date(data.updated_at),
-        repo: mapRepo(data.edges.repo),
+        repo: mapDataToRepo(data.edges.repo),
         deployment,
     }
 }
