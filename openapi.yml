@@ -1224,8 +1224,30 @@ components:
       properties:
         type:
           type: string
-        resource_id:
+          enum:
+            - deployment
+            - approval_requested
+            - approval_responded
+        repo_namespace:
+          type: string
+        repo_name:
+          type: string
+        deployment_number:
           type: number
+        deployment_type:
+          type: string
+        deployment_ref:
+          type: string
+        deployment_env:
+          type: string
+        deployment_status:
+          type: string
+        deployment_login:
+          type: string
+        approval_status:
+          type: string
+        approval_login:
+          type: string
         notified:
           type: boolean
           description: notified means it is notified by Chat or browser

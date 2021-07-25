@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/slack-go/slack"
+	"go.uber.org/zap"
 
 	"github.com/hanjunlee/gitploy/ent"
 	"github.com/hanjunlee/gitploy/ent/chatcallback"
@@ -150,7 +151,10 @@ func (s *Slack) interactDeploy(ctx context.Context, scb slack.InteractionCallbac
 		return fmt.Errorf("failed to deploy: %w", err)
 	}
 
-	s.i.Publish(ctx, d)
+	if err = s.i.PublishDeployment(ctx, re, d); err != nil {
+		s.log.Warn("failed to notify the deployment.", zap.Error(err))
+	}
+
 	return nil
 }
 

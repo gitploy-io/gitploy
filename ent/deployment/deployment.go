@@ -46,8 +46,6 @@ const (
 	EdgeRepo = "repo"
 	// EdgeApprovals holds the string denoting the approvals edge name in mutations.
 	EdgeApprovals = "approvals"
-	// EdgeNotifications holds the string denoting the notifications edge name in mutations.
-	EdgeNotifications = "notifications"
 	// EdgeDeploymentStatuses holds the string denoting the deployment_statuses edge name in mutations.
 	EdgeDeploymentStatuses = "deployment_statuses"
 	// Table holds the table name of the deployment in the database.
@@ -73,13 +71,6 @@ const (
 	ApprovalsInverseTable = "approvals"
 	// ApprovalsColumn is the table column denoting the approvals relation/edge.
 	ApprovalsColumn = "deployment_id"
-	// NotificationsTable is the table the holds the notifications relation/edge.
-	NotificationsTable = "notifications"
-	// NotificationsInverseTable is the table name for the Notification entity.
-	// It exists in this package in order to avoid circular dependency with the "notification" package.
-	NotificationsInverseTable = "notifications"
-	// NotificationsColumn is the table column denoting the notifications relation/edge.
-	NotificationsColumn = "deployment_id"
 	// DeploymentStatusesTable is the table the holds the deployment_statuses relation/edge.
 	DeploymentStatusesTable = "deployment_status"
 	// DeploymentStatusesInverseTable is the table name for the DeploymentStatus entity.

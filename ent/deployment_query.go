@@ -15,7 +15,6 @@ import (
 	"github.com/hanjunlee/gitploy/ent/approval"
 	"github.com/hanjunlee/gitploy/ent/deployment"
 	"github.com/hanjunlee/gitploy/ent/deploymentstatus"
-	"github.com/hanjunlee/gitploy/ent/notification"
 	"github.com/hanjunlee/gitploy/ent/predicate"
 	"github.com/hanjunlee/gitploy/ent/repo"
 	"github.com/hanjunlee/gitploy/ent/user"
@@ -34,7 +33,6 @@ type DeploymentQuery struct {
 	withUser               *UserQuery
 	withRepo               *RepoQuery
 	withApprovals          *ApprovalQuery
-	withNotifications      *NotificationQuery
 	withDeploymentStatuses *DeploymentStatusQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -131,28 +129,6 @@ func (dq *DeploymentQuery) QueryApprovals() *ApprovalQuery {
 			sqlgraph.From(deployment.Table, deployment.FieldID, selector),
 			sqlgraph.To(approval.Table, approval.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, deployment.ApprovalsTable, deployment.ApprovalsColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(dq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
-// QueryNotifications chains the current query on the "notifications" edge.
-func (dq *DeploymentQuery) QueryNotifications() *NotificationQuery {
-	query := &NotificationQuery{config: dq.config}
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := dq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := dq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(deployment.Table, deployment.FieldID, selector),
-			sqlgraph.To(notification.Table, notification.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, deployment.NotificationsTable, deployment.NotificationsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(dq.driver.Dialect(), step)
 		return fromU, nil
@@ -366,7 +342,6 @@ func (dq *DeploymentQuery) Clone() *DeploymentQuery {
 		withUser:               dq.withUser.Clone(),
 		withRepo:               dq.withRepo.Clone(),
 		withApprovals:          dq.withApprovals.Clone(),
-		withNotifications:      dq.withNotifications.Clone(),
 		withDeploymentStatuses: dq.withDeploymentStatuses.Clone(),
 		// clone intermediate query.
 		sql:  dq.sql.Clone(),
@@ -404,17 +379,6 @@ func (dq *DeploymentQuery) WithApprovals(opts ...func(*ApprovalQuery)) *Deployme
 		opt(query)
 	}
 	dq.withApprovals = query
-	return dq
-}
-
-// WithNotifications tells the query-builder to eager-load the nodes that are connected to
-// the "notifications" edge. The optional arguments are used to configure the query builder of the edge.
-func (dq *DeploymentQuery) WithNotifications(opts ...func(*NotificationQuery)) *DeploymentQuery {
-	query := &NotificationQuery{config: dq.config}
-	for _, opt := range opts {
-		opt(query)
-	}
-	dq.withNotifications = query
 	return dq
 }
 
@@ -494,11 +458,10 @@ func (dq *DeploymentQuery) sqlAll(ctx context.Context) ([]*Deployment, error) {
 	var (
 		nodes       = []*Deployment{}
 		_spec       = dq.querySpec()
-		loadedTypes = [5]bool{
+		loadedTypes = [4]bool{
 			dq.withUser != nil,
 			dq.withRepo != nil,
 			dq.withApprovals != nil,
-			dq.withNotifications != nil,
 			dq.withDeploymentStatuses != nil,
 		}
 	)
@@ -596,31 +559,6 @@ func (dq *DeploymentQuery) sqlAll(ctx context.Context) ([]*Deployment, error) {
 				return nil, fmt.Errorf(`unexpected foreign-key "deployment_id" returned %v for node %v`, fk, n.ID)
 			}
 			node.Edges.Approvals = append(node.Edges.Approvals, n)
-		}
-	}
-
-	if query := dq.withNotifications; query != nil {
-		fks := make([]driver.Value, 0, len(nodes))
-		nodeids := make(map[int]*Deployment)
-		for i := range nodes {
-			fks = append(fks, nodes[i].ID)
-			nodeids[nodes[i].ID] = nodes[i]
-			nodes[i].Edges.Notifications = []*Notification{}
-		}
-		query.Where(predicate.Notification(func(s *sql.Selector) {
-			s.Where(sql.InValues(deployment.NotificationsColumn, fks...))
-		}))
-		neighbors, err := query.All(ctx)
-		if err != nil {
-			return nil, err
-		}
-		for _, n := range neighbors {
-			fk := n.DeploymentID
-			node, ok := nodeids[fk]
-			if !ok {
-				return nil, fmt.Errorf(`unexpected foreign-key "deployment_id" returned %v for node %v`, fk, n.ID)
-			}
-			node.Edges.Notifications = append(node.Edges.Notifications, n)
 		}
 	}
 

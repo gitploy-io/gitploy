@@ -15,8 +15,6 @@ func (s *Store) ListNotifications(ctx context.Context, u *ent.User, page, perPag
 			notification.UserID(u.ID),
 		).
 		WithUser().
-		WithRepo().
-		WithDeployment().
 		Limit(perPage).
 		Offset(offset(page, perPage)).
 		Order(ent.Desc(notification.FieldCreatedAt)).
@@ -30,8 +28,6 @@ func (s *Store) ListNotificationsFromTime(ctx context.Context, t time.Time) ([]*
 			notification.CreatedAtGTE(t),
 		).
 		WithUser().
-		WithRepo().
-		WithDeployment().
 		All(ctx)
 }
 
@@ -40,23 +36,35 @@ func (s *Store) FindNotificationByID(ctx context.Context, id int) (*ent.Notifica
 }
 
 func (s *Store) CreateNotification(ctx context.Context, n *ent.Notification) (*ent.Notification, error) {
-	nc := s.c.Notification.
+	return s.c.Notification.
 		Create().
 		SetType(n.Type).
+		SetRepoNamespace(n.RepoNamespace).
+		SetRepoName(n.RepoName).
+		SetDeploymentNumber(n.DeploymentNumber).
+		SetDeploymentType(n.DeploymentType).
+		SetDeploymentRef(n.DeploymentRef).
+		SetDeploymentEnv(n.DeploymentEnv).
+		SetDeploymentStatus(n.DeploymentStatus).
+		SetDeploymentLogin(n.DeploymentLogin).
+		SetApprovalStatus(n.ApprovalStatus).
+		SetApprovalLogin(n.ApprovalLogin).
 		SetNotified(n.Notified).
 		SetUserID(n.UserID).
-		SetRepoID(n.RepoID)
-
-	if n.Type == notification.TypeDeployment {
-		nc = nc.SetDeploymentID(n.DeploymentID)
-	}
-
-	return nc.Save(ctx)
+		Save(ctx)
 }
 
 func (s *Store) UpdateNotification(ctx context.Context, n *ent.Notification) (*ent.Notification, error) {
 	return s.c.Notification.
 		UpdateOne(n).
+		SetRepoNamespace(n.RepoNamespace).
+		SetRepoName(n.RepoName).
+		SetDeploymentNumber(n.DeploymentNumber).
+		SetDeploymentType(n.DeploymentType).
+		SetDeploymentRef(n.DeploymentRef).
+		SetDeploymentEnv(n.DeploymentEnv).
+		SetDeploymentStatus(n.DeploymentStatus).
+		SetDeploymentLogin(n.DeploymentLogin).
 		SetNotified(n.Notified).
 		SetChecked(n.Checked).
 		Save(ctx)

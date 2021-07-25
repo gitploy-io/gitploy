@@ -49,11 +49,9 @@ type RepoEdges struct {
 	Deployments []*Deployment `json:"deployments,omitempty"`
 	// ChatCallback holds the value of the chat_callback edge.
 	ChatCallback []*ChatCallback `json:"chat_callback,omitempty"`
-	// Notifications holds the value of the notifications edge.
-	Notifications []*Notification `json:"notifications,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [4]bool
+	loadedTypes [3]bool
 }
 
 // PermsOrErr returns the Perms value or an error if the edge
@@ -81,15 +79,6 @@ func (e RepoEdges) ChatCallbackOrErr() ([]*ChatCallback, error) {
 		return e.ChatCallback, nil
 	}
 	return nil, &NotLoadedError{edge: "chat_callback"}
-}
-
-// NotificationsOrErr returns the Notifications value or an error if the edge
-// was not loaded in eager-loading.
-func (e RepoEdges) NotificationsOrErr() ([]*Notification, error) {
-	if e.loadedTypes[3] {
-		return e.Notifications, nil
-	}
-	return nil, &NotLoadedError{edge: "notifications"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -204,11 +193,6 @@ func (r *Repo) QueryDeployments() *DeploymentQuery {
 // QueryChatCallback queries the "chat_callback" edge of the Repo entity.
 func (r *Repo) QueryChatCallback() *ChatCallbackQuery {
 	return (&RepoClient{config: r.config}).QueryChatCallback(r)
-}
-
-// QueryNotifications queries the "notifications" edge of the Repo entity.
-func (r *Repo) QueryNotifications() *NotificationQuery {
-	return (&RepoClient{config: r.config}).QueryNotifications(r)
 }
 
 // Update returns a builder for updating this Repo.

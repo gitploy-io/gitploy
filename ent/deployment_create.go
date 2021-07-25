@@ -13,7 +13,6 @@ import (
 	"github.com/hanjunlee/gitploy/ent/approval"
 	"github.com/hanjunlee/gitploy/ent/deployment"
 	"github.com/hanjunlee/gitploy/ent/deploymentstatus"
-	"github.com/hanjunlee/gitploy/ent/notification"
 	"github.com/hanjunlee/gitploy/ent/repo"
 	"github.com/hanjunlee/gitploy/ent/user"
 )
@@ -196,21 +195,6 @@ func (dc *DeploymentCreate) AddApprovals(a ...*Approval) *DeploymentCreate {
 		ids[i] = a[i].ID
 	}
 	return dc.AddApprovalIDs(ids...)
-}
-
-// AddNotificationIDs adds the "notifications" edge to the Notification entity by IDs.
-func (dc *DeploymentCreate) AddNotificationIDs(ids ...int) *DeploymentCreate {
-	dc.mutation.AddNotificationIDs(ids...)
-	return dc
-}
-
-// AddNotifications adds the "notifications" edges to the Notification entity.
-func (dc *DeploymentCreate) AddNotifications(n ...*Notification) *DeploymentCreate {
-	ids := make([]int, len(n))
-	for i := range n {
-		ids[i] = n[i].ID
-	}
-	return dc.AddNotificationIDs(ids...)
 }
 
 // AddDeploymentStatusIDs adds the "deployment_statuses" edge to the DeploymentStatus entity by IDs.
@@ -541,25 +525,6 @@ func (dc *DeploymentCreate) createSpec() (*Deployment, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
 					Column: approval.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := dc.mutation.NotificationsIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   deployment.NotificationsTable,
-			Columns: []string{deployment.NotificationsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: notification.FieldID,
 				},
 			},
 		}

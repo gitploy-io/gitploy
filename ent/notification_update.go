@@ -11,10 +11,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/hanjunlee/gitploy/ent/deployment"
 	"github.com/hanjunlee/gitploy/ent/notification"
 	"github.com/hanjunlee/gitploy/ent/predicate"
-	"github.com/hanjunlee/gitploy/ent/repo"
 	"github.com/hanjunlee/gitploy/ent/user"
 )
 
@@ -42,6 +40,101 @@ func (nu *NotificationUpdate) SetNillableType(n *notification.Type) *Notificatio
 	if n != nil {
 		nu.SetType(*n)
 	}
+	return nu
+}
+
+// SetRepoNamespace sets the "repo_namespace" field.
+func (nu *NotificationUpdate) SetRepoNamespace(s string) *NotificationUpdate {
+	nu.mutation.SetRepoNamespace(s)
+	return nu
+}
+
+// SetRepoName sets the "repo_name" field.
+func (nu *NotificationUpdate) SetRepoName(s string) *NotificationUpdate {
+	nu.mutation.SetRepoName(s)
+	return nu
+}
+
+// SetDeploymentNumber sets the "deployment_number" field.
+func (nu *NotificationUpdate) SetDeploymentNumber(i int) *NotificationUpdate {
+	nu.mutation.ResetDeploymentNumber()
+	nu.mutation.SetDeploymentNumber(i)
+	return nu
+}
+
+// AddDeploymentNumber adds i to the "deployment_number" field.
+func (nu *NotificationUpdate) AddDeploymentNumber(i int) *NotificationUpdate {
+	nu.mutation.AddDeploymentNumber(i)
+	return nu
+}
+
+// SetDeploymentType sets the "deployment_type" field.
+func (nu *NotificationUpdate) SetDeploymentType(s string) *NotificationUpdate {
+	nu.mutation.SetDeploymentType(s)
+	return nu
+}
+
+// SetDeploymentRef sets the "deployment_ref" field.
+func (nu *NotificationUpdate) SetDeploymentRef(s string) *NotificationUpdate {
+	nu.mutation.SetDeploymentRef(s)
+	return nu
+}
+
+// SetDeploymentEnv sets the "deployment_env" field.
+func (nu *NotificationUpdate) SetDeploymentEnv(s string) *NotificationUpdate {
+	nu.mutation.SetDeploymentEnv(s)
+	return nu
+}
+
+// SetDeploymentStatus sets the "deployment_status" field.
+func (nu *NotificationUpdate) SetDeploymentStatus(s string) *NotificationUpdate {
+	nu.mutation.SetDeploymentStatus(s)
+	return nu
+}
+
+// SetDeploymentLogin sets the "deployment_login" field.
+func (nu *NotificationUpdate) SetDeploymentLogin(s string) *NotificationUpdate {
+	nu.mutation.SetDeploymentLogin(s)
+	return nu
+}
+
+// SetApprovalStatus sets the "approval_status" field.
+func (nu *NotificationUpdate) SetApprovalStatus(s string) *NotificationUpdate {
+	nu.mutation.SetApprovalStatus(s)
+	return nu
+}
+
+// SetNillableApprovalStatus sets the "approval_status" field if the given value is not nil.
+func (nu *NotificationUpdate) SetNillableApprovalStatus(s *string) *NotificationUpdate {
+	if s != nil {
+		nu.SetApprovalStatus(*s)
+	}
+	return nu
+}
+
+// ClearApprovalStatus clears the value of the "approval_status" field.
+func (nu *NotificationUpdate) ClearApprovalStatus() *NotificationUpdate {
+	nu.mutation.ClearApprovalStatus()
+	return nu
+}
+
+// SetApprovalLogin sets the "approval_login" field.
+func (nu *NotificationUpdate) SetApprovalLogin(s string) *NotificationUpdate {
+	nu.mutation.SetApprovalLogin(s)
+	return nu
+}
+
+// SetNillableApprovalLogin sets the "approval_login" field if the given value is not nil.
+func (nu *NotificationUpdate) SetNillableApprovalLogin(s *string) *NotificationUpdate {
+	if s != nil {
+		nu.SetApprovalLogin(*s)
+	}
+	return nu
+}
+
+// ClearApprovalLogin clears the value of the "approval_login" field.
+func (nu *NotificationUpdate) ClearApprovalLogin() *NotificationUpdate {
+	nu.mutation.ClearApprovalLogin()
 	return nu
 }
 
@@ -99,46 +192,9 @@ func (nu *NotificationUpdate) SetUserID(s string) *NotificationUpdate {
 	return nu
 }
 
-// SetRepoID sets the "repo_id" field.
-func (nu *NotificationUpdate) SetRepoID(s string) *NotificationUpdate {
-	nu.mutation.SetRepoID(s)
-	return nu
-}
-
-// SetDeploymentID sets the "deployment_id" field.
-func (nu *NotificationUpdate) SetDeploymentID(i int) *NotificationUpdate {
-	nu.mutation.ResetDeploymentID()
-	nu.mutation.SetDeploymentID(i)
-	return nu
-}
-
-// SetNillableDeploymentID sets the "deployment_id" field if the given value is not nil.
-func (nu *NotificationUpdate) SetNillableDeploymentID(i *int) *NotificationUpdate {
-	if i != nil {
-		nu.SetDeploymentID(*i)
-	}
-	return nu
-}
-
-// ClearDeploymentID clears the value of the "deployment_id" field.
-func (nu *NotificationUpdate) ClearDeploymentID() *NotificationUpdate {
-	nu.mutation.ClearDeploymentID()
-	return nu
-}
-
 // SetUser sets the "user" edge to the User entity.
 func (nu *NotificationUpdate) SetUser(u *User) *NotificationUpdate {
 	return nu.SetUserID(u.ID)
-}
-
-// SetRepo sets the "repo" edge to the Repo entity.
-func (nu *NotificationUpdate) SetRepo(r *Repo) *NotificationUpdate {
-	return nu.SetRepoID(r.ID)
-}
-
-// SetDeployment sets the "deployment" edge to the Deployment entity.
-func (nu *NotificationUpdate) SetDeployment(d *Deployment) *NotificationUpdate {
-	return nu.SetDeploymentID(d.ID)
 }
 
 // Mutation returns the NotificationMutation object of the builder.
@@ -149,18 +205,6 @@ func (nu *NotificationUpdate) Mutation() *NotificationMutation {
 // ClearUser clears the "user" edge to the User entity.
 func (nu *NotificationUpdate) ClearUser() *NotificationUpdate {
 	nu.mutation.ClearUser()
-	return nu
-}
-
-// ClearRepo clears the "repo" edge to the Repo entity.
-func (nu *NotificationUpdate) ClearRepo() *NotificationUpdate {
-	nu.mutation.ClearRepo()
-	return nu
-}
-
-// ClearDeployment clears the "deployment" edge to the Deployment entity.
-func (nu *NotificationUpdate) ClearDeployment() *NotificationUpdate {
-	nu.mutation.ClearDeployment()
 	return nu
 }
 
@@ -240,9 +284,6 @@ func (nu *NotificationUpdate) check() error {
 	if _, ok := nu.mutation.UserID(); nu.mutation.UserCleared() && !ok {
 		return errors.New("ent: clearing a required unique edge \"user\"")
 	}
-	if _, ok := nu.mutation.RepoID(); nu.mutation.RepoCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"repo\"")
-	}
 	return nil
 }
 
@@ -269,6 +310,95 @@ func (nu *NotificationUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Type:   field.TypeEnum,
 			Value:  value,
 			Column: notification.FieldType,
+		})
+	}
+	if value, ok := nu.mutation.RepoNamespace(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: notification.FieldRepoNamespace,
+		})
+	}
+	if value, ok := nu.mutation.RepoName(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: notification.FieldRepoName,
+		})
+	}
+	if value, ok := nu.mutation.DeploymentNumber(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: notification.FieldDeploymentNumber,
+		})
+	}
+	if value, ok := nu.mutation.AddedDeploymentNumber(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: notification.FieldDeploymentNumber,
+		})
+	}
+	if value, ok := nu.mutation.DeploymentType(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: notification.FieldDeploymentType,
+		})
+	}
+	if value, ok := nu.mutation.DeploymentRef(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: notification.FieldDeploymentRef,
+		})
+	}
+	if value, ok := nu.mutation.DeploymentEnv(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: notification.FieldDeploymentEnv,
+		})
+	}
+	if value, ok := nu.mutation.DeploymentStatus(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: notification.FieldDeploymentStatus,
+		})
+	}
+	if value, ok := nu.mutation.DeploymentLogin(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: notification.FieldDeploymentLogin,
+		})
+	}
+	if value, ok := nu.mutation.ApprovalStatus(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: notification.FieldApprovalStatus,
+		})
+	}
+	if nu.mutation.ApprovalStatusCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: notification.FieldApprovalStatus,
+		})
+	}
+	if value, ok := nu.mutation.ApprovalLogin(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: notification.FieldApprovalLogin,
+		})
+	}
+	if nu.mutation.ApprovalLoginCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: notification.FieldApprovalLogin,
 		})
 	}
 	if value, ok := nu.mutation.Notified(); ok {
@@ -334,76 +464,6 @@ func (nu *NotificationUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if nu.mutation.RepoCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   notification.RepoTable,
-			Columns: []string{notification.RepoColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
-					Column: repo.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := nu.mutation.RepoIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   notification.RepoTable,
-			Columns: []string{notification.RepoColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
-					Column: repo.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if nu.mutation.DeploymentCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   notification.DeploymentTable,
-			Columns: []string{notification.DeploymentColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: deployment.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := nu.mutation.DeploymentIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   notification.DeploymentTable,
-			Columns: []string{notification.DeploymentColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: deployment.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
 	if n, err = sqlgraph.UpdateNodes(ctx, nu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{notification.Label}
@@ -434,6 +494,101 @@ func (nuo *NotificationUpdateOne) SetNillableType(n *notification.Type) *Notific
 	if n != nil {
 		nuo.SetType(*n)
 	}
+	return nuo
+}
+
+// SetRepoNamespace sets the "repo_namespace" field.
+func (nuo *NotificationUpdateOne) SetRepoNamespace(s string) *NotificationUpdateOne {
+	nuo.mutation.SetRepoNamespace(s)
+	return nuo
+}
+
+// SetRepoName sets the "repo_name" field.
+func (nuo *NotificationUpdateOne) SetRepoName(s string) *NotificationUpdateOne {
+	nuo.mutation.SetRepoName(s)
+	return nuo
+}
+
+// SetDeploymentNumber sets the "deployment_number" field.
+func (nuo *NotificationUpdateOne) SetDeploymentNumber(i int) *NotificationUpdateOne {
+	nuo.mutation.ResetDeploymentNumber()
+	nuo.mutation.SetDeploymentNumber(i)
+	return nuo
+}
+
+// AddDeploymentNumber adds i to the "deployment_number" field.
+func (nuo *NotificationUpdateOne) AddDeploymentNumber(i int) *NotificationUpdateOne {
+	nuo.mutation.AddDeploymentNumber(i)
+	return nuo
+}
+
+// SetDeploymentType sets the "deployment_type" field.
+func (nuo *NotificationUpdateOne) SetDeploymentType(s string) *NotificationUpdateOne {
+	nuo.mutation.SetDeploymentType(s)
+	return nuo
+}
+
+// SetDeploymentRef sets the "deployment_ref" field.
+func (nuo *NotificationUpdateOne) SetDeploymentRef(s string) *NotificationUpdateOne {
+	nuo.mutation.SetDeploymentRef(s)
+	return nuo
+}
+
+// SetDeploymentEnv sets the "deployment_env" field.
+func (nuo *NotificationUpdateOne) SetDeploymentEnv(s string) *NotificationUpdateOne {
+	nuo.mutation.SetDeploymentEnv(s)
+	return nuo
+}
+
+// SetDeploymentStatus sets the "deployment_status" field.
+func (nuo *NotificationUpdateOne) SetDeploymentStatus(s string) *NotificationUpdateOne {
+	nuo.mutation.SetDeploymentStatus(s)
+	return nuo
+}
+
+// SetDeploymentLogin sets the "deployment_login" field.
+func (nuo *NotificationUpdateOne) SetDeploymentLogin(s string) *NotificationUpdateOne {
+	nuo.mutation.SetDeploymentLogin(s)
+	return nuo
+}
+
+// SetApprovalStatus sets the "approval_status" field.
+func (nuo *NotificationUpdateOne) SetApprovalStatus(s string) *NotificationUpdateOne {
+	nuo.mutation.SetApprovalStatus(s)
+	return nuo
+}
+
+// SetNillableApprovalStatus sets the "approval_status" field if the given value is not nil.
+func (nuo *NotificationUpdateOne) SetNillableApprovalStatus(s *string) *NotificationUpdateOne {
+	if s != nil {
+		nuo.SetApprovalStatus(*s)
+	}
+	return nuo
+}
+
+// ClearApprovalStatus clears the value of the "approval_status" field.
+func (nuo *NotificationUpdateOne) ClearApprovalStatus() *NotificationUpdateOne {
+	nuo.mutation.ClearApprovalStatus()
+	return nuo
+}
+
+// SetApprovalLogin sets the "approval_login" field.
+func (nuo *NotificationUpdateOne) SetApprovalLogin(s string) *NotificationUpdateOne {
+	nuo.mutation.SetApprovalLogin(s)
+	return nuo
+}
+
+// SetNillableApprovalLogin sets the "approval_login" field if the given value is not nil.
+func (nuo *NotificationUpdateOne) SetNillableApprovalLogin(s *string) *NotificationUpdateOne {
+	if s != nil {
+		nuo.SetApprovalLogin(*s)
+	}
+	return nuo
+}
+
+// ClearApprovalLogin clears the value of the "approval_login" field.
+func (nuo *NotificationUpdateOne) ClearApprovalLogin() *NotificationUpdateOne {
+	nuo.mutation.ClearApprovalLogin()
 	return nuo
 }
 
@@ -491,46 +646,9 @@ func (nuo *NotificationUpdateOne) SetUserID(s string) *NotificationUpdateOne {
 	return nuo
 }
 
-// SetRepoID sets the "repo_id" field.
-func (nuo *NotificationUpdateOne) SetRepoID(s string) *NotificationUpdateOne {
-	nuo.mutation.SetRepoID(s)
-	return nuo
-}
-
-// SetDeploymentID sets the "deployment_id" field.
-func (nuo *NotificationUpdateOne) SetDeploymentID(i int) *NotificationUpdateOne {
-	nuo.mutation.ResetDeploymentID()
-	nuo.mutation.SetDeploymentID(i)
-	return nuo
-}
-
-// SetNillableDeploymentID sets the "deployment_id" field if the given value is not nil.
-func (nuo *NotificationUpdateOne) SetNillableDeploymentID(i *int) *NotificationUpdateOne {
-	if i != nil {
-		nuo.SetDeploymentID(*i)
-	}
-	return nuo
-}
-
-// ClearDeploymentID clears the value of the "deployment_id" field.
-func (nuo *NotificationUpdateOne) ClearDeploymentID() *NotificationUpdateOne {
-	nuo.mutation.ClearDeploymentID()
-	return nuo
-}
-
 // SetUser sets the "user" edge to the User entity.
 func (nuo *NotificationUpdateOne) SetUser(u *User) *NotificationUpdateOne {
 	return nuo.SetUserID(u.ID)
-}
-
-// SetRepo sets the "repo" edge to the Repo entity.
-func (nuo *NotificationUpdateOne) SetRepo(r *Repo) *NotificationUpdateOne {
-	return nuo.SetRepoID(r.ID)
-}
-
-// SetDeployment sets the "deployment" edge to the Deployment entity.
-func (nuo *NotificationUpdateOne) SetDeployment(d *Deployment) *NotificationUpdateOne {
-	return nuo.SetDeploymentID(d.ID)
 }
 
 // Mutation returns the NotificationMutation object of the builder.
@@ -541,18 +659,6 @@ func (nuo *NotificationUpdateOne) Mutation() *NotificationMutation {
 // ClearUser clears the "user" edge to the User entity.
 func (nuo *NotificationUpdateOne) ClearUser() *NotificationUpdateOne {
 	nuo.mutation.ClearUser()
-	return nuo
-}
-
-// ClearRepo clears the "repo" edge to the Repo entity.
-func (nuo *NotificationUpdateOne) ClearRepo() *NotificationUpdateOne {
-	nuo.mutation.ClearRepo()
-	return nuo
-}
-
-// ClearDeployment clears the "deployment" edge to the Deployment entity.
-func (nuo *NotificationUpdateOne) ClearDeployment() *NotificationUpdateOne {
-	nuo.mutation.ClearDeployment()
 	return nuo
 }
 
@@ -639,9 +745,6 @@ func (nuo *NotificationUpdateOne) check() error {
 	if _, ok := nuo.mutation.UserID(); nuo.mutation.UserCleared() && !ok {
 		return errors.New("ent: clearing a required unique edge \"user\"")
 	}
-	if _, ok := nuo.mutation.RepoID(); nuo.mutation.RepoCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"repo\"")
-	}
 	return nil
 }
 
@@ -685,6 +788,95 @@ func (nuo *NotificationUpdateOne) sqlSave(ctx context.Context) (_node *Notificat
 			Type:   field.TypeEnum,
 			Value:  value,
 			Column: notification.FieldType,
+		})
+	}
+	if value, ok := nuo.mutation.RepoNamespace(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: notification.FieldRepoNamespace,
+		})
+	}
+	if value, ok := nuo.mutation.RepoName(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: notification.FieldRepoName,
+		})
+	}
+	if value, ok := nuo.mutation.DeploymentNumber(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: notification.FieldDeploymentNumber,
+		})
+	}
+	if value, ok := nuo.mutation.AddedDeploymentNumber(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: notification.FieldDeploymentNumber,
+		})
+	}
+	if value, ok := nuo.mutation.DeploymentType(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: notification.FieldDeploymentType,
+		})
+	}
+	if value, ok := nuo.mutation.DeploymentRef(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: notification.FieldDeploymentRef,
+		})
+	}
+	if value, ok := nuo.mutation.DeploymentEnv(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: notification.FieldDeploymentEnv,
+		})
+	}
+	if value, ok := nuo.mutation.DeploymentStatus(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: notification.FieldDeploymentStatus,
+		})
+	}
+	if value, ok := nuo.mutation.DeploymentLogin(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: notification.FieldDeploymentLogin,
+		})
+	}
+	if value, ok := nuo.mutation.ApprovalStatus(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: notification.FieldApprovalStatus,
+		})
+	}
+	if nuo.mutation.ApprovalStatusCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: notification.FieldApprovalStatus,
+		})
+	}
+	if value, ok := nuo.mutation.ApprovalLogin(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: notification.FieldApprovalLogin,
+		})
+	}
+	if nuo.mutation.ApprovalLoginCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: notification.FieldApprovalLogin,
 		})
 	}
 	if value, ok := nuo.mutation.Notified(); ok {
@@ -742,76 +934,6 @@ func (nuo *NotificationUpdateOne) sqlSave(ctx context.Context) (_node *Notificat
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: user.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if nuo.mutation.RepoCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   notification.RepoTable,
-			Columns: []string{notification.RepoColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
-					Column: repo.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := nuo.mutation.RepoIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   notification.RepoTable,
-			Columns: []string{notification.RepoColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
-					Column: repo.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if nuo.mutation.DeploymentCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   notification.DeploymentTable,
-			Columns: []string{notification.DeploymentColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: deployment.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := nuo.mutation.DeploymentIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   notification.DeploymentTable,
-			Columns: []string{notification.DeploymentColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: deployment.FieldID,
 				},
 			},
 		}

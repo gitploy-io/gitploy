@@ -84,6 +84,6 @@ type (
 	}
 
 	Chat interface {
-		NotifyDeployment(ctx context.Context, cu *ent.ChatUser, d *ent.Deployment) error
+		Notify(ctx context.Context, cu *ent.ChatUser, n *ent.Notification) error
 	}
 )

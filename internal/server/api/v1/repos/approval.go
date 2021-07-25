@@ -169,6 +169,10 @@ func (r *Repo) CreateApproval(c *gin.Context) {
 		return
 	}
 
+	if err := r.i.PublishApprovalRequested(ctx, re, d, ap); err != nil {
+		r.log.Warn("It has failed to notify the approval requested.", zap.Error(err))
+	}
+
 	// Get the approval with edges
 	if ae, _ := r.i.FindApprovalOfUser(ctx, d, u); ae != nil {
 		ap = ae
@@ -227,6 +231,9 @@ func (r *Repo) UpdateApproval(c *gin.Context) {
 			return
 		}
 
+		if err := r.i.PublishApprovalResponded(ctx, re, d, a); err != nil {
+			r.log.Warn("It has failed to notify the approval responded.", zap.Error(err))
+		}
 	}
 
 	// Get the approval with edges

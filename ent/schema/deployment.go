@@ -72,7 +72,6 @@ func (Deployment) Edges() []ent.Edge {
 			Unique().
 			Required(),
 		edge.To("approvals", Approval.Type),
-		edge.To("notifications", Notification.Type),
 		edge.To("deployment_statuses", DeploymentStatus.Type),
 	}
 }

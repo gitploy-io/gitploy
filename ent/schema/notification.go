@@ -20,10 +20,25 @@ func (Notification) Fields() []ent.Field {
 		field.Enum("type").
 			Values(
 				"deployment",
+				"approval_requested",
+				"approval_responded",
 			).
 			Default("deployment"),
-		// notified means it is notified by Chat or browser,
-		// in meanwhile checked means the status is checked directly or not.
+		// Denormalization from repository, deployment.
+		field.String("repo_namespace"),
+		field.String("repo_name"),
+		field.Int("deployment_number"),
+		field.String("deployment_type"),
+		field.String("deployment_ref"),
+		field.String("deployment_env"),
+		field.String("deployment_status"),
+		field.String("deployment_login"),
+		field.String("approval_status").
+			Optional(),
+		field.String("approval_login").
+			Optional(),
+		// The notified field means it is notified by Chat or browser,
+		// in meanwhile The checked field means the user has checked or not.
 		field.Bool("notified").
 			Default(false),
 		field.Bool("checked").
@@ -34,9 +49,6 @@ func (Notification) Fields() []ent.Field {
 			Default(time.Now).
 			UpdateDefault(time.Now),
 		field.String("user_id"),
-		field.String("repo_id"),
-		field.Int("deployment_id").
-			Optional(),
 	}
 }
 
@@ -48,22 +60,12 @@ func (Notification) Edges() []ent.Edge {
 			Field("user_id").
 			Required().
 			Unique(),
-		edge.From("repo", Repo.Type).
-			Ref("notifications").
-			Field("repo_id").
-			Required().
-			Unique(),
-		edge.From("deployment", Deployment.Type).
-			Ref("notifications").
-			Field("deployment_id").
-			Unique(),
 	}
 }
 
 func (Notification) Indexes() []ent.Index {
 	return []ent.Index{
 		index.Fields("user_id"),
-		index.Fields("created_at"),
 		index.Fields("user_id", "created_at"),
 	}
 }

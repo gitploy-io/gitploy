@@ -27,7 +27,7 @@ type (
 		Rollback(ctx context.Context, u *ent.User, re *ent.Repo, d *ent.Deployment, env *vo.Env) (*ent.Deployment, error)
 		GetConfig(ctx context.Context, u *ent.User, r *ent.Repo) (*vo.Config, error)
 
-		Publish(ctx context.Context, resource interface{}) error
+		PublishDeployment(ctx context.Context, r *ent.Repo, d *ent.Deployment) error
 
 		GetBranch(ctx context.Context, u *ent.User, r *ent.Repo, branch string) (*vo.Branch, error)
 		GetTag(ctx context.Context, u *ent.User, r *ent.Repo, tag string) (*vo.Tag, error)

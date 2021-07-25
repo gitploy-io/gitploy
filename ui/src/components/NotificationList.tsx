@@ -30,38 +30,27 @@ export default function NotificationList(props: NotificationListProps): JSX.Elem
 }
 
 function convertToNotificationLink(n: Notification): string {
-    const repo = n.repo
-    const deployment = n.deployment
-    if (deployment === null) {
-        throw new Error("The notification must have a deployment.")
-    }
-
-    switch (n.type) {
-        case NotificationType.Deployment:
-
-            return `/${repo.namespace}/${repo.name}/deployments/${deployment.number}`
-    }
+    return `/${n.repoNamespace}/${n.repoName}/deployments/${n.deploymentNumber}`
 }
 
 function convertToNotificationTitle(n: Notification): string {
-    const deployment = n.deployment
-    if (deployment === null) {
-        throw new Error("The notification must have a deployment.")
-    }
-
     switch (n.type) {
         case NotificationType.Deployment:
-
-            return `New Deployment #${deployment.number}`
+            return `New Deployment #${n.deploymentNumber}`
+        case NotificationType.ApprovalRequested:
+            return `Approval Requested`
+        case NotificationType.ApprovalResponded:
+            return `Approval Responded`
     }
 }
 
 function convertToNotificationMessage(n: Notification): string {
     switch (n.type) {
         case NotificationType.Deployment:
-            if (n.deployment === null) {
-                return `${n.repo.namespace}/${n.repo.name} - Deployed.`
-            }
-            return `${n.repo.namespace}/${n.repo.name} - Deployed to ${n.deployment.env} environment at ${moment(n.deployment.createdAt).fromNow()}`
+            return `${n.repoNamespace}/${n.repoName} - ${n.deploymentLogin} has deployed to ${n.deploymentEnv} environment ${moment(n.createdAt).fromNow()}`
+        case NotificationType.ApprovalRequested:
+            return `${n.repoNamespace}/${n.repoName} - ${n.deploymentLogin} has requested the approval for the deployment(#${n.deploymentNumber}) ${moment(n.createdAt).fromNow()}.`
+        case NotificationType.ApprovalResponded:
+            return `${n.repoNamespace}/${n.repoName} - ${n.approvalLogin} has responded the approval of the deployment(#${n.deploymentNumber}) ${moment(n.createdAt).fromNow()}.`
     }
 }
