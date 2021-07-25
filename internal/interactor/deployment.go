@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/hanjunlee/gitploy/ent"
+	"github.com/hanjunlee/gitploy/ent/approval"
 	"github.com/hanjunlee/gitploy/ent/deployment"
 	"github.com/hanjunlee/gitploy/vo"
 	"go.uber.org/zap"
@@ -56,7 +57,7 @@ func (i *Interactor) IsApproved(ctx context.Context, d *ent.Deployment) bool {
 
 	approved := 0
 	for _, a := range as {
-		if a.IsApproved {
+		if a.Status == approval.StatusApproved {
 			approved = approved + 1
 		}
 	}

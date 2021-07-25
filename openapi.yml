@@ -731,8 +731,12 @@ paths:
             schema:
               type: object
               properties:
-                is_approved:
-                  type: boolean
+                status:
+                  type: string
+                  enum:
+                    - pending
+                    - declined
+                    - approved
       responses:
         '200':
           description: Approval
@@ -1191,8 +1195,15 @@ components:
       properties:
         id:
           type: integer
+        # TODO: remove after migrate status field.
         is_approved:
           type: boolean
+        status:
+          type: string
+          enum:
+            - pending
+            - declined
+            - approved
         created_at:
           type: string
         updated_at:

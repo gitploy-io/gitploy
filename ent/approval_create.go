@@ -22,16 +22,16 @@ type ApprovalCreate struct {
 	hooks    []Hook
 }
 
-// SetIsApproved sets the "is_approved" field.
-func (ac *ApprovalCreate) SetIsApproved(b bool) *ApprovalCreate {
-	ac.mutation.SetIsApproved(b)
+// SetStatus sets the "status" field.
+func (ac *ApprovalCreate) SetStatus(a approval.Status) *ApprovalCreate {
+	ac.mutation.SetStatus(a)
 	return ac
 }
 
-// SetNillableIsApproved sets the "is_approved" field if the given value is not nil.
-func (ac *ApprovalCreate) SetNillableIsApproved(b *bool) *ApprovalCreate {
-	if b != nil {
-		ac.SetIsApproved(*b)
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (ac *ApprovalCreate) SetNillableStatus(a *approval.Status) *ApprovalCreate {
+	if a != nil {
+		ac.SetStatus(*a)
 	}
 	return ac
 }
@@ -138,9 +138,9 @@ func (ac *ApprovalCreate) SaveX(ctx context.Context) *Approval {
 
 // defaults sets the default values of the builder before save.
 func (ac *ApprovalCreate) defaults() {
-	if _, ok := ac.mutation.IsApproved(); !ok {
-		v := approval.DefaultIsApproved
-		ac.mutation.SetIsApproved(v)
+	if _, ok := ac.mutation.Status(); !ok {
+		v := approval.DefaultStatus
+		ac.mutation.SetStatus(v)
 	}
 	if _, ok := ac.mutation.CreatedAt(); !ok {
 		v := approval.DefaultCreatedAt()
@@ -154,8 +154,13 @@ func (ac *ApprovalCreate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (ac *ApprovalCreate) check() error {
-	if _, ok := ac.mutation.IsApproved(); !ok {
-		return &ValidationError{Name: "is_approved", err: errors.New("ent: missing required field \"is_approved\"")}
+	if _, ok := ac.mutation.Status(); !ok {
+		return &ValidationError{Name: "status", err: errors.New("ent: missing required field \"status\"")}
+	}
+	if v, ok := ac.mutation.Status(); ok {
+		if err := approval.StatusValidator(v); err != nil {
+			return &ValidationError{Name: "status", err: fmt.Errorf("ent: validator failed for field \"status\": %w", err)}
+		}
 	}
 	if _, ok := ac.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New("ent: missing required field \"created_at\"")}
@@ -202,13 +207,13 @@ func (ac *ApprovalCreate) createSpec() (*Approval, *sqlgraph.CreateSpec) {
 			},
 		}
 	)
-	if value, ok := ac.mutation.IsApproved(); ok {
+	if value, ok := ac.mutation.Status(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
+			Type:   field.TypeEnum,
 			Value:  value,
-			Column: approval.FieldIsApproved,
+			Column: approval.FieldStatus,
 		})
-		_node.IsApproved = value
+		_node.Status = value
 	}
 	if value, ok := ac.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

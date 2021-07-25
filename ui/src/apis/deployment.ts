@@ -15,7 +15,7 @@ import {
 import { UserData, mapDataToUser } from "./user"
 import { RepoData, mapDataToRepo } from "./repo"
 
-interface DeploymentData {
+export interface DeploymentData {
     id: number
     number: number
     type: string

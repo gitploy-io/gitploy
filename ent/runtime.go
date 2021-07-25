@@ -23,10 +23,6 @@ import (
 func init() {
 	approvalFields := schema.Approval{}.Fields()
 	_ = approvalFields
-	// approvalDescIsApproved is the schema descriptor for is_approved field.
-	approvalDescIsApproved := approvalFields[0].Descriptor()
-	// approval.DefaultIsApproved holds the default value on creation for the is_approved field.
-	approval.DefaultIsApproved = approvalDescIsApproved.Default.(bool)
 	// approvalDescCreatedAt is the schema descriptor for created_at field.
 	approvalDescCreatedAt := approvalFields[1].Descriptor()
 	// approval.DefaultCreatedAt holds the default value on creation for the created_at field.

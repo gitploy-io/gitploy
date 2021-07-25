@@ -93,13 +93,6 @@ func IDLTE(id int) predicate.Approval {
 	})
 }
 
-// IsApproved applies equality check predicate on the "is_approved" field. It's identical to IsApprovedEQ.
-func IsApproved(v bool) predicate.Approval {
-	return predicate.Approval(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldIsApproved), v))
-	})
-}
-
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.Approval {
 	return predicate.Approval(func(s *sql.Selector) {
@@ -128,17 +121,51 @@ func DeploymentID(v int) predicate.Approval {
 	})
 }
 
-// IsApprovedEQ applies the EQ predicate on the "is_approved" field.
-func IsApprovedEQ(v bool) predicate.Approval {
+// StatusEQ applies the EQ predicate on the "status" field.
+func StatusEQ(v Status) predicate.Approval {
 	return predicate.Approval(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldIsApproved), v))
+		s.Where(sql.EQ(s.C(FieldStatus), v))
 	})
 }
 
-// IsApprovedNEQ applies the NEQ predicate on the "is_approved" field.
-func IsApprovedNEQ(v bool) predicate.Approval {
+// StatusNEQ applies the NEQ predicate on the "status" field.
+func StatusNEQ(v Status) predicate.Approval {
 	return predicate.Approval(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldIsApproved), v))
+		s.Where(sql.NEQ(s.C(FieldStatus), v))
+	})
+}
+
+// StatusIn applies the In predicate on the "status" field.
+func StatusIn(vs ...Status) predicate.Approval {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Approval(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldStatus), v...))
+	})
+}
+
+// StatusNotIn applies the NotIn predicate on the "status" field.
+func StatusNotIn(vs ...Status) predicate.Approval {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Approval(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldStatus), v...))
 	})
 }
 

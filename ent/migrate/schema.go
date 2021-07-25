@@ -11,7 +11,7 @@ var (
 	// ApprovalsColumns holds the columns for the "approvals" table.
 	ApprovalsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "is_approved", Type: field.TypeBool, Default: false},
+		{Name: "status", Type: field.TypeEnum, Enums: []string{"pending", "declined", "approved"}, Default: "pending"},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "deployment_id", Type: field.TypeInt, Nullable: true},
