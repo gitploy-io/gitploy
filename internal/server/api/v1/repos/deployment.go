@@ -143,7 +143,7 @@ func (r *Repo) CreateDeployment(c *gin.Context) {
 		return
 	}
 
-	if err = r.i.PublishDeployment(ctx, u, re, d); err != nil {
+	if err = r.i.PublishDeployment(ctx, re, d); err != nil {
 		r.log.Warn("failed to notify the deployment.", zap.Error(err))
 	}
 
@@ -294,7 +294,7 @@ func (r *Repo) RollbackDeployment(c *gin.Context) {
 		return
 	}
 
-	if err = r.i.PublishDeployment(ctx, u, re, d); err != nil {
+	if err = r.i.PublishDeployment(ctx, re, d); err != nil {
 		r.log.Warn("failed to notify the deployment.", zap.Error(err))
 	}
 

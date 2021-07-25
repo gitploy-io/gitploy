@@ -151,7 +151,7 @@ func (s *Slack) interactDeploy(ctx context.Context, scb slack.InteractionCallbac
 		return fmt.Errorf("failed to deploy: %w", err)
 	}
 
-	if err = s.i.PublishDeployment(ctx, u, re, d); err != nil {
+	if err = s.i.PublishDeployment(ctx, re, d); err != nil {
 		s.log.Warn("failed to notify the deployment.", zap.Error(err))
 	}
 

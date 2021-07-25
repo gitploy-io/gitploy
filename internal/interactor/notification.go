@@ -81,7 +81,12 @@ func (i *Interactor) setNotificationNotified(ctx context.Context, n *ent.Notific
 }
 
 // PublishDeployment publish notifications to the deployer.
-func (i *Interactor) PublishDeployment(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment) error {
+func (i *Interactor) PublishDeployment(ctx context.Context, r *ent.Repo, d *ent.Deployment) error {
+	u, err := i.FindUserByID(ctx, d.UserID)
+	if err != nil {
+		return fmt.Errorf("the deployer is not found.")
+	}
+
 	if _, err := i.CreateNotification(ctx, &ent.Notification{
 		Type:             notification.TypeDeployment,
 		RepoNamespace:    r.Namespace,
