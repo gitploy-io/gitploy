@@ -85,7 +85,7 @@ func (s *Slack) notifyApprovalRequested(ctx context.Context, cu *ent.ChatUser, n
 						Type: slack.MBTSection,
 						Text: &slack.TextBlockObject{
 							Type: slack.MarkdownType,
-							Text: fmt.Sprintf("*%s* - %s has requested the approval for the deployment #%d.", fullName, n.DeploymentLogin, n.DeploymentNumber),
+							Text: fmt.Sprintf("*%s* - %s has requested the approval for the deployment(#%d).", fullName, n.DeploymentLogin, n.DeploymentNumber),
 						},
 					},
 				},
@@ -122,7 +122,7 @@ func (s *Slack) notifyApprovalResponded(ctx context.Context, cu *ent.ChatUser, n
 						Type: slack.MBTSection,
 						Text: &slack.TextBlockObject{
 							Type: slack.MarkdownType,
-							Text: fmt.Sprintf("*%s* - %s has *%s* the deployment #%d.", fullName, n.ApprovalLogin, action, n.DeploymentNumber),
+							Text: fmt.Sprintf("*%s* - %s has *%s* the deployment(#%d.)", fullName, n.ApprovalLogin, action, n.DeploymentNumber),
 						},
 					},
 				},

@@ -165,9 +165,9 @@ function convertToNotificationMessage(n: NotificationData): string {
         case NotificationType.Deployment:
             return `New Deployment #${n.deploymentNumber}\n ${n.repoNamespace}/${n.repoName} - ${n.deploymentLogin} has deployed to ${n.deploymentEnv} environment.`
         case NotificationType.ApprovalRequested:
-            return `Approval Requested\n - ${n.repoNamespace}/${n.repoName} - ${n.deploymentLogin} has requested the approval for the deployment #${n.deploymentNumber}.`
+            return `Approval Requested\n - ${n.repoNamespace}/${n.repoName} - ${n.deploymentLogin} has requested the approval for the deployment(#${n.deploymentNumber}).`
         case NotificationType.ApprovalResponded:
-            return `Approval Responded\n - ${n.repoNamespace}/${n.repoName} - ${n.approvalLogin} has responded the approval of the deployment #${n.deploymentNumber}.`
+            return `Approval Responded\n - ${n.repoNamespace}/${n.repoName} - ${n.approvalLogin} has responded the approval of the deployment(#${n.deploymentNumber}).`
         default:
             return "New Event"
     }
