@@ -14,6 +14,22 @@ const (
 	FieldID = "id"
 	// FieldType holds the string denoting the type field in the database.
 	FieldType = "type"
+	// FieldRepoNamespace holds the string denoting the repo_namespace field in the database.
+	FieldRepoNamespace = "repo_namespace"
+	// FieldRepoName holds the string denoting the repo_name field in the database.
+	FieldRepoName = "repo_name"
+	// FieldDeploymentNumber holds the string denoting the deployment_number field in the database.
+	FieldDeploymentNumber = "deployment_number"
+	// FieldDeploymentType holds the string denoting the deployment_type field in the database.
+	FieldDeploymentType = "deployment_type"
+	// FieldDeploymentRef holds the string denoting the deployment_ref field in the database.
+	FieldDeploymentRef = "deployment_ref"
+	// FieldDeploymentEnv holds the string denoting the deployment_env field in the database.
+	FieldDeploymentEnv = "deployment_env"
+	// FieldDeploymentStatus holds the string denoting the deployment_status field in the database.
+	FieldDeploymentStatus = "deployment_status"
+	// FieldDeploymentLogin holds the string denoting the deployment_login field in the database.
+	FieldDeploymentLogin = "deployment_login"
 	// FieldNotified holds the string denoting the notified field in the database.
 	FieldNotified = "notified"
 	// FieldChecked holds the string denoting the checked field in the database.
@@ -24,16 +40,8 @@ const (
 	FieldUpdatedAt = "updated_at"
 	// FieldUserID holds the string denoting the user_id field in the database.
 	FieldUserID = "user_id"
-	// FieldRepoID holds the string denoting the repo_id field in the database.
-	FieldRepoID = "repo_id"
-	// FieldDeploymentID holds the string denoting the deployment_id field in the database.
-	FieldDeploymentID = "deployment_id"
 	// EdgeUser holds the string denoting the user edge name in mutations.
 	EdgeUser = "user"
-	// EdgeRepo holds the string denoting the repo edge name in mutations.
-	EdgeRepo = "repo"
-	// EdgeDeployment holds the string denoting the deployment edge name in mutations.
-	EdgeDeployment = "deployment"
 	// Table holds the table name of the notification in the database.
 	Table = "notifications"
 	// UserTable is the table the holds the user relation/edge.
@@ -43,33 +51,25 @@ const (
 	UserInverseTable = "users"
 	// UserColumn is the table column denoting the user relation/edge.
 	UserColumn = "user_id"
-	// RepoTable is the table the holds the repo relation/edge.
-	RepoTable = "notifications"
-	// RepoInverseTable is the table name for the Repo entity.
-	// It exists in this package in order to avoid circular dependency with the "repo" package.
-	RepoInverseTable = "repos"
-	// RepoColumn is the table column denoting the repo relation/edge.
-	RepoColumn = "repo_id"
-	// DeploymentTable is the table the holds the deployment relation/edge.
-	DeploymentTable = "notifications"
-	// DeploymentInverseTable is the table name for the Deployment entity.
-	// It exists in this package in order to avoid circular dependency with the "deployment" package.
-	DeploymentInverseTable = "deployments"
-	// DeploymentColumn is the table column denoting the deployment relation/edge.
-	DeploymentColumn = "deployment_id"
 )
 
 // Columns holds all SQL columns for notification fields.
 var Columns = []string{
 	FieldID,
 	FieldType,
+	FieldRepoNamespace,
+	FieldRepoName,
+	FieldDeploymentNumber,
+	FieldDeploymentType,
+	FieldDeploymentRef,
+	FieldDeploymentEnv,
+	FieldDeploymentStatus,
+	FieldDeploymentLogin,
 	FieldNotified,
 	FieldChecked,
 	FieldCreatedAt,
 	FieldUpdatedAt,
 	FieldUserID,
-	FieldRepoID,
-	FieldDeploymentID,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).

@@ -2164,9 +2164,6 @@ type DeploymentMutation struct {
 	approvals                  map[int]struct{}
 	removedapprovals           map[int]struct{}
 	clearedapprovals           bool
-	notifications              map[int]struct{}
-	removednotifications       map[int]struct{}
-	clearednotifications       bool
 	deployment_statuses        map[int]struct{}
 	removeddeployment_statuses map[int]struct{}
 	cleareddeployment_statuses bool
@@ -2937,59 +2934,6 @@ func (m *DeploymentMutation) ResetApprovals() {
 	m.removedapprovals = nil
 }
 
-// AddNotificationIDs adds the "notifications" edge to the Notification entity by ids.
-func (m *DeploymentMutation) AddNotificationIDs(ids ...int) {
-	if m.notifications == nil {
-		m.notifications = make(map[int]struct{})
-	}
-	for i := range ids {
-		m.notifications[ids[i]] = struct{}{}
-	}
-}
-
-// ClearNotifications clears the "notifications" edge to the Notification entity.
-func (m *DeploymentMutation) ClearNotifications() {
-	m.clearednotifications = true
-}
-
-// NotificationsCleared reports if the "notifications" edge to the Notification entity was cleared.
-func (m *DeploymentMutation) NotificationsCleared() bool {
-	return m.clearednotifications
-}
-
-// RemoveNotificationIDs removes the "notifications" edge to the Notification entity by IDs.
-func (m *DeploymentMutation) RemoveNotificationIDs(ids ...int) {
-	if m.removednotifications == nil {
-		m.removednotifications = make(map[int]struct{})
-	}
-	for i := range ids {
-		m.removednotifications[ids[i]] = struct{}{}
-	}
-}
-
-// RemovedNotifications returns the removed IDs of the "notifications" edge to the Notification entity.
-func (m *DeploymentMutation) RemovedNotificationsIDs() (ids []int) {
-	for id := range m.removednotifications {
-		ids = append(ids, id)
-	}
-	return
-}
-
-// NotificationsIDs returns the "notifications" edge IDs in the mutation.
-func (m *DeploymentMutation) NotificationsIDs() (ids []int) {
-	for id := range m.notifications {
-		ids = append(ids, id)
-	}
-	return
-}
-
-// ResetNotifications resets all changes to the "notifications" edge.
-func (m *DeploymentMutation) ResetNotifications() {
-	m.notifications = nil
-	m.clearednotifications = false
-	m.removednotifications = nil
-}
-
 // AddDeploymentStatusIDs adds the "deployment_statuses" edge to the DeploymentStatus entity by ids.
 func (m *DeploymentMutation) AddDeploymentStatusIDs(ids ...int) {
 	if m.deployment_statuses == nil {
@@ -3425,7 +3369,7 @@ func (m *DeploymentMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *DeploymentMutation) AddedEdges() []string {
-	edges := make([]string, 0, 5)
+	edges := make([]string, 0, 4)
 	if m.user != nil {
 		edges = append(edges, deployment.EdgeUser)
 	}
@@ -3434,9 +3378,6 @@ func (m *DeploymentMutation) AddedEdges() []string {
 	}
 	if m.approvals != nil {
 		edges = append(edges, deployment.EdgeApprovals)
-	}
-	if m.notifications != nil {
-		edges = append(edges, deployment.EdgeNotifications)
 	}
 	if m.deployment_statuses != nil {
 		edges = append(edges, deployment.EdgeDeploymentStatuses)
@@ -3462,12 +3403,6 @@ func (m *DeploymentMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
-	case deployment.EdgeNotifications:
-		ids := make([]ent.Value, 0, len(m.notifications))
-		for id := range m.notifications {
-			ids = append(ids, id)
-		}
-		return ids
 	case deployment.EdgeDeploymentStatuses:
 		ids := make([]ent.Value, 0, len(m.deployment_statuses))
 		for id := range m.deployment_statuses {
@@ -3480,12 +3415,9 @@ func (m *DeploymentMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *DeploymentMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 5)
+	edges := make([]string, 0, 4)
 	if m.removedapprovals != nil {
 		edges = append(edges, deployment.EdgeApprovals)
-	}
-	if m.removednotifications != nil {
-		edges = append(edges, deployment.EdgeNotifications)
 	}
 	if m.removeddeployment_statuses != nil {
 		edges = append(edges, deployment.EdgeDeploymentStatuses)
@@ -3503,12 +3435,6 @@ func (m *DeploymentMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
-	case deployment.EdgeNotifications:
-		ids := make([]ent.Value, 0, len(m.removednotifications))
-		for id := range m.removednotifications {
-			ids = append(ids, id)
-		}
-		return ids
 	case deployment.EdgeDeploymentStatuses:
 		ids := make([]ent.Value, 0, len(m.removeddeployment_statuses))
 		for id := range m.removeddeployment_statuses {
@@ -3521,7 +3447,7 @@ func (m *DeploymentMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *DeploymentMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 5)
+	edges := make([]string, 0, 4)
 	if m.cleareduser {
 		edges = append(edges, deployment.EdgeUser)
 	}
@@ -3530,9 +3456,6 @@ func (m *DeploymentMutation) ClearedEdges() []string {
 	}
 	if m.clearedapprovals {
 		edges = append(edges, deployment.EdgeApprovals)
-	}
-	if m.clearednotifications {
-		edges = append(edges, deployment.EdgeNotifications)
 	}
 	if m.cleareddeployment_statuses {
 		edges = append(edges, deployment.EdgeDeploymentStatuses)
@@ -3550,8 +3473,6 @@ func (m *DeploymentMutation) EdgeCleared(name string) bool {
 		return m.clearedrepo
 	case deployment.EdgeApprovals:
 		return m.clearedapprovals
-	case deployment.EdgeNotifications:
-		return m.clearednotifications
 	case deployment.EdgeDeploymentStatuses:
 		return m.cleareddeployment_statuses
 	}
@@ -3584,9 +3505,6 @@ func (m *DeploymentMutation) ResetEdge(name string) error {
 		return nil
 	case deployment.EdgeApprovals:
 		m.ResetApprovals()
-		return nil
-	case deployment.EdgeNotifications:
-		m.ResetNotifications()
 		return nil
 	case deployment.EdgeDeploymentStatuses:
 		m.ResetDeploymentStatuses()
@@ -4254,24 +4172,29 @@ func (m *DeploymentStatusMutation) ResetEdge(name string) error {
 // NotificationMutation represents an operation that mutates the Notification nodes in the graph.
 type NotificationMutation struct {
 	config
-	op                Op
-	typ               string
-	id                *int
-	_type             *notification.Type
-	notified          *bool
-	checked           *bool
-	created_at        *time.Time
-	updated_at        *time.Time
-	clearedFields     map[string]struct{}
-	user              *string
-	cleareduser       bool
-	repo              *string
-	clearedrepo       bool
-	deployment        *int
-	cleareddeployment bool
-	done              bool
-	oldValue          func(context.Context) (*Notification, error)
-	predicates        []predicate.Notification
+	op                   Op
+	typ                  string
+	id                   *int
+	_type                *notification.Type
+	repo_namespace       *string
+	repo_name            *string
+	deployment_number    *int
+	adddeployment_number *int
+	deployment_type      *string
+	deployment_ref       *string
+	deployment_env       *string
+	deployment_status    *string
+	deployment_login     *string
+	notified             *bool
+	checked              *bool
+	created_at           *time.Time
+	updated_at           *time.Time
+	clearedFields        map[string]struct{}
+	user                 *string
+	cleareduser          bool
+	done                 bool
+	oldValue             func(context.Context) (*Notification, error)
+	predicates           []predicate.Notification
 }
 
 var _ ent.Mutation = (*NotificationMutation)(nil)
@@ -4387,6 +4310,314 @@ func (m *NotificationMutation) OldType(ctx context.Context) (v notification.Type
 // ResetType resets all changes to the "type" field.
 func (m *NotificationMutation) ResetType() {
 	m._type = nil
+}
+
+// SetRepoNamespace sets the "repo_namespace" field.
+func (m *NotificationMutation) SetRepoNamespace(s string) {
+	m.repo_namespace = &s
+}
+
+// RepoNamespace returns the value of the "repo_namespace" field in the mutation.
+func (m *NotificationMutation) RepoNamespace() (r string, exists bool) {
+	v := m.repo_namespace
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRepoNamespace returns the old "repo_namespace" field's value of the Notification entity.
+// If the Notification object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *NotificationMutation) OldRepoNamespace(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldRepoNamespace is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldRepoNamespace requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRepoNamespace: %w", err)
+	}
+	return oldValue.RepoNamespace, nil
+}
+
+// ResetRepoNamespace resets all changes to the "repo_namespace" field.
+func (m *NotificationMutation) ResetRepoNamespace() {
+	m.repo_namespace = nil
+}
+
+// SetRepoName sets the "repo_name" field.
+func (m *NotificationMutation) SetRepoName(s string) {
+	m.repo_name = &s
+}
+
+// RepoName returns the value of the "repo_name" field in the mutation.
+func (m *NotificationMutation) RepoName() (r string, exists bool) {
+	v := m.repo_name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRepoName returns the old "repo_name" field's value of the Notification entity.
+// If the Notification object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *NotificationMutation) OldRepoName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldRepoName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldRepoName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRepoName: %w", err)
+	}
+	return oldValue.RepoName, nil
+}
+
+// ResetRepoName resets all changes to the "repo_name" field.
+func (m *NotificationMutation) ResetRepoName() {
+	m.repo_name = nil
+}
+
+// SetDeploymentNumber sets the "deployment_number" field.
+func (m *NotificationMutation) SetDeploymentNumber(i int) {
+	m.deployment_number = &i
+	m.adddeployment_number = nil
+}
+
+// DeploymentNumber returns the value of the "deployment_number" field in the mutation.
+func (m *NotificationMutation) DeploymentNumber() (r int, exists bool) {
+	v := m.deployment_number
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeploymentNumber returns the old "deployment_number" field's value of the Notification entity.
+// If the Notification object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *NotificationMutation) OldDeploymentNumber(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldDeploymentNumber is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldDeploymentNumber requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeploymentNumber: %w", err)
+	}
+	return oldValue.DeploymentNumber, nil
+}
+
+// AddDeploymentNumber adds i to the "deployment_number" field.
+func (m *NotificationMutation) AddDeploymentNumber(i int) {
+	if m.adddeployment_number != nil {
+		*m.adddeployment_number += i
+	} else {
+		m.adddeployment_number = &i
+	}
+}
+
+// AddedDeploymentNumber returns the value that was added to the "deployment_number" field in this mutation.
+func (m *NotificationMutation) AddedDeploymentNumber() (r int, exists bool) {
+	v := m.adddeployment_number
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetDeploymentNumber resets all changes to the "deployment_number" field.
+func (m *NotificationMutation) ResetDeploymentNumber() {
+	m.deployment_number = nil
+	m.adddeployment_number = nil
+}
+
+// SetDeploymentType sets the "deployment_type" field.
+func (m *NotificationMutation) SetDeploymentType(s string) {
+	m.deployment_type = &s
+}
+
+// DeploymentType returns the value of the "deployment_type" field in the mutation.
+func (m *NotificationMutation) DeploymentType() (r string, exists bool) {
+	v := m.deployment_type
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeploymentType returns the old "deployment_type" field's value of the Notification entity.
+// If the Notification object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *NotificationMutation) OldDeploymentType(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldDeploymentType is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldDeploymentType requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeploymentType: %w", err)
+	}
+	return oldValue.DeploymentType, nil
+}
+
+// ResetDeploymentType resets all changes to the "deployment_type" field.
+func (m *NotificationMutation) ResetDeploymentType() {
+	m.deployment_type = nil
+}
+
+// SetDeploymentRef sets the "deployment_ref" field.
+func (m *NotificationMutation) SetDeploymentRef(s string) {
+	m.deployment_ref = &s
+}
+
+// DeploymentRef returns the value of the "deployment_ref" field in the mutation.
+func (m *NotificationMutation) DeploymentRef() (r string, exists bool) {
+	v := m.deployment_ref
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeploymentRef returns the old "deployment_ref" field's value of the Notification entity.
+// If the Notification object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *NotificationMutation) OldDeploymentRef(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldDeploymentRef is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldDeploymentRef requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeploymentRef: %w", err)
+	}
+	return oldValue.DeploymentRef, nil
+}
+
+// ResetDeploymentRef resets all changes to the "deployment_ref" field.
+func (m *NotificationMutation) ResetDeploymentRef() {
+	m.deployment_ref = nil
+}
+
+// SetDeploymentEnv sets the "deployment_env" field.
+func (m *NotificationMutation) SetDeploymentEnv(s string) {
+	m.deployment_env = &s
+}
+
+// DeploymentEnv returns the value of the "deployment_env" field in the mutation.
+func (m *NotificationMutation) DeploymentEnv() (r string, exists bool) {
+	v := m.deployment_env
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeploymentEnv returns the old "deployment_env" field's value of the Notification entity.
+// If the Notification object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *NotificationMutation) OldDeploymentEnv(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldDeploymentEnv is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldDeploymentEnv requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeploymentEnv: %w", err)
+	}
+	return oldValue.DeploymentEnv, nil
+}
+
+// ResetDeploymentEnv resets all changes to the "deployment_env" field.
+func (m *NotificationMutation) ResetDeploymentEnv() {
+	m.deployment_env = nil
+}
+
+// SetDeploymentStatus sets the "deployment_status" field.
+func (m *NotificationMutation) SetDeploymentStatus(s string) {
+	m.deployment_status = &s
+}
+
+// DeploymentStatus returns the value of the "deployment_status" field in the mutation.
+func (m *NotificationMutation) DeploymentStatus() (r string, exists bool) {
+	v := m.deployment_status
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeploymentStatus returns the old "deployment_status" field's value of the Notification entity.
+// If the Notification object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *NotificationMutation) OldDeploymentStatus(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldDeploymentStatus is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldDeploymentStatus requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeploymentStatus: %w", err)
+	}
+	return oldValue.DeploymentStatus, nil
+}
+
+// ResetDeploymentStatus resets all changes to the "deployment_status" field.
+func (m *NotificationMutation) ResetDeploymentStatus() {
+	m.deployment_status = nil
+}
+
+// SetDeploymentLogin sets the "deployment_login" field.
+func (m *NotificationMutation) SetDeploymentLogin(s string) {
+	m.deployment_login = &s
+}
+
+// DeploymentLogin returns the value of the "deployment_login" field in the mutation.
+func (m *NotificationMutation) DeploymentLogin() (r string, exists bool) {
+	v := m.deployment_login
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeploymentLogin returns the old "deployment_login" field's value of the Notification entity.
+// If the Notification object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *NotificationMutation) OldDeploymentLogin(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldDeploymentLogin is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldDeploymentLogin requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeploymentLogin: %w", err)
+	}
+	return oldValue.DeploymentLogin, nil
+}
+
+// ResetDeploymentLogin resets all changes to the "deployment_login" field.
+func (m *NotificationMutation) ResetDeploymentLogin() {
+	m.deployment_login = nil
 }
 
 // SetNotified sets the "notified" field.
@@ -4569,91 +4800,6 @@ func (m *NotificationMutation) ResetUserID() {
 	m.user = nil
 }
 
-// SetRepoID sets the "repo_id" field.
-func (m *NotificationMutation) SetRepoID(s string) {
-	m.repo = &s
-}
-
-// RepoID returns the value of the "repo_id" field in the mutation.
-func (m *NotificationMutation) RepoID() (r string, exists bool) {
-	v := m.repo
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldRepoID returns the old "repo_id" field's value of the Notification entity.
-// If the Notification object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *NotificationMutation) OldRepoID(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, fmt.Errorf("OldRepoID is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, fmt.Errorf("OldRepoID requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldRepoID: %w", err)
-	}
-	return oldValue.RepoID, nil
-}
-
-// ResetRepoID resets all changes to the "repo_id" field.
-func (m *NotificationMutation) ResetRepoID() {
-	m.repo = nil
-}
-
-// SetDeploymentID sets the "deployment_id" field.
-func (m *NotificationMutation) SetDeploymentID(i int) {
-	m.deployment = &i
-}
-
-// DeploymentID returns the value of the "deployment_id" field in the mutation.
-func (m *NotificationMutation) DeploymentID() (r int, exists bool) {
-	v := m.deployment
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldDeploymentID returns the old "deployment_id" field's value of the Notification entity.
-// If the Notification object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *NotificationMutation) OldDeploymentID(ctx context.Context) (v int, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, fmt.Errorf("OldDeploymentID is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, fmt.Errorf("OldDeploymentID requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldDeploymentID: %w", err)
-	}
-	return oldValue.DeploymentID, nil
-}
-
-// ClearDeploymentID clears the value of the "deployment_id" field.
-func (m *NotificationMutation) ClearDeploymentID() {
-	m.deployment = nil
-	m.clearedFields[notification.FieldDeploymentID] = struct{}{}
-}
-
-// DeploymentIDCleared returns if the "deployment_id" field was cleared in this mutation.
-func (m *NotificationMutation) DeploymentIDCleared() bool {
-	_, ok := m.clearedFields[notification.FieldDeploymentID]
-	return ok
-}
-
-// ResetDeploymentID resets all changes to the "deployment_id" field.
-func (m *NotificationMutation) ResetDeploymentID() {
-	m.deployment = nil
-	delete(m.clearedFields, notification.FieldDeploymentID)
-}
-
 // ClearUser clears the "user" edge to the User entity.
 func (m *NotificationMutation) ClearUser() {
 	m.cleareduser = true
@@ -4680,58 +4826,6 @@ func (m *NotificationMutation) ResetUser() {
 	m.cleareduser = false
 }
 
-// ClearRepo clears the "repo" edge to the Repo entity.
-func (m *NotificationMutation) ClearRepo() {
-	m.clearedrepo = true
-}
-
-// RepoCleared reports if the "repo" edge to the Repo entity was cleared.
-func (m *NotificationMutation) RepoCleared() bool {
-	return m.clearedrepo
-}
-
-// RepoIDs returns the "repo" edge IDs in the mutation.
-// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// RepoID instead. It exists only for internal usage by the builders.
-func (m *NotificationMutation) RepoIDs() (ids []string) {
-	if id := m.repo; id != nil {
-		ids = append(ids, *id)
-	}
-	return
-}
-
-// ResetRepo resets all changes to the "repo" edge.
-func (m *NotificationMutation) ResetRepo() {
-	m.repo = nil
-	m.clearedrepo = false
-}
-
-// ClearDeployment clears the "deployment" edge to the Deployment entity.
-func (m *NotificationMutation) ClearDeployment() {
-	m.cleareddeployment = true
-}
-
-// DeploymentCleared reports if the "deployment" edge to the Deployment entity was cleared.
-func (m *NotificationMutation) DeploymentCleared() bool {
-	return m.DeploymentIDCleared() || m.cleareddeployment
-}
-
-// DeploymentIDs returns the "deployment" edge IDs in the mutation.
-// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// DeploymentID instead. It exists only for internal usage by the builders.
-func (m *NotificationMutation) DeploymentIDs() (ids []int) {
-	if id := m.deployment; id != nil {
-		ids = append(ids, *id)
-	}
-	return
-}
-
-// ResetDeployment resets all changes to the "deployment" edge.
-func (m *NotificationMutation) ResetDeployment() {
-	m.deployment = nil
-	m.cleareddeployment = false
-}
-
 // Op returns the operation name.
 func (m *NotificationMutation) Op() Op {
 	return m.op
@@ -4746,9 +4840,33 @@ func (m *NotificationMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *NotificationMutation) Fields() []string {
-	fields := make([]string, 0, 8)
+	fields := make([]string, 0, 14)
 	if m._type != nil {
 		fields = append(fields, notification.FieldType)
+	}
+	if m.repo_namespace != nil {
+		fields = append(fields, notification.FieldRepoNamespace)
+	}
+	if m.repo_name != nil {
+		fields = append(fields, notification.FieldRepoName)
+	}
+	if m.deployment_number != nil {
+		fields = append(fields, notification.FieldDeploymentNumber)
+	}
+	if m.deployment_type != nil {
+		fields = append(fields, notification.FieldDeploymentType)
+	}
+	if m.deployment_ref != nil {
+		fields = append(fields, notification.FieldDeploymentRef)
+	}
+	if m.deployment_env != nil {
+		fields = append(fields, notification.FieldDeploymentEnv)
+	}
+	if m.deployment_status != nil {
+		fields = append(fields, notification.FieldDeploymentStatus)
+	}
+	if m.deployment_login != nil {
+		fields = append(fields, notification.FieldDeploymentLogin)
 	}
 	if m.notified != nil {
 		fields = append(fields, notification.FieldNotified)
@@ -4765,12 +4883,6 @@ func (m *NotificationMutation) Fields() []string {
 	if m.user != nil {
 		fields = append(fields, notification.FieldUserID)
 	}
-	if m.repo != nil {
-		fields = append(fields, notification.FieldRepoID)
-	}
-	if m.deployment != nil {
-		fields = append(fields, notification.FieldDeploymentID)
-	}
 	return fields
 }
 
@@ -4781,6 +4893,22 @@ func (m *NotificationMutation) Field(name string) (ent.Value, bool) {
 	switch name {
 	case notification.FieldType:
 		return m.GetType()
+	case notification.FieldRepoNamespace:
+		return m.RepoNamespace()
+	case notification.FieldRepoName:
+		return m.RepoName()
+	case notification.FieldDeploymentNumber:
+		return m.DeploymentNumber()
+	case notification.FieldDeploymentType:
+		return m.DeploymentType()
+	case notification.FieldDeploymentRef:
+		return m.DeploymentRef()
+	case notification.FieldDeploymentEnv:
+		return m.DeploymentEnv()
+	case notification.FieldDeploymentStatus:
+		return m.DeploymentStatus()
+	case notification.FieldDeploymentLogin:
+		return m.DeploymentLogin()
 	case notification.FieldNotified:
 		return m.Notified()
 	case notification.FieldChecked:
@@ -4791,10 +4919,6 @@ func (m *NotificationMutation) Field(name string) (ent.Value, bool) {
 		return m.UpdatedAt()
 	case notification.FieldUserID:
 		return m.UserID()
-	case notification.FieldRepoID:
-		return m.RepoID()
-	case notification.FieldDeploymentID:
-		return m.DeploymentID()
 	}
 	return nil, false
 }
@@ -4806,6 +4930,22 @@ func (m *NotificationMutation) OldField(ctx context.Context, name string) (ent.V
 	switch name {
 	case notification.FieldType:
 		return m.OldType(ctx)
+	case notification.FieldRepoNamespace:
+		return m.OldRepoNamespace(ctx)
+	case notification.FieldRepoName:
+		return m.OldRepoName(ctx)
+	case notification.FieldDeploymentNumber:
+		return m.OldDeploymentNumber(ctx)
+	case notification.FieldDeploymentType:
+		return m.OldDeploymentType(ctx)
+	case notification.FieldDeploymentRef:
+		return m.OldDeploymentRef(ctx)
+	case notification.FieldDeploymentEnv:
+		return m.OldDeploymentEnv(ctx)
+	case notification.FieldDeploymentStatus:
+		return m.OldDeploymentStatus(ctx)
+	case notification.FieldDeploymentLogin:
+		return m.OldDeploymentLogin(ctx)
 	case notification.FieldNotified:
 		return m.OldNotified(ctx)
 	case notification.FieldChecked:
@@ -4816,10 +4956,6 @@ func (m *NotificationMutation) OldField(ctx context.Context, name string) (ent.V
 		return m.OldUpdatedAt(ctx)
 	case notification.FieldUserID:
 		return m.OldUserID(ctx)
-	case notification.FieldRepoID:
-		return m.OldRepoID(ctx)
-	case notification.FieldDeploymentID:
-		return m.OldDeploymentID(ctx)
 	}
 	return nil, fmt.Errorf("unknown Notification field %s", name)
 }
@@ -4835,6 +4971,62 @@ func (m *NotificationMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetType(v)
+		return nil
+	case notification.FieldRepoNamespace:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRepoNamespace(v)
+		return nil
+	case notification.FieldRepoName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRepoName(v)
+		return nil
+	case notification.FieldDeploymentNumber:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeploymentNumber(v)
+		return nil
+	case notification.FieldDeploymentType:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeploymentType(v)
+		return nil
+	case notification.FieldDeploymentRef:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeploymentRef(v)
+		return nil
+	case notification.FieldDeploymentEnv:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeploymentEnv(v)
+		return nil
+	case notification.FieldDeploymentStatus:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeploymentStatus(v)
+		return nil
+	case notification.FieldDeploymentLogin:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeploymentLogin(v)
 		return nil
 	case notification.FieldNotified:
 		v, ok := value.(bool)
@@ -4871,20 +5063,6 @@ func (m *NotificationMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetUserID(v)
 		return nil
-	case notification.FieldRepoID:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetRepoID(v)
-		return nil
-	case notification.FieldDeploymentID:
-		v, ok := value.(int)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetDeploymentID(v)
-		return nil
 	}
 	return fmt.Errorf("unknown Notification field %s", name)
 }
@@ -4893,6 +5071,9 @@ func (m *NotificationMutation) SetField(name string, value ent.Value) error {
 // this mutation.
 func (m *NotificationMutation) AddedFields() []string {
 	var fields []string
+	if m.adddeployment_number != nil {
+		fields = append(fields, notification.FieldDeploymentNumber)
+	}
 	return fields
 }
 
@@ -4901,6 +5082,8 @@ func (m *NotificationMutation) AddedFields() []string {
 // was not set, or was not defined in the schema.
 func (m *NotificationMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
+	case notification.FieldDeploymentNumber:
+		return m.AddedDeploymentNumber()
 	}
 	return nil, false
 }
@@ -4910,6 +5093,13 @@ func (m *NotificationMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *NotificationMutation) AddField(name string, value ent.Value) error {
 	switch name {
+	case notification.FieldDeploymentNumber:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddDeploymentNumber(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Notification numeric field %s", name)
 }
@@ -4917,11 +5107,7 @@ func (m *NotificationMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *NotificationMutation) ClearedFields() []string {
-	var fields []string
-	if m.FieldCleared(notification.FieldDeploymentID) {
-		fields = append(fields, notification.FieldDeploymentID)
-	}
-	return fields
+	return nil
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -4934,11 +5120,6 @@ func (m *NotificationMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *NotificationMutation) ClearField(name string) error {
-	switch name {
-	case notification.FieldDeploymentID:
-		m.ClearDeploymentID()
-		return nil
-	}
 	return fmt.Errorf("unknown Notification nullable field %s", name)
 }
 
@@ -4948,6 +5129,30 @@ func (m *NotificationMutation) ResetField(name string) error {
 	switch name {
 	case notification.FieldType:
 		m.ResetType()
+		return nil
+	case notification.FieldRepoNamespace:
+		m.ResetRepoNamespace()
+		return nil
+	case notification.FieldRepoName:
+		m.ResetRepoName()
+		return nil
+	case notification.FieldDeploymentNumber:
+		m.ResetDeploymentNumber()
+		return nil
+	case notification.FieldDeploymentType:
+		m.ResetDeploymentType()
+		return nil
+	case notification.FieldDeploymentRef:
+		m.ResetDeploymentRef()
+		return nil
+	case notification.FieldDeploymentEnv:
+		m.ResetDeploymentEnv()
+		return nil
+	case notification.FieldDeploymentStatus:
+		m.ResetDeploymentStatus()
+		return nil
+	case notification.FieldDeploymentLogin:
+		m.ResetDeploymentLogin()
 		return nil
 	case notification.FieldNotified:
 		m.ResetNotified()
@@ -4964,27 +5169,15 @@ func (m *NotificationMutation) ResetField(name string) error {
 	case notification.FieldUserID:
 		m.ResetUserID()
 		return nil
-	case notification.FieldRepoID:
-		m.ResetRepoID()
-		return nil
-	case notification.FieldDeploymentID:
-		m.ResetDeploymentID()
-		return nil
 	}
 	return fmt.Errorf("unknown Notification field %s", name)
 }
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *NotificationMutation) AddedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 1)
 	if m.user != nil {
 		edges = append(edges, notification.EdgeUser)
-	}
-	if m.repo != nil {
-		edges = append(edges, notification.EdgeRepo)
-	}
-	if m.deployment != nil {
-		edges = append(edges, notification.EdgeDeployment)
 	}
 	return edges
 }
@@ -4997,21 +5190,13 @@ func (m *NotificationMutation) AddedIDs(name string) []ent.Value {
 		if id := m.user; id != nil {
 			return []ent.Value{*id}
 		}
-	case notification.EdgeRepo:
-		if id := m.repo; id != nil {
-			return []ent.Value{*id}
-		}
-	case notification.EdgeDeployment:
-		if id := m.deployment; id != nil {
-			return []ent.Value{*id}
-		}
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *NotificationMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 1)
 	return edges
 }
 
@@ -5025,15 +5210,9 @@ func (m *NotificationMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *NotificationMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 1)
 	if m.cleareduser {
 		edges = append(edges, notification.EdgeUser)
-	}
-	if m.clearedrepo {
-		edges = append(edges, notification.EdgeRepo)
-	}
-	if m.cleareddeployment {
-		edges = append(edges, notification.EdgeDeployment)
 	}
 	return edges
 }
@@ -5044,10 +5223,6 @@ func (m *NotificationMutation) EdgeCleared(name string) bool {
 	switch name {
 	case notification.EdgeUser:
 		return m.cleareduser
-	case notification.EdgeRepo:
-		return m.clearedrepo
-	case notification.EdgeDeployment:
-		return m.cleareddeployment
 	}
 	return false
 }
@@ -5059,12 +5234,6 @@ func (m *NotificationMutation) ClearEdge(name string) error {
 	case notification.EdgeUser:
 		m.ClearUser()
 		return nil
-	case notification.EdgeRepo:
-		m.ClearRepo()
-		return nil
-	case notification.EdgeDeployment:
-		m.ClearDeployment()
-		return nil
 	}
 	return fmt.Errorf("unknown Notification unique edge %s", name)
 }
@@ -5075,12 +5244,6 @@ func (m *NotificationMutation) ResetEdge(name string) error {
 	switch name {
 	case notification.EdgeUser:
 		m.ResetUser()
-		return nil
-	case notification.EdgeRepo:
-		m.ResetRepo()
-		return nil
-	case notification.EdgeDeployment:
-		m.ResetDeployment()
 		return nil
 	}
 	return fmt.Errorf("unknown Notification edge %s", name)
@@ -5792,9 +5955,6 @@ type RepoMutation struct {
 	chat_callback        map[int]struct{}
 	removedchat_callback map[int]struct{}
 	clearedchat_callback bool
-	notifications        map[int]struct{}
-	removednotifications map[int]struct{}
-	clearednotifications bool
 	done                 bool
 	oldValue             func(context.Context) (*Repo, error)
 	predicates           []predicate.Repo
@@ -6477,59 +6637,6 @@ func (m *RepoMutation) ResetChatCallback() {
 	m.removedchat_callback = nil
 }
 
-// AddNotificationIDs adds the "notifications" edge to the Notification entity by ids.
-func (m *RepoMutation) AddNotificationIDs(ids ...int) {
-	if m.notifications == nil {
-		m.notifications = make(map[int]struct{})
-	}
-	for i := range ids {
-		m.notifications[ids[i]] = struct{}{}
-	}
-}
-
-// ClearNotifications clears the "notifications" edge to the Notification entity.
-func (m *RepoMutation) ClearNotifications() {
-	m.clearednotifications = true
-}
-
-// NotificationsCleared reports if the "notifications" edge to the Notification entity was cleared.
-func (m *RepoMutation) NotificationsCleared() bool {
-	return m.clearednotifications
-}
-
-// RemoveNotificationIDs removes the "notifications" edge to the Notification entity by IDs.
-func (m *RepoMutation) RemoveNotificationIDs(ids ...int) {
-	if m.removednotifications == nil {
-		m.removednotifications = make(map[int]struct{})
-	}
-	for i := range ids {
-		m.removednotifications[ids[i]] = struct{}{}
-	}
-}
-
-// RemovedNotifications returns the removed IDs of the "notifications" edge to the Notification entity.
-func (m *RepoMutation) RemovedNotificationsIDs() (ids []int) {
-	for id := range m.removednotifications {
-		ids = append(ids, id)
-	}
-	return
-}
-
-// NotificationsIDs returns the "notifications" edge IDs in the mutation.
-func (m *RepoMutation) NotificationsIDs() (ids []int) {
-	for id := range m.notifications {
-		ids = append(ids, id)
-	}
-	return
-}
-
-// ResetNotifications resets all changes to the "notifications" edge.
-func (m *RepoMutation) ResetNotifications() {
-	m.notifications = nil
-	m.clearednotifications = false
-	m.removednotifications = nil
-}
-
 // Op returns the operation name.
 func (m *RepoMutation) Op() Op {
 	return m.op
@@ -6838,7 +6945,7 @@ func (m *RepoMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *RepoMutation) AddedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 3)
 	if m.perms != nil {
 		edges = append(edges, repo.EdgePerms)
 	}
@@ -6847,9 +6954,6 @@ func (m *RepoMutation) AddedEdges() []string {
 	}
 	if m.chat_callback != nil {
 		edges = append(edges, repo.EdgeChatCallback)
-	}
-	if m.notifications != nil {
-		edges = append(edges, repo.EdgeNotifications)
 	}
 	return edges
 }
@@ -6876,19 +6980,13 @@ func (m *RepoMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
-	case repo.EdgeNotifications:
-		ids := make([]ent.Value, 0, len(m.notifications))
-		for id := range m.notifications {
-			ids = append(ids, id)
-		}
-		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *RepoMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 3)
 	if m.removedperms != nil {
 		edges = append(edges, repo.EdgePerms)
 	}
@@ -6897,9 +6995,6 @@ func (m *RepoMutation) RemovedEdges() []string {
 	}
 	if m.removedchat_callback != nil {
 		edges = append(edges, repo.EdgeChatCallback)
-	}
-	if m.removednotifications != nil {
-		edges = append(edges, repo.EdgeNotifications)
 	}
 	return edges
 }
@@ -6926,19 +7021,13 @@ func (m *RepoMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
-	case repo.EdgeNotifications:
-		ids := make([]ent.Value, 0, len(m.removednotifications))
-		for id := range m.removednotifications {
-			ids = append(ids, id)
-		}
-		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *RepoMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 3)
 	if m.clearedperms {
 		edges = append(edges, repo.EdgePerms)
 	}
@@ -6947,9 +7036,6 @@ func (m *RepoMutation) ClearedEdges() []string {
 	}
 	if m.clearedchat_callback {
 		edges = append(edges, repo.EdgeChatCallback)
-	}
-	if m.clearednotifications {
-		edges = append(edges, repo.EdgeNotifications)
 	}
 	return edges
 }
@@ -6964,8 +7050,6 @@ func (m *RepoMutation) EdgeCleared(name string) bool {
 		return m.cleareddeployments
 	case repo.EdgeChatCallback:
 		return m.clearedchat_callback
-	case repo.EdgeNotifications:
-		return m.clearednotifications
 	}
 	return false
 }
@@ -6990,9 +7074,6 @@ func (m *RepoMutation) ResetEdge(name string) error {
 		return nil
 	case repo.EdgeChatCallback:
 		m.ResetChatCallback()
-		return nil
-	case repo.EdgeNotifications:
-		m.ResetNotifications()
 		return nil
 	}
 	return fmt.Errorf("unknown Repo edge %s", name)

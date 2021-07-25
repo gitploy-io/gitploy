@@ -93,6 +93,62 @@ func IDLTE(id int) predicate.Notification {
 	})
 }
 
+// RepoNamespace applies equality check predicate on the "repo_namespace" field. It's identical to RepoNamespaceEQ.
+func RepoNamespace(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldRepoNamespace), v))
+	})
+}
+
+// RepoName applies equality check predicate on the "repo_name" field. It's identical to RepoNameEQ.
+func RepoName(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldRepoName), v))
+	})
+}
+
+// DeploymentNumber applies equality check predicate on the "deployment_number" field. It's identical to DeploymentNumberEQ.
+func DeploymentNumber(v int) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldDeploymentNumber), v))
+	})
+}
+
+// DeploymentType applies equality check predicate on the "deployment_type" field. It's identical to DeploymentTypeEQ.
+func DeploymentType(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldDeploymentType), v))
+	})
+}
+
+// DeploymentRef applies equality check predicate on the "deployment_ref" field. It's identical to DeploymentRefEQ.
+func DeploymentRef(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldDeploymentRef), v))
+	})
+}
+
+// DeploymentEnv applies equality check predicate on the "deployment_env" field. It's identical to DeploymentEnvEQ.
+func DeploymentEnv(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldDeploymentEnv), v))
+	})
+}
+
+// DeploymentStatus applies equality check predicate on the "deployment_status" field. It's identical to DeploymentStatusEQ.
+func DeploymentStatus(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldDeploymentStatus), v))
+	})
+}
+
+// DeploymentLogin applies equality check predicate on the "deployment_login" field. It's identical to DeploymentLoginEQ.
+func DeploymentLogin(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldDeploymentLogin), v))
+	})
+}
+
 // Notified applies equality check predicate on the "notified" field. It's identical to NotifiedEQ.
 func Notified(v bool) predicate.Notification {
 	return predicate.Notification(func(s *sql.Selector) {
@@ -125,20 +181,6 @@ func UpdatedAt(v time.Time) predicate.Notification {
 func UserID(v string) predicate.Notification {
 	return predicate.Notification(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldUserID), v))
-	})
-}
-
-// RepoID applies equality check predicate on the "repo_id" field. It's identical to RepoIDEQ.
-func RepoID(v string) predicate.Notification {
-	return predicate.Notification(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRepoID), v))
-	})
-}
-
-// DeploymentID applies equality check predicate on the "deployment_id" field. It's identical to DeploymentIDEQ.
-func DeploymentID(v int) predicate.Notification {
-	return predicate.Notification(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldDeploymentID), v))
 	})
 }
 
@@ -187,6 +229,859 @@ func TypeNotIn(vs ...Type) predicate.Notification {
 			return
 		}
 		s.Where(sql.NotIn(s.C(FieldType), v...))
+	})
+}
+
+// RepoNamespaceEQ applies the EQ predicate on the "repo_namespace" field.
+func RepoNamespaceEQ(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldRepoNamespace), v))
+	})
+}
+
+// RepoNamespaceNEQ applies the NEQ predicate on the "repo_namespace" field.
+func RepoNamespaceNEQ(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldRepoNamespace), v))
+	})
+}
+
+// RepoNamespaceIn applies the In predicate on the "repo_namespace" field.
+func RepoNamespaceIn(vs ...string) predicate.Notification {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Notification(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldRepoNamespace), v...))
+	})
+}
+
+// RepoNamespaceNotIn applies the NotIn predicate on the "repo_namespace" field.
+func RepoNamespaceNotIn(vs ...string) predicate.Notification {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Notification(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldRepoNamespace), v...))
+	})
+}
+
+// RepoNamespaceGT applies the GT predicate on the "repo_namespace" field.
+func RepoNamespaceGT(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldRepoNamespace), v))
+	})
+}
+
+// RepoNamespaceGTE applies the GTE predicate on the "repo_namespace" field.
+func RepoNamespaceGTE(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldRepoNamespace), v))
+	})
+}
+
+// RepoNamespaceLT applies the LT predicate on the "repo_namespace" field.
+func RepoNamespaceLT(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldRepoNamespace), v))
+	})
+}
+
+// RepoNamespaceLTE applies the LTE predicate on the "repo_namespace" field.
+func RepoNamespaceLTE(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldRepoNamespace), v))
+	})
+}
+
+// RepoNamespaceContains applies the Contains predicate on the "repo_namespace" field.
+func RepoNamespaceContains(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldRepoNamespace), v))
+	})
+}
+
+// RepoNamespaceHasPrefix applies the HasPrefix predicate on the "repo_namespace" field.
+func RepoNamespaceHasPrefix(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldRepoNamespace), v))
+	})
+}
+
+// RepoNamespaceHasSuffix applies the HasSuffix predicate on the "repo_namespace" field.
+func RepoNamespaceHasSuffix(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldRepoNamespace), v))
+	})
+}
+
+// RepoNamespaceEqualFold applies the EqualFold predicate on the "repo_namespace" field.
+func RepoNamespaceEqualFold(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldRepoNamespace), v))
+	})
+}
+
+// RepoNamespaceContainsFold applies the ContainsFold predicate on the "repo_namespace" field.
+func RepoNamespaceContainsFold(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldRepoNamespace), v))
+	})
+}
+
+// RepoNameEQ applies the EQ predicate on the "repo_name" field.
+func RepoNameEQ(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldRepoName), v))
+	})
+}
+
+// RepoNameNEQ applies the NEQ predicate on the "repo_name" field.
+func RepoNameNEQ(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldRepoName), v))
+	})
+}
+
+// RepoNameIn applies the In predicate on the "repo_name" field.
+func RepoNameIn(vs ...string) predicate.Notification {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Notification(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldRepoName), v...))
+	})
+}
+
+// RepoNameNotIn applies the NotIn predicate on the "repo_name" field.
+func RepoNameNotIn(vs ...string) predicate.Notification {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Notification(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldRepoName), v...))
+	})
+}
+
+// RepoNameGT applies the GT predicate on the "repo_name" field.
+func RepoNameGT(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldRepoName), v))
+	})
+}
+
+// RepoNameGTE applies the GTE predicate on the "repo_name" field.
+func RepoNameGTE(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldRepoName), v))
+	})
+}
+
+// RepoNameLT applies the LT predicate on the "repo_name" field.
+func RepoNameLT(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldRepoName), v))
+	})
+}
+
+// RepoNameLTE applies the LTE predicate on the "repo_name" field.
+func RepoNameLTE(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldRepoName), v))
+	})
+}
+
+// RepoNameContains applies the Contains predicate on the "repo_name" field.
+func RepoNameContains(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldRepoName), v))
+	})
+}
+
+// RepoNameHasPrefix applies the HasPrefix predicate on the "repo_name" field.
+func RepoNameHasPrefix(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldRepoName), v))
+	})
+}
+
+// RepoNameHasSuffix applies the HasSuffix predicate on the "repo_name" field.
+func RepoNameHasSuffix(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldRepoName), v))
+	})
+}
+
+// RepoNameEqualFold applies the EqualFold predicate on the "repo_name" field.
+func RepoNameEqualFold(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldRepoName), v))
+	})
+}
+
+// RepoNameContainsFold applies the ContainsFold predicate on the "repo_name" field.
+func RepoNameContainsFold(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldRepoName), v))
+	})
+}
+
+// DeploymentNumberEQ applies the EQ predicate on the "deployment_number" field.
+func DeploymentNumberEQ(v int) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldDeploymentNumber), v))
+	})
+}
+
+// DeploymentNumberNEQ applies the NEQ predicate on the "deployment_number" field.
+func DeploymentNumberNEQ(v int) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldDeploymentNumber), v))
+	})
+}
+
+// DeploymentNumberIn applies the In predicate on the "deployment_number" field.
+func DeploymentNumberIn(vs ...int) predicate.Notification {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Notification(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldDeploymentNumber), v...))
+	})
+}
+
+// DeploymentNumberNotIn applies the NotIn predicate on the "deployment_number" field.
+func DeploymentNumberNotIn(vs ...int) predicate.Notification {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Notification(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldDeploymentNumber), v...))
+	})
+}
+
+// DeploymentNumberGT applies the GT predicate on the "deployment_number" field.
+func DeploymentNumberGT(v int) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldDeploymentNumber), v))
+	})
+}
+
+// DeploymentNumberGTE applies the GTE predicate on the "deployment_number" field.
+func DeploymentNumberGTE(v int) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldDeploymentNumber), v))
+	})
+}
+
+// DeploymentNumberLT applies the LT predicate on the "deployment_number" field.
+func DeploymentNumberLT(v int) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldDeploymentNumber), v))
+	})
+}
+
+// DeploymentNumberLTE applies the LTE predicate on the "deployment_number" field.
+func DeploymentNumberLTE(v int) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldDeploymentNumber), v))
+	})
+}
+
+// DeploymentTypeEQ applies the EQ predicate on the "deployment_type" field.
+func DeploymentTypeEQ(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldDeploymentType), v))
+	})
+}
+
+// DeploymentTypeNEQ applies the NEQ predicate on the "deployment_type" field.
+func DeploymentTypeNEQ(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldDeploymentType), v))
+	})
+}
+
+// DeploymentTypeIn applies the In predicate on the "deployment_type" field.
+func DeploymentTypeIn(vs ...string) predicate.Notification {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Notification(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldDeploymentType), v...))
+	})
+}
+
+// DeploymentTypeNotIn applies the NotIn predicate on the "deployment_type" field.
+func DeploymentTypeNotIn(vs ...string) predicate.Notification {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Notification(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldDeploymentType), v...))
+	})
+}
+
+// DeploymentTypeGT applies the GT predicate on the "deployment_type" field.
+func DeploymentTypeGT(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldDeploymentType), v))
+	})
+}
+
+// DeploymentTypeGTE applies the GTE predicate on the "deployment_type" field.
+func DeploymentTypeGTE(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldDeploymentType), v))
+	})
+}
+
+// DeploymentTypeLT applies the LT predicate on the "deployment_type" field.
+func DeploymentTypeLT(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldDeploymentType), v))
+	})
+}
+
+// DeploymentTypeLTE applies the LTE predicate on the "deployment_type" field.
+func DeploymentTypeLTE(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldDeploymentType), v))
+	})
+}
+
+// DeploymentTypeContains applies the Contains predicate on the "deployment_type" field.
+func DeploymentTypeContains(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldDeploymentType), v))
+	})
+}
+
+// DeploymentTypeHasPrefix applies the HasPrefix predicate on the "deployment_type" field.
+func DeploymentTypeHasPrefix(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldDeploymentType), v))
+	})
+}
+
+// DeploymentTypeHasSuffix applies the HasSuffix predicate on the "deployment_type" field.
+func DeploymentTypeHasSuffix(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldDeploymentType), v))
+	})
+}
+
+// DeploymentTypeEqualFold applies the EqualFold predicate on the "deployment_type" field.
+func DeploymentTypeEqualFold(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldDeploymentType), v))
+	})
+}
+
+// DeploymentTypeContainsFold applies the ContainsFold predicate on the "deployment_type" field.
+func DeploymentTypeContainsFold(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldDeploymentType), v))
+	})
+}
+
+// DeploymentRefEQ applies the EQ predicate on the "deployment_ref" field.
+func DeploymentRefEQ(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldDeploymentRef), v))
+	})
+}
+
+// DeploymentRefNEQ applies the NEQ predicate on the "deployment_ref" field.
+func DeploymentRefNEQ(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldDeploymentRef), v))
+	})
+}
+
+// DeploymentRefIn applies the In predicate on the "deployment_ref" field.
+func DeploymentRefIn(vs ...string) predicate.Notification {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Notification(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldDeploymentRef), v...))
+	})
+}
+
+// DeploymentRefNotIn applies the NotIn predicate on the "deployment_ref" field.
+func DeploymentRefNotIn(vs ...string) predicate.Notification {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Notification(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldDeploymentRef), v...))
+	})
+}
+
+// DeploymentRefGT applies the GT predicate on the "deployment_ref" field.
+func DeploymentRefGT(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldDeploymentRef), v))
+	})
+}
+
+// DeploymentRefGTE applies the GTE predicate on the "deployment_ref" field.
+func DeploymentRefGTE(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldDeploymentRef), v))
+	})
+}
+
+// DeploymentRefLT applies the LT predicate on the "deployment_ref" field.
+func DeploymentRefLT(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldDeploymentRef), v))
+	})
+}
+
+// DeploymentRefLTE applies the LTE predicate on the "deployment_ref" field.
+func DeploymentRefLTE(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldDeploymentRef), v))
+	})
+}
+
+// DeploymentRefContains applies the Contains predicate on the "deployment_ref" field.
+func DeploymentRefContains(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldDeploymentRef), v))
+	})
+}
+
+// DeploymentRefHasPrefix applies the HasPrefix predicate on the "deployment_ref" field.
+func DeploymentRefHasPrefix(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldDeploymentRef), v))
+	})
+}
+
+// DeploymentRefHasSuffix applies the HasSuffix predicate on the "deployment_ref" field.
+func DeploymentRefHasSuffix(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldDeploymentRef), v))
+	})
+}
+
+// DeploymentRefEqualFold applies the EqualFold predicate on the "deployment_ref" field.
+func DeploymentRefEqualFold(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldDeploymentRef), v))
+	})
+}
+
+// DeploymentRefContainsFold applies the ContainsFold predicate on the "deployment_ref" field.
+func DeploymentRefContainsFold(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldDeploymentRef), v))
+	})
+}
+
+// DeploymentEnvEQ applies the EQ predicate on the "deployment_env" field.
+func DeploymentEnvEQ(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldDeploymentEnv), v))
+	})
+}
+
+// DeploymentEnvNEQ applies the NEQ predicate on the "deployment_env" field.
+func DeploymentEnvNEQ(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldDeploymentEnv), v))
+	})
+}
+
+// DeploymentEnvIn applies the In predicate on the "deployment_env" field.
+func DeploymentEnvIn(vs ...string) predicate.Notification {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Notification(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldDeploymentEnv), v...))
+	})
+}
+
+// DeploymentEnvNotIn applies the NotIn predicate on the "deployment_env" field.
+func DeploymentEnvNotIn(vs ...string) predicate.Notification {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Notification(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldDeploymentEnv), v...))
+	})
+}
+
+// DeploymentEnvGT applies the GT predicate on the "deployment_env" field.
+func DeploymentEnvGT(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldDeploymentEnv), v))
+	})
+}
+
+// DeploymentEnvGTE applies the GTE predicate on the "deployment_env" field.
+func DeploymentEnvGTE(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldDeploymentEnv), v))
+	})
+}
+
+// DeploymentEnvLT applies the LT predicate on the "deployment_env" field.
+func DeploymentEnvLT(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldDeploymentEnv), v))
+	})
+}
+
+// DeploymentEnvLTE applies the LTE predicate on the "deployment_env" field.
+func DeploymentEnvLTE(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldDeploymentEnv), v))
+	})
+}
+
+// DeploymentEnvContains applies the Contains predicate on the "deployment_env" field.
+func DeploymentEnvContains(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldDeploymentEnv), v))
+	})
+}
+
+// DeploymentEnvHasPrefix applies the HasPrefix predicate on the "deployment_env" field.
+func DeploymentEnvHasPrefix(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldDeploymentEnv), v))
+	})
+}
+
+// DeploymentEnvHasSuffix applies the HasSuffix predicate on the "deployment_env" field.
+func DeploymentEnvHasSuffix(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldDeploymentEnv), v))
+	})
+}
+
+// DeploymentEnvEqualFold applies the EqualFold predicate on the "deployment_env" field.
+func DeploymentEnvEqualFold(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldDeploymentEnv), v))
+	})
+}
+
+// DeploymentEnvContainsFold applies the ContainsFold predicate on the "deployment_env" field.
+func DeploymentEnvContainsFold(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldDeploymentEnv), v))
+	})
+}
+
+// DeploymentStatusEQ applies the EQ predicate on the "deployment_status" field.
+func DeploymentStatusEQ(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldDeploymentStatus), v))
+	})
+}
+
+// DeploymentStatusNEQ applies the NEQ predicate on the "deployment_status" field.
+func DeploymentStatusNEQ(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldDeploymentStatus), v))
+	})
+}
+
+// DeploymentStatusIn applies the In predicate on the "deployment_status" field.
+func DeploymentStatusIn(vs ...string) predicate.Notification {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Notification(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldDeploymentStatus), v...))
+	})
+}
+
+// DeploymentStatusNotIn applies the NotIn predicate on the "deployment_status" field.
+func DeploymentStatusNotIn(vs ...string) predicate.Notification {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Notification(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldDeploymentStatus), v...))
+	})
+}
+
+// DeploymentStatusGT applies the GT predicate on the "deployment_status" field.
+func DeploymentStatusGT(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldDeploymentStatus), v))
+	})
+}
+
+// DeploymentStatusGTE applies the GTE predicate on the "deployment_status" field.
+func DeploymentStatusGTE(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldDeploymentStatus), v))
+	})
+}
+
+// DeploymentStatusLT applies the LT predicate on the "deployment_status" field.
+func DeploymentStatusLT(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldDeploymentStatus), v))
+	})
+}
+
+// DeploymentStatusLTE applies the LTE predicate on the "deployment_status" field.
+func DeploymentStatusLTE(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldDeploymentStatus), v))
+	})
+}
+
+// DeploymentStatusContains applies the Contains predicate on the "deployment_status" field.
+func DeploymentStatusContains(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldDeploymentStatus), v))
+	})
+}
+
+// DeploymentStatusHasPrefix applies the HasPrefix predicate on the "deployment_status" field.
+func DeploymentStatusHasPrefix(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldDeploymentStatus), v))
+	})
+}
+
+// DeploymentStatusHasSuffix applies the HasSuffix predicate on the "deployment_status" field.
+func DeploymentStatusHasSuffix(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldDeploymentStatus), v))
+	})
+}
+
+// DeploymentStatusEqualFold applies the EqualFold predicate on the "deployment_status" field.
+func DeploymentStatusEqualFold(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldDeploymentStatus), v))
+	})
+}
+
+// DeploymentStatusContainsFold applies the ContainsFold predicate on the "deployment_status" field.
+func DeploymentStatusContainsFold(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldDeploymentStatus), v))
+	})
+}
+
+// DeploymentLoginEQ applies the EQ predicate on the "deployment_login" field.
+func DeploymentLoginEQ(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldDeploymentLogin), v))
+	})
+}
+
+// DeploymentLoginNEQ applies the NEQ predicate on the "deployment_login" field.
+func DeploymentLoginNEQ(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldDeploymentLogin), v))
+	})
+}
+
+// DeploymentLoginIn applies the In predicate on the "deployment_login" field.
+func DeploymentLoginIn(vs ...string) predicate.Notification {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Notification(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldDeploymentLogin), v...))
+	})
+}
+
+// DeploymentLoginNotIn applies the NotIn predicate on the "deployment_login" field.
+func DeploymentLoginNotIn(vs ...string) predicate.Notification {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Notification(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldDeploymentLogin), v...))
+	})
+}
+
+// DeploymentLoginGT applies the GT predicate on the "deployment_login" field.
+func DeploymentLoginGT(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldDeploymentLogin), v))
+	})
+}
+
+// DeploymentLoginGTE applies the GTE predicate on the "deployment_login" field.
+func DeploymentLoginGTE(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldDeploymentLogin), v))
+	})
+}
+
+// DeploymentLoginLT applies the LT predicate on the "deployment_login" field.
+func DeploymentLoginLT(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldDeploymentLogin), v))
+	})
+}
+
+// DeploymentLoginLTE applies the LTE predicate on the "deployment_login" field.
+func DeploymentLoginLTE(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldDeploymentLogin), v))
+	})
+}
+
+// DeploymentLoginContains applies the Contains predicate on the "deployment_login" field.
+func DeploymentLoginContains(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldDeploymentLogin), v))
+	})
+}
+
+// DeploymentLoginHasPrefix applies the HasPrefix predicate on the "deployment_login" field.
+func DeploymentLoginHasPrefix(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldDeploymentLogin), v))
+	})
+}
+
+// DeploymentLoginHasSuffix applies the HasSuffix predicate on the "deployment_login" field.
+func DeploymentLoginHasSuffix(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldDeploymentLogin), v))
+	})
+}
+
+// DeploymentLoginEqualFold applies the EqualFold predicate on the "deployment_login" field.
+func DeploymentLoginEqualFold(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldDeploymentLogin), v))
+	})
+}
+
+// DeploymentLoginContainsFold applies the ContainsFold predicate on the "deployment_login" field.
+func DeploymentLoginContainsFold(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldDeploymentLogin), v))
 	})
 }
 
@@ -481,179 +1376,6 @@ func UserIDContainsFold(v string) predicate.Notification {
 	})
 }
 
-// RepoIDEQ applies the EQ predicate on the "repo_id" field.
-func RepoIDEQ(v string) predicate.Notification {
-	return predicate.Notification(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRepoID), v))
-	})
-}
-
-// RepoIDNEQ applies the NEQ predicate on the "repo_id" field.
-func RepoIDNEQ(v string) predicate.Notification {
-	return predicate.Notification(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldRepoID), v))
-	})
-}
-
-// RepoIDIn applies the In predicate on the "repo_id" field.
-func RepoIDIn(vs ...string) predicate.Notification {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Notification(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.In(s.C(FieldRepoID), v...))
-	})
-}
-
-// RepoIDNotIn applies the NotIn predicate on the "repo_id" field.
-func RepoIDNotIn(vs ...string) predicate.Notification {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Notification(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.NotIn(s.C(FieldRepoID), v...))
-	})
-}
-
-// RepoIDGT applies the GT predicate on the "repo_id" field.
-func RepoIDGT(v string) predicate.Notification {
-	return predicate.Notification(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldRepoID), v))
-	})
-}
-
-// RepoIDGTE applies the GTE predicate on the "repo_id" field.
-func RepoIDGTE(v string) predicate.Notification {
-	return predicate.Notification(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldRepoID), v))
-	})
-}
-
-// RepoIDLT applies the LT predicate on the "repo_id" field.
-func RepoIDLT(v string) predicate.Notification {
-	return predicate.Notification(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldRepoID), v))
-	})
-}
-
-// RepoIDLTE applies the LTE predicate on the "repo_id" field.
-func RepoIDLTE(v string) predicate.Notification {
-	return predicate.Notification(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldRepoID), v))
-	})
-}
-
-// RepoIDContains applies the Contains predicate on the "repo_id" field.
-func RepoIDContains(v string) predicate.Notification {
-	return predicate.Notification(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldRepoID), v))
-	})
-}
-
-// RepoIDHasPrefix applies the HasPrefix predicate on the "repo_id" field.
-func RepoIDHasPrefix(v string) predicate.Notification {
-	return predicate.Notification(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldRepoID), v))
-	})
-}
-
-// RepoIDHasSuffix applies the HasSuffix predicate on the "repo_id" field.
-func RepoIDHasSuffix(v string) predicate.Notification {
-	return predicate.Notification(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldRepoID), v))
-	})
-}
-
-// RepoIDEqualFold applies the EqualFold predicate on the "repo_id" field.
-func RepoIDEqualFold(v string) predicate.Notification {
-	return predicate.Notification(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldRepoID), v))
-	})
-}
-
-// RepoIDContainsFold applies the ContainsFold predicate on the "repo_id" field.
-func RepoIDContainsFold(v string) predicate.Notification {
-	return predicate.Notification(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldRepoID), v))
-	})
-}
-
-// DeploymentIDEQ applies the EQ predicate on the "deployment_id" field.
-func DeploymentIDEQ(v int) predicate.Notification {
-	return predicate.Notification(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldDeploymentID), v))
-	})
-}
-
-// DeploymentIDNEQ applies the NEQ predicate on the "deployment_id" field.
-func DeploymentIDNEQ(v int) predicate.Notification {
-	return predicate.Notification(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldDeploymentID), v))
-	})
-}
-
-// DeploymentIDIn applies the In predicate on the "deployment_id" field.
-func DeploymentIDIn(vs ...int) predicate.Notification {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Notification(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.In(s.C(FieldDeploymentID), v...))
-	})
-}
-
-// DeploymentIDNotIn applies the NotIn predicate on the "deployment_id" field.
-func DeploymentIDNotIn(vs ...int) predicate.Notification {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Notification(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.NotIn(s.C(FieldDeploymentID), v...))
-	})
-}
-
-// DeploymentIDIsNil applies the IsNil predicate on the "deployment_id" field.
-func DeploymentIDIsNil() predicate.Notification {
-	return predicate.Notification(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldDeploymentID)))
-	})
-}
-
-// DeploymentIDNotNil applies the NotNil predicate on the "deployment_id" field.
-func DeploymentIDNotNil() predicate.Notification {
-	return predicate.Notification(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldDeploymentID)))
-	})
-}
-
 // HasUser applies the HasEdge predicate on the "user" edge.
 func HasUser() predicate.Notification {
 	return predicate.Notification(func(s *sql.Selector) {
@@ -673,62 +1395,6 @@ func HasUserWith(preds ...predicate.User) predicate.Notification {
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(UserInverseTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, UserTable, UserColumn),
-		)
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
-// HasRepo applies the HasEdge predicate on the "repo" edge.
-func HasRepo() predicate.Notification {
-	return predicate.Notification(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(RepoTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, RepoTable, RepoColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasRepoWith applies the HasEdge predicate on the "repo" edge with a given conditions (other predicates).
-func HasRepoWith(preds ...predicate.Repo) predicate.Notification {
-	return predicate.Notification(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(RepoInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, RepoTable, RepoColumn),
-		)
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
-// HasDeployment applies the HasEdge predicate on the "deployment" edge.
-func HasDeployment() predicate.Notification {
-	return predicate.Notification(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(DeploymentTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, DeploymentTable, DeploymentColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasDeploymentWith applies the HasEdge predicate on the "deployment" edge with a given conditions (other predicates).
-func HasDeploymentWith(preds ...predicate.Deployment) predicate.Notification {
-	return predicate.Notification(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(DeploymentInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, DeploymentTable, DeploymentColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

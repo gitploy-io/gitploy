@@ -59,13 +59,11 @@ type DeploymentEdges struct {
 	Repo *Repo `json:"repo,omitempty"`
 	// Approvals holds the value of the approvals edge.
 	Approvals []*Approval `json:"approvals,omitempty"`
-	// Notifications holds the value of the notifications edge.
-	Notifications []*Notification `json:"notifications,omitempty"`
 	// DeploymentStatuses holds the value of the deployment_statuses edge.
 	DeploymentStatuses []*DeploymentStatus `json:"deployment_statuses,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [5]bool
+	loadedTypes [4]bool
 }
 
 // UserOrErr returns the User value or an error if the edge
@@ -105,19 +103,10 @@ func (e DeploymentEdges) ApprovalsOrErr() ([]*Approval, error) {
 	return nil, &NotLoadedError{edge: "approvals"}
 }
 
-// NotificationsOrErr returns the Notifications value or an error if the edge
-// was not loaded in eager-loading.
-func (e DeploymentEdges) NotificationsOrErr() ([]*Notification, error) {
-	if e.loadedTypes[3] {
-		return e.Notifications, nil
-	}
-	return nil, &NotLoadedError{edge: "notifications"}
-}
-
 // DeploymentStatusesOrErr returns the DeploymentStatuses value or an error if the edge
 // was not loaded in eager-loading.
 func (e DeploymentEdges) DeploymentStatusesOrErr() ([]*DeploymentStatus, error) {
-	if e.loadedTypes[4] {
+	if e.loadedTypes[3] {
 		return e.DeploymentStatuses, nil
 	}
 	return nil, &NotLoadedError{edge: "deployment_statuses"}
@@ -259,11 +248,6 @@ func (d *Deployment) QueryRepo() *RepoQuery {
 // QueryApprovals queries the "approvals" edge of the Deployment entity.
 func (d *Deployment) QueryApprovals() *ApprovalQuery {
 	return (&DeploymentClient{config: d.config}).QueryApprovals(d)
-}
-
-// QueryNotifications queries the "notifications" edge of the Deployment entity.
-func (d *Deployment) QueryNotifications() *NotificationQuery {
-	return (&DeploymentClient{config: d.config}).QueryNotifications(d)
 }
 
 // QueryDeploymentStatuses queries the "deployment_statuses" edge of the Deployment entity.

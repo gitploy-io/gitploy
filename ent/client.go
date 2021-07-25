@@ -677,22 +677,6 @@ func (c *DeploymentClient) QueryApprovals(d *Deployment) *ApprovalQuery {
 	return query
 }
 
-// QueryNotifications queries the notifications edge of a Deployment.
-func (c *DeploymentClient) QueryNotifications(d *Deployment) *NotificationQuery {
-	query := &NotificationQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := d.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(deployment.Table, deployment.FieldID, id),
-			sqlgraph.To(notification.Table, notification.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, deployment.NotificationsTable, deployment.NotificationsColumn),
-		)
-		fromV = sqlgraph.Neighbors(d.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
 // QueryDeploymentStatuses queries the deployment_statuses edge of a Deployment.
 func (c *DeploymentClient) QueryDeploymentStatuses(d *Deployment) *DeploymentStatusQuery {
 	query := &DeploymentStatusQuery{config: c.config}
@@ -914,38 +898,6 @@ func (c *NotificationClient) QueryUser(n *Notification) *UserQuery {
 			sqlgraph.From(notification.Table, notification.FieldID, id),
 			sqlgraph.To(user.Table, user.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, notification.UserTable, notification.UserColumn),
-		)
-		fromV = sqlgraph.Neighbors(n.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryRepo queries the repo edge of a Notification.
-func (c *NotificationClient) QueryRepo(n *Notification) *RepoQuery {
-	query := &RepoQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := n.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(notification.Table, notification.FieldID, id),
-			sqlgraph.To(repo.Table, repo.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, notification.RepoTable, notification.RepoColumn),
-		)
-		fromV = sqlgraph.Neighbors(n.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryDeployment queries the deployment edge of a Notification.
-func (c *NotificationClient) QueryDeployment(n *Notification) *DeploymentQuery {
-	query := &DeploymentQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := n.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(notification.Table, notification.FieldID, id),
-			sqlgraph.To(deployment.Table, deployment.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, notification.DeploymentTable, notification.DeploymentColumn),
 		)
 		fromV = sqlgraph.Neighbors(n.driver.Dialect(), step)
 		return fromV, nil
@@ -1206,22 +1158,6 @@ func (c *RepoClient) QueryChatCallback(r *Repo) *ChatCallbackQuery {
 			sqlgraph.From(repo.Table, repo.FieldID, id),
 			sqlgraph.To(chatcallback.Table, chatcallback.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, repo.ChatCallbackTable, repo.ChatCallbackColumn),
-		)
-		fromV = sqlgraph.Neighbors(r.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryNotifications queries the notifications edge of a Repo.
-func (c *RepoClient) QueryNotifications(r *Repo) *NotificationQuery {
-	query := &NotificationQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := r.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(repo.Table, repo.FieldID, id),
-			sqlgraph.To(notification.Table, notification.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, repo.NotificationsTable, repo.NotificationsColumn),
 		)
 		fromV = sqlgraph.Neighbors(r.driver.Dialect(), step)
 		return fromV, nil

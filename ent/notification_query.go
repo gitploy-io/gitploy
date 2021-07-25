@@ -11,10 +11,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/hanjunlee/gitploy/ent/deployment"
 	"github.com/hanjunlee/gitploy/ent/notification"
 	"github.com/hanjunlee/gitploy/ent/predicate"
-	"github.com/hanjunlee/gitploy/ent/repo"
 	"github.com/hanjunlee/gitploy/ent/user"
 )
 
@@ -28,9 +26,7 @@ type NotificationQuery struct {
 	fields     []string
 	predicates []predicate.Notification
 	// eager-loading edges.
-	withUser       *UserQuery
-	withRepo       *RepoQuery
-	withDeployment *DeploymentQuery
+	withUser *UserQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -82,50 +78,6 @@ func (nq *NotificationQuery) QueryUser() *UserQuery {
 			sqlgraph.From(notification.Table, notification.FieldID, selector),
 			sqlgraph.To(user.Table, user.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, notification.UserTable, notification.UserColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(nq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
-// QueryRepo chains the current query on the "repo" edge.
-func (nq *NotificationQuery) QueryRepo() *RepoQuery {
-	query := &RepoQuery{config: nq.config}
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := nq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := nq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(notification.Table, notification.FieldID, selector),
-			sqlgraph.To(repo.Table, repo.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, notification.RepoTable, notification.RepoColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(nq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
-// QueryDeployment chains the current query on the "deployment" edge.
-func (nq *NotificationQuery) QueryDeployment() *DeploymentQuery {
-	query := &DeploymentQuery{config: nq.config}
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := nq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := nq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(notification.Table, notification.FieldID, selector),
-			sqlgraph.To(deployment.Table, deployment.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, notification.DeploymentTable, notification.DeploymentColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(nq.driver.Dialect(), step)
 		return fromU, nil
@@ -309,14 +261,12 @@ func (nq *NotificationQuery) Clone() *NotificationQuery {
 		return nil
 	}
 	return &NotificationQuery{
-		config:         nq.config,
-		limit:          nq.limit,
-		offset:         nq.offset,
-		order:          append([]OrderFunc{}, nq.order...),
-		predicates:     append([]predicate.Notification{}, nq.predicates...),
-		withUser:       nq.withUser.Clone(),
-		withRepo:       nq.withRepo.Clone(),
-		withDeployment: nq.withDeployment.Clone(),
+		config:     nq.config,
+		limit:      nq.limit,
+		offset:     nq.offset,
+		order:      append([]OrderFunc{}, nq.order...),
+		predicates: append([]predicate.Notification{}, nq.predicates...),
+		withUser:   nq.withUser.Clone(),
 		// clone intermediate query.
 		sql:  nq.sql.Clone(),
 		path: nq.path,
@@ -331,28 +281,6 @@ func (nq *NotificationQuery) WithUser(opts ...func(*UserQuery)) *NotificationQue
 		opt(query)
 	}
 	nq.withUser = query
-	return nq
-}
-
-// WithRepo tells the query-builder to eager-load the nodes that are connected to
-// the "repo" edge. The optional arguments are used to configure the query builder of the edge.
-func (nq *NotificationQuery) WithRepo(opts ...func(*RepoQuery)) *NotificationQuery {
-	query := &RepoQuery{config: nq.config}
-	for _, opt := range opts {
-		opt(query)
-	}
-	nq.withRepo = query
-	return nq
-}
-
-// WithDeployment tells the query-builder to eager-load the nodes that are connected to
-// the "deployment" edge. The optional arguments are used to configure the query builder of the edge.
-func (nq *NotificationQuery) WithDeployment(opts ...func(*DeploymentQuery)) *NotificationQuery {
-	query := &DeploymentQuery{config: nq.config}
-	for _, opt := range opts {
-		opt(query)
-	}
-	nq.withDeployment = query
 	return nq
 }
 
@@ -421,10 +349,8 @@ func (nq *NotificationQuery) sqlAll(ctx context.Context) ([]*Notification, error
 	var (
 		nodes       = []*Notification{}
 		_spec       = nq.querySpec()
-		loadedTypes = [3]bool{
+		loadedTypes = [1]bool{
 			nq.withUser != nil,
-			nq.withRepo != nil,
-			nq.withDeployment != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -469,58 +395,6 @@ func (nq *NotificationQuery) sqlAll(ctx context.Context) ([]*Notification, error
 			}
 			for i := range nodes {
 				nodes[i].Edges.User = n
-			}
-		}
-	}
-
-	if query := nq.withRepo; query != nil {
-		ids := make([]string, 0, len(nodes))
-		nodeids := make(map[string][]*Notification)
-		for i := range nodes {
-			fk := nodes[i].RepoID
-			if _, ok := nodeids[fk]; !ok {
-				ids = append(ids, fk)
-			}
-			nodeids[fk] = append(nodeids[fk], nodes[i])
-		}
-		query.Where(repo.IDIn(ids...))
-		neighbors, err := query.All(ctx)
-		if err != nil {
-			return nil, err
-		}
-		for _, n := range neighbors {
-			nodes, ok := nodeids[n.ID]
-			if !ok {
-				return nil, fmt.Errorf(`unexpected foreign-key "repo_id" returned %v`, n.ID)
-			}
-			for i := range nodes {
-				nodes[i].Edges.Repo = n
-			}
-		}
-	}
-
-	if query := nq.withDeployment; query != nil {
-		ids := make([]int, 0, len(nodes))
-		nodeids := make(map[int][]*Notification)
-		for i := range nodes {
-			fk := nodes[i].DeploymentID
-			if _, ok := nodeids[fk]; !ok {
-				ids = append(ids, fk)
-			}
-			nodeids[fk] = append(nodeids[fk], nodes[i])
-		}
-		query.Where(deployment.IDIn(ids...))
-		neighbors, err := query.All(ctx)
-		if err != nil {
-			return nil, err
-		}
-		for _, n := range neighbors {
-			nodes, ok := nodeids[n.ID]
-			if !ok {
-				return nil, fmt.Errorf(`unexpected foreign-key "deployment_id" returned %v`, n.ID)
-			}
-			for i := range nodes {
-				nodes[i].Edges.Deployment = n
 			}
 		}
 	}

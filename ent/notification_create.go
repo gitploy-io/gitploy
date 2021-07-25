@@ -10,9 +10,7 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/hanjunlee/gitploy/ent/deployment"
 	"github.com/hanjunlee/gitploy/ent/notification"
-	"github.com/hanjunlee/gitploy/ent/repo"
 	"github.com/hanjunlee/gitploy/ent/user"
 )
 
@@ -34,6 +32,54 @@ func (nc *NotificationCreate) SetNillableType(n *notification.Type) *Notificatio
 	if n != nil {
 		nc.SetType(*n)
 	}
+	return nc
+}
+
+// SetRepoNamespace sets the "repo_namespace" field.
+func (nc *NotificationCreate) SetRepoNamespace(s string) *NotificationCreate {
+	nc.mutation.SetRepoNamespace(s)
+	return nc
+}
+
+// SetRepoName sets the "repo_name" field.
+func (nc *NotificationCreate) SetRepoName(s string) *NotificationCreate {
+	nc.mutation.SetRepoName(s)
+	return nc
+}
+
+// SetDeploymentNumber sets the "deployment_number" field.
+func (nc *NotificationCreate) SetDeploymentNumber(i int) *NotificationCreate {
+	nc.mutation.SetDeploymentNumber(i)
+	return nc
+}
+
+// SetDeploymentType sets the "deployment_type" field.
+func (nc *NotificationCreate) SetDeploymentType(s string) *NotificationCreate {
+	nc.mutation.SetDeploymentType(s)
+	return nc
+}
+
+// SetDeploymentRef sets the "deployment_ref" field.
+func (nc *NotificationCreate) SetDeploymentRef(s string) *NotificationCreate {
+	nc.mutation.SetDeploymentRef(s)
+	return nc
+}
+
+// SetDeploymentEnv sets the "deployment_env" field.
+func (nc *NotificationCreate) SetDeploymentEnv(s string) *NotificationCreate {
+	nc.mutation.SetDeploymentEnv(s)
+	return nc
+}
+
+// SetDeploymentStatus sets the "deployment_status" field.
+func (nc *NotificationCreate) SetDeploymentStatus(s string) *NotificationCreate {
+	nc.mutation.SetDeploymentStatus(s)
+	return nc
+}
+
+// SetDeploymentLogin sets the "deployment_login" field.
+func (nc *NotificationCreate) SetDeploymentLogin(s string) *NotificationCreate {
+	nc.mutation.SetDeploymentLogin(s)
 	return nc
 }
 
@@ -99,39 +145,9 @@ func (nc *NotificationCreate) SetUserID(s string) *NotificationCreate {
 	return nc
 }
 
-// SetRepoID sets the "repo_id" field.
-func (nc *NotificationCreate) SetRepoID(s string) *NotificationCreate {
-	nc.mutation.SetRepoID(s)
-	return nc
-}
-
-// SetDeploymentID sets the "deployment_id" field.
-func (nc *NotificationCreate) SetDeploymentID(i int) *NotificationCreate {
-	nc.mutation.SetDeploymentID(i)
-	return nc
-}
-
-// SetNillableDeploymentID sets the "deployment_id" field if the given value is not nil.
-func (nc *NotificationCreate) SetNillableDeploymentID(i *int) *NotificationCreate {
-	if i != nil {
-		nc.SetDeploymentID(*i)
-	}
-	return nc
-}
-
 // SetUser sets the "user" edge to the User entity.
 func (nc *NotificationCreate) SetUser(u *User) *NotificationCreate {
 	return nc.SetUserID(u.ID)
-}
-
-// SetRepo sets the "repo" edge to the Repo entity.
-func (nc *NotificationCreate) SetRepo(r *Repo) *NotificationCreate {
-	return nc.SetRepoID(r.ID)
-}
-
-// SetDeployment sets the "deployment" edge to the Deployment entity.
-func (nc *NotificationCreate) SetDeployment(d *Deployment) *NotificationCreate {
-	return nc.SetDeploymentID(d.ID)
 }
 
 // Mutation returns the NotificationMutation object of the builder.
@@ -218,6 +234,30 @@ func (nc *NotificationCreate) check() error {
 			return &ValidationError{Name: "type", err: fmt.Errorf("ent: validator failed for field \"type\": %w", err)}
 		}
 	}
+	if _, ok := nc.mutation.RepoNamespace(); !ok {
+		return &ValidationError{Name: "repo_namespace", err: errors.New("ent: missing required field \"repo_namespace\"")}
+	}
+	if _, ok := nc.mutation.RepoName(); !ok {
+		return &ValidationError{Name: "repo_name", err: errors.New("ent: missing required field \"repo_name\"")}
+	}
+	if _, ok := nc.mutation.DeploymentNumber(); !ok {
+		return &ValidationError{Name: "deployment_number", err: errors.New("ent: missing required field \"deployment_number\"")}
+	}
+	if _, ok := nc.mutation.DeploymentType(); !ok {
+		return &ValidationError{Name: "deployment_type", err: errors.New("ent: missing required field \"deployment_type\"")}
+	}
+	if _, ok := nc.mutation.DeploymentRef(); !ok {
+		return &ValidationError{Name: "deployment_ref", err: errors.New("ent: missing required field \"deployment_ref\"")}
+	}
+	if _, ok := nc.mutation.DeploymentEnv(); !ok {
+		return &ValidationError{Name: "deployment_env", err: errors.New("ent: missing required field \"deployment_env\"")}
+	}
+	if _, ok := nc.mutation.DeploymentStatus(); !ok {
+		return &ValidationError{Name: "deployment_status", err: errors.New("ent: missing required field \"deployment_status\"")}
+	}
+	if _, ok := nc.mutation.DeploymentLogin(); !ok {
+		return &ValidationError{Name: "deployment_login", err: errors.New("ent: missing required field \"deployment_login\"")}
+	}
 	if _, ok := nc.mutation.Notified(); !ok {
 		return &ValidationError{Name: "notified", err: errors.New("ent: missing required field \"notified\"")}
 	}
@@ -233,14 +273,8 @@ func (nc *NotificationCreate) check() error {
 	if _, ok := nc.mutation.UserID(); !ok {
 		return &ValidationError{Name: "user_id", err: errors.New("ent: missing required field \"user_id\"")}
 	}
-	if _, ok := nc.mutation.RepoID(); !ok {
-		return &ValidationError{Name: "repo_id", err: errors.New("ent: missing required field \"repo_id\"")}
-	}
 	if _, ok := nc.mutation.UserID(); !ok {
 		return &ValidationError{Name: "user", err: errors.New("ent: missing required edge \"user\"")}
-	}
-	if _, ok := nc.mutation.RepoID(); !ok {
-		return &ValidationError{Name: "repo", err: errors.New("ent: missing required edge \"repo\"")}
 	}
 	return nil
 }
@@ -276,6 +310,70 @@ func (nc *NotificationCreate) createSpec() (*Notification, *sqlgraph.CreateSpec)
 			Column: notification.FieldType,
 		})
 		_node.Type = value
+	}
+	if value, ok := nc.mutation.RepoNamespace(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: notification.FieldRepoNamespace,
+		})
+		_node.RepoNamespace = value
+	}
+	if value, ok := nc.mutation.RepoName(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: notification.FieldRepoName,
+		})
+		_node.RepoName = value
+	}
+	if value, ok := nc.mutation.DeploymentNumber(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: notification.FieldDeploymentNumber,
+		})
+		_node.DeploymentNumber = value
+	}
+	if value, ok := nc.mutation.DeploymentType(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: notification.FieldDeploymentType,
+		})
+		_node.DeploymentType = value
+	}
+	if value, ok := nc.mutation.DeploymentRef(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: notification.FieldDeploymentRef,
+		})
+		_node.DeploymentRef = value
+	}
+	if value, ok := nc.mutation.DeploymentEnv(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: notification.FieldDeploymentEnv,
+		})
+		_node.DeploymentEnv = value
+	}
+	if value, ok := nc.mutation.DeploymentStatus(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: notification.FieldDeploymentStatus,
+		})
+		_node.DeploymentStatus = value
+	}
+	if value, ok := nc.mutation.DeploymentLogin(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: notification.FieldDeploymentLogin,
+		})
+		_node.DeploymentLogin = value
 	}
 	if value, ok := nc.mutation.Notified(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -327,46 +425,6 @@ func (nc *NotificationCreate) createSpec() (*Notification, *sqlgraph.CreateSpec)
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.UserID = nodes[0]
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := nc.mutation.RepoIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   notification.RepoTable,
-			Columns: []string{notification.RepoColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
-					Column: repo.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_node.RepoID = nodes[0]
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := nc.mutation.DeploymentIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   notification.DeploymentTable,
-			Columns: []string{notification.DeploymentColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: deployment.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_node.DeploymentID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
