@@ -30,20 +30,6 @@ func (au *ApprovalUpdate) Where(ps ...predicate.Approval) *ApprovalUpdate {
 	return au
 }
 
-// SetIsApproved sets the "is_approved" field.
-func (au *ApprovalUpdate) SetIsApproved(b bool) *ApprovalUpdate {
-	au.mutation.SetIsApproved(b)
-	return au
-}
-
-// SetNillableIsApproved sets the "is_approved" field if the given value is not nil.
-func (au *ApprovalUpdate) SetNillableIsApproved(b *bool) *ApprovalUpdate {
-	if b != nil {
-		au.SetIsApproved(*b)
-	}
-	return au
-}
-
 // SetStatus sets the "status" field.
 func (au *ApprovalUpdate) SetStatus(a approval.Status) *ApprovalUpdate {
 	au.mutation.SetStatus(a)
@@ -218,13 +204,6 @@ func (au *ApprovalUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			}
 		}
 	}
-	if value, ok := au.mutation.IsApproved(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: approval.FieldIsApproved,
-		})
-	}
 	if value, ok := au.mutation.Status(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeEnum,
@@ -333,20 +312,6 @@ type ApprovalUpdateOne struct {
 	fields   []string
 	hooks    []Hook
 	mutation *ApprovalMutation
-}
-
-// SetIsApproved sets the "is_approved" field.
-func (auo *ApprovalUpdateOne) SetIsApproved(b bool) *ApprovalUpdateOne {
-	auo.mutation.SetIsApproved(b)
-	return auo
-}
-
-// SetNillableIsApproved sets the "is_approved" field if the given value is not nil.
-func (auo *ApprovalUpdateOne) SetNillableIsApproved(b *bool) *ApprovalUpdateOne {
-	if b != nil {
-		auo.SetIsApproved(*b)
-	}
-	return auo
 }
 
 // SetStatus sets the "status" field.
@@ -546,13 +511,6 @@ func (auo *ApprovalUpdateOne) sqlSave(ctx context.Context) (_node *Approval, err
 				ps[i](selector)
 			}
 		}
-	}
-	if value, ok := auo.mutation.IsApproved(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: approval.FieldIsApproved,
-		})
 	}
 	if value, ok := auo.mutation.Status(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{

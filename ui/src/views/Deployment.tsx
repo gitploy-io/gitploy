@@ -22,6 +22,7 @@ import {
     Deployment, 
     LastDeploymentStatus, 
     Approval,
+    ApprovalStatus,
     RequestStatus
 } from "../models"
 
@@ -177,7 +178,7 @@ function isDeployable(deployment: Deployment, approvals: Approval[]): boolean {
     // requiredApprovalCount have to be equal or greater than approved.
     let approved = 0
     approvals.forEach((approval) => {
-        if (approval.isApproved) {
+        if (approval.status === ApprovalStatus.Approved) {
             approved++
         }
     })

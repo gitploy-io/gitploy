@@ -2,19 +2,31 @@ import { StatusCodes } from 'http-status-codes'
 
 import { instance, headers } from './setting'
 import { _fetch } from "./_base"
-import { mapDataToUser } from "./user"
-import { mapDataToDeployment } from "./deployment"
+import { UserData, mapDataToUser } from "./user"
+import { DeploymentData, mapDataToDeployment } from "./deployment"
 import { 
     Repo,
     User, 
     Deployment, 
     Approval, 
+    ApprovalStatus,
     HttpNotFoundError,
     HttpUnprocessableEntityError
  } from '../models'
 
+interface ApprovalData {
+    id: number,
+    status: string
+    created_at: string
+    updated_at: string
+    edges: {
+        user: UserData,
+        deployment: DeploymentData
+    }
+}
+
 // eslint-disable-next-line
-export const mapDataToApproval = (data: any): Approval => {
+export const mapDataToApproval = (data: ApprovalData): Approval => {
     let user: User | null = null
     let deployment: Deployment | null = null
 
@@ -28,11 +40,24 @@ export const mapDataToApproval = (data: any): Approval => {
 
     return  {
         id: data.id,
-        isApproved: data.is_approved,
+        status: mapDataToApprovalStatus(data.status),
         createdAt: new Date(data.created_at),
         updatedAt: new Date(data.updated_at),
         user,
         deployment
+    }
+}
+
+const mapDataToApprovalStatus = (status: string): ApprovalStatus => {
+    switch (status) {
+        case "pending":
+            return ApprovalStatus.Pending
+        case "approved":
+            return ApprovalStatus.Approved
+        case "declined":
+            return ApprovalStatus.Declined
+        default:
+            return ApprovalStatus.Pending
     }
 }
 
@@ -104,7 +129,7 @@ export const getMyApproval = async (id: string, number: number): Promise<Approva
 
 export const setApprovalApproved = async (id: string, number: number): Promise<Approval> => {
     const body = {
-        is_approved: true,
+        status: ApprovalStatus.Approved.toString(),
     }
     const res = await _fetch(`${instance}/api/v1/repos/${id}/deployments/${number}/approval`, {
         credentials: "same-origin",
@@ -124,7 +149,7 @@ export const setApprovalApproved = async (id: string, number: number): Promise<A
 
 export const setApprovalDeclined = async (id: string, number: number): Promise<Approval> => {
     const body = {
-        is_approved: false,
+        status: ApprovalStatus.Declined.toString(),
     }
     const res = await _fetch(`${instance}/api/v1/repos/${id}/deployments/${number}/approval`, {
         credentials: "same-origin",

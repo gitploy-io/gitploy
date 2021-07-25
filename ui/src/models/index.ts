@@ -10,7 +10,7 @@ import Commit, { Status, StatusState } from "./Commit"
 import Branch from "./Branch"
 import Tag from "./Tag"
 import User, { ChatUser } from "./User"
-import Approval from "./Approval"
+import Approval, { ApprovalStatus } from "./Approval"
 import Notification, { NotificationType } from "./Notification"
 import { 
     HttpRequestError, 
@@ -54,4 +54,5 @@ export {
     StatusState,
     RequestStatus,
     NotificationType,
+    ApprovalStatus,
 }

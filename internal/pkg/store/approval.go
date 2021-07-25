@@ -54,7 +54,7 @@ func (s *Store) CreateApproval(ctx context.Context, a *ent.Approval) (*ent.Appro
 func (s *Store) UpdateApproval(ctx context.Context, a *ent.Approval) (*ent.Approval, error) {
 	return s.c.Approval.
 		UpdateOne(a).
-		SetIsApproved(a.IsApproved).
+		SetStatus(a.Status).
 		Save(ctx)
 }
 

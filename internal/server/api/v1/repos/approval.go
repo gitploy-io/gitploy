@@ -8,6 +8,7 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/hanjunlee/gitploy/ent"
+	"github.com/hanjunlee/gitploy/ent/approval"
 	gb "github.com/hanjunlee/gitploy/internal/server/global"
 )
 
@@ -17,7 +18,8 @@ type (
 	}
 
 	approvalPatchPayload struct {
-		IsApproved bool `json:"is_approved"`
+		IsApproved bool   `json:"is_approved"`
+		Status     string `json:"status"`
 	}
 )
 
@@ -217,8 +219,8 @@ func (r *Repo) UpdateApproval(c *gin.Context) {
 		return
 	}
 
-	if p.IsApproved != a.IsApproved {
-		a.IsApproved = p.IsApproved
+	if p.Status != string(a.Status) {
+		a.Status = approval.Status(p.Status)
 		if a, err = r.i.UpdateApproval(ctx, a); err != nil {
 			r.log.Error("failed to update the approval.", zap.Error(err))
 			gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to update the approval.")

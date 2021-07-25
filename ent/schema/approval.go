@@ -17,8 +17,6 @@ type Approval struct {
 // Fields of the Approval.
 func (Approval) Fields() []ent.Field {
 	return []ent.Field{
-		field.Bool("is_approved").
-			Default(false),
 		field.Enum("status").
 			Values(
 				"pending",

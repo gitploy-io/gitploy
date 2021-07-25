@@ -93,13 +93,6 @@ func IDLTE(id int) predicate.Approval {
 	})
 }
 
-// IsApproved applies equality check predicate on the "is_approved" field. It's identical to IsApprovedEQ.
-func IsApproved(v bool) predicate.Approval {
-	return predicate.Approval(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldIsApproved), v))
-	})
-}
-
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.Approval {
 	return predicate.Approval(func(s *sql.Selector) {
@@ -125,20 +118,6 @@ func UserID(v string) predicate.Approval {
 func DeploymentID(v int) predicate.Approval {
 	return predicate.Approval(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldDeploymentID), v))
-	})
-}
-
-// IsApprovedEQ applies the EQ predicate on the "is_approved" field.
-func IsApprovedEQ(v bool) predicate.Approval {
-	return predicate.Approval(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldIsApproved), v))
-	})
-}
-
-// IsApprovedNEQ applies the NEQ predicate on the "is_approved" field.
-func IsApprovedNEQ(v bool) predicate.Approval {
-	return predicate.Approval(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldIsApproved), v))
 	})
 }
 

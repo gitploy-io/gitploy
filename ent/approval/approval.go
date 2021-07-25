@@ -12,8 +12,6 @@ const (
 	Label = "approval"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
-	// FieldIsApproved holds the string denoting the is_approved field in the database.
-	FieldIsApproved = "is_approved"
 	// FieldStatus holds the string denoting the status field in the database.
 	FieldStatus = "status"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
@@ -49,7 +47,6 @@ const (
 // Columns holds all SQL columns for approval fields.
 var Columns = []string{
 	FieldID,
-	FieldIsApproved,
 	FieldStatus,
 	FieldCreatedAt,
 	FieldUpdatedAt,
@@ -68,8 +65,6 @@ func ValidColumn(column string) bool {
 }
 
 var (
-	// DefaultIsApproved holds the default value on creation for the "is_approved" field.
-	DefaultIsApproved bool
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
 	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.
