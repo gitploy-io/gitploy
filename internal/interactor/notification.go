@@ -2,12 +2,10 @@ package interactor
 
 import (
 	"context"
-	"fmt"
 	"math/rand"
 	"time"
 
 	"github.com/hanjunlee/gitploy/ent"
-	"github.com/hanjunlee/gitploy/ent/notification"
 	"go.uber.org/zap"
 )
 
@@ -22,7 +20,7 @@ func (i *Interactor) polling(stop <-chan struct{}) {
 
 	// Subscribe events to notify by Chat.
 	i.events.SubscribeAsync(eventChat, func(cu *ent.ChatUser, n *ent.Notification) {
-		if err := i.notifyByChat(ctx, cu, n); err != nil {
+		if err := i.Chat.Notify(ctx, cu, n); err != nil {
 			i.log.Error("failed to notify by chat.", zap.Error(err))
 		}
 	}, false)
@@ -79,45 +77,6 @@ func (i *Interactor) publish(ctx context.Context, n *ent.Notification) error {
 func (i *Interactor) SetNotificationNotified(ctx context.Context, n *ent.Notification) (*ent.Notification, error) {
 	n.Notified = true
 	return i.UpdateNotification(ctx, n)
-}
-
-func (i *Interactor) notifyByChat(ctx context.Context, cu *ent.ChatUser, n *ent.Notification) error {
-	switch n.Type {
-	case notification.TypeDeployment:
-		return i.notifyDeploymentByChat(ctx, cu, n)
-	default:
-		return nil
-	}
-}
-
-func (i *Interactor) notifyDeploymentByChat(ctx context.Context, cu *ent.ChatUser, n *ent.Notification) error {
-	d, err := i.FindDeploymentByID(ctx, n.DeploymentID)
-	if err != nil {
-		return err
-	}
-
-	return i.NotifyDeployment(ctx, cu, d)
-}
-
-// Notify enqueues a new notification for resource.
-func (i *Interactor) Publish(ctx context.Context, iface interface{}) error {
-	switch r := iface.(type) {
-	case *ent.Deployment:
-		return i.publishDeploymentNotification(ctx, r)
-	}
-
-	return fmt.Errorf("failed to notify")
-}
-
-// publishDeploymentNotification enqueues notifications for the deployer.
-func (i *Interactor) publishDeploymentNotification(ctx context.Context, d *ent.Deployment) error {
-	_, err := i.CreateNotification(ctx, &ent.Notification{
-		Type:         notification.TypeDeployment,
-		UserID:       d.UserID,
-		RepoID:       d.RepoID,
-		DeploymentID: d.ID,
-	})
-	return err
 }
 
 func (i *Interactor) Subscribe(fn func(u *ent.User, n *ent.Notification)) error {

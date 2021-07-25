@@ -6,10 +6,12 @@ import (
 	"strings"
 
 	"github.com/slack-go/slack"
+	"go.uber.org/zap"
 
 	"github.com/hanjunlee/gitploy/ent"
 	"github.com/hanjunlee/gitploy/ent/chatcallback"
 	"github.com/hanjunlee/gitploy/ent/deployment"
+	"github.com/hanjunlee/gitploy/ent/notification"
 	"github.com/hanjunlee/gitploy/vo"
 )
 
@@ -150,7 +152,20 @@ func (s *Slack) interactDeploy(ctx context.Context, scb slack.InteractionCallbac
 		return fmt.Errorf("failed to deploy: %w", err)
 	}
 
-	s.i.Publish(ctx, d)
+	if _, err = s.i.CreateNotification(ctx, &ent.Notification{
+		Type:             notification.TypeDeployment,
+		RepoNamespace:    re.Namespace,
+		RepoName:         re.Name,
+		DeploymentNumber: d.Number,
+		DeploymentType:   string(d.Type),
+		DeploymentRef:    d.Ref,
+		DeploymentEnv:    d.Env,
+		DeploymentStatus: string(d.Status),
+		DeploymentLogin:  u.Login,
+	}); err != nil {
+		s.log.Warn("failed to notify the deployment.", zap.Error(err))
+	}
+
 	return nil
 }
 

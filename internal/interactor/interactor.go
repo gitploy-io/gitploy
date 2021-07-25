@@ -48,6 +48,6 @@ func NewFakeChat() *FakeChat {
 	return &FakeChat{}
 }
 
-func (c *FakeChat) NotifyDeployment(ctx context.Context, cu *ent.ChatUser, d *ent.Deployment) error {
+func (c *FakeChat) Notify(ctx context.Context, cu *ent.ChatUser, n *ent.Notification) error {
 	return nil
 }

@@ -38,6 +38,8 @@ type (
 		UpdateApproval(ctx context.Context, a *ent.Approval) (*ent.Approval, error)
 		DeleteApproval(ctx context.Context, a *ent.Approval) error
 
+		CreateNotification(ctx context.Context, n *ent.Notification) (*ent.Notification, error)
+
 		ListCommits(ctx context.Context, u *ent.User, r *ent.Repo, branch string, page, perPage int) ([]*vo.Commit, error)
 		GetCommit(ctx context.Context, u *ent.User, r *ent.Repo, sha string) (*vo.Commit, error)
 		ListCommitStatuses(ctx context.Context, u *ent.User, r *ent.Repo, sha string) ([]*vo.Status, error)
@@ -47,7 +49,5 @@ type (
 
 		ListTags(ctx context.Context, u *ent.User, r *ent.Repo, page, perPage int) ([]*vo.Tag, error)
 		GetTag(ctx context.Context, u *ent.User, r *ent.Repo, tag string) (*vo.Tag, error)
-
-		Publish(ctx context.Context, resource interface{}) error
 	}
 )
