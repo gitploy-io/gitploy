@@ -37,6 +37,8 @@ type Notification struct {
 	DeploymentLogin string `json:"deployment_login"`
 	// ApprovalStatus holds the value of the "approval_status" field.
 	ApprovalStatus string `json:"approval_status"`
+	// ApprovalLogin holds the value of the "approval_login" field.
+	ApprovalLogin string `json:"approval_login"`
 	// Notified holds the value of the "notified" field.
 	Notified bool `json:"notified"`
 	// Checked holds the value of the "checked" field.
@@ -84,7 +86,7 @@ func (*Notification) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(sql.NullBool)
 		case notification.FieldID, notification.FieldDeploymentNumber:
 			values[i] = new(sql.NullInt64)
-		case notification.FieldType, notification.FieldRepoNamespace, notification.FieldRepoName, notification.FieldDeploymentType, notification.FieldDeploymentRef, notification.FieldDeploymentEnv, notification.FieldDeploymentStatus, notification.FieldDeploymentLogin, notification.FieldApprovalStatus, notification.FieldUserID:
+		case notification.FieldType, notification.FieldRepoNamespace, notification.FieldRepoName, notification.FieldDeploymentType, notification.FieldDeploymentRef, notification.FieldDeploymentEnv, notification.FieldDeploymentStatus, notification.FieldDeploymentLogin, notification.FieldApprovalStatus, notification.FieldApprovalLogin, notification.FieldUserID:
 			values[i] = new(sql.NullString)
 		case notification.FieldCreatedAt, notification.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -169,6 +171,12 @@ func (n *Notification) assignValues(columns []string, values []interface{}) erro
 			} else if value.Valid {
 				n.ApprovalStatus = value.String
 			}
+		case notification.FieldApprovalLogin:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field approval_login", values[i])
+			} else if value.Valid {
+				n.ApprovalLogin = value.String
+			}
 		case notification.FieldNotified:
 			if value, ok := values[i].(*sql.NullBool); !ok {
 				return fmt.Errorf("unexpected type %T for field notified", values[i])
@@ -252,6 +260,8 @@ func (n *Notification) String() string {
 	builder.WriteString(n.DeploymentLogin)
 	builder.WriteString(", approval_status=")
 	builder.WriteString(n.ApprovalStatus)
+	builder.WriteString(", approval_login=")
+	builder.WriteString(n.ApprovalLogin)
 	builder.WriteString(", notified=")
 	builder.WriteString(fmt.Sprintf("%v", n.Notified))
 	builder.WriteString(", checked=")

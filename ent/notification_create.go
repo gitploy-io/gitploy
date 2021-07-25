@@ -97,6 +97,20 @@ func (nc *NotificationCreate) SetNillableApprovalStatus(s *string) *Notification
 	return nc
 }
 
+// SetApprovalLogin sets the "approval_login" field.
+func (nc *NotificationCreate) SetApprovalLogin(s string) *NotificationCreate {
+	nc.mutation.SetApprovalLogin(s)
+	return nc
+}
+
+// SetNillableApprovalLogin sets the "approval_login" field if the given value is not nil.
+func (nc *NotificationCreate) SetNillableApprovalLogin(s *string) *NotificationCreate {
+	if s != nil {
+		nc.SetApprovalLogin(*s)
+	}
+	return nc
+}
+
 // SetNotified sets the "notified" field.
 func (nc *NotificationCreate) SetNotified(b bool) *NotificationCreate {
 	nc.mutation.SetNotified(b)
@@ -396,6 +410,14 @@ func (nc *NotificationCreate) createSpec() (*Notification, *sqlgraph.CreateSpec)
 			Column: notification.FieldApprovalStatus,
 		})
 		_node.ApprovalStatus = value
+	}
+	if value, ok := nc.mutation.ApprovalLogin(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: notification.FieldApprovalLogin,
+		})
+		_node.ApprovalLogin = value
 	}
 	if value, ok := nc.mutation.Notified(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

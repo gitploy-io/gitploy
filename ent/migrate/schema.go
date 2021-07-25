@@ -214,6 +214,7 @@ var (
 		{Name: "deployment_status", Type: field.TypeString},
 		{Name: "deployment_login", Type: field.TypeString},
 		{Name: "approval_status", Type: field.TypeString, Nullable: true},
+		{Name: "approval_login", Type: field.TypeString, Nullable: true},
 		{Name: "notified", Type: field.TypeBool, Default: false},
 		{Name: "checked", Type: field.TypeBool, Default: false},
 		{Name: "created_at", Type: field.TypeTime},
@@ -228,7 +229,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "notifications_users_notification",
-				Columns:    []*schema.Column{NotificationsColumns[15]},
+				Columns:    []*schema.Column{NotificationsColumns[16]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -237,12 +238,12 @@ var (
 			{
 				Name:    "notification_user_id",
 				Unique:  false,
-				Columns: []*schema.Column{NotificationsColumns[15]},
+				Columns: []*schema.Column{NotificationsColumns[16]},
 			},
 			{
 				Name:    "notification_user_id_created_at",
 				Unique:  false,
-				Columns: []*schema.Column{NotificationsColumns[15], NotificationsColumns[13]},
+				Columns: []*schema.Column{NotificationsColumns[16], NotificationsColumns[14]},
 			},
 		},
 	}

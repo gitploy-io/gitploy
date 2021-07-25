@@ -7,28 +7,34 @@ import (
 	"github.com/slack-go/slack"
 
 	"github.com/hanjunlee/gitploy/ent"
+	"github.com/hanjunlee/gitploy/ent/approval"
 	"github.com/hanjunlee/gitploy/ent/deployment"
 	"github.com/hanjunlee/gitploy/ent/notification"
+)
+
+const (
+	colorGray   = "#bfbfbf"
+	colorPurple = "#722ed1"
+	colorGreen  = "#52c41a"
+	colorRed    = "#f5222d"
 )
 
 func (s *Slack) Notify(ctx context.Context, cu *ent.ChatUser, n *ent.Notification) error {
 	if n.Type == notification.TypeDeployment {
 		return s.notifyDeploymentCreated(ctx, cu, n)
+	} else if n.Type == notification.TypeApprovalRequested {
+		return s.notifyApprovalRequested(ctx, cu, n)
+	} else if n.Type == notification.TypeApprovalResponded {
+		return s.notifyApprovalResponded(ctx, cu, n)
 	}
 
 	return fmt.Errorf("type have to be one of \"deployment_created\".")
 }
 
 func (s *Slack) notifyDeploymentCreated(ctx context.Context, cu *ent.ChatUser, n *ent.Notification) error {
-	const (
-		title = "New Deployment"
-	)
+	fullname := fmt.Sprintf("%s/%s", n.RepoNamespace, n.RepoName)
 
-	var (
-		fullname = fmt.Sprintf("%s/%s", n.RepoNamespace, n.RepoName)
-		ref      string
-	)
-
+	var ref string
 	if n.DeploymentType == string(deployment.TypeCommit) {
 		ref = n.DeploymentRef[:7]
 	} else {
@@ -51,7 +57,72 @@ func (s *Slack) notifyDeploymentCreated(ctx context.Context, cu *ent.ChatUser, n
 						Type: slack.MBTSection,
 						Text: &slack.TextBlockObject{
 							Type: slack.MarkdownType,
-							Text: fmt.Sprintf("*%s* - *%s* deploy `%s` to *%s* environment.", fullname, n.DeploymentLogin, ref, n.DeploymentEnv),
+							Text: fmt.Sprintf("*%s* - %s deploy `%s` to `%s` environment.", fullname, n.DeploymentLogin, ref, n.DeploymentEnv),
+						},
+					},
+				},
+			},
+		}))
+
+	return err
+}
+
+func (s *Slack) notifyApprovalRequested(ctx context.Context, cu *ent.ChatUser, n *ent.Notification) error {
+	fullName := fmt.Sprintf("%s/%s", n.RepoNamespace, n.RepoName)
+	_, _, err := s.Client(cu).
+		PostMessageContext(ctx, cu.ID, slack.MsgOptionAttachments(slack.Attachment{
+			Color: colorPurple,
+			Blocks: slack.Blocks{
+				BlockSet: []slack.Block{
+					slack.SectionBlock{
+						Type: slack.MBTSection,
+						Text: &slack.TextBlockObject{
+							Type: slack.MarkdownType,
+							Text: "*Approval Requested*",
+						},
+					},
+					slack.SectionBlock{
+						Type: slack.MBTSection,
+						Text: &slack.TextBlockObject{
+							Type: slack.MarkdownType,
+							Text: fmt.Sprintf("*%s* - %s has requested the approval for the deployment #%d.", fullName, n.DeploymentLogin, n.DeploymentNumber),
+						},
+					},
+				},
+			},
+		}))
+
+	return err
+}
+
+func (s *Slack) notifyApprovalResponded(ctx context.Context, cu *ent.ChatUser, n *ent.Notification) error {
+	fullName := fmt.Sprintf("%s/%s", n.RepoNamespace, n.RepoName)
+
+	// Verb used in the message.
+	var action string
+	if n.ApprovalStatus == string(approval.StatusApproved) {
+		action = "approved"
+	} else {
+		action = "declined"
+	}
+
+	_, _, err := s.Client(cu).
+		PostMessageContext(ctx, cu.ID, slack.MsgOptionAttachments(slack.Attachment{
+			Color: colorPurple,
+			Blocks: slack.Blocks{
+				BlockSet: []slack.Block{
+					slack.SectionBlock{
+						Type: slack.MBTSection,
+						Text: &slack.TextBlockObject{
+							Type: slack.MarkdownType,
+							Text: "*Approval Requested*",
+						},
+					},
+					slack.SectionBlock{
+						Type: slack.MBTSection,
+						Text: &slack.TextBlockObject{
+							Type: slack.MarkdownType,
+							Text: fmt.Sprintf("*%s* - %s has *%s* the deployment #%d.", fullName, n.ApprovalLogin, action, n.DeploymentNumber),
 						},
 					},
 				},
@@ -62,24 +133,18 @@ func (s *Slack) notifyDeploymentCreated(ctx context.Context, cu *ent.ChatUser, n
 }
 
 func mapDeploymentStatusToColor(status string) string {
-	const (
-		gray   = "#bfbfbf"
-		purple = "#722ed1"
-		green  = "#52c41a"
-		red    = "#f5222d"
-	)
 	switch deployment.Status(status) {
 	case deployment.StatusWaiting:
-		return gray
+		return colorGray
 	case deployment.StatusCreated:
-		return purple
+		return colorPurple
 	case deployment.StatusRunning:
-		return purple
+		return colorPurple
 	case deployment.StatusSuccess:
-		return green
+		return colorGreen
 	case deployment.StatusFailure:
-		return red
+		return colorRed
 	default:
-		return gray
+		return colorGray
 	}
 }

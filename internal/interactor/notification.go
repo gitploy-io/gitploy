@@ -2,6 +2,7 @@ package interactor
 
 import (
 	"context"
+	"fmt"
 	"math/rand"
 	"time"
 
@@ -98,6 +99,70 @@ func (i *Interactor) PublishDeployment(ctx context.Context, r *ent.Repo, d *ent.
 		DeploymentStatus: string(d.Status),
 		DeploymentLogin:  u.Login,
 		UserID:           u.ID,
+	}); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// PublishApprovalRequested publish notifications to who receives a request of approval.
+func (i *Interactor) PublishApprovalRequested(ctx context.Context, r *ent.Repo, d *ent.Deployment, a *ent.Approval) error {
+	du, err := i.FindUserByID(ctx, d.UserID)
+	if err != nil {
+		return fmt.Errorf("the deployer is not found.")
+	}
+
+	au, err := i.FindUserByID(ctx, a.UserID)
+	if err != nil {
+		return fmt.Errorf("the deployer is not found.")
+	}
+
+	if _, err := i.CreateNotification(ctx, &ent.Notification{
+		Type:             notification.TypeApprovalRequested,
+		RepoNamespace:    r.Namespace,
+		RepoName:         r.Name,
+		DeploymentNumber: d.Number,
+		DeploymentType:   string(d.Type),
+		DeploymentRef:    d.Ref,
+		DeploymentEnv:    d.Env,
+		DeploymentStatus: string(d.Status),
+		DeploymentLogin:  du.Login,
+		ApprovalStatus:   string(a.Status),
+		ApprovalLogin:    au.Login,
+		UserID:           a.UserID,
+	}); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// PublishApprovalResponded publish notifications to who has deployed.
+func (i *Interactor) PublishApprovalResponded(ctx context.Context, r *ent.Repo, d *ent.Deployment, a *ent.Approval) error {
+	du, err := i.FindUserByID(ctx, d.UserID)
+	if err != nil {
+		return fmt.Errorf("the deployer is not found.")
+	}
+
+	au, err := i.FindUserByID(ctx, a.UserID)
+	if err != nil {
+		return fmt.Errorf("the deployer is not found.")
+	}
+
+	if _, err := i.CreateNotification(ctx, &ent.Notification{
+		Type:             notification.TypeApprovalResponded,
+		RepoNamespace:    r.Namespace,
+		RepoName:         r.Name,
+		DeploymentNumber: d.Number,
+		DeploymentType:   string(d.Type),
+		DeploymentRef:    d.Ref,
+		DeploymentEnv:    d.Env,
+		DeploymentStatus: string(d.Status),
+		DeploymentLogin:  du.Login,
+		ApprovalStatus:   string(a.Status),
+		ApprovalLogin:    au.Login,
+		UserID:           d.UserID,
 	}); err != nil {
 		return err
 	}

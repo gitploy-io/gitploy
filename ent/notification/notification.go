@@ -32,6 +32,8 @@ const (
 	FieldDeploymentLogin = "deployment_login"
 	// FieldApprovalStatus holds the string denoting the approval_status field in the database.
 	FieldApprovalStatus = "approval_status"
+	// FieldApprovalLogin holds the string denoting the approval_login field in the database.
+	FieldApprovalLogin = "approval_login"
 	// FieldNotified holds the string denoting the notified field in the database.
 	FieldNotified = "notified"
 	// FieldChecked holds the string denoting the checked field in the database.
@@ -68,6 +70,7 @@ var Columns = []string{
 	FieldDeploymentStatus,
 	FieldDeploymentLogin,
 	FieldApprovalStatus,
+	FieldApprovalLogin,
 	FieldNotified,
 	FieldChecked,
 	FieldCreatedAt,

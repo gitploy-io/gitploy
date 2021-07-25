@@ -47,6 +47,8 @@ func (s *Store) CreateNotification(ctx context.Context, n *ent.Notification) (*e
 		SetDeploymentEnv(n.DeploymentEnv).
 		SetDeploymentStatus(n.DeploymentStatus).
 		SetDeploymentLogin(n.DeploymentLogin).
+		SetApprovalStatus(n.ApprovalStatus).
+		SetApprovalLogin(n.ApprovalLogin).
 		SetNotified(n.Notified).
 		SetUserID(n.UserID).
 		Save(ctx)

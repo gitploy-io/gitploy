@@ -39,6 +39,8 @@ type (
 		DeleteApproval(ctx context.Context, a *ent.Approval) error
 
 		PublishDeployment(ctx context.Context, r *ent.Repo, d *ent.Deployment) error
+		PublishApprovalRequested(ctx context.Context, r *ent.Repo, d *ent.Deployment, a *ent.Approval) error
+		PublishApprovalResponded(ctx context.Context, r *ent.Repo, d *ent.Deployment, a *ent.Approval) error
 
 		ListCommits(ctx context.Context, u *ent.User, r *ent.Repo, branch string, page, perPage int) ([]*vo.Commit, error)
 		GetCommit(ctx context.Context, u *ent.User, r *ent.Repo, sha string) (*vo.Commit, error)
