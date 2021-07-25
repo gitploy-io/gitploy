@@ -30,18 +30,17 @@ export default function NotificationList(props: NotificationListProps): JSX.Elem
 }
 
 function convertToNotificationLink(n: Notification): string {
-    switch (n.type) {
-        case NotificationType.Deployment:
-
-            return `/${n.repoNamespace}/${n.repoName}/deployments/${n.deploymentNumber}`
-    }
+    return `/${n.repoNamespace}/${n.repoName}/deployments/${n.deploymentNumber}`
 }
 
 function convertToNotificationTitle(n: Notification): string {
     switch (n.type) {
         case NotificationType.Deployment:
-
             return `New Deployment #${n.deploymentNumber}`
+        case NotificationType.ApprovalRequested:
+            return `Approval Requested`
+        case NotificationType.ApprovalResponded:
+            return `Approval Responded`
     }
 }
 
@@ -49,5 +48,9 @@ function convertToNotificationMessage(n: Notification): string {
     switch (n.type) {
         case NotificationType.Deployment:
             return `${n.repoNamespace}/${n.repoName} - Deployed to ${n.deploymentEnv} environment at ${moment(n.createdAt).fromNow()}`
+        case NotificationType.ApprovalRequested:
+            return `${n.repoNamespace}/${n.repoName} - ${n.deploymentLogin} has requested the approval for the deployment #${n.deploymentNumber}.`
+        case NotificationType.ApprovalResponded:
+            return `${n.repoNamespace}/${n.repoName} - ${n.approvalLogin} has responded the approval of the deployment #${n.deploymentNumber}.`
     }
 }

@@ -9,6 +9,8 @@ export default interface Notification {
     deploymentEnv: string
     deploymentStatus: string
     deploymentLogin: string
+    approvalStatus: string
+    approvalLogin: string
     notified: boolean
     checked: boolean
     createdAt: Date
@@ -16,5 +18,7 @@ export default interface Notification {
 }
 
 export enum NotificationType {
-    Deployment = "deployment"
+    Deployment = "deployment",
+    ApprovalRequested = "approval_requested",
+    ApprovalResponded = "approval_responded" 
 }

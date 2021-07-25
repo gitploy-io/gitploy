@@ -1224,6 +1224,10 @@ components:
       properties:
         type:
           type: string
+          enum:
+            - deployment
+            - approval_requested
+            - approval_responded
         repo_namespace:
           type: string
         repo_name:
@@ -1232,23 +1236,17 @@ components:
           type: number
         deployment_type:
           type: string
-          enum:
-            - commit
-            - branch
-            - tag
         deployment_ref:
           type: string
         deployment_env:
           type: string
         deployment_status:
           type: string
-          enum:
-            - waiting
-            - created
-            - running
-            - success
-            - failure
         deployment_login:
+          type: string
+        approval_status:
+          type: string
+        approval_login:
           type: string
         notified:
           type: boolean
