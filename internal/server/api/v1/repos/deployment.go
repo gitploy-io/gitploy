@@ -11,7 +11,6 @@ import (
 
 	"github.com/hanjunlee/gitploy/ent"
 	"github.com/hanjunlee/gitploy/ent/deployment"
-	"github.com/hanjunlee/gitploy/ent/notification"
 	gb "github.com/hanjunlee/gitploy/internal/server/global"
 	"github.com/hanjunlee/gitploy/vo"
 )
@@ -144,18 +143,7 @@ func (r *Repo) CreateDeployment(c *gin.Context) {
 		return
 	}
 
-	if _, err = r.i.CreateNotification(ctx, &ent.Notification{
-		Type:             notification.TypeDeployment,
-		RepoNamespace:    re.Namespace,
-		RepoName:         re.Name,
-		DeploymentNumber: d.Number,
-		DeploymentType:   string(d.Type),
-		DeploymentRef:    d.Ref,
-		DeploymentEnv:    d.Env,
-		DeploymentStatus: string(d.Status),
-		DeploymentLogin:  u.Login,
-		UserID:           u.ID,
-	}); err != nil {
+	if err = r.i.PublishDeployment(ctx, u, re, d); err != nil {
 		r.log.Warn("failed to notify the deployment.", zap.Error(err))
 	}
 
@@ -306,18 +294,7 @@ func (r *Repo) RollbackDeployment(c *gin.Context) {
 		return
 	}
 
-	if _, err = r.i.CreateNotification(ctx, &ent.Notification{
-		Type:             notification.TypeDeployment,
-		RepoNamespace:    re.Namespace,
-		RepoName:         re.Name,
-		DeploymentNumber: d.Number,
-		DeploymentType:   string(d.Type),
-		DeploymentRef:    d.Ref,
-		DeploymentEnv:    d.Env,
-		DeploymentStatus: string(d.Status),
-		DeploymentLogin:  u.Login,
-		UserID:           u.ID,
-	}); err != nil {
+	if err = r.i.PublishDeployment(ctx, u, re, d); err != nil {
 		r.log.Warn("failed to notify the deployment.", zap.Error(err))
 	}
 

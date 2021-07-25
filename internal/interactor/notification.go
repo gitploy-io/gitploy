@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/hanjunlee/gitploy/ent"
+	"github.com/hanjunlee/gitploy/ent/notification"
 	"go.uber.org/zap"
 )
 
@@ -66,17 +67,37 @@ func (i *Interactor) publish(ctx context.Context, n *ent.Notification) error {
 
 	if cu := u.Edges.ChatUser; cu != nil {
 		i.events.Publish(eventChat, cu, n)
-		n, _ = i.SetNotificationNotified(ctx, n)
+		n, _ = i.setNotificationNotified(ctx, n)
 	}
 
 	i.events.Publish(eventStream, u, n)
-	i.SetNotificationNotified(ctx, n)
+	i.setNotificationNotified(ctx, n)
 	return nil
 }
 
-func (i *Interactor) SetNotificationNotified(ctx context.Context, n *ent.Notification) (*ent.Notification, error) {
+func (i *Interactor) setNotificationNotified(ctx context.Context, n *ent.Notification) (*ent.Notification, error) {
 	n.Notified = true
 	return i.UpdateNotification(ctx, n)
+}
+
+// PublishDeployment publish notifications to the deployer.
+func (i *Interactor) PublishDeployment(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment) error {
+	if _, err := i.CreateNotification(ctx, &ent.Notification{
+		Type:             notification.TypeDeployment,
+		RepoNamespace:    r.Namespace,
+		RepoName:         r.Name,
+		DeploymentNumber: d.Number,
+		DeploymentType:   string(d.Type),
+		DeploymentRef:    d.Ref,
+		DeploymentEnv:    d.Env,
+		DeploymentStatus: string(d.Status),
+		DeploymentLogin:  u.Login,
+		UserID:           u.ID,
+	}); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (i *Interactor) Subscribe(fn func(u *ent.User, n *ent.Notification)) error {
