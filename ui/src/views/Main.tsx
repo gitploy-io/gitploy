@@ -163,10 +163,7 @@ function notify(n: NotificationData) {
 function convertToNotificationMessage(n: NotificationData): string {
     switch (n.type) {
         case NotificationType.Deployment:
-            if (n.deployment === null) {
-                return `New Deployment\n ${n.repo.namespace}/${n.repo.name} - Deployed.`
-            }
-            return `New Deployment\n ${n.repo.namespace}/${n.repo.name} - Deployed to ${n.deployment.env} environment.`
+            return `New Deployment #${n.deploymentNumber}\n ${n.repoNamespace}/${n.repoName} - Deployed to ${n.deploymentEnv} environment.`
     }
 }
 

@@ -186,6 +186,7 @@ func (s *Slack) interactRollback(ctx context.Context, scb slack.InteractionCallb
 		DeploymentEnv:    d.Env,
 		DeploymentStatus: string(d.Status),
 		DeploymentLogin:  u.Login,
+		UserID:           u.ID,
 	}); err != nil {
 		s.log.Warn("failed to notify the deployment.", zap.Error(err))
 	}

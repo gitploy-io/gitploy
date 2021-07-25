@@ -1,10 +1,44 @@
 import { instance, headers } from "./setting"
 import { _fetch } from "./_base"
-import { mapDataToRepo } from "./repo"
-import { mapDataToDeployment } from "./deployment"
-import { Notification as NotificationData, NotificationType, Deployment } from "../models"
+import { Notification as Noti, NotificationType } from "../models"
 
-export const subscribeNotification = (cb: (n: NotificationData) => void): EventSource => {
+interface NotificationData {
+    id: number
+    type: string
+    repo_namespace: string
+    repo_name: string
+    deployment_number: number
+    deployment_type: string
+    deployment_ref: string
+    deployment_env: string
+    deployment_status: string
+    deployment_login: string
+    notified: boolean
+    checked: boolean
+    created_at: string
+    updated_at: string
+}
+
+const mapDataToNotification = (data: NotificationData): Noti => {
+    return { 
+        id: data.id,
+        type: NotificationType.Deployment, 
+        repoNamespace: data.repo_namespace,
+        repoName: data.repo_name,
+        deploymentNumber: data.deployment_number,
+        deploymentType: data.deployment_type,
+        deploymentRef: data.deployment_ref,
+        deploymentEnv: data.deployment_env,
+        deploymentStatus: data.deployment_status,
+        deploymentLogin: data.deployment_login,
+        notified: data.notified,
+        checked: data.checked,
+        createdAt: new Date(data.created_at),
+        updatedAt: new Date(data.updated_at),
+    }
+}
+
+export const subscribeNotification = (cb: (n: Noti) => void): EventSource => {
     const sse = new EventSource(`${instance}/api/v1/stream`, {
         withCredentials: true,
     })
@@ -18,8 +52,8 @@ export const subscribeNotification = (cb: (n: NotificationData) => void): EventS
     return sse
 }
 
-export const listNotifications = async (page: number, perPage: number): Promise<NotificationData[]> => {
-    const notifications: NotificationData[]  = await _fetch(`${instance}/api/v1/notifications?page=${page}&per_page=${perPage}`, {
+export const listNotifications = async (page: number, perPage: number): Promise<Noti[]> => {
+    const notifications: Noti[]  = await _fetch(`${instance}/api/v1/notifications?page=${page}&per_page=${perPage}`, {
         headers,
         credentials: "same-origin",
     })
@@ -29,7 +63,7 @@ export const listNotifications = async (page: number, perPage: number): Promise<
     return notifications
 }
 
-export const patchNotificationChecked = async (id: number): Promise<NotificationData>=> {
+export const patchNotificationChecked = async (id: number): Promise<Noti>=> {
     const body = {
         checked: true
     }
@@ -43,25 +77,4 @@ export const patchNotificationChecked = async (id: number): Promise<Notification
         .then(data => mapDataToNotification(data))
 
     return notification
-}
-
-function mapDataToNotification(data: any): NotificationData {
-    let type: NotificationType = NotificationType.Deployment
-    let deployment: Deployment | null = null
-
-    if (data.type === "deployment") {
-        type = NotificationType.Deployment
-        deployment = mapDataToDeployment(data.edges.deployment)
-    } 
-
-    return { 
-        id: data.id,
-        type, 
-        notified: data.notified,
-        checked: data.checked,
-        createdAt: new Date(data.created_at),
-        updatedAt: new Date(data.updated_at),
-        repo: mapDataToRepo(data.edges.repo),
-        deployment,
-    }
 }

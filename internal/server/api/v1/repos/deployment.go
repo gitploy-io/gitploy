@@ -154,6 +154,7 @@ func (r *Repo) CreateDeployment(c *gin.Context) {
 		DeploymentEnv:    d.Env,
 		DeploymentStatus: string(d.Status),
 		DeploymentLogin:  u.Login,
+		UserID:           u.ID,
 	}); err != nil {
 		r.log.Warn("failed to notify the deployment.", zap.Error(err))
 	}
@@ -315,6 +316,7 @@ func (r *Repo) RollbackDeployment(c *gin.Context) {
 		DeploymentEnv:    d.Env,
 		DeploymentStatus: string(d.Status),
 		DeploymentLogin:  u.Login,
+		UserID:           u.ID,
 	}); err != nil {
 		r.log.Warn("failed to notify the deployment.", zap.Error(err))
 	}

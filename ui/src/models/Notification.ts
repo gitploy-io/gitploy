@@ -1,15 +1,18 @@
-import Deployment from "./Deployment"
-import Repo from "./Repo"
-
 export default interface Notification {
-    id: number,
-    type: NotificationType,
-    notified: boolean,
-    checked: boolean,
-    createdAt: Date,
-    updatedAt: Date,
-    repo: Repo,
-    deployment: Deployment | null,
+    id: number
+    type: NotificationType
+    repoNamespace: string
+    repoName: string
+    deploymentNumber: number
+    deploymentType: string
+    deploymentRef: string
+    deploymentEnv: string
+    deploymentStatus: string
+    deploymentLogin: string
+    notified: boolean
+    checked: boolean
+    createdAt: Date
+    updatedAt: Date
 }
 
 export enum NotificationType {
