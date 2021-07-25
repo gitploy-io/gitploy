@@ -20,6 +20,8 @@ func (Notification) Fields() []ent.Field {
 		field.Enum("type").
 			Values(
 				"deployment",
+				"approval_requested",
+				"approval_responded",
 			).
 			Default("deployment"),
 		// Denormalization from repository, deployment.
@@ -31,6 +33,8 @@ func (Notification) Fields() []ent.Field {
 		field.String("deployment_env"),
 		field.String("deployment_status"),
 		field.String("deployment_login"),
+		field.String("approval_status").
+			Optional(),
 		// The notified field means it is notified by Chat or browser,
 		// in meanwhile The checked field means the user has checked or not.
 		field.Bool("notified").

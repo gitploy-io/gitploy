@@ -4185,6 +4185,7 @@ type NotificationMutation struct {
 	deployment_env       *string
 	deployment_status    *string
 	deployment_login     *string
+	approval_status      *string
 	notified             *bool
 	checked              *bool
 	created_at           *time.Time
@@ -4620,6 +4621,55 @@ func (m *NotificationMutation) ResetDeploymentLogin() {
 	m.deployment_login = nil
 }
 
+// SetApprovalStatus sets the "approval_status" field.
+func (m *NotificationMutation) SetApprovalStatus(s string) {
+	m.approval_status = &s
+}
+
+// ApprovalStatus returns the value of the "approval_status" field in the mutation.
+func (m *NotificationMutation) ApprovalStatus() (r string, exists bool) {
+	v := m.approval_status
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldApprovalStatus returns the old "approval_status" field's value of the Notification entity.
+// If the Notification object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *NotificationMutation) OldApprovalStatus(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldApprovalStatus is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldApprovalStatus requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldApprovalStatus: %w", err)
+	}
+	return oldValue.ApprovalStatus, nil
+}
+
+// ClearApprovalStatus clears the value of the "approval_status" field.
+func (m *NotificationMutation) ClearApprovalStatus() {
+	m.approval_status = nil
+	m.clearedFields[notification.FieldApprovalStatus] = struct{}{}
+}
+
+// ApprovalStatusCleared returns if the "approval_status" field was cleared in this mutation.
+func (m *NotificationMutation) ApprovalStatusCleared() bool {
+	_, ok := m.clearedFields[notification.FieldApprovalStatus]
+	return ok
+}
+
+// ResetApprovalStatus resets all changes to the "approval_status" field.
+func (m *NotificationMutation) ResetApprovalStatus() {
+	m.approval_status = nil
+	delete(m.clearedFields, notification.FieldApprovalStatus)
+}
+
 // SetNotified sets the "notified" field.
 func (m *NotificationMutation) SetNotified(b bool) {
 	m.notified = &b
@@ -4840,7 +4890,7 @@ func (m *NotificationMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *NotificationMutation) Fields() []string {
-	fields := make([]string, 0, 14)
+	fields := make([]string, 0, 15)
 	if m._type != nil {
 		fields = append(fields, notification.FieldType)
 	}
@@ -4867,6 +4917,9 @@ func (m *NotificationMutation) Fields() []string {
 	}
 	if m.deployment_login != nil {
 		fields = append(fields, notification.FieldDeploymentLogin)
+	}
+	if m.approval_status != nil {
+		fields = append(fields, notification.FieldApprovalStatus)
 	}
 	if m.notified != nil {
 		fields = append(fields, notification.FieldNotified)
@@ -4909,6 +4962,8 @@ func (m *NotificationMutation) Field(name string) (ent.Value, bool) {
 		return m.DeploymentStatus()
 	case notification.FieldDeploymentLogin:
 		return m.DeploymentLogin()
+	case notification.FieldApprovalStatus:
+		return m.ApprovalStatus()
 	case notification.FieldNotified:
 		return m.Notified()
 	case notification.FieldChecked:
@@ -4946,6 +5001,8 @@ func (m *NotificationMutation) OldField(ctx context.Context, name string) (ent.V
 		return m.OldDeploymentStatus(ctx)
 	case notification.FieldDeploymentLogin:
 		return m.OldDeploymentLogin(ctx)
+	case notification.FieldApprovalStatus:
+		return m.OldApprovalStatus(ctx)
 	case notification.FieldNotified:
 		return m.OldNotified(ctx)
 	case notification.FieldChecked:
@@ -5028,6 +5085,13 @@ func (m *NotificationMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetDeploymentLogin(v)
 		return nil
+	case notification.FieldApprovalStatus:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetApprovalStatus(v)
+		return nil
 	case notification.FieldNotified:
 		v, ok := value.(bool)
 		if !ok {
@@ -5107,7 +5171,11 @@ func (m *NotificationMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *NotificationMutation) ClearedFields() []string {
-	return nil
+	var fields []string
+	if m.FieldCleared(notification.FieldApprovalStatus) {
+		fields = append(fields, notification.FieldApprovalStatus)
+	}
+	return fields
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -5120,6 +5188,11 @@ func (m *NotificationMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *NotificationMutation) ClearField(name string) error {
+	switch name {
+	case notification.FieldApprovalStatus:
+		m.ClearApprovalStatus()
+		return nil
+	}
 	return fmt.Errorf("unknown Notification nullable field %s", name)
 }
 
@@ -5153,6 +5226,9 @@ func (m *NotificationMutation) ResetField(name string) error {
 		return nil
 	case notification.FieldDeploymentLogin:
 		m.ResetDeploymentLogin()
+		return nil
+	case notification.FieldApprovalStatus:
+		m.ResetApprovalStatus()
 		return nil
 	case notification.FieldNotified:
 		m.ResetNotified()

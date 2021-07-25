@@ -35,6 +35,8 @@ type Notification struct {
 	DeploymentStatus string `json:"deployment_status"`
 	// DeploymentLogin holds the value of the "deployment_login" field.
 	DeploymentLogin string `json:"deployment_login"`
+	// ApprovalStatus holds the value of the "approval_status" field.
+	ApprovalStatus string `json:"approval_status"`
 	// Notified holds the value of the "notified" field.
 	Notified bool `json:"notified"`
 	// Checked holds the value of the "checked" field.
@@ -82,7 +84,7 @@ func (*Notification) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(sql.NullBool)
 		case notification.FieldID, notification.FieldDeploymentNumber:
 			values[i] = new(sql.NullInt64)
-		case notification.FieldType, notification.FieldRepoNamespace, notification.FieldRepoName, notification.FieldDeploymentType, notification.FieldDeploymentRef, notification.FieldDeploymentEnv, notification.FieldDeploymentStatus, notification.FieldDeploymentLogin, notification.FieldUserID:
+		case notification.FieldType, notification.FieldRepoNamespace, notification.FieldRepoName, notification.FieldDeploymentType, notification.FieldDeploymentRef, notification.FieldDeploymentEnv, notification.FieldDeploymentStatus, notification.FieldDeploymentLogin, notification.FieldApprovalStatus, notification.FieldUserID:
 			values[i] = new(sql.NullString)
 		case notification.FieldCreatedAt, notification.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -160,6 +162,12 @@ func (n *Notification) assignValues(columns []string, values []interface{}) erro
 				return fmt.Errorf("unexpected type %T for field deployment_login", values[i])
 			} else if value.Valid {
 				n.DeploymentLogin = value.String
+			}
+		case notification.FieldApprovalStatus:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field approval_status", values[i])
+			} else if value.Valid {
+				n.ApprovalStatus = value.String
 			}
 		case notification.FieldNotified:
 			if value, ok := values[i].(*sql.NullBool); !ok {
@@ -242,6 +250,8 @@ func (n *Notification) String() string {
 	builder.WriteString(n.DeploymentStatus)
 	builder.WriteString(", deployment_login=")
 	builder.WriteString(n.DeploymentLogin)
+	builder.WriteString(", approval_status=")
+	builder.WriteString(n.ApprovalStatus)
 	builder.WriteString(", notified=")
 	builder.WriteString(fmt.Sprintf("%v", n.Notified))
 	builder.WriteString(", checked=")

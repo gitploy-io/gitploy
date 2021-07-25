@@ -30,6 +30,8 @@ const (
 	FieldDeploymentStatus = "deployment_status"
 	// FieldDeploymentLogin holds the string denoting the deployment_login field in the database.
 	FieldDeploymentLogin = "deployment_login"
+	// FieldApprovalStatus holds the string denoting the approval_status field in the database.
+	FieldApprovalStatus = "approval_status"
 	// FieldNotified holds the string denoting the notified field in the database.
 	FieldNotified = "notified"
 	// FieldChecked holds the string denoting the checked field in the database.
@@ -65,6 +67,7 @@ var Columns = []string{
 	FieldDeploymentEnv,
 	FieldDeploymentStatus,
 	FieldDeploymentLogin,
+	FieldApprovalStatus,
 	FieldNotified,
 	FieldChecked,
 	FieldCreatedAt,
@@ -103,7 +106,9 @@ const DefaultType = TypeDeployment
 
 // Type values.
 const (
-	TypeDeployment Type = "deployment"
+	TypeDeployment        Type = "deployment"
+	TypeApprovalRequested Type = "approval_requested"
+	TypeApprovalResponded Type = "approval_responded"
 )
 
 func (_type Type) String() string {
@@ -113,7 +118,7 @@ func (_type Type) String() string {
 // TypeValidator is a validator for the "type" field enum values. It is called by the builders before save.
 func TypeValidator(_type Type) error {
 	switch _type {
-	case TypeDeployment:
+	case TypeDeployment, TypeApprovalRequested, TypeApprovalResponded:
 		return nil
 	default:
 		return fmt.Errorf("notification: invalid enum value for type field: %q", _type)

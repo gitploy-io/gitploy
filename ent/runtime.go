@@ -100,19 +100,19 @@ func init() {
 	notificationFields := schema.Notification{}.Fields()
 	_ = notificationFields
 	// notificationDescNotified is the schema descriptor for notified field.
-	notificationDescNotified := notificationFields[9].Descriptor()
+	notificationDescNotified := notificationFields[10].Descriptor()
 	// notification.DefaultNotified holds the default value on creation for the notified field.
 	notification.DefaultNotified = notificationDescNotified.Default.(bool)
 	// notificationDescChecked is the schema descriptor for checked field.
-	notificationDescChecked := notificationFields[10].Descriptor()
+	notificationDescChecked := notificationFields[11].Descriptor()
 	// notification.DefaultChecked holds the default value on creation for the checked field.
 	notification.DefaultChecked = notificationDescChecked.Default.(bool)
 	// notificationDescCreatedAt is the schema descriptor for created_at field.
-	notificationDescCreatedAt := notificationFields[11].Descriptor()
+	notificationDescCreatedAt := notificationFields[12].Descriptor()
 	// notification.DefaultCreatedAt holds the default value on creation for the created_at field.
 	notification.DefaultCreatedAt = notificationDescCreatedAt.Default.(func() time.Time)
 	// notificationDescUpdatedAt is the schema descriptor for updated_at field.
-	notificationDescUpdatedAt := notificationFields[12].Descriptor()
+	notificationDescUpdatedAt := notificationFields[13].Descriptor()
 	// notification.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	notification.DefaultUpdatedAt = notificationDescUpdatedAt.Default.(func() time.Time)
 	// notification.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.

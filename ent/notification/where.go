@@ -149,6 +149,13 @@ func DeploymentLogin(v string) predicate.Notification {
 	})
 }
 
+// ApprovalStatus applies equality check predicate on the "approval_status" field. It's identical to ApprovalStatusEQ.
+func ApprovalStatus(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldApprovalStatus), v))
+	})
+}
+
 // Notified applies equality check predicate on the "notified" field. It's identical to NotifiedEQ.
 func Notified(v bool) predicate.Notification {
 	return predicate.Notification(func(s *sql.Selector) {
@@ -1082,6 +1089,131 @@ func DeploymentLoginEqualFold(v string) predicate.Notification {
 func DeploymentLoginContainsFold(v string) predicate.Notification {
 	return predicate.Notification(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldDeploymentLogin), v))
+	})
+}
+
+// ApprovalStatusEQ applies the EQ predicate on the "approval_status" field.
+func ApprovalStatusEQ(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldApprovalStatus), v))
+	})
+}
+
+// ApprovalStatusNEQ applies the NEQ predicate on the "approval_status" field.
+func ApprovalStatusNEQ(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldApprovalStatus), v))
+	})
+}
+
+// ApprovalStatusIn applies the In predicate on the "approval_status" field.
+func ApprovalStatusIn(vs ...string) predicate.Notification {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Notification(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldApprovalStatus), v...))
+	})
+}
+
+// ApprovalStatusNotIn applies the NotIn predicate on the "approval_status" field.
+func ApprovalStatusNotIn(vs ...string) predicate.Notification {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Notification(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldApprovalStatus), v...))
+	})
+}
+
+// ApprovalStatusGT applies the GT predicate on the "approval_status" field.
+func ApprovalStatusGT(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldApprovalStatus), v))
+	})
+}
+
+// ApprovalStatusGTE applies the GTE predicate on the "approval_status" field.
+func ApprovalStatusGTE(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldApprovalStatus), v))
+	})
+}
+
+// ApprovalStatusLT applies the LT predicate on the "approval_status" field.
+func ApprovalStatusLT(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldApprovalStatus), v))
+	})
+}
+
+// ApprovalStatusLTE applies the LTE predicate on the "approval_status" field.
+func ApprovalStatusLTE(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldApprovalStatus), v))
+	})
+}
+
+// ApprovalStatusContains applies the Contains predicate on the "approval_status" field.
+func ApprovalStatusContains(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldApprovalStatus), v))
+	})
+}
+
+// ApprovalStatusHasPrefix applies the HasPrefix predicate on the "approval_status" field.
+func ApprovalStatusHasPrefix(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldApprovalStatus), v))
+	})
+}
+
+// ApprovalStatusHasSuffix applies the HasSuffix predicate on the "approval_status" field.
+func ApprovalStatusHasSuffix(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldApprovalStatus), v))
+	})
+}
+
+// ApprovalStatusIsNil applies the IsNil predicate on the "approval_status" field.
+func ApprovalStatusIsNil() predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldApprovalStatus)))
+	})
+}
+
+// ApprovalStatusNotNil applies the NotNil predicate on the "approval_status" field.
+func ApprovalStatusNotNil() predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldApprovalStatus)))
+	})
+}
+
+// ApprovalStatusEqualFold applies the EqualFold predicate on the "approval_status" field.
+func ApprovalStatusEqualFold(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldApprovalStatus), v))
+	})
+}
+
+// ApprovalStatusContainsFold applies the ContainsFold predicate on the "approval_status" field.
+func ApprovalStatusContainsFold(v string) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldApprovalStatus), v))
 	})
 }
 

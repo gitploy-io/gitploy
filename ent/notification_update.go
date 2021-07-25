@@ -98,6 +98,26 @@ func (nu *NotificationUpdate) SetDeploymentLogin(s string) *NotificationUpdate {
 	return nu
 }
 
+// SetApprovalStatus sets the "approval_status" field.
+func (nu *NotificationUpdate) SetApprovalStatus(s string) *NotificationUpdate {
+	nu.mutation.SetApprovalStatus(s)
+	return nu
+}
+
+// SetNillableApprovalStatus sets the "approval_status" field if the given value is not nil.
+func (nu *NotificationUpdate) SetNillableApprovalStatus(s *string) *NotificationUpdate {
+	if s != nil {
+		nu.SetApprovalStatus(*s)
+	}
+	return nu
+}
+
+// ClearApprovalStatus clears the value of the "approval_status" field.
+func (nu *NotificationUpdate) ClearApprovalStatus() *NotificationUpdate {
+	nu.mutation.ClearApprovalStatus()
+	return nu
+}
+
 // SetNotified sets the "notified" field.
 func (nu *NotificationUpdate) SetNotified(b bool) *NotificationUpdate {
 	nu.mutation.SetNotified(b)
@@ -335,6 +355,19 @@ func (nu *NotificationUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: notification.FieldDeploymentLogin,
 		})
 	}
+	if value, ok := nu.mutation.ApprovalStatus(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: notification.FieldApprovalStatus,
+		})
+	}
+	if nu.mutation.ApprovalStatusCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: notification.FieldApprovalStatus,
+		})
+	}
 	if value, ok := nu.mutation.Notified(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeBool,
@@ -483,6 +516,26 @@ func (nuo *NotificationUpdateOne) SetDeploymentStatus(s string) *NotificationUpd
 // SetDeploymentLogin sets the "deployment_login" field.
 func (nuo *NotificationUpdateOne) SetDeploymentLogin(s string) *NotificationUpdateOne {
 	nuo.mutation.SetDeploymentLogin(s)
+	return nuo
+}
+
+// SetApprovalStatus sets the "approval_status" field.
+func (nuo *NotificationUpdateOne) SetApprovalStatus(s string) *NotificationUpdateOne {
+	nuo.mutation.SetApprovalStatus(s)
+	return nuo
+}
+
+// SetNillableApprovalStatus sets the "approval_status" field if the given value is not nil.
+func (nuo *NotificationUpdateOne) SetNillableApprovalStatus(s *string) *NotificationUpdateOne {
+	if s != nil {
+		nuo.SetApprovalStatus(*s)
+	}
+	return nuo
+}
+
+// ClearApprovalStatus clears the value of the "approval_status" field.
+func (nuo *NotificationUpdateOne) ClearApprovalStatus() *NotificationUpdateOne {
+	nuo.mutation.ClearApprovalStatus()
 	return nuo
 }
 
@@ -745,6 +798,19 @@ func (nuo *NotificationUpdateOne) sqlSave(ctx context.Context) (_node *Notificat
 			Type:   field.TypeString,
 			Value:  value,
 			Column: notification.FieldDeploymentLogin,
+		})
+	}
+	if value, ok := nuo.mutation.ApprovalStatus(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: notification.FieldApprovalStatus,
+		})
+	}
+	if nuo.mutation.ApprovalStatusCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: notification.FieldApprovalStatus,
 		})
 	}
 	if value, ok := nuo.mutation.Notified(); ok {
