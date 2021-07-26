@@ -18,6 +18,33 @@ const mapDataToCommit = (data: CommitData): Commit => {
     }
 }
 
+interface StatusData {
+    context: string
+    avatar_url: string
+    target_url: string
+    state: string
+}
+
+const mapDataToStatus = (data: StatusData): Status => {
+    return {
+        context: data.context,
+        avatarUrl: data.avatar_url,
+        targetUrl: data.target_url,
+        state: mapStatusState(data.state),
+    }
+}
+
+const mapStatusState = (state: string) => {
+    if (state === "pending") {
+        return StatusState.Pending
+    } else if (state === "success") {
+        return StatusState.Success
+    } else if (state === "failure") {
+        return StatusState.Failure
+    }
+    return StatusState.Pending
+}
+
 export const listCommits = async (repoId: string, branch: string, page = 1, perPage = 30): Promise<Commit[]> => {
     const commits: Commit[] = await _fetch(`${instance}/api/v1/repos/${repoId}/commits?branch=${branch}&page=${page}&per_page=${perPage}`, {
         headers,
@@ -46,17 +73,6 @@ export const getCommit = async (repoId: string, sha: string): Promise<Commit> =>
     return commit
 }
 
-const mapStatusState = (state: string) => {
-    if (state === "pending") {
-        return StatusState.Pending
-    } else if (state === "success") {
-        return StatusState.Success
-    } else if (state === "failure") {
-        return StatusState.Failure
-    }
-    return StatusState.Pending
-}
-
 export const listStatuses = async (repoId: string, sha: string): Promise<{state: StatusState, statuses: Status[]}> => {
     const response = await _fetch(`${instance}/api/v1/repos/${repoId}/commits/${sha}/statuses`, {
         headers,
@@ -71,12 +87,7 @@ export const listStatuses = async (repoId: string, sha: string): Promise<{state:
         .json()
         .then(d => {
             let state: StatusState
-            const statuses: Status[] =  d.statuses.map((s: any) => ({
-                context: s.context,
-                avatarUrl: s.avatar_url,
-                targetUrl: s.target_url,
-                state: mapStatusState(s.state)
-            }))
+            const statuses: Status[] =  d.statuses.map((status: StatusData) => mapDataToStatus(status))
 
             if (statuses.length === 0) {
                 state = StatusState.Null

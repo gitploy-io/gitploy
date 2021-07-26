@@ -1088,6 +1088,10 @@ components:
         state:
           type: string
           description: The state is one of failure, pending, and success.
+          enum:
+            - pending
+            - failure
+            - success
     Branches:
       type: array
       items:
