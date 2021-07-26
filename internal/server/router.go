@@ -144,10 +144,9 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 		repov1.GET("/:id/config", rm.ReadPerm(), r.GetConfig)
 	}
 
-	userv1 := v1.Group("/users")
 	{
 		u := users.NewUser(c.Interactor)
-		userv1.GET("/me", u.Me)
+		v1.GET("/user", u.Me)
 	}
 
 	notiv1 := v1.Group("/notifications")

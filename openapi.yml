@@ -890,7 +890,7 @@ paths:
           $ref: '#/components/responses/422UnprocessableEntity'
         '500':
           $ref: '#/components/responses/500InternalError'
-  /users/me:
+  /user:
     get:
       tags:
         - User
