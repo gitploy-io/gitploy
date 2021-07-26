@@ -46,7 +46,7 @@ export const mapDataToUser = (data: UserData): User => {
 }
 
 export const getMe = async (): Promise<User> => {
-    const user:User = await _fetch(`${instance}/api/v1/users/me`, {
+    const user:User = await _fetch(`${instance}/api/v1/user`, {
         headers,
         credentials: "same-origin",
     })

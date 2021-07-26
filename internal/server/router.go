@@ -7,7 +7,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"golang.org/x/oauth2"
 
-	"github.com/hanjunlee/gitploy/internal/server/api/v1/notifications"
 	"github.com/hanjunlee/gitploy/internal/server/api/v1/repos"
 	"github.com/hanjunlee/gitploy/internal/server/api/v1/stream"
 	"github.com/hanjunlee/gitploy/internal/server/api/v1/sync"
@@ -67,7 +66,6 @@ type (
 		web.Interactor
 		repos.Interactor
 		users.Interactor
-		notifications.Interactor
 		stream.Interactor
 		hooks.Interactor
 	}
@@ -144,17 +142,11 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 		repov1.GET("/:id/config", rm.ReadPerm(), r.GetConfig)
 	}
 
-	userv1 := v1.Group("/users")
 	{
 		u := users.NewUser(c.Interactor)
-		userv1.GET("/me", u.Me)
-	}
-
-	notiv1 := v1.Group("/notifications")
-	{
-		noti := notifications.NewNoti(c.Interactor)
-		notiv1.GET("", noti.ListNotifications)
-		notiv1.PATCH("/:id", noti.UpdateNotification)
+		v1.GET("/user", u.GetMyUser)
+		v1.GET("/user/notifications", u.ListNotifications)
+		v1.GET("/user/notificaitons/:id", u.UpdateNotification)
 	}
 
 	streamv1 := v1.Group("/stream")
