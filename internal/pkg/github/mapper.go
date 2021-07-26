@@ -118,7 +118,7 @@ func mapGithubCheckRunToStatus(c *github.CheckRun) *vo.Status {
 	return &vo.Status{
 		Context:   *c.Name,
 		AvatarURL: *c.App.Owner.AvatarURL,
-		TargetURL: *c.App.HTMLURL,
+		TargetURL: *c.HTMLURL,
 		State:     state,
 	}
 }
