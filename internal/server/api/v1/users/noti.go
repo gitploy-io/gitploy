@@ -6,18 +6,12 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
-	"go.uber.org/zap"
 
 	"github.com/hanjunlee/gitploy/ent"
 	gb "github.com/hanjunlee/gitploy/internal/server/global"
 )
 
 type (
-	Noti struct {
-		i   Interactor
-		log *zap.Logger
-	}
-
 	notiPayload struct {
 		Checked bool `json:"checked"`
 	}
