@@ -906,10 +906,10 @@ paths:
           $ref: '#/components/responses/401Unauthorized'
         '500':
           $ref: '#/components/responses/500InternalError'
-  /notifications:
+  /user/notifications:
     get:
       tags:
-        - Notification
+        - User
       summary: List my notifications.
       parameters:
         - in: query
@@ -935,10 +935,10 @@ paths:
           $ref: '#/components/responses/401Unauthorized'
         '500':
           $ref: '#/components/responses/500InternalError'
-  /notifications/{id}:
+  /user/notifications/{id}:
     patch:
       tags:
-        - Notification
+        - User
       summary: Set the notification checked.
       parameters:
         - in: path

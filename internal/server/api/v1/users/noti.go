@@ -23,23 +23,16 @@ type (
 	}
 )
 
-func NewNoti(i Interactor) *Noti {
-	return &Noti{
-		i:   i,
-		log: zap.L().Named("notifications"),
-	}
-}
-
-func (n *Noti) ListNotifications(c *gin.Context) {
+func (u *User) ListNotifications(c *gin.Context) {
 	var (
 		page    = c.DefaultQuery("page", "1")
 		perPage = c.DefaultQuery("perPage", "30")
 	)
 	v, _ := c.Get(gb.KeyUser)
-	u, _ := v.(*ent.User)
+	vu, _ := v.(*ent.User)
 
 	ctx := c.Request.Context()
-	ns, err := n.i.ListNotifications(ctx, u, atoi(page), atoi(perPage))
+	ns, err := u.i.ListNotifications(ctx, vu, atoi(page), atoi(perPage))
 	if err != nil {
 		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to list notifications.")
 		return
@@ -48,7 +41,7 @@ func (n *Noti) ListNotifications(c *gin.Context) {
 	gb.Response(c, http.StatusOK, ns)
 }
 
-func (n *Noti) UpdateNotification(c *gin.Context) {
+func (u *User) UpdateNotification(c *gin.Context) {
 	ctx := c.Request.Context()
 
 	var (
@@ -56,7 +49,7 @@ func (n *Noti) UpdateNotification(c *gin.Context) {
 	)
 
 	v, _ := c.Get(gb.KeyUser)
-	u, _ := v.(*ent.User)
+	vu, _ := v.(*ent.User)
 
 	p := &notiPayload{}
 	var err error
@@ -65,7 +58,7 @@ func (n *Noti) UpdateNotification(c *gin.Context) {
 		return
 	}
 
-	nf, err := n.i.FindNotificationByID(ctx, atoi(id))
+	nf, err := u.i.FindNotificationByID(ctx, atoi(id))
 	if ent.IsNotFound(err) {
 		gb.ErrorResponse(c, http.StatusNotFound, "There is no notification.")
 		return
@@ -74,14 +67,14 @@ func (n *Noti) UpdateNotification(c *gin.Context) {
 		return
 	}
 
-	if nf.UserID != u.ID {
+	if nf.UserID != vu.ID {
 		gb.ErrorResponse(c, http.StatusForbidden, "There is no permission for the notification.")
 		return
 	}
 
 	if nf.Checked != p.Checked {
 		nf.Checked = p.Checked
-		if nf, err = n.i.UpdateNotification(ctx, nf); err != nil {
+		if nf, err = u.i.UpdateNotification(ctx, nf); err != nil {
 			gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to update the notification.")
 			return
 		}

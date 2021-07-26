@@ -24,7 +24,7 @@ func NewUser(i Interactor) *User {
 	}
 }
 
-func (u *User) Me(c *gin.Context) {
+func (u *User) GetMyUser(c *gin.Context) {
 	v, _ := c.Get(gb.KeyUser)
 	uv, _ := v.(*ent.User)
 

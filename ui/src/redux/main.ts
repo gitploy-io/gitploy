@@ -50,7 +50,7 @@ export const fetchNotifications = createAsyncThunk<Notification[], void, { state
     "main/fetchNotifications",
     async (_, { rejectWithValue }) => {
         try {
-            const notifications = await listNotifications(1, 30)
+            const notifications = await listNotifications()
             return notifications
         } catch (e) {
             return rejectWithValue(e)
