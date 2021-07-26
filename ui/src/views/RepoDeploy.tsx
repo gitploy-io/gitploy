@@ -37,11 +37,11 @@ export default function RepoDeploy(): JSX.Element {
         hasConfig, 
         envs, 
         branches, 
-        branchCheck,
+        branchStatuses,
         commits, 
-        commitCheck,
+        commitStatuses,
         tags, 
-        tagCheck,
+        tagStatuses,
         approvalEnabled,
         candidates,
         deploying } = useAppSelector(state => state.repoDeploy, shallowEqual)
@@ -145,15 +145,15 @@ export default function RepoDeploy(): JSX.Element {
                     branches={branches}
                     onSelectBranch={onSelectBranch}
                     onClickAddBranch={onClickAddBranch}
-                    branchCheck={branchCheck}
+                    branchStatuses={branchStatuses}
                     commits={commits}
                     onSelectCommit={onSelectCommit}
                     onClickAddCommit={onClickAddCommit}
-                    commitCheck={commitCheck}
+                    commitStatuses={commitStatuses}
                     tags={tags}
                     onSelectTag={onSelectTag}
                     onClickAddTag={onClickAddTag}
-                    tagCheck={tagCheck}
+                    tagStatuses={tagStatuses}
                     deploying={deploying === RequestStatus.Pending}
                     onClickDeploy={onClickDeploy} 
                     approvalEnabled={approvalEnabled}

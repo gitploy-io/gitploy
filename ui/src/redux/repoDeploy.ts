@@ -9,7 +9,7 @@ import {
     Commit, 
     Tag, 
     Config,
-    StatusState, 
+    Status,
     DeploymentType, 
     RequestStatus, 
     HttpNotFoundError 
@@ -41,13 +41,13 @@ interface RepoDeployState {
     envs: string[]
     type: DeploymentType | null
     branch: Branch | null
-    branchCheck: StatusState
+    branchStatuses: Status[]
     branches: Branch[]
     commit: Commit | null
-    commitCheck: StatusState
+    commitStatuses: Status[]
     commits: Commit[]
     tag: Tag | null
-    tagCheck: StatusState
+    tagStatuses: Status[]
     tags: Tag[]
     /**
      * Approval selecter.
@@ -69,13 +69,13 @@ const initialState: RepoDeployState = {
     envs: [],
     type: null,
     branch: null,
-    branchCheck: StatusState.Null,
+    branchStatuses: [],
     branches: [],
     commit: null,
-    commitCheck: StatusState.Null,
+    commitStatuses: [],
     commits: [],
     tag: null,
-    tagCheck: StatusState.Null,
+    tagStatuses: [],
     tags: [],
     approvalEnabled: false,
     approvers: [],
@@ -118,14 +118,14 @@ export const fetchBranches = createAsyncThunk<Branch[], void, { state: {repoDepl
     }
 )
 
-export const checkBranch = createAsyncThunk<StatusState, void, { state: {repoDeploy: RepoDeployState}}>(
+export const checkBranch = createAsyncThunk<Status[], void, { state: {repoDeploy: RepoDeployState}}>(
     "repoDeploy/checkBranch",
     async (_, { getState }) => {
         const { repo, branch } = getState().repoDeploy
         if (repo === null || branch === null) throw new Error("The repo and branch are not set.") 
 
-        const { state } = await listStatuses(repo.id, branch.commitSha)
-        return state
+        const { statuses } = await listStatuses(repo.id, branch.commitSha)
+        return statuses
     }
 )
 
@@ -161,14 +161,14 @@ export const fetchCommits = createAsyncThunk<Commit[], void, { state: {repoDeplo
     }
 )
 
-export const checkCommit = createAsyncThunk<StatusState, void, { state: {repoDeploy: RepoDeployState}}>(
+export const checkCommit = createAsyncThunk<Status[], void, { state: {repoDeploy: RepoDeployState}}>(
     "repoDeploy/checkCommit",
     async (_, { getState }) => {
         const { repo, commit } = getState().repoDeploy
         if (repo === null || commit === null) throw new Error("The repo and commit are not set.") 
 
-        const { state } = await listStatuses(repo.id, commit.sha)
-        return state
+        const { statuses } = await listStatuses(repo.id, commit.sha)
+        return statuses
     }
 )
 
@@ -203,14 +203,14 @@ export const fetchTags = createAsyncThunk<Tag[], void, { state: {repoDeploy: Rep
     }
 )
 
-export const checkTag = createAsyncThunk<StatusState, void, { state: {repoDeploy: RepoDeployState}}>(
+export const checkTag = createAsyncThunk<Status[], void, { state: {repoDeploy: RepoDeployState}}>(
     "repoDeploy/checkTag",
     async (_, { getState }) => {
         const { repo, tag } = getState().repoDeploy
         if (repo === null || tag === null) throw new Error("The repo and tag are not set.") 
 
-        const { state } = await listStatuses(repo.id, tag.commitSha)
-        return state
+        const { statuses } = await listStatuses(repo.id, tag.commitSha)
+        return statuses
     }
 )
 
@@ -356,7 +356,7 @@ export const repoDeploySlice = createSlice({
                 state.branches = action.payload
             })
             .addCase(checkBranch.fulfilled, (state, action) => {
-                state.branchCheck = action.payload
+                state.branchStatuses = action.payload
             })
             .addCase(addBranchManually.fulfilled, (state, action) => {
                 state.branches.unshift(action.payload)
@@ -365,7 +365,7 @@ export const repoDeploySlice = createSlice({
                 state.commits = action.payload
             })
             .addCase(checkCommit.fulfilled, (state, action) => {
-                state.commitCheck = action.payload
+                state.commitStatuses = action.payload
             })
             .addCase(addCommitManually.fulfilled, (state, action) => {
                 state.commits.unshift(action.payload)
@@ -374,7 +374,7 @@ export const repoDeploySlice = createSlice({
                 state.tags = action.payload
             })
             .addCase(checkTag.fulfilled, (state, action) => {
-                state.tagCheck = action.payload
+                state.tagStatuses = action.payload
             })
             .addCase(addTagManually.fulfilled, (state, action) => {
                 state.tags.unshift(action.payload)
