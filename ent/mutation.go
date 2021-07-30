@@ -995,22 +995,9 @@ func (m *ChatCallbackMutation) OldRepoID(ctx context.Context) (v string, err err
 	return oldValue.RepoID, nil
 }
 
-// ClearRepoID clears the value of the "repo_id" field.
-func (m *ChatCallbackMutation) ClearRepoID() {
-	m.repo = nil
-	m.clearedFields[chatcallback.FieldRepoID] = struct{}{}
-}
-
-// RepoIDCleared returns if the "repo_id" field was cleared in this mutation.
-func (m *ChatCallbackMutation) RepoIDCleared() bool {
-	_, ok := m.clearedFields[chatcallback.FieldRepoID]
-	return ok
-}
-
 // ResetRepoID resets all changes to the "repo_id" field.
 func (m *ChatCallbackMutation) ResetRepoID() {
 	m.repo = nil
-	delete(m.clearedFields, chatcallback.FieldRepoID)
 }
 
 // ClearChatUser clears the "chat_user" edge to the ChatUser entity.
@@ -1046,7 +1033,7 @@ func (m *ChatCallbackMutation) ClearRepo() {
 
 // RepoCleared reports if the "repo" edge to the Repo entity was cleared.
 func (m *ChatCallbackMutation) RepoCleared() bool {
-	return m.RepoIDCleared() || m.clearedrepo
+	return m.clearedrepo
 }
 
 // RepoIDs returns the "repo" edge IDs in the mutation.
@@ -1233,11 +1220,7 @@ func (m *ChatCallbackMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *ChatCallbackMutation) ClearedFields() []string {
-	var fields []string
-	if m.FieldCleared(chatcallback.FieldRepoID) {
-		fields = append(fields, chatcallback.FieldRepoID)
-	}
-	return fields
+	return nil
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -1250,11 +1233,6 @@ func (m *ChatCallbackMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *ChatCallbackMutation) ClearField(name string) error {
-	switch name {
-	case chatcallback.FieldRepoID:
-		m.ClearRepoID()
-		return nil
-	}
 	return fmt.Errorf("unknown ChatCallback nullable field %s", name)
 }
 
