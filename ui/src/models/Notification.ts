@@ -1,16 +1,22 @@
 export default interface Notification {
     id: number
     type: NotificationType
-    repoNamespace: string
-    repoName: string
-    deploymentNumber: number
-    deploymentType: string
-    deploymentRef: string
-    deploymentEnv: string
-    deploymentStatus: string
-    deploymentLogin: string
-    approvalStatus: string
-    approvalLogin: string
+    repo: {
+        namespace: string
+        name: string
+    }
+    deployment: {
+        number: number
+        type: string
+        ref: string
+        env: string
+        status: string
+        login: string
+    }
+    approval: {
+        status: string
+        login: string
+    }
     notified: boolean
     checked: boolean
     createdAt: Date

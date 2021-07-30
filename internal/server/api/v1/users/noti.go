@@ -3,6 +3,7 @@ package users
 import (
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
@@ -12,6 +13,37 @@ import (
 )
 
 type (
+	notificationData struct {
+		ID         int            `json:"id"`
+		Type       string         `json:"type"`
+		Repo       repoData       `json:"repo"`
+		Deployment deploymentData `json:"deployment"`
+		Approval   approvalData   `json:"approval"`
+		Notified   bool           `json:"notified"`
+		Checked    bool           `json:"checked"`
+		CreatedAt  time.Time      `json:"created_at"`
+		UpdatedAt  time.Time      `json:"updated_at"`
+	}
+
+	repoData struct {
+		Namespace string `json:"namespace"`
+		Name      string `json:"name"`
+	}
+
+	deploymentData struct {
+		Number int    `json:"number"`
+		Type   string `json:"type"`
+		Ref    string `json:"ref"`
+		Env    string `json:"env"`
+		Status string `json:"status"`
+		Login  string `json:"login"`
+	}
+
+	approvalData struct {
+		Status string `json:"status"`
+		Login  string `json:"login"`
+	}
+
 	notiPayload struct {
 		Checked bool `json:"checked"`
 	}
@@ -32,7 +64,12 @@ func (u *User) ListNotifications(c *gin.Context) {
 		return
 	}
 
-	gb.Response(c, http.StatusOK, ns)
+	ds := []notificationData{}
+	for _, n := range ns {
+		ds = append(ds, mapToNotificationData(n))
+	}
+
+	gb.Response(c, http.StatusOK, ds)
 }
 
 func (u *User) UpdateNotification(c *gin.Context) {
@@ -74,10 +111,37 @@ func (u *User) UpdateNotification(c *gin.Context) {
 		}
 	}
 
-	gb.Response(c, http.StatusOK, nf)
+	gb.Response(c, http.StatusOK, mapToNotificationData(nf))
 }
 
 func atoi(s string) int {
 	i, _ := strconv.Atoi(s)
 	return i
+}
+
+func mapToNotificationData(n *ent.Notification) notificationData {
+	return notificationData{
+		ID:   n.ID,
+		Type: string(n.Type),
+		Repo: repoData{
+			Namespace: n.RepoNamespace,
+			Name:      n.RepoName,
+		},
+		Deployment: deploymentData{
+			Number: n.DeploymentNumber,
+			Type:   n.DeploymentType,
+			Ref:    n.DeploymentRef,
+			Env:    n.DeploymentEnv,
+			Status: n.DeploymentStatus,
+			Login:  n.DeploymentLogin,
+		},
+		Approval: approvalData{
+			Status: n.ApprovalStatus,
+			Login:  n.ApprovalLogin,
+		},
+		Notified:  n.Notified,
+		Checked:   n.Checked,
+		CreatedAt: n.CreatedAt,
+		UpdatedAt: n.UpdatedAt,
+	}
 }

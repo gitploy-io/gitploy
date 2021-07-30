@@ -30,13 +30,13 @@ export default function NotificationList(props: NotificationListProps): JSX.Elem
 }
 
 function convertToNotificationLink(n: Notification): string {
-    return `/${n.repoNamespace}/${n.repoName}/deployments/${n.deploymentNumber}`
+    return `/${n.repo.namespace}/${n.repo.name}/deployments/${n.deployment.number}`
 }
 
 function convertToNotificationTitle(n: Notification): string {
     switch (n.type) {
         case NotificationType.Deployment:
-            return `New Deployment #${n.deploymentNumber}`
+            return `New Deployment #${n.deployment.number}`
         case NotificationType.ApprovalRequested:
             return `Approval Requested`
         case NotificationType.ApprovalResponded:
@@ -47,10 +47,10 @@ function convertToNotificationTitle(n: Notification): string {
 function convertToNotificationMessage(n: Notification): string {
     switch (n.type) {
         case NotificationType.Deployment:
-            return `${n.repoNamespace}/${n.repoName} - ${n.deploymentLogin} has deployed to ${n.deploymentEnv} environment ${moment(n.createdAt).fromNow()}`
+            return `${n.repo.namespace}/${n.repo.name} - ${n.deployment.login} has deployed to ${n.deployment.env} environment ${moment(n.createdAt).fromNow()}`
         case NotificationType.ApprovalRequested:
-            return `${n.repoNamespace}/${n.repoName} - ${n.deploymentLogin} has requested the approval for the deployment(#${n.deploymentNumber}) ${moment(n.createdAt).fromNow()}.`
+            return `${n.repo.namespace}/${n.repo.name} - ${n.deployment.login} has requested the approval for the deployment(#${n.deployment.number}) ${moment(n.createdAt).fromNow()}.`
         case NotificationType.ApprovalResponded:
-            return `${n.repoNamespace}/${n.repoName} - ${n.approvalLogin} has responded the approval of the deployment(#${n.deploymentNumber}) ${moment(n.createdAt).fromNow()}.`
+            return `${n.repo.namespace}/${n.repo.name} - ${n.approval.login} has responded the approval of the deployment(#${n.deployment.number}) ${moment(n.createdAt).fromNow()}.`
     }
 }
