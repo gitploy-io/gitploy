@@ -12,20 +12,12 @@ import (
 )
 
 const (
-	eventStream = "gitploy:stream"
-	eventChat   = "gitploy:chat"
+	eventNotification = "gitploy:notification"
 )
 
 func (i *Interactor) polling(stop <-chan struct{}) {
 	ctx := context.Background()
 	log := i.log.Named("polling")
-
-	// Subscribe events to notify by Chat.
-	i.events.SubscribeAsync(eventChat, func(cu *ent.ChatUser, n *ent.Notification) {
-		if err := i.Chat.Notify(ctx, cu, n); err != nil {
-			i.log.Error("failed to notify by chat.", zap.Error(err))
-		}
-	}, false)
 
 	// polling with the random period to escape the conflict; 3s - 4s
 	ticker := time.NewTicker(time.Millisecond * 100 * time.Duration(randint(30, 40)))
@@ -66,12 +58,7 @@ func (i *Interactor) publish(ctx context.Context, n *ent.Notification) error {
 		return err
 	}
 
-	if cu := u.Edges.ChatUser; cu != nil {
-		i.events.Publish(eventChat, cu, n)
-		n, _ = i.setNotificationNotified(ctx, n)
-	}
-
-	i.events.Publish(eventStream, u, n)
+	i.events.Publish(eventNotification, u, n)
 	i.setNotificationNotified(ctx, n)
 	return nil
 }
@@ -171,11 +158,11 @@ func (i *Interactor) PublishApprovalResponded(ctx context.Context, r *ent.Repo, 
 }
 
 func (i *Interactor) Subscribe(fn func(u *ent.User, n *ent.Notification)) error {
-	return i.events.SubscribeAsync(eventStream, fn, false)
+	return i.events.SubscribeAsync(eventNotification, fn, false)
 }
 
 func (i *Interactor) Unsubscribe(fn func(u *ent.User, n *ent.Notification)) error {
-	return i.events.Unsubscribe(eventStream, fn)
+	return i.events.Unsubscribe(eventNotification, fn)
 }
 
 func randint(min, max int64) int64 {
