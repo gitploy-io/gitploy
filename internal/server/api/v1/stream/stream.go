@@ -34,13 +34,20 @@ func (s *Stream) GetNotification(c *gin.Context) {
 	debugID := randstr()
 	s.log.Debug("create a stream.", zap.String("debug_id", debugID))
 
-	notifications := make(chan *ent.Notification, 10)
+	notifications := make(chan ent.Notification, 10)
 
-	// subscribe notification events
+	// Subscribe notification events
 	// it'll unsubscribe after the connection is closed.
 	sub := func(u *ent.User, n *ent.Notification) {
+		var vn ent.Notification = *n
+
+		// It is notified by Chat if user has connected with chat.
+		if u.Edges.ChatUser != nil {
+			vn.Notified = true
+		}
+
 		if me.ID == u.ID {
-			notifications <- n
+			notifications <- vn
 		}
 	}
 	if err := s.i.Subscribe(sub); err != nil {

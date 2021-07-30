@@ -13,7 +13,6 @@ import (
 	"github.com/hanjunlee/gitploy/ent/migrate"
 	"github.com/hanjunlee/gitploy/internal/interactor"
 	"github.com/hanjunlee/gitploy/internal/pkg/github"
-	"github.com/hanjunlee/gitploy/internal/pkg/slack"
 	"github.com/hanjunlee/gitploy/internal/pkg/store"
 	"github.com/hanjunlee/gitploy/internal/server"
 
@@ -57,7 +56,7 @@ func newRouterConfig(c *Config) *server.RouterConfig {
 		ServerConfig: newServerConfig(c),
 		SCMConfig:    newSCMConfig(c),
 		ChatConfig:   newChatConfig(c),
-		Interactor:   interactor.NewInteractor(newStore(c), newSCM(c), newChat(c)),
+		Interactor:   interactor.NewInteractor(newStore(c), newSCM(c)),
 	}
 }
 
@@ -140,17 +139,4 @@ func newSCM(c *Config) interactor.SCM {
 	}
 
 	return scm
-}
-
-func newChat(c *Config) interactor.Chat {
-	var chat interactor.Chat
-
-	if c.isSlackEnabled() {
-		chat = slack.NewSlack()
-	} else {
-		// To escape runtime error for nil pointer dereference.
-		chat = interactor.NewFakeChat()
-	}
-
-	return chat
 }

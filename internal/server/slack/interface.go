@@ -28,6 +28,7 @@ type (
 		GetConfig(ctx context.Context, u *ent.User, r *ent.Repo) (*vo.Config, error)
 
 		PublishDeployment(ctx context.Context, r *ent.Repo, d *ent.Deployment) error
+		Subscribe(func(*ent.User, *ent.Notification)) error
 
 		GetBranch(ctx context.Context, u *ent.User, r *ent.Repo, branch string) (*vo.Branch, error)
 		GetTag(ctx context.Context, u *ent.User, r *ent.Repo, tag string) (*vo.Tag, error)

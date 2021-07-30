@@ -1,6 +1,7 @@
 package slack
 
 import (
+	"context"
 	"math/rand"
 	"net/http"
 	"strconv"
@@ -23,6 +24,13 @@ type (
 )
 
 func NewSlack(c *oauth2.Config, i Interactor) *Slack {
+	i.Subscribe(func(u *ent.User, n *ent.Notification) {
+		if cu := u.Edges.ChatUser; cu != nil {
+			ctx := context.Background()
+			Notify(ctx, cu, n)
+		}
+	})
+
 	return &Slack{
 		c:   c,
 		i:   i,

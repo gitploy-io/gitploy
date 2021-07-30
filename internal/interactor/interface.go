@@ -82,8 +82,4 @@ type (
 		ListTags(ctx context.Context, u *ent.User, r *ent.Repo, page, perPage int) ([]*vo.Tag, error)
 		GetTag(ctx context.Context, u *ent.User, r *ent.Repo, tag string) (*vo.Tag, error)
 	}
-
-	Chat interface {
-		Notify(ctx context.Context, cu *ent.ChatUser, n *ent.Notification) error
-	}
 )

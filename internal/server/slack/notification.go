@@ -19,19 +19,23 @@ const (
 	colorRed    = "#f5222d"
 )
 
-func (s *Slack) Notify(ctx context.Context, cu *ent.ChatUser, n *ent.Notification) error {
+func NewClient(cu *ent.ChatUser) *slack.Client {
+	return slack.New(cu.BotToken)
+}
+
+func Notify(ctx context.Context, cu *ent.ChatUser, n *ent.Notification) error {
 	if n.Type == notification.TypeDeployment {
-		return s.notifyDeploymentCreated(ctx, cu, n)
+		return notifyDeploymentCreated(ctx, cu, n)
 	} else if n.Type == notification.TypeApprovalRequested {
-		return s.notifyApprovalRequested(ctx, cu, n)
+		return notifyApprovalRequested(ctx, cu, n)
 	} else if n.Type == notification.TypeApprovalResponded {
-		return s.notifyApprovalResponded(ctx, cu, n)
+		return notifyApprovalResponded(ctx, cu, n)
 	}
 
 	return fmt.Errorf("type have to be one of \"deployment_created\".")
 }
 
-func (s *Slack) notifyDeploymentCreated(ctx context.Context, cu *ent.ChatUser, n *ent.Notification) error {
+func notifyDeploymentCreated(ctx context.Context, cu *ent.ChatUser, n *ent.Notification) error {
 	fullname := fmt.Sprintf("%s/%s", n.RepoNamespace, n.RepoName)
 
 	var ref string
@@ -41,7 +45,8 @@ func (s *Slack) notifyDeploymentCreated(ctx context.Context, cu *ent.ChatUser, n
 		ref = n.DeploymentRef
 	}
 
-	_, _, err := s.Client(cu).
+	client := NewClient(cu)
+	_, _, err := client.
 		PostMessageContext(ctx, cu.ID, slack.MsgOptionAttachments(slack.Attachment{
 			Color: mapDeploymentStatusToColor(n.DeploymentStatus),
 			Blocks: slack.Blocks{
@@ -67,9 +72,11 @@ func (s *Slack) notifyDeploymentCreated(ctx context.Context, cu *ent.ChatUser, n
 	return err
 }
 
-func (s *Slack) notifyApprovalRequested(ctx context.Context, cu *ent.ChatUser, n *ent.Notification) error {
+func notifyApprovalRequested(ctx context.Context, cu *ent.ChatUser, n *ent.Notification) error {
 	fullName := fmt.Sprintf("%s/%s", n.RepoNamespace, n.RepoName)
-	_, _, err := s.Client(cu).
+	client := NewClient(cu)
+
+	_, _, err := client.
 		PostMessageContext(ctx, cu.ID, slack.MsgOptionAttachments(slack.Attachment{
 			Color: colorPurple,
 			Blocks: slack.Blocks{
@@ -95,7 +102,7 @@ func (s *Slack) notifyApprovalRequested(ctx context.Context, cu *ent.ChatUser, n
 	return err
 }
 
-func (s *Slack) notifyApprovalResponded(ctx context.Context, cu *ent.ChatUser, n *ent.Notification) error {
+func notifyApprovalResponded(ctx context.Context, cu *ent.ChatUser, n *ent.Notification) error {
 	fullName := fmt.Sprintf("%s/%s", n.RepoNamespace, n.RepoName)
 
 	// Verb used in the message.
@@ -106,7 +113,8 @@ func (s *Slack) notifyApprovalResponded(ctx context.Context, cu *ent.ChatUser, n
 		action = "declined"
 	}
 
-	_, _, err := s.Client(cu).
+	client := NewClient(cu)
+	_, _, err := client.
 		PostMessageContext(ctx, cu.ID, slack.MsgOptionAttachments(slack.Attachment{
 			Color: colorPurple,
 			Blocks: slack.Blocks{
