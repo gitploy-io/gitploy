@@ -1226,32 +1226,41 @@ components:
     Notification:
       type: object
       properties:
+        id:
+          type: number
         type:
           type: string
           enum:
             - deployment
             - approval_requested
             - approval_responded
-        repo_namespace:
-          type: string
-        repo_name:
-          type: string
-        deployment_number:
-          type: number
-        deployment_type:
-          type: string
-        deployment_ref:
-          type: string
-        deployment_env:
-          type: string
-        deployment_status:
-          type: string
-        deployment_login:
-          type: string
-        approval_status:
-          type: string
-        approval_login:
-          type: string
+        repo:
+          type: object
+          properties:
+            namespace:
+              type: string
+            name:
+              type: string
+        deployment:
+          type: object
+          properties:
+            number:
+              type: string
+            type:
+              type: string
+            ref:
+              type: string
+            status:
+              type: string
+            login:
+              type: string
+        approval:
+          type: object
+          properties:
+            status:
+              type: string
+            login:
+              type: string
         notified:
           type: boolean
           description: notified means it is notified by Chat or browser

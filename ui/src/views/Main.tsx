@@ -163,11 +163,11 @@ function notify(n: NotificationData) {
 function convertToNotificationMessage(n: NotificationData): string {
     switch (n.type) {
         case NotificationType.Deployment:
-            return `New Deployment #${n.deploymentNumber}\n ${n.repoNamespace}/${n.repoName} - ${n.deploymentLogin} has deployed to ${n.deploymentEnv} environment.`
+            return `New Deployment #${n.deployment.number}\n ${n.repo.namespace}/${n.repo.name} - ${n.deployment.login} has deployed to ${n.deployment.env} environment.`
         case NotificationType.ApprovalRequested:
-            return `Approval Requested\n - ${n.repoNamespace}/${n.repoName} - ${n.deploymentLogin} has requested the approval for the deployment(#${n.deploymentNumber}).`
+            return `Approval Requested\n - ${n.repo.namespace}/${n.repo.name} - ${n.deployment.login} has requested the approval for the deployment(#${n.deployment.number}).`
         case NotificationType.ApprovalResponded:
-            return `Approval Responded\n - ${n.repoNamespace}/${n.repoName} - ${n.approvalLogin} has responded the approval of the deployment(#${n.deploymentNumber}).`
+            return `Approval Responded\n - ${n.repo.namespace}/${n.repo.name} - ${n.approval.login} has responded the approval of the deployment(#${n.deployment.number}).`
         default:
             return "New Event"
     }

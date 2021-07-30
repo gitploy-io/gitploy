@@ -5,16 +5,22 @@ import { Notification as Noti, NotificationType } from "../models"
 interface NotificationData {
     id: number
     type: string
-    repo_namespace: string
-    repo_name: string
-    deployment_number: number
-    deployment_type: string
-    deployment_ref: string
-    deployment_env: string
-    deployment_status: string
-    deployment_login: string
-    approval_status: string
-    approval_login: string
+    repo: {
+        namespace: string
+        name: string
+    }
+    deployment: {
+        number: number
+        type: string
+        ref: string
+        env: string
+        status: string
+        login: string
+    }
+    approval: {
+        status: string
+        login: string
+    }
     notified: boolean
     checked: boolean
     created_at: string
@@ -40,16 +46,22 @@ const mapDataToNotification = (data: NotificationData): Noti => {
     return { 
         id: data.id,
         type, 
-        repoNamespace: data.repo_namespace,
-        repoName: data.repo_name,
-        deploymentNumber: data.deployment_number,
-        deploymentType: data.deployment_type,
-        deploymentRef: data.deployment_ref,
-        deploymentEnv: data.deployment_env,
-        deploymentStatus: data.deployment_status,
-        deploymentLogin: data.deployment_login,
-        approvalStatus: data.approval_status,
-        approvalLogin: data.approval_login,
+        repo: {
+            namespace: data.repo.namespace,
+            name: data.repo.name
+        },
+        deployment: {
+            number: data.deployment.number,
+            type: data.deployment.type,
+            ref: data.deployment.ref,
+            env: data.deployment.env,
+            status: data.deployment.status,
+            login: data.deployment.login,
+        },
+        approval: {
+            status: data.approval.status,
+            login: data.approval.login,
+        },
         notified: data.notified,
         checked: data.checked,
         createdAt: new Date(data.created_at),
