@@ -8,7 +8,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hanjunlee/gitploy/ent"
 	"github.com/hanjunlee/gitploy/ent/chatcallback"
-	"github.com/hanjunlee/gitploy/vo"
 	"github.com/slack-go/slack"
 	"go.uber.org/zap"
 	"golang.org/x/oauth2"
@@ -30,15 +29,6 @@ type (
 		ServerProto string
 		*oauth2.Config
 		Interactor
-	}
-
-	ErrorsPayload struct {
-		Errors []ErrorPayload `json:"errors"`
-	}
-
-	ErrorPayload struct {
-		Name  string `json:"name"`
-		Error string `json:"error"`
 	}
 )
 
@@ -64,39 +54,24 @@ func NewSlack(c *SlackConfig) *Slack {
 // Cmd handles Slash command of Slack.
 // https://api.slack.com/interactivity/slash-commands
 func (s *Slack) Cmd(c *gin.Context) {
-	ctx := c.Request.Context()
-
 	cmd, err := slack.SlashCommandParse(c.Request)
 	if err != nil {
-		s.log.Error("failed to parse the command.", zap.Error(err))
+		s.log.Error("It has failed to parse the command.", zap.Error(err))
 		c.Status(http.StatusInternalServerError)
 		return
 	}
 
-	t := strings.TrimSpace(cmd.Text)
-
-	var handleErr error
-	if strings.HasPrefix(t, "deploy ") {
-		handleErr = s.handleDeployCmd(ctx, cmd)
-	} else if strings.HasPrefix(t, "rollback ") {
-		handleErr = s.handleRollbackCmd(ctx, cmd)
-	} else if strings.HasPrefix(t, "help") {
-		s.handleHelpCmd(ctx, cmd)
+	args := strings.Split(cmd.Text, " ")
+	if args[0] == "deploy" && len(args) == 2 {
+		s.handleDeployCmd(c)
+	} else if args[0] == "rollback" && len(args) == 2 {
+		s.handleRollbackCmd(c)
 	} else {
-		s.handleHelpCmd(ctx, cmd)
+		s.handleHelpCmd(cmd.ChannelID, cmd.ResponseURL)
 	}
-
-	if handleErr != nil {
-		s.log.Error("It has failed to handle the command: %s", zap.Error(err))
-		c.Status(http.StatusInternalServerError)
-		return
-	}
-
-	s.log.Debug("It has handled the command successfully.", zap.String("command", cmd.Command))
-	c.Status(http.StatusOK)
 }
 
-func (s *Slack) handleHelpCmd(ctx context.Context, cmd slack.SlashCommand) {
+func (s *Slack) handleHelpCmd(channelID, responseURL string) {
 	msg := strings.Join([]string{
 		"Below are the commands you can use:",
 		"",
@@ -106,89 +81,61 @@ func (s *Slack) handleHelpCmd(ctx context.Context, cmd slack.SlashCommand) {
 		"*Rollback*",
 		"`/gitploy rollback OWNER/REPO` - Rollback by the deployment for OWNER/REPO.",
 	}, "\n")
-	responseMessage(cmd, msg)
+
+	responseMessage(channelID, responseURL, msg)
 }
 
-func responseMessage(obj interface{}, message string) {
-	var (
-		channelID   string
-		responseURL string
-	)
-	switch i := obj.(type) {
-	case slack.SlashCommand:
-		channelID = i.ChannelID
-		responseURL = i.ResponseURL
-	case slack.InteractionCallback:
-		channelID = i.Channel.ID
-		responseURL = i.ResponseURL
-	}
-
-	client := slack.New("")
-	client.SendMessage(channelID, slack.MsgOptionText(message, true), slack.MsgOptionResponseURL(responseURL, "ephemeral"))
+func responseMessage(channelID, responseURL, message string) {
+	slack.New("").
+		SendMessage(channelID, slack.MsgOptionResponseURL(responseURL, "ephemeral"), slack.MsgOptionText(message, true))
 }
 
 // Interact interacts interactive components (dialog, button).
 func (s *Slack) Interact(c *gin.Context) {
 	ctx := c.Request.Context()
 
-	c.Request.ParseForm()
-	payload := c.Request.PostForm.Get("payload")
-
-	scb := slack.InteractionCallback{}
-	err := scb.UnmarshalJSON([]byte(payload))
+	itr, err := s.InteractionCallbackParse(c.Request)
 	if err != nil {
-		s.log.Error("failed to unmarshal.", zap.Error(err))
+		s.log.Error("It has failed to parse the interaction callback.", zap.Error(err))
 		c.Status(http.StatusInternalServerError)
 		return
 	}
 
-	if scb.Type == slack.InteractionTypeDialogCancellation {
+	if itr.Type == slack.InteractionTypeDialogCancellation {
 		c.Status(http.StatusOK)
 		return
 	}
 
-	// Trim backticked double quote for string type.
-	// https://github.com/slack-go/slack/issues/816
-	state := strings.Trim(scb.State, "\"")
-
-	cb, err := s.i.FindChatCallbackByState(ctx, state)
+	cb, err := s.i.FindChatCallbackByState(ctx, itr.State)
 	if ent.IsNotFound(err) {
-		responseMessage(scb, "The callback is not found. You can interact with Slack by only `/gitploy`.")
+		responseMessage(itr.Channel.ID, itr.ResponseURL, "The callback is not found. You can interact with Slack by only `/gitploy`.")
 		c.Status(http.StatusOK)
 		return
 	} else if err != nil {
-		s.log.Error("failed to find the callback.", zap.Error(err))
+		s.log.Error("It has failed to find the callback.", zap.Error(err))
 		c.Status(http.StatusInternalServerError)
 		return
 	}
 
 	defer s.i.CloseChatCallback(ctx, cb)
-
-	var interactErr error
 	if cb.Type == chatcallback.TypeDeploy {
-		// It responds with the errors payload if the REF is not found.
-		// https://api.slack.com/dialogs#submit__input-validation
-		if interactErr = s.interactDeploy(c, scb, cb); vo.IsRefNotFoundError(err) {
-			c.JSON(http.StatusOK, ErrorsPayload{
-				Errors: []ErrorPayload{
-					{
-						Name:  "ref",
-						Error: "The reference is not found.",
-					},
-				},
-			})
-			return
-		}
+		s.interactDeploy(c)
 	} else if cb.Type == chatcallback.TypeRollback {
-		interactErr = s.interactRollback(c, scb, cb)
+		s.interactRollback(c)
 	}
+}
 
-	if interactErr != nil {
-		s.log.Error("It has failed to interact the component: %s", zap.Error(err))
-		c.Status(http.StatusInternalServerError)
-		return
-	}
+func (s *Slack) InteractionCallbackParse(r *http.Request) (slack.InteractionCallback, error) {
+	r.ParseForm()
+	payload := r.PostForm.Get("payload")
 
-	s.log.Debug("interact the component successfully.", zap.String("type", string(cb.Type)))
-	c.Status(http.StatusOK)
+	scb := slack.InteractionCallback{}
+	err := scb.UnmarshalJSON([]byte(payload))
+
+	// Trim backticked double quote for string type.
+	// https://github.com/slack-go/slack/issues/816
+	state := strings.Trim(scb.State, "\"")
+	scb.State = state
+
+	return scb, err
 }
