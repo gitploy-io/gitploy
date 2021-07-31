@@ -30,6 +30,7 @@ type (
 		PublishDeployment(ctx context.Context, r *ent.Repo, d *ent.Deployment) error
 		Subscribe(func(*ent.User, *ent.Notification)) error
 
+		GetCommit(ctx context.Context, u *ent.User, r *ent.Repo, sha string) (*vo.Commit, error)
 		GetBranch(ctx context.Context, u *ent.User, r *ent.Repo, branch string) (*vo.Branch, error)
 		GetTag(ctx context.Context, u *ent.User, r *ent.Repo, tag string) (*vo.Tag, error)
 	}

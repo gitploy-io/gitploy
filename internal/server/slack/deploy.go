@@ -220,23 +220,29 @@ func createDeployDialogElement(c *vo.Config) []slack.DialogElement {
 }
 
 func (s *Slack) getCommitSha(ctx context.Context, u *ent.User, re *ent.Repo, typ, ref string) (string, error) {
-	if typ == "commit" {
-		return ref, nil
-	} else if typ == "branch" {
+	switch typ {
+	case "commit":
+		c, err := s.i.GetCommit(ctx, u, re, ref)
+		if err != nil {
+			return "", err
+		}
+
+		return c.Sha, nil
+	case "branch":
 		b, err := s.i.GetBranch(ctx, u, re, ref)
 		if err != nil {
 			return "", err
 		}
 
 		return b.CommitSha, nil
-	} else if typ == "tag" {
+	case "tag":
 		t, err := s.i.GetTag(ctx, u, re, ref)
 		if err != nil {
 			return "", err
 		}
 
 		return t.CommitSha, nil
+	default:
+		return "", fmt.Errorf("Type must be one of commit, branch, tag.")
 	}
-
-	return "", fmt.Errorf("Type must be one of commit, branch, tag.")
 }
