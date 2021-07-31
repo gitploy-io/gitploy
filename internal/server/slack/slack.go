@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hanjunlee/gitploy/ent"
 	"github.com/hanjunlee/gitploy/ent/chatcallback"
+	"github.com/hanjunlee/gitploy/vo"
 	"github.com/slack-go/slack"
 	"go.uber.org/zap"
 	"golang.org/x/oauth2"
@@ -29,6 +30,15 @@ type (
 		ServerProto string
 		*oauth2.Config
 		Interactor
+	}
+
+	ErrorsPayload struct {
+		Errors []ErrorPayload `json:"errors"`
+	}
+
+	ErrorPayload struct {
+		Name  string `json:"name"`
+		Error string `json:"error"`
 	}
 )
 
@@ -156,7 +166,19 @@ func (s *Slack) Interact(c *gin.Context) {
 
 	var interactErr error
 	if cb.Type == chatcallback.TypeDeploy {
-		interactErr = s.interactDeploy(c, scb, cb)
+		// It responds with the errors payload if the REF is not found.
+		// https://api.slack.com/dialogs#submit__input-validation
+		if interactErr = s.interactDeploy(c, scb, cb); vo.IsRefNotFoundError(err) {
+			c.JSON(http.StatusOK, ErrorsPayload{
+				Errors: []ErrorPayload{
+					{
+						Name:  "ref",
+						Error: "The reference is not found.",
+					},
+				},
+			})
+			return
+		}
 	} else if cb.Type == chatcallback.TypeRollback {
 		interactErr = s.interactRollback(c, scb, cb)
 	}
