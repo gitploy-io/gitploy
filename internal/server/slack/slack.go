@@ -15,25 +15,40 @@ import (
 
 type (
 	Slack struct {
-		i   Interactor
-		c   *oauth2.Config
+		host  string
+		proto string
+
+		c *oauth2.Config
+		i Interactor
+
 		log *zap.Logger
+	}
+
+	SlackConfig struct {
+		ServerHost  string
+		ServerProto string
+		*oauth2.Config
+		Interactor
 	}
 )
 
-func NewSlack(c *oauth2.Config, i Interactor) *Slack {
-	i.Subscribe(func(u *ent.User, n *ent.Notification) {
+func NewSlack(c *SlackConfig) *Slack {
+	s := &Slack{
+		host:  c.ServerHost,
+		proto: c.ServerProto,
+		c:     c.Config,
+		i:     c.Interactor,
+		log:   zap.L().Named("slack"),
+	}
+
+	s.i.Subscribe(func(u *ent.User, n *ent.Notification) {
 		if cu := u.Edges.ChatUser; cu != nil {
 			ctx := context.Background()
-			Notify(ctx, cu, n)
+			s.Notify(ctx, cu, n)
 		}
 	})
 
-	return &Slack{
-		c:   c,
-		i:   i,
-		log: zap.L().Named("slack"),
-	}
+	return s
 }
 
 // Cmd handles Slash command of Slack.

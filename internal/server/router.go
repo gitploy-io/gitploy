@@ -142,11 +142,12 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 		repov1.GET("/:id/config", rm.ReadPerm(), r.GetConfig)
 	}
 
+	userv1 := v1.Group("/user")
 	{
 		u := users.NewUser(c.Interactor)
-		v1.GET("/user", u.GetMyUser)
-		v1.GET("/user/notifications", u.ListNotifications)
-		v1.GET("/user/notificaitons/:id", u.UpdateNotification)
+		userv1.GET("", u.GetMyUser)
+		userv1.GET("/notifications", u.ListNotifications)
+		userv1.PATCH("/notifications/:id", u.UpdateNotification)
 	}
 
 	streamv1 := v1.Group("/stream")
@@ -168,7 +169,12 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 		slackapi := r.Group("/slack")
 		{
 			m := s.NewSlackMiddleware(c.ChatConfig.Secret)
-			slack := s.NewSlack(newSlackOauthConfig(c), c.Interactor)
+			slack := s.NewSlack(&s.SlackConfig{
+				ServerHost:  c.Host,
+				ServerProto: c.Proto,
+				Config:      newSlackOauthConfig(c),
+				Interactor:  c.Interactor,
+			})
 			slackapi.GET("", slack.Index)
 			slackapi.GET("/signin", slack.SigninSlack)
 			slackapi.POST("/interact", m.Verify(), slack.Interact)

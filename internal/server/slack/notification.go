@@ -19,129 +19,90 @@ const (
 	colorRed    = "#f5222d"
 )
 
-func NewClient(cu *ent.ChatUser) *slack.Client {
-	return slack.New(cu.BotToken)
-}
-
-func Notify(ctx context.Context, cu *ent.ChatUser, n *ent.Notification) error {
+func (s *Slack) Notify(ctx context.Context, cu *ent.ChatUser, n *ent.Notification) error {
 	if n.Type == notification.TypeDeployment {
-		return notifyDeploymentCreated(ctx, cu, n)
+		return s.notifyDeploymentCreated(ctx, cu, n)
 	} else if n.Type == notification.TypeApprovalRequested {
-		return notifyApprovalRequested(ctx, cu, n)
+		return s.notifyApprovalRequested(ctx, cu, n)
 	} else if n.Type == notification.TypeApprovalResponded {
-		return notifyApprovalResponded(ctx, cu, n)
+		return s.notifyApprovalResponded(ctx, cu, n)
 	}
 
 	return fmt.Errorf("type have to be one of \"deployment_created\".")
 }
 
-func notifyDeploymentCreated(ctx context.Context, cu *ent.ChatUser, n *ent.Notification) error {
-	fullname := fmt.Sprintf("%s/%s", n.RepoNamespace, n.RepoName)
+func (s *Slack) notifyDeploymentCreated(ctx context.Context, cu *ent.ChatUser, n *ent.Notification) error {
+	var (
+		repoName = fmt.Sprintf("%s/%s", n.RepoNamespace, n.RepoName)
+		number   = n.DeploymentNumber
+		ref      = n.DeploymentRef
+		env      = n.DeploymentEnv
+		deployer = n.DeploymentLogin
+		link     = s.buildLink(n)
+	)
 
-	var ref string
 	if n.DeploymentType == string(deployment.TypeCommit) {
 		ref = n.DeploymentRef[:7]
-	} else {
-		ref = n.DeploymentRef
 	}
 
-	client := NewClient(cu)
+	client := slack.New(cu.BotToken)
 	_, _, err := client.
 		PostMessageContext(ctx, cu.ID, slack.MsgOptionAttachments(slack.Attachment{
-			Color: mapDeploymentStatusToColor(n.DeploymentStatus),
-			Blocks: slack.Blocks{
-				BlockSet: []slack.Block{
-					slack.SectionBlock{
-						Type: slack.MBTSection,
-						Text: &slack.TextBlockObject{
-							Type: slack.MarkdownType,
-							Text: fmt.Sprintf("*New Deployment #%d*", n.DeploymentNumber),
-						},
-					},
-					slack.SectionBlock{
-						Type: slack.MBTSection,
-						Text: &slack.TextBlockObject{
-							Type: slack.MarkdownType,
-							Text: fmt.Sprintf("*%s* - %s deploy `%s` to `%s` environment.", fullname, n.DeploymentLogin, ref, n.DeploymentEnv),
-						},
-					},
-				},
-			},
+			Color:   mapDeploymentStatusToColor(deployment.Status(n.DeploymentStatus)),
+			Pretext: fmt.Sprintf("*New Deployment #%d*", number),
+			Text:    fmt.Sprintf("*%s* deploys `%s` to the `%s` environment of `%s`. <%s|• View Details> ", deployer, ref, env, repoName, link),
 		}))
 
 	return err
 }
 
-func notifyApprovalRequested(ctx context.Context, cu *ent.ChatUser, n *ent.Notification) error {
-	fullName := fmt.Sprintf("%s/%s", n.RepoNamespace, n.RepoName)
-	client := NewClient(cu)
+func (s *Slack) notifyApprovalRequested(ctx context.Context, cu *ent.ChatUser, n *ent.Notification) error {
+	var (
+		repoName = fmt.Sprintf("%s/%s", n.RepoNamespace, n.RepoName)
+		number   = n.DeploymentNumber
+		approver = n.ApprovalLogin
+		link     = s.buildLink(n)
+	)
+
+	client := slack.New(cu.BotToken)
 
 	_, _, err := client.
 		PostMessageContext(ctx, cu.ID, slack.MsgOptionAttachments(slack.Attachment{
-			Color: colorPurple,
-			Blocks: slack.Blocks{
-				BlockSet: []slack.Block{
-					slack.SectionBlock{
-						Type: slack.MBTSection,
-						Text: &slack.TextBlockObject{
-							Type: slack.MarkdownType,
-							Text: "*Approval Requested*",
-						},
-					},
-					slack.SectionBlock{
-						Type: slack.MBTSection,
-						Text: &slack.TextBlockObject{
-							Type: slack.MarkdownType,
-							Text: fmt.Sprintf("*%s* - %s has requested the approval for the deployment(#%d).", fullName, n.DeploymentLogin, n.DeploymentNumber),
-						},
-					},
-				},
-			},
+			Color:   colorPurple,
+			Pretext: "*Approval Requested*",
+			Text:    fmt.Sprintf("%s has requested the approval for the deployment <%s|#%d> of `%s`.", approver, link, number, repoName),
 		}))
 
 	return err
 }
 
-func notifyApprovalResponded(ctx context.Context, cu *ent.ChatUser, n *ent.Notification) error {
-	fullName := fmt.Sprintf("%s/%s", n.RepoNamespace, n.RepoName)
+func (s *Slack) notifyApprovalResponded(ctx context.Context, cu *ent.ChatUser, n *ent.Notification) error {
+	var (
+		repoName = fmt.Sprintf("%s/%s", n.RepoNamespace, n.RepoName)
+		number   = n.DeploymentNumber
+		action   = string(n.ApprovalStatus)
+		approver = n.ApprovalLogin
+		link     = s.buildLink(n)
+	)
 
-	// Verb used in the message.
-	var action string
-	if n.ApprovalStatus == string(approval.StatusApproved) {
-		action = "approved"
-	} else {
-		action = "declined"
-	}
+	client := slack.New(cu.BotToken)
 
-	client := NewClient(cu)
 	_, _, err := client.
 		PostMessageContext(ctx, cu.ID, slack.MsgOptionAttachments(slack.Attachment{
-			Color: colorPurple,
-			Blocks: slack.Blocks{
-				BlockSet: []slack.Block{
-					slack.SectionBlock{
-						Type: slack.MBTSection,
-						Text: &slack.TextBlockObject{
-							Type: slack.MarkdownType,
-							Text: "*Approval Requested*",
-						},
-					},
-					slack.SectionBlock{
-						Type: slack.MBTSection,
-						Text: &slack.TextBlockObject{
-							Type: slack.MarkdownType,
-							Text: fmt.Sprintf("*%s* - %s has *%s* the deployment(#%d.)", fullName, n.ApprovalLogin, action, n.DeploymentNumber),
-						},
-					},
-				},
-			},
+			Color:   mapApprovalStatusToColor(approval.Status(n.ApprovalStatus)),
+			Pretext: "*Approval Responded*",
+			Text:    fmt.Sprintf("%s has *%s* for the deployment <%s|#%d> of `%s`.", approver, action, link, number, repoName),
 		}))
 
 	return err
 }
 
-func mapDeploymentStatusToColor(status string) string {
-	switch deployment.Status(status) {
+func (s *Slack) buildLink(n *ent.Notification) string {
+	return fmt.Sprintf("%s://%s/%s/%s/deployments/%d", s.proto, s.host, n.RepoNamespace, n.RepoName, n.DeploymentNumber)
+}
+
+func mapDeploymentStatusToColor(status deployment.Status) string {
+	switch status {
 	case deployment.StatusWaiting:
 		return colorGray
 	case deployment.StatusCreated:
@@ -151,6 +112,19 @@ func mapDeploymentStatusToColor(status string) string {
 	case deployment.StatusSuccess:
 		return colorGreen
 	case deployment.StatusFailure:
+		return colorRed
+	default:
+		return colorGray
+	}
+}
+
+func mapApprovalStatusToColor(status approval.Status) string {
+	switch status {
+	case approval.StatusPending:
+		return colorGray
+	case approval.StatusApproved:
+		return colorGreen
+	case approval.StatusDeclined:
 		return colorRed
 	default:
 		return colorGray
