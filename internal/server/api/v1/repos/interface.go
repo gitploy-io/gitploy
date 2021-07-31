@@ -15,8 +15,8 @@ type (
 		FindPermOfRepo(ctx context.Context, r *ent.Repo, u *ent.User) (*ent.Perm, error)
 
 		ListReposOfUser(ctx context.Context, u *ent.User, sorted bool, q string, page, perPage int) ([]*ent.Repo, error)
-		FindRepoByID(ctx context.Context, id string) (*ent.Repo, error)
-		FindRepoByNamespaceName(ctx context.Context, namespace, name string) (*ent.Repo, error)
+		FindRepoOfUserByID(ctx context.Context, u *ent.User, id string) (*ent.Repo, error)
+		FindRepoOfUserByNamespaceName(ctx context.Context, u *ent.User, namespace, name string) (*ent.Repo, error)
 		UpdateRepo(ctx context.Context, r *ent.Repo) (*ent.Repo, error)
 		ActivateRepo(ctx context.Context, u *ent.User, r *ent.Repo, c *vo.WebhookConfig) (*ent.Repo, error)
 		DeactivateRepo(ctx context.Context, u *ent.User, r *ent.Repo) (*ent.Repo, error)

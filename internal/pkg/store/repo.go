@@ -54,15 +54,24 @@ func (s *Store) UpdateRepo(ctx context.Context, r *ent.Repo) (*ent.Repo, error) 
 		Save(ctx)
 }
 
-func (s *Store) FindRepoByID(ctx context.Context, id string) (*ent.Repo, error) {
-	return s.c.Repo.Get(ctx, id)
+func (s *Store) FindRepoOfUserByID(ctx context.Context, u *ent.User, id string) (*ent.Repo, error) {
+	return s.c.Repo.
+		Query().
+		Where(
+			repo.And(
+				repo.HasPermsWith(perm.HasUserWith(user.IDEQ(u.ID))),
+				repo.IDEQ(id),
+			),
+		).
+		Only(ctx)
 }
 
-func (s *Store) FindRepoByNamespaceName(ctx context.Context, namespace, name string) (*ent.Repo, error) {
+func (s *Store) FindRepoOfUserByNamespaceName(ctx context.Context, u *ent.User, namespace, name string) (*ent.Repo, error) {
 	r, err := s.c.Repo.
 		Query().
 		Where(
 			repo.And(
+				repo.HasPermsWith(perm.HasUserWith(user.IDEQ(u.ID))),
 				repo.NamespaceEQ(namespace),
 				repo.NameEQ(name),
 			),

@@ -14,7 +14,7 @@ type (
 
 		FindPermOfRepo(ctx context.Context, r *ent.Repo, u *ent.User) (*ent.Perm, error)
 
-		FindRepoByNamespaceName(ctx context.Context, namespace, name string) (*ent.Repo, error)
+		FindRepoOfUserByNamespaceName(ctx context.Context, u *ent.User, namespace, name string) (*ent.Repo, error)
 
 		CreateDeployChatCallback(ctx context.Context, cu *ent.ChatUser, repo *ent.Repo, cb *ent.ChatCallback) (*ent.ChatCallback, error)
 		FindChatCallbackByState(ctx context.Context, state string) (*ent.ChatCallback, error)

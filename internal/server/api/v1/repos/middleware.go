@@ -39,7 +39,7 @@ func (rm *RepoMiddleware) ReadPerm() gin.HandlerFunc {
 		v, _ := c.Get(gb.KeyUser)
 		u := v.(*ent.User)
 
-		r, err := rm.i.FindRepoByID(ctx, id)
+		r, err := rm.i.FindRepoOfUserByID(ctx, u, id)
 		if ent.IsNotFound(err) {
 			rm.log.Error("the repo is not found.", zap.String("repo_id", id), zap.Error(err))
 			gb.ErrorResponse(c, http.StatusNotFound, "The repository is not found.")
@@ -76,7 +76,7 @@ func (rm *RepoMiddleware) WritePerm() gin.HandlerFunc {
 		v, _ := c.Get(gb.KeyUser)
 		u := v.(*ent.User)
 
-		r, err := rm.i.FindRepoByID(ctx, id)
+		r, err := rm.i.FindRepoOfUserByID(ctx, u, id)
 		if ent.IsNotFound(err) {
 			rm.log.Error("the repo is not found.", zap.String("repo_id", id), zap.Error(err))
 			gb.ErrorResponse(c, http.StatusNotFound, "The repository is not found.")
@@ -119,7 +119,7 @@ func (rm *RepoMiddleware) AdminPerm() gin.HandlerFunc {
 		v, _ := c.Get(gb.KeyUser)
 		u := v.(*ent.User)
 
-		r, err := rm.i.FindRepoByID(ctx, id)
+		r, err := rm.i.FindRepoOfUserByID(ctx, u, id)
 		if ent.IsNotFound(err) {
 			rm.log.Error("the repo is not found.", zap.String("repo_id", id), zap.Error(err))
 			gb.ErrorResponse(c, http.StatusNotFound, "The repository is not found.")

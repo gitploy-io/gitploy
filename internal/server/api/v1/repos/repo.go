@@ -129,6 +129,8 @@ func (r *Repo) GetRepo(c *gin.Context) {
 }
 
 func (r *Repo) GetRepoByNamespaceName(c *gin.Context) {
+	ctx := c.Request.Context()
+
 	var (
 		namespace = c.Query("namespace")
 		name      = c.Query("name")
@@ -137,26 +139,14 @@ func (r *Repo) GetRepoByNamespaceName(c *gin.Context) {
 	v, _ := c.Get(gb.KeyUser)
 	u := v.(*ent.User)
 
-	ctx := c.Request.Context()
-
-	repo, err := r.i.FindRepoByNamespaceName(ctx, namespace, name)
+	repo, err := r.i.FindRepoOfUserByNamespaceName(ctx, u, namespace, name)
 	if ent.IsNotFound(err) {
-		r.log.Error("failed to access the repo.", zap.String("repo", name), zap.Error(err))
-		gb.ErrorResponse(c, http.StatusNotFound, "It has failed to search the repo.")
+		r.log.Error("It has failed to find the repo.", zap.String("repo", name), zap.Error(err))
+		gb.ErrorResponse(c, http.StatusNotFound, "The repository is not found.")
 		return
 	} else if err != nil {
 		r.log.Error("failed to get the repository.", zap.String("repo", name), zap.Error(err))
 		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to get the repository.")
-		return
-	}
-
-	if _, err = r.i.FindPermOfRepo(ctx, repo, u); ent.IsNotFound(err) {
-		r.log.Error("denied to access the repo.", zap.String("repo_id", repo.ID), zap.Error(err))
-		gb.ErrorResponse(c, http.StatusForbidden, "It has denied to access the repo.")
-		return
-	} else if err != nil {
-		r.log.Error("failed to get the repository.", zap.String("repo_id", repo.ID), zap.Error(err))
-		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to get the permission.")
 		return
 	}
 
