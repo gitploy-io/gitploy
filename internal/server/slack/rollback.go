@@ -241,7 +241,3 @@ func strRef(d *ent.Deployment) string {
 
 	return ref
 }
-
-func trimRollbackCommandPrefix(txt string) string {
-	return strings.TrimPrefix(txt, "rollback ")
-}
