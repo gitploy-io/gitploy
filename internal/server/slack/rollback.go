@@ -3,9 +3,11 @@ package slack
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"strconv"
 	"strings"
 
+	"github.com/gin-gonic/gin"
 	"github.com/nleeper/goment"
 	"github.com/slack-go/slack"
 	"go.uber.org/zap"
@@ -24,76 +26,87 @@ type (
 )
 
 // handleRollbackCmd handles rollback command: "/gitploy rollback OWNER/REPO".
-func (s *Slack) handleRollbackCmd(ctx context.Context, cmd slack.SlashCommand) error {
+func (s *Slack) handleRollbackCmd(c *gin.Context) {
+	ctx := c.Request.Context()
+
+	cmd, _ := slack.SlashCommandParse(c.Request)
+
 	// user have to be exist if chat user is found.
 	cu, err := s.i.FindChatUserByID(ctx, cmd.UserID)
 	if ent.IsNotFound(err) {
-		responseMessage(cmd, "Slack is not connected with Gitploy.")
-		return nil
+		responseMessage(cmd.ChannelID, cmd.ResponseURL, "Slack is not connected with Gitploy.")
+		c.Status(http.StatusOK)
+		return
 	} else if err != nil {
-		return err
+		s.log.Error("It has failed to get chat user.", zap.Error(err))
+		c.Status(http.StatusInternalServerError)
+		return
 	}
 
-	u := cu.Edges.User
-	client := slack.New(cu.BotToken)
+	args := strings.Split(cmd.Text, " ")
 
-	fullname := trimRollbackCommandPrefix(cmd.Text)
-	ns, n, err := parseFullName(fullname)
+	ns, n, err := parseFullName(args[1])
 	if err != nil {
-		responseMessage(cmd, fmt.Sprintf("`%s` is invalid format.", fullname))
-		return nil
+		responseMessage(cmd.ChannelID, cmd.ResponseURL, fmt.Sprintf("`%s` is invalid format.", args[1]))
+		c.Status(http.StatusOK)
+		return
 	}
 
-	r, err := s.i.FindRepoByNamespaceName(ctx, ns, n)
+	r, err := s.i.FindRepoOfUserByNamespaceName(ctx, cu.Edges.User, ns, n)
 	if ent.IsNotFound(err) {
-		responseMessage(cmd, fmt.Sprintf("The `%s` is not found.", fullname))
-		return nil
+		responseMessage(cmd.ChannelID, cmd.ResponseURL, fmt.Sprintf("The `%s` is not found.", args[1]))
+		c.Status(http.StatusOK)
+		return
 	} else if err != nil {
-		return fmt.Errorf("failed to find the repo: %w", err)
+		s.log.Error("It has failed to get the repo.", zap.Error(err))
+		c.Status(http.StatusInternalServerError)
+		return
 	}
 
-	if _, err := s.i.FindPermOfRepo(ctx, r, u); ent.IsNotFound(err) {
-		responseMessage(cmd, fmt.Sprintf("You don't have the permission for the `%s` repository", fullname))
-		return nil
-	} else if err != nil {
-		return fmt.Errorf("failed to find the permission: %w", err)
-	}
-
-	config, err := s.i.GetConfig(ctx, u, r)
+	config, err := s.i.GetConfig(ctx, cu.Edges.User, r)
 	if vo.IsConfigNotFoundError(err) {
-		responseMessage(cmd, "The configuration file is not found")
-		return nil
+		responseMessage(cmd.ChannelID, cmd.ResponseURL, "The configuration file is not found")
+		c.Status(http.StatusOK)
+		return
 	} else if vo.IsConfigParseError(err) {
-		responseMessage(cmd, "The configuration file is invliad format.")
-		return nil
+		responseMessage(cmd.ChannelID, cmd.ResponseURL, "The configuration file is invliad format.")
+		c.Status(http.StatusOK)
+		return
 	} else if err != nil {
-		return fmt.Errorf("failed to get the config: %w", err)
+		s.log.Error("It has failed to get the config.", zap.Error(err))
+		c.Status(http.StatusInternalServerError)
+		return
 	}
 
 	state := randstr()
-	as := s.getSucceedDeploymentAggregation(ctx, r, config)
 
 	cb, err := s.i.CreateDeployChatCallback(ctx, cu, r, &ent.ChatCallback{
 		Type:  chatcallback.TypeRollback,
 		State: state,
 	})
 	if err != nil {
-		return fmt.Errorf("failed to save the callback: %w", err)
+		s.log.Error("It has failed to create a new callback.", zap.Error(err))
+		c.Status(http.StatusInternalServerError)
+		return
 	}
 
-	err = client.OpenDialogContext(ctx, cmd.TriggerID, slack.Dialog{
-		CallbackID:     itoa(cb.ID),
-		State:          state,
-		Title:          "Rollback",
-		SubmitLabel:    "Submit",
-		NotifyOnCancel: true,
-		Elements:       createRollbackDialogElement(as),
-	})
+	as := s.getSucceedDeploymentAggregation(ctx, r, config)
+	err = slack.New(cu.BotToken).
+		OpenDialogContext(ctx, cmd.TriggerID, slack.Dialog{
+			CallbackID:     itoa(cb.ID),
+			State:          state,
+			Title:          "Rollback",
+			SubmitLabel:    "Submit",
+			NotifyOnCancel: true,
+			Elements:       createRollbackDialogElement(as),
+		})
 	if err != nil {
-		return fmt.Errorf("failed to open a new dialog: %w", err)
+		s.log.Error("It has failed to open a dialog.", zap.Error(err))
+		c.Status(http.StatusInternalServerError)
+		return
 	}
 
-	return nil
+	c.Status(http.StatusOK)
 }
 
 func (s *Slack) getSucceedDeploymentAggregation(ctx context.Context, r *ent.Repo, cf *vo.Config) []*deploymentAggregation {
@@ -114,44 +127,46 @@ func (s *Slack) getSucceedDeploymentAggregation(ctx context.Context, r *ent.Repo
 	return a
 }
 
-func (s *Slack) interactRollback(ctx context.Context, scb slack.InteractionCallback, cb *ent.ChatCallback) error {
+func (s *Slack) interactRollback(c *gin.Context) {
+	ctx := c.Request.Context()
+
+	// InteractionCallbackParse hvae to be success because
+	// it was called in the Interact method.
+	itr, _ := s.InteractionCallbackParse(c.Request)
+	cb, _ := s.i.FindChatCallbackByState(ctx, itr.State)
+
 	var (
-		id = scb.Submission["deployment_id"]
+		id = itr.Submission["deployment_id"]
 	)
 
-	if cb.Edges.ChatUser == nil {
-		return fmt.Errorf("The chat_user edge is not found")
-	}
-
-	if cb.Edges.Repo == nil {
-		return fmt.Errorf("The repo edge is not found")
-	}
-
-	cu := cb.Edges.ChatUser
-	re := cb.Edges.Repo
-
-	cu, _ = s.i.FindChatUserByID(ctx, cu.ID)
-	u := cu.Edges.User
+	cu, _ := s.i.FindChatUserByID(ctx, cb.Edges.ChatUser.ID)
 
 	d, err := s.i.FindDeploymentByID(ctx, atoi(id))
 	if err != nil {
-		return fmt.Errorf("failed to find the deployment: %w", err)
+		s.log.Error("It has failed to find the deployment.", zap.Error(err))
+		c.Status(http.StatusInternalServerError)
+		return
 	}
 
-	cf, err := s.i.GetConfig(ctx, u, re)
+	cf, err := s.i.GetConfig(ctx, cu.Edges.User, cb.Edges.Repo)
 	if vo.IsConfigNotFoundError(err) {
-		responseMessage(scb, "The configuration file is not found.")
-		return nil
+		responseMessage(itr.Channel.ID, itr.ResponseURL, "The config file is not found.")
+		c.Status(http.StatusOK)
+		return
 	} else if vo.IsConfigParseError(err) {
-		responseMessage(scb, "The configuration file is invalid format.")
-		return nil
+		responseMessage(itr.Channel.ID, itr.ResponseURL, "The config file is invalid format.")
+		c.Status(http.StatusOK)
+		return
 	} else if err != nil {
-		return fmt.Errorf("failed to get the config: %w", err)
+		s.log.Error("It has failed to get the config file.", zap.Error(err))
+		c.Status(http.StatusInternalServerError)
+		return
 	}
 
 	if !cf.HasEnv(d.Env) {
-		responseMessage(scb, "The configuration file is invalid format.")
-		return nil
+		responseMessage(itr.Channel.ID, itr.ResponseURL, fmt.Sprintf("The `%s` environment is not found.", d.Env))
+		c.Status(http.StatusOK)
+		return
 	}
 
 	// Prepare to rollback:
@@ -160,11 +175,13 @@ func (s *Slack) interactRollback(ctx context.Context, scb slack.InteractionCallb
 		next int
 	)
 
-	if next, err = s.i.GetNextDeploymentNumberOfRepo(ctx, re); err != nil {
-		return fmt.Errorf("failed to get the next deployment number: %w", err)
+	if next, err = s.i.GetNextDeploymentNumberOfRepo(ctx, cb.Edges.Repo); err != nil {
+		s.log.Error("It has failed to get the next deployment number.", zap.Error(err))
+		c.Status(http.StatusInternalServerError)
+		return
 	}
 
-	d, err = s.i.Rollback(ctx, u, cb.Edges.Repo, &ent.Deployment{
+	d, err = s.i.Rollback(ctx, cu.Edges.User, cb.Edges.Repo, &ent.Deployment{
 		Number: next,
 		Type:   deployment.Type(d.Type),
 		Ref:    d.Ref,
@@ -172,14 +189,16 @@ func (s *Slack) interactRollback(ctx context.Context, scb slack.InteractionCallb
 		Env:    d.Env,
 	}, cf.GetEnv(d.Env))
 	if err != nil {
-		return fmt.Errorf("failed to deploy: %w", err)
+		s.log.Error("It has failed to deploy.", zap.Error(err))
+		c.Status(http.StatusInternalServerError)
+		return
 	}
 
-	if err = s.i.PublishDeployment(ctx, re, d); err != nil {
+	if err = s.i.PublishDeployment(ctx, cb.Edges.Repo, d); err != nil {
 		s.log.Warn("failed to notify the deployment.", zap.Error(err))
 	}
 
-	return nil
+	c.Status(http.StatusOK)
 }
 
 func createRollbackDialogElement(as []*deploymentAggregation) []slack.DialogElement {
