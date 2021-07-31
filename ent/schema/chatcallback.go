@@ -31,8 +31,7 @@ func (ChatCallback) Fields() []ent.Field {
 			Default(time.Now).
 			UpdateDefault(time.Now),
 		field.String("chat_user_id"),
-		field.String("repo_id").
-			Optional(),
+		field.String("repo_id"),
 	}
 }
 
@@ -47,6 +46,7 @@ func (ChatCallback) Edges() []ent.Edge {
 		edge.From("repo", Repo.Type).
 			Ref("chat_callback").
 			Field("repo_id").
-			Unique(),
+			Unique().
+			Required(),
 	}
 }

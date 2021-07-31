@@ -668,20 +668,6 @@ func RepoIDHasSuffix(v string) predicate.ChatCallback {
 	})
 }
 
-// RepoIDIsNil applies the IsNil predicate on the "repo_id" field.
-func RepoIDIsNil() predicate.ChatCallback {
-	return predicate.ChatCallback(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldRepoID)))
-	})
-}
-
-// RepoIDNotNil applies the NotNil predicate on the "repo_id" field.
-func RepoIDNotNil() predicate.ChatCallback {
-	return predicate.ChatCallback(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldRepoID)))
-	})
-}
-
 // RepoIDEqualFold applies the EqualFold predicate on the "repo_id" field.
 func RepoIDEqualFold(v string) predicate.ChatCallback {
 	return predicate.ChatCallback(func(s *sql.Selector) {

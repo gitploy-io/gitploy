@@ -88,20 +88,6 @@ func (ccu *ChatCallbackUpdate) SetRepoID(s string) *ChatCallbackUpdate {
 	return ccu
 }
 
-// SetNillableRepoID sets the "repo_id" field if the given value is not nil.
-func (ccu *ChatCallbackUpdate) SetNillableRepoID(s *string) *ChatCallbackUpdate {
-	if s != nil {
-		ccu.SetRepoID(*s)
-	}
-	return ccu
-}
-
-// ClearRepoID clears the value of the "repo_id" field.
-func (ccu *ChatCallbackUpdate) ClearRepoID() *ChatCallbackUpdate {
-	ccu.mutation.ClearRepoID()
-	return ccu
-}
-
 // SetChatUser sets the "chat_user" edge to the ChatUser entity.
 func (ccu *ChatCallbackUpdate) SetChatUser(c *ChatUser) *ChatCallbackUpdate {
 	return ccu.SetChatUserID(c.ID)
@@ -204,6 +190,9 @@ func (ccu *ChatCallbackUpdate) check() error {
 	}
 	if _, ok := ccu.mutation.ChatUserID(); ccu.mutation.ChatUserCleared() && !ok {
 		return errors.New("ent: clearing a required unique edge \"chat_user\"")
+	}
+	if _, ok := ccu.mutation.RepoID(); ccu.mutation.RepoCleared() && !ok {
+		return errors.New("ent: clearing a required unique edge \"repo\"")
 	}
 	return nil
 }
@@ -408,20 +397,6 @@ func (ccuo *ChatCallbackUpdateOne) SetRepoID(s string) *ChatCallbackUpdateOne {
 	return ccuo
 }
 
-// SetNillableRepoID sets the "repo_id" field if the given value is not nil.
-func (ccuo *ChatCallbackUpdateOne) SetNillableRepoID(s *string) *ChatCallbackUpdateOne {
-	if s != nil {
-		ccuo.SetRepoID(*s)
-	}
-	return ccuo
-}
-
-// ClearRepoID clears the value of the "repo_id" field.
-func (ccuo *ChatCallbackUpdateOne) ClearRepoID() *ChatCallbackUpdateOne {
-	ccuo.mutation.ClearRepoID()
-	return ccuo
-}
-
 // SetChatUser sets the "chat_user" edge to the ChatUser entity.
 func (ccuo *ChatCallbackUpdateOne) SetChatUser(c *ChatUser) *ChatCallbackUpdateOne {
 	return ccuo.SetChatUserID(c.ID)
@@ -531,6 +506,9 @@ func (ccuo *ChatCallbackUpdateOne) check() error {
 	}
 	if _, ok := ccuo.mutation.ChatUserID(); ccuo.mutation.ChatUserCleared() && !ok {
 		return errors.New("ent: clearing a required unique edge \"chat_user\"")
+	}
+	if _, ok := ccuo.mutation.RepoID(); ccuo.mutation.RepoCleared() && !ok {
+		return errors.New("ent: clearing a required unique edge \"repo\"")
 	}
 	return nil
 }

@@ -2,9 +2,7 @@ package slack
 
 import (
 	"context"
-	"math/rand"
 	"net/http"
-	"strconv"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -17,30 +15,47 @@ import (
 
 type (
 	Slack struct {
-		i   Interactor
-		c   *oauth2.Config
+		host  string
+		proto string
+
+		c *oauth2.Config
+		i Interactor
+
 		log *zap.Logger
+	}
+
+	SlackConfig struct {
+		ServerHost  string
+		ServerProto string
+		*oauth2.Config
+		Interactor
 	}
 )
 
-func NewSlack(c *oauth2.Config, i Interactor) *Slack {
-	i.Subscribe(func(u *ent.User, n *ent.Notification) {
+func NewSlack(c *SlackConfig) *Slack {
+	s := &Slack{
+		host:  c.ServerHost,
+		proto: c.ServerProto,
+		c:     c.Config,
+		i:     c.Interactor,
+		log:   zap.L().Named("slack"),
+	}
+
+	s.i.Subscribe(func(u *ent.User, n *ent.Notification) {
 		if cu := u.Edges.ChatUser; cu != nil {
 			ctx := context.Background()
-			Notify(ctx, cu, n)
+			s.Notify(ctx, cu, n)
 		}
 	})
 
-	return &Slack{
-		c:   c,
-		i:   i,
-		log: zap.L().Named("slack"),
-	}
+	return s
 }
 
 // Cmd handles Slash command of Slack.
 // https://api.slack.com/interactivity/slash-commands
 func (s *Slack) Cmd(c *gin.Context) {
+	ctx := c.Request.Context()
+
 	cmd, err := slack.SlashCommandParse(c.Request)
 	if err != nil {
 		s.log.Error("failed to parse the command.", zap.Error(err))
@@ -52,26 +67,26 @@ func (s *Slack) Cmd(c *gin.Context) {
 
 	var handleErr error
 	if strings.HasPrefix(t, "deploy ") {
-		handleErr = s.handleDeployCmd(c, cmd)
+		handleErr = s.handleDeployCmd(ctx, cmd)
 	} else if strings.HasPrefix(t, "rollback ") {
-		handleErr = s.handleRollbackCmd(c, cmd)
+		handleErr = s.handleRollbackCmd(ctx, cmd)
 	} else if strings.HasPrefix(t, "help") {
-		s.handleHelpCmd(c, cmd)
+		s.handleHelpCmd(ctx, cmd)
 	} else {
-		s.handleHelpCmd(c, cmd)
+		s.handleHelpCmd(ctx, cmd)
 	}
 
 	if handleErr != nil {
-		s.log.Error("failed to handle the command: %s", zap.Error(err))
+		s.log.Error("It has failed to handle the command: %s", zap.Error(err))
 		c.Status(http.StatusInternalServerError)
 		return
 	}
 
-	s.log.Debug("handling the command successfully.", zap.String("command", cmd.Command))
+	s.log.Debug("It has handled the command successfully.", zap.String("command", cmd.Command))
 	c.Status(http.StatusOK)
 }
 
-func (s *Slack) handleHelpCmd(c *gin.Context, cmd slack.SlashCommand) {
+func (s *Slack) handleHelpCmd(ctx context.Context, cmd slack.SlashCommand) {
 	msg := strings.Join([]string{
 		"Below are the commands you can use:",
 		"",
@@ -104,6 +119,8 @@ func responseMessage(obj interface{}, message string) {
 
 // Interact interacts interactive components (dialog, button).
 func (s *Slack) Interact(c *gin.Context) {
+	ctx := c.Request.Context()
+
 	c.Request.ParseForm()
 	payload := c.Request.PostForm.Get("payload")
 
@@ -119,8 +136,6 @@ func (s *Slack) Interact(c *gin.Context) {
 		c.Status(http.StatusOK)
 		return
 	}
-
-	ctx := c.Request.Context()
 
 	// Trim backticked double quote for string type.
 	// https://github.com/slack-go/slack/issues/816
@@ -140,42 +155,18 @@ func (s *Slack) Interact(c *gin.Context) {
 	defer s.i.CloseChatCallback(ctx, cb)
 
 	var interactErr error
-	if scb.Type == slack.InteractionTypeDialogSubmission && cb.Type == chatcallback.TypeDeploy {
+	if cb.Type == chatcallback.TypeDeploy {
 		interactErr = s.interactDeploy(c, scb, cb)
-	} else if scb.Type == slack.InteractionTypeDialogSubmission && cb.Type == chatcallback.TypeRollback {
+	} else if cb.Type == chatcallback.TypeRollback {
 		interactErr = s.interactRollback(c, scb, cb)
 	}
 
 	if interactErr != nil {
-		s.log.Error("failed to interact the component: %s", zap.Error(err))
+		s.log.Error("It has failed to interact the component: %s", zap.Error(err))
 		c.Status(http.StatusInternalServerError)
 		return
 	}
 
 	s.log.Debug("interact the component successfully.", zap.String("type", string(cb.Type)))
 	c.Status(http.StatusOK)
-}
-
-// Check checks Slack is enabled.
-func (s *Slack) Check(c *gin.Context) {
-	c.Status(http.StatusOK)
-}
-
-func randstr() string {
-	var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
-
-	b := make([]rune, 16)
-	for i := range b {
-		b[i] = letterRunes[rand.Intn(len(letterRunes))]
-	}
-	return string(b)
-}
-
-func atoi(a string) int {
-	i, _ := strconv.Atoi(a)
-	return i
-}
-
-func itoa(i int) string {
-	return strconv.Itoa(i)
 }

@@ -88,14 +88,6 @@ func (ccc *ChatCallbackCreate) SetRepoID(s string) *ChatCallbackCreate {
 	return ccc
 }
 
-// SetNillableRepoID sets the "repo_id" field if the given value is not nil.
-func (ccc *ChatCallbackCreate) SetNillableRepoID(s *string) *ChatCallbackCreate {
-	if s != nil {
-		ccc.SetRepoID(*s)
-	}
-	return ccc
-}
-
 // SetChatUser sets the "chat_user" edge to the ChatUser entity.
 func (ccc *ChatCallbackCreate) SetChatUser(c *ChatUser) *ChatCallbackCreate {
 	return ccc.SetChatUserID(c.ID)
@@ -197,8 +189,14 @@ func (ccc *ChatCallbackCreate) check() error {
 	if _, ok := ccc.mutation.ChatUserID(); !ok {
 		return &ValidationError{Name: "chat_user_id", err: errors.New("ent: missing required field \"chat_user_id\"")}
 	}
+	if _, ok := ccc.mutation.RepoID(); !ok {
+		return &ValidationError{Name: "repo_id", err: errors.New("ent: missing required field \"repo_id\"")}
+	}
 	if _, ok := ccc.mutation.ChatUserID(); !ok {
 		return &ValidationError{Name: "chat_user", err: errors.New("ent: missing required edge \"chat_user\"")}
+	}
+	if _, ok := ccc.mutation.RepoID(); !ok {
+		return &ValidationError{Name: "repo", err: errors.New("ent: missing required edge \"repo\"")}
 	}
 	return nil
 }
