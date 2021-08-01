@@ -9,6 +9,8 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/hanjunlee/gitploy/ent"
+	"github.com/hanjunlee/gitploy/ent/deployment"
+	"github.com/hanjunlee/gitploy/ent/notification"
 	gb "github.com/hanjunlee/gitploy/internal/server/global"
 )
 
@@ -81,7 +83,7 @@ func (h *Hooks) handleGithubHook(c *gin.Context) {
 	uid := *e.Deployment.ID
 	d, err := h.i.FindDeploymentByUID(ctx, uid)
 	if err != nil {
-		h.log.Error("failed to find the deployment by UID.", zap.Int64("uid", uid))
+		h.log.Error("It has failed to find the deployment by UID.", zap.Int64("deployment_uid", uid), zap.Error(err))
 		gb.ErrorResponse(c, http.StatusBadRequest, "It has failed to find the deployment by UID.")
 		return
 	}
@@ -90,9 +92,20 @@ func (h *Hooks) handleGithubHook(c *gin.Context) {
 	ds.DeploymentID = d.ID
 
 	if ds, err = h.i.CreateDeploymentStatus(ctx, ds); err != nil {
-		h.log.Error("failed to create a new the deployment status.", zap.Int64("uid", uid))
-		gb.ErrorResponse(c, http.StatusBadRequest, "It has failed to create a new the deployment status.")
+		h.log.Error("It has failed to create a new the deployment status.", zap.Error(err))
+		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to create a new the deployment status.")
 		return
+	}
+
+	d.Status = mapGithubState(ds.Status)
+	if d, err = h.i.UpdateDeployment(ctx, d); err != nil {
+		h.log.Error("It has failed to update the deployment status.", zap.Error(err))
+		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to update the deployment status.")
+		return
+	}
+
+	if err = h.i.Publish(ctx, notification.TypeDeploymentUpdated, d.Edges.Repo, d, nil); err != nil {
+		h.log.Warn("It has failed to notify the updated deployment.", zap.Error(err))
 	}
 
 	gb.Response(c, http.StatusCreated, ds)
@@ -125,4 +138,18 @@ func mapGithubDeploymentStatus(gds *github.DeploymentStatusEvent) *ent.Deploymen
 	}
 
 	return ds
+}
+
+// mapGithubState convert state into the status of deployment:
+// "in_progress", "queued" to "running",
+// "success" to "success", and "failure" to "failure".
+func mapGithubState(state string) deployment.Status {
+	switch state {
+	case "success":
+		return deployment.StatusSuccess
+	case "failure":
+		return deployment.StatusFailure
+	default:
+		return deployment.StatusRunning
+	}
 }

@@ -22,6 +22,8 @@ const (
 func (s *Slack) Notify(ctx context.Context, cu *ent.ChatUser, n *ent.Notification) error {
 	if n.Type == notification.TypeDeploymentCreated {
 		return s.notifyDeploymentCreated(ctx, cu, n)
+	} else if n.Type == notification.TypeDeploymentUpdated {
+		return s.notifyDeploymentUpdated(ctx, cu, n)
 	} else if n.Type == notification.TypeApprovalRequested {
 		return s.notifyApprovalRequested(ctx, cu, n)
 	} else if n.Type == notification.TypeApprovalResponded {
@@ -51,6 +53,25 @@ func (s *Slack) notifyDeploymentCreated(ctx context.Context, cu *ent.ChatUser, n
 			Color:   mapDeploymentStatusToColor(deployment.Status(n.DeploymentStatus)),
 			Pretext: fmt.Sprintf("*New Deployment #%d*", number),
 			Text:    fmt.Sprintf("*%s* deploys `%s` to the `%s` environment of `%s`. <%s|• View Details> ", deployer, ref, env, repoName, link),
+		}))
+
+	return err
+}
+
+func (s *Slack) notifyDeploymentUpdated(ctx context.Context, cu *ent.ChatUser, n *ent.Notification) error {
+	var (
+		repoName = fmt.Sprintf("%s/%s", n.RepoNamespace, n.RepoName)
+		number   = n.DeploymentNumber
+		status   = n.DeploymentStatus
+		link     = s.buildLink(n)
+	)
+
+	client := slack.New(cu.BotToken)
+	_, _, err := client.
+		PostMessageContext(ctx, cu.ID, slack.MsgOptionAttachments(slack.Attachment{
+			Color:   mapDeploymentStatusToColor(deployment.Status(n.DeploymentStatus)),
+			Pretext: fmt.Sprintf("*Deployment Updated #%d*", number),
+			Text:    fmt.Sprintf("The deployment <%s|#%d> of %s is updated %s.", link, number, repoName, status),
 		}))
 
 	return err

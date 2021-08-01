@@ -10,6 +10,7 @@ import (
 	"github.com/golang/mock/gomock"
 
 	"github.com/hanjunlee/gitploy/ent"
+	"github.com/hanjunlee/gitploy/ent/notification"
 	"github.com/hanjunlee/gitploy/internal/server/hooks/mock"
 )
 
@@ -45,6 +46,24 @@ func TestHook_HandleHook(t *testing.T) {
 				Description:  "Deployed successfully.",
 				DeploymentID: 1,
 			}, nil)
+
+		m.
+			EXPECT().
+			UpdateDeployment(gomock.Any(), gomock.Eq(&ent.Deployment{
+				ID:     1,
+				UID:    145988746,
+				Status: "success",
+			})).
+			Return(&ent.Deployment{
+				ID:     1,
+				UID:    145988746,
+				Status: "success",
+			}, nil)
+
+		m.
+			EXPECT().
+			Publish(gomock.Any(), gomock.Eq(notification.TypeDeploymentUpdated), gomock.Any(), gomock.Any(), gomock.Any()).
+			Return(nil)
 
 		h := NewHooks(&ConfigHooks{}, m)
 		r := gin.New()
