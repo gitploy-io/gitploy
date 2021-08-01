@@ -80,6 +80,9 @@ func (h *Hooks) handleGithubHook(c *gin.Context) {
 		}
 	}
 
+	// Convert event to the deployment status.
+	ds := mapGithubDeploymentStatus(e)
+
 	uid := *e.Deployment.ID
 	d, err := h.i.FindDeploymentByUID(ctx, uid)
 	if err != nil {
@@ -88,23 +91,23 @@ func (h *Hooks) handleGithubHook(c *gin.Context) {
 		return
 	}
 
-	ds := mapGithubDeploymentStatus(e)
 	ds.DeploymentID = d.ID
-
 	if ds, err = h.i.CreateDeploymentStatus(ctx, ds); err != nil {
 		h.log.Error("It has failed to create a new the deployment status.", zap.Error(err))
 		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to create a new the deployment status.")
 		return
 	}
 
+	repo := d.Edges.Repo
+
 	d.Status = mapGithubState(ds.Status)
-	if d, err = h.i.UpdateDeployment(ctx, d); err != nil {
+	if _, err := h.i.UpdateDeployment(ctx, d); err != nil {
 		h.log.Error("It has failed to update the deployment status.", zap.Error(err))
 		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to update the deployment status.")
 		return
 	}
 
-	if err = h.i.Publish(ctx, notification.TypeDeploymentUpdated, d.Edges.Repo, d, nil); err != nil {
+	if err = h.i.Publish(ctx, notification.TypeDeploymentUpdated, repo, d, nil); err != nil {
 		h.log.Warn("It has failed to notify the updated deployment.", zap.Error(err))
 	}
 

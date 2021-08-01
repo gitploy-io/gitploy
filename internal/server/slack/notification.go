@@ -71,7 +71,7 @@ func (s *Slack) notifyDeploymentUpdated(ctx context.Context, cu *ent.ChatUser, n
 		PostMessageContext(ctx, cu.ID, slack.MsgOptionAttachments(slack.Attachment{
 			Color:   mapDeploymentStatusToColor(deployment.Status(n.DeploymentStatus)),
 			Pretext: fmt.Sprintf("*Deployment Updated #%d*", number),
-			Text:    fmt.Sprintf("The deployment <%s|#%d> of %s is updated %s.", link, number, repoName, status),
+			Text:    fmt.Sprintf("The deployment <%s|#%d> of `%s` is updated %s.", link, number, repoName, status),
 		}))
 
 	return err
