@@ -30,8 +30,11 @@ interface NotificationData {
 const mapDataToNotification = (data: NotificationData): Noti => {
     let type: NotificationType 
     switch (data.type) {
-        case "deployment":
-            type = NotificationType.Deployment
+        case "deployment_created":
+            type = NotificationType.DeploymentCreated
+            break
+        case "deployment_updated":
+            type = NotificationType.DeploymentUpdated
             break
         case "approval_requested":
             type = NotificationType.ApprovalRequested
@@ -40,7 +43,7 @@ const mapDataToNotification = (data: NotificationData): Noti => {
             type = NotificationType.ApprovalResponded
             break
         default:
-            type = NotificationType.Deployment
+            type = NotificationType.DeploymentCreated
     }
 
     return { 

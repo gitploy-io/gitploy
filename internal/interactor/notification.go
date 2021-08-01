@@ -68,15 +68,34 @@ func (i *Interactor) setNotificationNotified(ctx context.Context, n *ent.Notific
 	return i.UpdateNotification(ctx, n)
 }
 
-// PublishDeployment publish notifications to the deployer.
-func (i *Interactor) PublishDeployment(ctx context.Context, r *ent.Repo, d *ent.Deployment) error {
+func (i *Interactor) Publish(ctx context.Context, typ notification.Type, r *ent.Repo, d *ent.Deployment, a *ent.Approval) error {
+	switch typ {
+	case notification.TypeDeploymentCreated:
+		return i.publishDeploymentCreated(ctx, r, d)
+
+	case notification.TypeDeploymentUpdated:
+		return i.publishDeploymentUpdated(ctx, r, d)
+
+	case notification.TypeApprovalRequested:
+		return i.publishApprovalRequested(ctx, r, d, a)
+
+	case notification.TypeApprovalResponded:
+		return i.publishApprovalResponded(ctx, r, d, a)
+
+	default:
+		return nil
+	}
+}
+
+// publishDeploymentCreated publish the notification to the deployer.
+func (i *Interactor) publishDeploymentCreated(ctx context.Context, r *ent.Repo, d *ent.Deployment) error {
 	u, err := i.FindUserByID(ctx, d.UserID)
 	if err != nil {
 		return fmt.Errorf("the deployer is not found.")
 	}
 
 	if _, err := i.CreateNotification(ctx, &ent.Notification{
-		Type:             notification.TypeDeployment,
+		Type:             notification.TypeDeploymentCreated,
 		RepoNamespace:    r.Namespace,
 		RepoName:         r.Name,
 		DeploymentNumber: d.Number,
@@ -93,8 +112,33 @@ func (i *Interactor) PublishDeployment(ctx context.Context, r *ent.Repo, d *ent.
 	return nil
 }
 
-// PublishApprovalRequested publish notifications to who receives a request of approval.
-func (i *Interactor) PublishApprovalRequested(ctx context.Context, r *ent.Repo, d *ent.Deployment, a *ent.Approval) error {
+// publishDeploymentUpdated publish a notification to the deployer.
+func (i *Interactor) publishDeploymentUpdated(ctx context.Context, r *ent.Repo, d *ent.Deployment) error {
+	u, err := i.FindUserByID(ctx, d.UserID)
+	if err != nil {
+		return fmt.Errorf("the deployer is not found.")
+	}
+
+	if _, err := i.CreateNotification(ctx, &ent.Notification{
+		Type:             notification.TypeDeploymentUpdated,
+		RepoNamespace:    r.Namespace,
+		RepoName:         r.Name,
+		DeploymentNumber: d.Number,
+		DeploymentType:   string(d.Type),
+		DeploymentRef:    d.Ref,
+		DeploymentEnv:    d.Env,
+		DeploymentStatus: string(d.Status),
+		DeploymentLogin:  u.Login,
+		UserID:           u.ID,
+	}); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// publishApprovalRequested publish notifications to who receives a request of approval.
+func (i *Interactor) publishApprovalRequested(ctx context.Context, r *ent.Repo, d *ent.Deployment, a *ent.Approval) error {
 	du, err := i.FindUserByID(ctx, d.UserID)
 	if err != nil {
 		return fmt.Errorf("the deployer is not found.")
@@ -125,8 +169,8 @@ func (i *Interactor) PublishApprovalRequested(ctx context.Context, r *ent.Repo, 
 	return nil
 }
 
-// PublishApprovalResponded publish notifications to who has deployed.
-func (i *Interactor) PublishApprovalResponded(ctx context.Context, r *ent.Repo, d *ent.Deployment, a *ent.Approval) error {
+// publishApprovalResponded publish notifications to who has deployed.
+func (i *Interactor) publishApprovalResponded(ctx context.Context, r *ent.Repo, d *ent.Deployment, a *ent.Approval) error {
 	du, err := i.FindUserByID(ctx, d.UserID)
 	if err != nil {
 		return fmt.Errorf("the deployer is not found.")

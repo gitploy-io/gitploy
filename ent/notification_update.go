@@ -35,14 +35,6 @@ func (nu *NotificationUpdate) SetType(n notification.Type) *NotificationUpdate {
 	return nu
 }
 
-// SetNillableType sets the "type" field if the given value is not nil.
-func (nu *NotificationUpdate) SetNillableType(n *notification.Type) *NotificationUpdate {
-	if n != nil {
-		nu.SetType(*n)
-	}
-	return nu
-}
-
 // SetRepoNamespace sets the "repo_namespace" field.
 func (nu *NotificationUpdate) SetRepoNamespace(s string) *NotificationUpdate {
 	nu.mutation.SetRepoNamespace(s)
@@ -486,14 +478,6 @@ type NotificationUpdateOne struct {
 // SetType sets the "type" field.
 func (nuo *NotificationUpdateOne) SetType(n notification.Type) *NotificationUpdateOne {
 	nuo.mutation.SetType(n)
-	return nuo
-}
-
-// SetNillableType sets the "type" field if the given value is not nil.
-func (nuo *NotificationUpdateOne) SetNillableType(n *notification.Type) *NotificationUpdateOne {
-	if n != nil {
-		nuo.SetType(*n)
-	}
 	return nuo
 }
 

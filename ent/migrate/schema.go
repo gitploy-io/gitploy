@@ -204,7 +204,7 @@ var (
 	// NotificationsColumns holds the columns for the "notifications" table.
 	NotificationsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "type", Type: field.TypeEnum, Enums: []string{"deployment", "approval_requested", "approval_responded"}, Default: "deployment"},
+		{Name: "type", Type: field.TypeEnum, Enums: []string{"deployment_created", "deployment_updated", "approval_requested", "approval_responded"}},
 		{Name: "repo_namespace", Type: field.TypeString},
 		{Name: "repo_name", Type: field.TypeString},
 		{Name: "deployment_number", Type: field.TypeInt},

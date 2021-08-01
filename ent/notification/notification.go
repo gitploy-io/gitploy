@@ -104,12 +104,10 @@ var (
 // Type defines the type for the "type" enum field.
 type Type string
 
-// TypeDeployment is the default value of the Type enum.
-const DefaultType = TypeDeployment
-
 // Type values.
 const (
-	TypeDeployment        Type = "deployment"
+	TypeDeploymentCreated Type = "deployment_created"
+	TypeDeploymentUpdated Type = "deployment_updated"
 	TypeApprovalRequested Type = "approval_requested"
 	TypeApprovalResponded Type = "approval_responded"
 )
@@ -121,7 +119,7 @@ func (_type Type) String() string {
 // TypeValidator is a validator for the "type" field enum values. It is called by the builders before save.
 func TypeValidator(_type Type) error {
 	switch _type {
-	case TypeDeployment, TypeApprovalRequested, TypeApprovalResponded:
+	case TypeDeploymentCreated, TypeDeploymentUpdated, TypeApprovalRequested, TypeApprovalResponded:
 		return nil
 	default:
 		return fmt.Errorf("notification: invalid enum value for type field: %q", _type)

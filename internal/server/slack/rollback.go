@@ -15,6 +15,7 @@ import (
 	"github.com/hanjunlee/gitploy/ent"
 	"github.com/hanjunlee/gitploy/ent/chatcallback"
 	"github.com/hanjunlee/gitploy/ent/deployment"
+	"github.com/hanjunlee/gitploy/ent/notification"
 	"github.com/hanjunlee/gitploy/vo"
 )
 
@@ -194,7 +195,7 @@ func (s *Slack) interactRollback(c *gin.Context) {
 		return
 	}
 
-	if err = s.i.PublishDeployment(ctx, cb.Edges.Repo, d); err != nil {
+	if err = s.i.Publish(ctx, notification.TypeDeploymentCreated, cb.Edges.Repo, d, nil); err != nil {
 		s.log.Warn("failed to notify the deployment.", zap.Error(err))
 	}
 

@@ -35,8 +35,10 @@ function convertToNotificationLink(n: Notification): string {
 
 function convertToNotificationTitle(n: Notification): string {
     switch (n.type) {
-        case NotificationType.Deployment:
+        case NotificationType.DeploymentCreated:
             return `New Deployment #${n.deployment.number}`
+        case NotificationType.DeploymentUpdated:
+            return `Deployment Updated #${n.deployment.number}`
         case NotificationType.ApprovalRequested:
             return `Approval Requested`
         case NotificationType.ApprovalResponded:
@@ -46,11 +48,13 @@ function convertToNotificationTitle(n: Notification): string {
 
 function convertToNotificationMessage(n: Notification): string {
     switch (n.type) {
-        case NotificationType.Deployment:
-            return `${n.repo.namespace}/${n.repo.name} - ${n.deployment.login} has deployed to ${n.deployment.env} environment ${moment(n.createdAt).fromNow()}`
+        case NotificationType.DeploymentCreated:
+            return `${n.deployment.login} deploys ${n.deployment.ref} to the ${n.deployment.env} environment of ${n.repo.namespace}/${n.repo.name} ${moment(n.createdAt).fromNow()}`
+        case NotificationType.DeploymentUpdated:
+            return `The deployment(#${n.deployment.number}) of ${n.repo.namespace}/${n.repo.name} is updated ${n.deployment.status} ${moment(n.createdAt).fromNow()}`
         case NotificationType.ApprovalRequested:
-            return `${n.repo.namespace}/${n.repo.name} - ${n.deployment.login} has requested the approval for the deployment(#${n.deployment.number}) ${moment(n.createdAt).fromNow()}.`
+            return `${n.deployment.login} has requested the approval for the deployment(#${n.deployment.number}) of ${n.repo.namespace}/${n.repo.name} ${moment(n.createdAt).fromNow()}.`
         case NotificationType.ApprovalResponded:
-            return `${n.repo.namespace}/${n.repo.name} - ${n.approval.login} has responded the approval of the deployment(#${n.deployment.number}) ${moment(n.createdAt).fromNow()}.`
+            return `${n.approval.login} has responded the approval of the deployment(#${n.deployment.number}) of ${n.repo.namespace}/${n.repo.name} ${moment(n.createdAt).fromNow()}.`
     }
 }

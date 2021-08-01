@@ -19,11 +19,11 @@ func (Notification) Fields() []ent.Field {
 	return []ent.Field{
 		field.Enum("type").
 			Values(
-				"deployment",
+				"deployment_created",
+				"deployment_updated",
 				"approval_requested",
 				"approval_responded",
-			).
-			Default("deployment"),
+			),
 		// Denormalization from repository, deployment.
 		field.String("repo_namespace"),
 		field.String("repo_name"),

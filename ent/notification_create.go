@@ -27,14 +27,6 @@ func (nc *NotificationCreate) SetType(n notification.Type) *NotificationCreate {
 	return nc
 }
 
-// SetNillableType sets the "type" field if the given value is not nil.
-func (nc *NotificationCreate) SetNillableType(n *notification.Type) *NotificationCreate {
-	if n != nil {
-		nc.SetType(*n)
-	}
-	return nc
-}
-
 // SetRepoNamespace sets the "repo_namespace" field.
 func (nc *NotificationCreate) SetRepoNamespace(s string) *NotificationCreate {
 	nc.mutation.SetRepoNamespace(s)
@@ -230,10 +222,6 @@ func (nc *NotificationCreate) SaveX(ctx context.Context) *Notification {
 
 // defaults sets the default values of the builder before save.
 func (nc *NotificationCreate) defaults() {
-	if _, ok := nc.mutation.GetType(); !ok {
-		v := notification.DefaultType
-		nc.mutation.SetType(v)
-	}
 	if _, ok := nc.mutation.Notified(); !ok {
 		v := notification.DefaultNotified
 		nc.mutation.SetNotified(v)
