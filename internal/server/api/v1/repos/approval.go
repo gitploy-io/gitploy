@@ -9,6 +9,7 @@ import (
 
 	"github.com/hanjunlee/gitploy/ent"
 	"github.com/hanjunlee/gitploy/ent/approval"
+	"github.com/hanjunlee/gitploy/ent/notification"
 	gb "github.com/hanjunlee/gitploy/internal/server/global"
 )
 
@@ -169,7 +170,7 @@ func (r *Repo) CreateApproval(c *gin.Context) {
 		return
 	}
 
-	if err := r.i.PublishApprovalRequested(ctx, re, d, ap); err != nil {
+	if err := r.i.Publish(ctx, notification.TypeApprovalRequested, re, d, ap); err != nil {
 		r.log.Warn("It has failed to notify the approval requested.", zap.Error(err))
 	}
 
@@ -231,7 +232,7 @@ func (r *Repo) UpdateApproval(c *gin.Context) {
 			return
 		}
 
-		if err := r.i.PublishApprovalResponded(ctx, re, d, a); err != nil {
+		if err := r.i.Publish(ctx, notification.TypeApprovalResponded, re, d, a); err != nil {
 			r.log.Warn("It has failed to notify the approval responded.", zap.Error(err))
 		}
 	}

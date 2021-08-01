@@ -11,6 +11,7 @@ import (
 
 	"github.com/hanjunlee/gitploy/ent"
 	"github.com/hanjunlee/gitploy/ent/deployment"
+	"github.com/hanjunlee/gitploy/ent/notification"
 	gb "github.com/hanjunlee/gitploy/internal/server/global"
 	"github.com/hanjunlee/gitploy/vo"
 )
@@ -143,7 +144,7 @@ func (r *Repo) CreateDeployment(c *gin.Context) {
 		return
 	}
 
-	if err = r.i.PublishDeployment(ctx, re, d); err != nil {
+	if err = r.i.Publish(ctx, notification.TypeDeployment, re, d, nil); err != nil {
 		r.log.Warn("failed to notify the deployment.", zap.Error(err))
 	}
 
@@ -294,7 +295,7 @@ func (r *Repo) RollbackDeployment(c *gin.Context) {
 		return
 	}
 
-	if err = r.i.PublishDeployment(ctx, re, d); err != nil {
+	if err = r.i.Publish(ctx, notification.TypeDeployment, re, d, nil); err != nil {
 		r.log.Warn("failed to notify the deployment.", zap.Error(err))
 	}
 
