@@ -26,6 +26,8 @@ type (
 )
 
 const (
+	// Github webhook payload
+	// https://docs.github.com/en/developers/webhooks-and-events/webhooks/webhook-events-and-payloads
 	headerGithubDelivery  = "X-GitHub-Delivery"
 	headerGithubSignature = "X-Hub-Signature-256"
 )
@@ -38,6 +40,8 @@ func NewHooks(c *ConfigHooks, i Interactor) *Hooks {
 	}
 }
 
+// HandleHook handles deployment status event, basically,
+// it creates a new deployment status for the deployment.
 func (h *Hooks) HandleHook(c *gin.Context) {
 	if isFromGithub(c) {
 		h.handleGithubHook(c)
@@ -99,9 +103,20 @@ func isFromGithub(c *gin.Context) bool {
 }
 
 func mapGithubDeploymentStatus(gds *github.DeploymentStatusEvent) *ent.DeploymentStatus {
-	state := *gds.DeploymentStatus.State
-	description := *gds.DeploymentStatus.Description
-	logURL := *gds.DeploymentStatus.LogURL
+	var (
+		state       = *gds.DeploymentStatus.State
+		description = *gds.DeploymentStatus.Description
+		logURL      string
+	)
+
+	// target_url is deprecated.
+	if gds.DeploymentStatus.TargetURL != nil {
+		logURL = *gds.DeploymentStatus.TargetURL
+	}
+
+	if gds.DeploymentStatus.LogURL != nil {
+		logURL = *gds.DeploymentStatus.LogURL
+	}
 
 	ds := &ent.DeploymentStatus{
 		Status:      state,
