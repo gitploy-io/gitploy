@@ -195,7 +195,7 @@ func (s *Slack) interactRollback(c *gin.Context) {
 		return
 	}
 
-	if err = s.i.Publish(ctx, notification.TypeDeployment, cb.Edges.Repo, d, nil); err != nil {
+	if err = s.i.Publish(ctx, notification.TypeDeploymentCreated, cb.Edges.Repo, d, nil); err != nil {
 		s.log.Warn("failed to notify the deployment.", zap.Error(err))
 	}
 

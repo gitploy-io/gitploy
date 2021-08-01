@@ -20,7 +20,7 @@ const (
 )
 
 func (s *Slack) Notify(ctx context.Context, cu *ent.ChatUser, n *ent.Notification) error {
-	if n.Type == notification.TypeDeployment {
+	if n.Type == notification.TypeDeploymentCreated {
 		return s.notifyDeploymentCreated(ctx, cu, n)
 	} else if n.Type == notification.TypeApprovalRequested {
 		return s.notifyApprovalRequested(ctx, cu, n)

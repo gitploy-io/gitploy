@@ -70,8 +70,8 @@ func (i *Interactor) setNotificationNotified(ctx context.Context, n *ent.Notific
 
 func (i *Interactor) Publish(ctx context.Context, typ notification.Type, r *ent.Repo, d *ent.Deployment, a *ent.Approval) error {
 	switch typ {
-	case notification.TypeDeployment:
-		return i.publishDeployment(ctx, r, d)
+	case notification.TypeDeploymentCreated:
+		return i.publishDeploymentCreated(ctx, r, d)
 
 	case notification.TypeApprovalRequested:
 		return i.publishApprovalRequested(ctx, r, d, a)
@@ -85,14 +85,14 @@ func (i *Interactor) Publish(ctx context.Context, typ notification.Type, r *ent.
 }
 
 // publishDeployment publish notifications to the deployer.
-func (i *Interactor) publishDeployment(ctx context.Context, r *ent.Repo, d *ent.Deployment) error {
+func (i *Interactor) publishDeploymentCreated(ctx context.Context, r *ent.Repo, d *ent.Deployment) error {
 	u, err := i.FindUserByID(ctx, d.UserID)
 	if err != nil {
 		return fmt.Errorf("the deployer is not found.")
 	}
 
 	if _, err := i.CreateNotification(ctx, &ent.Notification{
-		Type:             notification.TypeDeployment,
+		Type:             notification.TypeDeploymentCreated,
 		RepoNamespace:    r.Namespace,
 		RepoName:         r.Name,
 		DeploymentNumber: d.Number,

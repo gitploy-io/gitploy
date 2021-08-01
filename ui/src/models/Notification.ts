@@ -24,7 +24,8 @@ export default interface Notification {
 }
 
 export enum NotificationType {
-    Deployment = "deployment",
+    DeploymentCreated = "deployment_created",
+    DeploymentUpdated = "deployment_updated",
     ApprovalRequested = "approval_requested",
     ApprovalResponded = "approval_responded" 
 }

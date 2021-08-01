@@ -162,14 +162,14 @@ function notify(n: NotificationData) {
 
 function convertToNotificationMessage(n: NotificationData): string {
     switch (n.type) {
-        case NotificationType.Deployment:
-            return `New Deployment #${n.deployment.number}\n ${n.repo.namespace}/${n.repo.name} - ${n.deployment.login} has deployed to ${n.deployment.env} environment.`
+        case NotificationType.DeploymentCreated:
+            return `New Deployment #${n.deployment.number}\n ${n.deployment.login} deploys ${n.deployment.ref} to the ${n.deployment.env} environment of ${n.repo.namespace}/${n.repo.name}.`
+        case NotificationType.DeploymentUpdated:
+            return `Deployment Updated #${n.deployment.number}\n The deployment(#${n.deployment.number}) of ${n.repo.namespace}/${n.repo.name} is updated ${n.deployment.status}.`
         case NotificationType.ApprovalRequested:
-            return `Approval Requested\n - ${n.repo.namespace}/${n.repo.name} - ${n.deployment.login} has requested the approval for the deployment(#${n.deployment.number}).`
+            return `Approval Requested\n - ${n.deployment.login} has requested the approval for the deployment(#${n.deployment.number}) of ${n.repo.namespace}/${n.repo.name}.`
         case NotificationType.ApprovalResponded:
-            return `Approval Responded\n - ${n.repo.namespace}/${n.repo.name} - ${n.approval.login} has responded the approval of the deployment(#${n.deployment.number}).`
-        default:
-            return "New Event"
+            return `Approval Responded\n - ${n.approval.login} has responded the approval of the deployment(#${n.deployment.number}) of ${n.repo.namespace}/${n.repo.name}.`
     }
 }
 
