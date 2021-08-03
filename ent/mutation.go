@@ -654,7 +654,7 @@ type ChatCallbackMutation struct {
 	op               Op
 	typ              string
 	id               *int
-	state            *string
+	hash             *string
 	_type            *chatcallback.Type
 	is_opened        *bool
 	created_at       *time.Time
@@ -748,40 +748,40 @@ func (m *ChatCallbackMutation) ID() (id int, exists bool) {
 	return *m.id, true
 }
 
-// SetState sets the "state" field.
-func (m *ChatCallbackMutation) SetState(s string) {
-	m.state = &s
+// SetHash sets the "hash" field.
+func (m *ChatCallbackMutation) SetHash(s string) {
+	m.hash = &s
 }
 
-// State returns the value of the "state" field in the mutation.
-func (m *ChatCallbackMutation) State() (r string, exists bool) {
-	v := m.state
+// Hash returns the value of the "hash" field in the mutation.
+func (m *ChatCallbackMutation) Hash() (r string, exists bool) {
+	v := m.hash
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldState returns the old "state" field's value of the ChatCallback entity.
+// OldHash returns the old "hash" field's value of the ChatCallback entity.
 // If the ChatCallback object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ChatCallbackMutation) OldState(ctx context.Context) (v string, err error) {
+func (m *ChatCallbackMutation) OldHash(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, fmt.Errorf("OldState is only allowed on UpdateOne operations")
+		return v, fmt.Errorf("OldHash is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, fmt.Errorf("OldState requires an ID field in the mutation")
+		return v, fmt.Errorf("OldHash requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldState: %w", err)
+		return v, fmt.Errorf("querying old value for OldHash: %w", err)
 	}
-	return oldValue.State, nil
+	return oldValue.Hash, nil
 }
 
-// ResetState resets all changes to the "state" field.
-func (m *ChatCallbackMutation) ResetState() {
-	m.state = nil
+// ResetHash resets all changes to the "hash" field.
+func (m *ChatCallbackMutation) ResetHash() {
+	m.hash = nil
 }
 
 // SetType sets the "type" field.
@@ -1067,8 +1067,8 @@ func (m *ChatCallbackMutation) Type() string {
 // AddedFields().
 func (m *ChatCallbackMutation) Fields() []string {
 	fields := make([]string, 0, 7)
-	if m.state != nil {
-		fields = append(fields, chatcallback.FieldState)
+	if m.hash != nil {
+		fields = append(fields, chatcallback.FieldHash)
 	}
 	if m._type != nil {
 		fields = append(fields, chatcallback.FieldType)
@@ -1096,8 +1096,8 @@ func (m *ChatCallbackMutation) Fields() []string {
 // schema.
 func (m *ChatCallbackMutation) Field(name string) (ent.Value, bool) {
 	switch name {
-	case chatcallback.FieldState:
-		return m.State()
+	case chatcallback.FieldHash:
+		return m.Hash()
 	case chatcallback.FieldType:
 		return m.GetType()
 	case chatcallback.FieldIsOpened:
@@ -1119,8 +1119,8 @@ func (m *ChatCallbackMutation) Field(name string) (ent.Value, bool) {
 // database failed.
 func (m *ChatCallbackMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
-	case chatcallback.FieldState:
-		return m.OldState(ctx)
+	case chatcallback.FieldHash:
+		return m.OldHash(ctx)
 	case chatcallback.FieldType:
 		return m.OldType(ctx)
 	case chatcallback.FieldIsOpened:
@@ -1142,12 +1142,12 @@ func (m *ChatCallbackMutation) OldField(ctx context.Context, name string) (ent.V
 // type.
 func (m *ChatCallbackMutation) SetField(name string, value ent.Value) error {
 	switch name {
-	case chatcallback.FieldState:
+	case chatcallback.FieldHash:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetState(v)
+		m.SetHash(v)
 		return nil
 	case chatcallback.FieldType:
 		v, ok := value.(chatcallback.Type)
@@ -1240,8 +1240,8 @@ func (m *ChatCallbackMutation) ClearField(name string) error {
 // It returns an error if the field is not defined in the schema.
 func (m *ChatCallbackMutation) ResetField(name string) error {
 	switch name {
-	case chatcallback.FieldState:
-		m.ResetState()
+	case chatcallback.FieldHash:
+		m.ResetHash()
 		return nil
 	case chatcallback.FieldType:
 		m.ResetType()

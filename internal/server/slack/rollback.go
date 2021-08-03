@@ -88,11 +88,8 @@ func (s *Slack) handleRollbackCmd(c *gin.Context) {
 		return
 	}
 
-	state := randstr()
-
-	cb, err := s.i.CreateDeployChatCallback(ctx, cu, r, &ent.ChatCallback{
-		Type:  chatcallback.TypeRollback,
-		State: state,
+	cb, err := s.i.CreateChatCallback(ctx, cu, r, &ent.ChatCallback{
+		Type: chatcallback.TypeRollback,
 	})
 	if err != nil {
 		s.log.Error("It has failed to create a new callback.", zap.Error(err))
@@ -103,7 +100,7 @@ func (s *Slack) handleRollbackCmd(c *gin.Context) {
 	as := s.getSucceedDeploymentAggregation(ctx, r, config)
 
 	_, err = slack.New(cu.BotToken).
-		OpenViewContext(ctx, cmd.TriggerID, buildRollbackView(cb.State, as))
+		OpenViewContext(ctx, cmd.TriggerID, buildRollbackView(cb.Hash, as))
 	if err != nil {
 		s.log.Error("It has failed to open a dialog.", zap.Error(err))
 		c.Status(http.StatusInternalServerError)
@@ -203,7 +200,7 @@ func (s *Slack) interactRollback(c *gin.Context) {
 	// InteractionCallbackParse always to be parsed successfully because
 	// it was called in the Interact method.
 	itr, _ := s.InteractionCallbackParse(c.Request)
-	cb, _ := s.i.FindChatCallbackByState(ctx, itr.View.CallbackID)
+	cb, _ := s.i.FindChatCallbackByHash(ctx, itr.View.CallbackID)
 
 	cu, _ := s.i.FindChatUserByID(ctx, cb.Edges.ChatUser.ID)
 

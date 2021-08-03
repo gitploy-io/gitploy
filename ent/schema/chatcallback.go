@@ -16,8 +16,11 @@ type ChatCallback struct {
 // Fields of the ChatCallback.
 func (ChatCallback) Fields() []ent.Field {
 	return []ent.Field{
-		field.String("state").
-			Unique(),
+		field.String("hash").
+			Immutable().
+			Unique().
+			DefaultFunc(generateHash).
+			Sensitive(),
 		field.Enum("type").
 			Values(
 				"deploy",

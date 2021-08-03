@@ -93,10 +93,10 @@ func IDLTE(id int) predicate.ChatCallback {
 	})
 }
 
-// State applies equality check predicate on the "state" field. It's identical to StateEQ.
-func State(v string) predicate.ChatCallback {
+// Hash applies equality check predicate on the "hash" field. It's identical to HashEQ.
+func Hash(v string) predicate.ChatCallback {
 	return predicate.ChatCallback(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldState), v))
+		s.Where(sql.EQ(s.C(FieldHash), v))
 	})
 }
 
@@ -135,22 +135,22 @@ func RepoID(v string) predicate.ChatCallback {
 	})
 }
 
-// StateEQ applies the EQ predicate on the "state" field.
-func StateEQ(v string) predicate.ChatCallback {
+// HashEQ applies the EQ predicate on the "hash" field.
+func HashEQ(v string) predicate.ChatCallback {
 	return predicate.ChatCallback(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldState), v))
+		s.Where(sql.EQ(s.C(FieldHash), v))
 	})
 }
 
-// StateNEQ applies the NEQ predicate on the "state" field.
-func StateNEQ(v string) predicate.ChatCallback {
+// HashNEQ applies the NEQ predicate on the "hash" field.
+func HashNEQ(v string) predicate.ChatCallback {
 	return predicate.ChatCallback(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldState), v))
+		s.Where(sql.NEQ(s.C(FieldHash), v))
 	})
 }
 
-// StateIn applies the In predicate on the "state" field.
-func StateIn(vs ...string) predicate.ChatCallback {
+// HashIn applies the In predicate on the "hash" field.
+func HashIn(vs ...string) predicate.ChatCallback {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -162,12 +162,12 @@ func StateIn(vs ...string) predicate.ChatCallback {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.In(s.C(FieldState), v...))
+		s.Where(sql.In(s.C(FieldHash), v...))
 	})
 }
 
-// StateNotIn applies the NotIn predicate on the "state" field.
-func StateNotIn(vs ...string) predicate.ChatCallback {
+// HashNotIn applies the NotIn predicate on the "hash" field.
+func HashNotIn(vs ...string) predicate.ChatCallback {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -179,70 +179,70 @@ func StateNotIn(vs ...string) predicate.ChatCallback {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.NotIn(s.C(FieldState), v...))
+		s.Where(sql.NotIn(s.C(FieldHash), v...))
 	})
 }
 
-// StateGT applies the GT predicate on the "state" field.
-func StateGT(v string) predicate.ChatCallback {
+// HashGT applies the GT predicate on the "hash" field.
+func HashGT(v string) predicate.ChatCallback {
 	return predicate.ChatCallback(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldState), v))
+		s.Where(sql.GT(s.C(FieldHash), v))
 	})
 }
 
-// StateGTE applies the GTE predicate on the "state" field.
-func StateGTE(v string) predicate.ChatCallback {
+// HashGTE applies the GTE predicate on the "hash" field.
+func HashGTE(v string) predicate.ChatCallback {
 	return predicate.ChatCallback(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldState), v))
+		s.Where(sql.GTE(s.C(FieldHash), v))
 	})
 }
 
-// StateLT applies the LT predicate on the "state" field.
-func StateLT(v string) predicate.ChatCallback {
+// HashLT applies the LT predicate on the "hash" field.
+func HashLT(v string) predicate.ChatCallback {
 	return predicate.ChatCallback(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldState), v))
+		s.Where(sql.LT(s.C(FieldHash), v))
 	})
 }
 
-// StateLTE applies the LTE predicate on the "state" field.
-func StateLTE(v string) predicate.ChatCallback {
+// HashLTE applies the LTE predicate on the "hash" field.
+func HashLTE(v string) predicate.ChatCallback {
 	return predicate.ChatCallback(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldState), v))
+		s.Where(sql.LTE(s.C(FieldHash), v))
 	})
 }
 
-// StateContains applies the Contains predicate on the "state" field.
-func StateContains(v string) predicate.ChatCallback {
+// HashContains applies the Contains predicate on the "hash" field.
+func HashContains(v string) predicate.ChatCallback {
 	return predicate.ChatCallback(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldState), v))
+		s.Where(sql.Contains(s.C(FieldHash), v))
 	})
 }
 
-// StateHasPrefix applies the HasPrefix predicate on the "state" field.
-func StateHasPrefix(v string) predicate.ChatCallback {
+// HashHasPrefix applies the HasPrefix predicate on the "hash" field.
+func HashHasPrefix(v string) predicate.ChatCallback {
 	return predicate.ChatCallback(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldState), v))
+		s.Where(sql.HasPrefix(s.C(FieldHash), v))
 	})
 }
 
-// StateHasSuffix applies the HasSuffix predicate on the "state" field.
-func StateHasSuffix(v string) predicate.ChatCallback {
+// HashHasSuffix applies the HasSuffix predicate on the "hash" field.
+func HashHasSuffix(v string) predicate.ChatCallback {
 	return predicate.ChatCallback(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldState), v))
+		s.Where(sql.HasSuffix(s.C(FieldHash), v))
 	})
 }
 
-// StateEqualFold applies the EqualFold predicate on the "state" field.
-func StateEqualFold(v string) predicate.ChatCallback {
+// HashEqualFold applies the EqualFold predicate on the "hash" field.
+func HashEqualFold(v string) predicate.ChatCallback {
 	return predicate.ChatCallback(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldState), v))
+		s.Where(sql.EqualFold(s.C(FieldHash), v))
 	})
 }
 
-// StateContainsFold applies the ContainsFold predicate on the "state" field.
-func StateContainsFold(v string) predicate.ChatCallback {
+// HashContainsFold applies the ContainsFold predicate on the "hash" field.
+func HashContainsFold(v string) predicate.ChatCallback {
 	return predicate.ChatCallback(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldState), v))
+		s.Where(sql.ContainsFold(s.C(FieldHash), v))
 	})
 }
 

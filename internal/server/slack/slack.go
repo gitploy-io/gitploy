@@ -102,7 +102,7 @@ func (s *Slack) Interact(c *gin.Context) {
 	}
 
 	// TODO: change "state" into "hash".
-	cb, err := s.i.FindChatCallbackByState(ctx, itr.View.CallbackID)
+	cb, err := s.i.FindChatCallbackByHash(ctx, itr.View.CallbackID)
 	if ent.IsNotFound(err) {
 		responseMessage(itr.Channel.ID, itr.ResponseURL, "The callback is not found. You can interact with Slack by only `/gitploy`.")
 		c.Status(http.StatusOK)

@@ -18,8 +18,8 @@ type ChatCallback struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID int `json:"id,omitempty"`
-	// State holds the value of the "state" field.
-	State string `json:"state"`
+	// Hash holds the value of the "hash" field.
+	Hash string `json:"-"`
 	// Type holds the value of the "type" field.
 	Type chatcallback.Type `json:"type"`
 	// IsOpened holds the value of the "is_opened" field.
@@ -85,7 +85,7 @@ func (*ChatCallback) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(sql.NullBool)
 		case chatcallback.FieldID:
 			values[i] = new(sql.NullInt64)
-		case chatcallback.FieldState, chatcallback.FieldType, chatcallback.FieldChatUserID, chatcallback.FieldRepoID:
+		case chatcallback.FieldHash, chatcallback.FieldType, chatcallback.FieldChatUserID, chatcallback.FieldRepoID:
 			values[i] = new(sql.NullString)
 		case chatcallback.FieldCreatedAt, chatcallback.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -110,11 +110,11 @@ func (cc *ChatCallback) assignValues(columns []string, values []interface{}) err
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
 			cc.ID = int(value.Int64)
-		case chatcallback.FieldState:
+		case chatcallback.FieldHash:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field state", values[i])
+				return fmt.Errorf("unexpected type %T for field hash", values[i])
 			} else if value.Valid {
-				cc.State = value.String
+				cc.Hash = value.String
 			}
 		case chatcallback.FieldType:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -190,8 +190,7 @@ func (cc *ChatCallback) String() string {
 	var builder strings.Builder
 	builder.WriteString("ChatCallback(")
 	builder.WriteString(fmt.Sprintf("id=%v", cc.ID))
-	builder.WriteString(", state=")
-	builder.WriteString(cc.State)
+	builder.WriteString(", hash=<sensitive>")
 	builder.WriteString(", type=")
 	builder.WriteString(fmt.Sprintf("%v", cc.Type))
 	builder.WriteString(", is_opened=")

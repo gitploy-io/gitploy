@@ -12,8 +12,8 @@ const (
 	Label = "chat_callback"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
-	// FieldState holds the string denoting the state field in the database.
-	FieldState = "state"
+	// FieldHash holds the string denoting the hash field in the database.
+	FieldHash = "hash"
 	// FieldType holds the string denoting the type field in the database.
 	FieldType = "type"
 	// FieldIsOpened holds the string denoting the is_opened field in the database.
@@ -51,7 +51,7 @@ const (
 // Columns holds all SQL columns for chatcallback fields.
 var Columns = []string{
 	FieldID,
-	FieldState,
+	FieldHash,
 	FieldType,
 	FieldIsOpened,
 	FieldCreatedAt,
@@ -71,6 +71,8 @@ func ValidColumn(column string) bool {
 }
 
 var (
+	// DefaultHash holds the default value on creation for the "hash" field.
+	DefaultHash func() string
 	// DefaultIsOpened holds the default value on creation for the "is_opened" field.
 	DefaultIsOpened bool
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.

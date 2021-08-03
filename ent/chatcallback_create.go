@@ -22,9 +22,17 @@ type ChatCallbackCreate struct {
 	hooks    []Hook
 }
 
-// SetState sets the "state" field.
-func (ccc *ChatCallbackCreate) SetState(s string) *ChatCallbackCreate {
-	ccc.mutation.SetState(s)
+// SetHash sets the "hash" field.
+func (ccc *ChatCallbackCreate) SetHash(s string) *ChatCallbackCreate {
+	ccc.mutation.SetHash(s)
+	return ccc
+}
+
+// SetNillableHash sets the "hash" field if the given value is not nil.
+func (ccc *ChatCallbackCreate) SetNillableHash(s *string) *ChatCallbackCreate {
+	if s != nil {
+		ccc.SetHash(*s)
+	}
 	return ccc
 }
 
@@ -150,6 +158,10 @@ func (ccc *ChatCallbackCreate) SaveX(ctx context.Context) *ChatCallback {
 
 // defaults sets the default values of the builder before save.
 func (ccc *ChatCallbackCreate) defaults() {
+	if _, ok := ccc.mutation.Hash(); !ok {
+		v := chatcallback.DefaultHash()
+		ccc.mutation.SetHash(v)
+	}
 	if _, ok := ccc.mutation.IsOpened(); !ok {
 		v := chatcallback.DefaultIsOpened
 		ccc.mutation.SetIsOpened(v)
@@ -166,8 +178,8 @@ func (ccc *ChatCallbackCreate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (ccc *ChatCallbackCreate) check() error {
-	if _, ok := ccc.mutation.State(); !ok {
-		return &ValidationError{Name: "state", err: errors.New("ent: missing required field \"state\"")}
+	if _, ok := ccc.mutation.Hash(); !ok {
+		return &ValidationError{Name: "hash", err: errors.New("ent: missing required field \"hash\"")}
 	}
 	if _, ok := ccc.mutation.GetType(); !ok {
 		return &ValidationError{Name: "type", err: errors.New("ent: missing required field \"type\"")}
@@ -225,13 +237,13 @@ func (ccc *ChatCallbackCreate) createSpec() (*ChatCallback, *sqlgraph.CreateSpec
 			},
 		}
 	)
-	if value, ok := ccc.mutation.State(); ok {
+	if value, ok := ccc.mutation.Hash(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
-			Column: chatcallback.FieldState,
+			Column: chatcallback.FieldHash,
 		})
-		_node.State = value
+		_node.Hash = value
 	}
 	if value, ok := ccc.mutation.GetType(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

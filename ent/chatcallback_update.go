@@ -30,12 +30,6 @@ func (ccu *ChatCallbackUpdate) Where(ps ...predicate.ChatCallback) *ChatCallback
 	return ccu
 }
 
-// SetState sets the "state" field.
-func (ccu *ChatCallbackUpdate) SetState(s string) *ChatCallbackUpdate {
-	ccu.mutation.SetState(s)
-	return ccu
-}
-
 // SetType sets the "type" field.
 func (ccu *ChatCallbackUpdate) SetType(c chatcallback.Type) *ChatCallbackUpdate {
 	ccu.mutation.SetType(c)
@@ -215,13 +209,6 @@ func (ccu *ChatCallbackUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			}
 		}
 	}
-	if value, ok := ccu.mutation.State(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: chatcallback.FieldState,
-		})
-	}
 	if value, ok := ccu.mutation.GetType(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeEnum,
@@ -337,12 +324,6 @@ type ChatCallbackUpdateOne struct {
 	fields   []string
 	hooks    []Hook
 	mutation *ChatCallbackMutation
-}
-
-// SetState sets the "state" field.
-func (ccuo *ChatCallbackUpdateOne) SetState(s string) *ChatCallbackUpdateOne {
-	ccuo.mutation.SetState(s)
-	return ccuo
 }
 
 // SetType sets the "type" field.
@@ -547,13 +528,6 @@ func (ccuo *ChatCallbackUpdateOne) sqlSave(ctx context.Context) (_node *ChatCall
 				ps[i](selector)
 			}
 		}
-	}
-	if value, ok := ccuo.mutation.State(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: chatcallback.FieldState,
-		})
 	}
 	if value, ok := ccuo.mutation.GetType(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{

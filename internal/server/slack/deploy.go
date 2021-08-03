@@ -97,12 +97,9 @@ func (s *Slack) handleDeployCmd(c *gin.Context) {
 		return
 	}
 
-	state := randstr()
-
 	// Create a new callback to interact with submissions.
-	cb, err := s.i.CreateDeployChatCallback(ctx, cu, r, &ent.ChatCallback{
-		Type:  chatcallback.TypeDeploy,
-		State: state,
+	cb, err := s.i.CreateChatCallback(ctx, cu, r, &ent.ChatCallback{
+		Type: chatcallback.TypeDeploy,
 	})
 	if err != nil {
 		s.log.Error("It has failed to create a new callback.", zap.Error(err))
@@ -111,7 +108,7 @@ func (s *Slack) handleDeployCmd(c *gin.Context) {
 	}
 
 	_, err = slack.New(cu.BotToken).
-		OpenViewContext(ctx, cmd.TriggerID, buildDeployView(cb.State, config))
+		OpenViewContext(ctx, cmd.TriggerID, buildDeployView(cb.Hash, config))
 	if err != nil {
 		s.log.Error("It has failed to open a new view.", zap.Error(err))
 		c.Status(http.StatusInternalServerError)
@@ -243,7 +240,7 @@ func (s *Slack) interactDeploy(c *gin.Context) {
 	// InteractionCallbackParse always to be parsed successfully because
 	// it was called in the Interact method.
 	itr, _ := s.InteractionCallbackParse(c.Request)
-	cb, _ := s.i.FindChatCallbackByState(ctx, itr.View.CallbackID)
+	cb, _ := s.i.FindChatCallbackByHash(ctx, itr.View.CallbackID)
 
 	cu, _ := s.i.FindChatUserByID(ctx, cb.Edges.ChatUser.ID)
 
