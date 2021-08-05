@@ -1,3 +1,5 @@
+//go:generate mockgen -source ./interface.go -destination ./mock/interactor.go -package mock
+
 package slack
 
 import (

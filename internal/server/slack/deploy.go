@@ -292,7 +292,7 @@ func (s *Slack) interactDeploy(c *gin.Context) {
 	// validate values.
 	sm := parseViewSubmissions(itr)
 
-	sha, err := s.getCommitSha(ctx, cu.Edges.User, cb.Edges.Repo, sm.Type, sm.Ref)
+	_, err := s.getCommitSha(ctx, cu.Edges.User, cb.Edges.Repo, sm.Type, sm.Ref)
 	if vo.IsRefNotFoundError(err) {
 		c.JSON(http.StatusOK, buildErrorsPayload(map[string]string{
 			blockRef: "The reference is not found.",
@@ -330,7 +330,6 @@ func (s *Slack) interactDeploy(c *gin.Context) {
 		Number: number,
 		Type:   deployment.Type(sm.Type),
 		Ref:    sm.Ref,
-		Sha:    sha,
 		Env:    sm.Env,
 	}, env)
 	if err != nil {
