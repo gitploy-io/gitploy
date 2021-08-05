@@ -27,6 +27,7 @@ const (
 type (
 	rollbackViewSubmission struct {
 		DeploymentID int
+		ApproverIDs  []string
 	}
 
 	deploymentAggregation struct {
@@ -88,6 +89,13 @@ func (s *Slack) handleRollbackCmd(c *gin.Context) {
 		return
 	}
 
+	perms, err := s.i.ListPermsOfRepo(ctx, r, "", 1, 100)
+	if err != nil {
+		s.log.Error("It has failed to list permissions.", zap.Error(err))
+		c.Status(http.StatusInternalServerError)
+		return
+	}
+
 	cb, err := s.i.CreateChatCallback(ctx, cu, r, &ent.ChatCallback{
 		Type: chatcallback.TypeRollback,
 	})
@@ -100,7 +108,7 @@ func (s *Slack) handleRollbackCmd(c *gin.Context) {
 	as := s.getSucceedDeploymentAggregation(ctx, r, config)
 
 	_, err = slack.New(cu.BotToken).
-		OpenViewContext(ctx, cmd.TriggerID, buildRollbackView(cb.Hash, as))
+		OpenViewContext(ctx, cmd.TriggerID, buildRollbackView(cb.Hash, as, perms))
 	if err != nil {
 		s.log.Error("It has failed to open a dialog.", zap.Error(err))
 		c.Status(http.StatusInternalServerError)
@@ -110,7 +118,7 @@ func (s *Slack) handleRollbackCmd(c *gin.Context) {
 	c.Status(http.StatusOK)
 }
 
-func buildRollbackView(callbackID string, as []*deploymentAggregation) slack.ModalViewRequest {
+func buildRollbackView(callbackID string, as []*deploymentAggregation, perms []*ent.Perm) slack.ModalViewRequest {
 	groups := []*slack.OptionGroupBlockObject{}
 
 	for _, a := range as {
@@ -134,6 +142,22 @@ func buildRollbackView(callbackID string, as []*deploymentAggregation) slack.Mod
 				Text: string(a.envName),
 			},
 			Options: options,
+		})
+	}
+
+	approvers := []*slack.OptionBlockObject{}
+	for _, perm := range perms {
+		u := perm.Edges.User
+		if u == nil {
+			continue
+		}
+
+		approvers = append(approvers, &slack.OptionBlockObject{
+			Text: &slack.TextBlockObject{
+				Type: slack.PlainTextType,
+				Text: u.Login,
+			},
+			Value: u.ID,
 		})
 	}
 
@@ -169,6 +193,24 @@ func buildRollbackView(callbackID string, as []*deploymentAggregation) slack.Mod
 							Text: "Select target deployment",
 						},
 						OptionGroups: groups,
+					},
+				},
+				slack.InputBlock{
+					Type:    slack.MBTInput,
+					BlockID: blockApprovers,
+					Label: &slack.TextBlockObject{
+						Type: slack.PlainTextType,
+						Text: "Approvers",
+					},
+					Optional: true,
+					Element: slack.SelectBlockElement{
+						Type:     slack.MultiOptTypeStatic,
+						ActionID: actionApprovers,
+						Placeholder: &slack.TextBlockObject{
+							Type: slack.PlainTextType,
+							Text: "Select approvers",
+						},
+						Options: approvers,
 					},
 				},
 			},
@@ -226,6 +268,8 @@ func (s *Slack) interactRollback(c *gin.Context) {
 		return
 	}
 
+	env := cf.GetEnv(d.Env)
+
 	next, err := s.i.GetNextDeploymentNumberOfRepo(ctx, cb.Edges.Repo)
 	if err != nil {
 		s.log.Error("It has failed to get the next deployment number.", zap.Error(err))
@@ -239,7 +283,7 @@ func (s *Slack) interactRollback(c *gin.Context) {
 		Ref:    d.Ref,
 		Sha:    d.Sha,
 		Env:    d.Env,
-	}, cf.GetEnv(d.Env))
+	}, env)
 	if err != nil {
 		s.log.Error("It has failed to deploy.", zap.Error(err))
 		c.Status(http.StatusInternalServerError)
@@ -248,6 +292,23 @@ func (s *Slack) interactRollback(c *gin.Context) {
 
 	if err = s.i.Publish(ctx, notification.TypeDeploymentCreated, cb.Edges.Repo, d, nil); err != nil {
 		s.log.Warn("failed to notify the deployment.", zap.Error(err))
+	}
+
+	if env.IsApprovalEabled() {
+		for _, id := range sm.ApproverIDs {
+			a, err := s.i.CreateApproval(ctx, &ent.Approval{
+				UserID:       id,
+				DeploymentID: d.ID,
+			})
+			if err != nil {
+				s.log.Error("It has failed to create a new approval.", zap.Error(err))
+				continue
+			}
+
+			if err := s.i.Publish(ctx, notification.TypeApprovalRequested, cb.Edges.Repo, d, a); err != nil {
+				s.log.Warn("It has failed to publish the approval.", zap.Error(err))
+			}
+		}
 	}
 
 	c.Status(http.StatusOK)
@@ -259,6 +320,15 @@ func parseRollbackSubmissions(itr slack.InteractionCallback) *rollbackViewSubmis
 	values := itr.View.State.Values
 	if v, ok := values[blockDeployment][actionDeployment]; ok {
 		sm.DeploymentID = atoi(v.SelectedOption.Value)
+	}
+
+	ids := make([]string, 0)
+	if v, ok := values[blockApprovers][actionApprovers]; ok {
+		for _, option := range v.SelectedOptions {
+			ids = append(ids, option.Value)
+		}
+
+		sm.ApproverIDs = ids
 	}
 
 	return sm

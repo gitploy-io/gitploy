@@ -20,19 +20,22 @@ import (
 const (
 	// When creating a view, set unique block_ids for all blocks
 	// and unique action_ids for each block element.
-	blockEnv   = "block_env"
-	blockType  = "block_type"
-	blockRef   = "block_ref"
-	actionEnv  = "action_env"
-	actionType = "action_type"
-	actionRef  = "action_ref"
+	blockEnv        = "block_env"
+	blockType       = "block_type"
+	blockRef        = "block_ref"
+	blockApprovers  = "block_approvers"
+	actionEnv       = "action_env"
+	actionType      = "action_type"
+	actionRef       = "action_ref"
+	actionApprovers = "action_approver_ids"
 )
 
 type (
 	deployViewSubmission struct {
-		Env  string
-		Type string
-		Ref  string
+		Env         string
+		Type        string
+		Ref         string
+		ApproverIDs []string
 	}
 
 	ErrorsPayload struct {
@@ -97,6 +100,13 @@ func (s *Slack) handleDeployCmd(c *gin.Context) {
 		return
 	}
 
+	perms, err := s.i.ListPermsOfRepo(ctx, r, "", 1, 100)
+	if err != nil {
+		s.log.Error("It has failed to list permissions.", zap.Error(err))
+		c.Status(http.StatusInternalServerError)
+		return
+	}
+
 	// Create a new callback to interact with submissions.
 	cb, err := s.i.CreateChatCallback(ctx, cu, r, &ent.ChatCallback{
 		Type: chatcallback.TypeDeploy,
@@ -108,7 +118,7 @@ func (s *Slack) handleDeployCmd(c *gin.Context) {
 	}
 
 	_, err = slack.New(cu.BotToken).
-		OpenViewContext(ctx, cmd.TriggerID, buildDeployView(cb.Hash, config))
+		OpenViewContext(ctx, cmd.TriggerID, buildDeployView(cb.Hash, config, perms))
 	if err != nil {
 		s.log.Error("It has failed to open a new view.", zap.Error(err))
 		c.Status(http.StatusInternalServerError)
@@ -127,15 +137,31 @@ func parseFullName(fullname string) (string, string, error) {
 	return namespaceName[0], namespaceName[1], nil
 }
 
-func buildDeployView(callbackID string, c *vo.Config) slack.ModalViewRequest {
-	options := []*slack.OptionBlockObject{}
+func buildDeployView(callbackID string, c *vo.Config, perms []*ent.Perm) slack.ModalViewRequest {
+	envs := []*slack.OptionBlockObject{}
 	for _, env := range c.Envs {
-		options = append(options, &slack.OptionBlockObject{
+		envs = append(envs, &slack.OptionBlockObject{
 			Text: &slack.TextBlockObject{
 				Type: slack.PlainTextType,
 				Text: env.Name,
 			},
 			Value: env.Name,
+		})
+	}
+
+	approvers := []*slack.OptionBlockObject{}
+	for _, perm := range perms {
+		u := perm.Edges.User
+		if u == nil {
+			continue
+		}
+
+		approvers = append(approvers, &slack.OptionBlockObject{
+			Text: &slack.TextBlockObject{
+				Type: slack.PlainTextType,
+				Text: u.Login,
+			},
+			Value: u.ID,
 		})
 	}
 
@@ -170,7 +196,7 @@ func buildDeployView(callbackID string, c *vo.Config) slack.ModalViewRequest {
 							Type: slack.PlainTextType,
 							Text: "Select target environment",
 						},
-						Options: options,
+						Options: envs,
 					},
 				},
 				slack.InputBlock{
@@ -228,6 +254,24 @@ func buildDeployView(callbackID string, c *vo.Config) slack.ModalViewRequest {
 						},
 					},
 				},
+				slack.InputBlock{
+					Type:    slack.MBTInput,
+					BlockID: blockApprovers,
+					Label: &slack.TextBlockObject{
+						Type: slack.PlainTextType,
+						Text: "Approvers",
+					},
+					Optional: true,
+					Element: slack.SelectBlockElement{
+						Type:     slack.MultiOptTypeStatic,
+						ActionID: actionApprovers,
+						Placeholder: &slack.TextBlockObject{
+							Type: slack.PlainTextType,
+							Text: "Select approvers",
+						},
+						Options: approvers,
+					},
+				},
 			},
 		},
 	}
@@ -273,6 +317,8 @@ func (s *Slack) interactDeploy(c *gin.Context) {
 		return
 	}
 
+	env := cf.GetEnv(sm.Env)
+
 	number, err := s.i.GetNextDeploymentNumberOfRepo(ctx, cb.Edges.Repo)
 	if err != nil {
 		s.log.Error("It has failed to get the next deployment number.", zap.Error(err))
@@ -286,7 +332,7 @@ func (s *Slack) interactDeploy(c *gin.Context) {
 		Ref:    sm.Ref,
 		Sha:    sha,
 		Env:    sm.Env,
-	}, cf.GetEnv(sm.Env))
+	}, env)
 	if err != nil {
 		s.log.Error("It has failed to deploy.", zap.Error(err))
 		c.Status(http.StatusInternalServerError)
@@ -295,6 +341,23 @@ func (s *Slack) interactDeploy(c *gin.Context) {
 
 	if err = s.i.Publish(ctx, notification.TypeDeploymentCreated, cb.Edges.Repo, d, nil); err != nil {
 		s.log.Warn("It has failed to publish the deployment.", zap.Error(err))
+	}
+
+	if env.IsApprovalEabled() {
+		for _, id := range sm.ApproverIDs {
+			a, err := s.i.CreateApproval(ctx, &ent.Approval{
+				UserID:       id,
+				DeploymentID: d.ID,
+			})
+			if err != nil {
+				s.log.Error("It has failed to create a new approval.", zap.Error(err))
+				continue
+			}
+
+			if err := s.i.Publish(ctx, notification.TypeApprovalRequested, cb.Edges.Repo, d, a); err != nil {
+				s.log.Warn("It has failed to publish the approval.", zap.Error(err))
+			}
+		}
 	}
 
 	c.Status(http.StatusOK)
@@ -314,6 +377,15 @@ func parseViewSubmissions(itr slack.InteractionCallback) *deployViewSubmission {
 
 	if v, ok := values[blockRef][actionRef]; ok {
 		sm.Ref = v.Value
+	}
+
+	ids := make([]string, 0)
+	if v, ok := values[blockApprovers][actionApprovers]; ok {
+		for _, option := range v.SelectedOptions {
+			ids = append(ids, option.Value)
+		}
+
+		sm.ApproverIDs = ids
 	}
 
 	return sm
