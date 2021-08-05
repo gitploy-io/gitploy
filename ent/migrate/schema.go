@@ -40,7 +40,7 @@ var (
 	// ChatCallbacksColumns holds the columns for the "chat_callbacks" table.
 	ChatCallbacksColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "state", Type: field.TypeString, Unique: true},
+		{Name: "hash", Type: field.TypeString, Unique: true},
 		{Name: "type", Type: field.TypeEnum, Enums: []string{"deploy", "rollback"}},
 		{Name: "is_opened", Type: field.TypeBool, Default: true},
 		{Name: "created_at", Type: field.TypeTime},

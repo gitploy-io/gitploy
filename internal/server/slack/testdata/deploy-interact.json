@@ -1,0 +1,232 @@
+{
+    "type": "view_submission",
+    "team": {
+      "id": "T024K36ZE3",
+      "domain": "gitploy"
+    },
+    "user": {
+      "id": "U025KUBB2",
+      "username": "gitploy",
+      "name": "gitploy",
+      "team_id": "T024K36ZE3"
+    },
+    "trigger_id": "2343342985366.2150662237479.d8d4101b1404c64b832d43c5768fd2b0",
+    "view": {
+      "id": "V02AA2N0H34",
+      "team_id": "T024K36ZE3",
+      "type": "modal",
+      "blocks": [
+        {
+          "type": "input",
+          "block_id": "block_env",
+          "label": {
+            "type": "plain_text",
+            "text": "Environment",
+            "emoji": true
+          },
+          "optional": false,
+          "dispatch_action": false,
+          "element": {
+            "type": "static_select",
+            "action_id": "action_env",
+            "placeholder": {
+              "type": "plain_text",
+              "text": "Select target environment",
+              "emoji": true
+            },
+            "options": [
+              {
+                "text": {
+                  "type": "plain_text",
+                  "text": "prod",
+                  "emoji": true
+                },
+                "value": "prod"
+              }
+            ]
+          }
+        },
+        {
+          "type": "input",
+          "block_id": "block_type",
+          "label": {
+            "type": "plain_text",
+            "text": "Reference Type",
+            "emoji": true
+          },
+          "optional": false,
+          "dispatch_action": false,
+          "element": {
+            "type": "static_select",
+            "action_id": "action_type",
+            "placeholder": {
+              "type": "plain_text",
+              "text": "Select your reference type",
+              "emoji": true
+            },
+            "options": [
+              {
+                "text": {
+                  "type": "plain_text",
+                  "text": "Commit",
+                  "emoji": true
+                },
+                "value": "commit"
+              },
+              {
+                "text": {
+                  "type": "plain_text",
+                  "text": "Branch",
+                  "emoji": true
+                },
+                "value": "branch"
+              },
+              {
+                "text": {
+                  "type": "plain_text",
+                  "text": "Tag",
+                  "emoji": true
+                },
+                "value": "tag"
+              }
+            ]
+          }
+        },
+        {
+          "type": "input",
+          "block_id": "block_ref",
+          "label": {
+            "type": "plain_text",
+            "text": "Reference",
+            "emoji": true
+          },
+          "optional": false,
+          "dispatch_action": false,
+          "element": {
+            "type": "plain_text_input",
+            "action_id": "action_ref",
+            "placeholder": {
+              "type": "plain_text",
+              "text": "E.g. Commit - 25a667d6, Branch - main, Tag - v0.1.2",
+              "emoji": true
+            },
+            "dispatch_action_config": {
+              "trigger_actions_on": [
+                "on_enter_pressed"
+              ]
+            }
+          }
+        },
+        {
+          "type": "input",
+          "block_id": "block_approvers",
+          "label": {
+            "type": "plain_text",
+            "text": "Approvers",
+            "emoji": true
+          },
+          "optional": true,
+          "dispatch_action": false,
+          "element": {
+            "type": "multi_static_select",
+            "action_id": "action_approver_ids",
+            "placeholder": {
+              "type": "plain_text",
+              "text": "Select approvers",
+              "emoji": true
+            },
+            "options": [
+              {
+                "text": {
+                  "type": "plain_text",
+                  "text": "hanjunlee",
+                  "emoji": true
+                },
+                "value": "17633736"
+              }
+            ]
+          }
+        }
+      ],
+      "private_metadata": "",
+      "callback_id": "nafyVuEqzcchuVmV",
+      "state": {
+        "values": {
+          "block_env": {
+            "action_env": {
+              "type": "static_select",
+              "selected_option": {
+                "text": {
+                  "type": "plain_text",
+                  "text": "prod",
+                  "emoji": true
+                },
+                "value": "prod"
+              }
+            }
+          },
+          "block_type": {
+            "action_type": {
+              "type": "static_select",
+              "selected_option": {
+                "text": {
+                  "type": "plain_text",
+                  "text": "Branch",
+                  "emoji": true
+                },
+                "value": "branch"
+              }
+            }
+          },
+          "block_ref": {
+            "action_ref": {
+              "type": "plain_text_input",
+              "value": "main"
+            }
+          },
+          "block_approvers": {
+            "action_approver_ids": {
+              "type": "multi_static_select",
+              "selected_options": [
+                {
+                  "text": {
+                    "type": "plain_text",
+                    "text": "hanjunlee",
+                    "emoji": true
+                  },
+                  "value": "17633736"
+                }
+              ]
+            }
+          }
+        }
+      },
+      "hash": "1628164073.uijClkp6",
+      "title": {
+        "type": "plain_text",
+        "text": "Deploy",
+        "emoji": true
+      },
+      "clear_on_close": false,
+      "notify_on_close": false,
+      "close": {
+        "type": "plain_text",
+        "text": "Close",
+        "emoji": true
+      },
+      "submit": {
+        "type": "plain_text",
+        "text": "Submit",
+        "emoji": true
+      },
+      "previous_view_id": null,
+      "root_view_id": "V02AA2N0H34",
+      "app_id": "24NKFBZT8",
+      "external_id": "",
+      "app_installed_team_id": "T024E6ZE3",
+      "bot_id": "B02YBE1F"
+    },
+    "response_urls": [],
+    "is_enterprise_install": false,
+    "enterprise": null
+  }

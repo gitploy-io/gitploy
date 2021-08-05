@@ -326,12 +326,12 @@ func (ccq *ChatCallbackQuery) WithRepo(opts ...func(*RepoQuery)) *ChatCallbackQu
 // Example:
 //
 //	var v []struct {
-//		State string `json:"state"`
+//		Hash string `json:"hash"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.ChatCallback.Query().
-//		GroupBy(chatcallback.FieldState).
+//		GroupBy(chatcallback.FieldHash).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 //
@@ -353,11 +353,11 @@ func (ccq *ChatCallbackQuery) GroupBy(field string, fields ...string) *ChatCallb
 // Example:
 //
 //	var v []struct {
-//		State string `json:"state"`
+//		Hash string `json:"hash"`
 //	}
 //
 //	client.ChatCallback.Query().
-//		Select(chatcallback.FieldState).
+//		Select(chatcallback.FieldHash).
 //		Scan(ctx, &v)
 //
 func (ccq *ChatCallbackQuery) Select(field string, fields ...string) *ChatCallbackSelect {

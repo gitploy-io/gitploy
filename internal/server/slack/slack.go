@@ -101,12 +101,8 @@ func (s *Slack) Interact(c *gin.Context) {
 		return
 	}
 
-	if itr.Type == slack.InteractionTypeDialogCancellation {
-		c.Status(http.StatusOK)
-		return
-	}
-
-	cb, err := s.i.FindChatCallbackByState(ctx, itr.State)
+	// TODO: change "state" into "hash".
+	cb, err := s.i.FindChatCallbackByHash(ctx, itr.View.CallbackID)
 	if ent.IsNotFound(err) {
 		responseMessage(itr.Channel.ID, itr.ResponseURL, "The callback is not found. You can interact with Slack by only `/gitploy`.")
 		c.Status(http.StatusOK)
@@ -118,6 +114,7 @@ func (s *Slack) Interact(c *gin.Context) {
 	}
 
 	defer s.i.CloseChatCallback(ctx, cb)
+
 	if cb.Type == chatcallback.TypeDeploy {
 		s.interactDeploy(c)
 	} else if cb.Type == chatcallback.TypeRollback {

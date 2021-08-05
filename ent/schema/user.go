@@ -32,14 +32,7 @@ func (User) Fields() []ent.Field {
 		field.String("hash").
 			Immutable().
 			Unique().
-			DefaultFunc(func() string {
-				var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
-				b := make([]rune, 16)
-				for i := range b {
-					b[i] = letterRunes[rand.Intn(len(letterRunes))]
-				}
-				return string(b)
-			}).
+			DefaultFunc(generateHash).
 			Sensitive(),
 		field.Time("synced_at").
 			Optional(),
@@ -61,4 +54,13 @@ func (User) Edges() []ent.Edge {
 		edge.To("approvals", Approval.Type),
 		edge.To("notification", Notification.Type),
 	}
+}
+
+func generateHash() string {
+	var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+	b := make([]rune, 16)
+	for i := range b {
+		b[i] = letterRunes[rand.Intn(len(letterRunes))]
+	}
+	return string(b)
 }

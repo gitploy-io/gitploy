@@ -43,7 +43,7 @@ func (s *Slack) notifyDeploymentCreated(ctx context.Context, cu *ent.ChatUser, n
 		link     = s.buildLink(n)
 	)
 
-	if n.DeploymentType == string(deployment.TypeCommit) {
+	if n.DeploymentType == string(deployment.TypeCommit) && len(n.DeploymentRef) > 7 {
 		ref = n.DeploymentRef[:7]
 	}
 

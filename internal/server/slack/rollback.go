@@ -19,7 +19,17 @@ import (
 	"github.com/hanjunlee/gitploy/vo"
 )
 
+const (
+	blockDeployment  = "block_deployment"
+	actionDeployment = "aciton_deployment"
+)
+
 type (
+	rollbackViewSubmission struct {
+		DeploymentID int
+		ApproverIDs  []string
+	}
+
 	deploymentAggregation struct {
 		envName     string
 		deployments []*ent.Deployment
@@ -48,14 +58,14 @@ func (s *Slack) handleRollbackCmd(c *gin.Context) {
 
 	ns, n, err := parseFullName(args[1])
 	if err != nil {
-		responseMessage(cmd.ChannelID, cmd.ResponseURL, fmt.Sprintf("`%s` is invalid format.", args[1]))
+		responseMessage(cmd.ChannelID, cmd.ResponseURL, fmt.Sprintf("`%s` is invalid repository format.", args[1]))
 		c.Status(http.StatusOK)
 		return
 	}
 
 	r, err := s.i.FindRepoOfUserByNamespaceName(ctx, cu.Edges.User, ns, n)
 	if ent.IsNotFound(err) {
-		responseMessage(cmd.ChannelID, cmd.ResponseURL, fmt.Sprintf("The `%s` is not found.", args[1]))
+		responseMessage(cmd.ChannelID, cmd.ResponseURL, fmt.Sprintf("The `%s` repository is not found.", args[1]))
 		c.Status(http.StatusOK)
 		return
 	} else if err != nil {
@@ -66,11 +76,11 @@ func (s *Slack) handleRollbackCmd(c *gin.Context) {
 
 	config, err := s.i.GetConfig(ctx, cu.Edges.User, r)
 	if vo.IsConfigNotFoundError(err) {
-		responseMessage(cmd.ChannelID, cmd.ResponseURL, "The configuration file is not found")
+		responseMessage(cmd.ChannelID, cmd.ResponseURL, "The config file is not found")
 		c.Status(http.StatusOK)
 		return
 	} else if vo.IsConfigParseError(err) {
-		responseMessage(cmd.ChannelID, cmd.ResponseURL, "The configuration file is invliad format.")
+		responseMessage(cmd.ChannelID, cmd.ResponseURL, "The config file is invliad format.")
 		c.Status(http.StatusOK)
 		return
 	} else if err != nil {
@@ -79,11 +89,15 @@ func (s *Slack) handleRollbackCmd(c *gin.Context) {
 		return
 	}
 
-	state := randstr()
+	perms, err := s.i.ListPermsOfRepo(ctx, r, "", 1, 100)
+	if err != nil {
+		s.log.Error("It has failed to list permissions.", zap.Error(err))
+		c.Status(http.StatusInternalServerError)
+		return
+	}
 
-	cb, err := s.i.CreateDeployChatCallback(ctx, cu, r, &ent.ChatCallback{
-		Type:  chatcallback.TypeRollback,
-		State: state,
+	cb, err := s.i.CreateChatCallback(ctx, cu, r, &ent.ChatCallback{
+		Type: chatcallback.TypeRollback,
 	})
 	if err != nil {
 		s.log.Error("It has failed to create a new callback.", zap.Error(err))
@@ -92,15 +106,9 @@ func (s *Slack) handleRollbackCmd(c *gin.Context) {
 	}
 
 	as := s.getSucceedDeploymentAggregation(ctx, r, config)
-	err = slack.New(cu.BotToken).
-		OpenDialogContext(ctx, cmd.TriggerID, slack.Dialog{
-			CallbackID:     itoa(cb.ID),
-			State:          state,
-			Title:          "Rollback",
-			SubmitLabel:    "Submit",
-			NotifyOnCancel: true,
-			Elements:       createRollbackDialogElement(as),
-		})
+
+	_, err = slack.New(cu.BotToken).
+		OpenViewContext(ctx, cmd.TriggerID, buildRollbackView(cb.Hash, as, perms))
 	if err != nil {
 		s.log.Error("It has failed to open a dialog.", zap.Error(err))
 		c.Status(http.StatusInternalServerError)
@@ -108,6 +116,106 @@ func (s *Slack) handleRollbackCmd(c *gin.Context) {
 	}
 
 	c.Status(http.StatusOK)
+}
+
+func buildRollbackView(callbackID string, as []*deploymentAggregation, perms []*ent.Perm) slack.ModalViewRequest {
+	groups := []*slack.OptionGroupBlockObject{}
+
+	for _, a := range as {
+		options := []*slack.OptionBlockObject{}
+
+		for _, d := range a.deployments {
+			created, _ := goment.New(d.CreatedAt)
+
+			options = append(options, &slack.OptionBlockObject{
+				Text: &slack.TextBlockObject{
+					Type: slack.PlainTextType,
+					Text: fmt.Sprintf("#%d - %s deployed at %s", d.ID, d.GetShortRef(), created.FromNow()),
+				},
+				Value: strconv.Itoa(d.ID),
+			})
+		}
+
+		groups = append(groups, &slack.OptionGroupBlockObject{
+			Label: &slack.TextBlockObject{
+				Type: slack.PlainTextType,
+				Text: string(a.envName),
+			},
+			Options: options,
+		})
+	}
+
+	approvers := []*slack.OptionBlockObject{}
+	for _, perm := range perms {
+		u := perm.Edges.User
+		if u == nil {
+			continue
+		}
+
+		approvers = append(approvers, &slack.OptionBlockObject{
+			Text: &slack.TextBlockObject{
+				Type: slack.PlainTextType,
+				Text: u.Login,
+			},
+			Value: u.ID,
+		})
+	}
+
+	return slack.ModalViewRequest{
+		Type:       slack.VTModal,
+		CallbackID: callbackID,
+		Title: &slack.TextBlockObject{
+			Type: slack.PlainTextType,
+			Text: "Rollback",
+		},
+		Submit: &slack.TextBlockObject{
+			Type: slack.PlainTextType,
+			Text: "Submit",
+		},
+		Close: &slack.TextBlockObject{
+			Type: slack.PlainTextType,
+			Text: "Close",
+		},
+		Blocks: slack.Blocks{
+			BlockSet: []slack.Block{
+				slack.InputBlock{
+					Type:    slack.MBTInput,
+					BlockID: blockDeployment,
+					Label: &slack.TextBlockObject{
+						Type: slack.PlainTextType,
+						Text: "Deployments",
+					},
+					Element: slack.SelectBlockElement{
+						Type:     slack.OptTypeStatic,
+						ActionID: actionDeployment,
+						Placeholder: &slack.TextBlockObject{
+							Type: slack.PlainTextType,
+							Text: "Select target deployment",
+						},
+						OptionGroups: groups,
+					},
+				},
+				slack.InputBlock{
+					Type:    slack.MBTInput,
+					BlockID: blockApprovers,
+					Label: &slack.TextBlockObject{
+						Type: slack.PlainTextType,
+						Text: "Approvers",
+					},
+					Optional: true,
+					Element: slack.SelectBlockElement{
+						Type:     slack.MultiOptTypeStatic,
+						ActionID: actionApprovers,
+						Placeholder: &slack.TextBlockObject{
+							Type: slack.PlainTextType,
+							Text: "Select approvers",
+						},
+						Options: approvers,
+					},
+				},
+			},
+		},
+	}
 }
 
 func (s *Slack) getSucceedDeploymentAggregation(ctx context.Context, r *ent.Repo, cf *vo.Config) []*deploymentAggregation {
@@ -131,18 +239,16 @@ func (s *Slack) getSucceedDeploymentAggregation(ctx context.Context, r *ent.Repo
 func (s *Slack) interactRollback(c *gin.Context) {
 	ctx := c.Request.Context()
 
-	// InteractionCallbackParse hvae to be success because
+	// InteractionCallbackParse always to be parsed successfully because
 	// it was called in the Interact method.
 	itr, _ := s.InteractionCallbackParse(c.Request)
-	cb, _ := s.i.FindChatCallbackByState(ctx, itr.State)
-
-	var (
-		id = itr.Submission["deployment_id"]
-	)
+	cb, _ := s.i.FindChatCallbackByHash(ctx, itr.View.CallbackID)
 
 	cu, _ := s.i.FindChatUserByID(ctx, cb.Edges.ChatUser.ID)
 
-	d, err := s.i.FindDeploymentByID(ctx, atoi(id))
+	sm := parseRollbackSubmissions(itr)
+
+	d, err := s.i.FindDeploymentByID(ctx, sm.DeploymentID)
 	if err != nil {
 		s.log.Error("It has failed to find the deployment.", zap.Error(err))
 		c.Status(http.StatusInternalServerError)
@@ -150,15 +256,7 @@ func (s *Slack) interactRollback(c *gin.Context) {
 	}
 
 	cf, err := s.i.GetConfig(ctx, cu.Edges.User, cb.Edges.Repo)
-	if vo.IsConfigNotFoundError(err) {
-		responseMessage(itr.Channel.ID, itr.ResponseURL, "The config file is not found.")
-		c.Status(http.StatusOK)
-		return
-	} else if vo.IsConfigParseError(err) {
-		responseMessage(itr.Channel.ID, itr.ResponseURL, "The config file is invalid format.")
-		c.Status(http.StatusOK)
-		return
-	} else if err != nil {
+	if err != nil {
 		s.log.Error("It has failed to get the config file.", zap.Error(err))
 		c.Status(http.StatusInternalServerError)
 		return
@@ -170,13 +268,10 @@ func (s *Slack) interactRollback(c *gin.Context) {
 		return
 	}
 
-	// Prepare to rollback:
-	// 1) next deployment number.
-	var (
-		next int
-	)
+	env := cf.GetEnv(d.Env)
 
-	if next, err = s.i.GetNextDeploymentNumberOfRepo(ctx, cb.Edges.Repo); err != nil {
+	next, err := s.i.GetNextDeploymentNumberOfRepo(ctx, cb.Edges.Repo)
+	if err != nil {
 		s.log.Error("It has failed to get the next deployment number.", zap.Error(err))
 		c.Status(http.StatusInternalServerError)
 		return
@@ -188,7 +283,7 @@ func (s *Slack) interactRollback(c *gin.Context) {
 		Ref:    d.Ref,
 		Sha:    d.Sha,
 		Env:    d.Env,
-	}, cf.GetEnv(d.Env))
+	}, env)
 	if err != nil {
 		s.log.Error("It has failed to deploy.", zap.Error(err))
 		c.Status(http.StatusInternalServerError)
@@ -199,46 +294,42 @@ func (s *Slack) interactRollback(c *gin.Context) {
 		s.log.Warn("failed to notify the deployment.", zap.Error(err))
 	}
 
+	if env.IsApprovalEabled() {
+		for _, id := range sm.ApproverIDs {
+			a, err := s.i.CreateApproval(ctx, &ent.Approval{
+				UserID:       id,
+				DeploymentID: d.ID,
+			})
+			if err != nil {
+				s.log.Error("It has failed to create a new approval.", zap.Error(err))
+				continue
+			}
+
+			if err := s.i.Publish(ctx, notification.TypeApprovalRequested, cb.Edges.Repo, d, a); err != nil {
+				s.log.Warn("It has failed to publish the approval.", zap.Error(err))
+			}
+		}
+	}
+
 	c.Status(http.StatusOK)
 }
 
-func createRollbackDialogElement(as []*deploymentAggregation) []slack.DialogElement {
-	groups := []slack.DialogOptionGroup{}
-	for _, a := range as {
-		options := []slack.DialogSelectOption{}
+func parseRollbackSubmissions(itr slack.InteractionCallback) *rollbackViewSubmission {
+	sm := &rollbackViewSubmission{}
 
-		for _, d := range a.deployments {
-			created, _ := goment.New(d.CreatedAt)
-			options = append(options, slack.DialogSelectOption{
-				Label: fmt.Sprintf("#%d - %s deployed at %s", d.ID, strRef(d), created.FromNow()),
-				Value: strconv.Itoa(d.ID),
-			})
+	values := itr.View.State.Values
+	if v, ok := values[blockDeployment][actionDeployment]; ok {
+		sm.DeploymentID = atoi(v.SelectedOption.Value)
+	}
+
+	ids := make([]string, 0)
+	if v, ok := values[blockApprovers][actionApprovers]; ok {
+		for _, option := range v.SelectedOptions {
+			ids = append(ids, option.Value)
 		}
 
-		groups = append(groups, slack.DialogOptionGroup{
-			Label:   strings.Title(a.envName),
-			Options: options,
-		})
+		sm.ApproverIDs = ids
 	}
 
-	return []slack.DialogElement{
-		slack.DialogInputSelect{
-			DialogInput: slack.DialogInput{
-				Type:  slack.InputTypeSelect,
-				Label: "Deployment",
-				Name:  "deployment_id",
-			},
-			OptionGroups: groups,
-		},
-	}
-}
-
-func strRef(d *ent.Deployment) string {
-	ref := d.Ref
-
-	if d.Type == deployment.TypeCommit {
-		ref = d.Ref[:7]
-	}
-
-	return ref
+	return sm
 }

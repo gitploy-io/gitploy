@@ -35,6 +35,10 @@ func init() {
 	approval.UpdateDefaultUpdatedAt = approvalDescUpdatedAt.UpdateDefault.(func() time.Time)
 	chatcallbackFields := schema.ChatCallback{}.Fields()
 	_ = chatcallbackFields
+	// chatcallbackDescHash is the schema descriptor for hash field.
+	chatcallbackDescHash := chatcallbackFields[0].Descriptor()
+	// chatcallback.DefaultHash holds the default value on creation for the hash field.
+	chatcallback.DefaultHash = chatcallbackDescHash.Default.(func() string)
 	// chatcallbackDescIsOpened is the schema descriptor for is_opened field.
 	chatcallbackDescIsOpened := chatcallbackFields[2].Descriptor()
 	// chatcallback.DefaultIsOpened holds the default value on creation for the is_opened field.
