@@ -8,41 +8,29 @@ import (
 	"github.com/hanjunlee/gitploy/ent/approval"
 	"github.com/hanjunlee/gitploy/ent/deployment"
 	"github.com/hanjunlee/gitploy/vo"
-	"go.uber.org/zap"
 )
 
-func (i *Interactor) Deploy(ctx context.Context, u *ent.User, re *ent.Repo, d *ent.Deployment, env *vo.Env) (*ent.Deployment, error) {
-	d.UserID = u.ID
-	d.RepoID = re.ID
-
-	d, err := i.Store.CreateDeployment(ctx, d)
-	if err != nil {
-		return nil, fmt.Errorf("failed to save a new deployment to the store: %w", err)
-	}
-
-	if !env.IsApprovalEabled() {
-		return i.deployToSCM(ctx, u, re, d, env)
-	}
-
-	d.IsApprovalEnabled = true
-	d.RequiredApprovalCount = env.Approval.RequiredCount
-	d, _ = i.Store.UpdateDeployment(ctx, d)
-
-	return d, nil
+func (i *Interactor) Deploy(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, env *vo.Env) (*ent.Deployment, error) {
+	return i.deploy(ctx, u, r, d, env)
 }
 
-func (i *Interactor) Rollback(ctx context.Context, u *ent.User, re *ent.Repo, d *ent.Deployment, env *vo.Env) (*ent.Deployment, error) {
-	d.UserID = u.ID
-	d.RepoID = re.ID
+func (i *Interactor) Rollback(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, env *vo.Env) (*ent.Deployment, error) {
 	d.IsRollback = true
+
+	return i.deploy(ctx, u, r, d, env)
+}
+
+func (i *Interactor) deploy(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, env *vo.Env) (*ent.Deployment, error) {
+	d.UserID = u.ID
+	d.RepoID = r.ID
 
 	d, err := i.Store.CreateDeployment(ctx, d)
 	if err != nil {
-		return nil, fmt.Errorf("failed to save a new deployment to the store: %w", err)
+		return nil, fmt.Errorf("It failed to save a new deployment to the store: %w", err)
 	}
 
 	if !env.IsApprovalEabled() {
-		return i.deployToSCM(ctx, u, re, d, env)
+		return i.createDeploymentToSCM(ctx, u, r, d, env)
 	}
 
 	d.IsApprovalEnabled = true
@@ -65,11 +53,11 @@ func (i *Interactor) IsApproved(ctx context.Context, d *ent.Deployment) bool {
 	return approved >= d.RequiredApprovalCount
 }
 
-func (i *Interactor) DeployToSCM(ctx context.Context, u *ent.User, re *ent.Repo, d *ent.Deployment, env *vo.Env) (*ent.Deployment, error) {
-	return i.deployToSCM(ctx, u, re, d, env)
+func (i *Interactor) CreateDeploymentToSCM(ctx context.Context, u *ent.User, re *ent.Repo, d *ent.Deployment, env *vo.Env) (*ent.Deployment, error) {
+	return i.createDeploymentToSCM(ctx, u, re, d, env)
 }
 
-func (i *Interactor) deployToSCM(ctx context.Context, u *ent.User, re *ent.Repo, d *ent.Deployment, e *vo.Env) (*ent.Deployment, error) {
+func (i *Interactor) createDeploymentToSCM(ctx context.Context, u *ent.User, re *ent.Repo, d *ent.Deployment, e *vo.Env) (*ent.Deployment, error) {
 	if d.IsRollback {
 		// Rollback configures it can deploy the ref without any constraints.
 		// 1) Set auto_merge false to avoid the merge conflict.
@@ -79,11 +67,10 @@ func (i *Interactor) deployToSCM(ctx context.Context, u *ent.User, re *ent.Repo,
 		e.RequiredContexts = []string{}
 	}
 
-	uid, err := i.SCM.CreateDeployment(ctx, u, re, d, e)
+	rd, err := i.SCM.CreateDeployment(ctx, u, re, d, e)
 	if err != nil {
 		d.Status = deployment.StatusFailure
 		if _, err := i.UpdateDeployment(ctx, d); err != nil {
-			i.log.Error("failed to update the deployment.", zap.Error(err))
 			return nil, err
 		}
 

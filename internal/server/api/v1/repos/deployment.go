@@ -211,7 +211,7 @@ func (r *Repo) UpdateDeployment(c *gin.Context) {
 			return
 		}
 
-		if d, err = r.i.DeployToSCM(ctx, u, re, d, cf.GetEnv(d.Env)); err != nil {
+		if d, err = r.i.CreateDeploymentToSCM(ctx, u, re, d, cf.GetEnv(d.Env)); err != nil {
 			r.log.Error("failed to deploy to SCM.", zap.Error(err))
 			gb.ErrorResponse(c, http.StatusUnprocessableEntity, "It has failed to deploy to SCM.")
 			return
