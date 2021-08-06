@@ -36,6 +36,7 @@ func (Deployment) Fields() []ent.Field {
 				"running",
 				"success",
 				"failure",
+				"canceled",
 			).
 			Default("waiting"),
 		// UID is determined from SCM.
