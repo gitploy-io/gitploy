@@ -55,8 +55,6 @@ func (Perm) Edges() []ent.Edge {
 
 func (Perm) Indexes() []ent.Index {
 	return []ent.Index{
-		index.Fields("user_id"),
-		index.Fields("repo_id"),
 		index.Fields("repo_id", "user_id"),
 	}
 }

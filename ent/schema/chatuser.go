@@ -6,7 +6,6 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
-	"entgo.io/ent/schema/index"
 )
 
 // ChatUser holds the schema definition for the ChatUser entity.
@@ -43,11 +42,5 @@ func (ChatUser) Edges() []ent.Edge {
 			Field("user_id").
 			Unique().
 			Required(),
-	}
-}
-
-func (ChatUser) Indexes() []ent.Index {
-	return []ent.Index{
-		index.Fields("user_id"),
 	}
 }

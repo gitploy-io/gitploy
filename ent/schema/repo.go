@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"entgo.io/ent"
+	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 )
@@ -43,8 +44,17 @@ func (Repo) Fields() []ent.Field {
 // Edges of the Repo.
 func (Repo) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("perms", Perm.Type),
-		edge.To("deployments", Deployment.Type),
-		edge.To("chat_callback", ChatCallback.Type),
+		edge.To("perms", Perm.Type).
+			Annotations(entsql.Annotation{
+				OnDelete: entsql.Cascade,
+			}),
+		edge.To("deployments", Deployment.Type).
+			Annotations(entsql.Annotation{
+				OnDelete: entsql.Cascade,
+			}),
+		edge.To("chat_callback", ChatCallback.Type).
+			Annotations(entsql.Annotation{
+				OnDelete: entsql.Cascade,
+			}),
 	}
 }

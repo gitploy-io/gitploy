@@ -10,7 +10,6 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/hanjunlee/gitploy/ent"
-	"github.com/hanjunlee/gitploy/ent/migrate"
 	"github.com/hanjunlee/gitploy/internal/interactor"
 	"github.com/hanjunlee/gitploy/internal/pkg/github"
 	"github.com/hanjunlee/gitploy/internal/pkg/store"
@@ -122,7 +121,6 @@ func newStore(c *Config) interactor.Store {
 
 	err = client.Schema.Create(
 		context.Background(),
-		migrate.WithForeignKeys(false),
 	)
 	if err != nil {
 		log.Fatalf("failed creating schema resources: %v", err)

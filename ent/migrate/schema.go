@@ -27,7 +27,7 @@ var (
 				Symbol:     "approvals_deployments_approvals",
 				Columns:    []*schema.Column{ApprovalsColumns[4]},
 				RefColumns: []*schema.Column{DeploymentsColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.Cascade,
 			},
 			{
 				Symbol:     "approvals_users_approvals",
@@ -64,7 +64,7 @@ var (
 				Symbol:     "chat_callbacks_repos_chat_callback",
 				Columns:    []*schema.Column{ChatCallbacksColumns[7]},
 				RefColumns: []*schema.Column{ReposColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.Cascade,
 			},
 		},
 	}
@@ -89,14 +89,7 @@ var (
 				Symbol:     "chat_users_users_chat_user",
 				Columns:    []*schema.Column{ChatUsersColumns[7]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
-				OnDelete:   schema.SetNull,
-			},
-		},
-		Indexes: []*schema.Index{
-			{
-				Name:    "chatuser_user_id",
-				Unique:  false,
-				Columns: []*schema.Column{ChatUsersColumns[7]},
+				OnDelete:   schema.Cascade,
 			},
 		},
 	}
@@ -128,7 +121,7 @@ var (
 				Symbol:     "deployments_repos_deployments",
 				Columns:    []*schema.Column{DeploymentsColumns[13]},
 				RefColumns: []*schema.Column{ReposColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.Cascade,
 			},
 			{
 				Symbol:     "deployments_users_deployments",
@@ -138,16 +131,6 @@ var (
 			},
 		},
 		Indexes: []*schema.Index{
-			{
-				Name:    "deployment_user_id",
-				Unique:  false,
-				Columns: []*schema.Column{DeploymentsColumns[14]},
-			},
-			{
-				Name:    "deployment_repo_id",
-				Unique:  false,
-				Columns: []*schema.Column{DeploymentsColumns[13]},
-			},
 			{
 				Name:    "deployment_repo_id_env_created_at",
 				Unique:  false,
@@ -190,14 +173,7 @@ var (
 				Symbol:     "deployment_status_deployments_deployment_statuses",
 				Columns:    []*schema.Column{DeploymentStatusColumns[6]},
 				RefColumns: []*schema.Column{DeploymentsColumns[0]},
-				OnDelete:   schema.SetNull,
-			},
-		},
-		Indexes: []*schema.Index{
-			{
-				Name:    "deploymentstatus_deployment_id",
-				Unique:  false,
-				Columns: []*schema.Column{DeploymentStatusColumns[6]},
+				OnDelete:   schema.Cascade,
 			},
 		},
 	}
@@ -231,15 +207,10 @@ var (
 				Symbol:     "notifications_users_notification",
 				Columns:    []*schema.Column{NotificationsColumns[16]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.Cascade,
 			},
 		},
 		Indexes: []*schema.Index{
-			{
-				Name:    "notification_user_id",
-				Unique:  false,
-				Columns: []*schema.Column{NotificationsColumns[16]},
-			},
 			{
 				Name:    "notification_user_id_created_at",
 				Unique:  false,
@@ -267,26 +238,16 @@ var (
 				Symbol:     "perms_repos_perms",
 				Columns:    []*schema.Column{PermsColumns[5]},
 				RefColumns: []*schema.Column{ReposColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.Cascade,
 			},
 			{
 				Symbol:     "perms_users_perms",
 				Columns:    []*schema.Column{PermsColumns[6]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.Cascade,
 			},
 		},
 		Indexes: []*schema.Index{
-			{
-				Name:    "perm_user_id",
-				Unique:  false,
-				Columns: []*schema.Column{PermsColumns[6]},
-			},
-			{
-				Name:    "perm_repo_id",
-				Unique:  false,
-				Columns: []*schema.Column{PermsColumns[5]},
-			},
 			{
 				Name:    "perm_repo_id_user_id",
 				Unique:  false,
