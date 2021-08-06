@@ -59,21 +59,15 @@ func (du *DeploymentUpdate) SetNillableType(d *deployment.Type) *DeploymentUpdat
 	return du
 }
 
-// SetRef sets the "ref" field.
-func (du *DeploymentUpdate) SetRef(s string) *DeploymentUpdate {
-	du.mutation.SetRef(s)
-	return du
-}
-
-// SetSha sets the "sha" field.
-func (du *DeploymentUpdate) SetSha(s string) *DeploymentUpdate {
-	du.mutation.SetSha(s)
-	return du
-}
-
 // SetEnv sets the "env" field.
 func (du *DeploymentUpdate) SetEnv(s string) *DeploymentUpdate {
 	du.mutation.SetEnv(s)
+	return du
+}
+
+// SetRef sets the "ref" field.
+func (du *DeploymentUpdate) SetRef(s string) *DeploymentUpdate {
+	du.mutation.SetRef(s)
 	return du
 }
 
@@ -115,6 +109,46 @@ func (du *DeploymentUpdate) AddUID(i int64) *DeploymentUpdate {
 // ClearUID clears the value of the "uid" field.
 func (du *DeploymentUpdate) ClearUID() *DeploymentUpdate {
 	du.mutation.ClearUID()
+	return du
+}
+
+// SetSha sets the "sha" field.
+func (du *DeploymentUpdate) SetSha(s string) *DeploymentUpdate {
+	du.mutation.SetSha(s)
+	return du
+}
+
+// SetNillableSha sets the "sha" field if the given value is not nil.
+func (du *DeploymentUpdate) SetNillableSha(s *string) *DeploymentUpdate {
+	if s != nil {
+		du.SetSha(*s)
+	}
+	return du
+}
+
+// ClearSha clears the value of the "sha" field.
+func (du *DeploymentUpdate) ClearSha() *DeploymentUpdate {
+	du.mutation.ClearSha()
+	return du
+}
+
+// SetHTMLURL sets the "html_url" field.
+func (du *DeploymentUpdate) SetHTMLURL(s string) *DeploymentUpdate {
+	du.mutation.SetHTMLURL(s)
+	return du
+}
+
+// SetNillableHTMLURL sets the "html_url" field if the given value is not nil.
+func (du *DeploymentUpdate) SetNillableHTMLURL(s *string) *DeploymentUpdate {
+	if s != nil {
+		du.SetHTMLURL(*s)
+	}
+	return du
+}
+
+// ClearHTMLURL clears the value of the "html_url" field.
+func (du *DeploymentUpdate) ClearHTMLURL() *DeploymentUpdate {
+	du.mutation.ClearHTMLURL()
 	return du
 }
 
@@ -376,6 +410,11 @@ func (du *DeploymentUpdate) check() error {
 			return &ValidationError{Name: "status", err: fmt.Errorf("ent: validator failed for field \"status\": %w", err)}
 		}
 	}
+	if v, ok := du.mutation.HTMLURL(); ok {
+		if err := deployment.HTMLURLValidator(v); err != nil {
+			return &ValidationError{Name: "html_url", err: fmt.Errorf("ent: validator failed for field \"html_url\": %w", err)}
+		}
+	}
 	if _, ok := du.mutation.UserID(); du.mutation.UserCleared() && !ok {
 		return errors.New("ent: clearing a required unique edge \"user\"")
 	}
@@ -424,25 +463,18 @@ func (du *DeploymentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: deployment.FieldType,
 		})
 	}
-	if value, ok := du.mutation.Ref(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: deployment.FieldRef,
-		})
-	}
-	if value, ok := du.mutation.Sha(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: deployment.FieldSha,
-		})
-	}
 	if value, ok := du.mutation.Env(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
 			Column: deployment.FieldEnv,
+		})
+	}
+	if value, ok := du.mutation.Ref(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: deployment.FieldRef,
 		})
 	}
 	if value, ok := du.mutation.Status(); ok {
@@ -470,6 +502,32 @@ func (du *DeploymentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeInt64,
 			Column: deployment.FieldUID,
+		})
+	}
+	if value, ok := du.mutation.Sha(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: deployment.FieldSha,
+		})
+	}
+	if du.mutation.ShaCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: deployment.FieldSha,
+		})
+	}
+	if value, ok := du.mutation.HTMLURL(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: deployment.FieldHTMLURL,
+		})
+	}
+	if du.mutation.HTMLURLCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: deployment.FieldHTMLURL,
 		})
 	}
 	if value, ok := du.mutation.IsRollback(); ok {
@@ -738,21 +796,15 @@ func (duo *DeploymentUpdateOne) SetNillableType(d *deployment.Type) *DeploymentU
 	return duo
 }
 
-// SetRef sets the "ref" field.
-func (duo *DeploymentUpdateOne) SetRef(s string) *DeploymentUpdateOne {
-	duo.mutation.SetRef(s)
-	return duo
-}
-
-// SetSha sets the "sha" field.
-func (duo *DeploymentUpdateOne) SetSha(s string) *DeploymentUpdateOne {
-	duo.mutation.SetSha(s)
-	return duo
-}
-
 // SetEnv sets the "env" field.
 func (duo *DeploymentUpdateOne) SetEnv(s string) *DeploymentUpdateOne {
 	duo.mutation.SetEnv(s)
+	return duo
+}
+
+// SetRef sets the "ref" field.
+func (duo *DeploymentUpdateOne) SetRef(s string) *DeploymentUpdateOne {
+	duo.mutation.SetRef(s)
 	return duo
 }
 
@@ -794,6 +846,46 @@ func (duo *DeploymentUpdateOne) AddUID(i int64) *DeploymentUpdateOne {
 // ClearUID clears the value of the "uid" field.
 func (duo *DeploymentUpdateOne) ClearUID() *DeploymentUpdateOne {
 	duo.mutation.ClearUID()
+	return duo
+}
+
+// SetSha sets the "sha" field.
+func (duo *DeploymentUpdateOne) SetSha(s string) *DeploymentUpdateOne {
+	duo.mutation.SetSha(s)
+	return duo
+}
+
+// SetNillableSha sets the "sha" field if the given value is not nil.
+func (duo *DeploymentUpdateOne) SetNillableSha(s *string) *DeploymentUpdateOne {
+	if s != nil {
+		duo.SetSha(*s)
+	}
+	return duo
+}
+
+// ClearSha clears the value of the "sha" field.
+func (duo *DeploymentUpdateOne) ClearSha() *DeploymentUpdateOne {
+	duo.mutation.ClearSha()
+	return duo
+}
+
+// SetHTMLURL sets the "html_url" field.
+func (duo *DeploymentUpdateOne) SetHTMLURL(s string) *DeploymentUpdateOne {
+	duo.mutation.SetHTMLURL(s)
+	return duo
+}
+
+// SetNillableHTMLURL sets the "html_url" field if the given value is not nil.
+func (duo *DeploymentUpdateOne) SetNillableHTMLURL(s *string) *DeploymentUpdateOne {
+	if s != nil {
+		duo.SetHTMLURL(*s)
+	}
+	return duo
+}
+
+// ClearHTMLURL clears the value of the "html_url" field.
+func (duo *DeploymentUpdateOne) ClearHTMLURL() *DeploymentUpdateOne {
+	duo.mutation.ClearHTMLURL()
 	return duo
 }
 
@@ -1062,6 +1154,11 @@ func (duo *DeploymentUpdateOne) check() error {
 			return &ValidationError{Name: "status", err: fmt.Errorf("ent: validator failed for field \"status\": %w", err)}
 		}
 	}
+	if v, ok := duo.mutation.HTMLURL(); ok {
+		if err := deployment.HTMLURLValidator(v); err != nil {
+			return &ValidationError{Name: "html_url", err: fmt.Errorf("ent: validator failed for field \"html_url\": %w", err)}
+		}
+	}
 	if _, ok := duo.mutation.UserID(); duo.mutation.UserCleared() && !ok {
 		return errors.New("ent: clearing a required unique edge \"user\"")
 	}
@@ -1127,25 +1224,18 @@ func (duo *DeploymentUpdateOne) sqlSave(ctx context.Context) (_node *Deployment,
 			Column: deployment.FieldType,
 		})
 	}
-	if value, ok := duo.mutation.Ref(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: deployment.FieldRef,
-		})
-	}
-	if value, ok := duo.mutation.Sha(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: deployment.FieldSha,
-		})
-	}
 	if value, ok := duo.mutation.Env(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
 			Column: deployment.FieldEnv,
+		})
+	}
+	if value, ok := duo.mutation.Ref(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: deployment.FieldRef,
 		})
 	}
 	if value, ok := duo.mutation.Status(); ok {
@@ -1173,6 +1263,32 @@ func (duo *DeploymentUpdateOne) sqlSave(ctx context.Context) (_node *Deployment,
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeInt64,
 			Column: deployment.FieldUID,
+		})
+	}
+	if value, ok := duo.mutation.Sha(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: deployment.FieldSha,
+		})
+	}
+	if duo.mutation.ShaCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: deployment.FieldSha,
+		})
+	}
+	if value, ok := duo.mutation.HTMLURL(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: deployment.FieldHTMLURL,
+		})
+	}
+	if duo.mutation.HTMLURLCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: deployment.FieldHTMLURL,
 		})
 	}
 	if value, ok := duo.mutation.IsRollback(); ok {

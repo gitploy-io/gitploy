@@ -82,11 +82,14 @@ func (i *Interactor) createDeploymentToSCM(ctx context.Context, u *ent.User, re 
 		return nil, err
 	}
 
-	d.UID = uid
+	// Save the state of the remote deployment.
+	d.UID = rd.UID
+	d.Sha = rd.SHA
+	d.HTMLURL = rd.HTLMURL
 	d.Status = deployment.StatusCreated
+
 	if _, err := i.UpdateDeployment(ctx, d); err != nil {
-		i.log.Error("failed to update the deployment.", zap.Error(err))
-		return d, nil
+		return nil, err
 	}
 
 	i.CreateDeploymentStatus(ctx, &ent.DeploymentStatus{

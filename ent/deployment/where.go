@@ -100,10 +100,24 @@ func Number(v int) predicate.Deployment {
 	})
 }
 
+// Env applies equality check predicate on the "env" field. It's identical to EnvEQ.
+func Env(v string) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldEnv), v))
+	})
+}
+
 // Ref applies equality check predicate on the "ref" field. It's identical to RefEQ.
 func Ref(v string) predicate.Deployment {
 	return predicate.Deployment(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldRef), v))
+	})
+}
+
+// UID applies equality check predicate on the "uid" field. It's identical to UIDEQ.
+func UID(v int64) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldUID), v))
 	})
 }
 
@@ -114,17 +128,10 @@ func Sha(v string) predicate.Deployment {
 	})
 }
 
-// Env applies equality check predicate on the "env" field. It's identical to EnvEQ.
-func Env(v string) predicate.Deployment {
+// HTMLURL applies equality check predicate on the "html_url" field. It's identical to HTMLURLEQ.
+func HTMLURL(v string) predicate.Deployment {
 	return predicate.Deployment(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldEnv), v))
-	})
-}
-
-// UID applies equality check predicate on the "uid" field. It's identical to UIDEQ.
-func UID(v int64) predicate.Deployment {
-	return predicate.Deployment(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldUID), v))
+		s.Where(sql.EQ(s.C(FieldHTMLURL), v))
 	})
 }
 
@@ -301,228 +308,6 @@ func TypeNotIn(vs ...Type) predicate.Deployment {
 	})
 }
 
-// RefEQ applies the EQ predicate on the "ref" field.
-func RefEQ(v string) predicate.Deployment {
-	return predicate.Deployment(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRef), v))
-	})
-}
-
-// RefNEQ applies the NEQ predicate on the "ref" field.
-func RefNEQ(v string) predicate.Deployment {
-	return predicate.Deployment(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldRef), v))
-	})
-}
-
-// RefIn applies the In predicate on the "ref" field.
-func RefIn(vs ...string) predicate.Deployment {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Deployment(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.In(s.C(FieldRef), v...))
-	})
-}
-
-// RefNotIn applies the NotIn predicate on the "ref" field.
-func RefNotIn(vs ...string) predicate.Deployment {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Deployment(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.NotIn(s.C(FieldRef), v...))
-	})
-}
-
-// RefGT applies the GT predicate on the "ref" field.
-func RefGT(v string) predicate.Deployment {
-	return predicate.Deployment(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldRef), v))
-	})
-}
-
-// RefGTE applies the GTE predicate on the "ref" field.
-func RefGTE(v string) predicate.Deployment {
-	return predicate.Deployment(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldRef), v))
-	})
-}
-
-// RefLT applies the LT predicate on the "ref" field.
-func RefLT(v string) predicate.Deployment {
-	return predicate.Deployment(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldRef), v))
-	})
-}
-
-// RefLTE applies the LTE predicate on the "ref" field.
-func RefLTE(v string) predicate.Deployment {
-	return predicate.Deployment(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldRef), v))
-	})
-}
-
-// RefContains applies the Contains predicate on the "ref" field.
-func RefContains(v string) predicate.Deployment {
-	return predicate.Deployment(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldRef), v))
-	})
-}
-
-// RefHasPrefix applies the HasPrefix predicate on the "ref" field.
-func RefHasPrefix(v string) predicate.Deployment {
-	return predicate.Deployment(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldRef), v))
-	})
-}
-
-// RefHasSuffix applies the HasSuffix predicate on the "ref" field.
-func RefHasSuffix(v string) predicate.Deployment {
-	return predicate.Deployment(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldRef), v))
-	})
-}
-
-// RefEqualFold applies the EqualFold predicate on the "ref" field.
-func RefEqualFold(v string) predicate.Deployment {
-	return predicate.Deployment(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldRef), v))
-	})
-}
-
-// RefContainsFold applies the ContainsFold predicate on the "ref" field.
-func RefContainsFold(v string) predicate.Deployment {
-	return predicate.Deployment(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldRef), v))
-	})
-}
-
-// ShaEQ applies the EQ predicate on the "sha" field.
-func ShaEQ(v string) predicate.Deployment {
-	return predicate.Deployment(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldSha), v))
-	})
-}
-
-// ShaNEQ applies the NEQ predicate on the "sha" field.
-func ShaNEQ(v string) predicate.Deployment {
-	return predicate.Deployment(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldSha), v))
-	})
-}
-
-// ShaIn applies the In predicate on the "sha" field.
-func ShaIn(vs ...string) predicate.Deployment {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Deployment(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.In(s.C(FieldSha), v...))
-	})
-}
-
-// ShaNotIn applies the NotIn predicate on the "sha" field.
-func ShaNotIn(vs ...string) predicate.Deployment {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Deployment(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.NotIn(s.C(FieldSha), v...))
-	})
-}
-
-// ShaGT applies the GT predicate on the "sha" field.
-func ShaGT(v string) predicate.Deployment {
-	return predicate.Deployment(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldSha), v))
-	})
-}
-
-// ShaGTE applies the GTE predicate on the "sha" field.
-func ShaGTE(v string) predicate.Deployment {
-	return predicate.Deployment(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldSha), v))
-	})
-}
-
-// ShaLT applies the LT predicate on the "sha" field.
-func ShaLT(v string) predicate.Deployment {
-	return predicate.Deployment(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldSha), v))
-	})
-}
-
-// ShaLTE applies the LTE predicate on the "sha" field.
-func ShaLTE(v string) predicate.Deployment {
-	return predicate.Deployment(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldSha), v))
-	})
-}
-
-// ShaContains applies the Contains predicate on the "sha" field.
-func ShaContains(v string) predicate.Deployment {
-	return predicate.Deployment(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldSha), v))
-	})
-}
-
-// ShaHasPrefix applies the HasPrefix predicate on the "sha" field.
-func ShaHasPrefix(v string) predicate.Deployment {
-	return predicate.Deployment(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldSha), v))
-	})
-}
-
-// ShaHasSuffix applies the HasSuffix predicate on the "sha" field.
-func ShaHasSuffix(v string) predicate.Deployment {
-	return predicate.Deployment(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldSha), v))
-	})
-}
-
-// ShaEqualFold applies the EqualFold predicate on the "sha" field.
-func ShaEqualFold(v string) predicate.Deployment {
-	return predicate.Deployment(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldSha), v))
-	})
-}
-
-// ShaContainsFold applies the ContainsFold predicate on the "sha" field.
-func ShaContainsFold(v string) predicate.Deployment {
-	return predicate.Deployment(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldSha), v))
-	})
-}
-
 // EnvEQ applies the EQ predicate on the "env" field.
 func EnvEQ(v string) predicate.Deployment {
 	return predicate.Deployment(func(s *sql.Selector) {
@@ -631,6 +416,117 @@ func EnvEqualFold(v string) predicate.Deployment {
 func EnvContainsFold(v string) predicate.Deployment {
 	return predicate.Deployment(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldEnv), v))
+	})
+}
+
+// RefEQ applies the EQ predicate on the "ref" field.
+func RefEQ(v string) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldRef), v))
+	})
+}
+
+// RefNEQ applies the NEQ predicate on the "ref" field.
+func RefNEQ(v string) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldRef), v))
+	})
+}
+
+// RefIn applies the In predicate on the "ref" field.
+func RefIn(vs ...string) predicate.Deployment {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Deployment(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldRef), v...))
+	})
+}
+
+// RefNotIn applies the NotIn predicate on the "ref" field.
+func RefNotIn(vs ...string) predicate.Deployment {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Deployment(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldRef), v...))
+	})
+}
+
+// RefGT applies the GT predicate on the "ref" field.
+func RefGT(v string) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldRef), v))
+	})
+}
+
+// RefGTE applies the GTE predicate on the "ref" field.
+func RefGTE(v string) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldRef), v))
+	})
+}
+
+// RefLT applies the LT predicate on the "ref" field.
+func RefLT(v string) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldRef), v))
+	})
+}
+
+// RefLTE applies the LTE predicate on the "ref" field.
+func RefLTE(v string) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldRef), v))
+	})
+}
+
+// RefContains applies the Contains predicate on the "ref" field.
+func RefContains(v string) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldRef), v))
+	})
+}
+
+// RefHasPrefix applies the HasPrefix predicate on the "ref" field.
+func RefHasPrefix(v string) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldRef), v))
+	})
+}
+
+// RefHasSuffix applies the HasSuffix predicate on the "ref" field.
+func RefHasSuffix(v string) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldRef), v))
+	})
+}
+
+// RefEqualFold applies the EqualFold predicate on the "ref" field.
+func RefEqualFold(v string) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldRef), v))
+	})
+}
+
+// RefContainsFold applies the ContainsFold predicate on the "ref" field.
+func RefContainsFold(v string) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldRef), v))
 	})
 }
 
@@ -769,6 +665,256 @@ func UIDIsNil() predicate.Deployment {
 func UIDNotNil() predicate.Deployment {
 	return predicate.Deployment(func(s *sql.Selector) {
 		s.Where(sql.NotNull(s.C(FieldUID)))
+	})
+}
+
+// ShaEQ applies the EQ predicate on the "sha" field.
+func ShaEQ(v string) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldSha), v))
+	})
+}
+
+// ShaNEQ applies the NEQ predicate on the "sha" field.
+func ShaNEQ(v string) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldSha), v))
+	})
+}
+
+// ShaIn applies the In predicate on the "sha" field.
+func ShaIn(vs ...string) predicate.Deployment {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Deployment(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldSha), v...))
+	})
+}
+
+// ShaNotIn applies the NotIn predicate on the "sha" field.
+func ShaNotIn(vs ...string) predicate.Deployment {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Deployment(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldSha), v...))
+	})
+}
+
+// ShaGT applies the GT predicate on the "sha" field.
+func ShaGT(v string) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldSha), v))
+	})
+}
+
+// ShaGTE applies the GTE predicate on the "sha" field.
+func ShaGTE(v string) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldSha), v))
+	})
+}
+
+// ShaLT applies the LT predicate on the "sha" field.
+func ShaLT(v string) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldSha), v))
+	})
+}
+
+// ShaLTE applies the LTE predicate on the "sha" field.
+func ShaLTE(v string) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldSha), v))
+	})
+}
+
+// ShaContains applies the Contains predicate on the "sha" field.
+func ShaContains(v string) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldSha), v))
+	})
+}
+
+// ShaHasPrefix applies the HasPrefix predicate on the "sha" field.
+func ShaHasPrefix(v string) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldSha), v))
+	})
+}
+
+// ShaHasSuffix applies the HasSuffix predicate on the "sha" field.
+func ShaHasSuffix(v string) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldSha), v))
+	})
+}
+
+// ShaIsNil applies the IsNil predicate on the "sha" field.
+func ShaIsNil() predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldSha)))
+	})
+}
+
+// ShaNotNil applies the NotNil predicate on the "sha" field.
+func ShaNotNil() predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldSha)))
+	})
+}
+
+// ShaEqualFold applies the EqualFold predicate on the "sha" field.
+func ShaEqualFold(v string) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldSha), v))
+	})
+}
+
+// ShaContainsFold applies the ContainsFold predicate on the "sha" field.
+func ShaContainsFold(v string) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldSha), v))
+	})
+}
+
+// HTMLURLEQ applies the EQ predicate on the "html_url" field.
+func HTMLURLEQ(v string) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldHTMLURL), v))
+	})
+}
+
+// HTMLURLNEQ applies the NEQ predicate on the "html_url" field.
+func HTMLURLNEQ(v string) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldHTMLURL), v))
+	})
+}
+
+// HTMLURLIn applies the In predicate on the "html_url" field.
+func HTMLURLIn(vs ...string) predicate.Deployment {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Deployment(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldHTMLURL), v...))
+	})
+}
+
+// HTMLURLNotIn applies the NotIn predicate on the "html_url" field.
+func HTMLURLNotIn(vs ...string) predicate.Deployment {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Deployment(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldHTMLURL), v...))
+	})
+}
+
+// HTMLURLGT applies the GT predicate on the "html_url" field.
+func HTMLURLGT(v string) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldHTMLURL), v))
+	})
+}
+
+// HTMLURLGTE applies the GTE predicate on the "html_url" field.
+func HTMLURLGTE(v string) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldHTMLURL), v))
+	})
+}
+
+// HTMLURLLT applies the LT predicate on the "html_url" field.
+func HTMLURLLT(v string) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldHTMLURL), v))
+	})
+}
+
+// HTMLURLLTE applies the LTE predicate on the "html_url" field.
+func HTMLURLLTE(v string) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldHTMLURL), v))
+	})
+}
+
+// HTMLURLContains applies the Contains predicate on the "html_url" field.
+func HTMLURLContains(v string) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldHTMLURL), v))
+	})
+}
+
+// HTMLURLHasPrefix applies the HasPrefix predicate on the "html_url" field.
+func HTMLURLHasPrefix(v string) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldHTMLURL), v))
+	})
+}
+
+// HTMLURLHasSuffix applies the HasSuffix predicate on the "html_url" field.
+func HTMLURLHasSuffix(v string) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldHTMLURL), v))
+	})
+}
+
+// HTMLURLIsNil applies the IsNil predicate on the "html_url" field.
+func HTMLURLIsNil() predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldHTMLURL)))
+	})
+}
+
+// HTMLURLNotNil applies the NotNil predicate on the "html_url" field.
+func HTMLURLNotNil() predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldHTMLURL)))
+	})
+}
+
+// HTMLURLEqualFold applies the EqualFold predicate on the "html_url" field.
+func HTMLURLEqualFold(v string) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldHTMLURL), v))
+	})
+}
+
+// HTMLURLContainsFold applies the ContainsFold predicate on the "html_url" field.
+func HTMLURLContainsFold(v string) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldHTMLURL), v))
 	})
 }
 

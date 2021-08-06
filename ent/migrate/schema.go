@@ -98,11 +98,12 @@ var (
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "number", Type: field.TypeInt},
 		{Name: "type", Type: field.TypeEnum, Enums: []string{"commit", "branch", "tag"}, Default: "commit"},
-		{Name: "ref", Type: field.TypeString},
-		{Name: "sha", Type: field.TypeString},
 		{Name: "env", Type: field.TypeString},
+		{Name: "ref", Type: field.TypeString},
 		{Name: "status", Type: field.TypeEnum, Enums: []string{"waiting", "created", "running", "success", "failure", "canceled"}, Default: "waiting"},
 		{Name: "uid", Type: field.TypeInt64, Nullable: true},
+		{Name: "sha", Type: field.TypeString, Nullable: true},
+		{Name: "html_url", Type: field.TypeString, Nullable: true, Size: 2000},
 		{Name: "is_rollback", Type: field.TypeBool, Default: false},
 		{Name: "is_approval_enabled", Type: field.TypeBool, Default: false},
 		{Name: "required_approval_count", Type: field.TypeInt, Default: 0},
@@ -119,13 +120,13 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "deployments_repos_deployments",
-				Columns:    []*schema.Column{DeploymentsColumns[13]},
+				Columns:    []*schema.Column{DeploymentsColumns[14]},
 				RefColumns: []*schema.Column{ReposColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
 			{
 				Symbol:     "deployments_users_deployments",
-				Columns:    []*schema.Column{DeploymentsColumns[14]},
+				Columns:    []*schema.Column{DeploymentsColumns[15]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -134,22 +135,22 @@ var (
 			{
 				Name:    "deployment_repo_id_env_created_at",
 				Unique:  false,
-				Columns: []*schema.Column{DeploymentsColumns[13], DeploymentsColumns[5], DeploymentsColumns[11]},
+				Columns: []*schema.Column{DeploymentsColumns[14], DeploymentsColumns[3], DeploymentsColumns[12]},
 			},
 			{
 				Name:    "deployment_repo_id_created_at",
 				Unique:  false,
-				Columns: []*schema.Column{DeploymentsColumns[13], DeploymentsColumns[11]},
+				Columns: []*schema.Column{DeploymentsColumns[14], DeploymentsColumns[12]},
 			},
 			{
 				Name:    "deployment_number_repo_id",
 				Unique:  true,
-				Columns: []*schema.Column{DeploymentsColumns[1], DeploymentsColumns[13]},
+				Columns: []*schema.Column{DeploymentsColumns[1], DeploymentsColumns[14]},
 			},
 			{
 				Name:    "deployment_uid",
 				Unique:  false,
-				Columns: []*schema.Column{DeploymentsColumns[7]},
+				Columns: []*schema.Column{DeploymentsColumns[6]},
 			},
 		},
 	}

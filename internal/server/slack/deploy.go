@@ -329,8 +329,8 @@ func (s *Slack) interactDeploy(c *gin.Context) {
 	d, err := s.i.Deploy(ctx, cu.Edges.User, cb.Edges.Repo, &ent.Deployment{
 		Number: number,
 		Type:   deployment.Type(sm.Type),
-		Ref:    sm.Ref,
 		Env:    sm.Env,
+		Ref:    sm.Ref,
 	}, env)
 	if err != nil {
 		s.log.Error("It has failed to deploy.", zap.Error(err))

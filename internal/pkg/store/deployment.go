@@ -111,7 +111,6 @@ func (s *Store) CreateDeployment(ctx context.Context, d *ent.Deployment) (*ent.D
 		SetNumber(d.Number).
 		SetType(d.Type).
 		SetRef(d.Ref).
-		SetSha(d.Sha).
 		SetEnv(d.Env).
 		SetIsRollback(d.IsRollback).
 		SetIsApprovalEnabled(d.IsApprovalEnabled).
@@ -123,11 +122,12 @@ func (s *Store) CreateDeployment(ctx context.Context, d *ent.Deployment) (*ent.D
 
 func (s *Store) UpdateDeployment(ctx context.Context, d *ent.Deployment) (*ent.Deployment, error) {
 	return s.c.Deployment.UpdateOne(d).
-		SetUID(d.UID).
 		SetType(d.Type).
 		SetRef(d.Ref).
-		SetSha(d.Sha).
 		SetEnv(d.Env).
+		SetUID(d.UID).
+		SetSha(d.Sha).
+		SetHTMLURL(d.HTMLURL).
 		SetIsRollback(d.IsRollback).
 		SetIsApprovalEnabled(d.IsApprovalEnabled).
 		SetRequiredApprovalCount(d.RequiredApprovalCount).

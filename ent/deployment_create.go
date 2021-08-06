@@ -44,21 +44,15 @@ func (dc *DeploymentCreate) SetNillableType(d *deployment.Type) *DeploymentCreat
 	return dc
 }
 
-// SetRef sets the "ref" field.
-func (dc *DeploymentCreate) SetRef(s string) *DeploymentCreate {
-	dc.mutation.SetRef(s)
-	return dc
-}
-
-// SetSha sets the "sha" field.
-func (dc *DeploymentCreate) SetSha(s string) *DeploymentCreate {
-	dc.mutation.SetSha(s)
-	return dc
-}
-
 // SetEnv sets the "env" field.
 func (dc *DeploymentCreate) SetEnv(s string) *DeploymentCreate {
 	dc.mutation.SetEnv(s)
+	return dc
+}
+
+// SetRef sets the "ref" field.
+func (dc *DeploymentCreate) SetRef(s string) *DeploymentCreate {
+	dc.mutation.SetRef(s)
 	return dc
 }
 
@@ -86,6 +80,34 @@ func (dc *DeploymentCreate) SetUID(i int64) *DeploymentCreate {
 func (dc *DeploymentCreate) SetNillableUID(i *int64) *DeploymentCreate {
 	if i != nil {
 		dc.SetUID(*i)
+	}
+	return dc
+}
+
+// SetSha sets the "sha" field.
+func (dc *DeploymentCreate) SetSha(s string) *DeploymentCreate {
+	dc.mutation.SetSha(s)
+	return dc
+}
+
+// SetNillableSha sets the "sha" field if the given value is not nil.
+func (dc *DeploymentCreate) SetNillableSha(s *string) *DeploymentCreate {
+	if s != nil {
+		dc.SetSha(*s)
+	}
+	return dc
+}
+
+// SetHTMLURL sets the "html_url" field.
+func (dc *DeploymentCreate) SetHTMLURL(s string) *DeploymentCreate {
+	dc.mutation.SetHTMLURL(s)
+	return dc
+}
+
+// SetNillableHTMLURL sets the "html_url" field if the given value is not nil.
+func (dc *DeploymentCreate) SetNillableHTMLURL(s *string) *DeploymentCreate {
+	if s != nil {
+		dc.SetHTMLURL(*s)
 	}
 	return dc
 }
@@ -307,14 +329,11 @@ func (dc *DeploymentCreate) check() error {
 			return &ValidationError{Name: "type", err: fmt.Errorf("ent: validator failed for field \"type\": %w", err)}
 		}
 	}
-	if _, ok := dc.mutation.Ref(); !ok {
-		return &ValidationError{Name: "ref", err: errors.New("ent: missing required field \"ref\"")}
-	}
-	if _, ok := dc.mutation.Sha(); !ok {
-		return &ValidationError{Name: "sha", err: errors.New("ent: missing required field \"sha\"")}
-	}
 	if _, ok := dc.mutation.Env(); !ok {
 		return &ValidationError{Name: "env", err: errors.New("ent: missing required field \"env\"")}
+	}
+	if _, ok := dc.mutation.Ref(); !ok {
+		return &ValidationError{Name: "ref", err: errors.New("ent: missing required field \"ref\"")}
 	}
 	if _, ok := dc.mutation.Status(); !ok {
 		return &ValidationError{Name: "status", err: errors.New("ent: missing required field \"status\"")}
@@ -322,6 +341,11 @@ func (dc *DeploymentCreate) check() error {
 	if v, ok := dc.mutation.Status(); ok {
 		if err := deployment.StatusValidator(v); err != nil {
 			return &ValidationError{Name: "status", err: fmt.Errorf("ent: validator failed for field \"status\": %w", err)}
+		}
+	}
+	if v, ok := dc.mutation.HTMLURL(); ok {
+		if err := deployment.HTMLURLValidator(v); err != nil {
+			return &ValidationError{Name: "html_url", err: fmt.Errorf("ent: validator failed for field \"html_url\": %w", err)}
 		}
 	}
 	if _, ok := dc.mutation.IsRollback(); !ok {
@@ -394,22 +418,6 @@ func (dc *DeploymentCreate) createSpec() (*Deployment, *sqlgraph.CreateSpec) {
 		})
 		_node.Type = value
 	}
-	if value, ok := dc.mutation.Ref(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: deployment.FieldRef,
-		})
-		_node.Ref = value
-	}
-	if value, ok := dc.mutation.Sha(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: deployment.FieldSha,
-		})
-		_node.Sha = value
-	}
 	if value, ok := dc.mutation.Env(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -417,6 +425,14 @@ func (dc *DeploymentCreate) createSpec() (*Deployment, *sqlgraph.CreateSpec) {
 			Column: deployment.FieldEnv,
 		})
 		_node.Env = value
+	}
+	if value, ok := dc.mutation.Ref(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: deployment.FieldRef,
+		})
+		_node.Ref = value
 	}
 	if value, ok := dc.mutation.Status(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -433,6 +449,22 @@ func (dc *DeploymentCreate) createSpec() (*Deployment, *sqlgraph.CreateSpec) {
 			Column: deployment.FieldUID,
 		})
 		_node.UID = value
+	}
+	if value, ok := dc.mutation.Sha(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: deployment.FieldSha,
+		})
+		_node.Sha = value
+	}
+	if value, ok := dc.mutation.HTMLURL(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: deployment.FieldHTMLURL,
+		})
+		_node.HTMLURL = value
 	}
 	if value, ok := dc.mutation.IsRollback(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

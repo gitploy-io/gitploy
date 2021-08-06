@@ -26,9 +26,8 @@ func (Deployment) Fields() []ent.Field {
 				"tag",
 			).
 			Default("commit"),
-		field.String("ref"),
-		field.String("sha"),
 		field.String("env"),
+		field.String("ref"),
 		field.Enum("status").
 			Values(
 				"waiting",
@@ -39,9 +38,14 @@ func (Deployment) Fields() []ent.Field {
 				"canceled",
 			).
 			Default("waiting"),
-		// UID is determined from SCM.
-		// The waiting status can not have UID.
+		// UID, SHA, and HTLM URL are returned after
+		// the remote deployment is created.
 		field.Int64("uid").
+			Optional(),
+		field.String("sha").
+			Optional(),
+		field.String("html_url").
+			MaxLen(2000).
 			Optional(),
 		field.Bool("is_rollback").
 			Default(false),

@@ -1,8 +1,6 @@
 package repos
 
 import (
-	"context"
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -108,19 +106,9 @@ func (r *Repo) CreateDeployment(c *gin.Context) {
 		return
 	}
 
-	// Prepare to deploy:
-	// 1) commit SHA.
-	// 2) next deployment number.
 	var (
-		sha    string
 		number int
 	)
-	if sha, err = r.getCommitSha(ctx, u, re, p.Type, p.Ref); err != nil {
-		r.log.Error("failed to get the commit sha.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusInternalServerError, "The Ref is invalid.")
-		return
-	}
-
 	if number, err = r.i.GetNextDeploymentNumberOfRepo(ctx, re); err != nil {
 		r.log.Error("failed to get the next deployment number.", zap.Error(err))
 		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to the next deployment number.")
@@ -130,9 +118,8 @@ func (r *Repo) CreateDeployment(c *gin.Context) {
 	d, err := r.i.Deploy(ctx, u, re, &ent.Deployment{
 		Number: number,
 		Type:   deployment.Type(p.Type),
-		Ref:    p.Ref,
-		Sha:    sha,
 		Env:    p.Env,
+		Ref:    p.Ref,
 	}, cf.GetEnv(p.Env))
 	if ent.IsConstraintError(err) {
 		r.log.Warn("deployment number conflict.", zap.Error(err))
@@ -266,8 +253,6 @@ func (r *Repo) RollbackDeployment(c *gin.Context) {
 		return
 	}
 
-	// Prepare to rollback:
-	// 1) next deployment number.
 	var (
 		next int
 	)
@@ -281,9 +266,8 @@ func (r *Repo) RollbackDeployment(c *gin.Context) {
 	d, err = r.i.Rollback(ctx, u, re, &ent.Deployment{
 		Number: next,
 		Type:   d.Type,
-		Ref:    d.Ref,
-		Sha:    d.Sha,
 		Env:    d.Env,
+		Ref:    d.Ref,
 	}, cf.GetEnv(d.Env))
 	if ent.IsConstraintError(err) {
 		r.log.Warn("deployment number conflict.", zap.Error(err))
@@ -332,26 +316,4 @@ func (r *Repo) GetConfig(c *gin.Context) {
 	}
 
 	gb.Response(c, http.StatusOK, config)
-}
-
-func (r *Repo) getCommitSha(ctx context.Context, u *ent.User, re *ent.Repo, typ, ref string) (string, error) {
-	if typ == "commit" {
-		return ref, nil
-	} else if typ == "branch" {
-		b, err := r.i.GetBranch(ctx, u, re, ref)
-		if err != nil {
-			return "", err
-		}
-
-		return b.CommitSha, nil
-	} else if typ == "tag" {
-		t, err := r.i.GetTag(ctx, u, re, ref)
-		if err != nil {
-			return "", err
-		}
-
-		return t.CommitSha, nil
-	}
-
-	return "", fmt.Errorf("Type must be one of commit, branch, tag.")
 }
