@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"entgo.io/ent"
+	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
@@ -71,15 +72,19 @@ func (Deployment) Edges() []ent.Edge {
 			Field("repo_id").
 			Unique().
 			Required(),
-		edge.To("approvals", Approval.Type),
-		edge.To("deployment_statuses", DeploymentStatus.Type),
+		edge.To("approvals", Approval.Type).
+			Annotations(entsql.Annotation{
+				OnDelete: entsql.Cascade,
+			}),
+		edge.To("deployment_statuses", DeploymentStatus.Type).
+			Annotations(entsql.Annotation{
+				OnDelete: entsql.Cascade,
+			}),
 	}
 }
 
 func (Deployment) Indexes() []ent.Index {
 	return []ent.Index{
-		index.Fields("user_id"),
-		index.Fields("repo_id"),
 		// Basically deployments are ordered by created_at field.
 		index.Fields("repo_id", "env", "created_at"),
 		index.Fields("repo_id", "created_at"),
