@@ -31,7 +31,8 @@ export enum LastDeploymentStatus {
     Created = "created",
     Running = "running",
     Success = "success",
-    Failure = "failure"
+    Failure = "failure",
+    Canceled = "canceled"
 }
 
 export interface DeploymentStatus {

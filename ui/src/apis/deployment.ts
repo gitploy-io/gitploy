@@ -109,6 +109,8 @@ function mapLastDeploymentStatus(s: string) {
             return LastDeploymentStatus.Success
         case "failure":
             return LastDeploymentStatus.Failure
+        case "canceled":
+            return LastDeploymentStatus.Canceled
         default:
             return LastDeploymentStatus.Waiting
     }

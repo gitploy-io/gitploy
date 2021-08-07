@@ -733,10 +733,6 @@ paths:
               properties:
                 status:
                   type: string
-                  enum:
-                    - pending
-                    - declined
-                    - approved
       responses:
         '200':
           description: Approval
@@ -1123,17 +1119,30 @@ components:
       properties:
         id:
           type: integer
-        uid:
-          type: integer
         type:
           type: string
+          enum:
+            - commit
+            - branch
+            - tag
         ref:
-          type: string
-        sha:
           type: string
         env:
           type: string
         status:
+          type: string
+          enum:
+            - waiting
+            - created
+            - running
+            - success
+            - failure
+            - canceled
+        uid:
+          type: integer
+        sha:
+          type: string
+        html_url:
           type: string
         created_at:
           type: string
