@@ -70,6 +70,8 @@ const getStatusColor = (status: LastDeploymentStatus) => {
             return "green"
         case LastDeploymentStatus.Failure:
             return "red"
+        case LastDeploymentStatus.Canceled:
+            return "gray"
         default:
             return "gray"
     }
