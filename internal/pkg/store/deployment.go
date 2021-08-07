@@ -96,29 +96,17 @@ func (s *Store) FindDeploymentByUID(ctx context.Context, uid int64) (*ent.Deploy
 		First(ctx)
 }
 
-// TODO: Lock deployments for the index which has repo_id.
 func (s *Store) GetNextDeploymentNumberOfRepo(ctx context.Context, r *ent.Repo) (int, error) {
-	var v []struct {
-		RepoID string `json:"repo_id"`
-		Max    int    `json:"max"`
-	}
-	err := s.c.Deployment.Query().
+	cnt, err := s.c.Deployment.Query().
 		Where(
 			deployment.RepoID(r.ID),
 		).
-		GroupBy(deployment.FieldRepoID).
-		Aggregate(ent.Max(deployment.FieldNumber)).
-		Scan(ctx, &v)
+		Count(ctx)
 	if err != nil {
 		return 0, err
 	}
 
-	max := 0
-	if len(v) != 0 {
-		max = v[0].Max + 1
-	}
-
-	return max, nil
+	return cnt + 1, nil
 }
 
 // CreateDeployment always set the next number of deployment
