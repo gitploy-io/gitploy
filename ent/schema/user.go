@@ -68,7 +68,7 @@ func (User) Edges() []ent.Edge {
 
 func generateHash() string {
 	var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
-	b := make([]rune, 16)
+	b := make([]rune, 32)
 	for i := range b {
 		b[i] = letterRunes[rand.Intn(len(letterRunes))]
 	}
