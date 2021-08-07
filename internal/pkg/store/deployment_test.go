@@ -138,83 +138,107 @@ func TestStore_ListDeploymentsOfRepo(t *testing.T) {
 }
 
 func TestStore_GetNextDeploymentNumberOfRepo(t *testing.T) {
-	client := enttest.Open(t, "sqlite3", "file:ent?mode=memory&cache=shared&_fk=1")
-	defer client.Close()
+	t.Run("Return one when it is the first deployment of the repository.", func(t *testing.T) {
+		client := enttest.Open(t, "sqlite3", "file:ent?mode=memory&cache=shared&_fk=1")
+		defer client.Close()
 
-	ctx := context.Background()
-	_, err := client.Repo.Create().
-		SetID("1").
-		SetNamespace("octocat").
-		SetName("HelloWorld").
-		Save(ctx)
-	if err != nil {
-		t.Errorf("failed to create a new repo: %s", err)
-		return
-	}
+		ctx := context.Background()
 
-	_, err = client.User.Create().
-		SetID("1").
-		SetLogin("octocat").
-		SetToken("").
-		SetRefresh("").
-		SetExpiry(time.Time{}).
-		Save(ctx)
-	if err != nil {
-		t.Errorf("failed to create a new user: %s", err)
-		return
-	}
+		s := NewStore(client)
 
-	_, err = client.Deployment.Create().
-		SetType(deployment.TypeBranch).
-		SetNumber(1).
-		SetType("branch").
-		SetRef("main").
-		SetSha("7e555a2").
-		SetEnv("local").
-		SetUserID("1").
-		SetRepoID("1").
-		SetStatus(deployment.StatusCreated).
-		Save(ctx)
-	if err != nil {
-		t.Errorf("failed to create a new repo: %s", err)
-		return
-	}
-
-	s := NewStore(client)
-
-	t.Run("The next number must to be 0 for first deployment", func(tt *testing.T) {
-		_, err := client.Repo.Create().
-			SetID("2").
-			SetNamespace("octocat").
-			SetName("Goodbye").
-			Save(ctx)
+		number, err := s.GetNextDeploymentNumberOfRepo(ctx, &ent.Repo{ID: "1"})
 		if err != nil {
-			t.Fatalf("failed to create a new repo: %s", err)
+			t.Fatalf("GetNextDeploymentNumberOfRepo returns an error: %s", err)
+			t.FailNow()
 		}
 
-		num, err := s.GetNextDeploymentNumberOfRepo(ctx, &ent.Repo{
-			ID: "2",
-		})
-		if err != nil {
-			t.Errorf("CreateDeployment return error: %s", err)
-		}
-
-		if num != 0 {
-			t.Errorf("CreateDeployment = %d, 0", num)
+		expected := 1
+		if number != expected {
+			t.Fatalf("GetNextDeploymentNumberOfRepo = %d, want %d", number, expected)
+			t.FailNow()
 		}
 	})
 
-	t.Run("The next number is 2", func(tt *testing.T) {
+	t.Run("Return two when there is a single deployment.", func(t *testing.T) {
+		client := enttest.Open(t, "sqlite3", "file:ent?mode=memory&cache=shared&_fk=1")
+		defer client.Close()
 
-		num, err := s.GetNextDeploymentNumberOfRepo(ctx, &ent.Repo{
-			ID: "1",
-		})
+		ctx := context.Background()
+
+		r1, err := client.Repo.Create().
+			SetID("1").
+			SetNamespace("octocat").
+			SetName("HelloWorld").
+			Save(ctx)
 		if err != nil {
-			t.Errorf("CreateDeployment return error: %s", err)
+			t.Errorf("It has failed to create a new repo: %s", err)
+			t.FailNow()
 		}
 
-		if num != 2 {
-			t.Errorf("CreateDeployment = %d, 2", num)
+		r2, err := client.Repo.Create().
+			SetID("2").
+			SetNamespace("octocat").
+			SetName("GoodBye").
+			Save(ctx)
+		if err != nil {
+			t.Errorf("It has failed to create a new repo: %s", err)
+			t.FailNow()
+		}
+
+		_, err = client.User.Create().
+			SetID("1").
+			SetLogin("octocat").
+			SetToken("").
+			SetRefresh("").
+			SetExpiry(time.Time{}).
+			Save(ctx)
+		if err != nil {
+			t.Errorf("It has failed to create a new user: %s", err)
+			t.FailNow()
+		}
+
+		_, err = client.Deployment.Create().
+			SetType(deployment.TypeBranch).
+			SetNumber(1).
+			SetType("branch").
+			SetRef("main").
+			SetEnv("local").
+			SetUserID("1").
+			SetRepoID(r1.ID).
+			SetStatus(deployment.StatusCreated).
+			Save(ctx)
+		if err != nil {
+			t.Errorf("It has failed to create a new deployment: %s", err)
+			t.FailNow()
+		}
+
+		_, err = client.Deployment.Create().
+			SetType(deployment.TypeBranch).
+			SetNumber(1).
+			SetType("branch").
+			SetRef("main").
+			SetEnv("prod").
+			SetUserID("1").
+			SetRepoID(r2.ID).
+			SetStatus(deployment.StatusCreated).
+			Save(ctx)
+		if err != nil {
+			t.Errorf("It has failed to create a new deployment: %s", err)
+			t.FailNow()
+		}
+
+		s := NewStore(client)
+
+		number, err := s.GetNextDeploymentNumberOfRepo(ctx, r1)
+		if err != nil {
+			t.Fatalf("GetNextDeploymentNumberOfRepo returns an error: %s", err)
+			t.FailNow()
+		}
+
+		expected := 2
+		if number != expected {
+			t.Fatalf("GetNextDeploymentNumberOfRepo = %d, want %d", number, expected)
+			t.FailNow()
 		}
 	})
 }
