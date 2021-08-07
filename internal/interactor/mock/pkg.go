@@ -456,6 +456,21 @@ func (mr *MockStoreMockRecorder) ListDeploymentsOfRepo(ctx, r, env, status, page
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListDeploymentsOfRepo", reflect.TypeOf((*MockStore)(nil).ListDeploymentsOfRepo), ctx, r, env, status, page, perPage)
 }
 
+// ListInactiveDeploymentsLessThanTime mocks base method.
+func (m *MockStore) ListInactiveDeploymentsLessThanTime(ctx context.Context, t time.Time, page, perPage int) ([]*ent.Deployment, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListInactiveDeploymentsLessThanTime", ctx, t, page, perPage)
+	ret0, _ := ret[0].([]*ent.Deployment)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListInactiveDeploymentsLessThanTime indicates an expected call of ListInactiveDeploymentsLessThanTime.
+func (mr *MockStoreMockRecorder) ListInactiveDeploymentsLessThanTime(ctx, t, page, perPage interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListInactiveDeploymentsLessThanTime", reflect.TypeOf((*MockStore)(nil).ListInactiveDeploymentsLessThanTime), ctx, t, page, perPage)
+}
+
 // ListNotifications mocks base method.
 func (m *MockStore) ListNotifications(ctx context.Context, u *ent.User, page, perPage int) ([]*ent.Notification, error) {
 	m.ctrl.T.Helper()
@@ -656,6 +671,20 @@ func NewMockSCM(ctrl *gomock.Controller) *MockSCM {
 // EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockSCM) EXPECT() *MockSCMMockRecorder {
 	return m.recorder
+}
+
+// CancelDeployment mocks base method.
+func (m *MockSCM) CancelDeployment(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, s *ent.DeploymentStatus) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CancelDeployment", ctx, u, r, d, s)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// CancelDeployment indicates an expected call of CancelDeployment.
+func (mr *MockSCMMockRecorder) CancelDeployment(ctx, u, r, d, s interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CancelDeployment", reflect.TypeOf((*MockSCM)(nil).CancelDeployment), ctx, u, r, d, s)
 }
 
 // CreateDeployment mocks base method.

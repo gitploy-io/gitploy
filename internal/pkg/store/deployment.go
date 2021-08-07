@@ -2,11 +2,28 @@ package store
 
 import (
 	"context"
+	"time"
 
 	"github.com/hanjunlee/gitploy/ent"
 	"github.com/hanjunlee/gitploy/ent/deployment"
 	"github.com/hanjunlee/gitploy/ent/repo"
 )
+
+func (s *Store) ListInactiveDeploymentsLessThanTime(ctx context.Context, t time.Time, page, perPage int) ([]*ent.Deployment, error) {
+	return s.c.Deployment.
+		Query().
+		Where(
+			deployment.And(
+				deployment.StatusIn(deployment.StatusWaiting, deployment.StatusCreated),
+				deployment.CreatedAtLT(t),
+			),
+		).
+		WithRepo().
+		WithUser().
+		Limit(perPage).
+		Offset(offset(page, perPage)).
+		All(ctx)
+}
 
 func (s *Store) ListDeploymentsOfRepo(ctx context.Context, r *ent.Repo, env string, status string, page, perPage int) ([]*ent.Deployment, error) {
 	q := s.c.Deployment.

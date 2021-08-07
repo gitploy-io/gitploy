@@ -55,7 +55,7 @@ func newRouterConfig(c *Config) *server.RouterConfig {
 		ServerConfig: newServerConfig(c),
 		SCMConfig:    newSCMConfig(c),
 		ChatConfig:   newChatConfig(c),
-		Interactor:   interactor.NewInteractor(newStore(c), newSCM(c)),
+		Interactor:   NewInteractor(c),
 	}
 }
 
@@ -111,6 +111,17 @@ func newChatConfig(c *Config) *server.ChatConfig {
 	}
 
 	return cc
+}
+
+func NewInteractor(c *Config) server.Interactor {
+	return interactor.NewInteractor(
+		&interactor.InteractorConfig{
+			ServerHost:  c.ServerHost,
+			ServerProto: c.ServerProto,
+			Store:       newStore(c),
+			SCM:         newSCM(c),
+		},
+	)
 }
 
 func newStore(c *Config) interactor.Store {

@@ -3,11 +3,13 @@ package interactor
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/hanjunlee/gitploy/ent"
 	"github.com/hanjunlee/gitploy/ent/approval"
 	"github.com/hanjunlee/gitploy/ent/deployment"
 	"github.com/hanjunlee/gitploy/vo"
+	"go.uber.org/zap"
 )
 
 func (i *Interactor) Deploy(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, env *vo.Env) (*ent.Deployment, error) {
@@ -99,4 +101,57 @@ func (i *Interactor) createDeploymentToSCM(ctx context.Context, u *ent.User, re 
 		DeploymentID: d.ID,
 	})
 	return d, nil
+}
+
+func (i *Interactor) runClosingInactiveDeployment(stop <-chan struct{}) {
+	ctx := context.Background()
+
+	ticker := time.NewTicker(time.Minute)
+L:
+	for {
+		select {
+		case _, ok := <-stop:
+			if !ok {
+				ticker.Stop()
+				break L
+			}
+		case t := <-ticker.C:
+			ds, err := i.ListInactiveDeploymentsLessThanTime(ctx, t.Add(-30*time.Minute), 1, 30)
+			if err != nil {
+				i.log.Error("It has failed to read inactive deployments.", zap.Error(err))
+				continue
+			}
+
+			for _, d := range ds {
+				// Change the status of the deployment canceled, and also
+				// cancel the remote deployment if it has.
+				if d.Status == deployment.StatusCreated {
+					if d.Edges.User != nil && d.Edges.Repo != nil {
+						r := d.Edges.Repo
+						s := &ent.DeploymentStatus{
+							Status:      "canceled",
+							Description: "Gitploy cancels the inactive deployment.",
+							LogURL:      fmt.Sprintf("%s://%s/%s/%s/deployments/%d", i.ServerProto, i.ServerHost, r.Namespace, r.Name, d.Number),
+						}
+						if err := i.SCM.CancelDeployment(ctx, d.Edges.User, d.Edges.Repo, d, s); err != nil {
+							i.log.Error("It has failed to cancel the remote deployment.", zap.Error(err))
+							continue
+						}
+
+						if _, err := i.Store.CreateDeploymentStatus(ctx, s); err != nil {
+							i.log.Error("It has failed to create a new deployment status.", zap.Error(err))
+							continue
+						}
+					}
+				}
+
+				d.Status = deployment.StatusCanceled
+				if _, err := i.UpdateDeployment(ctx, d); err != nil {
+					i.log.Error("It has failed to update the deployment canceled.", zap.Error(err))
+				}
+
+				i.log.Debug("Cancel the inactive deployment.", zap.Int("deployment_id", d.ID))
+			}
+		}
+	}
 }

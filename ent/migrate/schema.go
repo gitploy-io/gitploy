@@ -152,6 +152,11 @@ var (
 				Unique:  false,
 				Columns: []*schema.Column{DeploymentsColumns[6]},
 			},
+			{
+				Name:    "deployment_status_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{DeploymentsColumns[5], DeploymentsColumns[12]},
+			},
 		},
 	}
 	// DeploymentStatusColumns holds the columns for the "deployment_status" table.

@@ -98,5 +98,7 @@ func (Deployment) Indexes() []ent.Index {
 			Unique(),
 		// Find by UID when the hook is coming.
 		index.Fields("uid"),
+		// List inactive deployments for 30 minutes.
+		index.Fields("status", "created_at"),
 	}
 }
