@@ -1,7 +1,9 @@
-import { List } from "antd"
+import { List, Typography } from "antd"
 import  moment from "moment"
 
 import { Notification, NotificationType } from "../models"
+
+const { Paragraph, Text } = Typography
 
 interface NotificationListProps {
     notifications: Notification[]
@@ -11,21 +13,29 @@ interface NotificationListProps {
 export default function NotificationList(props: NotificationListProps): JSX.Element {
     const uncheckedStyle: React.CSSProperties = { backgroundColor: "#efdbff" }
 
-    return ( <List size="small"
+    return ( <List 
+            size="small"
+            itemLayout="vertical"
             dataSource={props.notifications}
             renderItem={(n, idx) => {
-                return (<List.Item key={idx} style={(!n.checked)? uncheckedStyle : {}}>
+                return (
+                    <List.Item 
+                        key={idx} 
+                        style={(!n.checked)? uncheckedStyle : {}}
+                    >
                         <List.Item.Meta 
-                            title={
-                                <a 
-                                    href={convertToNotificationLink(n)}
-                                    onClick={() => {props.onClickNotificaiton(n)}}>
-                                    {convertToNotificationTitle(n)} 
-                                </a>}
-                            />
-                        {convertToNotificationMessage(n)}
-                    </List.Item>)
-            }}>
+                            style={{margin: 0}}
+                            title={<a 
+                                        href={convertToNotificationLink(n)}
+                                        onClick={() => {props.onClickNotificaiton(n)}}
+                                    >
+                                        {convertToNotificationTitle(n)} 
+                                    </a>}
+                            description={convertToNotificationMessage(n)}
+                        />
+                    </List.Item>
+                )
+            } }>
         </List>)
 }
 
@@ -46,15 +56,26 @@ function convertToNotificationTitle(n: Notification): string {
     }
 }
 
-function convertToNotificationMessage(n: Notification): string {
+function convertToNotificationMessage(n: Notification): JSX.Element {
+    const ref = (n.deployment.type === "commit")? n.deployment.ref.substr(0, 7) : n.deployment.ref
+    const style: React.CSSProperties = {margin: 0}
+
     switch (n.type) {
         case NotificationType.DeploymentCreated:
-            return `${n.deployment.login} deploys ${n.deployment.ref} to the ${n.deployment.env} environment of ${n.repo.namespace}/${n.repo.name} ${moment(n.createdAt).fromNow()}`
+            return <Paragraph style={style}>
+                <Text strong>{n.deployment.login}</Text> deploys <Text code>{ref}</Text> to the <Text code>{n.deployment.env}</Text> environment of <Text code>{n.repo.namespace}/{n.repo.name}</Text> {moment(n.createdAt).fromNow()}
+            </Paragraph>
         case NotificationType.DeploymentUpdated:
-            return `The deployment(#${n.deployment.number}) of ${n.repo.namespace}/${n.repo.name} is updated ${n.deployment.status} ${moment(n.createdAt).fromNow()}`
+            return <Paragraph style={style}>
+                The deployment(#{n.deployment.number}) of <Text code>{n.repo.namespace}/{n.repo.name}</Text> is updated {n.deployment.status} {moment(n.createdAt).fromNow()}
+            </Paragraph>
         case NotificationType.ApprovalRequested:
-            return `${n.deployment.login} has requested the approval for the deployment(#${n.deployment.number}) of ${n.repo.namespace}/${n.repo.name} ${moment(n.createdAt).fromNow()}.`
+            return <Paragraph style={style}>
+                <Text strong>{n.deployment.login}</Text> has requested the approval for the deployment(#{n.deployment.number}) of <Text code>{n.repo.namespace}/{n.repo.name}</Text> {moment(n.createdAt).fromNow()}
+            </Paragraph>
         case NotificationType.ApprovalResponded:
-            return `${n.approval.login} has responded the approval of the deployment(#${n.deployment.number}) of ${n.repo.namespace}/${n.repo.name} ${moment(n.createdAt).fromNow()}.`
+            return <Paragraph style={style}>
+                <Text strong>{n.deployment.login}</Text> has <Text strong>{n.approval.status}</Text> the approval for the deployment(#{n.deployment.number}) of <Text code>{n.repo.namespace}/{n.repo.name}</Text> {moment(n.createdAt).fromNow()}
+            </Paragraph>
     }
 }
