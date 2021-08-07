@@ -17,7 +17,7 @@ export default function ActivityLogs(props: ActivityLogsProps): JSX.Element {
         <Timeline>
             {props.deployments.map((d, idx) => {
                 const dot = (d.lastStatus === LastDeploymentStatus.Running) ? <SyncOutlined spin /> : null
-                const ref = (d.type === DeploymentType.Commit)? d.sha.substr(0, 7) : d.ref
+                const ref = (d.type === DeploymentType.Commit)? d.ref.substr(0, 7) : d.ref
                 let description: React.ReactElement 
 
                 if (d.deployer) {
