@@ -2,13 +2,30 @@ package store
 
 import (
 	"context"
+	"time"
 
 	"github.com/hanjunlee/gitploy/ent"
 	"github.com/hanjunlee/gitploy/ent/deployment"
 	"github.com/hanjunlee/gitploy/ent/repo"
 )
 
-func (s *Store) ListDeployments(ctx context.Context, r *ent.Repo, env string, status string, page, perPage int) ([]*ent.Deployment, error) {
+func (s *Store) ListInactiveDeploymentsLessThanTime(ctx context.Context, t time.Time, page, perPage int) ([]*ent.Deployment, error) {
+	return s.c.Deployment.
+		Query().
+		Where(
+			deployment.And(
+				deployment.StatusIn(deployment.StatusWaiting, deployment.StatusCreated),
+				deployment.CreatedAtLT(t),
+			),
+		).
+		WithRepo().
+		WithUser().
+		Limit(perPage).
+		Offset(offset(page, perPage)).
+		All(ctx)
+}
+
+func (s *Store) ListDeploymentsOfRepo(ctx context.Context, r *ent.Repo, env string, status string, page, perPage int) ([]*ent.Deployment, error) {
 	q := s.c.Deployment.
 		Query()
 
@@ -111,7 +128,6 @@ func (s *Store) CreateDeployment(ctx context.Context, d *ent.Deployment) (*ent.D
 		SetNumber(d.Number).
 		SetType(d.Type).
 		SetRef(d.Ref).
-		SetSha(d.Sha).
 		SetEnv(d.Env).
 		SetIsRollback(d.IsRollback).
 		SetIsApprovalEnabled(d.IsApprovalEnabled).
@@ -123,11 +139,12 @@ func (s *Store) CreateDeployment(ctx context.Context, d *ent.Deployment) (*ent.D
 
 func (s *Store) UpdateDeployment(ctx context.Context, d *ent.Deployment) (*ent.Deployment, error) {
 	return s.c.Deployment.UpdateOne(d).
-		SetUID(d.UID).
 		SetType(d.Type).
 		SetRef(d.Ref).
-		SetSha(d.Sha).
 		SetEnv(d.Env).
+		SetUID(d.UID).
+		SetSha(d.Sha).
+		SetHTMLURL(d.HTMLURL).
 		SetIsRollback(d.IsRollback).
 		SetIsApprovalEnabled(d.IsApprovalEnabled).
 		SetRequiredApprovalCount(d.RequiredApprovalCount).

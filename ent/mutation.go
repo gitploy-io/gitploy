@@ -2122,12 +2122,13 @@ type DeploymentMutation struct {
 	number                     *int
 	addnumber                  *int
 	_type                      *deployment.Type
-	ref                        *string
-	sha                        *string
 	env                        *string
+	ref                        *string
 	status                     *deployment.Status
 	uid                        *int64
 	adduid                     *int64
+	sha                        *string
+	html_url                   *string
 	is_rollback                *bool
 	is_approval_enabled        *bool
 	required_approval_count    *int
@@ -2321,78 +2322,6 @@ func (m *DeploymentMutation) ResetType() {
 	m._type = nil
 }
 
-// SetRef sets the "ref" field.
-func (m *DeploymentMutation) SetRef(s string) {
-	m.ref = &s
-}
-
-// Ref returns the value of the "ref" field in the mutation.
-func (m *DeploymentMutation) Ref() (r string, exists bool) {
-	v := m.ref
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldRef returns the old "ref" field's value of the Deployment entity.
-// If the Deployment object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *DeploymentMutation) OldRef(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, fmt.Errorf("OldRef is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, fmt.Errorf("OldRef requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldRef: %w", err)
-	}
-	return oldValue.Ref, nil
-}
-
-// ResetRef resets all changes to the "ref" field.
-func (m *DeploymentMutation) ResetRef() {
-	m.ref = nil
-}
-
-// SetSha sets the "sha" field.
-func (m *DeploymentMutation) SetSha(s string) {
-	m.sha = &s
-}
-
-// Sha returns the value of the "sha" field in the mutation.
-func (m *DeploymentMutation) Sha() (r string, exists bool) {
-	v := m.sha
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldSha returns the old "sha" field's value of the Deployment entity.
-// If the Deployment object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *DeploymentMutation) OldSha(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, fmt.Errorf("OldSha is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, fmt.Errorf("OldSha requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldSha: %w", err)
-	}
-	return oldValue.Sha, nil
-}
-
-// ResetSha resets all changes to the "sha" field.
-func (m *DeploymentMutation) ResetSha() {
-	m.sha = nil
-}
-
 // SetEnv sets the "env" field.
 func (m *DeploymentMutation) SetEnv(s string) {
 	m.env = &s
@@ -2427,6 +2356,42 @@ func (m *DeploymentMutation) OldEnv(ctx context.Context) (v string, err error) {
 // ResetEnv resets all changes to the "env" field.
 func (m *DeploymentMutation) ResetEnv() {
 	m.env = nil
+}
+
+// SetRef sets the "ref" field.
+func (m *DeploymentMutation) SetRef(s string) {
+	m.ref = &s
+}
+
+// Ref returns the value of the "ref" field in the mutation.
+func (m *DeploymentMutation) Ref() (r string, exists bool) {
+	v := m.ref
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRef returns the old "ref" field's value of the Deployment entity.
+// If the Deployment object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DeploymentMutation) OldRef(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldRef is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldRef requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRef: %w", err)
+	}
+	return oldValue.Ref, nil
+}
+
+// ResetRef resets all changes to the "ref" field.
+func (m *DeploymentMutation) ResetRef() {
+	m.ref = nil
 }
 
 // SetStatus sets the "status" field.
@@ -2533,6 +2498,104 @@ func (m *DeploymentMutation) ResetUID() {
 	m.uid = nil
 	m.adduid = nil
 	delete(m.clearedFields, deployment.FieldUID)
+}
+
+// SetSha sets the "sha" field.
+func (m *DeploymentMutation) SetSha(s string) {
+	m.sha = &s
+}
+
+// Sha returns the value of the "sha" field in the mutation.
+func (m *DeploymentMutation) Sha() (r string, exists bool) {
+	v := m.sha
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSha returns the old "sha" field's value of the Deployment entity.
+// If the Deployment object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DeploymentMutation) OldSha(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldSha is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldSha requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSha: %w", err)
+	}
+	return oldValue.Sha, nil
+}
+
+// ClearSha clears the value of the "sha" field.
+func (m *DeploymentMutation) ClearSha() {
+	m.sha = nil
+	m.clearedFields[deployment.FieldSha] = struct{}{}
+}
+
+// ShaCleared returns if the "sha" field was cleared in this mutation.
+func (m *DeploymentMutation) ShaCleared() bool {
+	_, ok := m.clearedFields[deployment.FieldSha]
+	return ok
+}
+
+// ResetSha resets all changes to the "sha" field.
+func (m *DeploymentMutation) ResetSha() {
+	m.sha = nil
+	delete(m.clearedFields, deployment.FieldSha)
+}
+
+// SetHTMLURL sets the "html_url" field.
+func (m *DeploymentMutation) SetHTMLURL(s string) {
+	m.html_url = &s
+}
+
+// HTMLURL returns the value of the "html_url" field in the mutation.
+func (m *DeploymentMutation) HTMLURL() (r string, exists bool) {
+	v := m.html_url
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldHTMLURL returns the old "html_url" field's value of the Deployment entity.
+// If the Deployment object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DeploymentMutation) OldHTMLURL(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldHTMLURL is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldHTMLURL requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldHTMLURL: %w", err)
+	}
+	return oldValue.HTMLURL, nil
+}
+
+// ClearHTMLURL clears the value of the "html_url" field.
+func (m *DeploymentMutation) ClearHTMLURL() {
+	m.html_url = nil
+	m.clearedFields[deployment.FieldHTMLURL] = struct{}{}
+}
+
+// HTMLURLCleared returns if the "html_url" field was cleared in this mutation.
+func (m *DeploymentMutation) HTMLURLCleared() bool {
+	_, ok := m.clearedFields[deployment.FieldHTMLURL]
+	return ok
+}
+
+// ResetHTMLURL resets all changes to the "html_url" field.
+func (m *DeploymentMutation) ResetHTMLURL() {
+	m.html_url = nil
+	delete(m.clearedFields, deployment.FieldHTMLURL)
 }
 
 // SetIsRollback sets the "is_rollback" field.
@@ -2979,27 +3042,30 @@ func (m *DeploymentMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *DeploymentMutation) Fields() []string {
-	fields := make([]string, 0, 14)
+	fields := make([]string, 0, 15)
 	if m.number != nil {
 		fields = append(fields, deployment.FieldNumber)
 	}
 	if m._type != nil {
 		fields = append(fields, deployment.FieldType)
 	}
-	if m.ref != nil {
-		fields = append(fields, deployment.FieldRef)
-	}
-	if m.sha != nil {
-		fields = append(fields, deployment.FieldSha)
-	}
 	if m.env != nil {
 		fields = append(fields, deployment.FieldEnv)
+	}
+	if m.ref != nil {
+		fields = append(fields, deployment.FieldRef)
 	}
 	if m.status != nil {
 		fields = append(fields, deployment.FieldStatus)
 	}
 	if m.uid != nil {
 		fields = append(fields, deployment.FieldUID)
+	}
+	if m.sha != nil {
+		fields = append(fields, deployment.FieldSha)
+	}
+	if m.html_url != nil {
+		fields = append(fields, deployment.FieldHTMLURL)
 	}
 	if m.is_rollback != nil {
 		fields = append(fields, deployment.FieldIsRollback)
@@ -3034,16 +3100,18 @@ func (m *DeploymentMutation) Field(name string) (ent.Value, bool) {
 		return m.Number()
 	case deployment.FieldType:
 		return m.GetType()
-	case deployment.FieldRef:
-		return m.Ref()
-	case deployment.FieldSha:
-		return m.Sha()
 	case deployment.FieldEnv:
 		return m.Env()
+	case deployment.FieldRef:
+		return m.Ref()
 	case deployment.FieldStatus:
 		return m.Status()
 	case deployment.FieldUID:
 		return m.UID()
+	case deployment.FieldSha:
+		return m.Sha()
+	case deployment.FieldHTMLURL:
+		return m.HTMLURL()
 	case deployment.FieldIsRollback:
 		return m.IsRollback()
 	case deployment.FieldIsApprovalEnabled:
@@ -3071,16 +3139,18 @@ func (m *DeploymentMutation) OldField(ctx context.Context, name string) (ent.Val
 		return m.OldNumber(ctx)
 	case deployment.FieldType:
 		return m.OldType(ctx)
-	case deployment.FieldRef:
-		return m.OldRef(ctx)
-	case deployment.FieldSha:
-		return m.OldSha(ctx)
 	case deployment.FieldEnv:
 		return m.OldEnv(ctx)
+	case deployment.FieldRef:
+		return m.OldRef(ctx)
 	case deployment.FieldStatus:
 		return m.OldStatus(ctx)
 	case deployment.FieldUID:
 		return m.OldUID(ctx)
+	case deployment.FieldSha:
+		return m.OldSha(ctx)
+	case deployment.FieldHTMLURL:
+		return m.OldHTMLURL(ctx)
 	case deployment.FieldIsRollback:
 		return m.OldIsRollback(ctx)
 	case deployment.FieldIsApprovalEnabled:
@@ -3118,26 +3188,19 @@ func (m *DeploymentMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetType(v)
 		return nil
-	case deployment.FieldRef:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetRef(v)
-		return nil
-	case deployment.FieldSha:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetSha(v)
-		return nil
 	case deployment.FieldEnv:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetEnv(v)
+		return nil
+	case deployment.FieldRef:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRef(v)
 		return nil
 	case deployment.FieldStatus:
 		v, ok := value.(deployment.Status)
@@ -3152,6 +3215,20 @@ func (m *DeploymentMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetUID(v)
+		return nil
+	case deployment.FieldSha:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSha(v)
+		return nil
+	case deployment.FieldHTMLURL:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetHTMLURL(v)
 		return nil
 	case deployment.FieldIsRollback:
 		v, ok := value.(bool)
@@ -3274,6 +3351,12 @@ func (m *DeploymentMutation) ClearedFields() []string {
 	if m.FieldCleared(deployment.FieldUID) {
 		fields = append(fields, deployment.FieldUID)
 	}
+	if m.FieldCleared(deployment.FieldSha) {
+		fields = append(fields, deployment.FieldSha)
+	}
+	if m.FieldCleared(deployment.FieldHTMLURL) {
+		fields = append(fields, deployment.FieldHTMLURL)
+	}
 	return fields
 }
 
@@ -3291,6 +3374,12 @@ func (m *DeploymentMutation) ClearField(name string) error {
 	case deployment.FieldUID:
 		m.ClearUID()
 		return nil
+	case deployment.FieldSha:
+		m.ClearSha()
+		return nil
+	case deployment.FieldHTMLURL:
+		m.ClearHTMLURL()
+		return nil
 	}
 	return fmt.Errorf("unknown Deployment nullable field %s", name)
 }
@@ -3305,20 +3394,23 @@ func (m *DeploymentMutation) ResetField(name string) error {
 	case deployment.FieldType:
 		m.ResetType()
 		return nil
-	case deployment.FieldRef:
-		m.ResetRef()
-		return nil
-	case deployment.FieldSha:
-		m.ResetSha()
-		return nil
 	case deployment.FieldEnv:
 		m.ResetEnv()
+		return nil
+	case deployment.FieldRef:
+		m.ResetRef()
 		return nil
 	case deployment.FieldStatus:
 		m.ResetStatus()
 		return nil
 	case deployment.FieldUID:
 		m.ResetUID()
+		return nil
+	case deployment.FieldSha:
+		m.ResetSha()
+		return nil
+	case deployment.FieldHTMLURL:
+		m.ResetHTMLURL()
 		return nil
 	case deployment.FieldIsRollback:
 		m.ResetIsRollback()

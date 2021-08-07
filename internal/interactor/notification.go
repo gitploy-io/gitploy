@@ -15,9 +15,8 @@ const (
 	eventNotification = "gitploy:notification"
 )
 
-func (i *Interactor) polling(stop <-chan struct{}) {
+func (i *Interactor) runPublishingNotifications(stop <-chan struct{}) {
 	ctx := context.Background()
-	log := i.log.Named("polling")
 
 	// polling with the random period to escape the conflict; 3s - 4s
 	ticker := time.NewTicker(time.Millisecond * 100 * time.Duration(randint(30, 40)))
@@ -33,7 +32,7 @@ L:
 		case t := <-ticker.C:
 			ns, err := i.ListNotificationsFromTime(ctx, t.Add(-time.Second*4))
 			if err != nil {
-				log.Error("failed to read notifications.", zap.Error(err))
+				i.log.Error("It has failed to read notifications.", zap.Error(err))
 				continue
 			}
 
@@ -43,7 +42,7 @@ L:
 				}
 
 				i.publish(ctx, n)
-				i.log.Debug("publish the notification event.", zap.Int("notification_id", n.ID))
+				i.log.Debug("Publish the notification event.", zap.Int("notification_id", n.ID))
 			}
 		}
 	}

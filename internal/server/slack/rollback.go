@@ -222,7 +222,7 @@ func (s *Slack) getSucceedDeploymentAggregation(ctx context.Context, r *ent.Repo
 	a := []*deploymentAggregation{}
 
 	for _, env := range cf.Envs {
-		ds, _ := s.i.ListDeployments(ctx, r, env.Name, string(deployment.StatusSuccess), 1, 5)
+		ds, _ := s.i.ListDeploymentsOfRepo(ctx, r, env.Name, string(deployment.StatusSuccess), 1, 5)
 		if len(ds) == 0 {
 			continue
 		}

@@ -16,16 +16,18 @@ const (
 	FieldNumber = "number"
 	// FieldType holds the string denoting the type field in the database.
 	FieldType = "type"
-	// FieldRef holds the string denoting the ref field in the database.
-	FieldRef = "ref"
-	// FieldSha holds the string denoting the sha field in the database.
-	FieldSha = "sha"
 	// FieldEnv holds the string denoting the env field in the database.
 	FieldEnv = "env"
+	// FieldRef holds the string denoting the ref field in the database.
+	FieldRef = "ref"
 	// FieldStatus holds the string denoting the status field in the database.
 	FieldStatus = "status"
 	// FieldUID holds the string denoting the uid field in the database.
 	FieldUID = "uid"
+	// FieldSha holds the string denoting the sha field in the database.
+	FieldSha = "sha"
+	// FieldHTMLURL holds the string denoting the html_url field in the database.
+	FieldHTMLURL = "html_url"
 	// FieldIsRollback holds the string denoting the is_rollback field in the database.
 	FieldIsRollback = "is_rollback"
 	// FieldIsApprovalEnabled holds the string denoting the is_approval_enabled field in the database.
@@ -85,11 +87,12 @@ var Columns = []string{
 	FieldID,
 	FieldNumber,
 	FieldType,
-	FieldRef,
-	FieldSha,
 	FieldEnv,
+	FieldRef,
 	FieldStatus,
 	FieldUID,
+	FieldSha,
+	FieldHTMLURL,
 	FieldIsRollback,
 	FieldIsApprovalEnabled,
 	FieldRequiredApprovalCount,
@@ -110,6 +113,8 @@ func ValidColumn(column string) bool {
 }
 
 var (
+	// HTMLURLValidator is a validator for the "html_url" field. It is called by the builders before save.
+	HTMLURLValidator func(string) error
 	// DefaultIsRollback holds the default value on creation for the "is_rollback" field.
 	DefaultIsRollback bool
 	// DefaultIsApprovalEnabled holds the default value on creation for the "is_approval_enabled" field.
@@ -159,11 +164,12 @@ const DefaultStatus = StatusWaiting
 
 // Status values.
 const (
-	StatusWaiting Status = "waiting"
-	StatusCreated Status = "created"
-	StatusRunning Status = "running"
-	StatusSuccess Status = "success"
-	StatusFailure Status = "failure"
+	StatusWaiting  Status = "waiting"
+	StatusCreated  Status = "created"
+	StatusRunning  Status = "running"
+	StatusSuccess  Status = "success"
+	StatusFailure  Status = "failure"
+	StatusCanceled Status = "canceled"
 )
 
 func (s Status) String() string {
@@ -173,7 +179,7 @@ func (s Status) String() string {
 // StatusValidator is a validator for the "status" field enum values. It is called by the builders before save.
 func StatusValidator(s Status) error {
 	switch s {
-	case StatusWaiting, StatusCreated, StatusRunning, StatusSuccess, StatusFailure:
+	case StatusWaiting, StatusCreated, StatusRunning, StatusSuccess, StatusFailure, StatusCanceled:
 		return nil
 	default:
 		return fmt.Errorf("deployment: invalid enum value for status field: %q", s)

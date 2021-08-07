@@ -22,16 +22,18 @@ type Deployment struct {
 	Number int `json:"number"`
 	// Type holds the value of the "type" field.
 	Type deployment.Type `json:"type"`
-	// Ref holds the value of the "ref" field.
-	Ref string `json:"ref"`
-	// Sha holds the value of the "sha" field.
-	Sha string `json:"sha"`
 	// Env holds the value of the "env" field.
 	Env string `json:"env"`
+	// Ref holds the value of the "ref" field.
+	Ref string `json:"ref"`
 	// Status holds the value of the "status" field.
 	Status deployment.Status `json:"status"`
 	// UID holds the value of the "uid" field.
 	UID int64 `json:"uid"`
+	// Sha holds the value of the "sha" field.
+	Sha string `json:"sha"`
+	// HTMLURL holds the value of the "html_url" field.
+	HTMLURL string `json:"html_url"`
 	// IsRollback holds the value of the "is_rollback" field.
 	IsRollback bool `json:"is_rollback"`
 	// IsApprovalEnabled holds the value of the "is_approval_enabled" field.
@@ -121,7 +123,7 @@ func (*Deployment) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(sql.NullBool)
 		case deployment.FieldID, deployment.FieldNumber, deployment.FieldUID, deployment.FieldRequiredApprovalCount:
 			values[i] = new(sql.NullInt64)
-		case deployment.FieldType, deployment.FieldRef, deployment.FieldSha, deployment.FieldEnv, deployment.FieldStatus, deployment.FieldUserID, deployment.FieldRepoID:
+		case deployment.FieldType, deployment.FieldEnv, deployment.FieldRef, deployment.FieldStatus, deployment.FieldSha, deployment.FieldHTMLURL, deployment.FieldUserID, deployment.FieldRepoID:
 			values[i] = new(sql.NullString)
 		case deployment.FieldCreatedAt, deployment.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -158,23 +160,17 @@ func (d *Deployment) assignValues(columns []string, values []interface{}) error 
 			} else if value.Valid {
 				d.Type = deployment.Type(value.String)
 			}
-		case deployment.FieldRef:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field ref", values[i])
-			} else if value.Valid {
-				d.Ref = value.String
-			}
-		case deployment.FieldSha:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field sha", values[i])
-			} else if value.Valid {
-				d.Sha = value.String
-			}
 		case deployment.FieldEnv:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field env", values[i])
 			} else if value.Valid {
 				d.Env = value.String
+			}
+		case deployment.FieldRef:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field ref", values[i])
+			} else if value.Valid {
+				d.Ref = value.String
 			}
 		case deployment.FieldStatus:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -187,6 +183,18 @@ func (d *Deployment) assignValues(columns []string, values []interface{}) error 
 				return fmt.Errorf("unexpected type %T for field uid", values[i])
 			} else if value.Valid {
 				d.UID = value.Int64
+			}
+		case deployment.FieldSha:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field sha", values[i])
+			} else if value.Valid {
+				d.Sha = value.String
+			}
+		case deployment.FieldHTMLURL:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field html_url", values[i])
+			} else if value.Valid {
+				d.HTMLURL = value.String
 			}
 		case deployment.FieldIsRollback:
 			if value, ok := values[i].(*sql.NullBool); !ok {
@@ -282,16 +290,18 @@ func (d *Deployment) String() string {
 	builder.WriteString(fmt.Sprintf("%v", d.Number))
 	builder.WriteString(", type=")
 	builder.WriteString(fmt.Sprintf("%v", d.Type))
-	builder.WriteString(", ref=")
-	builder.WriteString(d.Ref)
-	builder.WriteString(", sha=")
-	builder.WriteString(d.Sha)
 	builder.WriteString(", env=")
 	builder.WriteString(d.Env)
+	builder.WriteString(", ref=")
+	builder.WriteString(d.Ref)
 	builder.WriteString(", status=")
 	builder.WriteString(fmt.Sprintf("%v", d.Status))
 	builder.WriteString(", uid=")
 	builder.WriteString(fmt.Sprintf("%v", d.UID))
+	builder.WriteString(", sha=")
+	builder.WriteString(d.Sha)
+	builder.WriteString(", html_url=")
+	builder.WriteString(d.HTMLURL)
 	builder.WriteString(", is_rollback=")
 	builder.WriteString(fmt.Sprintf("%v", d.IsRollback))
 	builder.WriteString(", is_approval_enabled=")

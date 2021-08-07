@@ -7,33 +7,48 @@ import (
 
 type (
 	Interactor struct {
+		// Host and protocol of server for Log URL of deployment status.
+		ServerHost  string
+		ServerProto string
+
 		Store
 		SCM
 
-		// Notification events
+		// The channel to stop background workers.
 		stopCh chan struct{}
 		events evbus.Bus
 
 		log *zap.Logger
 	}
 
-	// Chat is optional function.
-	// by provide FakeChat you can disable chat.
-	FakeChat struct{}
+	InteractorConfig struct {
+		ServerHost  string
+		ServerProto string
+
+		Store
+		SCM
+	}
 )
 
-func NewInteractor(store Store, scm SCM) *Interactor {
+func NewInteractor(c *InteractorConfig) *Interactor {
 	i := &Interactor{
-		Store:  store,
-		SCM:    scm,
-		stopCh: make(chan struct{}),
-		events: evbus.New(),
-		log:    zap.L().Named("interactor"),
+		ServerHost:  c.ServerHost,
+		ServerProto: c.ServerProto,
+		Store:       c.Store,
+		SCM:         c.SCM,
+		stopCh:      make(chan struct{}),
+		events:      evbus.New(),
+		log:         zap.L().Named("interactor"),
 	}
 
 	go func() {
-		i.log.Info("start to polling notification.")
-		i.polling(i.stopCh)
+		i.log.Info("Start the working publishing notifications.")
+		i.runPublishingNotifications(i.stopCh)
+	}()
+
+	go func() {
+		i.log.Info("Start the worker canceling inactive deployments.")
+		i.runClosingInactiveDeployment(i.stopCh)
 	}()
 	return i
 }

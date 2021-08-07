@@ -12,7 +12,7 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-func TestStore_ListDeployments(t *testing.T) {
+func TestStore_ListDeploymentsOfRepo(t *testing.T) {
 	client := enttest.Open(t, "sqlite3", "file:ent?mode=memory&cache=shared&_fk=1")
 	defer client.Close()
 
@@ -85,7 +85,7 @@ func TestStore_ListDeployments(t *testing.T) {
 	s := NewStore(client)
 
 	t.Run("list all deployments", func(tt *testing.T) {
-		ds, err := s.ListDeployments(ctx, r, "", "", 1, 100)
+		ds, err := s.ListDeploymentsOfRepo(ctx, r, "", "", 1, 100)
 		if err != nil {
 			tt.Errorf("failed to list deployments: %s", err)
 			return
@@ -93,12 +93,12 @@ func TestStore_ListDeployments(t *testing.T) {
 
 		e := 3
 		if len(ds) != e {
-			tt.Errorf("ListDeployments = len(%v), expected len(%v)", len(ds), e)
+			tt.Errorf("ListDeploymentsOfRepo = len(%v), expected len(%v)", len(ds), e)
 		}
 	})
 
 	t.Run("list env=local deployments", func(tt *testing.T) {
-		ds, err := s.ListDeployments(ctx, r, "local", "", 1, 100)
+		ds, err := s.ListDeploymentsOfRepo(ctx, r, "local", "", 1, 100)
 		if err != nil {
 			tt.Errorf("failed to list deployments: %s", err)
 			return
@@ -106,12 +106,12 @@ func TestStore_ListDeployments(t *testing.T) {
 
 		e := 1
 		if len(ds) != e {
-			tt.Errorf("ListDeployments = len(%v), expected len(%v)", len(ds), e)
+			tt.Errorf("ListDeploymentsOfRepo = len(%v), expected len(%v)", len(ds), e)
 		}
 	})
 
 	t.Run("list status=created deployments", func(tt *testing.T) {
-		ds, err := s.ListDeployments(ctx, r, "", "created", 1, 100)
+		ds, err := s.ListDeploymentsOfRepo(ctx, r, "", "created", 1, 100)
 		if err != nil {
 			tt.Errorf("failed to list deployments: %s", err)
 			return
@@ -119,12 +119,12 @@ func TestStore_ListDeployments(t *testing.T) {
 
 		e := 1
 		if len(ds) != e {
-			tt.Errorf("ListDeployments = len(%v), expected len(%v)", len(ds), e)
+			tt.Errorf("ListDeploymentsOfRepo = len(%v), expected len(%v)", len(ds), e)
 		}
 	})
 
 	t.Run("list env=local&status=created deployments", func(tt *testing.T) {
-		ds, err := s.ListDeployments(ctx, r, "local", "created", 1, 100)
+		ds, err := s.ListDeploymentsOfRepo(ctx, r, "local", "created", 1, 100)
 		if err != nil {
 			tt.Errorf("failed to list deployments: %s", err)
 			return
@@ -132,7 +132,7 @@ func TestStore_ListDeployments(t *testing.T) {
 
 		e := 1
 		if len(ds) != e {
-			tt.Errorf("ListDeployments = len(%v), expected len(%v)", len(ds), e)
+			tt.Errorf("ListDeploymentsOfRepo = len(%v), expected len(%v)", len(ds), e)
 		}
 	})
 }
