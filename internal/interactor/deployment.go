@@ -58,10 +58,11 @@ func (i *Interactor) CreateDeploymentToSCM(ctx context.Context, u *ent.User, re 
 }
 
 func (i *Interactor) createDeploymentToSCM(ctx context.Context, u *ent.User, re *ent.Repo, d *ent.Deployment, e *vo.Env) (*ent.Deployment, error) {
+
+	// Rollback configures it can deploy the ref without any constraints.
+	// 1) Set auto_merge false to avoid the merge conflict.
+	// 2) Set required_contexts empty to skip the verfication.
 	if d.IsRollback {
-		// Rollback configures it can deploy the ref without any constraints.
-		// 1) Set auto_merge false to avoid the merge conflict.
-		// 2) Set required_contexts empty to skip the verfication.
 		e.Task = "rollback"
 		e.AutoMerge = false
 		e.RequiredContexts = []string{}
@@ -88,7 +89,7 @@ func (i *Interactor) createDeploymentToSCM(ctx context.Context, u *ent.User, re 
 	d.HTMLURL = rd.HTLMURL
 	d.Status = deployment.StatusCreated
 
-	if _, err := i.UpdateDeployment(ctx, d); err != nil {
+	if d, err = i.UpdateDeployment(ctx, d); err != nil {
 		return nil, err
 	}
 

@@ -1,3 +1,5 @@
+//go:generate mockgen -source ./interface.go -destination ./mock/pkg.go -package mock
+
 package interactor
 
 import (
