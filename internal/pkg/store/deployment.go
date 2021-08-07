@@ -8,7 +8,7 @@ import (
 	"github.com/hanjunlee/gitploy/ent/repo"
 )
 
-func (s *Store) ListDeployments(ctx context.Context, r *ent.Repo, env string, status string, page, perPage int) ([]*ent.Deployment, error) {
+func (s *Store) ListDeploymentsOfRepo(ctx context.Context, r *ent.Repo, env string, status string, page, perPage int) ([]*ent.Deployment, error) {
 	q := s.c.Deployment.
 		Query()
 

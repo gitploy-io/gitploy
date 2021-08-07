@@ -441,19 +441,19 @@ func (mr *MockStoreMockRecorder) ListApprovals(ctx, d interface{}) *gomock.Call 
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListApprovals", reflect.TypeOf((*MockStore)(nil).ListApprovals), ctx, d)
 }
 
-// ListDeployments mocks base method.
-func (m *MockStore) ListDeployments(ctx context.Context, r *ent.Repo, env, status string, page, perPage int) ([]*ent.Deployment, error) {
+// ListDeploymentsOfRepo mocks base method.
+func (m *MockStore) ListDeploymentsOfRepo(ctx context.Context, r *ent.Repo, env, status string, page, perPage int) ([]*ent.Deployment, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListDeployments", ctx, r, env, status, page, perPage)
+	ret := m.ctrl.Call(m, "ListDeploymentsOfRepo", ctx, r, env, status, page, perPage)
 	ret0, _ := ret[0].([]*ent.Deployment)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// ListDeployments indicates an expected call of ListDeployments.
-func (mr *MockStoreMockRecorder) ListDeployments(ctx, r, env, status, page, perPage interface{}) *gomock.Call {
+// ListDeploymentsOfRepo indicates an expected call of ListDeploymentsOfRepo.
+func (mr *MockStoreMockRecorder) ListDeploymentsOfRepo(ctx, r, env, status, page, perPage interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListDeployments", reflect.TypeOf((*MockStore)(nil).ListDeployments), ctx, r, env, status, page, perPage)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListDeploymentsOfRepo", reflect.TypeOf((*MockStore)(nil).ListDeploymentsOfRepo), ctx, r, env, status, page, perPage)
 }
 
 // ListNotifications mocks base method.

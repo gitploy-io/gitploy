@@ -247,19 +247,19 @@ func (mr *MockInteractorMockRecorder) GetTag(ctx, u, r, tag interface{}) *gomock
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTag", reflect.TypeOf((*MockInteractor)(nil).GetTag), ctx, u, r, tag)
 }
 
-// ListDeployments mocks base method.
-func (m *MockInteractor) ListDeployments(ctx context.Context, r *ent.Repo, env, status string, page, perPage int) ([]*ent.Deployment, error) {
+// ListDeploymentsOfRepo mocks base method.
+func (m *MockInteractor) ListDeploymentsOfRepo(ctx context.Context, r *ent.Repo, env, status string, page, perPage int) ([]*ent.Deployment, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListDeployments", ctx, r, env, status, page, perPage)
+	ret := m.ctrl.Call(m, "ListDeploymentsOfRepo", ctx, r, env, status, page, perPage)
 	ret0, _ := ret[0].([]*ent.Deployment)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// ListDeployments indicates an expected call of ListDeployments.
-func (mr *MockInteractorMockRecorder) ListDeployments(ctx, r, env, status, page, perPage interface{}) *gomock.Call {
+// ListDeploymentsOfRepo indicates an expected call of ListDeploymentsOfRepo.
+func (mr *MockInteractorMockRecorder) ListDeploymentsOfRepo(ctx, r, env, status, page, perPage interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListDeployments", reflect.TypeOf((*MockInteractor)(nil).ListDeployments), ctx, r, env, status, page, perPage)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListDeploymentsOfRepo", reflect.TypeOf((*MockInteractor)(nil).ListDeploymentsOfRepo), ctx, r, env, status, page, perPage)
 }
 
 // ListPermsOfRepo mocks base method.
