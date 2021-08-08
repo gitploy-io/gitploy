@@ -320,7 +320,7 @@ func (r *Repo) ListDeploymentChanges(c *gin.Context) {
 		return
 	}
 
-	ld, err := r.i.FindLatestSuccedDeployment(ctx, d)
+	ld, err := r.i.FindLatestSuccessfulDeployment(ctx, d)
 	if ent.IsNotFound(err) {
 		r.log.Warn("The comparable deployment is not found.", zap.Error(err))
 		gb.ErrorResponse(c, http.StatusNotFound, "The comparable deployment is not found.")

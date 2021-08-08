@@ -224,7 +224,7 @@ func TestStore_GetNextDeploymentNumberOfRepo(t *testing.T) {
 	})
 }
 
-func TestStore_FindLatestSuccedDeployment(t *testing.T) {
+func TestStore_FindLatestSuccessfulDeployment(t *testing.T) {
 	r := &ent.Repo{
 		ID: "1",
 	}
@@ -255,9 +255,9 @@ func TestStore_FindLatestSuccedDeployment(t *testing.T) {
 
 		s := NewStore(client)
 
-		d, err := s.FindLatestSuccedDeployment(ctx, d)
+		d, err := s.FindLatestSuccessfulDeployment(ctx, d)
 		if !ent.IsNotFound(err) {
-			t.Fatalf("FindLatestSuccedDeployment does not return NotFoundError: %s", err)
+			t.Fatalf("FindLatestSuccessfulDeployment does not return NotFoundError: %s", err)
 			t.FailNow()
 		}
 	})
@@ -313,14 +313,14 @@ func TestStore_FindLatestSuccedDeployment(t *testing.T) {
 
 		s := NewStore(client)
 
-		d, err := s.FindLatestSuccedDeployment(ctx, d)
+		d, err := s.FindLatestSuccessfulDeployment(ctx, d)
 		if err != nil {
-			t.Fatalf("FindLatestSuccedDeployment returns an error: %s", err)
+			t.Fatalf("FindLatestSuccessfulDeployment returns an error: %s", err)
 			t.FailNow()
 		}
 
 		if d.ID != expected.ID {
-			t.Fatalf("FindLatestSuccedDeployment = %v, wanted %v", d, expected)
+			t.Fatalf("FindLatestSuccessfulDeployment = %v, wanted %v", d, expected)
 			t.FailNow()
 		}
 	})

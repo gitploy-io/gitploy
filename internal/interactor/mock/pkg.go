@@ -306,19 +306,19 @@ func (mr *MockStoreMockRecorder) FindDeploymentOfRepoByNumber(ctx, r, number int
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindDeploymentOfRepoByNumber", reflect.TypeOf((*MockStore)(nil).FindDeploymentOfRepoByNumber), ctx, r, number)
 }
 
-// FindLatestSuccedDeployment mocks base method.
-func (m *MockStore) FindLatestSuccedDeployment(ctx context.Context, d *ent.Deployment) (*ent.Deployment, error) {
+// FindLatestSuccessfulDeployment mocks base method.
+func (m *MockStore) FindLatestSuccessfulDeployment(ctx context.Context, d *ent.Deployment) (*ent.Deployment, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FindLatestSuccedDeployment", ctx, d)
+	ret := m.ctrl.Call(m, "FindLatestSuccessfulDeployment", ctx, d)
 	ret0, _ := ret[0].(*ent.Deployment)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// FindLatestSuccedDeployment indicates an expected call of FindLatestSuccedDeployment.
-func (mr *MockStoreMockRecorder) FindLatestSuccedDeployment(ctx, d interface{}) *gomock.Call {
+// FindLatestSuccessfulDeployment indicates an expected call of FindLatestSuccessfulDeployment.
+func (mr *MockStoreMockRecorder) FindLatestSuccessfulDeployment(ctx, d interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindLatestSuccedDeployment", reflect.TypeOf((*MockStore)(nil).FindLatestSuccedDeployment), ctx, d)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindLatestSuccessfulDeployment", reflect.TypeOf((*MockStore)(nil).FindLatestSuccessfulDeployment), ctx, d)
 }
 
 // FindNotificationByID mocks base method.

@@ -108,7 +108,7 @@ func (s *Store) GetNextDeploymentNumberOfRepo(ctx context.Context, r *ent.Repo) 
 
 	return cnt + 1, nil
 }
-func (s *Store) FindLatestSuccedDeployment(ctx context.Context, d *ent.Deployment) (*ent.Deployment, error) {
+func (s *Store) FindLatestSuccessfulDeployment(ctx context.Context, d *ent.Deployment) (*ent.Deployment, error) {
 	return s.c.Deployment.
 		Query().
 		Where(
