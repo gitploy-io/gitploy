@@ -129,9 +129,10 @@ L:
 					if d.Edges.User != nil && d.Edges.Repo != nil {
 						r := d.Edges.Repo
 						s := &ent.DeploymentStatus{
-							Status:      "canceled",
-							Description: "Gitploy cancels the inactive deployment.",
-							LogURL:      fmt.Sprintf("%s://%s/%s/%s/deployments/%d", i.ServerProto, i.ServerHost, r.Namespace, r.Name, d.Number),
+							Status:       "canceled",
+							Description:  "Gitploy cancels the inactive deployment.",
+							LogURL:       fmt.Sprintf("%s://%s/%s/%s/deployments/%d", i.ServerProto, i.ServerHost, r.Namespace, r.Name, d.Number),
+							DeploymentID: d.ID,
 						}
 						if err := i.SCM.CancelDeployment(ctx, d.Edges.User, d.Edges.Repo, d, s); err != nil {
 							i.log.Error("It has failed to cancel the remote deployment.", zap.Error(err))
