@@ -184,7 +184,7 @@ func (g *Github) ListTags(ctx context.Context, u *ent.User, r *ent.Repo, page, p
 	for _, n := range q.Repository.Refs.Nodes {
 		tags = append(tags, &vo.Tag{
 			Name:      n.Name,
-			CommitSha: n.Target.Oid,
+			CommitSHA: n.Target.Oid,
 		})
 	}
 
@@ -220,7 +220,7 @@ func (g *Github) GetTag(ctx context.Context, u *ent.User, r *ent.Repo, tag strin
 	n := q.Repository.Refs.Nodes[0]
 	t := &vo.Tag{
 		Name:      n.Name,
-		CommitSha: n.Target.Oid,
+		CommitSHA: n.Target.Oid,
 	}
 
 	return t, nil

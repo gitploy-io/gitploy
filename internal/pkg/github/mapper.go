@@ -65,7 +65,7 @@ func mapGithubCommitToCommit(cm *github.RepositoryCommit) *vo.Commit {
 	}
 
 	return &vo.Commit{
-		Sha:           *cm.SHA,
+		SHA:           *cm.SHA,
 		Message:       *cm.Commit.Message,
 		IsPullRequest: isPullRequest,
 	}
@@ -126,7 +126,7 @@ func mapGithubCheckRunToStatus(c *github.CheckRun) *vo.Status {
 func mapGithubBranchToBranch(b *github.Branch) *vo.Branch {
 	return &vo.Branch{
 		Name:      *b.Name,
-		CommitSha: *b.Commit.SHA,
+		CommitSHA: *b.Commit.SHA,
 	}
 }
 
