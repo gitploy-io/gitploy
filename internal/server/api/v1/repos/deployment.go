@@ -1,6 +1,8 @@
 package repos
 
 import (
+	"context"
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -230,6 +232,7 @@ func (r *Repo) RollbackDeployment(c *gin.Context) {
 	if ent.IsNotFound(err) {
 		r.log.Warn("the deployment is not found.", zap.Error(err))
 		gb.ErrorResponse(c, http.StatusNotFound, "The deployment is not found.")
+		return
 	}
 
 	cf, err := r.i.GetConfig(ctx, u, re)
@@ -289,6 +292,88 @@ func (r *Repo) RollbackDeployment(c *gin.Context) {
 	}
 
 	gb.Response(c, http.StatusCreated, d)
+}
+
+func (r *Repo) ListDeploymentChanges(c *gin.Context) {
+	ctx := c.Request.Context()
+
+	var (
+		number  = c.Param("number")
+		page    = c.DefaultQuery("page", "1")
+		perPage = c.DefaultQuery("per_page", "30")
+	)
+
+	vu, _ := c.Get(gb.KeyUser)
+	u := vu.(*ent.User)
+
+	vr, _ := c.Get(KeyRepo)
+	re := vr.(*ent.Repo)
+
+	d, err := r.i.FindDeploymentOfRepoByNumber(ctx, re, atoi(number))
+	if ent.IsNotFound(err) {
+		r.log.Warn("The deployment is not found.", zap.Error(err))
+		gb.ErrorResponse(c, http.StatusNotFound, "The deployment is not found.")
+		return
+	} else if err != nil {
+		r.log.Error("It has failed to find the deployment.", zap.Error(err))
+		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to find the deployment.")
+		return
+	}
+
+	ld, err := r.i.FindLatestSuccedDeployment(ctx, d)
+	if ent.IsNotFound(err) {
+		r.log.Warn("The comparable deployment is not found.", zap.Error(err))
+		gb.ErrorResponse(c, http.StatusNotFound, "The comparable deployment is not found.")
+		return
+	} else if err != nil {
+		r.log.Error("It has failed to find the comparable deployment.", zap.Error(err))
+		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to find the comparable deployment.")
+		return
+	}
+
+	sha, err := r.getCommitSha(ctx, u, re, d.Type, d.Ref)
+	if err != nil {
+		r.log.Error("It has failed to get the SHA of deployment.", zap.Error(err))
+		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to get the SHA of deployment.")
+		return
+	}
+
+	commits, err := r.i.CompareCommits(ctx, u, re, ld.Sha, sha, atoi(page), atoi(perPage))
+	if err != nil {
+		r.log.Error("It has failed to compare two commits.", zap.Error(err))
+		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to compare two commits.")
+		return
+	}
+
+	gb.Response(c, http.StatusOK, commits)
+}
+
+func (r *Repo) getCommitSha(ctx context.Context, u *ent.User, re *ent.Repo, typ deployment.Type, ref string) (string, error) {
+	switch typ {
+	case deployment.TypeCommit:
+		c, err := r.i.GetCommit(ctx, u, re, ref)
+		if err != nil {
+			return "", err
+		}
+
+		return c.SHA, nil
+	case deployment.TypeBranch:
+		b, err := r.i.GetBranch(ctx, u, re, ref)
+		if err != nil {
+			return "", err
+		}
+
+		return b.CommitSHA, nil
+	case deployment.TypeTag:
+		t, err := r.i.GetTag(ctx, u, re, ref)
+		if err != nil {
+			return "", err
+		}
+
+		return t.CommitSHA, nil
+	default:
+		return "", fmt.Errorf("Type must be one of commit, branch, tag.")
+	}
 }
 
 func (r *Repo) GetConfig(c *gin.Context) {

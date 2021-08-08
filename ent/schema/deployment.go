@@ -90,7 +90,9 @@ func (Deployment) Edges() []ent.Edge {
 
 func (Deployment) Indexes() []ent.Index {
 	return []ent.Index{
-		// Basically deployments are ordered by created_at field.
+		// Find the latest succeed deployment.
+		index.Fields("repo_id", "env", "status", "updated_at"),
+		// List deployments by the env.
 		index.Fields("repo_id", "env", "created_at"),
 		index.Fields("repo_id", "created_at"),
 		// The deployment number is unique for the repo.

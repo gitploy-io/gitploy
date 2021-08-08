@@ -306,6 +306,21 @@ func (mr *MockStoreMockRecorder) FindDeploymentOfRepoByNumber(ctx, r, number int
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindDeploymentOfRepoByNumber", reflect.TypeOf((*MockStore)(nil).FindDeploymentOfRepoByNumber), ctx, r, number)
 }
 
+// FindLatestSuccedDeployment mocks base method.
+func (m *MockStore) FindLatestSuccedDeployment(ctx context.Context, d *ent.Deployment) (*ent.Deployment, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindLatestSuccedDeployment", ctx, d)
+	ret0, _ := ret[0].(*ent.Deployment)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindLatestSuccedDeployment indicates an expected call of FindLatestSuccedDeployment.
+func (mr *MockStoreMockRecorder) FindLatestSuccedDeployment(ctx, d interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindLatestSuccedDeployment", reflect.TypeOf((*MockStore)(nil).FindLatestSuccedDeployment), ctx, d)
+}
+
 // FindNotificationByID mocks base method.
 func (m *MockStore) FindNotificationByID(ctx context.Context, id int) (*ent.Notification, error) {
 	m.ctrl.T.Helper()
@@ -685,6 +700,21 @@ func (m *MockSCM) CancelDeployment(ctx context.Context, u *ent.User, r *ent.Repo
 func (mr *MockSCMMockRecorder) CancelDeployment(ctx, u, r, d, s interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CancelDeployment", reflect.TypeOf((*MockSCM)(nil).CancelDeployment), ctx, u, r, d, s)
+}
+
+// CompareCommits mocks base method.
+func (m *MockSCM) CompareCommits(ctx context.Context, u *ent.User, r *ent.Repo, base, head string, page, perPage int) ([]*vo.Commit, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CompareCommits", ctx, u, r, base, head, page, perPage)
+	ret0, _ := ret[0].([]*vo.Commit)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CompareCommits indicates an expected call of CompareCommits.
+func (mr *MockSCMMockRecorder) CompareCommits(ctx, u, r, base, head, page, perPage interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CompareCommits", reflect.TypeOf((*MockSCM)(nil).CompareCommits), ctx, u, r, base, head, page, perPage)
 }
 
 // CreateDeployment mocks base method.
