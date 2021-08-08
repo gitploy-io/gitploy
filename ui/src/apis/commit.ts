@@ -10,7 +10,7 @@ interface CommitData {
     is_pull_request: boolean
 }
 
-const mapDataToCommit = (data: CommitData): Commit => {
+export const mapDataToCommit = (data: CommitData): Commit => {
     return {
         sha: data.sha,
         message: data.message,

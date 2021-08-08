@@ -331,11 +331,15 @@ func (r *Repo) ListDeploymentChanges(c *gin.Context) {
 		return
 	}
 
-	sha, err := r.getCommitSha(ctx, u, re, d.Type, d.Ref)
-	if err != nil {
-		r.log.Error("It has failed to get the SHA of deployment.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to get the SHA of deployment.")
-		return
+	// Get SHA when the status of deployment is waiting.
+	sha := d.Sha
+	if sha == "" {
+		sha, err = r.getCommitSha(ctx, u, re, d.Type, d.Ref)
+		if err != nil {
+			r.log.Error("It has failed to get the SHA of deployment.", zap.Error(err))
+			gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to get the SHA of deployment.")
+			return
+		}
 	}
 
 	commits, err := r.i.CompareCommits(ctx, u, re, ld.Sha, sha, atoi(page), atoi(perPage))
