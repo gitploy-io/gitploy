@@ -68,6 +68,7 @@ func mapGithubCommitToCommit(cm *github.RepositoryCommit) *vo.Commit {
 		SHA:           *cm.SHA,
 		Message:       *cm.Commit.Message,
 		IsPullRequest: isPullRequest,
+		HTMLURL:       *cm.HTMLURL,
 	}
 }
 

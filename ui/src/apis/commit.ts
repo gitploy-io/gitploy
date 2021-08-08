@@ -8,13 +8,15 @@ interface CommitData {
     sha: string
     message: string
     is_pull_request: boolean
+    html_url: string
 }
 
 export const mapDataToCommit = (data: CommitData): Commit => {
     return {
         sha: data.sha,
         message: data.message,
-        isPullRequest: data.is_pull_request
+        isPullRequest: data.is_pull_request,
+        htmlUrl: data.html_url,
     }
 }
 

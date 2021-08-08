@@ -5,6 +5,7 @@ type (
 		SHA           string `json:"sha"`
 		Message       string `json:"message"`
 		IsPullRequest bool   `json:"is_pull_request"`
+		HTMLURL       string `json:"html_url"`
 	}
 
 	StatusState string

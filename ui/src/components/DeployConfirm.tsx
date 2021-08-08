@@ -116,8 +116,10 @@ function CommitChanges(props: CommitChangesProps): JSX.Element {
             {props.changes.map((change, idx) => {
                 const style: React.CSSProperties =  (idx === props.changes.length - 1) ?  {height: 0} : {}
 
-                return <Timeline.Item color="gray" style={style}>
-                    {change.message.split("\n", 1)[0].substr(0, 50)}
+                return <Timeline.Item key={idx} color="gray" style={style}>
+                    <a href={change.htmlUrl} className="gitploy-link">
+                        {change.message.split("\n", 1)[0].substr(0, 50)}
+                    </a>
                 </Timeline.Item>
             })}
         </Timeline>
