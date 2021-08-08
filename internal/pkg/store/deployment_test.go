@@ -255,7 +255,7 @@ func TestStore_FindLatestSuccessfulDeployment(t *testing.T) {
 
 		s := NewStore(client)
 
-		d, err := s.FindLatestSuccessfulDeployment(ctx, d)
+		_, err := s.FindLatestSuccessfulDeployment(ctx, d)
 		if !ent.IsNotFound(err) {
 			t.Fatalf("FindLatestSuccessfulDeployment does not return NotFoundError: %s", err)
 			t.FailNow()
