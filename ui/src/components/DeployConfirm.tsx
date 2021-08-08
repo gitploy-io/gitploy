@@ -113,12 +113,14 @@ function CommitChanges(props: CommitChangesProps): JSX.Element {
     }
     return (
         <Timeline>
-            {props.changes.map((change, idx) => {
+            {props.changes.slice(0, 10).map((change, idx) => {
                 const style: React.CSSProperties =  (idx === props.changes.length - 1) ?  {height: 0} : {}
+                // Omit lines after the first feedline.
+                const message = change.message.split("\n", 1)[0]
 
                 return <Timeline.Item key={idx} color="gray" style={style}>
                     <a href={change.htmlUrl} className="gitploy-link">
-                        {change.message.split("\n", 1)[0].substr(0, 50)}
+                        {message.substr(0, 50)}
                     </a>
                 </Timeline.Item>
             })}
