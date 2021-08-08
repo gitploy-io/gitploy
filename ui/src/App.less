@@ -1,1 +1,21 @@
 @import '~antd/dist/antd.less';
+
+@gitploy-prefix: ~'gitploy';
+
+// Link changes color when it is hover.
+.@{gitploy-prefix} {
+  &-link {
+    margin-bottom: 4px;
+    color: @text-color;
+    font-size: @font-size-base;
+    line-height: @line-height-base;
+    > a {
+      color: @text-color;
+      transition: all 0.3s;
+      &:hover {
+        color: @primary-color;
+      }
+    }
+  }
+
+}

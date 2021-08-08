@@ -133,6 +133,11 @@ var (
 		},
 		Indexes: []*schema.Index{
 			{
+				Name:    "deployment_repo_id_env_status_updated_at",
+				Unique:  false,
+				Columns: []*schema.Column{DeploymentsColumns[14], DeploymentsColumns[3], DeploymentsColumns[5], DeploymentsColumns[13]},
+			},
+			{
 				Name:    "deployment_repo_id_env_created_at",
 				Unique:  false,
 				Columns: []*schema.Column{DeploymentsColumns[14], DeploymentsColumns[3], DeploymentsColumns[12]},

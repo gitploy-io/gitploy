@@ -9,11 +9,13 @@ import {
     DeploymentType, 
     DeploymentStatus,
     LastDeploymentStatus, 
+    Commit,
     HttpRequestError, 
     HttpUnprocessableEntityError 
 } from "../models"
 import { UserData, mapDataToUser } from "./user"
 import { RepoData, mapDataToRepo } from "./repo"
+import { mapDataToCommit } from "./commit"
 
 export interface DeploymentData {
     id: number
@@ -206,4 +208,21 @@ export const rollbackDeployment = async (repoId: string, number: number): Promis
         .json()
         .then(d => mapDataToDeployment(d))
     return deployment
+}
+
+export const listDeploymentChanges = async (repoId: string, number: number, page = 1, perPage = 30): Promise<Commit[]> => {
+    const res = await _fetch(`${instance}/api/v1/repos/${repoId}/deployments/${number}/changes?page=${page}&per_page=${perPage}`, {
+        headers,
+        credentials: 'same-origin',
+    })
+
+    if (res.status === StatusCodes.NOT_FOUND) {
+        return []
+    }
+
+    const commits: Commit[] = await res
+        .json()
+        .then(ds => ds.map((d: any): Commit => mapDataToCommit(d)))
+
+    return commits
 }

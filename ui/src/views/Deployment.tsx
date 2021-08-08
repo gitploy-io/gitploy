@@ -8,6 +8,7 @@ import {
     init, 
     deploymentSlice, 
     fetchDeployment, 
+    fetchDeploymentChanges,
     fetchApprovals, 
     fetchMyApproval,
     deployToSCM,
@@ -44,6 +45,7 @@ export default function DeploymentView(): JSX.Element {
     const { namespace, name, number } = useParams<Params>()
     const { 
         deployment, 
+        changes,
         deploying,
         approvals, 
         candidates, 
@@ -56,6 +58,7 @@ export default function DeploymentView(): JSX.Element {
             await dispatch(init({namespace, name}))
             await dispatch(actions.setNumber(parseInt(number, 10)))
             await dispatch(fetchDeployment())
+            await dispatch(fetchDeploymentChanges())
             await dispatch(fetchApprovals())
             await dispatch(fetchMyApproval())
         }
@@ -150,6 +153,7 @@ export default function DeploymentView(): JSX.Element {
                             isDeployable={isDeployable(deployment, approvals)}
                             deploying={RequestStatus.Pending === deploying}
                             deployment={deployment}
+                            changes={changes}
                             onClickDeploy={onClickDeploy}
                         />
                     </Col>

@@ -2,6 +2,7 @@ export default interface Commit {
     sha: string
     message: string
     isPullRequest: boolean
+    htmlUrl: string
 }
 
 export interface Status {

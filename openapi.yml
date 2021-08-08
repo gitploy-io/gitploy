@@ -564,6 +564,52 @@ paths:
           description: The configuration is invalid or it is not approved.
         '500':
           $ref: '#/components/responses/500InternalError'
+  /repos/{id}/deployments/{number}/changes:
+    get:
+      tags:
+        - Repo
+      summary: List commits from the environment state.
+      description: > 
+        List commits from the environment state, internally, 
+        it compares with the previous succeed deployment.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            description: The repository id
+        - in: path
+          name: number
+          required: true
+          schema:
+            type: integer
+            description: The deployment number.
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+        - in: query
+          name: per_page
+          schema:
+            type: integer
+            default: 30
+      responses:
+        '200':
+          description: Commits
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Commits'
+        '401': 
+          $ref: '#/components/responses/401Unauthorized'
+        '403': 
+          $ref: '#/components/responses/403Forbidden'
+        '404': 
+          $ref: '#/components/responses/404NotFound'
+        '500':
+          $ref: '#/components/responses/500InternalError'
   /repos/{id}/deployments/{number}/rollback:
     post:
       tags:
@@ -1068,6 +1114,8 @@ components:
           type: string
         is_pull_request:
           type: boolean
+        html_url:
+          type: string  
     Statuses:
       type: array
       items:

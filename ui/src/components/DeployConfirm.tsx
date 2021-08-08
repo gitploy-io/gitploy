@@ -1,14 +1,16 @@
-import { Form, Typography, Avatar, Button } from "antd"
+import { Form, Typography, Avatar, Button, Collapse, Timeline } from "antd"
 
-import { Deployment, DeploymentType } from "../models"
+import { Deployment, DeploymentType, Commit } from "../models"
 import DeploymentStatusSteps from "./DeploymentStatusSteps"
 
 const { Text } = Typography
+const { Panel } = Collapse
 
 interface DeployConfirmProps {
     isDeployable: boolean
     deploying: boolean
     deployment: Deployment
+    changes: Commit[]
     onClickDeploy(): void
 }
 
@@ -49,15 +51,13 @@ export default function DeployConfirm(props: DeployConfirmProps): JSX.Element {
                 {...layout}
                 label="Deployer"
             >
-                <Text>
-                    {(props.deployment.deployer !== null)?
-                         <Text >
-                            <Avatar size="small" src={props.deployment.deployer.avatar} /> {props.deployment.deployer.login}
-                        </Text> :
-                        <Avatar size="small" >
-                            U
-                        </Avatar>}
-                </Text>
+                {(props.deployment.deployer !== null)?
+                     <Text >
+                        <Avatar size="small" src={props.deployment.deployer.avatar} /> {props.deployment.deployer.login}
+                    </Text> :
+                    <Avatar size="small" >
+                        U
+                    </Avatar>}
             </Form.Item>
             {(props.deployment.isApprovalEanbled) ?
                 <Form.Item
@@ -67,6 +67,21 @@ export default function DeployConfirm(props: DeployConfirmProps): JSX.Element {
                     <Text>{props.deployment.requiredApprovalCount}</Text>
                 </Form.Item>: 
                 null }
+            <Form.Item
+                {...layout}
+                label="Changes"
+            >
+                <Collapse ghost >
+                    <Panel 
+                        key={1} 
+                        header="Click" 
+                        // Fix the position to align with the field.
+                        style={{position: "relative", top: "-5px", left: "-15px"}}
+                    >
+                        <CommitChanges changes={props.changes}/>
+                    </Panel>
+                </Collapse>
+            </Form.Item>
             <Form.Item 
                 {...submitLayout}
             >
@@ -85,5 +100,30 @@ export default function DeployConfirm(props: DeployConfirmProps): JSX.Element {
                     </Button>}
             </Form.Item>
         </Form>
+    )
+}
+
+interface CommitChangesProps {
+    changes: Commit[]
+}
+
+function CommitChanges(props: CommitChangesProps): JSX.Element {
+    if (props.changes.length === 0) {
+        return <div>There are no commits.</div>
+    }
+    return (
+        <Timeline>
+            {props.changes.slice(0, 10).map((change, idx) => {
+                const style: React.CSSProperties =  (idx === props.changes.length - 1) ?  {height: 0} : {}
+                // Omit lines after the first feedline.
+                const message = change.message.split("\n", 1)[0]
+
+                return <Timeline.Item key={idx} color="gray" style={style}>
+                    <a href={change.htmlUrl} className="gitploy-link">
+                        {message.substr(0, 50)}
+                    </a>
+                </Timeline.Item>
+            })}
+        </Timeline>
     )
 }

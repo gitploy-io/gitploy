@@ -44,6 +44,23 @@ func (g *Github) ListCommits(ctx context.Context, u *ent.User, r *ent.Repo, bran
 	return ret, nil
 }
 
+func (g *Github) CompareCommits(ctx context.Context, u *ent.User, r *ent.Repo, base, head string, page, perPage int) ([]*vo.Commit, error) {
+	// TODO: support pagination.
+	res, _, err := g.Client(ctx, u.Token).
+		Repositories.
+		CompareCommits(ctx, r.Namespace, r.Name, base, head)
+	if err != nil {
+		return nil, err
+	}
+
+	ret := make([]*vo.Commit, 0)
+	for _, cm := range res.Commits {
+		ret = append(ret, mapGithubCommitToCommit(cm))
+	}
+
+	return ret, nil
+}
+
 func (g *Github) GetCommit(ctx context.Context, u *ent.User, r *ent.Repo, sha string) (*vo.Commit, error) {
 	cm, res, err := g.Client(ctx, u.Token).
 		Repositories.
@@ -184,7 +201,7 @@ func (g *Github) ListTags(ctx context.Context, u *ent.User, r *ent.Repo, page, p
 	for _, n := range q.Repository.Refs.Nodes {
 		tags = append(tags, &vo.Tag{
 			Name:      n.Name,
-			CommitSha: n.Target.Oid,
+			CommitSHA: n.Target.Oid,
 		})
 	}
 
@@ -220,7 +237,7 @@ func (g *Github) GetTag(ctx context.Context, u *ent.User, r *ent.Repo, tag strin
 	n := q.Repository.Refs.Nodes[0]
 	t := &vo.Tag{
 		Name:      n.Name,
-		CommitSha: n.Target.Oid,
+		CommitSHA: n.Target.Oid,
 	}
 
 	return t, nil

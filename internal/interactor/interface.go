@@ -39,6 +39,7 @@ type (
 		FindDeploymentByID(ctx context.Context, id int) (*ent.Deployment, error)
 		FindDeploymentByUID(ctx context.Context, uid int64) (*ent.Deployment, error)
 		FindDeploymentOfRepoByNumber(ctx context.Context, r *ent.Repo, number int) (*ent.Deployment, error)
+		FindLatestSuccessfulDeployment(ctx context.Context, d *ent.Deployment) (*ent.Deployment, error)
 		GetNextDeploymentNumberOfRepo(ctx context.Context, r *ent.Repo) (int, error)
 		CreateDeployment(ctx context.Context, d *ent.Deployment) (*ent.Deployment, error)
 		UpdateDeployment(ctx context.Context, d *ent.Deployment) (*ent.Deployment, error)
@@ -77,6 +78,7 @@ type (
 		DeleteWebhook(ctx context.Context, u *ent.User, r *ent.Repo, id int64) error
 
 		ListCommits(ctx context.Context, u *ent.User, r *ent.Repo, branch string, page, perPage int) ([]*vo.Commit, error)
+		CompareCommits(ctx context.Context, u *ent.User, r *ent.Repo, base, head string, page, perPage int) ([]*vo.Commit, error)
 		GetCommit(ctx context.Context, u *ent.User, r *ent.Repo, sha string) (*vo.Commit, error)
 		ListCommitStatuses(ctx context.Context, u *ent.User, r *ent.Repo, sha string) ([]*vo.Status, error)
 

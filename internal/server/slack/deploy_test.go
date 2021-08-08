@@ -72,7 +72,7 @@ func TestSlack_interactDeploy(t *testing.T) {
 			GetBranch(gomock.Any(), u, r, branch).
 			Return(&vo.Branch{
 				Name:      branch,
-				CommitSha: "commit_sha",
+				CommitSHA: "commit_sha",
 			}, nil)
 
 		m.

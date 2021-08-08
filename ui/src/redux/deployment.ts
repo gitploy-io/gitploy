@@ -5,6 +5,7 @@ import {
     User,
     Repo, 
     Deployment, 
+    Commit,
     Approval, 
     RequestStatus, 
     HttpNotFoundError, 
@@ -20,13 +21,15 @@ import {
     deleteApproval as _deleteApproval,
     getMyApproval, 
     setApprovalApproved, 
-    setApprovalDeclined 
+    setApprovalDeclined, 
+    listDeploymentChanges
 } from "../apis"
 
 interface DeploymentState {
     repo: Repo | null
     number: number
     deployment: Deployment | null
+    changes: Commit[]
     deploying: RequestStatus
     deployId: string
 
@@ -41,6 +44,7 @@ const initialState: DeploymentState = {
     repo: null,
     number: 0,
     deployment: null,
+    changes: [],
     deploying: RequestStatus.Idle,
     deployId: "",
     approvals: [],
@@ -65,6 +69,21 @@ export const fetchDeployment = createAsyncThunk<Deployment, void, { state: {depl
         try {
             const deployment = await getDeployment(repo.id, number)
             return deployment
+        } catch(e) { 
+            return rejectWithValue(e)
+        }
+    },
+)
+
+export const fetchDeploymentChanges = createAsyncThunk<Commit[], void, { state: {deployment: DeploymentState} }>(
+    'deployment/fetchDeploymentChanges', 
+    async (_, { getState, rejectWithValue } ) => {
+        const { repo, number } = getState().deployment
+        if (repo === null) throw new Error("There is no repo.")
+
+        try {
+            const commits = await listDeploymentChanges(repo.id, number)
+            return commits
         } catch(e) { 
             return rejectWithValue(e)
         }
@@ -235,8 +254,11 @@ export const deploymentSlice = createSlice({
             })
 
             .addCase(fetchDeployment.fulfilled, (state, action) => {
-                const deployment = action.payload
-                state.deployment = deployment
+                state.deployment = action.payload
+            })
+
+            .addCase(fetchDeploymentChanges.fulfilled, (state, action) => {
+                state.changes = action.payload
             })
 
             .addCase(deployToSCM.pending, (state, action) => {

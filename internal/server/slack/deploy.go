@@ -405,21 +405,21 @@ func (s *Slack) getCommitSha(ctx context.Context, u *ent.User, re *ent.Repo, typ
 			return "", err
 		}
 
-		return c.Sha, nil
+		return c.SHA, nil
 	case "branch":
 		b, err := s.i.GetBranch(ctx, u, re, ref)
 		if err != nil {
 			return "", err
 		}
 
-		return b.CommitSha, nil
+		return b.CommitSHA, nil
 	case "tag":
 		t, err := s.i.GetTag(ctx, u, re, ref)
 		if err != nil {
 			return "", err
 		}
 
-		return t.CommitSha, nil
+		return t.CommitSHA, nil
 	default:
 		return "", fmt.Errorf("Type must be one of commit, branch, tag.")
 	}

@@ -108,6 +108,19 @@ func (s *Store) GetNextDeploymentNumberOfRepo(ctx context.Context, r *ent.Repo) 
 
 	return cnt + 1, nil
 }
+func (s *Store) FindLatestSuccessfulDeployment(ctx context.Context, d *ent.Deployment) (*ent.Deployment, error) {
+	return s.c.Deployment.
+		Query().
+		Where(
+			deployment.And(
+				deployment.RepoIDEQ(d.RepoID),
+				deployment.EnvEQ(d.Env),
+				deployment.StatusEQ(deployment.StatusSuccess),
+			),
+		).
+		Order(ent.Desc(deployment.FieldUpdatedAt)).
+		First(ctx)
+}
 
 // CreateDeployment always set the next number of deployment
 // when it creates.
