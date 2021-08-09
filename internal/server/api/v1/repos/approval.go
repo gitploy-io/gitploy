@@ -128,9 +128,6 @@ func (r *Repo) CreateApproval(c *gin.Context) {
 		return
 	}
 
-	vu, _ := c.Get(gb.KeyUser)
-	u := vu.(*ent.User)
-
 	vr, _ := c.Get(KeyRepo)
 	re := vr.(*ent.Repo)
 
@@ -145,7 +142,7 @@ func (r *Repo) CreateApproval(c *gin.Context) {
 		return
 	}
 
-	approver, err := r.i.FindUserByID(ctx, p.UserID)
+	user, err := r.i.FindUserByID(ctx, p.UserID)
 	if ent.IsNotFound(err) {
 		r.log.Warn("The approver is not found.", zap.Error(err))
 		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "The approver is not found.")
@@ -156,8 +153,18 @@ func (r *Repo) CreateApproval(c *gin.Context) {
 		return
 	}
 
+	if _, err := r.i.FindPermOfRepo(ctx, re, user); ent.IsNotFound(err) {
+		r.log.Warn("The permission is not found.", zap.Error(err))
+		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "There is no permssion for the repository.")
+		return
+	} else if err != nil {
+		r.log.Error("It has failed to get the perm.", zap.Error(err))
+		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to get the perm.")
+		return
+	}
+
 	ap, err := r.i.CreateApproval(ctx, &ent.Approval{
-		UserID:       approver.ID,
+		UserID:       user.ID,
 		DeploymentID: d.ID,
 	})
 	if ent.IsConstraintError(err) {
@@ -175,7 +182,7 @@ func (r *Repo) CreateApproval(c *gin.Context) {
 	}
 
 	// Get the approval with edges
-	if ae, _ := r.i.FindApprovalOfUser(ctx, d, u); ae != nil {
+	if ae, _ := r.i.FindApprovalByID(ctx, ap.ID); ae != nil {
 		ap = ae
 	}
 
