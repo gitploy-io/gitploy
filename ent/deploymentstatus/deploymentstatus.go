@@ -27,7 +27,7 @@ const (
 	EdgeDeployment = "deployment"
 	// Table holds the table name of the deploymentstatus in the database.
 	Table = "deployment_status"
-	// DeploymentTable is the table the holds the deployment relation/edge.
+	// DeploymentTable is the table that holds the deployment relation/edge.
 	DeploymentTable = "deployment_status"
 	// DeploymentInverseTable is the table name for the Deployment entity.
 	// It exists in this package in order to avoid circular dependency with the "deployment" package.

@@ -360,8 +360,8 @@ func (aq *ApprovalQuery) GroupBy(field string, fields ...string) *ApprovalGroupB
 //		Select(approval.FieldStatus).
 //		Scan(ctx, &v)
 //
-func (aq *ApprovalQuery) Select(field string, fields ...string) *ApprovalSelect {
-	aq.fields = append([]string{field}, fields...)
+func (aq *ApprovalQuery) Select(fields ...string) *ApprovalSelect {
+	aq.fields = append(aq.fields, fields...)
 	return &ApprovalSelect{ApprovalQuery: aq}
 }
 
@@ -529,10 +529,14 @@ func (aq *ApprovalQuery) querySpec() *sqlgraph.QuerySpec {
 func (aq *ApprovalQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	builder := sql.Dialect(aq.driver.Dialect())
 	t1 := builder.Table(approval.Table)
-	selector := builder.Select(t1.Columns(approval.Columns...)...).From(t1)
+	columns := aq.fields
+	if len(columns) == 0 {
+		columns = approval.Columns
+	}
+	selector := builder.Select(t1.Columns(columns...)...).From(t1)
 	if aq.sql != nil {
 		selector = aq.sql
-		selector.Select(selector.Columns(approval.Columns...)...)
+		selector.Select(selector.Columns(columns...)...)
 	}
 	for _, p := range aq.predicates {
 		p(selector)
@@ -800,13 +804,24 @@ func (agb *ApprovalGroupBy) sqlScan(ctx context.Context, v interface{}) error {
 }
 
 func (agb *ApprovalGroupBy) sqlQuery() *sql.Selector {
-	selector := agb.sql
-	columns := make([]string, 0, len(agb.fields)+len(agb.fns))
-	columns = append(columns, agb.fields...)
+	selector := agb.sql.Select()
+	aggregation := make([]string, 0, len(agb.fns))
 	for _, fn := range agb.fns {
-		columns = append(columns, fn(selector))
+		aggregation = append(aggregation, fn(selector))
 	}
-	return selector.Select(columns...).GroupBy(agb.fields...)
+	// If no columns were selected in a custom aggregation function, the default
+	// selection is the fields used for "group-by", and the aggregation functions.
+	if len(selector.SelectedColumns()) == 0 {
+		columns := make([]string, 0, len(agb.fields)+len(agb.fns))
+		for _, f := range agb.fields {
+			columns = append(columns, selector.C(f))
+		}
+		for _, c := range aggregation {
+			columns = append(columns, c)
+		}
+		selector.Select(columns...)
+	}
+	return selector.GroupBy(selector.Columns(agb.fields...)...)
 }
 
 // ApprovalSelect is the builder for selecting fields of Approval entities.
@@ -1022,16 +1037,10 @@ func (as *ApprovalSelect) BoolX(ctx context.Context) bool {
 
 func (as *ApprovalSelect) sqlScan(ctx context.Context, v interface{}) error {
 	rows := &sql.Rows{}
-	query, args := as.sqlQuery().Query()
+	query, args := as.sql.Query()
 	if err := as.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
 	defer rows.Close()
 	return sql.ScanSlice(rows, v)
-}
-
-func (as *ApprovalSelect) sqlQuery() sql.Querier {
-	selector := as.sql
-	selector.Select(selector.Columns(as.fields...)...)
-	return selector
 }

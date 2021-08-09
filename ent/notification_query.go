@@ -324,8 +324,8 @@ func (nq *NotificationQuery) GroupBy(field string, fields ...string) *Notificati
 //		Select(notification.FieldType).
 //		Scan(ctx, &v)
 //
-func (nq *NotificationQuery) Select(field string, fields ...string) *NotificationSelect {
-	nq.fields = append([]string{field}, fields...)
+func (nq *NotificationQuery) Select(fields ...string) *NotificationSelect {
+	nq.fields = append(nq.fields, fields...)
 	return &NotificationSelect{NotificationQuery: nq}
 }
 
@@ -466,10 +466,14 @@ func (nq *NotificationQuery) querySpec() *sqlgraph.QuerySpec {
 func (nq *NotificationQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	builder := sql.Dialect(nq.driver.Dialect())
 	t1 := builder.Table(notification.Table)
-	selector := builder.Select(t1.Columns(notification.Columns...)...).From(t1)
+	columns := nq.fields
+	if len(columns) == 0 {
+		columns = notification.Columns
+	}
+	selector := builder.Select(t1.Columns(columns...)...).From(t1)
 	if nq.sql != nil {
 		selector = nq.sql
-		selector.Select(selector.Columns(notification.Columns...)...)
+		selector.Select(selector.Columns(columns...)...)
 	}
 	for _, p := range nq.predicates {
 		p(selector)
@@ -737,13 +741,24 @@ func (ngb *NotificationGroupBy) sqlScan(ctx context.Context, v interface{}) erro
 }
 
 func (ngb *NotificationGroupBy) sqlQuery() *sql.Selector {
-	selector := ngb.sql
-	columns := make([]string, 0, len(ngb.fields)+len(ngb.fns))
-	columns = append(columns, ngb.fields...)
+	selector := ngb.sql.Select()
+	aggregation := make([]string, 0, len(ngb.fns))
 	for _, fn := range ngb.fns {
-		columns = append(columns, fn(selector))
+		aggregation = append(aggregation, fn(selector))
 	}
-	return selector.Select(columns...).GroupBy(ngb.fields...)
+	// If no columns were selected in a custom aggregation function, the default
+	// selection is the fields used for "group-by", and the aggregation functions.
+	if len(selector.SelectedColumns()) == 0 {
+		columns := make([]string, 0, len(ngb.fields)+len(ngb.fns))
+		for _, f := range ngb.fields {
+			columns = append(columns, selector.C(f))
+		}
+		for _, c := range aggregation {
+			columns = append(columns, c)
+		}
+		selector.Select(columns...)
+	}
+	return selector.GroupBy(selector.Columns(ngb.fields...)...)
 }
 
 // NotificationSelect is the builder for selecting fields of Notification entities.
@@ -959,16 +974,10 @@ func (ns *NotificationSelect) BoolX(ctx context.Context) bool {
 
 func (ns *NotificationSelect) sqlScan(ctx context.Context, v interface{}) error {
 	rows := &sql.Rows{}
-	query, args := ns.sqlQuery().Query()
+	query, args := ns.sql.Query()
 	if err := ns.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
 	defer rows.Close()
 	return sql.ScanSlice(rows, v)
-}
-
-func (ns *NotificationSelect) sqlQuery() sql.Querier {
-	selector := ns.sql
-	selector.Select(selector.Columns(ns.fields...)...)
-	return selector
 }

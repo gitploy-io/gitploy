@@ -133,11 +133,17 @@ func (cuc *ChatUserCreate) Save(ctx context.Context) (*ChatUser, error) {
 				return nil, err
 			}
 			cuc.mutation = mutation
-			node, err = cuc.sqlSave(ctx)
+			if node, err = cuc.sqlSave(ctx); err != nil {
+				return nil, err
+			}
+			mutation.id = &node.ID
 			mutation.done = true
 			return node, err
 		})
 		for i := len(cuc.hooks) - 1; i >= 0; i-- {
+			if cuc.hooks[i] == nil {
+				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
+			}
 			mut = cuc.hooks[i](mut)
 		}
 		if _, err := mut.Mutate(ctx, cuc.mutation); err != nil {
@@ -156,6 +162,19 @@ func (cuc *ChatUserCreate) SaveX(ctx context.Context) *ChatUser {
 	return v
 }
 
+// Exec executes the query.
+func (cuc *ChatUserCreate) Exec(ctx context.Context) error {
+	_, err := cuc.Save(ctx)
+	return err
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (cuc *ChatUserCreate) ExecX(ctx context.Context) {
+	if err := cuc.Exec(ctx); err != nil {
+		panic(err)
+	}
+}
+
 // defaults sets the default values of the builder before save.
 func (cuc *ChatUserCreate) defaults() {
 	if _, ok := cuc.mutation.CreatedAt(); !ok {
@@ -171,25 +190,25 @@ func (cuc *ChatUserCreate) defaults() {
 // check runs all checks and user-defined validators on the builder.
 func (cuc *ChatUserCreate) check() error {
 	if _, ok := cuc.mutation.Token(); !ok {
-		return &ValidationError{Name: "token", err: errors.New("ent: missing required field \"token\"")}
+		return &ValidationError{Name: "token", err: errors.New(`ent: missing required field "token"`)}
 	}
 	if _, ok := cuc.mutation.Refresh(); !ok {
-		return &ValidationError{Name: "refresh", err: errors.New("ent: missing required field \"refresh\"")}
+		return &ValidationError{Name: "refresh", err: errors.New(`ent: missing required field "refresh"`)}
 	}
 	if _, ok := cuc.mutation.Expiry(); !ok {
-		return &ValidationError{Name: "expiry", err: errors.New("ent: missing required field \"expiry\"")}
+		return &ValidationError{Name: "expiry", err: errors.New(`ent: missing required field "expiry"`)}
 	}
 	if _, ok := cuc.mutation.BotToken(); !ok {
-		return &ValidationError{Name: "bot_token", err: errors.New("ent: missing required field \"bot_token\"")}
+		return &ValidationError{Name: "bot_token", err: errors.New(`ent: missing required field "bot_token"`)}
 	}
 	if _, ok := cuc.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New("ent: missing required field \"created_at\"")}
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "created_at"`)}
 	}
 	if _, ok := cuc.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "updated_at", err: errors.New("ent: missing required field \"updated_at\"")}
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "updated_at"`)}
 	}
 	if _, ok := cuc.mutation.UserID(); !ok {
-		return &ValidationError{Name: "user_id", err: errors.New("ent: missing required field \"user_id\"")}
+		return &ValidationError{Name: "user_id", err: errors.New(`ent: missing required field "user_id"`)}
 	}
 	if _, ok := cuc.mutation.UserID(); !ok {
 		return &ValidationError{Name: "user", err: errors.New("ent: missing required edge \"user\"")}
@@ -200,8 +219,8 @@ func (cuc *ChatUserCreate) check() error {
 func (cuc *ChatUserCreate) sqlSave(ctx context.Context) (*ChatUser, error) {
 	_node, _spec := cuc.createSpec()
 	if err := sqlgraph.CreateNode(ctx, cuc.driver, _spec); err != nil {
-		if cerr, ok := isSQLConstraintError(err); ok {
-			err = cerr
+		if sqlgraph.IsConstraintError(err) {
+			err = &ConstraintError{err.Error(), err}
 		}
 		return nil, err
 	}
@@ -342,17 +361,19 @@ func (cucb *ChatUserCreateBulk) Save(ctx context.Context) ([]*ChatUser, error) {
 				if i < len(mutators)-1 {
 					_, err = mutators[i+1].Mutate(root, cucb.builders[i+1].mutation)
 				} else {
+					spec := &sqlgraph.BatchCreateSpec{Nodes: specs}
 					// Invoke the actual operation on the latest mutation in the chain.
-					if err = sqlgraph.BatchCreate(ctx, cucb.driver, &sqlgraph.BatchCreateSpec{Nodes: specs}); err != nil {
-						if cerr, ok := isSQLConstraintError(err); ok {
-							err = cerr
+					if err = sqlgraph.BatchCreate(ctx, cucb.driver, spec); err != nil {
+						if sqlgraph.IsConstraintError(err) {
+							err = &ConstraintError{err.Error(), err}
 						}
 					}
 				}
-				mutation.done = true
 				if err != nil {
 					return nil, err
 				}
+				mutation.id = &nodes[i].ID
+				mutation.done = true
 				return nodes[i], nil
 			})
 			for i := len(builder.hooks) - 1; i >= 0; i-- {
@@ -376,4 +397,17 @@ func (cucb *ChatUserCreateBulk) SaveX(ctx context.Context) []*ChatUser {
 		panic(err)
 	}
 	return v
+}
+
+// Exec executes the query.
+func (cucb *ChatUserCreateBulk) Exec(ctx context.Context) error {
+	_, err := cucb.Save(ctx)
+	return err
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (cucb *ChatUserCreateBulk) ExecX(ctx context.Context) {
+	if err := cucb.Exec(ctx); err != nil {
+		panic(err)
+	}
 }

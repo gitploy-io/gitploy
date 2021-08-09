@@ -23,9 +23,9 @@ type DeploymentStatusUpdate struct {
 	mutation *DeploymentStatusMutation
 }
 
-// Where adds a new predicate for the DeploymentStatusUpdate builder.
+// Where appends a list predicates to the DeploymentStatusUpdate builder.
 func (dsu *DeploymentStatusUpdate) Where(ps ...predicate.DeploymentStatus) *DeploymentStatusUpdate {
-	dsu.mutation.predicates = append(dsu.mutation.predicates, ps...)
+	dsu.mutation.Where(ps...)
 	return dsu
 }
 
@@ -97,7 +97,6 @@ func (dsu *DeploymentStatusUpdate) SetUpdatedAt(t time.Time) *DeploymentStatusUp
 
 // SetDeploymentID sets the "deployment_id" field.
 func (dsu *DeploymentStatusUpdate) SetDeploymentID(i int) *DeploymentStatusUpdate {
-	dsu.mutation.ResetDeploymentID()
 	dsu.mutation.SetDeploymentID(i)
 	return dsu
 }
@@ -145,6 +144,9 @@ func (dsu *DeploymentStatusUpdate) Save(ctx context.Context) (int, error) {
 			return affected, err
 		})
 		for i := len(dsu.hooks) - 1; i >= 0; i-- {
+			if dsu.hooks[i] == nil {
+				return 0, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
+			}
 			mut = dsu.hooks[i](mut)
 		}
 		if _, err := mut.Mutate(ctx, dsu.mutation); err != nil {
@@ -295,8 +297,8 @@ func (dsu *DeploymentStatusUpdate) sqlSave(ctx context.Context) (n int, err erro
 	if n, err = sqlgraph.UpdateNodes(ctx, dsu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{deploymentstatus.Label}
-		} else if cerr, ok := isSQLConstraintError(err); ok {
-			err = cerr
+		} else if sqlgraph.IsConstraintError(err) {
+			err = &ConstraintError{err.Error(), err}
 		}
 		return 0, err
 	}
@@ -379,7 +381,6 @@ func (dsuo *DeploymentStatusUpdateOne) SetUpdatedAt(t time.Time) *DeploymentStat
 
 // SetDeploymentID sets the "deployment_id" field.
 func (dsuo *DeploymentStatusUpdateOne) SetDeploymentID(i int) *DeploymentStatusUpdateOne {
-	dsuo.mutation.ResetDeploymentID()
 	dsuo.mutation.SetDeploymentID(i)
 	return dsuo
 }
@@ -434,6 +435,9 @@ func (dsuo *DeploymentStatusUpdateOne) Save(ctx context.Context) (*DeploymentSta
 			return node, err
 		})
 		for i := len(dsuo.hooks) - 1; i >= 0; i-- {
+			if dsuo.hooks[i] == nil {
+				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
+			}
 			mut = dsuo.hooks[i](mut)
 		}
 		if _, err := mut.Mutate(ctx, dsuo.mutation); err != nil {
@@ -604,8 +608,8 @@ func (dsuo *DeploymentStatusUpdateOne) sqlSave(ctx context.Context) (_node *Depl
 	if err = sqlgraph.UpdateNode(ctx, dsuo.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{deploymentstatus.Label}
-		} else if cerr, ok := isSQLConstraintError(err); ok {
-			err = cerr
+		} else if sqlgraph.IsConstraintError(err) {
+			err = &ConstraintError{err.Error(), err}
 		}
 		return nil, err
 	}

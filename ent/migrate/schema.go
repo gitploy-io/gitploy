@@ -282,10 +282,9 @@ var (
 	}
 	// ReposTable holds the schema information for the "repos" table.
 	ReposTable = &schema.Table{
-		Name:        "repos",
-		Columns:     ReposColumns,
-		PrimaryKey:  []*schema.Column{ReposColumns[0]},
-		ForeignKeys: []*schema.ForeignKey{},
+		Name:       "repos",
+		Columns:    ReposColumns,
+		PrimaryKey: []*schema.Column{ReposColumns[0]},
 	}
 	// UsersColumns holds the columns for the "users" table.
 	UsersColumns = []*schema.Column{
@@ -303,10 +302,9 @@ var (
 	}
 	// UsersTable holds the schema information for the "users" table.
 	UsersTable = &schema.Table{
-		Name:        "users",
-		Columns:     UsersColumns,
-		PrimaryKey:  []*schema.Column{UsersColumns[0]},
-		ForeignKeys: []*schema.ForeignKey{},
+		Name:       "users",
+		Columns:    UsersColumns,
+		PrimaryKey: []*schema.Column{UsersColumns[0]},
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{

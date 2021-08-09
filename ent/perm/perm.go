@@ -30,14 +30,14 @@ const (
 	EdgeRepo = "repo"
 	// Table holds the table name of the perm in the database.
 	Table = "perms"
-	// UserTable is the table the holds the user relation/edge.
+	// UserTable is the table that holds the user relation/edge.
 	UserTable = "perms"
 	// UserInverseTable is the table name for the User entity.
 	// It exists in this package in order to avoid circular dependency with the "user" package.
 	UserInverseTable = "users"
 	// UserColumn is the table column denoting the user relation/edge.
 	UserColumn = "user_id"
-	// RepoTable is the table the holds the repo relation/edge.
+	// RepoTable is the table that holds the repo relation/edge.
 	RepoTable = "perms"
 	// RepoInverseTable is the table name for the Repo entity.
 	// It exists in this package in order to avoid circular dependency with the "repo" package.

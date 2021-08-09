@@ -43,35 +43,35 @@ const (
 	EdgeNotification = "notification"
 	// Table holds the table name of the user in the database.
 	Table = "users"
-	// ChatUserTable is the table the holds the chat_user relation/edge.
+	// ChatUserTable is the table that holds the chat_user relation/edge.
 	ChatUserTable = "chat_users"
 	// ChatUserInverseTable is the table name for the ChatUser entity.
 	// It exists in this package in order to avoid circular dependency with the "chatuser" package.
 	ChatUserInverseTable = "chat_users"
 	// ChatUserColumn is the table column denoting the chat_user relation/edge.
 	ChatUserColumn = "user_id"
-	// PermsTable is the table the holds the perms relation/edge.
+	// PermsTable is the table that holds the perms relation/edge.
 	PermsTable = "perms"
 	// PermsInverseTable is the table name for the Perm entity.
 	// It exists in this package in order to avoid circular dependency with the "perm" package.
 	PermsInverseTable = "perms"
 	// PermsColumn is the table column denoting the perms relation/edge.
 	PermsColumn = "user_id"
-	// DeploymentsTable is the table the holds the deployments relation/edge.
+	// DeploymentsTable is the table that holds the deployments relation/edge.
 	DeploymentsTable = "deployments"
 	// DeploymentsInverseTable is the table name for the Deployment entity.
 	// It exists in this package in order to avoid circular dependency with the "deployment" package.
 	DeploymentsInverseTable = "deployments"
 	// DeploymentsColumn is the table column denoting the deployments relation/edge.
 	DeploymentsColumn = "user_id"
-	// ApprovalsTable is the table the holds the approvals relation/edge.
+	// ApprovalsTable is the table that holds the approvals relation/edge.
 	ApprovalsTable = "approvals"
 	// ApprovalsInverseTable is the table name for the Approval entity.
 	// It exists in this package in order to avoid circular dependency with the "approval" package.
 	ApprovalsInverseTable = "approvals"
 	// ApprovalsColumn is the table column denoting the approvals relation/edge.
 	ApprovalsColumn = "user_id"
-	// NotificationTable is the table the holds the notification relation/edge.
+	// NotificationTable is the table that holds the notification relation/edge.
 	NotificationTable = "notifications"
 	// NotificationInverseTable is the table name for the Notification entity.
 	// It exists in this package in order to avoid circular dependency with the "notification" package.

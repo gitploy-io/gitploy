@@ -20,9 +20,9 @@ type DeploymentDelete struct {
 	mutation *DeploymentMutation
 }
 
-// Where adds a new predicate to the DeploymentDelete builder.
+// Where appends a list predicates to the DeploymentDelete builder.
 func (dd *DeploymentDelete) Where(ps ...predicate.Deployment) *DeploymentDelete {
-	dd.mutation.predicates = append(dd.mutation.predicates, ps...)
+	dd.mutation.Where(ps...)
 	return dd
 }
 
@@ -46,6 +46,9 @@ func (dd *DeploymentDelete) Exec(ctx context.Context) (int, error) {
 			return affected, err
 		})
 		for i := len(dd.hooks) - 1; i >= 0; i-- {
+			if dd.hooks[i] == nil {
+				return 0, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
+			}
 			mut = dd.hooks[i](mut)
 		}
 		if _, err := mut.Mutate(ctx, dd.mutation); err != nil {

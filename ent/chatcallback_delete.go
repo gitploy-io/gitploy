@@ -20,9 +20,9 @@ type ChatCallbackDelete struct {
 	mutation *ChatCallbackMutation
 }
 
-// Where adds a new predicate to the ChatCallbackDelete builder.
+// Where appends a list predicates to the ChatCallbackDelete builder.
 func (ccd *ChatCallbackDelete) Where(ps ...predicate.ChatCallback) *ChatCallbackDelete {
-	ccd.mutation.predicates = append(ccd.mutation.predicates, ps...)
+	ccd.mutation.Where(ps...)
 	return ccd
 }
 
@@ -46,6 +46,9 @@ func (ccd *ChatCallbackDelete) Exec(ctx context.Context) (int, error) {
 			return affected, err
 		})
 		for i := len(ccd.hooks) - 1; i >= 0; i-- {
+			if ccd.hooks[i] == nil {
+				return 0, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
+			}
 			mut = ccd.hooks[i](mut)
 		}
 		if _, err := mut.Mutate(ctx, ccd.mutation); err != nil {

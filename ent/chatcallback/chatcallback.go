@@ -32,14 +32,14 @@ const (
 	EdgeRepo = "repo"
 	// Table holds the table name of the chatcallback in the database.
 	Table = "chat_callbacks"
-	// ChatUserTable is the table the holds the chat_user relation/edge.
+	// ChatUserTable is the table that holds the chat_user relation/edge.
 	ChatUserTable = "chat_callbacks"
 	// ChatUserInverseTable is the table name for the ChatUser entity.
 	// It exists in this package in order to avoid circular dependency with the "chatuser" package.
 	ChatUserInverseTable = "chat_users"
 	// ChatUserColumn is the table column denoting the chat_user relation/edge.
 	ChatUserColumn = "chat_user_id"
-	// RepoTable is the table the holds the repo relation/edge.
+	// RepoTable is the table that holds the repo relation/edge.
 	RepoTable = "chat_callbacks"
 	// RepoInverseTable is the table name for the Repo entity.
 	// It exists in this package in order to avoid circular dependency with the "repo" package.

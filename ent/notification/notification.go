@@ -48,7 +48,7 @@ const (
 	EdgeUser = "user"
 	// Table holds the table name of the notification in the database.
 	Table = "notifications"
-	// UserTable is the table the holds the user relation/edge.
+	// UserTable is the table that holds the user relation/edge.
 	UserTable = "notifications"
 	// UserInverseTable is the table name for the User entity.
 	// It exists in this package in order to avoid circular dependency with the "user" package.
