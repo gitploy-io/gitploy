@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -36,6 +37,7 @@ type UserQuery struct {
 	withDeployments  *DeploymentQuery
 	withApprovals    *ApprovalQuery
 	withNotification *NotificationQuery
+	modifiers        []func(s *sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -515,6 +517,9 @@ func (uq *UserQuery) sqlAll(ctx context.Context) ([]*User, error) {
 		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
+	if len(uq.modifiers) > 0 {
+		_spec.Modifiers = uq.modifiers
+	}
 	if err := sqlgraph.QueryNodes(ctx, uq.driver, _spec); err != nil {
 		return nil, err
 	}
@@ -651,6 +656,9 @@ func (uq *UserQuery) sqlAll(ctx context.Context) ([]*User, error) {
 
 func (uq *UserQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := uq.querySpec()
+	if len(uq.modifiers) > 0 {
+		_spec.Modifiers = uq.modifiers
+	}
 	return sqlgraph.CountNodes(ctx, uq.driver, _spec)
 }
 
@@ -722,6 +730,9 @@ func (uq *UserQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector = uq.sql
 		selector.Select(selector.Columns(columns...)...)
 	}
+	for _, m := range uq.modifiers {
+		m(selector)
+	}
 	for _, p := range uq.predicates {
 		p(selector)
 	}
@@ -737,6 +748,32 @@ func (uq *UserQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector.Limit(*limit)
 	}
 	return selector
+}
+
+// ForUpdate locks the selected rows against concurrent updates, and prevent them from being
+// updated, deleted or "selected ... for update" by other sessions, until the transaction is
+// either committed or rolled-back.
+func (uq *UserQuery) ForUpdate(opts ...sql.LockOption) *UserQuery {
+	if uq.driver.Dialect() == dialect.Postgres {
+		uq.Unique(false)
+	}
+	uq.modifiers = append(uq.modifiers, func(s *sql.Selector) {
+		s.ForUpdate(opts...)
+	})
+	return uq
+}
+
+// ForShare behaves similarly to ForUpdate, except that it acquires a shared mode lock
+// on any rows that are read. Other sessions can read the rows, but cannot modify them
+// until your transaction commits.
+func (uq *UserQuery) ForShare(opts ...sql.LockOption) *UserQuery {
+	if uq.driver.Dialect() == dialect.Postgres {
+		uq.Unique(false)
+	}
+	uq.modifiers = append(uq.modifiers, func(s *sql.Selector) {
+		s.ForShare(opts...)
+	})
+	return uq
 }
 
 // UserGroupBy is the group-by builder for User entities.

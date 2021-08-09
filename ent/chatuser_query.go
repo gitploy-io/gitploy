@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -30,6 +31,7 @@ type ChatUserQuery struct {
 	// eager-loading edges.
 	withChatCallback *ChatCallbackQuery
 	withUser         *UserQuery
+	modifiers        []func(s *sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -404,6 +406,9 @@ func (cuq *ChatUserQuery) sqlAll(ctx context.Context) ([]*ChatUser, error) {
 		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
+	if len(cuq.modifiers) > 0 {
+		_spec.Modifiers = cuq.modifiers
+	}
 	if err := sqlgraph.QueryNodes(ctx, cuq.driver, _spec); err != nil {
 		return nil, err
 	}
@@ -467,6 +472,9 @@ func (cuq *ChatUserQuery) sqlAll(ctx context.Context) ([]*ChatUser, error) {
 
 func (cuq *ChatUserQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := cuq.querySpec()
+	if len(cuq.modifiers) > 0 {
+		_spec.Modifiers = cuq.modifiers
+	}
 	return sqlgraph.CountNodes(ctx, cuq.driver, _spec)
 }
 
@@ -538,6 +546,9 @@ func (cuq *ChatUserQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector = cuq.sql
 		selector.Select(selector.Columns(columns...)...)
 	}
+	for _, m := range cuq.modifiers {
+		m(selector)
+	}
 	for _, p := range cuq.predicates {
 		p(selector)
 	}
@@ -553,6 +564,32 @@ func (cuq *ChatUserQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector.Limit(*limit)
 	}
 	return selector
+}
+
+// ForUpdate locks the selected rows against concurrent updates, and prevent them from being
+// updated, deleted or "selected ... for update" by other sessions, until the transaction is
+// either committed or rolled-back.
+func (cuq *ChatUserQuery) ForUpdate(opts ...sql.LockOption) *ChatUserQuery {
+	if cuq.driver.Dialect() == dialect.Postgres {
+		cuq.Unique(false)
+	}
+	cuq.modifiers = append(cuq.modifiers, func(s *sql.Selector) {
+		s.ForUpdate(opts...)
+	})
+	return cuq
+}
+
+// ForShare behaves similarly to ForUpdate, except that it acquires a shared mode lock
+// on any rows that are read. Other sessions can read the rows, but cannot modify them
+// until your transaction commits.
+func (cuq *ChatUserQuery) ForShare(opts ...sql.LockOption) *ChatUserQuery {
+	if cuq.driver.Dialect() == dialect.Postgres {
+		cuq.Unique(false)
+	}
+	cuq.modifiers = append(cuq.modifiers, func(s *sql.Selector) {
+		s.ForShare(opts...)
+	})
+	return cuq
 }
 
 // ChatUserGroupBy is the group-by builder for ChatUser entities.

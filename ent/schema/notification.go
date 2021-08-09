@@ -65,6 +65,9 @@ func (Notification) Edges() []ent.Edge {
 
 func (Notification) Indexes() []ent.Index {
 	return []ent.Index{
+		// List notifications of user.
 		index.Fields("user_id", "created_at"),
+		// Publish notifications periodically.
+		index.Fields("created_at"),
 	}
 }

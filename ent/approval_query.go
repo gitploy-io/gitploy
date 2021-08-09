@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -29,6 +30,7 @@ type ApprovalQuery struct {
 	// eager-loading edges.
 	withUser       *UserQuery
 	withDeployment *DeploymentQuery
+	modifiers      []func(s *sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -403,6 +405,9 @@ func (aq *ApprovalQuery) sqlAll(ctx context.Context) ([]*Approval, error) {
 		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
+	if len(aq.modifiers) > 0 {
+		_spec.Modifiers = aq.modifiers
+	}
 	if err := sqlgraph.QueryNodes(ctx, aq.driver, _spec); err != nil {
 		return nil, err
 	}
@@ -467,6 +472,9 @@ func (aq *ApprovalQuery) sqlAll(ctx context.Context) ([]*Approval, error) {
 
 func (aq *ApprovalQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := aq.querySpec()
+	if len(aq.modifiers) > 0 {
+		_spec.Modifiers = aq.modifiers
+	}
 	return sqlgraph.CountNodes(ctx, aq.driver, _spec)
 }
 
@@ -538,6 +546,9 @@ func (aq *ApprovalQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector = aq.sql
 		selector.Select(selector.Columns(columns...)...)
 	}
+	for _, m := range aq.modifiers {
+		m(selector)
+	}
 	for _, p := range aq.predicates {
 		p(selector)
 	}
@@ -553,6 +564,32 @@ func (aq *ApprovalQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector.Limit(*limit)
 	}
 	return selector
+}
+
+// ForUpdate locks the selected rows against concurrent updates, and prevent them from being
+// updated, deleted or "selected ... for update" by other sessions, until the transaction is
+// either committed or rolled-back.
+func (aq *ApprovalQuery) ForUpdate(opts ...sql.LockOption) *ApprovalQuery {
+	if aq.driver.Dialect() == dialect.Postgres {
+		aq.Unique(false)
+	}
+	aq.modifiers = append(aq.modifiers, func(s *sql.Selector) {
+		s.ForUpdate(opts...)
+	})
+	return aq
+}
+
+// ForShare behaves similarly to ForUpdate, except that it acquires a shared mode lock
+// on any rows that are read. Other sessions can read the rows, but cannot modify them
+// until your transaction commits.
+func (aq *ApprovalQuery) ForShare(opts ...sql.LockOption) *ApprovalQuery {
+	if aq.driver.Dialect() == dialect.Postgres {
+		aq.Unique(false)
+	}
+	aq.modifiers = append(aq.modifiers, func(s *sql.Selector) {
+		s.ForShare(opts...)
+	})
+	return aq
 }
 
 // ApprovalGroupBy is the group-by builder for Approval entities.
