@@ -197,11 +197,17 @@ func (nc *NotificationCreate) Save(ctx context.Context) (*Notification, error) {
 				return nil, err
 			}
 			nc.mutation = mutation
-			node, err = nc.sqlSave(ctx)
+			if node, err = nc.sqlSave(ctx); err != nil {
+				return nil, err
+			}
+			mutation.id = &node.ID
 			mutation.done = true
 			return node, err
 		})
 		for i := len(nc.hooks) - 1; i >= 0; i-- {
+			if nc.hooks[i] == nil {
+				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
+			}
 			mut = nc.hooks[i](mut)
 		}
 		if _, err := mut.Mutate(ctx, nc.mutation); err != nil {
@@ -218,6 +224,19 @@ func (nc *NotificationCreate) SaveX(ctx context.Context) *Notification {
 		panic(err)
 	}
 	return v
+}
+
+// Exec executes the query.
+func (nc *NotificationCreate) Exec(ctx context.Context) error {
+	_, err := nc.Save(ctx)
+	return err
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (nc *NotificationCreate) ExecX(ctx context.Context) {
+	if err := nc.Exec(ctx); err != nil {
+		panic(err)
+	}
 }
 
 // defaults sets the default values of the builder before save.
@@ -243,51 +262,51 @@ func (nc *NotificationCreate) defaults() {
 // check runs all checks and user-defined validators on the builder.
 func (nc *NotificationCreate) check() error {
 	if _, ok := nc.mutation.GetType(); !ok {
-		return &ValidationError{Name: "type", err: errors.New("ent: missing required field \"type\"")}
+		return &ValidationError{Name: "type", err: errors.New(`ent: missing required field "type"`)}
 	}
 	if v, ok := nc.mutation.GetType(); ok {
 		if err := notification.TypeValidator(v); err != nil {
-			return &ValidationError{Name: "type", err: fmt.Errorf("ent: validator failed for field \"type\": %w", err)}
+			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "type": %w`, err)}
 		}
 	}
 	if _, ok := nc.mutation.RepoNamespace(); !ok {
-		return &ValidationError{Name: "repo_namespace", err: errors.New("ent: missing required field \"repo_namespace\"")}
+		return &ValidationError{Name: "repo_namespace", err: errors.New(`ent: missing required field "repo_namespace"`)}
 	}
 	if _, ok := nc.mutation.RepoName(); !ok {
-		return &ValidationError{Name: "repo_name", err: errors.New("ent: missing required field \"repo_name\"")}
+		return &ValidationError{Name: "repo_name", err: errors.New(`ent: missing required field "repo_name"`)}
 	}
 	if _, ok := nc.mutation.DeploymentNumber(); !ok {
-		return &ValidationError{Name: "deployment_number", err: errors.New("ent: missing required field \"deployment_number\"")}
+		return &ValidationError{Name: "deployment_number", err: errors.New(`ent: missing required field "deployment_number"`)}
 	}
 	if _, ok := nc.mutation.DeploymentType(); !ok {
-		return &ValidationError{Name: "deployment_type", err: errors.New("ent: missing required field \"deployment_type\"")}
+		return &ValidationError{Name: "deployment_type", err: errors.New(`ent: missing required field "deployment_type"`)}
 	}
 	if _, ok := nc.mutation.DeploymentRef(); !ok {
-		return &ValidationError{Name: "deployment_ref", err: errors.New("ent: missing required field \"deployment_ref\"")}
+		return &ValidationError{Name: "deployment_ref", err: errors.New(`ent: missing required field "deployment_ref"`)}
 	}
 	if _, ok := nc.mutation.DeploymentEnv(); !ok {
-		return &ValidationError{Name: "deployment_env", err: errors.New("ent: missing required field \"deployment_env\"")}
+		return &ValidationError{Name: "deployment_env", err: errors.New(`ent: missing required field "deployment_env"`)}
 	}
 	if _, ok := nc.mutation.DeploymentStatus(); !ok {
-		return &ValidationError{Name: "deployment_status", err: errors.New("ent: missing required field \"deployment_status\"")}
+		return &ValidationError{Name: "deployment_status", err: errors.New(`ent: missing required field "deployment_status"`)}
 	}
 	if _, ok := nc.mutation.DeploymentLogin(); !ok {
-		return &ValidationError{Name: "deployment_login", err: errors.New("ent: missing required field \"deployment_login\"")}
+		return &ValidationError{Name: "deployment_login", err: errors.New(`ent: missing required field "deployment_login"`)}
 	}
 	if _, ok := nc.mutation.Notified(); !ok {
-		return &ValidationError{Name: "notified", err: errors.New("ent: missing required field \"notified\"")}
+		return &ValidationError{Name: "notified", err: errors.New(`ent: missing required field "notified"`)}
 	}
 	if _, ok := nc.mutation.Checked(); !ok {
-		return &ValidationError{Name: "checked", err: errors.New("ent: missing required field \"checked\"")}
+		return &ValidationError{Name: "checked", err: errors.New(`ent: missing required field "checked"`)}
 	}
 	if _, ok := nc.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New("ent: missing required field \"created_at\"")}
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "created_at"`)}
 	}
 	if _, ok := nc.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "updated_at", err: errors.New("ent: missing required field \"updated_at\"")}
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "updated_at"`)}
 	}
 	if _, ok := nc.mutation.UserID(); !ok {
-		return &ValidationError{Name: "user_id", err: errors.New("ent: missing required field \"user_id\"")}
+		return &ValidationError{Name: "user_id", err: errors.New(`ent: missing required field "user_id"`)}
 	}
 	if _, ok := nc.mutation.UserID(); !ok {
 		return &ValidationError{Name: "user", err: errors.New("ent: missing required edge \"user\"")}
@@ -298,8 +317,8 @@ func (nc *NotificationCreate) check() error {
 func (nc *NotificationCreate) sqlSave(ctx context.Context) (*Notification, error) {
 	_node, _spec := nc.createSpec()
 	if err := sqlgraph.CreateNode(ctx, nc.driver, _spec); err != nil {
-		if cerr, ok := isSQLConstraintError(err); ok {
-			err = cerr
+		if sqlgraph.IsConstraintError(err) {
+			err = &ConstraintError{err.Error(), err}
 		}
 		return nil, err
 	}
@@ -491,19 +510,23 @@ func (ncb *NotificationCreateBulk) Save(ctx context.Context) ([]*Notification, e
 				if i < len(mutators)-1 {
 					_, err = mutators[i+1].Mutate(root, ncb.builders[i+1].mutation)
 				} else {
+					spec := &sqlgraph.BatchCreateSpec{Nodes: specs}
 					// Invoke the actual operation on the latest mutation in the chain.
-					if err = sqlgraph.BatchCreate(ctx, ncb.driver, &sqlgraph.BatchCreateSpec{Nodes: specs}); err != nil {
-						if cerr, ok := isSQLConstraintError(err); ok {
-							err = cerr
+					if err = sqlgraph.BatchCreate(ctx, ncb.driver, spec); err != nil {
+						if sqlgraph.IsConstraintError(err) {
+							err = &ConstraintError{err.Error(), err}
 						}
 					}
 				}
-				mutation.done = true
 				if err != nil {
 					return nil, err
 				}
-				id := specs[i].ID.Value.(int64)
-				nodes[i].ID = int(id)
+				mutation.id = &nodes[i].ID
+				mutation.done = true
+				if specs[i].ID.Value != nil {
+					id := specs[i].ID.Value.(int64)
+					nodes[i].ID = int(id)
+				}
 				return nodes[i], nil
 			})
 			for i := len(builder.hooks) - 1; i >= 0; i-- {
@@ -527,4 +550,17 @@ func (ncb *NotificationCreateBulk) SaveX(ctx context.Context) []*Notification {
 		panic(err)
 	}
 	return v
+}
+
+// Exec executes the query.
+func (ncb *NotificationCreateBulk) Exec(ctx context.Context) error {
+	_, err := ncb.Save(ctx)
+	return err
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (ncb *NotificationCreateBulk) ExecX(ctx context.Context) {
+	if err := ncb.Exec(ctx); err != nil {
+		panic(err)
+	}
 }

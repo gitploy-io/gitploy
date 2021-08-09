@@ -3,7 +3,7 @@ module github.com/hanjunlee/gitploy
 go 1.15
 
 require (
-	entgo.io/ent v0.8.0
+	entgo.io/ent v0.9.0
 	github.com/asaskevich/EventBus v0.0.0-20200907212545-49d423059eef
 	github.com/creasty/defaults v1.5.1
 	github.com/davecgh/go-spew v1.1.1
@@ -18,7 +18,7 @@ require (
 	github.com/json-iterator/go v1.1.11 // indirect
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/leodido/go-urn v1.2.1 // indirect
-	github.com/mattn/go-sqlite3 v1.14.7
+	github.com/mattn/go-sqlite3 v1.14.8
 	github.com/nleeper/goment v1.4.2
 	github.com/pkg/errors v0.9.1
 	github.com/shurcooL/githubv4 v0.0.0-20201206200315-234843c633fa

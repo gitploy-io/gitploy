@@ -39,21 +39,21 @@ const (
 	EdgeChatCallback = "chat_callback"
 	// Table holds the table name of the repo in the database.
 	Table = "repos"
-	// PermsTable is the table the holds the perms relation/edge.
+	// PermsTable is the table that holds the perms relation/edge.
 	PermsTable = "perms"
 	// PermsInverseTable is the table name for the Perm entity.
 	// It exists in this package in order to avoid circular dependency with the "perm" package.
 	PermsInverseTable = "perms"
 	// PermsColumn is the table column denoting the perms relation/edge.
 	PermsColumn = "repo_id"
-	// DeploymentsTable is the table the holds the deployments relation/edge.
+	// DeploymentsTable is the table that holds the deployments relation/edge.
 	DeploymentsTable = "deployments"
 	// DeploymentsInverseTable is the table name for the Deployment entity.
 	// It exists in this package in order to avoid circular dependency with the "deployment" package.
 	DeploymentsInverseTable = "deployments"
 	// DeploymentsColumn is the table column denoting the deployments relation/edge.
 	DeploymentsColumn = "repo_id"
-	// ChatCallbackTable is the table the holds the chat_callback relation/edge.
+	// ChatCallbackTable is the table that holds the chat_callback relation/edge.
 	ChatCallbackTable = "chat_callbacks"
 	// ChatCallbackInverseTable is the table name for the ChatCallback entity.
 	// It exists in this package in order to avoid circular dependency with the "chatcallback" package.

@@ -15,6 +15,9 @@ import (
 // https://github.com/ent/ent/tree/master/examples/entcpkg
 func main() {
 	err := entc.Generate("./schema", &gen.Config{
+		Features: []gen.Feature{
+			gen.FeatureLock,
+		},
 		Hooks: []gen.Hook{
 			TagFields("json"),
 		},

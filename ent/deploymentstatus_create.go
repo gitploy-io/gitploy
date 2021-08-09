@@ -121,11 +121,17 @@ func (dsc *DeploymentStatusCreate) Save(ctx context.Context) (*DeploymentStatus,
 				return nil, err
 			}
 			dsc.mutation = mutation
-			node, err = dsc.sqlSave(ctx)
+			if node, err = dsc.sqlSave(ctx); err != nil {
+				return nil, err
+			}
+			mutation.id = &node.ID
 			mutation.done = true
 			return node, err
 		})
 		for i := len(dsc.hooks) - 1; i >= 0; i-- {
+			if dsc.hooks[i] == nil {
+				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
+			}
 			mut = dsc.hooks[i](mut)
 		}
 		if _, err := mut.Mutate(ctx, dsc.mutation); err != nil {
@@ -144,6 +150,19 @@ func (dsc *DeploymentStatusCreate) SaveX(ctx context.Context) *DeploymentStatus 
 	return v
 }
 
+// Exec executes the query.
+func (dsc *DeploymentStatusCreate) Exec(ctx context.Context) error {
+	_, err := dsc.Save(ctx)
+	return err
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (dsc *DeploymentStatusCreate) ExecX(ctx context.Context) {
+	if err := dsc.Exec(ctx); err != nil {
+		panic(err)
+	}
+}
+
 // defaults sets the default values of the builder before save.
 func (dsc *DeploymentStatusCreate) defaults() {
 	if _, ok := dsc.mutation.CreatedAt(); !ok {
@@ -159,16 +178,16 @@ func (dsc *DeploymentStatusCreate) defaults() {
 // check runs all checks and user-defined validators on the builder.
 func (dsc *DeploymentStatusCreate) check() error {
 	if _, ok := dsc.mutation.Status(); !ok {
-		return &ValidationError{Name: "status", err: errors.New("ent: missing required field \"status\"")}
+		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "status"`)}
 	}
 	if _, ok := dsc.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New("ent: missing required field \"created_at\"")}
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "created_at"`)}
 	}
 	if _, ok := dsc.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "updated_at", err: errors.New("ent: missing required field \"updated_at\"")}
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "updated_at"`)}
 	}
 	if _, ok := dsc.mutation.DeploymentID(); !ok {
-		return &ValidationError{Name: "deployment_id", err: errors.New("ent: missing required field \"deployment_id\"")}
+		return &ValidationError{Name: "deployment_id", err: errors.New(`ent: missing required field "deployment_id"`)}
 	}
 	if _, ok := dsc.mutation.DeploymentID(); !ok {
 		return &ValidationError{Name: "deployment", err: errors.New("ent: missing required edge \"deployment\"")}
@@ -179,8 +198,8 @@ func (dsc *DeploymentStatusCreate) check() error {
 func (dsc *DeploymentStatusCreate) sqlSave(ctx context.Context) (*DeploymentStatus, error) {
 	_node, _spec := dsc.createSpec()
 	if err := sqlgraph.CreateNode(ctx, dsc.driver, _spec); err != nil {
-		if cerr, ok := isSQLConstraintError(err); ok {
-			err = cerr
+		if sqlgraph.IsConstraintError(err) {
+			err = &ConstraintError{err.Error(), err}
 		}
 		return nil, err
 	}
@@ -292,19 +311,23 @@ func (dscb *DeploymentStatusCreateBulk) Save(ctx context.Context) ([]*Deployment
 				if i < len(mutators)-1 {
 					_, err = mutators[i+1].Mutate(root, dscb.builders[i+1].mutation)
 				} else {
+					spec := &sqlgraph.BatchCreateSpec{Nodes: specs}
 					// Invoke the actual operation on the latest mutation in the chain.
-					if err = sqlgraph.BatchCreate(ctx, dscb.driver, &sqlgraph.BatchCreateSpec{Nodes: specs}); err != nil {
-						if cerr, ok := isSQLConstraintError(err); ok {
-							err = cerr
+					if err = sqlgraph.BatchCreate(ctx, dscb.driver, spec); err != nil {
+						if sqlgraph.IsConstraintError(err) {
+							err = &ConstraintError{err.Error(), err}
 						}
 					}
 				}
-				mutation.done = true
 				if err != nil {
 					return nil, err
 				}
-				id := specs[i].ID.Value.(int64)
-				nodes[i].ID = int(id)
+				mutation.id = &nodes[i].ID
+				mutation.done = true
+				if specs[i].ID.Value != nil {
+					id := specs[i].ID.Value.(int64)
+					nodes[i].ID = int(id)
+				}
 				return nodes[i], nil
 			})
 			for i := len(builder.hooks) - 1; i >= 0; i-- {
@@ -328,4 +351,17 @@ func (dscb *DeploymentStatusCreateBulk) SaveX(ctx context.Context) []*Deployment
 		panic(err)
 	}
 	return v
+}
+
+// Exec executes the query.
+func (dscb *DeploymentStatusCreateBulk) Exec(ctx context.Context) error {
+	_, err := dscb.Save(ctx)
+	return err
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (dscb *DeploymentStatusCreateBulk) ExecX(ctx context.Context) {
+	if err := dscb.Exec(ctx); err != nil {
+		panic(err)
+	}
 }

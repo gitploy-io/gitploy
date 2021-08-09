@@ -20,9 +20,9 @@ type ChatUserDelete struct {
 	mutation *ChatUserMutation
 }
 
-// Where adds a new predicate to the ChatUserDelete builder.
+// Where appends a list predicates to the ChatUserDelete builder.
 func (cud *ChatUserDelete) Where(ps ...predicate.ChatUser) *ChatUserDelete {
-	cud.mutation.predicates = append(cud.mutation.predicates, ps...)
+	cud.mutation.Where(ps...)
 	return cud
 }
 
@@ -46,6 +46,9 @@ func (cud *ChatUserDelete) Exec(ctx context.Context) (int, error) {
 			return affected, err
 		})
 		for i := len(cud.hooks) - 1; i >= 0; i-- {
+			if cud.hooks[i] == nil {
+				return 0, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
+			}
 			mut = cud.hooks[i](mut)
 		}
 		if _, err := mut.Mutate(ctx, cud.mutation); err != nil {

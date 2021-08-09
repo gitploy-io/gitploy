@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -30,6 +31,7 @@ type ChatUserQuery struct {
 	// eager-loading edges.
 	withChatCallback *ChatCallbackQuery
 	withUser         *UserQuery
+	modifiers        []func(s *sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -361,8 +363,8 @@ func (cuq *ChatUserQuery) GroupBy(field string, fields ...string) *ChatUserGroup
 //		Select(chatuser.FieldToken).
 //		Scan(ctx, &v)
 //
-func (cuq *ChatUserQuery) Select(field string, fields ...string) *ChatUserSelect {
-	cuq.fields = append([]string{field}, fields...)
+func (cuq *ChatUserQuery) Select(fields ...string) *ChatUserSelect {
+	cuq.fields = append(cuq.fields, fields...)
 	return &ChatUserSelect{ChatUserQuery: cuq}
 }
 
@@ -403,6 +405,9 @@ func (cuq *ChatUserQuery) sqlAll(ctx context.Context) ([]*ChatUser, error) {
 		node := nodes[len(nodes)-1]
 		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
+	}
+	if len(cuq.modifiers) > 0 {
+		_spec.Modifiers = cuq.modifiers
 	}
 	if err := sqlgraph.QueryNodes(ctx, cuq.driver, _spec); err != nil {
 		return nil, err
@@ -467,6 +472,9 @@ func (cuq *ChatUserQuery) sqlAll(ctx context.Context) ([]*ChatUser, error) {
 
 func (cuq *ChatUserQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := cuq.querySpec()
+	if len(cuq.modifiers) > 0 {
+		_spec.Modifiers = cuq.modifiers
+	}
 	return sqlgraph.CountNodes(ctx, cuq.driver, _spec)
 }
 
@@ -529,10 +537,17 @@ func (cuq *ChatUserQuery) querySpec() *sqlgraph.QuerySpec {
 func (cuq *ChatUserQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	builder := sql.Dialect(cuq.driver.Dialect())
 	t1 := builder.Table(chatuser.Table)
-	selector := builder.Select(t1.Columns(chatuser.Columns...)...).From(t1)
+	columns := cuq.fields
+	if len(columns) == 0 {
+		columns = chatuser.Columns
+	}
+	selector := builder.Select(t1.Columns(columns...)...).From(t1)
 	if cuq.sql != nil {
 		selector = cuq.sql
-		selector.Select(selector.Columns(chatuser.Columns...)...)
+		selector.Select(selector.Columns(columns...)...)
+	}
+	for _, m := range cuq.modifiers {
+		m(selector)
 	}
 	for _, p := range cuq.predicates {
 		p(selector)
@@ -549,6 +564,32 @@ func (cuq *ChatUserQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector.Limit(*limit)
 	}
 	return selector
+}
+
+// ForUpdate locks the selected rows against concurrent updates, and prevent them from being
+// updated, deleted or "selected ... for update" by other sessions, until the transaction is
+// either committed or rolled-back.
+func (cuq *ChatUserQuery) ForUpdate(opts ...sql.LockOption) *ChatUserQuery {
+	if cuq.driver.Dialect() == dialect.Postgres {
+		cuq.Unique(false)
+	}
+	cuq.modifiers = append(cuq.modifiers, func(s *sql.Selector) {
+		s.ForUpdate(opts...)
+	})
+	return cuq
+}
+
+// ForShare behaves similarly to ForUpdate, except that it acquires a shared mode lock
+// on any rows that are read. Other sessions can read the rows, but cannot modify them
+// until your transaction commits.
+func (cuq *ChatUserQuery) ForShare(opts ...sql.LockOption) *ChatUserQuery {
+	if cuq.driver.Dialect() == dialect.Postgres {
+		cuq.Unique(false)
+	}
+	cuq.modifiers = append(cuq.modifiers, func(s *sql.Selector) {
+		s.ForShare(opts...)
+	})
+	return cuq
 }
 
 // ChatUserGroupBy is the group-by builder for ChatUser entities.
@@ -800,13 +841,24 @@ func (cugb *ChatUserGroupBy) sqlScan(ctx context.Context, v interface{}) error {
 }
 
 func (cugb *ChatUserGroupBy) sqlQuery() *sql.Selector {
-	selector := cugb.sql
-	columns := make([]string, 0, len(cugb.fields)+len(cugb.fns))
-	columns = append(columns, cugb.fields...)
+	selector := cugb.sql.Select()
+	aggregation := make([]string, 0, len(cugb.fns))
 	for _, fn := range cugb.fns {
-		columns = append(columns, fn(selector))
+		aggregation = append(aggregation, fn(selector))
 	}
-	return selector.Select(columns...).GroupBy(cugb.fields...)
+	// If no columns were selected in a custom aggregation function, the default
+	// selection is the fields used for "group-by", and the aggregation functions.
+	if len(selector.SelectedColumns()) == 0 {
+		columns := make([]string, 0, len(cugb.fields)+len(cugb.fns))
+		for _, f := range cugb.fields {
+			columns = append(columns, selector.C(f))
+		}
+		for _, c := range aggregation {
+			columns = append(columns, c)
+		}
+		selector.Select(columns...)
+	}
+	return selector.GroupBy(selector.Columns(cugb.fields...)...)
 }
 
 // ChatUserSelect is the builder for selecting fields of ChatUser entities.
@@ -1022,16 +1074,10 @@ func (cus *ChatUserSelect) BoolX(ctx context.Context) bool {
 
 func (cus *ChatUserSelect) sqlScan(ctx context.Context, v interface{}) error {
 	rows := &sql.Rows{}
-	query, args := cus.sqlQuery().Query()
+	query, args := cus.sql.Query()
 	if err := cus.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
 	defer rows.Close()
 	return sql.ScanSlice(rows, v)
-}
-
-func (cus *ChatUserSelect) sqlQuery() sql.Querier {
-	selector := cus.sql
-	selector.Select(selector.Columns(cus.fields...)...)
-	return selector
 }

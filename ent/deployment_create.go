@@ -261,11 +261,17 @@ func (dc *DeploymentCreate) Save(ctx context.Context) (*Deployment, error) {
 				return nil, err
 			}
 			dc.mutation = mutation
-			node, err = dc.sqlSave(ctx)
+			if node, err = dc.sqlSave(ctx); err != nil {
+				return nil, err
+			}
+			mutation.id = &node.ID
 			mutation.done = true
 			return node, err
 		})
 		for i := len(dc.hooks) - 1; i >= 0; i-- {
+			if dc.hooks[i] == nil {
+				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
+			}
 			mut = dc.hooks[i](mut)
 		}
 		if _, err := mut.Mutate(ctx, dc.mutation); err != nil {
@@ -282,6 +288,19 @@ func (dc *DeploymentCreate) SaveX(ctx context.Context) *Deployment {
 		panic(err)
 	}
 	return v
+}
+
+// Exec executes the query.
+func (dc *DeploymentCreate) Exec(ctx context.Context) error {
+	_, err := dc.Save(ctx)
+	return err
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (dc *DeploymentCreate) ExecX(ctx context.Context) {
+	if err := dc.Exec(ctx); err != nil {
+		panic(err)
+	}
 }
 
 // defaults sets the default values of the builder before save.
@@ -319,55 +338,55 @@ func (dc *DeploymentCreate) defaults() {
 // check runs all checks and user-defined validators on the builder.
 func (dc *DeploymentCreate) check() error {
 	if _, ok := dc.mutation.Number(); !ok {
-		return &ValidationError{Name: "number", err: errors.New("ent: missing required field \"number\"")}
+		return &ValidationError{Name: "number", err: errors.New(`ent: missing required field "number"`)}
 	}
 	if _, ok := dc.mutation.GetType(); !ok {
-		return &ValidationError{Name: "type", err: errors.New("ent: missing required field \"type\"")}
+		return &ValidationError{Name: "type", err: errors.New(`ent: missing required field "type"`)}
 	}
 	if v, ok := dc.mutation.GetType(); ok {
 		if err := deployment.TypeValidator(v); err != nil {
-			return &ValidationError{Name: "type", err: fmt.Errorf("ent: validator failed for field \"type\": %w", err)}
+			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "type": %w`, err)}
 		}
 	}
 	if _, ok := dc.mutation.Env(); !ok {
-		return &ValidationError{Name: "env", err: errors.New("ent: missing required field \"env\"")}
+		return &ValidationError{Name: "env", err: errors.New(`ent: missing required field "env"`)}
 	}
 	if _, ok := dc.mutation.Ref(); !ok {
-		return &ValidationError{Name: "ref", err: errors.New("ent: missing required field \"ref\"")}
+		return &ValidationError{Name: "ref", err: errors.New(`ent: missing required field "ref"`)}
 	}
 	if _, ok := dc.mutation.Status(); !ok {
-		return &ValidationError{Name: "status", err: errors.New("ent: missing required field \"status\"")}
+		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "status"`)}
 	}
 	if v, ok := dc.mutation.Status(); ok {
 		if err := deployment.StatusValidator(v); err != nil {
-			return &ValidationError{Name: "status", err: fmt.Errorf("ent: validator failed for field \"status\": %w", err)}
+			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "status": %w`, err)}
 		}
 	}
 	if v, ok := dc.mutation.HTMLURL(); ok {
 		if err := deployment.HTMLURLValidator(v); err != nil {
-			return &ValidationError{Name: "html_url", err: fmt.Errorf("ent: validator failed for field \"html_url\": %w", err)}
+			return &ValidationError{Name: "html_url", err: fmt.Errorf(`ent: validator failed for field "html_url": %w`, err)}
 		}
 	}
 	if _, ok := dc.mutation.IsRollback(); !ok {
-		return &ValidationError{Name: "is_rollback", err: errors.New("ent: missing required field \"is_rollback\"")}
+		return &ValidationError{Name: "is_rollback", err: errors.New(`ent: missing required field "is_rollback"`)}
 	}
 	if _, ok := dc.mutation.IsApprovalEnabled(); !ok {
-		return &ValidationError{Name: "is_approval_enabled", err: errors.New("ent: missing required field \"is_approval_enabled\"")}
+		return &ValidationError{Name: "is_approval_enabled", err: errors.New(`ent: missing required field "is_approval_enabled"`)}
 	}
 	if _, ok := dc.mutation.RequiredApprovalCount(); !ok {
-		return &ValidationError{Name: "required_approval_count", err: errors.New("ent: missing required field \"required_approval_count\"")}
+		return &ValidationError{Name: "required_approval_count", err: errors.New(`ent: missing required field "required_approval_count"`)}
 	}
 	if _, ok := dc.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New("ent: missing required field \"created_at\"")}
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "created_at"`)}
 	}
 	if _, ok := dc.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "updated_at", err: errors.New("ent: missing required field \"updated_at\"")}
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "updated_at"`)}
 	}
 	if _, ok := dc.mutation.UserID(); !ok {
-		return &ValidationError{Name: "user_id", err: errors.New("ent: missing required field \"user_id\"")}
+		return &ValidationError{Name: "user_id", err: errors.New(`ent: missing required field "user_id"`)}
 	}
 	if _, ok := dc.mutation.RepoID(); !ok {
-		return &ValidationError{Name: "repo_id", err: errors.New("ent: missing required field \"repo_id\"")}
+		return &ValidationError{Name: "repo_id", err: errors.New(`ent: missing required field "repo_id"`)}
 	}
 	if _, ok := dc.mutation.UserID(); !ok {
 		return &ValidationError{Name: "user", err: errors.New("ent: missing required edge \"user\"")}
@@ -381,8 +400,8 @@ func (dc *DeploymentCreate) check() error {
 func (dc *DeploymentCreate) sqlSave(ctx context.Context) (*Deployment, error) {
 	_node, _spec := dc.createSpec()
 	if err := sqlgraph.CreateNode(ctx, dc.driver, _spec); err != nil {
-		if cerr, ok := isSQLConstraintError(err); ok {
-			err = cerr
+		if sqlgraph.IsConstraintError(err) {
+			err = &ConstraintError{err.Error(), err}
 		}
 		return nil, err
 	}
@@ -616,19 +635,23 @@ func (dcb *DeploymentCreateBulk) Save(ctx context.Context) ([]*Deployment, error
 				if i < len(mutators)-1 {
 					_, err = mutators[i+1].Mutate(root, dcb.builders[i+1].mutation)
 				} else {
+					spec := &sqlgraph.BatchCreateSpec{Nodes: specs}
 					// Invoke the actual operation on the latest mutation in the chain.
-					if err = sqlgraph.BatchCreate(ctx, dcb.driver, &sqlgraph.BatchCreateSpec{Nodes: specs}); err != nil {
-						if cerr, ok := isSQLConstraintError(err); ok {
-							err = cerr
+					if err = sqlgraph.BatchCreate(ctx, dcb.driver, spec); err != nil {
+						if sqlgraph.IsConstraintError(err) {
+							err = &ConstraintError{err.Error(), err}
 						}
 					}
 				}
-				mutation.done = true
 				if err != nil {
 					return nil, err
 				}
-				id := specs[i].ID.Value.(int64)
-				nodes[i].ID = int(id)
+				mutation.id = &nodes[i].ID
+				mutation.done = true
+				if specs[i].ID.Value != nil {
+					id := specs[i].ID.Value.(int64)
+					nodes[i].ID = int(id)
+				}
 				return nodes[i], nil
 			})
 			for i := len(builder.hooks) - 1; i >= 0; i-- {
@@ -652,4 +675,17 @@ func (dcb *DeploymentCreateBulk) SaveX(ctx context.Context) []*Deployment {
 		panic(err)
 	}
 	return v
+}
+
+// Exec executes the query.
+func (dcb *DeploymentCreateBulk) Exec(ctx context.Context) error {
+	_, err := dcb.Save(ctx)
+	return err
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (dcb *DeploymentCreateBulk) ExecX(ctx context.Context) {
+	if err := dcb.Exec(ctx); err != nil {
+		panic(err)
+	}
 }

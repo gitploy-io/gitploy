@@ -30,7 +30,7 @@ L:
 				break L
 			}
 		case t := <-ticker.C:
-			ns, err := i.ListNotificationsFromTime(ctx, t.Add(-time.Second*4))
+			ns, err := i.ListPublishingNotificaitonsGreaterThanTime(ctx, t.Add(-time.Second*4))
 			if err != nil {
 				i.log.Error("It has failed to read notifications.", zap.Error(err))
 				continue
@@ -58,13 +58,7 @@ func (i *Interactor) publish(ctx context.Context, n *ent.Notification) error {
 	}
 
 	i.events.Publish(eventNotification, u, n)
-	i.setNotificationNotified(ctx, n)
 	return nil
-}
-
-func (i *Interactor) setNotificationNotified(ctx context.Context, n *ent.Notification) (*ent.Notification, error) {
-	n.Notified = true
-	return i.UpdateNotification(ctx, n)
 }
 
 func (i *Interactor) Publish(ctx context.Context, typ notification.Type, r *ent.Repo, d *ent.Deployment, a *ent.Approval) error {

@@ -28,14 +28,14 @@ const (
 	EdgeDeployment = "deployment"
 	// Table holds the table name of the approval in the database.
 	Table = "approvals"
-	// UserTable is the table the holds the user relation/edge.
+	// UserTable is the table that holds the user relation/edge.
 	UserTable = "approvals"
 	// UserInverseTable is the table name for the User entity.
 	// It exists in this package in order to avoid circular dependency with the "user" package.
 	UserInverseTable = "users"
 	// UserColumn is the table column denoting the user relation/edge.
 	UserColumn = "user_id"
-	// DeploymentTable is the table the holds the deployment relation/edge.
+	// DeploymentTable is the table that holds the deployment relation/edge.
 	DeploymentTable = "approvals"
 	// DeploymentInverseTable is the table name for the Deployment entity.
 	// It exists in this package in order to avoid circular dependency with the "deployment" package.

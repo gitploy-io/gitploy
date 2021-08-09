@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -29,6 +30,7 @@ type ChatCallbackQuery struct {
 	// eager-loading edges.
 	withChatUser *ChatUserQuery
 	withRepo     *RepoQuery
+	modifiers    []func(s *sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -360,8 +362,8 @@ func (ccq *ChatCallbackQuery) GroupBy(field string, fields ...string) *ChatCallb
 //		Select(chatcallback.FieldHash).
 //		Scan(ctx, &v)
 //
-func (ccq *ChatCallbackQuery) Select(field string, fields ...string) *ChatCallbackSelect {
-	ccq.fields = append([]string{field}, fields...)
+func (ccq *ChatCallbackQuery) Select(fields ...string) *ChatCallbackSelect {
+	ccq.fields = append(ccq.fields, fields...)
 	return &ChatCallbackSelect{ChatCallbackQuery: ccq}
 }
 
@@ -402,6 +404,9 @@ func (ccq *ChatCallbackQuery) sqlAll(ctx context.Context) ([]*ChatCallback, erro
 		node := nodes[len(nodes)-1]
 		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
+	}
+	if len(ccq.modifiers) > 0 {
+		_spec.Modifiers = ccq.modifiers
 	}
 	if err := sqlgraph.QueryNodes(ctx, ccq.driver, _spec); err != nil {
 		return nil, err
@@ -467,6 +472,9 @@ func (ccq *ChatCallbackQuery) sqlAll(ctx context.Context) ([]*ChatCallback, erro
 
 func (ccq *ChatCallbackQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := ccq.querySpec()
+	if len(ccq.modifiers) > 0 {
+		_spec.Modifiers = ccq.modifiers
+	}
 	return sqlgraph.CountNodes(ctx, ccq.driver, _spec)
 }
 
@@ -529,10 +537,17 @@ func (ccq *ChatCallbackQuery) querySpec() *sqlgraph.QuerySpec {
 func (ccq *ChatCallbackQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	builder := sql.Dialect(ccq.driver.Dialect())
 	t1 := builder.Table(chatcallback.Table)
-	selector := builder.Select(t1.Columns(chatcallback.Columns...)...).From(t1)
+	columns := ccq.fields
+	if len(columns) == 0 {
+		columns = chatcallback.Columns
+	}
+	selector := builder.Select(t1.Columns(columns...)...).From(t1)
 	if ccq.sql != nil {
 		selector = ccq.sql
-		selector.Select(selector.Columns(chatcallback.Columns...)...)
+		selector.Select(selector.Columns(columns...)...)
+	}
+	for _, m := range ccq.modifiers {
+		m(selector)
 	}
 	for _, p := range ccq.predicates {
 		p(selector)
@@ -549,6 +564,32 @@ func (ccq *ChatCallbackQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector.Limit(*limit)
 	}
 	return selector
+}
+
+// ForUpdate locks the selected rows against concurrent updates, and prevent them from being
+// updated, deleted or "selected ... for update" by other sessions, until the transaction is
+// either committed or rolled-back.
+func (ccq *ChatCallbackQuery) ForUpdate(opts ...sql.LockOption) *ChatCallbackQuery {
+	if ccq.driver.Dialect() == dialect.Postgres {
+		ccq.Unique(false)
+	}
+	ccq.modifiers = append(ccq.modifiers, func(s *sql.Selector) {
+		s.ForUpdate(opts...)
+	})
+	return ccq
+}
+
+// ForShare behaves similarly to ForUpdate, except that it acquires a shared mode lock
+// on any rows that are read. Other sessions can read the rows, but cannot modify them
+// until your transaction commits.
+func (ccq *ChatCallbackQuery) ForShare(opts ...sql.LockOption) *ChatCallbackQuery {
+	if ccq.driver.Dialect() == dialect.Postgres {
+		ccq.Unique(false)
+	}
+	ccq.modifiers = append(ccq.modifiers, func(s *sql.Selector) {
+		s.ForShare(opts...)
+	})
+	return ccq
 }
 
 // ChatCallbackGroupBy is the group-by builder for ChatCallback entities.
@@ -800,13 +841,24 @@ func (ccgb *ChatCallbackGroupBy) sqlScan(ctx context.Context, v interface{}) err
 }
 
 func (ccgb *ChatCallbackGroupBy) sqlQuery() *sql.Selector {
-	selector := ccgb.sql
-	columns := make([]string, 0, len(ccgb.fields)+len(ccgb.fns))
-	columns = append(columns, ccgb.fields...)
+	selector := ccgb.sql.Select()
+	aggregation := make([]string, 0, len(ccgb.fns))
 	for _, fn := range ccgb.fns {
-		columns = append(columns, fn(selector))
+		aggregation = append(aggregation, fn(selector))
 	}
-	return selector.Select(columns...).GroupBy(ccgb.fields...)
+	// If no columns were selected in a custom aggregation function, the default
+	// selection is the fields used for "group-by", and the aggregation functions.
+	if len(selector.SelectedColumns()) == 0 {
+		columns := make([]string, 0, len(ccgb.fields)+len(ccgb.fns))
+		for _, f := range ccgb.fields {
+			columns = append(columns, selector.C(f))
+		}
+		for _, c := range aggregation {
+			columns = append(columns, c)
+		}
+		selector.Select(columns...)
+	}
+	return selector.GroupBy(selector.Columns(ccgb.fields...)...)
 }
 
 // ChatCallbackSelect is the builder for selecting fields of ChatCallback entities.
@@ -1022,16 +1074,10 @@ func (ccs *ChatCallbackSelect) BoolX(ctx context.Context) bool {
 
 func (ccs *ChatCallbackSelect) sqlScan(ctx context.Context, v interface{}) error {
 	rows := &sql.Rows{}
-	query, args := ccs.sqlQuery().Query()
+	query, args := ccs.sql.Query()
 	if err := ccs.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
 	defer rows.Close()
 	return sql.ScanSlice(rows, v)
-}
-
-func (ccs *ChatCallbackSelect) sqlQuery() sql.Querier {
-	selector := ccs.sql
-	selector.Select(selector.Columns(ccs.fields...)...)
-	return selector
 }

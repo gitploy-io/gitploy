@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -34,6 +35,7 @@ type DeploymentQuery struct {
 	withRepo               *RepoQuery
 	withApprovals          *ApprovalQuery
 	withDeploymentStatuses *DeploymentStatusQuery
+	modifiers              []func(s *sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -433,8 +435,8 @@ func (dq *DeploymentQuery) GroupBy(field string, fields ...string) *DeploymentGr
 //		Select(deployment.FieldNumber).
 //		Scan(ctx, &v)
 //
-func (dq *DeploymentQuery) Select(field string, fields ...string) *DeploymentSelect {
-	dq.fields = append([]string{field}, fields...)
+func (dq *DeploymentQuery) Select(fields ...string) *DeploymentSelect {
+	dq.fields = append(dq.fields, fields...)
 	return &DeploymentSelect{DeploymentQuery: dq}
 }
 
@@ -477,6 +479,9 @@ func (dq *DeploymentQuery) sqlAll(ctx context.Context) ([]*Deployment, error) {
 		node := nodes[len(nodes)-1]
 		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
+	}
+	if len(dq.modifiers) > 0 {
+		_spec.Modifiers = dq.modifiers
 	}
 	if err := sqlgraph.QueryNodes(ctx, dq.driver, _spec); err != nil {
 		return nil, err
@@ -592,6 +597,9 @@ func (dq *DeploymentQuery) sqlAll(ctx context.Context) ([]*Deployment, error) {
 
 func (dq *DeploymentQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := dq.querySpec()
+	if len(dq.modifiers) > 0 {
+		_spec.Modifiers = dq.modifiers
+	}
 	return sqlgraph.CountNodes(ctx, dq.driver, _spec)
 }
 
@@ -654,10 +662,17 @@ func (dq *DeploymentQuery) querySpec() *sqlgraph.QuerySpec {
 func (dq *DeploymentQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	builder := sql.Dialect(dq.driver.Dialect())
 	t1 := builder.Table(deployment.Table)
-	selector := builder.Select(t1.Columns(deployment.Columns...)...).From(t1)
+	columns := dq.fields
+	if len(columns) == 0 {
+		columns = deployment.Columns
+	}
+	selector := builder.Select(t1.Columns(columns...)...).From(t1)
 	if dq.sql != nil {
 		selector = dq.sql
-		selector.Select(selector.Columns(deployment.Columns...)...)
+		selector.Select(selector.Columns(columns...)...)
+	}
+	for _, m := range dq.modifiers {
+		m(selector)
 	}
 	for _, p := range dq.predicates {
 		p(selector)
@@ -674,6 +689,32 @@ func (dq *DeploymentQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector.Limit(*limit)
 	}
 	return selector
+}
+
+// ForUpdate locks the selected rows against concurrent updates, and prevent them from being
+// updated, deleted or "selected ... for update" by other sessions, until the transaction is
+// either committed or rolled-back.
+func (dq *DeploymentQuery) ForUpdate(opts ...sql.LockOption) *DeploymentQuery {
+	if dq.driver.Dialect() == dialect.Postgres {
+		dq.Unique(false)
+	}
+	dq.modifiers = append(dq.modifiers, func(s *sql.Selector) {
+		s.ForUpdate(opts...)
+	})
+	return dq
+}
+
+// ForShare behaves similarly to ForUpdate, except that it acquires a shared mode lock
+// on any rows that are read. Other sessions can read the rows, but cannot modify them
+// until your transaction commits.
+func (dq *DeploymentQuery) ForShare(opts ...sql.LockOption) *DeploymentQuery {
+	if dq.driver.Dialect() == dialect.Postgres {
+		dq.Unique(false)
+	}
+	dq.modifiers = append(dq.modifiers, func(s *sql.Selector) {
+		s.ForShare(opts...)
+	})
+	return dq
 }
 
 // DeploymentGroupBy is the group-by builder for Deployment entities.
@@ -925,13 +966,24 @@ func (dgb *DeploymentGroupBy) sqlScan(ctx context.Context, v interface{}) error 
 }
 
 func (dgb *DeploymentGroupBy) sqlQuery() *sql.Selector {
-	selector := dgb.sql
-	columns := make([]string, 0, len(dgb.fields)+len(dgb.fns))
-	columns = append(columns, dgb.fields...)
+	selector := dgb.sql.Select()
+	aggregation := make([]string, 0, len(dgb.fns))
 	for _, fn := range dgb.fns {
-		columns = append(columns, fn(selector))
+		aggregation = append(aggregation, fn(selector))
 	}
-	return selector.Select(columns...).GroupBy(dgb.fields...)
+	// If no columns were selected in a custom aggregation function, the default
+	// selection is the fields used for "group-by", and the aggregation functions.
+	if len(selector.SelectedColumns()) == 0 {
+		columns := make([]string, 0, len(dgb.fields)+len(dgb.fns))
+		for _, f := range dgb.fields {
+			columns = append(columns, selector.C(f))
+		}
+		for _, c := range aggregation {
+			columns = append(columns, c)
+		}
+		selector.Select(columns...)
+	}
+	return selector.GroupBy(selector.Columns(dgb.fields...)...)
 }
 
 // DeploymentSelect is the builder for selecting fields of Deployment entities.
@@ -1147,16 +1199,10 @@ func (ds *DeploymentSelect) BoolX(ctx context.Context) bool {
 
 func (ds *DeploymentSelect) sqlScan(ctx context.Context, v interface{}) error {
 	rows := &sql.Rows{}
-	query, args := ds.sqlQuery().Query()
+	query, args := ds.sql.Query()
 	if err := ds.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
 	defer rows.Close()
 	return sql.ScanSlice(rows, v)
-}
-
-func (ds *DeploymentSelect) sqlQuery() sql.Querier {
-	selector := ds.sql
-	selector.Select(selector.Columns(ds.fields...)...)
-	return selector
 }

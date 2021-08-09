@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -26,7 +27,8 @@ type NotificationQuery struct {
 	fields     []string
 	predicates []predicate.Notification
 	// eager-loading edges.
-	withUser *UserQuery
+	withUser  *UserQuery
+	modifiers []func(s *sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -324,8 +326,8 @@ func (nq *NotificationQuery) GroupBy(field string, fields ...string) *Notificati
 //		Select(notification.FieldType).
 //		Scan(ctx, &v)
 //
-func (nq *NotificationQuery) Select(field string, fields ...string) *NotificationSelect {
-	nq.fields = append([]string{field}, fields...)
+func (nq *NotificationQuery) Select(fields ...string) *NotificationSelect {
+	nq.fields = append(nq.fields, fields...)
 	return &NotificationSelect{NotificationQuery: nq}
 }
 
@@ -366,6 +368,9 @@ func (nq *NotificationQuery) sqlAll(ctx context.Context) ([]*Notification, error
 		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
+	if len(nq.modifiers) > 0 {
+		_spec.Modifiers = nq.modifiers
+	}
 	if err := sqlgraph.QueryNodes(ctx, nq.driver, _spec); err != nil {
 		return nil, err
 	}
@@ -404,6 +409,9 @@ func (nq *NotificationQuery) sqlAll(ctx context.Context) ([]*Notification, error
 
 func (nq *NotificationQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := nq.querySpec()
+	if len(nq.modifiers) > 0 {
+		_spec.Modifiers = nq.modifiers
+	}
 	return sqlgraph.CountNodes(ctx, nq.driver, _spec)
 }
 
@@ -466,10 +474,17 @@ func (nq *NotificationQuery) querySpec() *sqlgraph.QuerySpec {
 func (nq *NotificationQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	builder := sql.Dialect(nq.driver.Dialect())
 	t1 := builder.Table(notification.Table)
-	selector := builder.Select(t1.Columns(notification.Columns...)...).From(t1)
+	columns := nq.fields
+	if len(columns) == 0 {
+		columns = notification.Columns
+	}
+	selector := builder.Select(t1.Columns(columns...)...).From(t1)
 	if nq.sql != nil {
 		selector = nq.sql
-		selector.Select(selector.Columns(notification.Columns...)...)
+		selector.Select(selector.Columns(columns...)...)
+	}
+	for _, m := range nq.modifiers {
+		m(selector)
 	}
 	for _, p := range nq.predicates {
 		p(selector)
@@ -486,6 +501,32 @@ func (nq *NotificationQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector.Limit(*limit)
 	}
 	return selector
+}
+
+// ForUpdate locks the selected rows against concurrent updates, and prevent them from being
+// updated, deleted or "selected ... for update" by other sessions, until the transaction is
+// either committed or rolled-back.
+func (nq *NotificationQuery) ForUpdate(opts ...sql.LockOption) *NotificationQuery {
+	if nq.driver.Dialect() == dialect.Postgres {
+		nq.Unique(false)
+	}
+	nq.modifiers = append(nq.modifiers, func(s *sql.Selector) {
+		s.ForUpdate(opts...)
+	})
+	return nq
+}
+
+// ForShare behaves similarly to ForUpdate, except that it acquires a shared mode lock
+// on any rows that are read. Other sessions can read the rows, but cannot modify them
+// until your transaction commits.
+func (nq *NotificationQuery) ForShare(opts ...sql.LockOption) *NotificationQuery {
+	if nq.driver.Dialect() == dialect.Postgres {
+		nq.Unique(false)
+	}
+	nq.modifiers = append(nq.modifiers, func(s *sql.Selector) {
+		s.ForShare(opts...)
+	})
+	return nq
 }
 
 // NotificationGroupBy is the group-by builder for Notification entities.
@@ -737,13 +778,24 @@ func (ngb *NotificationGroupBy) sqlScan(ctx context.Context, v interface{}) erro
 }
 
 func (ngb *NotificationGroupBy) sqlQuery() *sql.Selector {
-	selector := ngb.sql
-	columns := make([]string, 0, len(ngb.fields)+len(ngb.fns))
-	columns = append(columns, ngb.fields...)
+	selector := ngb.sql.Select()
+	aggregation := make([]string, 0, len(ngb.fns))
 	for _, fn := range ngb.fns {
-		columns = append(columns, fn(selector))
+		aggregation = append(aggregation, fn(selector))
 	}
-	return selector.Select(columns...).GroupBy(ngb.fields...)
+	// If no columns were selected in a custom aggregation function, the default
+	// selection is the fields used for "group-by", and the aggregation functions.
+	if len(selector.SelectedColumns()) == 0 {
+		columns := make([]string, 0, len(ngb.fields)+len(ngb.fns))
+		for _, f := range ngb.fields {
+			columns = append(columns, selector.C(f))
+		}
+		for _, c := range aggregation {
+			columns = append(columns, c)
+		}
+		selector.Select(columns...)
+	}
+	return selector.GroupBy(selector.Columns(ngb.fields...)...)
 }
 
 // NotificationSelect is the builder for selecting fields of Notification entities.
@@ -959,16 +1011,10 @@ func (ns *NotificationSelect) BoolX(ctx context.Context) bool {
 
 func (ns *NotificationSelect) sqlScan(ctx context.Context, v interface{}) error {
 	rows := &sql.Rows{}
-	query, args := ns.sqlQuery().Query()
+	query, args := ns.sql.Query()
 	if err := ns.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
 	defer rows.Close()
 	return sql.ScanSlice(rows, v)
-}
-
-func (ns *NotificationSelect) sqlQuery() sql.Querier {
-	selector := ns.sql
-	selector.Select(selector.Columns(ns.fields...)...)
-	return selector
 }

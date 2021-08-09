@@ -131,8 +131,8 @@ func (m ApprovalMutation) Tx() (*Tx, error) {
 	return tx, nil
 }
 
-// ID returns the ID value in the mutation. Note that the ID
-// is only available if it was provided to the builder.
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
 func (m *ApprovalMutation) ID() (id int, exists bool) {
 	if m.id == nil {
 		return
@@ -370,6 +370,11 @@ func (m *ApprovalMutation) DeploymentIDs() (ids []int) {
 func (m *ApprovalMutation) ResetDeployment() {
 	m.deployment = nil
 	m.cleareddeployment = false
+}
+
+// Where appends a list predicates to the ApprovalMutation builder.
+func (m *ApprovalMutation) Where(ps ...predicate.Approval) {
+	m.predicates = append(m.predicates, ps...)
 }
 
 // Op returns the operation name.
@@ -739,8 +744,8 @@ func (m ChatCallbackMutation) Tx() (*Tx, error) {
 	return tx, nil
 }
 
-// ID returns the ID value in the mutation. Note that the ID
-// is only available if it was provided to the builder.
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
 func (m *ChatCallbackMutation) ID() (id int, exists bool) {
 	if m.id == nil {
 		return
@@ -1050,6 +1055,11 @@ func (m *ChatCallbackMutation) RepoIDs() (ids []string) {
 func (m *ChatCallbackMutation) ResetRepo() {
 	m.repo = nil
 	m.clearedrepo = false
+}
+
+// Where appends a list predicates to the ChatCallbackMutation builder.
+func (m *ChatCallbackMutation) Where(ps ...predicate.ChatCallback) {
+	m.predicates = append(m.predicates, ps...)
 }
 
 // Op returns the operation name.
@@ -1458,8 +1468,8 @@ func (m *ChatUserMutation) SetID(id string) {
 	m.id = &id
 }
 
-// ID returns the ID value in the mutation. Note that the ID
-// is only available if it was provided to the builder.
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
 func (m *ChatUserMutation) ID() (id string, exists bool) {
 	if m.id == nil {
 		return
@@ -1745,6 +1755,7 @@ func (m *ChatUserMutation) RemoveChatCallbackIDs(ids ...int) {
 		m.removedchat_callback = make(map[int]struct{})
 	}
 	for i := range ids {
+		delete(m.chat_callback, ids[i])
 		m.removedchat_callback[ids[i]] = struct{}{}
 	}
 }
@@ -1796,6 +1807,11 @@ func (m *ChatUserMutation) UserIDs() (ids []string) {
 func (m *ChatUserMutation) ResetUser() {
 	m.user = nil
 	m.cleareduser = false
+}
+
+// Where appends a list predicates to the ChatUserMutation builder.
+func (m *ChatUserMutation) Where(ps ...predicate.ChatUser) {
+	m.predicates = append(m.predicates, ps...)
 }
 
 // Op returns the operation name.
@@ -2221,8 +2237,8 @@ func (m DeploymentMutation) Tx() (*Tx, error) {
 	return tx, nil
 }
 
-// ID returns the ID value in the mutation. Note that the ID
-// is only available if it was provided to the builder.
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
 func (m *DeploymentMutation) ID() (id int, exists bool) {
 	if m.id == nil {
 		return
@@ -2948,6 +2964,7 @@ func (m *DeploymentMutation) RemoveApprovalIDs(ids ...int) {
 		m.removedapprovals = make(map[int]struct{})
 	}
 	for i := range ids {
+		delete(m.approvals, ids[i])
 		m.removedapprovals[ids[i]] = struct{}{}
 	}
 }
@@ -3001,6 +3018,7 @@ func (m *DeploymentMutation) RemoveDeploymentStatusIDs(ids ...int) {
 		m.removeddeployment_statuses = make(map[int]struct{})
 	}
 	for i := range ids {
+		delete(m.deployment_statuses, ids[i])
 		m.removeddeployment_statuses[ids[i]] = struct{}{}
 	}
 }
@@ -3026,6 +3044,11 @@ func (m *DeploymentMutation) ResetDeploymentStatuses() {
 	m.deployment_statuses = nil
 	m.cleareddeployment_statuses = false
 	m.removeddeployment_statuses = nil
+}
+
+// Where appends a list predicates to the DeploymentMutation builder.
+func (m *DeploymentMutation) Where(ps ...predicate.Deployment) {
+	m.predicates = append(m.predicates, ps...)
 }
 
 // Op returns the operation name.
@@ -3672,8 +3695,8 @@ func (m DeploymentStatusMutation) Tx() (*Tx, error) {
 	return tx, nil
 }
 
-// ID returns the ID value in the mutation. Note that the ID
-// is only available if it was provided to the builder.
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
 func (m *DeploymentStatusMutation) ID() (id int, exists bool) {
 	if m.id == nil {
 		return
@@ -3947,6 +3970,11 @@ func (m *DeploymentStatusMutation) DeploymentIDs() (ids []int) {
 func (m *DeploymentStatusMutation) ResetDeployment() {
 	m.deployment = nil
 	m.cleareddeployment = false
+}
+
+// Where appends a list predicates to the DeploymentStatusMutation builder.
+func (m *DeploymentStatusMutation) Where(ps ...predicate.DeploymentStatus) {
+	m.predicates = append(m.predicates, ps...)
 }
 
 // Op returns the operation name.
@@ -4339,8 +4367,8 @@ func (m NotificationMutation) Tx() (*Tx, error) {
 	return tx, nil
 }
 
-// ID returns the ID value in the mutation. Note that the ID
-// is only available if it was provided to the builder.
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
 func (m *NotificationMutation) ID() (id int, exists bool) {
 	if m.id == nil {
 		return
@@ -4996,6 +5024,11 @@ func (m *NotificationMutation) ResetUser() {
 	m.cleareduser = false
 }
 
+// Where appends a list predicates to the NotificationMutation builder.
+func (m *NotificationMutation) Where(ps ...predicate.Notification) {
+	m.predicates = append(m.predicates, ps...)
+}
+
 // Op returns the operation name.
 func (m *NotificationMutation) Op() Op {
 	return m.op
@@ -5558,8 +5591,8 @@ func (m PermMutation) Tx() (*Tx, error) {
 	return tx, nil
 }
 
-// ID returns the ID value in the mutation. Note that the ID
-// is only available if it was provided to the builder.
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
 func (m *PermMutation) ID() (id int, exists bool) {
 	if m.id == nil {
 		return
@@ -5846,6 +5879,11 @@ func (m *PermMutation) RepoIDs() (ids []string) {
 func (m *PermMutation) ResetRepo() {
 	m.repo = nil
 	m.clearedrepo = false
+}
+
+// Where appends a list predicates to the PermMutation builder.
+func (m *PermMutation) Where(ps ...predicate.Perm) {
+	m.predicates = append(m.predicates, ps...)
 }
 
 // Op returns the operation name.
@@ -6255,8 +6293,8 @@ func (m *RepoMutation) SetID(id string) {
 	m.id = &id
 }
 
-// ID returns the ID value in the mutation. Note that the ID
-// is only available if it was provided to the builder.
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
 func (m *RepoMutation) ID() (id string, exists bool) {
 	if m.id == nil {
 		return
@@ -6723,6 +6761,7 @@ func (m *RepoMutation) RemovePermIDs(ids ...int) {
 		m.removedperms = make(map[int]struct{})
 	}
 	for i := range ids {
+		delete(m.perms, ids[i])
 		m.removedperms[ids[i]] = struct{}{}
 	}
 }
@@ -6776,6 +6815,7 @@ func (m *RepoMutation) RemoveDeploymentIDs(ids ...int) {
 		m.removeddeployments = make(map[int]struct{})
 	}
 	for i := range ids {
+		delete(m.deployments, ids[i])
 		m.removeddeployments[ids[i]] = struct{}{}
 	}
 }
@@ -6829,6 +6869,7 @@ func (m *RepoMutation) RemoveChatCallbackIDs(ids ...int) {
 		m.removedchat_callback = make(map[int]struct{})
 	}
 	for i := range ids {
+		delete(m.chat_callback, ids[i])
 		m.removedchat_callback[ids[i]] = struct{}{}
 	}
 }
@@ -6854,6 +6895,11 @@ func (m *RepoMutation) ResetChatCallback() {
 	m.chat_callback = nil
 	m.clearedchat_callback = false
 	m.removedchat_callback = nil
+}
+
+// Where appends a list predicates to the RepoMutation builder.
+func (m *RepoMutation) Where(ps ...predicate.Repo) {
+	m.predicates = append(m.predicates, ps...)
 }
 
 // Op returns the operation name.
@@ -7410,8 +7456,8 @@ func (m *UserMutation) SetID(id string) {
 	m.id = &id
 }
 
-// ID returns the ID value in the mutation. Note that the ID
-// is only available if it was provided to the builder.
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
 func (m *UserMutation) ID() (id string, exists bool) {
 	if m.id == nil {
 		return
@@ -7870,6 +7916,7 @@ func (m *UserMutation) RemovePermIDs(ids ...int) {
 		m.removedperms = make(map[int]struct{})
 	}
 	for i := range ids {
+		delete(m.perms, ids[i])
 		m.removedperms[ids[i]] = struct{}{}
 	}
 }
@@ -7923,6 +7970,7 @@ func (m *UserMutation) RemoveDeploymentIDs(ids ...int) {
 		m.removeddeployments = make(map[int]struct{})
 	}
 	for i := range ids {
+		delete(m.deployments, ids[i])
 		m.removeddeployments[ids[i]] = struct{}{}
 	}
 }
@@ -7976,6 +8024,7 @@ func (m *UserMutation) RemoveApprovalIDs(ids ...int) {
 		m.removedapprovals = make(map[int]struct{})
 	}
 	for i := range ids {
+		delete(m.approvals, ids[i])
 		m.removedapprovals[ids[i]] = struct{}{}
 	}
 }
@@ -8029,6 +8078,7 @@ func (m *UserMutation) RemoveNotificationIDs(ids ...int) {
 		m.removednotification = make(map[int]struct{})
 	}
 	for i := range ids {
+		delete(m.notification, ids[i])
 		m.removednotification[ids[i]] = struct{}{}
 	}
 }
@@ -8054,6 +8104,11 @@ func (m *UserMutation) ResetNotification() {
 	m.notification = nil
 	m.clearednotification = false
 	m.removednotification = nil
+}
+
+// Where appends a list predicates to the UserMutation builder.
+func (m *UserMutation) Where(ps ...predicate.User) {
+	m.predicates = append(m.predicates, ps...)
 }
 
 // Op returns the operation name.

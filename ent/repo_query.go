@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -32,6 +33,7 @@ type RepoQuery struct {
 	withPerms        *PermQuery
 	withDeployments  *DeploymentQuery
 	withChatCallback *ChatCallbackQuery
+	modifiers        []func(s *sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -397,8 +399,8 @@ func (rq *RepoQuery) GroupBy(field string, fields ...string) *RepoGroupBy {
 //		Select(repo.FieldNamespace).
 //		Scan(ctx, &v)
 //
-func (rq *RepoQuery) Select(field string, fields ...string) *RepoSelect {
-	rq.fields = append([]string{field}, fields...)
+func (rq *RepoQuery) Select(fields ...string) *RepoSelect {
+	rq.fields = append(rq.fields, fields...)
 	return &RepoSelect{RepoQuery: rq}
 }
 
@@ -440,6 +442,9 @@ func (rq *RepoQuery) sqlAll(ctx context.Context) ([]*Repo, error) {
 		node := nodes[len(nodes)-1]
 		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
+	}
+	if len(rq.modifiers) > 0 {
+		_spec.Modifiers = rq.modifiers
 	}
 	if err := sqlgraph.QueryNodes(ctx, rq.driver, _spec); err != nil {
 		return nil, err
@@ -528,6 +533,9 @@ func (rq *RepoQuery) sqlAll(ctx context.Context) ([]*Repo, error) {
 
 func (rq *RepoQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := rq.querySpec()
+	if len(rq.modifiers) > 0 {
+		_spec.Modifiers = rq.modifiers
+	}
 	return sqlgraph.CountNodes(ctx, rq.driver, _spec)
 }
 
@@ -590,10 +598,17 @@ func (rq *RepoQuery) querySpec() *sqlgraph.QuerySpec {
 func (rq *RepoQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	builder := sql.Dialect(rq.driver.Dialect())
 	t1 := builder.Table(repo.Table)
-	selector := builder.Select(t1.Columns(repo.Columns...)...).From(t1)
+	columns := rq.fields
+	if len(columns) == 0 {
+		columns = repo.Columns
+	}
+	selector := builder.Select(t1.Columns(columns...)...).From(t1)
 	if rq.sql != nil {
 		selector = rq.sql
-		selector.Select(selector.Columns(repo.Columns...)...)
+		selector.Select(selector.Columns(columns...)...)
+	}
+	for _, m := range rq.modifiers {
+		m(selector)
 	}
 	for _, p := range rq.predicates {
 		p(selector)
@@ -610,6 +625,32 @@ func (rq *RepoQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector.Limit(*limit)
 	}
 	return selector
+}
+
+// ForUpdate locks the selected rows against concurrent updates, and prevent them from being
+// updated, deleted or "selected ... for update" by other sessions, until the transaction is
+// either committed or rolled-back.
+func (rq *RepoQuery) ForUpdate(opts ...sql.LockOption) *RepoQuery {
+	if rq.driver.Dialect() == dialect.Postgres {
+		rq.Unique(false)
+	}
+	rq.modifiers = append(rq.modifiers, func(s *sql.Selector) {
+		s.ForUpdate(opts...)
+	})
+	return rq
+}
+
+// ForShare behaves similarly to ForUpdate, except that it acquires a shared mode lock
+// on any rows that are read. Other sessions can read the rows, but cannot modify them
+// until your transaction commits.
+func (rq *RepoQuery) ForShare(opts ...sql.LockOption) *RepoQuery {
+	if rq.driver.Dialect() == dialect.Postgres {
+		rq.Unique(false)
+	}
+	rq.modifiers = append(rq.modifiers, func(s *sql.Selector) {
+		s.ForShare(opts...)
+	})
+	return rq
 }
 
 // RepoGroupBy is the group-by builder for Repo entities.
@@ -861,13 +902,24 @@ func (rgb *RepoGroupBy) sqlScan(ctx context.Context, v interface{}) error {
 }
 
 func (rgb *RepoGroupBy) sqlQuery() *sql.Selector {
-	selector := rgb.sql
-	columns := make([]string, 0, len(rgb.fields)+len(rgb.fns))
-	columns = append(columns, rgb.fields...)
+	selector := rgb.sql.Select()
+	aggregation := make([]string, 0, len(rgb.fns))
 	for _, fn := range rgb.fns {
-		columns = append(columns, fn(selector))
+		aggregation = append(aggregation, fn(selector))
 	}
-	return selector.Select(columns...).GroupBy(rgb.fields...)
+	// If no columns were selected in a custom aggregation function, the default
+	// selection is the fields used for "group-by", and the aggregation functions.
+	if len(selector.SelectedColumns()) == 0 {
+		columns := make([]string, 0, len(rgb.fields)+len(rgb.fns))
+		for _, f := range rgb.fields {
+			columns = append(columns, selector.C(f))
+		}
+		for _, c := range aggregation {
+			columns = append(columns, c)
+		}
+		selector.Select(columns...)
+	}
+	return selector.GroupBy(selector.Columns(rgb.fields...)...)
 }
 
 // RepoSelect is the builder for selecting fields of Repo entities.
@@ -1083,16 +1135,10 @@ func (rs *RepoSelect) BoolX(ctx context.Context) bool {
 
 func (rs *RepoSelect) sqlScan(ctx context.Context, v interface{}) error {
 	rows := &sql.Rows{}
-	query, args := rs.sqlQuery().Query()
+	query, args := rs.sql.Query()
 	if err := rs.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
 	defer rows.Close()
 	return sql.ScanSlice(rows, v)
-}
-
-func (rs *RepoSelect) sqlQuery() sql.Querier {
-	selector := rs.sql
-	selector.Select(selector.Columns(rs.fields...)...)
-	return selector
 }

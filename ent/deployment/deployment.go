@@ -52,28 +52,28 @@ const (
 	EdgeDeploymentStatuses = "deployment_statuses"
 	// Table holds the table name of the deployment in the database.
 	Table = "deployments"
-	// UserTable is the table the holds the user relation/edge.
+	// UserTable is the table that holds the user relation/edge.
 	UserTable = "deployments"
 	// UserInverseTable is the table name for the User entity.
 	// It exists in this package in order to avoid circular dependency with the "user" package.
 	UserInverseTable = "users"
 	// UserColumn is the table column denoting the user relation/edge.
 	UserColumn = "user_id"
-	// RepoTable is the table the holds the repo relation/edge.
+	// RepoTable is the table that holds the repo relation/edge.
 	RepoTable = "deployments"
 	// RepoInverseTable is the table name for the Repo entity.
 	// It exists in this package in order to avoid circular dependency with the "repo" package.
 	RepoInverseTable = "repos"
 	// RepoColumn is the table column denoting the repo relation/edge.
 	RepoColumn = "repo_id"
-	// ApprovalsTable is the table the holds the approvals relation/edge.
+	// ApprovalsTable is the table that holds the approvals relation/edge.
 	ApprovalsTable = "approvals"
 	// ApprovalsInverseTable is the table name for the Approval entity.
 	// It exists in this package in order to avoid circular dependency with the "approval" package.
 	ApprovalsInverseTable = "approvals"
 	// ApprovalsColumn is the table column denoting the approvals relation/edge.
 	ApprovalsColumn = "deployment_id"
-	// DeploymentStatusesTable is the table the holds the deployment_statuses relation/edge.
+	// DeploymentStatusesTable is the table that holds the deployment_statuses relation/edge.
 	DeploymentStatusesTable = "deployment_status"
 	// DeploymentStatusesInverseTable is the table name for the DeploymentStatus entity.
 	// It exists in this package in order to avoid circular dependency with the "deploymentstatus" package.

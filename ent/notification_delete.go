@@ -20,9 +20,9 @@ type NotificationDelete struct {
 	mutation *NotificationMutation
 }
 
-// Where adds a new predicate to the NotificationDelete builder.
+// Where appends a list predicates to the NotificationDelete builder.
 func (nd *NotificationDelete) Where(ps ...predicate.Notification) *NotificationDelete {
-	nd.mutation.predicates = append(nd.mutation.predicates, ps...)
+	nd.mutation.Where(ps...)
 	return nd
 }
 
@@ -46,6 +46,9 @@ func (nd *NotificationDelete) Exec(ctx context.Context) (int, error) {
 			return affected, err
 		})
 		for i := len(nd.hooks) - 1; i >= 0; i-- {
+			if nd.hooks[i] == nil {
+				return 0, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
+			}
 			mut = nd.hooks[i](mut)
 		}
 		if _, err := mut.Mutate(ctx, nd.mutation); err != nil {
