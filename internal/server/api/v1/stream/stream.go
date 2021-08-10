@@ -1,6 +1,8 @@
 package stream
 
 import (
+	"context"
+	"fmt"
 	"math/rand"
 	"net/http"
 	"time"
@@ -10,6 +12,7 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/hanjunlee/gitploy/ent"
+	"github.com/hanjunlee/gitploy/ent/event"
 	gb "github.com/hanjunlee/gitploy/internal/server/global"
 )
 
@@ -27,41 +30,41 @@ func NewStream(i Interactor) *Stream {
 	}
 }
 
-func (s *Stream) GetNotification(c *gin.Context) {
+func (s *Stream) GetEvents(c *gin.Context) {
+	ctx := c.Request.Context()
+
 	v, _ := c.Get(gb.KeyUser)
-	me, _ := v.(*ent.User)
+	u, _ := v.(*ent.User)
 
 	debugID := randstr()
 	s.log.Debug("create a stream.", zap.String("debug_id", debugID))
 
-	notifications := make(chan ent.Notification, 10)
+	events := make(chan *ent.Event, 10)
 
-	// Subscribe notification events
+	// Subscribe events
 	// it'll unsubscribe after the connection is closed.
-	sub := func(u *ent.User, n *ent.Notification) {
-		var vn ent.Notification = *n
-
-		// It is notified by Chat if user has connected with chat.
-		if u.Edges.ChatUser != nil {
-			vn.Notified = true
+	sub := func(event *ent.Event) {
+		if ok, err := s.hasPermForEvent(ctx, u, event); !ok {
+			return
+		} else if err != nil {
+			s.log.Error("It has failed to check the perm.", zap.Error(err))
+			return
 		}
 
-		if me.ID == u.ID {
-			notifications <- vn
-		}
+		events <- event
 	}
-	if err := s.i.Subscribe(sub); err != nil {
+	if err := s.i.SubscribeEvent(sub); err != nil {
 		s.log.Error("failed to subscribe notification events", zap.Error(err))
 		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to connect.")
 		return
 	}
 
 	defer func() {
-		if err := s.i.Unsubscribe(sub); err != nil {
+		if err := s.i.UnsubscribeEvent(sub); err != nil {
 			s.log.Error("failed to unsubscribe notification events.")
 		}
 
-		close(notifications)
+		close(events)
 	}()
 
 	w := c.Writer
@@ -81,15 +84,62 @@ L:
 				Data:  "ping",
 			})
 			w.Flush()
-		case n := <-notifications:
+		case e := <-events:
+			var data interface{}
+			if e.Type == event.TypeDeployment {
+				data = e.Edges.Deployment
+			} else if e.Type == event.TypeApproval {
+				data = e.Edges.Approval
+			}
+
 			c.Render(-1, sse.Event{
-				Event: "notification",
-				Data:  n,
+				Event: e.Type.String(),
+				Data:  data,
 			})
 			w.Flush()
-			s.log.Debug("server sent event.", zap.Int("notification_id", n.ID), zap.String("debug_id", debugID))
+			s.log.Debug("server sent event.", zap.Int("event_id", e.ID), zap.String("debug_id", debugID))
 		}
 	}
+}
+
+// hasPermForEvent checks the user has permission for the event.
+func (s *Stream) hasPermForEvent(ctx context.Context, u *ent.User, e *ent.Event) (bool, error) {
+	if e.Type == event.TypeDeployment {
+		d, err := s.i.FindDeploymentByID(ctx, e.DeploymentID)
+		if err != nil {
+			return false, err
+		}
+
+		if _, err = s.i.FindPermOfRepo(ctx, d.Edges.Repo, u); ent.IsNotFound(err) {
+			return false, nil
+		} else if err != nil {
+			return false, err
+		}
+
+		return true, nil
+	}
+
+	if e.Type == event.TypeApproval {
+		a, err := s.i.FindApprovalByID(ctx, e.ApprovalID)
+		if err != nil {
+			return false, err
+		}
+
+		d, err := s.i.FindDeploymentByID(ctx, a.DeploymentID)
+		if err != nil {
+			return false, err
+		}
+
+		if _, err = s.i.FindPermOfRepo(ctx, d.Edges.Repo, u); ent.IsNotFound(err) {
+			return false, nil
+		} else if err != nil {
+			return false, err
+		}
+
+		return true, nil
+	}
+
+	return false, fmt.Errorf("The type of event is not \"deployment\" or \"approval\".")
 }
 
 func randstr() string {

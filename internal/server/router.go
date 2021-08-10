@@ -154,7 +154,7 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 	streamv1 := v1.Group("/stream")
 	{
 		s := stream.NewStream(c.Interactor)
-		streamv1.GET("", s.GetNotification)
+		streamv1.GET("/events", s.GetEvents)
 	}
 
 	hooksapi := r.Group("/hooks")
