@@ -10,7 +10,6 @@ import (
 	"github.com/golang/mock/gomock"
 
 	"github.com/hanjunlee/gitploy/ent"
-	"github.com/hanjunlee/gitploy/ent/notification"
 	"github.com/hanjunlee/gitploy/internal/server/hooks/mock"
 )
 
@@ -62,8 +61,8 @@ func TestHook_HandleHook(t *testing.T) {
 
 		m.
 			EXPECT().
-			Publish(gomock.Any(), gomock.Eq(notification.TypeDeploymentUpdated), gomock.Any(), gomock.Any(), gomock.Any()).
-			Return(nil)
+			CreateEvent(gomock.Any(), gomock.Any()).
+			Return(&ent.Event{}, nil)
 
 		h := NewHooks(&ConfigHooks{}, m)
 		r := gin.New()

@@ -97,6 +97,21 @@ func (mr *MockInteractorMockRecorder) CreateDeploymentToSCM(ctx, u, re, d, env i
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateDeploymentToSCM", reflect.TypeOf((*MockInteractor)(nil).CreateDeploymentToSCM), ctx, u, re, d, env)
 }
 
+// CreateEvent mocks base method.
+func (m *MockInteractor) CreateEvent(ctx context.Context, e *ent.Event) (*ent.Event, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateEvent", ctx, e)
+	ret0, _ := ret[0].(*ent.Event)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreateEvent indicates an expected call of CreateEvent.
+func (mr *MockInteractorMockRecorder) CreateEvent(ctx, e interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateEvent", reflect.TypeOf((*MockInteractor)(nil).CreateEvent), ctx, e)
+}
+
 // DeactivateRepo mocks base method.
 func (m *MockInteractor) DeactivateRepo(ctx context.Context, u *ent.User, r *ent.Repo) (*ent.Repo, error) {
 	m.ctrl.T.Helper()

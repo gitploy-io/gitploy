@@ -12,7 +12,6 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/hanjunlee/gitploy/ent"
 	"github.com/hanjunlee/gitploy/ent/deployment"
-	"github.com/hanjunlee/gitploy/ent/notification"
 	"github.com/hanjunlee/gitploy/internal/server/slack/mock"
 	"github.com/hanjunlee/gitploy/vo"
 	"go.uber.org/zap"
@@ -112,8 +111,8 @@ func TestSlack_interactDeploy(t *testing.T) {
 
 		m.
 			EXPECT().
-			Publish(gomock.Any(), notification.TypeDeploymentCreated, r, gomock.Any(), nil).
-			Return(nil)
+			CreateEvent(gomock.Any(), gomock.Any()).
+			Return(&ent.Event{}, nil)
 
 		s := &Slack{
 			i:   m,

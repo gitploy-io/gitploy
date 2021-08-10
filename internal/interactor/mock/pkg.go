@@ -142,6 +142,21 @@ func (mr *MockStoreMockRecorder) CreateDeploymentStatus(ctx, s interface{}) *gom
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateDeploymentStatus", reflect.TypeOf((*MockStore)(nil).CreateDeploymentStatus), ctx, s)
 }
 
+// CreateEvent mocks base method.
+func (m *MockStore) CreateEvent(ctx context.Context, e *ent.Event) (*ent.Event, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateEvent", ctx, e)
+	ret0, _ := ret[0].(*ent.Event)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreateEvent indicates an expected call of CreateEvent.
+func (mr *MockStoreMockRecorder) CreateEvent(ctx, e interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateEvent", reflect.TypeOf((*MockStore)(nil).CreateEvent), ctx, e)
+}
+
 // CreateNotification mocks base method.
 func (m *MockStore) CreateNotification(ctx context.Context, n *ent.Notification) (*ent.Notification, error) {
 	m.ctrl.T.Helper()
@@ -471,6 +486,21 @@ func (mr *MockStoreMockRecorder) ListDeploymentsOfRepo(ctx, r, env, status, page
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListDeploymentsOfRepo", reflect.TypeOf((*MockStore)(nil).ListDeploymentsOfRepo), ctx, r, env, status, page, perPage)
 }
 
+// ListEventsGreaterThanTime mocks base method.
+func (m *MockStore) ListEventsGreaterThanTime(ctx context.Context, t time.Time) ([]*ent.Event, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListEventsGreaterThanTime", ctx, t)
+	ret0, _ := ret[0].([]*ent.Event)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListEventsGreaterThanTime indicates an expected call of ListEventsGreaterThanTime.
+func (mr *MockStoreMockRecorder) ListEventsGreaterThanTime(ctx, t interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListEventsGreaterThanTime", reflect.TypeOf((*MockStore)(nil).ListEventsGreaterThanTime), ctx, t)
+}
+
 // ListInactiveDeploymentsLessThanTime mocks base method.
 func (m *MockStore) ListInactiveDeploymentsLessThanTime(ctx context.Context, t time.Time, page, perPage int) ([]*ent.Deployment, error) {
 	m.ctrl.T.Helper()
@@ -501,21 +531,6 @@ func (mr *MockStoreMockRecorder) ListNotifications(ctx, u, page, perPage interfa
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListNotifications", reflect.TypeOf((*MockStore)(nil).ListNotifications), ctx, u, page, perPage)
 }
 
-// ListPublishingNotificaitonsGreaterThanTime mocks base method.
-func (m *MockStore) ListPublishingNotificaitonsGreaterThanTime(ctx context.Context, t time.Time) ([]*ent.Notification, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListPublishingNotificaitonsGreaterThanTime", ctx, t)
-	ret0, _ := ret[0].([]*ent.Notification)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// ListPublishingNotificaitonsGreaterThanTime indicates an expected call of ListPublishingNotificaitonsGreaterThanTime.
-func (mr *MockStoreMockRecorder) ListPublishingNotificaitonsGreaterThanTime(ctx, t interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListPublishingNotificaitonsGreaterThanTime", reflect.TypeOf((*MockStore)(nil).ListPublishingNotificaitonsGreaterThanTime), ctx, t)
-}
-
 // ListPermsOfRepo mocks base method.
 func (m *MockStore) ListPermsOfRepo(ctx context.Context, r *ent.Repo, q string, page, perPage int) ([]*ent.Perm, error) {
 	m.ctrl.T.Helper()
@@ -529,6 +544,21 @@ func (m *MockStore) ListPermsOfRepo(ctx context.Context, r *ent.Repo, q string, 
 func (mr *MockStoreMockRecorder) ListPermsOfRepo(ctx, r, q, page, perPage interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListPermsOfRepo", reflect.TypeOf((*MockStore)(nil).ListPermsOfRepo), ctx, r, q, page, perPage)
+}
+
+// ListPublishingNotificaitonsGreaterThanTime mocks base method.
+func (m *MockStore) ListPublishingNotificaitonsGreaterThanTime(ctx context.Context, t time.Time) ([]*ent.Notification, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListPublishingNotificaitonsGreaterThanTime", ctx, t)
+	ret0, _ := ret[0].([]*ent.Notification)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListPublishingNotificaitonsGreaterThanTime indicates an expected call of ListPublishingNotificaitonsGreaterThanTime.
+func (mr *MockStoreMockRecorder) ListPublishingNotificaitonsGreaterThanTime(ctx, t interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListPublishingNotificaitonsGreaterThanTime", reflect.TypeOf((*MockStore)(nil).ListPublishingNotificaitonsGreaterThanTime), ctx, t)
 }
 
 // ListReposOfUser mocks base method.

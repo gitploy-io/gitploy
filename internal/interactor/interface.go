@@ -64,6 +64,9 @@ type (
 		FindNotificationByID(ctx context.Context, id int) (*ent.Notification, error)
 		CreateNotification(ctx context.Context, n *ent.Notification) (*ent.Notification, error)
 		UpdateNotification(ctx context.Context, n *ent.Notification) (*ent.Notification, error)
+
+		ListEventsGreaterThanTime(ctx context.Context, t time.Time) ([]*ent.Event, error)
+		CreateEvent(ctx context.Context, e *ent.Event) (*ent.Event, error)
 	}
 
 	SCM interface {

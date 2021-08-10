@@ -11,7 +11,7 @@ import (
 
 	"github.com/hanjunlee/gitploy/ent"
 	"github.com/hanjunlee/gitploy/ent/deployment"
-	"github.com/hanjunlee/gitploy/ent/notification"
+	"github.com/hanjunlee/gitploy/ent/event"
 	gb "github.com/hanjunlee/gitploy/internal/server/global"
 	"github.com/hanjunlee/gitploy/vo"
 )
@@ -133,8 +133,11 @@ func (r *Repo) CreateDeployment(c *gin.Context) {
 		return
 	}
 
-	if err = r.i.Publish(ctx, notification.TypeDeploymentCreated, re, d, nil); err != nil {
-		r.log.Warn("failed to notify the deployment.", zap.Error(err))
+	if _, err := r.i.CreateEvent(ctx, &ent.Event{
+		Type:         event.TypeDeployment,
+		DeploymentID: d.ID,
+	}); err != nil {
+		r.log.Error("It has failed to create the event.", zap.Error(err))
 	}
 
 	// Get the deployment with edges.
@@ -282,8 +285,11 @@ func (r *Repo) RollbackDeployment(c *gin.Context) {
 		return
 	}
 
-	if err = r.i.Publish(ctx, notification.TypeDeploymentCreated, re, d, nil); err != nil {
-		r.log.Warn("failed to notify the deployment.", zap.Error(err))
+	if _, err := r.i.CreateEvent(ctx, &ent.Event{
+		Type:         event.TypeDeployment,
+		DeploymentID: d.ID,
+	}); err != nil {
+		r.log.Error("It has failed to create the event.", zap.Error(err))
 	}
 
 	// Get the deployment with edges.

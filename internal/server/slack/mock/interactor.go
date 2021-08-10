@@ -82,6 +82,21 @@ func (mr *MockInteractorMockRecorder) CreateChatCallback(ctx, cu, repo, cb inter
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateChatCallback", reflect.TypeOf((*MockInteractor)(nil).CreateChatCallback), ctx, cu, repo, cb)
 }
 
+// CreateEvent mocks base method.
+func (m *MockInteractor) CreateEvent(ctx context.Context, e *ent.Event) (*ent.Event, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateEvent", ctx, e)
+	ret0, _ := ret[0].(*ent.Event)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreateEvent indicates an expected call of CreateEvent.
+func (mr *MockInteractorMockRecorder) CreateEvent(ctx, e interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateEvent", reflect.TypeOf((*MockInteractor)(nil).CreateEvent), ctx, e)
+}
+
 // Deploy mocks base method.
 func (m *MockInteractor) Deploy(ctx context.Context, u *ent.User, re *ent.Repo, d *ent.Deployment, env *vo.Env) (*ent.Deployment, error) {
 	m.ctrl.T.Helper()

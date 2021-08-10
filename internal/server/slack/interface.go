@@ -36,6 +36,8 @@ type (
 		Publish(ctx context.Context, typ notification.Type, r *ent.Repo, d *ent.Deployment, a *ent.Approval) error
 		Subscribe(func(*ent.User, *ent.Notification)) error
 
+		CreateEvent(ctx context.Context, e *ent.Event) (*ent.Event, error)
+
 		GetCommit(ctx context.Context, u *ent.User, r *ent.Repo, sha string) (*vo.Commit, error)
 		GetBranch(ctx context.Context, u *ent.User, r *ent.Repo, branch string) (*vo.Branch, error)
 		GetTag(ctx context.Context, u *ent.User, r *ent.Repo, tag string) (*vo.Tag, error)

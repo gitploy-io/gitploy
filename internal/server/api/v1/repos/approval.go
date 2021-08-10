@@ -9,7 +9,7 @@ import (
 
 	"github.com/hanjunlee/gitploy/ent"
 	"github.com/hanjunlee/gitploy/ent/approval"
-	"github.com/hanjunlee/gitploy/ent/notification"
+	"github.com/hanjunlee/gitploy/ent/event"
 	gb "github.com/hanjunlee/gitploy/internal/server/global"
 )
 
@@ -177,8 +177,11 @@ func (r *Repo) CreateApproval(c *gin.Context) {
 		return
 	}
 
-	if err := r.i.Publish(ctx, notification.TypeApprovalRequested, re, d, ap); err != nil {
-		r.log.Warn("It has failed to notify the approval requested.", zap.Error(err))
+	if _, err := r.i.CreateEvent(ctx, &ent.Event{
+		Type:       event.TypeApproval,
+		ApprovalID: ap.ID,
+	}); err != nil {
+		r.log.Error("It has failed to create the event.", zap.Error(err))
 	}
 
 	// Get the approval with edges
@@ -239,8 +242,11 @@ func (r *Repo) UpdateApproval(c *gin.Context) {
 			return
 		}
 
-		if err := r.i.Publish(ctx, notification.TypeApprovalResponded, re, d, a); err != nil {
-			r.log.Warn("It has failed to notify the approval responded.", zap.Error(err))
+		if _, err := r.i.CreateEvent(ctx, &ent.Event{
+			Type:       event.TypeApproval,
+			ApprovalID: a.ID,
+		}); err != nil {
+			r.log.Error("It has failed to create the event.", zap.Error(err))
 		}
 	}
 
