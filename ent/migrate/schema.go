@@ -188,6 +188,41 @@ var (
 			},
 		},
 	}
+	// EventsColumns holds the columns for the "events" table.
+	EventsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "type", Type: field.TypeEnum, Enums: []string{"deployment", "approval"}},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "approval_id", Type: field.TypeInt, Nullable: true},
+		{Name: "deployment_id", Type: field.TypeInt, Nullable: true},
+	}
+	// EventsTable holds the schema information for the "events" table.
+	EventsTable = &schema.Table{
+		Name:       "events",
+		Columns:    EventsColumns,
+		PrimaryKey: []*schema.Column{EventsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "events_approvals_event",
+				Columns:    []*schema.Column{EventsColumns[3]},
+				RefColumns: []*schema.Column{ApprovalsColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "events_deployments_event",
+				Columns:    []*schema.Column{EventsColumns[4]},
+				RefColumns: []*schema.Column{DeploymentsColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "event_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{EventsColumns[2]},
+			},
+		},
+	}
 	// NotificationsColumns holds the columns for the "notifications" table.
 	NotificationsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
@@ -318,6 +353,7 @@ var (
 		ChatUsersTable,
 		DeploymentsTable,
 		DeploymentStatusTable,
+		EventsTable,
 		NotificationsTable,
 		PermsTable,
 		ReposTable,
@@ -334,6 +370,8 @@ func init() {
 	DeploymentsTable.ForeignKeys[0].RefTable = ReposTable
 	DeploymentsTable.ForeignKeys[1].RefTable = UsersTable
 	DeploymentStatusTable.ForeignKeys[0].RefTable = DeploymentsTable
+	EventsTable.ForeignKeys[0].RefTable = ApprovalsTable
+	EventsTable.ForeignKeys[1].RefTable = DeploymentsTable
 	NotificationsTable.ForeignKeys[0].RefTable = UsersTable
 	PermsTable.ForeignKeys[0].RefTable = ReposTable
 	PermsTable.ForeignKeys[1].RefTable = UsersTable

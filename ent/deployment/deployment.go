@@ -50,6 +50,8 @@ const (
 	EdgeApprovals = "approvals"
 	// EdgeDeploymentStatuses holds the string denoting the deployment_statuses edge name in mutations.
 	EdgeDeploymentStatuses = "deployment_statuses"
+	// EdgeEvent holds the string denoting the event edge name in mutations.
+	EdgeEvent = "event"
 	// Table holds the table name of the deployment in the database.
 	Table = "deployments"
 	// UserTable is the table that holds the user relation/edge.
@@ -80,6 +82,13 @@ const (
 	DeploymentStatusesInverseTable = "deployment_status"
 	// DeploymentStatusesColumn is the table column denoting the deployment_statuses relation/edge.
 	DeploymentStatusesColumn = "deployment_id"
+	// EventTable is the table that holds the event relation/edge.
+	EventTable = "events"
+	// EventInverseTable is the table name for the Event entity.
+	// It exists in this package in order to avoid circular dependency with the "event" package.
+	EventInverseTable = "events"
+	// EventColumn is the table column denoting the event relation/edge.
+	EventColumn = "deployment_id"
 )
 
 // Columns holds all SQL columns for deployment fields.

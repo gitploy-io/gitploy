@@ -10,6 +10,7 @@ import (
 	"github.com/hanjunlee/gitploy/ent/chatuser"
 	"github.com/hanjunlee/gitploy/ent/deployment"
 	"github.com/hanjunlee/gitploy/ent/deploymentstatus"
+	"github.com/hanjunlee/gitploy/ent/event"
 	"github.com/hanjunlee/gitploy/ent/notification"
 	"github.com/hanjunlee/gitploy/ent/perm"
 	"github.com/hanjunlee/gitploy/ent/repo"
@@ -105,6 +106,12 @@ func init() {
 	deploymentstatus.DefaultUpdatedAt = deploymentstatusDescUpdatedAt.Default.(func() time.Time)
 	// deploymentstatus.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	deploymentstatus.UpdateDefaultUpdatedAt = deploymentstatusDescUpdatedAt.UpdateDefault.(func() time.Time)
+	eventFields := schema.Event{}.Fields()
+	_ = eventFields
+	// eventDescCreatedAt is the schema descriptor for created_at field.
+	eventDescCreatedAt := eventFields[1].Descriptor()
+	// event.DefaultCreatedAt holds the default value on creation for the created_at field.
+	event.DefaultCreatedAt = eventDescCreatedAt.Default.(func() time.Time)
 	notificationFields := schema.Notification{}.Fields()
 	_ = notificationFields
 	// notificationDescNotified is the schema descriptor for notified field.

@@ -14,6 +14,7 @@ import (
 	"github.com/hanjunlee/gitploy/ent/chatuser"
 	"github.com/hanjunlee/gitploy/ent/deployment"
 	"github.com/hanjunlee/gitploy/ent/deploymentstatus"
+	"github.com/hanjunlee/gitploy/ent/event"
 	"github.com/hanjunlee/gitploy/ent/notification"
 	"github.com/hanjunlee/gitploy/ent/perm"
 	"github.com/hanjunlee/gitploy/ent/repo"
@@ -39,6 +40,8 @@ type Client struct {
 	Deployment *DeploymentClient
 	// DeploymentStatus is the client for interacting with the DeploymentStatus builders.
 	DeploymentStatus *DeploymentStatusClient
+	// Event is the client for interacting with the Event builders.
+	Event *EventClient
 	// Notification is the client for interacting with the Notification builders.
 	Notification *NotificationClient
 	// Perm is the client for interacting with the Perm builders.
@@ -65,6 +68,7 @@ func (c *Client) init() {
 	c.ChatUser = NewChatUserClient(c.config)
 	c.Deployment = NewDeploymentClient(c.config)
 	c.DeploymentStatus = NewDeploymentStatusClient(c.config)
+	c.Event = NewEventClient(c.config)
 	c.Notification = NewNotificationClient(c.config)
 	c.Perm = NewPermClient(c.config)
 	c.Repo = NewRepoClient(c.config)
@@ -107,6 +111,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		ChatUser:         NewChatUserClient(cfg),
 		Deployment:       NewDeploymentClient(cfg),
 		DeploymentStatus: NewDeploymentStatusClient(cfg),
+		Event:            NewEventClient(cfg),
 		Notification:     NewNotificationClient(cfg),
 		Perm:             NewPermClient(cfg),
 		Repo:             NewRepoClient(cfg),
@@ -134,6 +139,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		ChatUser:         NewChatUserClient(cfg),
 		Deployment:       NewDeploymentClient(cfg),
 		DeploymentStatus: NewDeploymentStatusClient(cfg),
+		Event:            NewEventClient(cfg),
 		Notification:     NewNotificationClient(cfg),
 		Perm:             NewPermClient(cfg),
 		Repo:             NewRepoClient(cfg),
@@ -172,6 +178,7 @@ func (c *Client) Use(hooks ...Hook) {
 	c.ChatUser.Use(hooks...)
 	c.Deployment.Use(hooks...)
 	c.DeploymentStatus.Use(hooks...)
+	c.Event.Use(hooks...)
 	c.Notification.Use(hooks...)
 	c.Perm.Use(hooks...)
 	c.Repo.Use(hooks...)
@@ -288,6 +295,22 @@ func (c *ApprovalClient) QueryDeployment(a *Approval) *DeploymentQuery {
 			sqlgraph.From(approval.Table, approval.FieldID, id),
 			sqlgraph.To(deployment.Table, deployment.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, approval.DeploymentTable, approval.DeploymentColumn),
+		)
+		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryEvent queries the event edge of a Approval.
+func (c *ApprovalClient) QueryEvent(a *Approval) *EventQuery {
+	query := &EventQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := a.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(approval.Table, approval.FieldID, id),
+			sqlgraph.To(event.Table, event.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, approval.EventTable, approval.EventColumn),
 		)
 		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
 		return fromV, nil
@@ -693,6 +716,22 @@ func (c *DeploymentClient) QueryDeploymentStatuses(d *Deployment) *DeploymentSta
 	return query
 }
 
+// QueryEvent queries the event edge of a Deployment.
+func (c *DeploymentClient) QueryEvent(d *Deployment) *EventQuery {
+	query := &EventQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := d.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(deployment.Table, deployment.FieldID, id),
+			sqlgraph.To(event.Table, event.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, deployment.EventTable, deployment.EventColumn),
+		)
+		fromV = sqlgraph.Neighbors(d.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *DeploymentClient) Hooks() []Hook {
 	return c.hooks.Deployment
@@ -802,6 +841,128 @@ func (c *DeploymentStatusClient) QueryDeployment(ds *DeploymentStatus) *Deployme
 // Hooks returns the client hooks.
 func (c *DeploymentStatusClient) Hooks() []Hook {
 	return c.hooks.DeploymentStatus
+}
+
+// EventClient is a client for the Event schema.
+type EventClient struct {
+	config
+}
+
+// NewEventClient returns a client for the Event from the given config.
+func NewEventClient(c config) *EventClient {
+	return &EventClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `event.Hooks(f(g(h())))`.
+func (c *EventClient) Use(hooks ...Hook) {
+	c.hooks.Event = append(c.hooks.Event, hooks...)
+}
+
+// Create returns a create builder for Event.
+func (c *EventClient) Create() *EventCreate {
+	mutation := newEventMutation(c.config, OpCreate)
+	return &EventCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Event entities.
+func (c *EventClient) CreateBulk(builders ...*EventCreate) *EventCreateBulk {
+	return &EventCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Event.
+func (c *EventClient) Update() *EventUpdate {
+	mutation := newEventMutation(c.config, OpUpdate)
+	return &EventUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *EventClient) UpdateOne(e *Event) *EventUpdateOne {
+	mutation := newEventMutation(c.config, OpUpdateOne, withEvent(e))
+	return &EventUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *EventClient) UpdateOneID(id int) *EventUpdateOne {
+	mutation := newEventMutation(c.config, OpUpdateOne, withEventID(id))
+	return &EventUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Event.
+func (c *EventClient) Delete() *EventDelete {
+	mutation := newEventMutation(c.config, OpDelete)
+	return &EventDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *EventClient) DeleteOne(e *Event) *EventDeleteOne {
+	return c.DeleteOneID(e.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *EventClient) DeleteOneID(id int) *EventDeleteOne {
+	builder := c.Delete().Where(event.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &EventDeleteOne{builder}
+}
+
+// Query returns a query builder for Event.
+func (c *EventClient) Query() *EventQuery {
+	return &EventQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a Event entity by its id.
+func (c *EventClient) Get(ctx context.Context, id int) (*Event, error) {
+	return c.Query().Where(event.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *EventClient) GetX(ctx context.Context, id int) *Event {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryDeployment queries the deployment edge of a Event.
+func (c *EventClient) QueryDeployment(e *Event) *DeploymentQuery {
+	query := &DeploymentQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := e.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(event.Table, event.FieldID, id),
+			sqlgraph.To(deployment.Table, deployment.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, event.DeploymentTable, event.DeploymentColumn),
+		)
+		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryApproval queries the approval edge of a Event.
+func (c *EventClient) QueryApproval(e *Event) *ApprovalQuery {
+	query := &ApprovalQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := e.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(event.Table, event.FieldID, id),
+			sqlgraph.To(approval.Table, approval.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, event.ApprovalTable, event.ApprovalColumn),
+		)
+		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *EventClient) Hooks() []Hook {
+	return c.hooks.Event
 }
 
 // NotificationClient is a client for the Notification schema.

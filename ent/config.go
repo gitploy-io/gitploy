@@ -29,6 +29,7 @@ type hooks struct {
 	ChatUser         []ent.Hook
 	Deployment       []ent.Hook
 	DeploymentStatus []ent.Hook
+	Event            []ent.Hook
 	Notification     []ent.Hook
 	Perm             []ent.Hook
 	Repo             []ent.Hook
