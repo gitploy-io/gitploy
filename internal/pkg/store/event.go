@@ -20,7 +20,7 @@ func (s *Store) ListEventsGreaterThanTime(ctx context.Context, t time.Time) ([]*
 		).
 		WithApproval().
 		WithDeployment().
-		Limit(100).
+		Limit(limit).
 		All(ctx)
 }
 
