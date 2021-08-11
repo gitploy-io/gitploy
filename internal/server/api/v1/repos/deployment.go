@@ -134,7 +134,8 @@ func (r *Repo) CreateDeployment(c *gin.Context) {
 	}
 
 	if _, err := r.i.CreateEvent(ctx, &ent.Event{
-		Type:         event.TypeDeployment,
+		Kind:         event.KindDeployment,
+		Type:         event.TypeCreated,
 		DeploymentID: d.ID,
 	}); err != nil {
 		r.log.Error("It has failed to create the event.", zap.Error(err))
@@ -286,7 +287,8 @@ func (r *Repo) RollbackDeployment(c *gin.Context) {
 	}
 
 	if _, err := r.i.CreateEvent(ctx, &ent.Event{
-		Type:         event.TypeDeployment,
+		Kind:         event.KindDeployment,
+		Type:         event.TypeCreated,
 		DeploymentID: d.ID,
 	}); err != nil {
 		r.log.Error("It has failed to create the event.", zap.Error(err))

@@ -22,6 +22,12 @@ type EventCreate struct {
 	hooks    []Hook
 }
 
+// SetKind sets the "kind" field.
+func (ec *EventCreate) SetKind(e event.Kind) *EventCreate {
+	ec.mutation.SetKind(e)
+	return ec
+}
+
 // SetType sets the "type" field.
 func (ec *EventCreate) SetType(e event.Type) *EventCreate {
 	ec.mutation.SetType(e)
@@ -159,6 +165,14 @@ func (ec *EventCreate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (ec *EventCreate) check() error {
+	if _, ok := ec.mutation.Kind(); !ok {
+		return &ValidationError{Name: "kind", err: errors.New(`ent: missing required field "kind"`)}
+	}
+	if v, ok := ec.mutation.Kind(); ok {
+		if err := event.KindValidator(v); err != nil {
+			return &ValidationError{Name: "kind", err: fmt.Errorf(`ent: validator failed for field "kind": %w`, err)}
+		}
+	}
 	if _, ok := ec.mutation.GetType(); !ok {
 		return &ValidationError{Name: "type", err: errors.New(`ent: missing required field "type"`)}
 	}
@@ -197,6 +211,14 @@ func (ec *EventCreate) createSpec() (*Event, *sqlgraph.CreateSpec) {
 			},
 		}
 	)
+	if value, ok := ec.mutation.Kind(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeEnum,
+			Value:  value,
+			Column: event.FieldKind,
+		})
+		_node.Kind = value
+	}
 	if value, ok := ec.mutation.GetType(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeEnum,

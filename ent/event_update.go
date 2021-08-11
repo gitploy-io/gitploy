@@ -29,6 +29,12 @@ func (eu *EventUpdate) Where(ps ...predicate.Event) *EventUpdate {
 	return eu
 }
 
+// SetKind sets the "kind" field.
+func (eu *EventUpdate) SetKind(e event.Kind) *EventUpdate {
+	eu.mutation.SetKind(e)
+	return eu
+}
+
 // SetType sets the "type" field.
 func (eu *EventUpdate) SetType(e event.Type) *EventUpdate {
 	eu.mutation.SetType(e)
@@ -178,6 +184,11 @@ func (eu *EventUpdate) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (eu *EventUpdate) check() error {
+	if v, ok := eu.mutation.Kind(); ok {
+		if err := event.KindValidator(v); err != nil {
+			return &ValidationError{Name: "kind", err: fmt.Errorf("ent: validator failed for field \"kind\": %w", err)}
+		}
+	}
 	if v, ok := eu.mutation.GetType(); ok {
 		if err := event.TypeValidator(v); err != nil {
 			return &ValidationError{Name: "type", err: fmt.Errorf("ent: validator failed for field \"type\": %w", err)}
@@ -203,6 +214,13 @@ func (eu *EventUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := eu.mutation.Kind(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeEnum,
+			Value:  value,
+			Column: event.FieldKind,
+		})
 	}
 	if value, ok := eu.mutation.GetType(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
@@ -305,6 +323,12 @@ type EventUpdateOne struct {
 	fields   []string
 	hooks    []Hook
 	mutation *EventMutation
+}
+
+// SetKind sets the "kind" field.
+func (euo *EventUpdateOne) SetKind(e event.Kind) *EventUpdateOne {
+	euo.mutation.SetKind(e)
+	return euo
 }
 
 // SetType sets the "type" field.
@@ -463,6 +487,11 @@ func (euo *EventUpdateOne) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (euo *EventUpdateOne) check() error {
+	if v, ok := euo.mutation.Kind(); ok {
+		if err := event.KindValidator(v); err != nil {
+			return &ValidationError{Name: "kind", err: fmt.Errorf("ent: validator failed for field \"kind\": %w", err)}
+		}
+	}
 	if v, ok := euo.mutation.GetType(); ok {
 		if err := event.TypeValidator(v); err != nil {
 			return &ValidationError{Name: "type", err: fmt.Errorf("ent: validator failed for field \"type\": %w", err)}
@@ -505,6 +534,13 @@ func (euo *EventUpdateOne) sqlSave(ctx context.Context) (_node *Event, err error
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := euo.mutation.Kind(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeEnum,
+			Value:  value,
+			Column: event.FieldKind,
+		})
 	}
 	if value, ok := euo.mutation.GetType(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{

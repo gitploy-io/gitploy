@@ -25,11 +25,12 @@ func (s *Store) ListEventsGreaterThanTime(ctx context.Context, t time.Time) ([]*
 func (s *Store) CreateEvent(ctx context.Context, e *ent.Event) (*ent.Event, error) {
 	create := s.c.Event.
 		Create().
+		SetKind(e.Kind).
 		SetType(e.Type)
 
-	if e.Type == event.TypeDeployment {
+	if e.Kind == event.KindDeployment {
 		create = create.SetDeploymentID(e.DeploymentID)
-	} else if e.Type == event.TypeApproval {
+	} else if e.Kind == event.KindApproval {
 		create = create.SetApprovalID(e.ApprovalID)
 	}
 

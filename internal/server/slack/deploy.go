@@ -339,7 +339,8 @@ func (s *Slack) interactDeploy(c *gin.Context) {
 	}
 
 	if _, err := s.i.CreateEvent(ctx, &ent.Event{
-		Type:         event.TypeDeployment,
+		Kind:         event.KindDeployment,
+		Type:         event.TypeCreated,
 		DeploymentID: d.ID,
 	}); err != nil {
 		s.log.Error("It has failed to create the event.", zap.Error(err))
@@ -357,7 +358,8 @@ func (s *Slack) interactDeploy(c *gin.Context) {
 			}
 
 			if _, err := s.i.CreateEvent(ctx, &ent.Event{
-				Type:       event.TypeApproval,
+				Kind:       event.KindDeployment,
+				Type:       event.TypeCreated,
 				ApprovalID: a.ID,
 			}); err != nil {
 				s.log.Error("It has failed to create the event.", zap.Error(err))

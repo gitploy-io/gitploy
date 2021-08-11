@@ -4441,6 +4441,7 @@ type EventMutation struct {
 	op                Op
 	typ               string
 	id                *int
+	kind              *event.Kind
 	_type             *event.Type
 	created_at        *time.Time
 	clearedFields     map[string]struct{}
@@ -4530,6 +4531,42 @@ func (m *EventMutation) ID() (id int, exists bool) {
 		return
 	}
 	return *m.id, true
+}
+
+// SetKind sets the "kind" field.
+func (m *EventMutation) SetKind(e event.Kind) {
+	m.kind = &e
+}
+
+// Kind returns the value of the "kind" field in the mutation.
+func (m *EventMutation) Kind() (r event.Kind, exists bool) {
+	v := m.kind
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldKind returns the old "kind" field's value of the Event entity.
+// If the Event object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EventMutation) OldKind(ctx context.Context) (v event.Kind, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldKind is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldKind requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldKind: %w", err)
+	}
+	return oldValue.Kind, nil
+}
+
+// ResetKind resets all changes to the "kind" field.
+func (m *EventMutation) ResetKind() {
+	m.kind = nil
 }
 
 // SetType sets the "type" field.
@@ -4773,7 +4810,10 @@ func (m *EventMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *EventMutation) Fields() []string {
-	fields := make([]string, 0, 4)
+	fields := make([]string, 0, 5)
+	if m.kind != nil {
+		fields = append(fields, event.FieldKind)
+	}
 	if m._type != nil {
 		fields = append(fields, event.FieldType)
 	}
@@ -4794,6 +4834,8 @@ func (m *EventMutation) Fields() []string {
 // schema.
 func (m *EventMutation) Field(name string) (ent.Value, bool) {
 	switch name {
+	case event.FieldKind:
+		return m.Kind()
 	case event.FieldType:
 		return m.GetType()
 	case event.FieldCreatedAt:
@@ -4811,6 +4853,8 @@ func (m *EventMutation) Field(name string) (ent.Value, bool) {
 // database failed.
 func (m *EventMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
+	case event.FieldKind:
+		return m.OldKind(ctx)
 	case event.FieldType:
 		return m.OldType(ctx)
 	case event.FieldCreatedAt:
@@ -4828,6 +4872,13 @@ func (m *EventMutation) OldField(ctx context.Context, name string) (ent.Value, e
 // type.
 func (m *EventMutation) SetField(name string, value ent.Value) error {
 	switch name {
+	case event.FieldKind:
+		v, ok := value.(event.Kind)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetKind(v)
+		return nil
 	case event.FieldType:
 		v, ok := value.(event.Type)
 		if !ok {
@@ -4923,6 +4974,9 @@ func (m *EventMutation) ClearField(name string) error {
 // It returns an error if the field is not defined in the schema.
 func (m *EventMutation) ResetField(name string) error {
 	switch name {
+	case event.FieldKind:
+		m.ResetKind()
+		return nil
 	case event.FieldType:
 		m.ResetType()
 		return nil

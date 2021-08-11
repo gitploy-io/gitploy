@@ -12,6 +12,8 @@ const (
 	Label = "event"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
+	// FieldKind holds the string denoting the kind field in the database.
+	FieldKind = "kind"
 	// FieldType holds the string denoting the type field in the database.
 	FieldType = "type"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
@@ -45,6 +47,7 @@ const (
 // Columns holds all SQL columns for event fields.
 var Columns = []string{
 	FieldID,
+	FieldKind,
 	FieldType,
 	FieldCreatedAt,
 	FieldDeploymentID,
@@ -66,13 +69,36 @@ var (
 	DefaultCreatedAt func() time.Time
 )
 
+// Kind defines the type for the "kind" enum field.
+type Kind string
+
+// Kind values.
+const (
+	KindDeployment Kind = "deployment"
+	KindApproval   Kind = "approval"
+)
+
+func (k Kind) String() string {
+	return string(k)
+}
+
+// KindValidator is a validator for the "kind" field enum values. It is called by the builders before save.
+func KindValidator(k Kind) error {
+	switch k {
+	case KindDeployment, KindApproval:
+		return nil
+	default:
+		return fmt.Errorf("event: invalid enum value for kind field: %q", k)
+	}
+}
+
 // Type defines the type for the "type" enum field.
 type Type string
 
 // Type values.
 const (
-	TypeDeployment Type = "deployment"
-	TypeApproval   Type = "approval"
+	TypeCreated Type = "created"
+	TypeUpdated Type = "updated"
 )
 
 func (_type Type) String() string {
@@ -82,7 +108,7 @@ func (_type Type) String() string {
 // TypeValidator is a validator for the "type" field enum values. It is called by the builders before save.
 func TypeValidator(_type Type) error {
 	switch _type {
-	case TypeDeployment, TypeApproval:
+	case TypeCreated, TypeUpdated:
 		return nil
 	default:
 		return fmt.Errorf("event: invalid enum value for type field: %q", _type)

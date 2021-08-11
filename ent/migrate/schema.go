@@ -191,7 +191,8 @@ var (
 	// EventsColumns holds the columns for the "events" table.
 	EventsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "type", Type: field.TypeEnum, Enums: []string{"deployment", "approval"}},
+		{Name: "kind", Type: field.TypeEnum, Enums: []string{"deployment", "approval"}},
+		{Name: "type", Type: field.TypeEnum, Enums: []string{"created", "updated"}},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "approval_id", Type: field.TypeInt, Nullable: true},
 		{Name: "deployment_id", Type: field.TypeInt, Nullable: true},
@@ -204,13 +205,13 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "events_approvals_event",
-				Columns:    []*schema.Column{EventsColumns[3]},
+				Columns:    []*schema.Column{EventsColumns[4]},
 				RefColumns: []*schema.Column{ApprovalsColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
 			{
 				Symbol:     "events_deployments_event",
-				Columns:    []*schema.Column{EventsColumns[4]},
+				Columns:    []*schema.Column{EventsColumns[5]},
 				RefColumns: []*schema.Column{DeploymentsColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
@@ -219,7 +220,7 @@ var (
 			{
 				Name:    "event_created_at",
 				Unique:  false,
-				Columns: []*schema.Column{EventsColumns[2]},
+				Columns: []*schema.Column{EventsColumns[3]},
 			},
 		},
 	}

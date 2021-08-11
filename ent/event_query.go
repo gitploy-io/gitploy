@@ -328,12 +328,12 @@ func (eq *EventQuery) WithApproval(opts ...func(*ApprovalQuery)) *EventQuery {
 // Example:
 //
 //	var v []struct {
-//		Type event.Type `json:"type"`
+//		Kind event.Kind `json:"kind"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.Event.Query().
-//		GroupBy(event.FieldType).
+//		GroupBy(event.FieldKind).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 //
@@ -355,11 +355,11 @@ func (eq *EventQuery) GroupBy(field string, fields ...string) *EventGroupBy {
 // Example:
 //
 //	var v []struct {
-//		Type event.Type `json:"type"`
+//		Kind event.Kind `json:"kind"`
 //	}
 //
 //	client.Event.Query().
-//		Select(event.FieldType).
+//		Select(event.FieldKind).
 //		Scan(ctx, &v)
 //
 func (eq *EventQuery) Select(fields ...string) *EventSelect {

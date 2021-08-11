@@ -17,10 +17,15 @@ type Event struct {
 // Fields of the Event.
 func (Event) Fields() []ent.Field {
 	return []ent.Field{
-		field.Enum("type").
+		field.Enum("kind").
 			Values(
 				"deployment",
 				"approval",
+			),
+		field.Enum("type").
+			Values(
+				"created",
+				"updated",
 			),
 		field.Time("created_at").
 			Default(time.Now),

@@ -178,7 +178,8 @@ func (r *Repo) CreateApproval(c *gin.Context) {
 	}
 
 	if _, err := r.i.CreateEvent(ctx, &ent.Event{
-		Type:       event.TypeApproval,
+		Kind:       event.KindApproval,
+		Type:       event.TypeCreated,
 		ApprovalID: ap.ID,
 	}); err != nil {
 		r.log.Error("It has failed to create the event.", zap.Error(err))
@@ -243,7 +244,8 @@ func (r *Repo) UpdateApproval(c *gin.Context) {
 		}
 
 		if _, err := r.i.CreateEvent(ctx, &ent.Event{
-			Type:       event.TypeApproval,
+			Kind:       event.KindApproval,
+			Type:       event.TypeUpdated,
 			ApprovalID: a.ID,
 		}); err != nil {
 			r.log.Error("It has failed to create the event.", zap.Error(err))

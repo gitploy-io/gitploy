@@ -106,7 +106,8 @@ func (h *Hooks) handleGithubHook(c *gin.Context) {
 	}
 
 	if _, err := h.i.CreateEvent(ctx, &ent.Event{
-		Type:         event.TypeDeployment,
+		Kind:         event.KindDeployment,
+		Type:         event.TypeUpdated,
 		DeploymentID: d.ID,
 	}); err != nil {
 		h.log.Error("It has failed to create the event.", zap.Error(err))

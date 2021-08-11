@@ -18,6 +18,8 @@ type Event struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID int `json:"id,omitempty"`
+	// Kind holds the value of the "kind" field.
+	Kind event.Kind `json:"kind"`
 	// Type holds the value of the "type" field.
 	Type event.Type `json:"type"`
 	// CreatedAt holds the value of the "created_at" field.
@@ -77,7 +79,7 @@ func (*Event) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case event.FieldID, event.FieldDeploymentID, event.FieldApprovalID:
 			values[i] = new(sql.NullInt64)
-		case event.FieldType:
+		case event.FieldKind, event.FieldType:
 			values[i] = new(sql.NullString)
 		case event.FieldCreatedAt:
 			values[i] = new(sql.NullTime)
@@ -102,6 +104,12 @@ func (e *Event) assignValues(columns []string, values []interface{}) error {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
 			e.ID = int(value.Int64)
+		case event.FieldKind:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field kind", values[i])
+			} else if value.Valid {
+				e.Kind = event.Kind(value.String)
+			}
 		case event.FieldType:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field type", values[i])
@@ -164,6 +172,8 @@ func (e *Event) String() string {
 	var builder strings.Builder
 	builder.WriteString("Event(")
 	builder.WriteString(fmt.Sprintf("id=%v", e.ID))
+	builder.WriteString(", kind=")
+	builder.WriteString(fmt.Sprintf("%v", e.Kind))
 	builder.WriteString(", type=")
 	builder.WriteString(fmt.Sprintf("%v", e.Type))
 	builder.WriteString(", created_at=")

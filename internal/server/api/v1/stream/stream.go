@@ -86,9 +86,9 @@ L:
 			w.Flush()
 		case e := <-events:
 			var data interface{}
-			if e.Type == event.TypeDeployment {
+			if e.Kind == event.KindDeployment {
 				data = e.Edges.Deployment
-			} else if e.Type == event.TypeApproval {
+			} else if e.Kind == event.KindApproval {
 				data = e.Edges.Approval
 			}
 
@@ -104,7 +104,7 @@ L:
 
 // hasPermForEvent checks the user has permission for the event.
 func (s *Stream) hasPermForEvent(ctx context.Context, u *ent.User, e *ent.Event) (bool, error) {
-	if e.Type == event.TypeDeployment {
+	if e.Kind == event.KindDeployment {
 		d, err := s.i.FindDeploymentByID(ctx, e.DeploymentID)
 		if err != nil {
 			return false, err
@@ -119,7 +119,7 @@ func (s *Stream) hasPermForEvent(ctx context.Context, u *ent.User, e *ent.Event)
 		return true, nil
 	}
 
-	if e.Type == event.TypeApproval {
+	if e.Kind == event.KindApproval {
 		a, err := s.i.FindApprovalByID(ctx, e.ApprovalID)
 		if err != nil {
 			return false, err
