@@ -52,6 +52,20 @@ func (mr *MockStoreMockRecorder) Activate(ctx, r interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Activate", reflect.TypeOf((*MockStore)(nil).Activate), ctx, r)
 }
 
+// CheckNotificationRecordOfEvent mocks base method.
+func (m *MockStore) CheckNotificationRecordOfEvent(ctx context.Context, e *ent.Event) bool {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CheckNotificationRecordOfEvent", ctx, e)
+	ret0, _ := ret[0].(bool)
+	return ret0
+}
+
+// CheckNotificationRecordOfEvent indicates an expected call of CheckNotificationRecordOfEvent.
+func (mr *MockStoreMockRecorder) CheckNotificationRecordOfEvent(ctx, e interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CheckNotificationRecordOfEvent", reflect.TypeOf((*MockStore)(nil).CheckNotificationRecordOfEvent), ctx, e)
+}
+
 // CloseChatCallback mocks base method.
 func (m *MockStore) CloseChatCallback(ctx context.Context, cb *ent.ChatCallback) (*ent.ChatCallback, error) {
 	m.ctrl.T.Helper()

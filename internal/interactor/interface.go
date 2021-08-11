@@ -67,6 +67,7 @@ type (
 
 		ListEventsGreaterThanTime(ctx context.Context, t time.Time) ([]*ent.Event, error)
 		CreateEvent(ctx context.Context, e *ent.Event) (*ent.Event, error)
+		CheckNotificationRecordOfEvent(ctx context.Context, e *ent.Event) bool
 	}
 
 	SCM interface {

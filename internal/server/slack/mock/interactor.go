@@ -37,6 +37,20 @@ func (m *MockInteractor) EXPECT() *MockInteractorMockRecorder {
 	return m.recorder
 }
 
+// CheckNotificationRecordOfEvent mocks base method.
+func (m *MockInteractor) CheckNotificationRecordOfEvent(ctx context.Context, e *ent.Event) bool {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CheckNotificationRecordOfEvent", ctx, e)
+	ret0, _ := ret[0].(bool)
+	return ret0
+}
+
+// CheckNotificationRecordOfEvent indicates an expected call of CheckNotificationRecordOfEvent.
+func (mr *MockInteractorMockRecorder) CheckNotificationRecordOfEvent(ctx, e interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CheckNotificationRecordOfEvent", reflect.TypeOf((*MockInteractor)(nil).CheckNotificationRecordOfEvent), ctx, e)
+}
+
 // CloseChatCallback mocks base method.
 func (m *MockInteractor) CloseChatCallback(ctx context.Context, cb *ent.ChatCallback) (*ent.ChatCallback, error) {
 	m.ctrl.T.Helper()
@@ -50,6 +64,21 @@ func (m *MockInteractor) CloseChatCallback(ctx context.Context, cb *ent.ChatCall
 func (mr *MockInteractorMockRecorder) CloseChatCallback(ctx, cb interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CloseChatCallback", reflect.TypeOf((*MockInteractor)(nil).CloseChatCallback), ctx, cb)
+}
+
+// ConvertEventToNotification mocks base method.
+func (m *MockInteractor) ConvertEventToNotification(ctx context.Context, e *ent.Event) (*vo.Notification, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ConvertEventToNotification", ctx, e)
+	ret0, _ := ret[0].(*vo.Notification)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ConvertEventToNotification indicates an expected call of ConvertEventToNotification.
+func (mr *MockInteractorMockRecorder) ConvertEventToNotification(ctx, e interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ConvertEventToNotification", reflect.TypeOf((*MockInteractor)(nil).ConvertEventToNotification), ctx, e)
 }
 
 // CreateApproval mocks base method.
@@ -292,6 +321,21 @@ func (mr *MockInteractorMockRecorder) ListPermsOfRepo(ctx, r, q, page, perPage i
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListPermsOfRepo", reflect.TypeOf((*MockInteractor)(nil).ListPermsOfRepo), ctx, r, q, page, perPage)
 }
 
+// ListUsersOfEvent mocks base method.
+func (m *MockInteractor) ListUsersOfEvent(ctx context.Context, e *ent.Event) ([]*ent.User, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListUsersOfEvent", ctx, e)
+	ret0, _ := ret[0].([]*ent.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListUsersOfEvent indicates an expected call of ListUsersOfEvent.
+func (mr *MockInteractorMockRecorder) ListUsersOfEvent(ctx, e interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListUsersOfEvent", reflect.TypeOf((*MockInteractor)(nil).ListUsersOfEvent), ctx, e)
+}
+
 // Publish mocks base method.
 func (m *MockInteractor) Publish(ctx context.Context, typ notification.Type, r *ent.Repo, d *ent.Deployment, a *ent.Approval) error {
 	m.ctrl.T.Helper()
@@ -348,4 +392,32 @@ func (m *MockInteractor) Subscribe(arg0 func(*ent.User, *ent.Notification)) erro
 func (mr *MockInteractorMockRecorder) Subscribe(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Subscribe", reflect.TypeOf((*MockInteractor)(nil).Subscribe), arg0)
+}
+
+// SubscribeEvent mocks base method.
+func (m *MockInteractor) SubscribeEvent(fn func(*ent.Event)) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SubscribeEvent", fn)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// SubscribeEvent indicates an expected call of SubscribeEvent.
+func (mr *MockInteractorMockRecorder) SubscribeEvent(fn interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SubscribeEvent", reflect.TypeOf((*MockInteractor)(nil).SubscribeEvent), fn)
+}
+
+// UnsubscribeEvent mocks base method.
+func (m *MockInteractor) UnsubscribeEvent(fn func(*ent.Event)) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UnsubscribeEvent", fn)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UnsubscribeEvent indicates an expected call of UnsubscribeEvent.
+func (mr *MockInteractorMockRecorder) UnsubscribeEvent(fn interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UnsubscribeEvent", reflect.TypeOf((*MockInteractor)(nil).UnsubscribeEvent), fn)
 }
