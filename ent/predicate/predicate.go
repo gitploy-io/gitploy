@@ -27,6 +27,9 @@ type Event func(*sql.Selector)
 // Notification is the predicate function for notification builders.
 type Notification func(*sql.Selector)
 
+// NotificationRecord is the predicate function for notificationrecord builders.
+type NotificationRecord func(*sql.Selector)
+
 // Perm is the predicate function for perm builders.
 type Perm func(*sql.Selector)
 

@@ -11,6 +11,7 @@ import (
 	"github.com/hanjunlee/gitploy/ent/approval"
 	"github.com/hanjunlee/gitploy/ent/deployment"
 	"github.com/hanjunlee/gitploy/ent/event"
+	"github.com/hanjunlee/gitploy/ent/notificationrecord"
 )
 
 // Event is the model entity for the Event schema.
@@ -39,9 +40,11 @@ type EventEdges struct {
 	Deployment *Deployment `json:"deployment,omitempty"`
 	// Approval holds the value of the approval edge.
 	Approval *Approval `json:"approval,omitempty"`
+	// NotificationRecord holds the value of the notification_record edge.
+	NotificationRecord *NotificationRecord `json:"notification_record,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
+	loadedTypes [3]bool
 }
 
 // DeploymentOrErr returns the Deployment value or an error if the edge
@@ -70,6 +73,20 @@ func (e EventEdges) ApprovalOrErr() (*Approval, error) {
 		return e.Approval, nil
 	}
 	return nil, &NotLoadedError{edge: "approval"}
+}
+
+// NotificationRecordOrErr returns the NotificationRecord value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e EventEdges) NotificationRecordOrErr() (*NotificationRecord, error) {
+	if e.loadedTypes[2] {
+		if e.NotificationRecord == nil {
+			// The edge notification_record was loaded in eager-loading,
+			// but was not found.
+			return nil, &NotFoundError{label: notificationrecord.Label}
+		}
+		return e.NotificationRecord, nil
+	}
+	return nil, &NotLoadedError{edge: "notification_record"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -147,6 +164,11 @@ func (e *Event) QueryDeployment() *DeploymentQuery {
 // QueryApproval queries the "approval" edge of the Event entity.
 func (e *Event) QueryApproval() *ApprovalQuery {
 	return (&EventClient{config: e.config}).QueryApproval(e)
+}
+
+// QueryNotificationRecord queries the "notification_record" edge of the Event entity.
+func (e *Event) QueryNotificationRecord() *NotificationRecordQuery {
+	return (&EventClient{config: e.config}).QueryNotificationRecord(e)
 }
 
 // Update returns a builder for updating this Event.

@@ -13,6 +13,7 @@ import (
 	"github.com/hanjunlee/gitploy/ent/approval"
 	"github.com/hanjunlee/gitploy/ent/deployment"
 	"github.com/hanjunlee/gitploy/ent/event"
+	"github.com/hanjunlee/gitploy/ent/notificationrecord"
 	"github.com/hanjunlee/gitploy/ent/predicate"
 )
 
@@ -105,6 +106,25 @@ func (eu *EventUpdate) SetApproval(a *Approval) *EventUpdate {
 	return eu.SetApprovalID(a.ID)
 }
 
+// SetNotificationRecordID sets the "notification_record" edge to the NotificationRecord entity by ID.
+func (eu *EventUpdate) SetNotificationRecordID(id int) *EventUpdate {
+	eu.mutation.SetNotificationRecordID(id)
+	return eu
+}
+
+// SetNillableNotificationRecordID sets the "notification_record" edge to the NotificationRecord entity by ID if the given value is not nil.
+func (eu *EventUpdate) SetNillableNotificationRecordID(id *int) *EventUpdate {
+	if id != nil {
+		eu = eu.SetNotificationRecordID(*id)
+	}
+	return eu
+}
+
+// SetNotificationRecord sets the "notification_record" edge to the NotificationRecord entity.
+func (eu *EventUpdate) SetNotificationRecord(n *NotificationRecord) *EventUpdate {
+	return eu.SetNotificationRecordID(n.ID)
+}
+
 // Mutation returns the EventMutation object of the builder.
 func (eu *EventUpdate) Mutation() *EventMutation {
 	return eu.mutation
@@ -119,6 +139,12 @@ func (eu *EventUpdate) ClearDeployment() *EventUpdate {
 // ClearApproval clears the "approval" edge to the Approval entity.
 func (eu *EventUpdate) ClearApproval() *EventUpdate {
 	eu.mutation.ClearApproval()
+	return eu
+}
+
+// ClearNotificationRecord clears the "notification_record" edge to the NotificationRecord entity.
+func (eu *EventUpdate) ClearNotificationRecord() *EventUpdate {
+	eu.mutation.ClearNotificationRecord()
 	return eu
 }
 
@@ -306,6 +332,41 @@ func (eu *EventUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if eu.mutation.NotificationRecordCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   event.NotificationRecordTable,
+			Columns: []string{event.NotificationRecordColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: notificationrecord.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := eu.mutation.NotificationRecordIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   event.NotificationRecordTable,
+			Columns: []string{event.NotificationRecordColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: notificationrecord.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, eu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{event.Label}
@@ -401,6 +462,25 @@ func (euo *EventUpdateOne) SetApproval(a *Approval) *EventUpdateOne {
 	return euo.SetApprovalID(a.ID)
 }
 
+// SetNotificationRecordID sets the "notification_record" edge to the NotificationRecord entity by ID.
+func (euo *EventUpdateOne) SetNotificationRecordID(id int) *EventUpdateOne {
+	euo.mutation.SetNotificationRecordID(id)
+	return euo
+}
+
+// SetNillableNotificationRecordID sets the "notification_record" edge to the NotificationRecord entity by ID if the given value is not nil.
+func (euo *EventUpdateOne) SetNillableNotificationRecordID(id *int) *EventUpdateOne {
+	if id != nil {
+		euo = euo.SetNotificationRecordID(*id)
+	}
+	return euo
+}
+
+// SetNotificationRecord sets the "notification_record" edge to the NotificationRecord entity.
+func (euo *EventUpdateOne) SetNotificationRecord(n *NotificationRecord) *EventUpdateOne {
+	return euo.SetNotificationRecordID(n.ID)
+}
+
 // Mutation returns the EventMutation object of the builder.
 func (euo *EventUpdateOne) Mutation() *EventMutation {
 	return euo.mutation
@@ -415,6 +495,12 @@ func (euo *EventUpdateOne) ClearDeployment() *EventUpdateOne {
 // ClearApproval clears the "approval" edge to the Approval entity.
 func (euo *EventUpdateOne) ClearApproval() *EventUpdateOne {
 	euo.mutation.ClearApproval()
+	return euo
+}
+
+// ClearNotificationRecord clears the "notification_record" edge to the NotificationRecord entity.
+func (euo *EventUpdateOne) ClearNotificationRecord() *EventUpdateOne {
+	euo.mutation.ClearNotificationRecord()
 	return euo
 }
 
@@ -618,6 +704,41 @@ func (euo *EventUpdateOne) sqlSave(ctx context.Context) (_node *Event, err error
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
 					Column: approval.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if euo.mutation.NotificationRecordCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   event.NotificationRecordTable,
+			Columns: []string{event.NotificationRecordColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: notificationrecord.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := euo.mutation.NotificationRecordIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   event.NotificationRecordTable,
+			Columns: []string{event.NotificationRecordColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: notificationrecord.FieldID,
 				},
 			},
 		}

@@ -26,6 +26,8 @@ type Tx struct {
 	Event *EventClient
 	// Notification is the client for interacting with the Notification builders.
 	Notification *NotificationClient
+	// NotificationRecord is the client for interacting with the NotificationRecord builders.
+	NotificationRecord *NotificationRecordClient
 	// Perm is the client for interacting with the Perm builders.
 	Perm *PermClient
 	// Repo is the client for interacting with the Repo builders.
@@ -174,6 +176,7 @@ func (tx *Tx) init() {
 	tx.DeploymentStatus = NewDeploymentStatusClient(tx.config)
 	tx.Event = NewEventClient(tx.config)
 	tx.Notification = NewNotificationClient(tx.config)
+	tx.NotificationRecord = NewNotificationRecordClient(tx.config)
 	tx.Perm = NewPermClient(tx.config)
 	tx.Repo = NewRepoClient(tx.config)
 	tx.User = NewUserClient(tx.config)

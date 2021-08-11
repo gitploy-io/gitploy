@@ -47,6 +47,8 @@ func (Event) Edges() []ent.Edge {
 			Ref("event").
 			Field("approval_id").
 			Unique(),
+		edge.To("notification_record", NotificationRecord.Type).
+			Unique(),
 	}
 }
 

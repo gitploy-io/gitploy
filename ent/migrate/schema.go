@@ -270,6 +270,25 @@ var (
 			},
 		},
 	}
+	// NotificationRecordsColumns holds the columns for the "notification_records" table.
+	NotificationRecordsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "event_id", Type: field.TypeInt, Unique: true, Nullable: true},
+	}
+	// NotificationRecordsTable holds the schema information for the "notification_records" table.
+	NotificationRecordsTable = &schema.Table{
+		Name:       "notification_records",
+		Columns:    NotificationRecordsColumns,
+		PrimaryKey: []*schema.Column{NotificationRecordsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "notification_records_events_notification_record",
+				Columns:    []*schema.Column{NotificationRecordsColumns[1]},
+				RefColumns: []*schema.Column{EventsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+	}
 	// PermsColumns holds the columns for the "perms" table.
 	PermsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
@@ -356,6 +375,7 @@ var (
 		DeploymentStatusTable,
 		EventsTable,
 		NotificationsTable,
+		NotificationRecordsTable,
 		PermsTable,
 		ReposTable,
 		UsersTable,
@@ -374,6 +394,7 @@ func init() {
 	EventsTable.ForeignKeys[0].RefTable = ApprovalsTable
 	EventsTable.ForeignKeys[1].RefTable = DeploymentsTable
 	NotificationsTable.ForeignKeys[0].RefTable = UsersTable
+	NotificationRecordsTable.ForeignKeys[0].RefTable = EventsTable
 	PermsTable.ForeignKeys[0].RefTable = ReposTable
 	PermsTable.ForeignKeys[1].RefTable = UsersTable
 }

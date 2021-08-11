@@ -13,6 +13,7 @@ import (
 	"github.com/hanjunlee/gitploy/ent/approval"
 	"github.com/hanjunlee/gitploy/ent/deployment"
 	"github.com/hanjunlee/gitploy/ent/event"
+	"github.com/hanjunlee/gitploy/ent/notificationrecord"
 )
 
 // EventCreate is the builder for creating a Event entity.
@@ -84,6 +85,25 @@ func (ec *EventCreate) SetDeployment(d *Deployment) *EventCreate {
 // SetApproval sets the "approval" edge to the Approval entity.
 func (ec *EventCreate) SetApproval(a *Approval) *EventCreate {
 	return ec.SetApprovalID(a.ID)
+}
+
+// SetNotificationRecordID sets the "notification_record" edge to the NotificationRecord entity by ID.
+func (ec *EventCreate) SetNotificationRecordID(id int) *EventCreate {
+	ec.mutation.SetNotificationRecordID(id)
+	return ec
+}
+
+// SetNillableNotificationRecordID sets the "notification_record" edge to the NotificationRecord entity by ID if the given value is not nil.
+func (ec *EventCreate) SetNillableNotificationRecordID(id *int) *EventCreate {
+	if id != nil {
+		ec = ec.SetNotificationRecordID(*id)
+	}
+	return ec
+}
+
+// SetNotificationRecord sets the "notification_record" edge to the NotificationRecord entity.
+func (ec *EventCreate) SetNotificationRecord(n *NotificationRecord) *EventCreate {
+	return ec.SetNotificationRecordID(n.ID)
 }
 
 // Mutation returns the EventMutation object of the builder.
@@ -273,6 +293,25 @@ func (ec *EventCreate) createSpec() (*Event, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.ApprovalID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ec.mutation.NotificationRecordIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   event.NotificationRecordTable,
+			Columns: []string{event.NotificationRecordColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: notificationrecord.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

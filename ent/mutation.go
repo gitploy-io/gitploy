@@ -15,6 +15,7 @@ import (
 	"github.com/hanjunlee/gitploy/ent/deploymentstatus"
 	"github.com/hanjunlee/gitploy/ent/event"
 	"github.com/hanjunlee/gitploy/ent/notification"
+	"github.com/hanjunlee/gitploy/ent/notificationrecord"
 	"github.com/hanjunlee/gitploy/ent/perm"
 	"github.com/hanjunlee/gitploy/ent/predicate"
 	"github.com/hanjunlee/gitploy/ent/repo"
@@ -32,16 +33,17 @@ const (
 	OpUpdateOne = ent.OpUpdateOne
 
 	// Node types.
-	TypeApproval         = "Approval"
-	TypeChatCallback     = "ChatCallback"
-	TypeChatUser         = "ChatUser"
-	TypeDeployment       = "Deployment"
-	TypeDeploymentStatus = "DeploymentStatus"
-	TypeEvent            = "Event"
-	TypeNotification     = "Notification"
-	TypePerm             = "Perm"
-	TypeRepo             = "Repo"
-	TypeUser             = "User"
+	TypeApproval           = "Approval"
+	TypeChatCallback       = "ChatCallback"
+	TypeChatUser           = "ChatUser"
+	TypeDeployment         = "Deployment"
+	TypeDeploymentStatus   = "DeploymentStatus"
+	TypeEvent              = "Event"
+	TypeNotification       = "Notification"
+	TypeNotificationRecord = "NotificationRecord"
+	TypePerm               = "Perm"
+	TypeRepo               = "Repo"
+	TypeUser               = "User"
 )
 
 // ApprovalMutation represents an operation that mutates the Approval nodes in the graph.
@@ -4438,20 +4440,22 @@ func (m *DeploymentStatusMutation) ResetEdge(name string) error {
 // EventMutation represents an operation that mutates the Event nodes in the graph.
 type EventMutation struct {
 	config
-	op                Op
-	typ               string
-	id                *int
-	kind              *event.Kind
-	_type             *event.Type
-	created_at        *time.Time
-	clearedFields     map[string]struct{}
-	deployment        *int
-	cleareddeployment bool
-	approval          *int
-	clearedapproval   bool
-	done              bool
-	oldValue          func(context.Context) (*Event, error)
-	predicates        []predicate.Event
+	op                         Op
+	typ                        string
+	id                         *int
+	kind                       *event.Kind
+	_type                      *event.Type
+	created_at                 *time.Time
+	clearedFields              map[string]struct{}
+	deployment                 *int
+	cleareddeployment          bool
+	approval                   *int
+	clearedapproval            bool
+	notification_record        *int
+	clearednotification_record bool
+	done                       bool
+	oldValue                   func(context.Context) (*Event, error)
+	predicates                 []predicate.Event
 }
 
 var _ ent.Mutation = (*EventMutation)(nil)
@@ -4791,6 +4795,45 @@ func (m *EventMutation) ResetApproval() {
 	m.clearedapproval = false
 }
 
+// SetNotificationRecordID sets the "notification_record" edge to the NotificationRecord entity by id.
+func (m *EventMutation) SetNotificationRecordID(id int) {
+	m.notification_record = &id
+}
+
+// ClearNotificationRecord clears the "notification_record" edge to the NotificationRecord entity.
+func (m *EventMutation) ClearNotificationRecord() {
+	m.clearednotification_record = true
+}
+
+// NotificationRecordCleared reports if the "notification_record" edge to the NotificationRecord entity was cleared.
+func (m *EventMutation) NotificationRecordCleared() bool {
+	return m.clearednotification_record
+}
+
+// NotificationRecordID returns the "notification_record" edge ID in the mutation.
+func (m *EventMutation) NotificationRecordID() (id int, exists bool) {
+	if m.notification_record != nil {
+		return *m.notification_record, true
+	}
+	return
+}
+
+// NotificationRecordIDs returns the "notification_record" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// NotificationRecordID instead. It exists only for internal usage by the builders.
+func (m *EventMutation) NotificationRecordIDs() (ids []int) {
+	if id := m.notification_record; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetNotificationRecord resets all changes to the "notification_record" edge.
+func (m *EventMutation) ResetNotificationRecord() {
+	m.notification_record = nil
+	m.clearednotification_record = false
+}
+
 // Where appends a list predicates to the EventMutation builder.
 func (m *EventMutation) Where(ps ...predicate.Event) {
 	m.predicates = append(m.predicates, ps...)
@@ -4995,12 +5038,15 @@ func (m *EventMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *EventMutation) AddedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	if m.deployment != nil {
 		edges = append(edges, event.EdgeDeployment)
 	}
 	if m.approval != nil {
 		edges = append(edges, event.EdgeApproval)
+	}
+	if m.notification_record != nil {
+		edges = append(edges, event.EdgeNotificationRecord)
 	}
 	return edges
 }
@@ -5017,13 +5063,17 @@ func (m *EventMutation) AddedIDs(name string) []ent.Value {
 		if id := m.approval; id != nil {
 			return []ent.Value{*id}
 		}
+	case event.EdgeNotificationRecord:
+		if id := m.notification_record; id != nil {
+			return []ent.Value{*id}
+		}
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *EventMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	return edges
 }
 
@@ -5037,12 +5087,15 @@ func (m *EventMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *EventMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	if m.cleareddeployment {
 		edges = append(edges, event.EdgeDeployment)
 	}
 	if m.clearedapproval {
 		edges = append(edges, event.EdgeApproval)
+	}
+	if m.clearednotification_record {
+		edges = append(edges, event.EdgeNotificationRecord)
 	}
 	return edges
 }
@@ -5055,6 +5108,8 @@ func (m *EventMutation) EdgeCleared(name string) bool {
 		return m.cleareddeployment
 	case event.EdgeApproval:
 		return m.clearedapproval
+	case event.EdgeNotificationRecord:
+		return m.clearednotification_record
 	}
 	return false
 }
@@ -5069,6 +5124,9 @@ func (m *EventMutation) ClearEdge(name string) error {
 	case event.EdgeApproval:
 		m.ClearApproval()
 		return nil
+	case event.EdgeNotificationRecord:
+		m.ClearNotificationRecord()
+		return nil
 	}
 	return fmt.Errorf("unknown Event unique edge %s", name)
 }
@@ -5082,6 +5140,9 @@ func (m *EventMutation) ResetEdge(name string) error {
 		return nil
 	case event.EdgeApproval:
 		m.ResetApproval()
+		return nil
+	case event.EdgeNotificationRecord:
+		m.ResetNotificationRecord()
 		return nil
 	}
 	return fmt.Errorf("unknown Event edge %s", name)
@@ -6319,6 +6380,356 @@ func (m *NotificationMutation) ResetEdge(name string) error {
 		return nil
 	}
 	return fmt.Errorf("unknown Notification edge %s", name)
+}
+
+// NotificationRecordMutation represents an operation that mutates the NotificationRecord nodes in the graph.
+type NotificationRecordMutation struct {
+	config
+	op            Op
+	typ           string
+	id            *int
+	clearedFields map[string]struct{}
+	event         *int
+	clearedevent  bool
+	done          bool
+	oldValue      func(context.Context) (*NotificationRecord, error)
+	predicates    []predicate.NotificationRecord
+}
+
+var _ ent.Mutation = (*NotificationRecordMutation)(nil)
+
+// notificationrecordOption allows management of the mutation configuration using functional options.
+type notificationrecordOption func(*NotificationRecordMutation)
+
+// newNotificationRecordMutation creates new mutation for the NotificationRecord entity.
+func newNotificationRecordMutation(c config, op Op, opts ...notificationrecordOption) *NotificationRecordMutation {
+	m := &NotificationRecordMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeNotificationRecord,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withNotificationRecordID sets the ID field of the mutation.
+func withNotificationRecordID(id int) notificationrecordOption {
+	return func(m *NotificationRecordMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *NotificationRecord
+		)
+		m.oldValue = func(ctx context.Context) (*NotificationRecord, error) {
+			once.Do(func() {
+				if m.done {
+					err = fmt.Errorf("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().NotificationRecord.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withNotificationRecord sets the old NotificationRecord of the mutation.
+func withNotificationRecord(node *NotificationRecord) notificationrecordOption {
+	return func(m *NotificationRecordMutation) {
+		m.oldValue = func(context.Context) (*NotificationRecord, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m NotificationRecordMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m NotificationRecordMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, fmt.Errorf("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *NotificationRecordMutation) ID() (id int, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// SetEventID sets the "event_id" field.
+func (m *NotificationRecordMutation) SetEventID(i int) {
+	m.event = &i
+}
+
+// EventID returns the value of the "event_id" field in the mutation.
+func (m *NotificationRecordMutation) EventID() (r int, exists bool) {
+	v := m.event
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEventID returns the old "event_id" field's value of the NotificationRecord entity.
+// If the NotificationRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *NotificationRecordMutation) OldEventID(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldEventID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldEventID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEventID: %w", err)
+	}
+	return oldValue.EventID, nil
+}
+
+// ResetEventID resets all changes to the "event_id" field.
+func (m *NotificationRecordMutation) ResetEventID() {
+	m.event = nil
+}
+
+// ClearEvent clears the "event" edge to the Event entity.
+func (m *NotificationRecordMutation) ClearEvent() {
+	m.clearedevent = true
+}
+
+// EventCleared reports if the "event" edge to the Event entity was cleared.
+func (m *NotificationRecordMutation) EventCleared() bool {
+	return m.clearedevent
+}
+
+// EventIDs returns the "event" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// EventID instead. It exists only for internal usage by the builders.
+func (m *NotificationRecordMutation) EventIDs() (ids []int) {
+	if id := m.event; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetEvent resets all changes to the "event" edge.
+func (m *NotificationRecordMutation) ResetEvent() {
+	m.event = nil
+	m.clearedevent = false
+}
+
+// Where appends a list predicates to the NotificationRecordMutation builder.
+func (m *NotificationRecordMutation) Where(ps ...predicate.NotificationRecord) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// Op returns the operation name.
+func (m *NotificationRecordMutation) Op() Op {
+	return m.op
+}
+
+// Type returns the node type of this mutation (NotificationRecord).
+func (m *NotificationRecordMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *NotificationRecordMutation) Fields() []string {
+	fields := make([]string, 0, 1)
+	if m.event != nil {
+		fields = append(fields, notificationrecord.FieldEventID)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *NotificationRecordMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case notificationrecord.FieldEventID:
+		return m.EventID()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *NotificationRecordMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case notificationrecord.FieldEventID:
+		return m.OldEventID(ctx)
+	}
+	return nil, fmt.Errorf("unknown NotificationRecord field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *NotificationRecordMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case notificationrecord.FieldEventID:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEventID(v)
+		return nil
+	}
+	return fmt.Errorf("unknown NotificationRecord field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *NotificationRecordMutation) AddedFields() []string {
+	var fields []string
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *NotificationRecordMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *NotificationRecordMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown NotificationRecord numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *NotificationRecordMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *NotificationRecordMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *NotificationRecordMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown NotificationRecord nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *NotificationRecordMutation) ResetField(name string) error {
+	switch name {
+	case notificationrecord.FieldEventID:
+		m.ResetEventID()
+		return nil
+	}
+	return fmt.Errorf("unknown NotificationRecord field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *NotificationRecordMutation) AddedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.event != nil {
+		edges = append(edges, notificationrecord.EdgeEvent)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *NotificationRecordMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case notificationrecord.EdgeEvent:
+		if id := m.event; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *NotificationRecordMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 1)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *NotificationRecordMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	}
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *NotificationRecordMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.clearedevent {
+		edges = append(edges, notificationrecord.EdgeEvent)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *NotificationRecordMutation) EdgeCleared(name string) bool {
+	switch name {
+	case notificationrecord.EdgeEvent:
+		return m.clearedevent
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *NotificationRecordMutation) ClearEdge(name string) error {
+	switch name {
+	case notificationrecord.EdgeEvent:
+		m.ClearEvent()
+		return nil
+	}
+	return fmt.Errorf("unknown NotificationRecord unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *NotificationRecordMutation) ResetEdge(name string) error {
+	switch name {
+	case notificationrecord.EdgeEvent:
+		m.ResetEvent()
+		return nil
+	}
+	return fmt.Errorf("unknown NotificationRecord edge %s", name)
 }
 
 // PermMutation represents an operation that mutates the Perm nodes in the graph.

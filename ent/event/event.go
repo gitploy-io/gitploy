@@ -26,6 +26,8 @@ const (
 	EdgeDeployment = "deployment"
 	// EdgeApproval holds the string denoting the approval edge name in mutations.
 	EdgeApproval = "approval"
+	// EdgeNotificationRecord holds the string denoting the notification_record edge name in mutations.
+	EdgeNotificationRecord = "notification_record"
 	// Table holds the table name of the event in the database.
 	Table = "events"
 	// DeploymentTable is the table that holds the deployment relation/edge.
@@ -42,6 +44,13 @@ const (
 	ApprovalInverseTable = "approvals"
 	// ApprovalColumn is the table column denoting the approval relation/edge.
 	ApprovalColumn = "approval_id"
+	// NotificationRecordTable is the table that holds the notification_record relation/edge.
+	NotificationRecordTable = "notification_records"
+	// NotificationRecordInverseTable is the table name for the NotificationRecord entity.
+	// It exists in this package in order to avoid circular dependency with the "notificationrecord" package.
+	NotificationRecordInverseTable = "notification_records"
+	// NotificationRecordColumn is the table column denoting the notification_record relation/edge.
+	NotificationRecordColumn = "event_id"
 )
 
 // Columns holds all SQL columns for event fields.

@@ -4,6 +4,7 @@ package ent
 
 import (
 	"context"
+	"database/sql/driver"
 	"errors"
 	"fmt"
 	"math"
@@ -15,6 +16,7 @@ import (
 	"github.com/hanjunlee/gitploy/ent/approval"
 	"github.com/hanjunlee/gitploy/ent/deployment"
 	"github.com/hanjunlee/gitploy/ent/event"
+	"github.com/hanjunlee/gitploy/ent/notificationrecord"
 	"github.com/hanjunlee/gitploy/ent/predicate"
 )
 
@@ -28,9 +30,10 @@ type EventQuery struct {
 	fields     []string
 	predicates []predicate.Event
 	// eager-loading edges.
-	withDeployment *DeploymentQuery
-	withApproval   *ApprovalQuery
-	modifiers      []func(s *sql.Selector)
+	withDeployment         *DeploymentQuery
+	withApproval           *ApprovalQuery
+	withNotificationRecord *NotificationRecordQuery
+	modifiers              []func(s *sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -104,6 +107,28 @@ func (eq *EventQuery) QueryApproval() *ApprovalQuery {
 			sqlgraph.From(event.Table, event.FieldID, selector),
 			sqlgraph.To(approval.Table, approval.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, event.ApprovalTable, event.ApprovalColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(eq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryNotificationRecord chains the current query on the "notification_record" edge.
+func (eq *EventQuery) QueryNotificationRecord() *NotificationRecordQuery {
+	query := &NotificationRecordQuery{config: eq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := eq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := eq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(event.Table, event.FieldID, selector),
+			sqlgraph.To(notificationrecord.Table, notificationrecord.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, false, event.NotificationRecordTable, event.NotificationRecordColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(eq.driver.Dialect(), step)
 		return fromU, nil
@@ -287,13 +312,14 @@ func (eq *EventQuery) Clone() *EventQuery {
 		return nil
 	}
 	return &EventQuery{
-		config:         eq.config,
-		limit:          eq.limit,
-		offset:         eq.offset,
-		order:          append([]OrderFunc{}, eq.order...),
-		predicates:     append([]predicate.Event{}, eq.predicates...),
-		withDeployment: eq.withDeployment.Clone(),
-		withApproval:   eq.withApproval.Clone(),
+		config:                 eq.config,
+		limit:                  eq.limit,
+		offset:                 eq.offset,
+		order:                  append([]OrderFunc{}, eq.order...),
+		predicates:             append([]predicate.Event{}, eq.predicates...),
+		withDeployment:         eq.withDeployment.Clone(),
+		withApproval:           eq.withApproval.Clone(),
+		withNotificationRecord: eq.withNotificationRecord.Clone(),
 		// clone intermediate query.
 		sql:  eq.sql.Clone(),
 		path: eq.path,
@@ -319,6 +345,17 @@ func (eq *EventQuery) WithApproval(opts ...func(*ApprovalQuery)) *EventQuery {
 		opt(query)
 	}
 	eq.withApproval = query
+	return eq
+}
+
+// WithNotificationRecord tells the query-builder to eager-load the nodes that are connected to
+// the "notification_record" edge. The optional arguments are used to configure the query builder of the edge.
+func (eq *EventQuery) WithNotificationRecord(opts ...func(*NotificationRecordQuery)) *EventQuery {
+	query := &NotificationRecordQuery{config: eq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	eq.withNotificationRecord = query
 	return eq
 }
 
@@ -387,9 +424,10 @@ func (eq *EventQuery) sqlAll(ctx context.Context) ([]*Event, error) {
 	var (
 		nodes       = []*Event{}
 		_spec       = eq.querySpec()
-		loadedTypes = [2]bool{
+		loadedTypes = [3]bool{
 			eq.withDeployment != nil,
 			eq.withApproval != nil,
+			eq.withNotificationRecord != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -464,6 +502,30 @@ func (eq *EventQuery) sqlAll(ctx context.Context) ([]*Event, error) {
 			for i := range nodes {
 				nodes[i].Edges.Approval = n
 			}
+		}
+	}
+
+	if query := eq.withNotificationRecord; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[int]*Event)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+		}
+		query.Where(predicate.NotificationRecord(func(s *sql.Selector) {
+			s.Where(sql.InValues(event.NotificationRecordColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.EventID
+			node, ok := nodeids[fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "event_id" returned %v for node %v`, fk, n.ID)
+			}
+			node.Edges.NotificationRecord = n
 		}
 	}
 
