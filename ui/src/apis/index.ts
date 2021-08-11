@@ -9,7 +9,6 @@ import { listTags, getTag } from './tag'
 import { getMe } from "./user"
 import { checkSlack } from "./chat"
 import { listApprovals, getMyApproval, createApproval, deleteApproval, setApprovalApproved, setApprovalDeclined } from "./approval"
-import { subscribeNotification, listNotifications, patchNotificationChecked } from "./notification"
 
 export {
     sync,
@@ -41,7 +40,4 @@ export {
     getMyApproval,
     setApprovalApproved,
     setApprovalDeclined,
-    subscribeNotification, 
-    listNotifications,
-    patchNotificationChecked,
 }

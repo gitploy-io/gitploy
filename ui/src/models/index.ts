@@ -11,7 +11,6 @@ import Branch from "./Branch"
 import Tag from "./Tag"
 import User, { ChatUser } from "./User"
 import Approval, { ApprovalStatus } from "./Approval"
-import Notification, { NotificationType } from "./Notification"
 import { 
     HttpRequestError, 
     HttpInternalServerError, 
@@ -38,7 +37,6 @@ export type {
     User,
     ChatUser,
     Approval,
-    Notification,
 }
 
 export {
@@ -53,6 +51,5 @@ export {
     DeploymentType,
     StatusState,
     RequestStatus,
-    NotificationType,
     ApprovalStatus,
 }

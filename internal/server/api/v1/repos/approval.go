@@ -102,7 +102,7 @@ func (r *Repo) GetMyApproval(c *gin.Context) {
 
 	a, err := r.i.FindApprovalOfUser(ctx, d, u)
 	if ent.IsNotFound(err) {
-		r.log.Warn("The approval is not found.", zap.Error(err))
+		// r.log.Warn("The approval is not found.", zap.Error(err))
 		gb.ErrorResponse(c, http.StatusNotFound, "The approval is not found.")
 		return
 	} else if err != nil {
