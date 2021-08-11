@@ -40,6 +40,12 @@ func (s *Slack) Notify(ctx context.Context, e *ent.Event) error {
 	}
 
 	for _, u := range users {
+		// Load edges.
+		if u, err = s.i.FindUserByID(ctx, u.ID); err != nil {
+			s.log.Error("It has failed to get the user.", zap.Error(err))
+			continue
+		}
+
 		if u.Edges.ChatUser != nil {
 			if err := s.notify(ctx, u.Edges.ChatUser, n); err != nil {
 				s.log.Error("It has failed to notify the event.", zap.Error(err))

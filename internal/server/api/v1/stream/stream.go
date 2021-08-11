@@ -93,7 +93,7 @@ L:
 			}
 
 			c.Render(-1, sse.Event{
-				Event: e.Type.String(),
+				Event: e.Kind.String(),
 				Data:  data,
 			})
 			w.Flush()

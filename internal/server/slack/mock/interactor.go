@@ -216,6 +216,21 @@ func (mr *MockInteractorMockRecorder) FindRepoOfUserByNamespaceName(ctx, u, name
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindRepoOfUserByNamespaceName", reflect.TypeOf((*MockInteractor)(nil).FindRepoOfUserByNamespaceName), ctx, u, namespace, name)
 }
 
+// FindUserByID mocks base method.
+func (m *MockInteractor) FindUserByID(ctx context.Context, id string) (*ent.User, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindUserByID", ctx, id)
+	ret0, _ := ret[0].(*ent.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindUserByID indicates an expected call of FindUserByID.
+func (mr *MockInteractorMockRecorder) FindUserByID(ctx, id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindUserByID", reflect.TypeOf((*MockInteractor)(nil).FindUserByID), ctx, id)
+}
+
 // GetBranch mocks base method.
 func (m *MockInteractor) GetBranch(ctx context.Context, u *ent.User, r *ent.Repo, branch string) (*vo.Branch, error) {
 	m.ctrl.T.Helper()

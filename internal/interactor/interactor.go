@@ -42,8 +42,8 @@ func NewInteractor(c *InteractorConfig) *Interactor {
 	}
 
 	go func() {
-		i.log.Info("Start the working publishing notifications.")
-		i.runPublishingNotifications(i.stopCh)
+		i.log.Info("Start the working publishing events.")
+		i.runPublishingEvents(i.stopCh)
 	}()
 
 	go func() {
