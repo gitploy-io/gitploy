@@ -22,8 +22,10 @@ type Tx struct {
 	Deployment *DeploymentClient
 	// DeploymentStatus is the client for interacting with the DeploymentStatus builders.
 	DeploymentStatus *DeploymentStatusClient
-	// Notification is the client for interacting with the Notification builders.
-	Notification *NotificationClient
+	// Event is the client for interacting with the Event builders.
+	Event *EventClient
+	// NotificationRecord is the client for interacting with the NotificationRecord builders.
+	NotificationRecord *NotificationRecordClient
 	// Perm is the client for interacting with the Perm builders.
 	Perm *PermClient
 	// Repo is the client for interacting with the Repo builders.
@@ -170,7 +172,8 @@ func (tx *Tx) init() {
 	tx.ChatUser = NewChatUserClient(tx.config)
 	tx.Deployment = NewDeploymentClient(tx.config)
 	tx.DeploymentStatus = NewDeploymentStatusClient(tx.config)
-	tx.Notification = NewNotificationClient(tx.config)
+	tx.Event = NewEventClient(tx.config)
+	tx.NotificationRecord = NewNotificationRecordClient(tx.config)
 	tx.Perm = NewPermClient(tx.config)
 	tx.Repo = NewRepoClient(tx.config)
 	tx.User = NewUserClient(tx.config)

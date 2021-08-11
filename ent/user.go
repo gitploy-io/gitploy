@@ -52,11 +52,9 @@ type UserEdges struct {
 	Deployments []*Deployment `json:"deployments,omitempty"`
 	// Approvals holds the value of the approvals edge.
 	Approvals []*Approval `json:"approvals,omitempty"`
-	// Notification holds the value of the notification edge.
-	Notification []*Notification `json:"notification,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [5]bool
+	loadedTypes [4]bool
 }
 
 // ChatUserOrErr returns the ChatUser value or an error if the edge
@@ -98,15 +96,6 @@ func (e UserEdges) ApprovalsOrErr() ([]*Approval, error) {
 		return e.Approvals, nil
 	}
 	return nil, &NotLoadedError{edge: "approvals"}
-}
-
-// NotificationOrErr returns the Notification value or an error if the edge
-// was not loaded in eager-loading.
-func (e UserEdges) NotificationOrErr() ([]*Notification, error) {
-	if e.loadedTypes[4] {
-		return e.Notification, nil
-	}
-	return nil, &NotLoadedError{edge: "notification"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -224,11 +213,6 @@ func (u *User) QueryDeployments() *DeploymentQuery {
 // QueryApprovals queries the "approvals" edge of the User entity.
 func (u *User) QueryApprovals() *ApprovalQuery {
 	return (&UserClient{config: u.config}).QueryApprovals(u)
-}
-
-// QueryNotification queries the "notification" edge of the User entity.
-func (u *User) QueryNotification() *NotificationQuery {
-	return (&UserClient{config: u.config}).QueryNotification(u)
 }
 
 // Update returns a builder for updating this User.

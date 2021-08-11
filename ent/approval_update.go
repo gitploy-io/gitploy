@@ -13,6 +13,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/hanjunlee/gitploy/ent/approval"
 	"github.com/hanjunlee/gitploy/ent/deployment"
+	"github.com/hanjunlee/gitploy/ent/event"
 	"github.com/hanjunlee/gitploy/ent/predicate"
 	"github.com/hanjunlee/gitploy/ent/user"
 )
@@ -86,6 +87,21 @@ func (au *ApprovalUpdate) SetDeployment(d *Deployment) *ApprovalUpdate {
 	return au.SetDeploymentID(d.ID)
 }
 
+// AddEventIDs adds the "event" edge to the Event entity by IDs.
+func (au *ApprovalUpdate) AddEventIDs(ids ...int) *ApprovalUpdate {
+	au.mutation.AddEventIDs(ids...)
+	return au
+}
+
+// AddEvent adds the "event" edges to the Event entity.
+func (au *ApprovalUpdate) AddEvent(e ...*Event) *ApprovalUpdate {
+	ids := make([]int, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return au.AddEventIDs(ids...)
+}
+
 // Mutation returns the ApprovalMutation object of the builder.
 func (au *ApprovalUpdate) Mutation() *ApprovalMutation {
 	return au.mutation
@@ -101,6 +117,27 @@ func (au *ApprovalUpdate) ClearUser() *ApprovalUpdate {
 func (au *ApprovalUpdate) ClearDeployment() *ApprovalUpdate {
 	au.mutation.ClearDeployment()
 	return au
+}
+
+// ClearEvent clears all "event" edges to the Event entity.
+func (au *ApprovalUpdate) ClearEvent() *ApprovalUpdate {
+	au.mutation.ClearEvent()
+	return au
+}
+
+// RemoveEventIDs removes the "event" edge to Event entities by IDs.
+func (au *ApprovalUpdate) RemoveEventIDs(ids ...int) *ApprovalUpdate {
+	au.mutation.RemoveEventIDs(ids...)
+	return au
+}
+
+// RemoveEvent removes "event" edges to Event entities.
+func (au *ApprovalUpdate) RemoveEvent(e ...*Event) *ApprovalUpdate {
+	ids := make([]int, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return au.RemoveEventIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -297,6 +334,60 @@ func (au *ApprovalUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if au.mutation.EventCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   approval.EventTable,
+			Columns: []string{approval.EventColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: event.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := au.mutation.RemovedEventIDs(); len(nodes) > 0 && !au.mutation.EventCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   approval.EventTable,
+			Columns: []string{approval.EventColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: event.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := au.mutation.EventIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   approval.EventTable,
+			Columns: []string{approval.EventColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: event.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, au.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{approval.Label}
@@ -372,6 +463,21 @@ func (auo *ApprovalUpdateOne) SetDeployment(d *Deployment) *ApprovalUpdateOne {
 	return auo.SetDeploymentID(d.ID)
 }
 
+// AddEventIDs adds the "event" edge to the Event entity by IDs.
+func (auo *ApprovalUpdateOne) AddEventIDs(ids ...int) *ApprovalUpdateOne {
+	auo.mutation.AddEventIDs(ids...)
+	return auo
+}
+
+// AddEvent adds the "event" edges to the Event entity.
+func (auo *ApprovalUpdateOne) AddEvent(e ...*Event) *ApprovalUpdateOne {
+	ids := make([]int, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return auo.AddEventIDs(ids...)
+}
+
 // Mutation returns the ApprovalMutation object of the builder.
 func (auo *ApprovalUpdateOne) Mutation() *ApprovalMutation {
 	return auo.mutation
@@ -387,6 +493,27 @@ func (auo *ApprovalUpdateOne) ClearUser() *ApprovalUpdateOne {
 func (auo *ApprovalUpdateOne) ClearDeployment() *ApprovalUpdateOne {
 	auo.mutation.ClearDeployment()
 	return auo
+}
+
+// ClearEvent clears all "event" edges to the Event entity.
+func (auo *ApprovalUpdateOne) ClearEvent() *ApprovalUpdateOne {
+	auo.mutation.ClearEvent()
+	return auo
+}
+
+// RemoveEventIDs removes the "event" edge to Event entities by IDs.
+func (auo *ApprovalUpdateOne) RemoveEventIDs(ids ...int) *ApprovalUpdateOne {
+	auo.mutation.RemoveEventIDs(ids...)
+	return auo
+}
+
+// RemoveEvent removes "event" edges to Event entities.
+func (auo *ApprovalUpdateOne) RemoveEvent(e ...*Event) *ApprovalUpdateOne {
+	ids := make([]int, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return auo.RemoveEventIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -599,6 +726,60 @@ func (auo *ApprovalUpdateOne) sqlSave(ctx context.Context) (_node *Approval, err
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
 					Column: deployment.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if auo.mutation.EventCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   approval.EventTable,
+			Columns: []string{approval.EventColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: event.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := auo.mutation.RemovedEventIDs(); len(nodes) > 0 && !auo.mutation.EventCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   approval.EventTable,
+			Columns: []string{approval.EventColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: event.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := auo.mutation.EventIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   approval.EventTable,
+			Columns: []string{approval.EventColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: event.FieldID,
 				},
 			},
 		}

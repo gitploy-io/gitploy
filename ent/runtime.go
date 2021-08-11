@@ -10,7 +10,7 @@ import (
 	"github.com/hanjunlee/gitploy/ent/chatuser"
 	"github.com/hanjunlee/gitploy/ent/deployment"
 	"github.com/hanjunlee/gitploy/ent/deploymentstatus"
-	"github.com/hanjunlee/gitploy/ent/notification"
+	"github.com/hanjunlee/gitploy/ent/event"
 	"github.com/hanjunlee/gitploy/ent/perm"
 	"github.com/hanjunlee/gitploy/ent/repo"
 	"github.com/hanjunlee/gitploy/ent/schema"
@@ -105,26 +105,12 @@ func init() {
 	deploymentstatus.DefaultUpdatedAt = deploymentstatusDescUpdatedAt.Default.(func() time.Time)
 	// deploymentstatus.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	deploymentstatus.UpdateDefaultUpdatedAt = deploymentstatusDescUpdatedAt.UpdateDefault.(func() time.Time)
-	notificationFields := schema.Notification{}.Fields()
-	_ = notificationFields
-	// notificationDescNotified is the schema descriptor for notified field.
-	notificationDescNotified := notificationFields[11].Descriptor()
-	// notification.DefaultNotified holds the default value on creation for the notified field.
-	notification.DefaultNotified = notificationDescNotified.Default.(bool)
-	// notificationDescChecked is the schema descriptor for checked field.
-	notificationDescChecked := notificationFields[12].Descriptor()
-	// notification.DefaultChecked holds the default value on creation for the checked field.
-	notification.DefaultChecked = notificationDescChecked.Default.(bool)
-	// notificationDescCreatedAt is the schema descriptor for created_at field.
-	notificationDescCreatedAt := notificationFields[13].Descriptor()
-	// notification.DefaultCreatedAt holds the default value on creation for the created_at field.
-	notification.DefaultCreatedAt = notificationDescCreatedAt.Default.(func() time.Time)
-	// notificationDescUpdatedAt is the schema descriptor for updated_at field.
-	notificationDescUpdatedAt := notificationFields[14].Descriptor()
-	// notification.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	notification.DefaultUpdatedAt = notificationDescUpdatedAt.Default.(func() time.Time)
-	// notification.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
-	notification.UpdateDefaultUpdatedAt = notificationDescUpdatedAt.UpdateDefault.(func() time.Time)
+	eventFields := schema.Event{}.Fields()
+	_ = eventFields
+	// eventDescCreatedAt is the schema descriptor for created_at field.
+	eventDescCreatedAt := eventFields[2].Descriptor()
+	// event.DefaultCreatedAt holds the default value on creation for the created_at field.
+	event.DefaultCreatedAt = eventDescCreatedAt.Default.(func() time.Time)
 	permFields := schema.Perm{}.Fields()
 	_ = permFields
 	// permDescCreatedAt is the schema descriptor for created_at field.

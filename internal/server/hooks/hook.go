@@ -10,7 +10,7 @@ import (
 
 	"github.com/hanjunlee/gitploy/ent"
 	"github.com/hanjunlee/gitploy/ent/deployment"
-	"github.com/hanjunlee/gitploy/ent/notification"
+	"github.com/hanjunlee/gitploy/ent/event"
 	gb "github.com/hanjunlee/gitploy/internal/server/global"
 )
 
@@ -98,8 +98,6 @@ func (h *Hooks) handleGithubHook(c *gin.Context) {
 		return
 	}
 
-	repo := d.Edges.Repo
-
 	d.Status = mapGithubState(ds.Status)
 	if _, err := h.i.UpdateDeployment(ctx, d); err != nil {
 		h.log.Error("It has failed to update the deployment status.", zap.Error(err))
@@ -107,8 +105,12 @@ func (h *Hooks) handleGithubHook(c *gin.Context) {
 		return
 	}
 
-	if err = h.i.Publish(ctx, notification.TypeDeploymentUpdated, repo, d, nil); err != nil {
-		h.log.Warn("It has failed to notify the updated deployment.", zap.Error(err))
+	if _, err := h.i.CreateEvent(ctx, &ent.Event{
+		Kind:         event.KindDeployment,
+		Type:         event.TypeUpdated,
+		DeploymentID: d.ID,
+	}); err != nil {
+		h.log.Error("It has failed to create the event.", zap.Error(err))
 	}
 
 	gb.Response(c, http.StatusCreated, ds)

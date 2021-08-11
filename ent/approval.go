@@ -39,9 +39,11 @@ type ApprovalEdges struct {
 	User *User `json:"user,omitempty"`
 	// Deployment holds the value of the deployment edge.
 	Deployment *Deployment `json:"deployment,omitempty"`
+	// Event holds the value of the event edge.
+	Event []*Event `json:"event,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
+	loadedTypes [3]bool
 }
 
 // UserOrErr returns the User value or an error if the edge
@@ -70,6 +72,15 @@ func (e ApprovalEdges) DeploymentOrErr() (*Deployment, error) {
 		return e.Deployment, nil
 	}
 	return nil, &NotLoadedError{edge: "deployment"}
+}
+
+// EventOrErr returns the Event value or an error if the edge
+// was not loaded in eager-loading.
+func (e ApprovalEdges) EventOrErr() ([]*Event, error) {
+	if e.loadedTypes[2] {
+		return e.Event, nil
+	}
+	return nil, &NotLoadedError{edge: "event"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -147,6 +158,11 @@ func (a *Approval) QueryUser() *UserQuery {
 // QueryDeployment queries the "deployment" edge of the Approval entity.
 func (a *Approval) QueryDeployment() *DeploymentQuery {
 	return (&ApprovalClient{config: a.config}).QueryDeployment(a)
+}
+
+// QueryEvent queries the "event" edge of the Approval entity.
+func (a *Approval) QueryEvent() *EventQuery {
+	return (&ApprovalClient{config: a.config}).QueryEvent(a)
 }
 
 // Update returns a builder for updating this Approval.

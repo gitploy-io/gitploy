@@ -57,13 +57,9 @@ type (
 		UpdateApproval(ctx context.Context, a *ent.Approval) (*ent.Approval, error)
 		DeleteApproval(ctx context.Context, a *ent.Approval) error
 
-		// ListPublishingNotificaitonsGreaterThanTime returns notifications which are not published yet,
-		// internally, it locks rows while it selects notifications to publish.
-		ListPublishingNotificaitonsGreaterThanTime(ctx context.Context, t time.Time) ([]*ent.Notification, error)
-		ListNotifications(ctx context.Context, u *ent.User, page, perPage int) ([]*ent.Notification, error)
-		FindNotificationByID(ctx context.Context, id int) (*ent.Notification, error)
-		CreateNotification(ctx context.Context, n *ent.Notification) (*ent.Notification, error)
-		UpdateNotification(ctx context.Context, n *ent.Notification) (*ent.Notification, error)
+		ListEventsGreaterThanTime(ctx context.Context, t time.Time) ([]*ent.Event, error)
+		CreateEvent(ctx context.Context, e *ent.Event) (*ent.Event, error)
+		CheckNotificationRecordOfEvent(ctx context.Context, e *ent.Event) bool
 	}
 
 	SCM interface {

@@ -6,12 +6,13 @@ import (
 	"context"
 
 	"github.com/hanjunlee/gitploy/ent"
-	"github.com/hanjunlee/gitploy/ent/notification"
 	"github.com/hanjunlee/gitploy/vo"
 )
 
 type (
 	Interactor interface {
+		FindUserByID(ctx context.Context, id string) (*ent.User, error)
+
 		FindChatUserByID(ctx context.Context, id string) (*ent.ChatUser, error)
 		SaveChatUser(ctx context.Context, u *ent.User, cu *ent.ChatUser) (*ent.ChatUser, error)
 
@@ -33,8 +34,13 @@ type (
 
 		CreateApproval(ctx context.Context, a *ent.Approval) (*ent.Approval, error)
 
-		Publish(ctx context.Context, typ notification.Type, r *ent.Repo, d *ent.Deployment, a *ent.Approval) error
-		Subscribe(func(*ent.User, *ent.Notification)) error
+		SubscribeEvent(fn func(e *ent.Event)) error
+		UnsubscribeEvent(fn func(e *ent.Event)) error
+
+		ListUsersOfEvent(ctx context.Context, e *ent.Event) ([]*ent.User, error)
+		CheckNotificationRecordOfEvent(ctx context.Context, e *ent.Event) bool
+		CreateEvent(ctx context.Context, e *ent.Event) (*ent.Event, error)
+		ConvertEventToNotification(ctx context.Context, e *ent.Event) (*vo.Notification, error)
 
 		GetCommit(ctx context.Context, u *ent.User, r *ent.Repo, sha string) (*vo.Commit, error)
 		GetBranch(ctx context.Context, u *ent.User, r *ent.Repo, branch string) (*vo.Branch, error)

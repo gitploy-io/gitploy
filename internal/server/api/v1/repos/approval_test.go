@@ -76,7 +76,8 @@ func TestRepo_CreateApproval(t *testing.T) {
 
 		m.
 			EXPECT().
-			Publish(ctx, any, any, any, any)
+			CreateEvent(ctx, any).
+			Return(&ent.Event{}, nil)
 
 		m.
 			EXPECT().

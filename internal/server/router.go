@@ -147,14 +147,12 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 	{
 		u := users.NewUser(c.Interactor)
 		userv1.GET("", u.GetMyUser)
-		userv1.GET("/notifications", u.ListNotifications)
-		userv1.PATCH("/notifications/:id", u.UpdateNotification)
 	}
 
 	streamv1 := v1.Group("/stream")
 	{
 		s := stream.NewStream(c.Interactor)
-		streamv1.GET("", s.GetNotification)
+		streamv1.GET("/events", s.GetEvents)
 	}
 
 	hooksapi := r.Group("/hooks")

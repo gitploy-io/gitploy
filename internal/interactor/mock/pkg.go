@@ -52,6 +52,20 @@ func (mr *MockStoreMockRecorder) Activate(ctx, r interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Activate", reflect.TypeOf((*MockStore)(nil).Activate), ctx, r)
 }
 
+// CheckNotificationRecordOfEvent mocks base method.
+func (m *MockStore) CheckNotificationRecordOfEvent(ctx context.Context, e *ent.Event) bool {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CheckNotificationRecordOfEvent", ctx, e)
+	ret0, _ := ret[0].(bool)
+	return ret0
+}
+
+// CheckNotificationRecordOfEvent indicates an expected call of CheckNotificationRecordOfEvent.
+func (mr *MockStoreMockRecorder) CheckNotificationRecordOfEvent(ctx, e interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CheckNotificationRecordOfEvent", reflect.TypeOf((*MockStore)(nil).CheckNotificationRecordOfEvent), ctx, e)
+}
+
 // CloseChatCallback mocks base method.
 func (m *MockStore) CloseChatCallback(ctx context.Context, cb *ent.ChatCallback) (*ent.ChatCallback, error) {
 	m.ctrl.T.Helper()
@@ -142,19 +156,19 @@ func (mr *MockStoreMockRecorder) CreateDeploymentStatus(ctx, s interface{}) *gom
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateDeploymentStatus", reflect.TypeOf((*MockStore)(nil).CreateDeploymentStatus), ctx, s)
 }
 
-// CreateNotification mocks base method.
-func (m *MockStore) CreateNotification(ctx context.Context, n *ent.Notification) (*ent.Notification, error) {
+// CreateEvent mocks base method.
+func (m *MockStore) CreateEvent(ctx context.Context, e *ent.Event) (*ent.Event, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateNotification", ctx, n)
-	ret0, _ := ret[0].(*ent.Notification)
+	ret := m.ctrl.Call(m, "CreateEvent", ctx, e)
+	ret0, _ := ret[0].(*ent.Event)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// CreateNotification indicates an expected call of CreateNotification.
-func (mr *MockStoreMockRecorder) CreateNotification(ctx, n interface{}) *gomock.Call {
+// CreateEvent indicates an expected call of CreateEvent.
+func (mr *MockStoreMockRecorder) CreateEvent(ctx, e interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateNotification", reflect.TypeOf((*MockStore)(nil).CreateNotification), ctx, n)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateEvent", reflect.TypeOf((*MockStore)(nil).CreateEvent), ctx, e)
 }
 
 // CreateUser mocks base method.
@@ -321,21 +335,6 @@ func (mr *MockStoreMockRecorder) FindLatestSuccessfulDeployment(ctx, d interface
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindLatestSuccessfulDeployment", reflect.TypeOf((*MockStore)(nil).FindLatestSuccessfulDeployment), ctx, d)
 }
 
-// FindNotificationByID mocks base method.
-func (m *MockStore) FindNotificationByID(ctx context.Context, id int) (*ent.Notification, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FindNotificationByID", ctx, id)
-	ret0, _ := ret[0].(*ent.Notification)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// FindNotificationByID indicates an expected call of FindNotificationByID.
-func (mr *MockStoreMockRecorder) FindNotificationByID(ctx, id interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindNotificationByID", reflect.TypeOf((*MockStore)(nil).FindNotificationByID), ctx, id)
-}
-
 // FindPermOfRepo mocks base method.
 func (m *MockStore) FindPermOfRepo(ctx context.Context, r *ent.Repo, u *ent.User) (*ent.Perm, error) {
 	m.ctrl.T.Helper()
@@ -471,6 +470,21 @@ func (mr *MockStoreMockRecorder) ListDeploymentsOfRepo(ctx, r, env, status, page
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListDeploymentsOfRepo", reflect.TypeOf((*MockStore)(nil).ListDeploymentsOfRepo), ctx, r, env, status, page, perPage)
 }
 
+// ListEventsGreaterThanTime mocks base method.
+func (m *MockStore) ListEventsGreaterThanTime(ctx context.Context, t time.Time) ([]*ent.Event, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListEventsGreaterThanTime", ctx, t)
+	ret0, _ := ret[0].([]*ent.Event)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListEventsGreaterThanTime indicates an expected call of ListEventsGreaterThanTime.
+func (mr *MockStoreMockRecorder) ListEventsGreaterThanTime(ctx, t interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListEventsGreaterThanTime", reflect.TypeOf((*MockStore)(nil).ListEventsGreaterThanTime), ctx, t)
+}
+
 // ListInactiveDeploymentsLessThanTime mocks base method.
 func (m *MockStore) ListInactiveDeploymentsLessThanTime(ctx context.Context, t time.Time, page, perPage int) ([]*ent.Deployment, error) {
 	m.ctrl.T.Helper()
@@ -484,36 +498,6 @@ func (m *MockStore) ListInactiveDeploymentsLessThanTime(ctx context.Context, t t
 func (mr *MockStoreMockRecorder) ListInactiveDeploymentsLessThanTime(ctx, t, page, perPage interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListInactiveDeploymentsLessThanTime", reflect.TypeOf((*MockStore)(nil).ListInactiveDeploymentsLessThanTime), ctx, t, page, perPage)
-}
-
-// ListNotifications mocks base method.
-func (m *MockStore) ListNotifications(ctx context.Context, u *ent.User, page, perPage int) ([]*ent.Notification, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListNotifications", ctx, u, page, perPage)
-	ret0, _ := ret[0].([]*ent.Notification)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// ListNotifications indicates an expected call of ListNotifications.
-func (mr *MockStoreMockRecorder) ListNotifications(ctx, u, page, perPage interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListNotifications", reflect.TypeOf((*MockStore)(nil).ListNotifications), ctx, u, page, perPage)
-}
-
-// ListPublishingNotificaitonsGreaterThanTime mocks base method.
-func (m *MockStore) ListPublishingNotificaitonsGreaterThanTime(ctx context.Context, t time.Time) ([]*ent.Notification, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListPublishingNotificaitonsGreaterThanTime", ctx, t)
-	ret0, _ := ret[0].([]*ent.Notification)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// ListPublishingNotificaitonsGreaterThanTime indicates an expected call of ListPublishingNotificaitonsGreaterThanTime.
-func (mr *MockStoreMockRecorder) ListPublishingNotificaitonsGreaterThanTime(ctx, t interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListPublishingNotificaitonsGreaterThanTime", reflect.TypeOf((*MockStore)(nil).ListPublishingNotificaitonsGreaterThanTime), ctx, t)
 }
 
 // ListPermsOfRepo mocks base method.
@@ -618,21 +602,6 @@ func (m *MockStore) UpdateDeployment(ctx context.Context, d *ent.Deployment) (*e
 func (mr *MockStoreMockRecorder) UpdateDeployment(ctx, d interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateDeployment", reflect.TypeOf((*MockStore)(nil).UpdateDeployment), ctx, d)
-}
-
-// UpdateNotification mocks base method.
-func (m *MockStore) UpdateNotification(ctx context.Context, n *ent.Notification) (*ent.Notification, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UpdateNotification", ctx, n)
-	ret0, _ := ret[0].(*ent.Notification)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// UpdateNotification indicates an expected call of UpdateNotification.
-func (mr *MockStoreMockRecorder) UpdateNotification(ctx, n interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateNotification", reflect.TypeOf((*MockStore)(nil).UpdateNotification), ctx, n)
 }
 
 // UpdateRepo mocks base method.

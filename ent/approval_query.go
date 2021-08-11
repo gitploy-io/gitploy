@@ -4,6 +4,7 @@ package ent
 
 import (
 	"context"
+	"database/sql/driver"
 	"errors"
 	"fmt"
 	"math"
@@ -14,6 +15,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/hanjunlee/gitploy/ent/approval"
 	"github.com/hanjunlee/gitploy/ent/deployment"
+	"github.com/hanjunlee/gitploy/ent/event"
 	"github.com/hanjunlee/gitploy/ent/predicate"
 	"github.com/hanjunlee/gitploy/ent/user"
 )
@@ -30,6 +32,7 @@ type ApprovalQuery struct {
 	// eager-loading edges.
 	withUser       *UserQuery
 	withDeployment *DeploymentQuery
+	withEvent      *EventQuery
 	modifiers      []func(s *sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -104,6 +107,28 @@ func (aq *ApprovalQuery) QueryDeployment() *DeploymentQuery {
 			sqlgraph.From(approval.Table, approval.FieldID, selector),
 			sqlgraph.To(deployment.Table, deployment.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, approval.DeploymentTable, approval.DeploymentColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryEvent chains the current query on the "event" edge.
+func (aq *ApprovalQuery) QueryEvent() *EventQuery {
+	query := &EventQuery{config: aq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := aq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := aq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(approval.Table, approval.FieldID, selector),
+			sqlgraph.To(event.Table, event.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, approval.EventTable, approval.EventColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
 		return fromU, nil
@@ -294,6 +319,7 @@ func (aq *ApprovalQuery) Clone() *ApprovalQuery {
 		predicates:     append([]predicate.Approval{}, aq.predicates...),
 		withUser:       aq.withUser.Clone(),
 		withDeployment: aq.withDeployment.Clone(),
+		withEvent:      aq.withEvent.Clone(),
 		// clone intermediate query.
 		sql:  aq.sql.Clone(),
 		path: aq.path,
@@ -319,6 +345,17 @@ func (aq *ApprovalQuery) WithDeployment(opts ...func(*DeploymentQuery)) *Approva
 		opt(query)
 	}
 	aq.withDeployment = query
+	return aq
+}
+
+// WithEvent tells the query-builder to eager-load the nodes that are connected to
+// the "event" edge. The optional arguments are used to configure the query builder of the edge.
+func (aq *ApprovalQuery) WithEvent(opts ...func(*EventQuery)) *ApprovalQuery {
+	query := &EventQuery{config: aq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	aq.withEvent = query
 	return aq
 }
 
@@ -387,9 +424,10 @@ func (aq *ApprovalQuery) sqlAll(ctx context.Context) ([]*Approval, error) {
 	var (
 		nodes       = []*Approval{}
 		_spec       = aq.querySpec()
-		loadedTypes = [2]bool{
+		loadedTypes = [3]bool{
 			aq.withUser != nil,
 			aq.withDeployment != nil,
+			aq.withEvent != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -464,6 +502,31 @@ func (aq *ApprovalQuery) sqlAll(ctx context.Context) ([]*Approval, error) {
 			for i := range nodes {
 				nodes[i].Edges.Deployment = n
 			}
+		}
+	}
+
+	if query := aq.withEvent; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[int]*Approval)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.Event = []*Event{}
+		}
+		query.Where(predicate.Event(func(s *sql.Selector) {
+			s.Where(sql.InValues(approval.EventColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.ApprovalID
+			node, ok := nodeids[fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "approval_id" returned %v for node %v`, fk, n.ID)
+			}
+			node.Edges.Event = append(node.Edges.Event, n)
 		}
 	}
 

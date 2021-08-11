@@ -39,8 +39,6 @@ const (
 	EdgeDeployments = "deployments"
 	// EdgeApprovals holds the string denoting the approvals edge name in mutations.
 	EdgeApprovals = "approvals"
-	// EdgeNotification holds the string denoting the notification edge name in mutations.
-	EdgeNotification = "notification"
 	// Table holds the table name of the user in the database.
 	Table = "users"
 	// ChatUserTable is the table that holds the chat_user relation/edge.
@@ -71,13 +69,6 @@ const (
 	ApprovalsInverseTable = "approvals"
 	// ApprovalsColumn is the table column denoting the approvals relation/edge.
 	ApprovalsColumn = "user_id"
-	// NotificationTable is the table that holds the notification relation/edge.
-	NotificationTable = "notifications"
-	// NotificationInverseTable is the table name for the Notification entity.
-	// It exists in this package in order to avoid circular dependency with the "notification" package.
-	NotificationInverseTable = "notifications"
-	// NotificationColumn is the table column denoting the notification relation/edge.
-	NotificationColumn = "user_id"
 )
 
 // Columns holds all SQL columns for user fields.

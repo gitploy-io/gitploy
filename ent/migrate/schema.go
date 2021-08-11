@@ -188,49 +188,58 @@ var (
 			},
 		},
 	}
-	// NotificationsColumns holds the columns for the "notifications" table.
-	NotificationsColumns = []*schema.Column{
+	// EventsColumns holds the columns for the "events" table.
+	EventsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "type", Type: field.TypeEnum, Enums: []string{"deployment_created", "deployment_updated", "approval_requested", "approval_responded"}},
-		{Name: "repo_namespace", Type: field.TypeString},
-		{Name: "repo_name", Type: field.TypeString},
-		{Name: "deployment_number", Type: field.TypeInt},
-		{Name: "deployment_type", Type: field.TypeString},
-		{Name: "deployment_ref", Type: field.TypeString},
-		{Name: "deployment_env", Type: field.TypeString},
-		{Name: "deployment_status", Type: field.TypeString},
-		{Name: "deployment_login", Type: field.TypeString},
-		{Name: "approval_status", Type: field.TypeString, Nullable: true},
-		{Name: "approval_login", Type: field.TypeString, Nullable: true},
-		{Name: "notified", Type: field.TypeBool, Default: false},
-		{Name: "checked", Type: field.TypeBool, Default: false},
+		{Name: "kind", Type: field.TypeEnum, Enums: []string{"deployment", "approval"}},
+		{Name: "type", Type: field.TypeEnum, Enums: []string{"created", "updated"}},
 		{Name: "created_at", Type: field.TypeTime},
-		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "user_id", Type: field.TypeString, Nullable: true},
+		{Name: "approval_id", Type: field.TypeInt, Nullable: true},
+		{Name: "deployment_id", Type: field.TypeInt, Nullable: true},
 	}
-	// NotificationsTable holds the schema information for the "notifications" table.
-	NotificationsTable = &schema.Table{
-		Name:       "notifications",
-		Columns:    NotificationsColumns,
-		PrimaryKey: []*schema.Column{NotificationsColumns[0]},
+	// EventsTable holds the schema information for the "events" table.
+	EventsTable = &schema.Table{
+		Name:       "events",
+		Columns:    EventsColumns,
+		PrimaryKey: []*schema.Column{EventsColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "notifications_users_notification",
-				Columns:    []*schema.Column{NotificationsColumns[16]},
-				RefColumns: []*schema.Column{UsersColumns[0]},
+				Symbol:     "events_approvals_event",
+				Columns:    []*schema.Column{EventsColumns[4]},
+				RefColumns: []*schema.Column{ApprovalsColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "events_deployments_event",
+				Columns:    []*schema.Column{EventsColumns[5]},
+				RefColumns: []*schema.Column{DeploymentsColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
 		},
 		Indexes: []*schema.Index{
 			{
-				Name:    "notification_user_id_created_at",
+				Name:    "event_created_at",
 				Unique:  false,
-				Columns: []*schema.Column{NotificationsColumns[16], NotificationsColumns[14]},
+				Columns: []*schema.Column{EventsColumns[3]},
 			},
+		},
+	}
+	// NotificationRecordsColumns holds the columns for the "notification_records" table.
+	NotificationRecordsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "event_id", Type: field.TypeInt, Unique: true, Nullable: true},
+	}
+	// NotificationRecordsTable holds the schema information for the "notification_records" table.
+	NotificationRecordsTable = &schema.Table{
+		Name:       "notification_records",
+		Columns:    NotificationRecordsColumns,
+		PrimaryKey: []*schema.Column{NotificationRecordsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
 			{
-				Name:    "notification_created_at",
-				Unique:  false,
-				Columns: []*schema.Column{NotificationsColumns[14]},
+				Symbol:     "notification_records_events_notification_record",
+				Columns:    []*schema.Column{NotificationRecordsColumns[1]},
+				RefColumns: []*schema.Column{EventsColumns[0]},
+				OnDelete:   schema.SetNull,
 			},
 		},
 	}
@@ -318,7 +327,8 @@ var (
 		ChatUsersTable,
 		DeploymentsTable,
 		DeploymentStatusTable,
-		NotificationsTable,
+		EventsTable,
+		NotificationRecordsTable,
 		PermsTable,
 		ReposTable,
 		UsersTable,
@@ -334,7 +344,9 @@ func init() {
 	DeploymentsTable.ForeignKeys[0].RefTable = ReposTable
 	DeploymentsTable.ForeignKeys[1].RefTable = UsersTable
 	DeploymentStatusTable.ForeignKeys[0].RefTable = DeploymentsTable
-	NotificationsTable.ForeignKeys[0].RefTable = UsersTable
+	EventsTable.ForeignKeys[0].RefTable = ApprovalsTable
+	EventsTable.ForeignKeys[1].RefTable = DeploymentsTable
+	NotificationRecordsTable.ForeignKeys[0].RefTable = EventsTable
 	PermsTable.ForeignKeys[0].RefTable = ReposTable
 	PermsTable.ForeignKeys[1].RefTable = UsersTable
 }

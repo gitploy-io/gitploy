@@ -74,15 +74,28 @@ func (f DeploymentStatusFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.V
 	return f(ctx, mv)
 }
 
-// The NotificationFunc type is an adapter to allow the use of ordinary
-// function as Notification mutator.
-type NotificationFunc func(context.Context, *ent.NotificationMutation) (ent.Value, error)
+// The EventFunc type is an adapter to allow the use of ordinary
+// function as Event mutator.
+type EventFunc func(context.Context, *ent.EventMutation) (ent.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f NotificationFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	mv, ok := m.(*ent.NotificationMutation)
+func (f EventFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.EventMutation)
 	if !ok {
-		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.NotificationMutation", m)
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.EventMutation", m)
+	}
+	return f(ctx, mv)
+}
+
+// The NotificationRecordFunc type is an adapter to allow the use of ordinary
+// function as NotificationRecord mutator.
+type NotificationRecordFunc func(context.Context, *ent.NotificationRecordMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f NotificationRecordFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.NotificationRecordMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.NotificationRecordMutation", m)
 	}
 	return f(ctx, mv)
 }

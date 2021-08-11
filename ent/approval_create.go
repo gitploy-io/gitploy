@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/hanjunlee/gitploy/ent/approval"
 	"github.com/hanjunlee/gitploy/ent/deployment"
+	"github.com/hanjunlee/gitploy/ent/event"
 	"github.com/hanjunlee/gitploy/ent/user"
 )
 
@@ -84,6 +85,21 @@ func (ac *ApprovalCreate) SetUser(u *User) *ApprovalCreate {
 // SetDeployment sets the "deployment" edge to the Deployment entity.
 func (ac *ApprovalCreate) SetDeployment(d *Deployment) *ApprovalCreate {
 	return ac.SetDeploymentID(d.ID)
+}
+
+// AddEventIDs adds the "event" edge to the Event entity by IDs.
+func (ac *ApprovalCreate) AddEventIDs(ids ...int) *ApprovalCreate {
+	ac.mutation.AddEventIDs(ids...)
+	return ac
+}
+
+// AddEvent adds the "event" edges to the Event entity.
+func (ac *ApprovalCreate) AddEvent(e ...*Event) *ApprovalCreate {
+	ids := make([]int, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return ac.AddEventIDs(ids...)
 }
 
 // Mutation returns the ApprovalMutation object of the builder.
@@ -288,6 +304,25 @@ func (ac *ApprovalCreate) createSpec() (*Approval, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.DeploymentID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ac.mutation.EventIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   approval.EventTable,
+			Columns: []string{approval.EventColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: event.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

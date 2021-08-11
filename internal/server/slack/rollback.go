@@ -15,7 +15,7 @@ import (
 	"github.com/hanjunlee/gitploy/ent"
 	"github.com/hanjunlee/gitploy/ent/chatcallback"
 	"github.com/hanjunlee/gitploy/ent/deployment"
-	"github.com/hanjunlee/gitploy/ent/notification"
+	"github.com/hanjunlee/gitploy/ent/event"
 	"github.com/hanjunlee/gitploy/vo"
 )
 
@@ -290,8 +290,12 @@ func (s *Slack) interactRollback(c *gin.Context) {
 		return
 	}
 
-	if err = s.i.Publish(ctx, notification.TypeDeploymentCreated, cb.Edges.Repo, d, nil); err != nil {
-		s.log.Warn("failed to notify the deployment.", zap.Error(err))
+	if _, err := s.i.CreateEvent(ctx, &ent.Event{
+		Kind:         event.KindDeployment,
+		Type:         event.TypeCreated,
+		DeploymentID: d.ID,
+	}); err != nil {
+		s.log.Error("It has failed to create the event.", zap.Error(err))
 	}
 
 	if env.IsApprovalEabled() {
@@ -305,8 +309,12 @@ func (s *Slack) interactRollback(c *gin.Context) {
 				continue
 			}
 
-			if err := s.i.Publish(ctx, notification.TypeApprovalRequested, cb.Edges.Repo, d, a); err != nil {
-				s.log.Warn("It has failed to publish the approval.", zap.Error(err))
+			if _, err := s.i.CreateEvent(ctx, &ent.Event{
+				Kind:       event.KindDeployment,
+				Type:       event.TypeCreated,
+				ApprovalID: a.ID,
+			}); err != nil {
+				s.log.Error("It has failed to create the event.", zap.Error(err))
 			}
 		}
 	}

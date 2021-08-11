@@ -948,70 +948,6 @@ paths:
           $ref: '#/components/responses/401Unauthorized'
         '500':
           $ref: '#/components/responses/500InternalError'
-  /user/notifications:
-    get:
-      tags:
-        - User
-      summary: List my notifications.
-      parameters:
-        - in: query
-          name: page
-          schema:
-            type: integer
-            default: 1
-            description: The page number
-        - in: query
-          name: per_page
-          schema:
-            type: integer
-            default: 30
-            description: The item count per page
-      responses:
-        '200':
-          description: Notifications items
-          content:
-            application/json:
-              schema:
-               $ref: '#/components/schemas/Notifications'
-        '401': 
-          $ref: '#/components/responses/401Unauthorized'
-        '500':
-          $ref: '#/components/responses/500InternalError'
-  /user/notifications/{id}:
-    patch:
-      tags:
-        - User
-      summary: Set the notification checked.
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: integer
-            description: The notification id.
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                checked:
-                  type: boolean
-      responses:
-        '200':
-          description: Notifications items
-          content:
-            application/json:
-              schema:
-               $ref: '#/components/schemas/Notifications'
-        '401': 
-          $ref: '#/components/responses/401Unauthorized'
-        '403': 
-          $ref: '#/components/responses/403Forbidden'
-        '404': 
-          $ref: '#/components/responses/404NotFound'
-        '500':
-          $ref: '#/components/responses/500InternalError'
   
 security:
   - BearerAuth: []
@@ -1276,58 +1212,6 @@ components:
               $ref: '#/components/schemas/User'
             deployment:
               $ref: '#/components/schemas/Deployment'
-    Notifications:
-      type: array
-      items:
-        $ref: '#/components/schemas/Notification'
-    Notification:
-      type: object
-      properties:
-        id:
-          type: number
-        type:
-          type: string
-          enum:
-            - deployment_created
-            - deployment_updated
-            - approval_requested
-            - approval_responded
-        repo:
-          type: object
-          properties:
-            namespace:
-              type: string
-            name:
-              type: string
-        deployment:
-          type: object
-          properties:
-            number:
-              type: string
-            type:
-              type: string
-            ref:
-              type: string
-            status:
-              type: string
-            login:
-              type: string
-        approval:
-          type: object
-          properties:
-            status:
-              type: string
-            login:
-              type: string
-        notified:
-          type: boolean
-          description: notified means it is notified by Chat or browser
-        checked:
-          type: boolean
-        created_at:
-          type: string
-        updated_at:
-          type: string
     Error:
       type: object
       properties:

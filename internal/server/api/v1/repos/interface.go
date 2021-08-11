@@ -6,7 +6,6 @@ import (
 	"context"
 
 	"github.com/hanjunlee/gitploy/ent"
-	"github.com/hanjunlee/gitploy/ent/notification"
 	"github.com/hanjunlee/gitploy/vo"
 )
 
@@ -42,7 +41,7 @@ type (
 		UpdateApproval(ctx context.Context, a *ent.Approval) (*ent.Approval, error)
 		DeleteApproval(ctx context.Context, a *ent.Approval) error
 
-		Publish(ctx context.Context, typ notification.Type, r *ent.Repo, d *ent.Deployment, a *ent.Approval) error
+		CreateEvent(ctx context.Context, e *ent.Event) (*ent.Event, error)
 
 		ListCommits(ctx context.Context, u *ent.User, r *ent.Repo, branch string, page, perPage int) ([]*vo.Commit, error)
 		CompareCommits(ctx context.Context, u *ent.User, r *ent.Repo, base, head string, page, perPage int) ([]*vo.Commit, error)
