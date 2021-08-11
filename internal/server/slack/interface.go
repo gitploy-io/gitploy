@@ -6,7 +6,6 @@ import (
 	"context"
 
 	"github.com/hanjunlee/gitploy/ent"
-	"github.com/hanjunlee/gitploy/ent/notification"
 	"github.com/hanjunlee/gitploy/vo"
 )
 
@@ -35,8 +34,6 @@ type (
 
 		CreateApproval(ctx context.Context, a *ent.Approval) (*ent.Approval, error)
 
-		Publish(ctx context.Context, typ notification.Type, r *ent.Repo, d *ent.Deployment, a *ent.Approval) error
-		Subscribe(func(*ent.User, *ent.Notification)) error
 		SubscribeEvent(fn func(e *ent.Event)) error
 		UnsubscribeEvent(fn func(e *ent.Event)) error
 

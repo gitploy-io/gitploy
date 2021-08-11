@@ -15,7 +15,6 @@ import (
 	"github.com/hanjunlee/gitploy/ent/deployment"
 	"github.com/hanjunlee/gitploy/ent/deploymentstatus"
 	"github.com/hanjunlee/gitploy/ent/event"
-	"github.com/hanjunlee/gitploy/ent/notification"
 	"github.com/hanjunlee/gitploy/ent/notificationrecord"
 	"github.com/hanjunlee/gitploy/ent/perm"
 	"github.com/hanjunlee/gitploy/ent/repo"
@@ -43,8 +42,6 @@ type Client struct {
 	DeploymentStatus *DeploymentStatusClient
 	// Event is the client for interacting with the Event builders.
 	Event *EventClient
-	// Notification is the client for interacting with the Notification builders.
-	Notification *NotificationClient
 	// NotificationRecord is the client for interacting with the NotificationRecord builders.
 	NotificationRecord *NotificationRecordClient
 	// Perm is the client for interacting with the Perm builders.
@@ -72,7 +69,6 @@ func (c *Client) init() {
 	c.Deployment = NewDeploymentClient(c.config)
 	c.DeploymentStatus = NewDeploymentStatusClient(c.config)
 	c.Event = NewEventClient(c.config)
-	c.Notification = NewNotificationClient(c.config)
 	c.NotificationRecord = NewNotificationRecordClient(c.config)
 	c.Perm = NewPermClient(c.config)
 	c.Repo = NewRepoClient(c.config)
@@ -116,7 +112,6 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Deployment:         NewDeploymentClient(cfg),
 		DeploymentStatus:   NewDeploymentStatusClient(cfg),
 		Event:              NewEventClient(cfg),
-		Notification:       NewNotificationClient(cfg),
 		NotificationRecord: NewNotificationRecordClient(cfg),
 		Perm:               NewPermClient(cfg),
 		Repo:               NewRepoClient(cfg),
@@ -145,7 +140,6 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Deployment:         NewDeploymentClient(cfg),
 		DeploymentStatus:   NewDeploymentStatusClient(cfg),
 		Event:              NewEventClient(cfg),
-		Notification:       NewNotificationClient(cfg),
 		NotificationRecord: NewNotificationRecordClient(cfg),
 		Perm:               NewPermClient(cfg),
 		Repo:               NewRepoClient(cfg),
@@ -185,7 +179,6 @@ func (c *Client) Use(hooks ...Hook) {
 	c.Deployment.Use(hooks...)
 	c.DeploymentStatus.Use(hooks...)
 	c.Event.Use(hooks...)
-	c.Notification.Use(hooks...)
 	c.NotificationRecord.Use(hooks...)
 	c.Perm.Use(hooks...)
 	c.Repo.Use(hooks...)
@@ -988,112 +981,6 @@ func (c *EventClient) Hooks() []Hook {
 	return c.hooks.Event
 }
 
-// NotificationClient is a client for the Notification schema.
-type NotificationClient struct {
-	config
-}
-
-// NewNotificationClient returns a client for the Notification from the given config.
-func NewNotificationClient(c config) *NotificationClient {
-	return &NotificationClient{config: c}
-}
-
-// Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `notification.Hooks(f(g(h())))`.
-func (c *NotificationClient) Use(hooks ...Hook) {
-	c.hooks.Notification = append(c.hooks.Notification, hooks...)
-}
-
-// Create returns a create builder for Notification.
-func (c *NotificationClient) Create() *NotificationCreate {
-	mutation := newNotificationMutation(c.config, OpCreate)
-	return &NotificationCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// CreateBulk returns a builder for creating a bulk of Notification entities.
-func (c *NotificationClient) CreateBulk(builders ...*NotificationCreate) *NotificationCreateBulk {
-	return &NotificationCreateBulk{config: c.config, builders: builders}
-}
-
-// Update returns an update builder for Notification.
-func (c *NotificationClient) Update() *NotificationUpdate {
-	mutation := newNotificationMutation(c.config, OpUpdate)
-	return &NotificationUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOne returns an update builder for the given entity.
-func (c *NotificationClient) UpdateOne(n *Notification) *NotificationUpdateOne {
-	mutation := newNotificationMutation(c.config, OpUpdateOne, withNotification(n))
-	return &NotificationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOneID returns an update builder for the given id.
-func (c *NotificationClient) UpdateOneID(id int) *NotificationUpdateOne {
-	mutation := newNotificationMutation(c.config, OpUpdateOne, withNotificationID(id))
-	return &NotificationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// Delete returns a delete builder for Notification.
-func (c *NotificationClient) Delete() *NotificationDelete {
-	mutation := newNotificationMutation(c.config, OpDelete)
-	return &NotificationDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// DeleteOne returns a delete builder for the given entity.
-func (c *NotificationClient) DeleteOne(n *Notification) *NotificationDeleteOne {
-	return c.DeleteOneID(n.ID)
-}
-
-// DeleteOneID returns a delete builder for the given id.
-func (c *NotificationClient) DeleteOneID(id int) *NotificationDeleteOne {
-	builder := c.Delete().Where(notification.ID(id))
-	builder.mutation.id = &id
-	builder.mutation.op = OpDeleteOne
-	return &NotificationDeleteOne{builder}
-}
-
-// Query returns a query builder for Notification.
-func (c *NotificationClient) Query() *NotificationQuery {
-	return &NotificationQuery{
-		config: c.config,
-	}
-}
-
-// Get returns a Notification entity by its id.
-func (c *NotificationClient) Get(ctx context.Context, id int) (*Notification, error) {
-	return c.Query().Where(notification.ID(id)).Only(ctx)
-}
-
-// GetX is like Get, but panics if an error occurs.
-func (c *NotificationClient) GetX(ctx context.Context, id int) *Notification {
-	obj, err := c.Get(ctx, id)
-	if err != nil {
-		panic(err)
-	}
-	return obj
-}
-
-// QueryUser queries the user edge of a Notification.
-func (c *NotificationClient) QueryUser(n *Notification) *UserQuery {
-	query := &UserQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := n.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(notification.Table, notification.FieldID, id),
-			sqlgraph.To(user.Table, user.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, notification.UserTable, notification.UserColumn),
-		)
-		fromV = sqlgraph.Neighbors(n.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// Hooks returns the client hooks.
-func (c *NotificationClient) Hooks() []Hook {
-	return c.hooks.Notification
-}
-
 // NotificationRecordClient is a client for the NotificationRecord schema.
 type NotificationRecordClient struct {
 	config
@@ -1602,22 +1489,6 @@ func (c *UserClient) QueryApprovals(u *User) *ApprovalQuery {
 			sqlgraph.From(user.Table, user.FieldID, id),
 			sqlgraph.To(approval.Table, approval.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, user.ApprovalsTable, user.ApprovalsColumn),
-		)
-		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryNotification queries the notification edge of a User.
-func (c *UserClient) QueryNotification(u *User) *NotificationQuery {
-	query := &NotificationQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := u.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(user.Table, user.FieldID, id),
-			sqlgraph.To(notification.Table, notification.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, user.NotificationTable, user.NotificationColumn),
 		)
 		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
 		return fromV, nil

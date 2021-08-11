@@ -10,7 +10,6 @@ import (
 
 	gomock "github.com/golang/mock/gomock"
 	ent "github.com/hanjunlee/gitploy/ent"
-	notification "github.com/hanjunlee/gitploy/ent/notification"
 )
 
 // MockInteractor is a mock of Interactor interface.
@@ -79,20 +78,6 @@ func (m *MockInteractor) FindDeploymentByUID(ctx context.Context, uid int64) (*e
 func (mr *MockInteractorMockRecorder) FindDeploymentByUID(ctx, uid interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindDeploymentByUID", reflect.TypeOf((*MockInteractor)(nil).FindDeploymentByUID), ctx, uid)
-}
-
-// Publish mocks base method.
-func (m *MockInteractor) Publish(ctx context.Context, typ notification.Type, r *ent.Repo, d *ent.Deployment, a *ent.Approval) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Publish", ctx, typ, r, d, a)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// Publish indicates an expected call of Publish.
-func (mr *MockInteractorMockRecorder) Publish(ctx, typ, r, d, a interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Publish", reflect.TypeOf((*MockInteractor)(nil).Publish), ctx, typ, r, d, a)
 }
 
 // UpdateDeployment mocks base method.

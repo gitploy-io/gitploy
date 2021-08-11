@@ -8,8 +8,6 @@ import (
 
 type (
 	Interactor interface {
-		Subscribe(func(*ent.User, *ent.Notification)) error
-		Unsubscribe(func(*ent.User, *ent.Notification)) error
 		SubscribeEvent(fn func(e *ent.Event)) error
 		UnsubscribeEvent(fn func(e *ent.Event)) error
 		FindDeploymentByID(ctx context.Context, id int) (*ent.Deployment, error)

@@ -24,9 +24,6 @@ type DeploymentStatus func(*sql.Selector)
 // Event is the predicate function for event builders.
 type Event func(*sql.Selector)
 
-// Notification is the predicate function for notification builders.
-type Notification func(*sql.Selector)
-
 // NotificationRecord is the predicate function for notificationrecord builders.
 type NotificationRecord func(*sql.Selector)
 

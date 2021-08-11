@@ -10,7 +10,6 @@ import (
 
 	gomock "github.com/golang/mock/gomock"
 	ent "github.com/hanjunlee/gitploy/ent"
-	notification "github.com/hanjunlee/gitploy/ent/notification"
 	vo "github.com/hanjunlee/gitploy/vo"
 )
 
@@ -351,20 +350,6 @@ func (mr *MockInteractorMockRecorder) ListUsersOfEvent(ctx, e interface{}) *gomo
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListUsersOfEvent", reflect.TypeOf((*MockInteractor)(nil).ListUsersOfEvent), ctx, e)
 }
 
-// Publish mocks base method.
-func (m *MockInteractor) Publish(ctx context.Context, typ notification.Type, r *ent.Repo, d *ent.Deployment, a *ent.Approval) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Publish", ctx, typ, r, d, a)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// Publish indicates an expected call of Publish.
-func (mr *MockInteractorMockRecorder) Publish(ctx, typ, r, d, a interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Publish", reflect.TypeOf((*MockInteractor)(nil).Publish), ctx, typ, r, d, a)
-}
-
 // Rollback mocks base method.
 func (m *MockInteractor) Rollback(ctx context.Context, u *ent.User, re *ent.Repo, d *ent.Deployment, env *vo.Env) (*ent.Deployment, error) {
 	m.ctrl.T.Helper()
@@ -393,20 +378,6 @@ func (m *MockInteractor) SaveChatUser(ctx context.Context, u *ent.User, cu *ent.
 func (mr *MockInteractorMockRecorder) SaveChatUser(ctx, u, cu interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SaveChatUser", reflect.TypeOf((*MockInteractor)(nil).SaveChatUser), ctx, u, cu)
-}
-
-// Subscribe mocks base method.
-func (m *MockInteractor) Subscribe(arg0 func(*ent.User, *ent.Notification)) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Subscribe", arg0)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// Subscribe indicates an expected call of Subscribe.
-func (mr *MockInteractorMockRecorder) Subscribe(arg0 interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Subscribe", reflect.TypeOf((*MockInteractor)(nil).Subscribe), arg0)
 }
 
 // SubscribeEvent mocks base method.

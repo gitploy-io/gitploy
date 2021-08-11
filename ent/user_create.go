@@ -13,7 +13,6 @@ import (
 	"github.com/hanjunlee/gitploy/ent/approval"
 	"github.com/hanjunlee/gitploy/ent/chatuser"
 	"github.com/hanjunlee/gitploy/ent/deployment"
-	"github.com/hanjunlee/gitploy/ent/notification"
 	"github.com/hanjunlee/gitploy/ent/perm"
 	"github.com/hanjunlee/gitploy/ent/user"
 )
@@ -201,21 +200,6 @@ func (uc *UserCreate) AddApprovals(a ...*Approval) *UserCreate {
 		ids[i] = a[i].ID
 	}
 	return uc.AddApprovalIDs(ids...)
-}
-
-// AddNotificationIDs adds the "notification" edge to the Notification entity by IDs.
-func (uc *UserCreate) AddNotificationIDs(ids ...int) *UserCreate {
-	uc.mutation.AddNotificationIDs(ids...)
-	return uc
-}
-
-// AddNotification adds the "notification" edges to the Notification entity.
-func (uc *UserCreate) AddNotification(n ...*Notification) *UserCreate {
-	ids := make([]int, len(n))
-	for i := range n {
-		ids[i] = n[i].ID
-	}
-	return uc.AddNotificationIDs(ids...)
 }
 
 // Mutation returns the UserMutation object of the builder.
@@ -510,25 +494,6 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
 					Column: approval.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := uc.mutation.NotificationIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   user.NotificationTable,
-			Columns: []string{user.NotificationColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: notification.FieldID,
 				},
 			},
 		}

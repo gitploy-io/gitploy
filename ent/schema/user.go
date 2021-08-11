@@ -59,10 +59,6 @@ func (User) Edges() []ent.Edge {
 			}),
 		edge.To("deployments", Deployment.Type),
 		edge.To("approvals", Approval.Type),
-		edge.To("notification", Notification.Type).
-			Annotations(entsql.Annotation{
-				OnDelete: entsql.Cascade,
-			}),
 	}
 }
 

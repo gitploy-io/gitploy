@@ -145,7 +145,7 @@ func (s *Stream) hasPermForEvent(ctx context.Context, u *ent.User, e *ent.Event)
 func randstr() string {
 	var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
 
-	b := make([]rune, 8)
+	b := make([]rune, 4)
 	for i := range b {
 		b[i] = letterRunes[rand.Intn(len(letterRunes))]
 	}

@@ -224,52 +224,6 @@ var (
 			},
 		},
 	}
-	// NotificationsColumns holds the columns for the "notifications" table.
-	NotificationsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "type", Type: field.TypeEnum, Enums: []string{"deployment_created", "deployment_updated", "approval_requested", "approval_responded"}},
-		{Name: "repo_namespace", Type: field.TypeString},
-		{Name: "repo_name", Type: field.TypeString},
-		{Name: "deployment_number", Type: field.TypeInt},
-		{Name: "deployment_type", Type: field.TypeString},
-		{Name: "deployment_ref", Type: field.TypeString},
-		{Name: "deployment_env", Type: field.TypeString},
-		{Name: "deployment_status", Type: field.TypeString},
-		{Name: "deployment_login", Type: field.TypeString},
-		{Name: "approval_status", Type: field.TypeString, Nullable: true},
-		{Name: "approval_login", Type: field.TypeString, Nullable: true},
-		{Name: "notified", Type: field.TypeBool, Default: false},
-		{Name: "checked", Type: field.TypeBool, Default: false},
-		{Name: "created_at", Type: field.TypeTime},
-		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "user_id", Type: field.TypeString, Nullable: true},
-	}
-	// NotificationsTable holds the schema information for the "notifications" table.
-	NotificationsTable = &schema.Table{
-		Name:       "notifications",
-		Columns:    NotificationsColumns,
-		PrimaryKey: []*schema.Column{NotificationsColumns[0]},
-		ForeignKeys: []*schema.ForeignKey{
-			{
-				Symbol:     "notifications_users_notification",
-				Columns:    []*schema.Column{NotificationsColumns[16]},
-				RefColumns: []*schema.Column{UsersColumns[0]},
-				OnDelete:   schema.Cascade,
-			},
-		},
-		Indexes: []*schema.Index{
-			{
-				Name:    "notification_user_id_created_at",
-				Unique:  false,
-				Columns: []*schema.Column{NotificationsColumns[16], NotificationsColumns[14]},
-			},
-			{
-				Name:    "notification_created_at",
-				Unique:  false,
-				Columns: []*schema.Column{NotificationsColumns[14]},
-			},
-		},
-	}
 	// NotificationRecordsColumns holds the columns for the "notification_records" table.
 	NotificationRecordsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
@@ -374,7 +328,6 @@ var (
 		DeploymentsTable,
 		DeploymentStatusTable,
 		EventsTable,
-		NotificationsTable,
 		NotificationRecordsTable,
 		PermsTable,
 		ReposTable,
@@ -393,7 +346,6 @@ func init() {
 	DeploymentStatusTable.ForeignKeys[0].RefTable = DeploymentsTable
 	EventsTable.ForeignKeys[0].RefTable = ApprovalsTable
 	EventsTable.ForeignKeys[1].RefTable = DeploymentsTable
-	NotificationsTable.ForeignKeys[0].RefTable = UsersTable
 	NotificationRecordsTable.ForeignKeys[0].RefTable = EventsTable
 	PermsTable.ForeignKeys[0].RefTable = ReposTable
 	PermsTable.ForeignKeys[1].RefTable = UsersTable
