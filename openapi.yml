@@ -939,7 +939,7 @@ paths:
       summary: Get my information.
       responses:
         '200':
-          description: Ok
+          description: User
           content:
             application/json:
               schema:
@@ -948,7 +948,112 @@ paths:
           $ref: '#/components/responses/401Unauthorized'
         '500':
           $ref: '#/components/responses/500InternalError'
-  
+  /search/deployments:
+    get:
+      tags:
+        - Search
+      summary: Search deployments.
+      parameters:
+        - in: query
+          name: statuses
+          required: false
+          schema:
+            type: string
+            description: > 
+              Status list comma separated.
+        - in: query
+          name: owned
+          required: false
+          schema:
+            type: boolean
+            description: Own deployments.
+        - in: query
+          name: from
+          required: false
+          schema:
+            type: string
+            description: Begin of created_at
+            default: CURRENT_TIME - ACTIVE_DURATION
+        - in: query
+          name: to
+          required: false
+          schema:
+            type: string
+            description: End of created_at
+            default: CURRENT_TIME
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+            description: The page number
+        - in: query
+          name: per_page
+          schema:
+            type: integer
+            default: 30
+            description: The number per page
+      responses:
+        '200':
+          description: Returns deployments which matches to conditions.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Deployments'
+        '401': 
+          $ref: '#/components/responses/401Unauthorized'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+  /search/approval:
+    get:
+      tags:
+        - Search
+      summary: Search assigned approvals.
+      parameters:
+        - in: query
+          name: statuses
+          required: false
+          schema:
+            type: string
+            description: > 
+              Status list comma separated.
+        - in: query
+          name: from
+          required: false
+          schema:
+            type: string
+            description: Begin of created_at
+            default: CURRENT_TIME - ACTIVE_DURATION
+        - in: query
+          name: to
+          required: false
+          schema:
+            type: string
+            description: End of created_at
+            default: CURRENT_TIME
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+            description: The page number
+        - in: query
+          name: per_page
+          schema:
+            type: integer
+            default: 30
+            description: The number per page
+      responses:
+        '200':
+          description: Returns deployments which matches to conditions.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Deployments'
+        '401': 
+          $ref: '#/components/responses/401Unauthorized'
+        '500':
+          $ref: '#/components/responses/500InternalError'
 security:
   - BearerAuth: []
   - OAuth2:
