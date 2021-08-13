@@ -956,7 +956,7 @@ paths:
       parameters:
         - in: query
           name: statuses
-          required: false
+          required: true
           schema:
             type: string
             description: > 
@@ -972,15 +972,15 @@ paths:
           required: false
           schema:
             type: string
-            description: Begin of created_at
-            default: CURRENT_TIME - ACTIVE_DURATION
+            format: date-time
+            description: Begin of created_at.
         - in: query
           name: to
           required: false
           schema:
             type: string
-            description: End of created_at
-            default: CURRENT_TIME
+            format: date-time
+            description: End of created_at.
         - in: query
           name: page
           schema:
@@ -1004,7 +1004,7 @@ paths:
           $ref: '#/components/responses/401Unauthorized'
         '500':
           $ref: '#/components/responses/500InternalError'
-  /search/approval:
+  /search/approvals:
     get:
       tags:
         - Search
@@ -1012,7 +1012,7 @@ paths:
       parameters:
         - in: query
           name: statuses
-          required: false
+          required: true
           schema:
             type: string
             description: > 
@@ -1022,15 +1022,15 @@ paths:
           required: false
           schema:
             type: string
+            format: date-time
             description: Begin of created_at
-            default: CURRENT_TIME - ACTIVE_DURATION
         - in: query
           name: to
           required: false
           schema:
             type: string
+            format: date-time
             description: End of created_at
-            default: CURRENT_TIME
         - in: query
           name: page
           schema:

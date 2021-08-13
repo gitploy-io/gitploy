@@ -8,6 +8,7 @@ import (
 	"golang.org/x/oauth2"
 
 	"github.com/hanjunlee/gitploy/internal/server/api/v1/repos"
+	"github.com/hanjunlee/gitploy/internal/server/api/v1/search"
 	"github.com/hanjunlee/gitploy/internal/server/api/v1/stream"
 	"github.com/hanjunlee/gitploy/internal/server/api/v1/sync"
 	"github.com/hanjunlee/gitploy/internal/server/api/v1/users"
@@ -68,6 +69,7 @@ type (
 		users.Interactor
 		stream.Interactor
 		hooks.Interactor
+		search.Interactor
 	}
 )
 
@@ -153,6 +155,13 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 	{
 		s := stream.NewStream(c.Interactor)
 		streamv1.GET("/events", s.GetEvents)
+	}
+
+	searchapi := v1.Group("/search")
+	{
+		s := search.NewSearch(c.Interactor)
+		searchapi.GET("/deployments", s.SearchDeployments)
+		searchapi.GET("/approvals", s.SearchApprovals)
 	}
 
 	hooksapi := r.Group("/hooks")

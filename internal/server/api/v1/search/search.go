@@ -16,7 +16,7 @@ import (
 )
 
 const (
-	activeDuration = -30 * time.Minute
+	activeDuration = 30 * time.Minute
 )
 
 type (
@@ -26,14 +26,21 @@ type (
 	}
 )
 
+func NewSearch(i Interactor) *Search {
+	return &Search{
+		i:   i,
+		log: zap.L().Named("search"),
+	}
+}
+
 func (s *Search) SearchDeployments(c *gin.Context) {
 	ctx := c.Request.Context()
 
 	var (
 		statuses = c.DefaultQuery("statuses", "")
 		owned    = c.DefaultQuery("owned", "true")
-		from     = c.DefaultQuery("from", time.Now().Add(activeDuration).Format(time.RFC3339))
-		to       = c.DefaultQuery("to", time.Now().Format(time.RFC3339))
+		from     = c.DefaultQuery("from", time.Now().UTC().Add(-activeDuration).Format(time.RFC3339))
+		to       = c.DefaultQuery("to", time.Now().UTC().Format(time.RFC3339))
 		page     = c.DefaultQuery("page", "1")
 		perPage  = c.DefaultQuery("per_page", "30")
 	)
@@ -54,27 +61,27 @@ func (s *Search) SearchDeployments(c *gin.Context) {
 	}
 
 	if o, err = strconv.ParseBool(owned); err != nil {
-		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "Invalid format of \"owned\" parameter.")
+		gb.ErrorResponse(c, http.StatusBadRequest, "Invalid format of \"owned\" parameter.")
 		return
 	}
 
-	if f, err = time.Parse(from, time.RFC3339); err != nil {
-		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "Invalid format of \"from\" parameter, ISO format only.")
+	if f, err = time.Parse(time.RFC3339, from); err != nil {
+		gb.ErrorResponse(c, http.StatusBadRequest, "Invalid format of \"from\" parameter, RFC3339 format only.")
 		return
 	}
 
-	if t, err = time.Parse(to, time.RFC3339); err != nil {
-		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "Invalid format of \"to\" parameter, ISO format only.")
+	if t, err = time.Parse(time.RFC3339, to); err != nil {
+		gb.ErrorResponse(c, http.StatusBadRequest, "Invalid format of \"to\" parameter, RFC3339 format only.")
 		return
 	}
 
 	if p, err = strconv.Atoi(page); err != nil {
-		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "Invalid format of \"page\" parameter.")
+		gb.ErrorResponse(c, http.StatusBadRequest, "Invalid format of \"page\" parameter.")
 		return
 	}
 
 	if pp, err = strconv.Atoi(perPage); err != nil {
-		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "Invalid format of \"per_page\" parameter.")
+		gb.ErrorResponse(c, http.StatusBadRequest, "Invalid format of \"per_page\" parameter.")
 		return
 	}
 
@@ -100,8 +107,8 @@ func (s *Search) SearchApprovals(c *gin.Context) {
 
 	var (
 		statuses = c.DefaultQuery("statuses", "")
-		from     = c.DefaultQuery("from", time.Now().Add(activeDuration).Format(time.RFC3339))
-		to       = c.DefaultQuery("to", time.Now().Format(time.RFC3339))
+		from     = c.DefaultQuery("from", time.Now().UTC().Add(-activeDuration).Format(time.RFC3339))
+		to       = c.DefaultQuery("to", time.Now().UTC().Format(time.RFC3339))
 		page     = c.DefaultQuery("page", "1")
 		perPage  = c.DefaultQuery("per_page", "30")
 	)
@@ -120,23 +127,23 @@ func (s *Search) SearchApprovals(c *gin.Context) {
 		ss = append(ss, approval.Status(st))
 	}
 
-	if f, err = time.Parse(from, time.RFC3339); err != nil {
-		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "Invalid format of \"from\" parameter, ISO format only.")
+	if f, err = time.Parse(time.RFC3339, from); err != nil {
+		gb.ErrorResponse(c, http.StatusBadRequest, "Invalid format of \"from\" parameter, RFC3339 format only.")
 		return
 	}
 
-	if t, err = time.Parse(to, time.RFC3339); err != nil {
-		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "Invalid format of \"to\" parameter, ISO format only.")
+	if t, err = time.Parse(time.RFC3339, to); err != nil {
+		gb.ErrorResponse(c, http.StatusBadRequest, "Invalid format of \"to\" parameter, RFC3339 format only.")
 		return
 	}
 
 	if p, err = strconv.Atoi(page); err != nil {
-		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "Invalid format of \"page\" parameter.")
+		gb.ErrorResponse(c, http.StatusBadRequest, "Invalid format of \"page\" parameter.")
 		return
 	}
 
 	if pp, err = strconv.Atoi(perPage); err != nil {
-		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "Invalid format of \"per_page\" parameter.")
+		gb.ErrorResponse(c, http.StatusBadRequest, "Invalid format of \"per_page\" parameter.")
 		return
 	}
 
