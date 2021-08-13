@@ -8,6 +8,7 @@ import (
 	"github.com/hanjunlee/gitploy/ent"
 	"github.com/hanjunlee/gitploy/ent/deployment"
 	"github.com/hanjunlee/gitploy/ent/enttest"
+	"github.com/hanjunlee/gitploy/ent/migrate"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -33,6 +34,112 @@ func setupDeploymentTestClient(client *ent.Client, r *ent.Repo, u *ent.User) *en
 		SaveX(ctx)
 
 	return client
+}
+
+func TestStore_SearchDeployments(t *testing.T) {
+
+	client := enttest.Open(t, "sqlite3", "file:ent?mode=memory&cache=shared&_fk=1",
+		enttest.WithOptions(ent.Debug()),
+		enttest.WithMigrateOptions(migrate.WithForeignKeys(false)),
+	)
+	defer client.Close()
+
+	ctx := context.Background()
+
+	const (
+		u1 = "1"
+		u2 = "2"
+		r1 = "1"
+		r2 = "2"
+	)
+
+	client.Perm.
+		Create().
+		SetUserID(u1).
+		SetRepoID(r1).
+		SaveX(ctx)
+
+	client.Deployment.Create().
+		SetType(deployment.TypeBranch).
+		SetNumber(1).
+		SetRef("main").
+		SetSha("7e555a2").
+		SetEnv("local").
+		SetUserID(u1).
+		SetRepoID(r1).
+		SaveX(ctx)
+
+	client.Deployment.Create().
+		SetType(deployment.TypeBranch).
+		SetNumber(2).
+		SetRef("main").
+		SetSha("a20052a").
+		SetEnv("dev").
+		SetUserID(u2).
+		SetRepoID(r1).
+		SaveX(ctx)
+
+	t.Run("u1 searchs all deployments of r1.", func(t *testing.T) {
+		const (
+			owned   = false
+			page    = 1
+			perPage = 2
+		)
+
+		store := NewStore(client)
+
+		res, err := store.SearchDeployments(ctx,
+			&ent.User{ID: u1},
+			[]deployment.Status{
+				deployment.StatusWaiting,
+			},
+			owned,
+			time.Now().Add(-time.Minute),
+			time.Now(),
+			page,
+			perPage)
+		if err != nil {
+			t.Fatalf("SearchDeployments return an error: %s", err)
+			t.FailNow()
+		}
+
+		expected := 2
+		if len(res) != expected {
+			t.Fatalf("SearchDeployments = %v, wanted %v", res, expected)
+			t.FailNow()
+		}
+	})
+
+	t.Run("u1 searchs owned deployments of r1.", func(t *testing.T) {
+		const (
+			owned   = true
+			page    = 1
+			perPage = 2
+		)
+
+		store := NewStore(client)
+
+		res, err := store.SearchDeployments(ctx,
+			&ent.User{ID: u1},
+			[]deployment.Status{
+				deployment.StatusWaiting,
+			},
+			owned,
+			time.Now().Add(-time.Minute),
+			time.Now(),
+			page,
+			perPage)
+		if err != nil {
+			t.Fatalf("SearchDeployments return an error: %s", err)
+			t.FailNow()
+		}
+
+		expected := 1
+		if len(res) != expected {
+			t.Fatalf("SearchDeployments = %v, wanted %v", res, expected)
+			t.FailNow()
+		}
+	})
 }
 
 func TestStore_ListDeploymentsOfRepo(t *testing.T) {

@@ -4,10 +4,59 @@ import (
 	"context"
 	"time"
 
+	"entgo.io/ent/dialect/sql"
 	"github.com/hanjunlee/gitploy/ent"
 	"github.com/hanjunlee/gitploy/ent/deployment"
+	"github.com/hanjunlee/gitploy/ent/perm"
 	"github.com/hanjunlee/gitploy/ent/repo"
 )
+
+func (s *Store) SearchDeployments(ctx context.Context, u *ent.User, ss []deployment.Status, owned bool, from time.Time, to time.Time, page, perPage int) ([]*ent.Deployment, error) {
+	if owned {
+		return s.c.Deployment.
+			Query().
+			Where(
+				deployment.And(
+					deployment.UserIDEQ(u.ID),
+					deployment.StatusIn(ss...),
+					deployment.CreatedAtGTE(from),
+					deployment.CreatedAtLT(to),
+				),
+			).
+			Offset(offset(page, perPage)).
+			Limit(perPage).
+			All(ctx)
+	}
+
+	return s.c.Deployment.
+		Query().
+		Where(func(s *sql.Selector) {
+			t := sql.Table(perm.Table)
+
+			// Join with Perm for Repo.ID
+			s.Join(t).
+				On(
+					s.C(deployment.FieldRepoID),
+					s.C(perm.FieldRepoID),
+				).
+				Where(
+					sql.EQ(
+						t.C(perm.FieldUserID),
+						u.ID,
+					),
+				)
+		}).
+		Where(
+			deployment.And(
+				deployment.StatusIn(ss...),
+				deployment.CreatedAtGTE(from),
+				deployment.CreatedAtLT(to),
+			),
+		).
+		Offset(offset(page, perPage)).
+		Limit(perPage).
+		All(ctx)
+}
 
 func (s *Store) ListInactiveDeploymentsLessThanTime(ctx context.Context, t time.Time, page, perPage int) ([]*ent.Deployment, error) {
 	return s.c.Deployment.

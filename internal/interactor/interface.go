@@ -7,6 +7,8 @@ import (
 	"time"
 
 	"github.com/hanjunlee/gitploy/ent"
+	"github.com/hanjunlee/gitploy/ent/approval"
+	"github.com/hanjunlee/gitploy/ent/deployment"
 	"github.com/hanjunlee/gitploy/vo"
 )
 
@@ -34,6 +36,7 @@ type (
 		FindPermOfRepo(ctx context.Context, r *ent.Repo, u *ent.User) (*ent.Perm, error)
 		SyncPerm(ctx context.Context, user *ent.User, perm *ent.Perm, sync time.Time) error
 
+		SearchDeployments(ctx context.Context, u *ent.User, s []deployment.Status, owned bool, from time.Time, to time.Time, page, perPage int) ([]*ent.Deployment, error)
 		ListInactiveDeploymentsLessThanTime(ctx context.Context, t time.Time, page, perPage int) ([]*ent.Deployment, error)
 		ListDeploymentsOfRepo(ctx context.Context, r *ent.Repo, env string, status string, page, perPage int) ([]*ent.Deployment, error)
 		FindDeploymentByID(ctx context.Context, id int) (*ent.Deployment, error)
@@ -50,6 +53,7 @@ type (
 		FindChatCallbackByHash(ctx context.Context, state string) (*ent.ChatCallback, error)
 		CloseChatCallback(ctx context.Context, cb *ent.ChatCallback) (*ent.ChatCallback, error)
 
+		SearchApprovals(ctx context.Context, u *ent.User, s []approval.Status, from time.Time, to time.Time, page, perPage int) ([]*ent.Approval, error)
 		ListApprovals(ctx context.Context, d *ent.Deployment) ([]*ent.Approval, error)
 		FindApprovalByID(ctx context.Context, id int) (*ent.Approval, error)
 		FindApprovalOfUser(ctx context.Context, d *ent.Deployment, u *ent.User) (*ent.Approval, error)
