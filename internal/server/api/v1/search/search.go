@@ -39,8 +39,8 @@ func (s *Search) SearchDeployments(c *gin.Context) {
 	var (
 		statuses = c.DefaultQuery("statuses", "")
 		owned    = c.DefaultQuery("owned", "true")
-		from     = c.DefaultQuery("from", time.Now().UTC().Add(-activeDuration).Format(time.RFC3339))
-		to       = c.DefaultQuery("to", time.Now().UTC().Format(time.RFC3339))
+		from     = c.DefaultQuery("from", time.Now().Add(-activeDuration).Format(time.RFC3339))
+		to       = c.DefaultQuery("to", time.Now().Format(time.RFC3339))
 		page     = c.DefaultQuery("page", "1")
 		perPage  = c.DefaultQuery("per_page", "30")
 	)
@@ -107,8 +107,8 @@ func (s *Search) SearchApprovals(c *gin.Context) {
 
 	var (
 		statuses = c.DefaultQuery("statuses", "")
-		from     = c.DefaultQuery("from", time.Now().UTC().Add(-activeDuration).Format(time.RFC3339))
-		to       = c.DefaultQuery("to", time.Now().UTC().Format(time.RFC3339))
+		from     = c.DefaultQuery("from", time.Now().Add(-activeDuration).Format(time.RFC3339))
+		to       = c.DefaultQuery("to", time.Now().Format(time.RFC3339))
 		page     = c.DefaultQuery("page", "1")
 		perPage  = c.DefaultQuery("per_page", "30")
 	)
