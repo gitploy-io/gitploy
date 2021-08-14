@@ -1,10 +1,13 @@
-import { useEffect, useState } from 'react'
-import { shallowEqual } from 'react-redux'
+import { useEffect, useState } from "react"
+import { shallowEqual } from "react-redux"
 import { Layout, Menu, Row, Col, Result, Button, Drawer, Avatar, Dropdown, Badge} from "antd"
-import { BellOutlined } from "@ant-design/icons"
+import { SettingFilled } from "@ant-design/icons"
 
 import { useAppSelector, useAppDispatch } from "../redux/hooks"
-import { init } from "../redux/main"
+import { init, searchDeployments, searchApprovals, mainSlice } from "../redux/main"
+import { subscribeDeploymentEvent, subscribeApprovalEvent } from "../apis"
+
+import RecentActivities from "../components/RecentActivities"
 
 const { Header, Content, Footer } = Layout
 
@@ -14,23 +17,42 @@ export default function Main(props: any) {
         available, 
         authorized, 
         user,
+        deployments,
+        approvals
     } = useAppSelector(state => state.main, shallowEqual)
     const dispatch = useAppDispatch()
 
     useEffect(() => {
         dispatch(init())
+        dispatch(searchDeployments())
+        dispatch(searchApprovals())
 
+        const de = subscribeDeploymentEvent((d) => {
+            dispatch(mainSlice.actions.handleDeploymentEvent(d))
+        })
+
+        const ae = subscribeApprovalEvent((a) => {
+            dispatch(mainSlice.actions.handleApprovalEvent(a))
+        })
+
+        return () => {
+            de.close()
+            ae.close()
+        }
     }, [dispatch])
 
-    const [ isNotificationsVisible, setNotificationsVisible ] = useState(false)
+    const [ isRecentActivitiesVisible, setRecentActivitiesVisible ] = useState(false)
 
-    const showNotifications = () => {
-        setNotificationsVisible(true)
+    const showRecentActivities = () => {
+        setRecentActivitiesVisible(true)
     }
 
-    const onCloseNotifications = () => {
-        setNotificationsVisible(false)
+    const onCloseRecentActivities = () => {
+        setRecentActivitiesVisible(false)
     }
+
+    // Count of recent activities.
+    const countActivities = deployments.length + approvals.length
 
     let content: React.ReactElement
     if (!available) {
@@ -63,20 +85,27 @@ export default function Main(props: any) {
                         </Menu>
                     </Col>
                     <Col span="8" style={{textAlign: "right"}}>
-                        <Badge size="small" >
+                        <Badge 
+                            size="small" 
+                            count={countActivities}
+                        >
                             <Button 
                                 type="primary" 
                                 shape="circle" 
-                                icon={<BellOutlined />}
-                                onClick={showNotifications}></Button>
-
-                            </Badge>
-                        <Drawer title="Notifications"
+                                icon={<SettingFilled spin={countActivities !== 0 }/>}
+                                onClick={showRecentActivities}
+                            />
+                        </Badge>
+                        <Drawer title="Recent Activities"
                             placement="right"
                             width={400}
-                            visible={isNotificationsVisible}
-                            onClose={onCloseNotifications}>
-                                <p>Deployments, Approvals</p>
+                            visible={isRecentActivitiesVisible}
+                            onClose={onCloseRecentActivities}
+                        >
+                            <RecentActivities 
+                                deployments={deployments}
+                                approvals={approvals}
+                            />
                         </Drawer>
                         &nbsp; &nbsp;
 

@@ -129,6 +129,45 @@ function mapDataToDeploymentStatus(data: any): DeploymentStatus {
     }
 }
 
+function mapDeploymentStatusToString(status: LastDeploymentStatus): string {
+    switch (status) {
+        case LastDeploymentStatus.Waiting:
+            return "waiting"
+        case LastDeploymentStatus.Created:
+            return "created"
+        case LastDeploymentStatus.Running:
+            return "running"
+        case LastDeploymentStatus.Success:
+            return "success"
+        case LastDeploymentStatus.Failure:
+            return "failure"
+        case LastDeploymentStatus.Canceled:
+            return "canceled"
+        default:
+            return "waiting"
+    }
+
+}
+
+export const searchDeployments = async (statuses: LastDeploymentStatus[], owned: boolean, from?: Date, to?: Date, page = 1, perPage = 30): Promise<Deployment[]> => {
+    const ss: string[] = []
+    statuses.forEach((status) => {
+        ss.push(mapDeploymentStatusToString(status))
+    })
+
+    const fromParam = (from)? `from=${from.toISOString()}` : ""
+    const toParam = (to)? `&to=to.toISOString()` : ""
+    
+    const deployments: Deployment[] = await _fetch(`${instance}/api/v1/search/deployments?statuses=${ss.join(",")}&owned=${owned}&${fromParam}&${toParam}&page=${page}&per_page=${perPage}`, {
+        headers,
+        credentials: 'same-origin',
+    })
+        .then(response => response.json())
+        .then(ds => ds.map((d: any): Deployment => mapDataToDeployment(d)))
+
+    return deployments
+}
+
 export const listDeployments = async (repoId: string, env: string, status: string, page: number, perPage: number): Promise<Deployment[]> => {
     const deployments: Deployment[] = await _fetch(`${instance}/api/v1/repos/${repoId}/deployments?env=${env}&status=${status}&page=${page}&per_page=${perPage}`, {
         headers,

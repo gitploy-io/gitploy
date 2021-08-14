@@ -2,10 +2,31 @@ package store
 
 import (
 	"context"
+	"time"
 
 	"github.com/hanjunlee/gitploy/ent"
 	"github.com/hanjunlee/gitploy/ent/approval"
 )
+
+func (s *Store) SearchApprovals(ctx context.Context, u *ent.User, ss []approval.Status, from time.Time, to time.Time, page, perPage int) ([]*ent.Approval, error) {
+	return s.c.Approval.
+		Query().
+		Where(
+			approval.And(
+				approval.UserID(u.ID),
+				approval.StatusIn(ss...),
+				approval.CreatedAtGTE(from),
+				approval.CreatedAtLT(to),
+			),
+		).
+		WithUser().
+		WithDeployment(func(dq *ent.DeploymentQuery) {
+			dq.WithRepo()
+		}).
+		Offset(offset(page, perPage)).
+		Limit(perPage).
+		All(ctx)
+}
 
 func (s *Store) ListApprovals(ctx context.Context, d *ent.Deployment) ([]*ent.Approval, error) {
 	return s.c.Approval.
@@ -14,7 +35,9 @@ func (s *Store) ListApprovals(ctx context.Context, d *ent.Deployment) ([]*ent.Ap
 			approval.DeploymentIDEQ(d.ID),
 		).
 		WithUser().
-		WithDeployment().
+		WithDeployment(func(dq *ent.DeploymentQuery) {
+			dq.WithRepo()
+		}).
 		All(ctx)
 }
 
@@ -25,7 +48,9 @@ func (s *Store) FindApprovalByID(ctx context.Context, id int) (*ent.Approval, er
 			approval.IDEQ(id),
 		).
 		WithUser().
-		WithDeployment().
+		WithDeployment(func(dq *ent.DeploymentQuery) {
+			dq.WithRepo()
+		}).
 		First(ctx)
 }
 
@@ -39,7 +64,9 @@ func (s *Store) FindApprovalOfUser(ctx context.Context, d *ent.Deployment, u *en
 			),
 		).
 		WithUser().
-		WithDeployment().
+		WithDeployment(func(dq *ent.DeploymentQuery) {
+			dq.WithRepo()
+		}).
 		First(ctx)
 }
 

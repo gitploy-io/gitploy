@@ -11,6 +11,8 @@ import (
 
 	gomock "github.com/golang/mock/gomock"
 	ent "github.com/hanjunlee/gitploy/ent"
+	approval "github.com/hanjunlee/gitploy/ent/approval"
+	deployment "github.com/hanjunlee/gitploy/ent/deployment"
 	vo "github.com/hanjunlee/gitploy/vo"
 )
 
@@ -543,6 +545,36 @@ func (m *MockStore) ListSortedReposOfUser(ctx context.Context, u *ent.User, q st
 func (mr *MockStoreMockRecorder) ListSortedReposOfUser(ctx, u, q, page, perPage interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListSortedReposOfUser", reflect.TypeOf((*MockStore)(nil).ListSortedReposOfUser), ctx, u, q, page, perPage)
+}
+
+// SearchApprovals mocks base method.
+func (m *MockStore) SearchApprovals(ctx context.Context, u *ent.User, s []approval.Status, from, to time.Time, page, perPage int) ([]*ent.Approval, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SearchApprovals", ctx, u, s, from, to, page, perPage)
+	ret0, _ := ret[0].([]*ent.Approval)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// SearchApprovals indicates an expected call of SearchApprovals.
+func (mr *MockStoreMockRecorder) SearchApprovals(ctx, u, s, from, to, page, perPage interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SearchApprovals", reflect.TypeOf((*MockStore)(nil).SearchApprovals), ctx, u, s, from, to, page, perPage)
+}
+
+// SearchDeployments mocks base method.
+func (m *MockStore) SearchDeployments(ctx context.Context, u *ent.User, s []deployment.Status, owned bool, from, to time.Time, page, perPage int) ([]*ent.Deployment, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SearchDeployments", ctx, u, s, owned, from, to, page, perPage)
+	ret0, _ := ret[0].([]*ent.Deployment)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// SearchDeployments indicates an expected call of SearchDeployments.
+func (mr *MockStoreMockRecorder) SearchDeployments(ctx, u, s, owned, from, to, page, perPage interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SearchDeployments", reflect.TypeOf((*MockStore)(nil).SearchDeployments), ctx, u, s, owned, from, to, page, perPage)
 }
 
 // SyncPerm mocks base method.
