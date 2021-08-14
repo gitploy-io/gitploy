@@ -11,7 +11,7 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/hanjunlee/gitploy/ent"
-	"github.com/hanjunlee/gitploy/ent/chatcallback"
+	"github.com/hanjunlee/gitploy/ent/callback"
 	"github.com/hanjunlee/gitploy/ent/deployment"
 	"github.com/hanjunlee/gitploy/ent/event"
 	"github.com/hanjunlee/gitploy/vo"
@@ -108,8 +108,9 @@ func (s *Slack) handleDeployCmd(c *gin.Context) {
 	}
 
 	// Create a new callback to interact with submissions.
-	cb, err := s.i.CreateChatCallback(ctx, cu, r, &ent.ChatCallback{
-		Type: chatcallback.TypeDeploy,
+	cb, err := s.i.CreateCallback(ctx, &ent.Callback{
+		Type:   callback.TypeDeploy,
+		RepoID: r.ID,
 	})
 	if err != nil {
 		s.log.Error("It has failed to create a new callback.", zap.Error(err))
@@ -284,9 +285,9 @@ func (s *Slack) interactDeploy(c *gin.Context) {
 	// InteractionCallbackParse always to be parsed successfully because
 	// it was called in the Interact method.
 	itr, _ := s.InteractionCallbackParse(c.Request)
-	cb, _ := s.i.FindChatCallbackByHash(ctx, itr.View.CallbackID)
+	cb, _ := s.i.FindCallbackByHash(ctx, itr.View.CallbackID)
 
-	cu, _ := s.i.FindChatUserByID(ctx, cb.Edges.ChatUser.ID)
+	cu, _ := s.i.FindChatUserByID(ctx, itr.User.ID)
 
 	// Parse view submission, and
 	// validate values.

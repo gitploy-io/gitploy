@@ -50,21 +50,6 @@ func (mr *MockInteractorMockRecorder) CheckNotificationRecordOfEvent(ctx, e inte
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CheckNotificationRecordOfEvent", reflect.TypeOf((*MockInteractor)(nil).CheckNotificationRecordOfEvent), ctx, e)
 }
 
-// CloseChatCallback mocks base method.
-func (m *MockInteractor) CloseChatCallback(ctx context.Context, cb *ent.ChatCallback) (*ent.ChatCallback, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CloseChatCallback", ctx, cb)
-	ret0, _ := ret[0].(*ent.ChatCallback)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// CloseChatCallback indicates an expected call of CloseChatCallback.
-func (mr *MockInteractorMockRecorder) CloseChatCallback(ctx, cb interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CloseChatCallback", reflect.TypeOf((*MockInteractor)(nil).CloseChatCallback), ctx, cb)
-}
-
 // CreateApproval mocks base method.
 func (m *MockInteractor) CreateApproval(ctx context.Context, a *ent.Approval) (*ent.Approval, error) {
 	m.ctrl.T.Helper()
@@ -80,19 +65,19 @@ func (mr *MockInteractorMockRecorder) CreateApproval(ctx, a interface{}) *gomock
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateApproval", reflect.TypeOf((*MockInteractor)(nil).CreateApproval), ctx, a)
 }
 
-// CreateChatCallback mocks base method.
-func (m *MockInteractor) CreateChatCallback(ctx context.Context, cu *ent.ChatUser, repo *ent.Repo, cb *ent.ChatCallback) (*ent.ChatCallback, error) {
+// CreateCallback mocks base method.
+func (m *MockInteractor) CreateCallback(ctx context.Context, cb *ent.Callback) (*ent.Callback, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateChatCallback", ctx, cu, repo, cb)
-	ret0, _ := ret[0].(*ent.ChatCallback)
+	ret := m.ctrl.Call(m, "CreateCallback", ctx, cb)
+	ret0, _ := ret[0].(*ent.Callback)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// CreateChatCallback indicates an expected call of CreateChatCallback.
-func (mr *MockInteractorMockRecorder) CreateChatCallback(ctx, cu, repo, cb interface{}) *gomock.Call {
+// CreateCallback indicates an expected call of CreateCallback.
+func (mr *MockInteractorMockRecorder) CreateCallback(ctx, cb interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateChatCallback", reflect.TypeOf((*MockInteractor)(nil).CreateChatCallback), ctx, cu, repo, cb)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateCallback", reflect.TypeOf((*MockInteractor)(nil).CreateCallback), ctx, cb)
 }
 
 // CreateEvent mocks base method.
@@ -125,19 +110,19 @@ func (mr *MockInteractorMockRecorder) Deploy(ctx, u, re, d, env interface{}) *go
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Deploy", reflect.TypeOf((*MockInteractor)(nil).Deploy), ctx, u, re, d, env)
 }
 
-// FindChatCallbackByHash mocks base method.
-func (m *MockInteractor) FindChatCallbackByHash(ctx context.Context, state string) (*ent.ChatCallback, error) {
+// FindCallbackByHash mocks base method.
+func (m *MockInteractor) FindCallbackByHash(ctx context.Context, hash string) (*ent.Callback, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FindChatCallbackByHash", ctx, state)
-	ret0, _ := ret[0].(*ent.ChatCallback)
+	ret := m.ctrl.Call(m, "FindCallbackByHash", ctx, hash)
+	ret0, _ := ret[0].(*ent.Callback)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// FindChatCallbackByHash indicates an expected call of FindChatCallbackByHash.
-func (mr *MockInteractorMockRecorder) FindChatCallbackByHash(ctx, state interface{}) *gomock.Call {
+// FindCallbackByHash indicates an expected call of FindCallbackByHash.
+func (mr *MockInteractorMockRecorder) FindCallbackByHash(ctx, hash interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindChatCallbackByHash", reflect.TypeOf((*MockInteractor)(nil).FindChatCallbackByHash), ctx, state)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindCallbackByHash", reflect.TypeOf((*MockInteractor)(nil).FindCallbackByHash), ctx, hash)
 }
 
 // FindChatUserByID mocks base method.

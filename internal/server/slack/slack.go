@@ -7,7 +7,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/hanjunlee/gitploy/ent"
-	"github.com/hanjunlee/gitploy/ent/chatcallback"
+	"github.com/hanjunlee/gitploy/ent/callback"
 	"github.com/slack-go/slack"
 	"go.uber.org/zap"
 	"golang.org/x/oauth2"
@@ -100,8 +100,7 @@ func (s *Slack) Interact(c *gin.Context) {
 		return
 	}
 
-	// TODO: change "state" into "hash".
-	cb, err := s.i.FindChatCallbackByHash(ctx, itr.View.CallbackID)
+	cb, err := s.i.FindCallbackByHash(ctx, itr.View.CallbackID)
 	if ent.IsNotFound(err) {
 		responseMessage(itr.Channel.ID, itr.ResponseURL, "The callback is not found. You can interact with Slack by only `/gitploy`.")
 		c.Status(http.StatusOK)
@@ -112,11 +111,9 @@ func (s *Slack) Interact(c *gin.Context) {
 		return
 	}
 
-	defer s.i.CloseChatCallback(ctx, cb)
-
-	if cb.Type == chatcallback.TypeDeploy {
+	if cb.Type == callback.TypeDeploy {
 		s.interactDeploy(c)
-	} else if cb.Type == chatcallback.TypeRollback {
+	} else if cb.Type == callback.TypeRollback {
 		s.interactRollback(c)
 	}
 }

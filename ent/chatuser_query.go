@@ -4,7 +4,6 @@ package ent
 
 import (
 	"context"
-	"database/sql/driver"
 	"errors"
 	"fmt"
 	"math"
@@ -13,7 +12,6 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/hanjunlee/gitploy/ent/chatcallback"
 	"github.com/hanjunlee/gitploy/ent/chatuser"
 	"github.com/hanjunlee/gitploy/ent/predicate"
 	"github.com/hanjunlee/gitploy/ent/user"
@@ -29,9 +27,8 @@ type ChatUserQuery struct {
 	fields     []string
 	predicates []predicate.ChatUser
 	// eager-loading edges.
-	withChatCallback *ChatCallbackQuery
-	withUser         *UserQuery
-	modifiers        []func(s *sql.Selector)
+	withUser  *UserQuery
+	modifiers []func(s *sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -66,28 +63,6 @@ func (cuq *ChatUserQuery) Unique(unique bool) *ChatUserQuery {
 func (cuq *ChatUserQuery) Order(o ...OrderFunc) *ChatUserQuery {
 	cuq.order = append(cuq.order, o...)
 	return cuq
-}
-
-// QueryChatCallback chains the current query on the "chat_callback" edge.
-func (cuq *ChatUserQuery) QueryChatCallback() *ChatCallbackQuery {
-	query := &ChatCallbackQuery{config: cuq.config}
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := cuq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := cuq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(chatuser.Table, chatuser.FieldID, selector),
-			sqlgraph.To(chatcallback.Table, chatcallback.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, chatuser.ChatCallbackTable, chatuser.ChatCallbackColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(cuq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
 }
 
 // QueryUser chains the current query on the "user" edge.
@@ -288,28 +263,16 @@ func (cuq *ChatUserQuery) Clone() *ChatUserQuery {
 		return nil
 	}
 	return &ChatUserQuery{
-		config:           cuq.config,
-		limit:            cuq.limit,
-		offset:           cuq.offset,
-		order:            append([]OrderFunc{}, cuq.order...),
-		predicates:       append([]predicate.ChatUser{}, cuq.predicates...),
-		withChatCallback: cuq.withChatCallback.Clone(),
-		withUser:         cuq.withUser.Clone(),
+		config:     cuq.config,
+		limit:      cuq.limit,
+		offset:     cuq.offset,
+		order:      append([]OrderFunc{}, cuq.order...),
+		predicates: append([]predicate.ChatUser{}, cuq.predicates...),
+		withUser:   cuq.withUser.Clone(),
 		// clone intermediate query.
 		sql:  cuq.sql.Clone(),
 		path: cuq.path,
 	}
-}
-
-// WithChatCallback tells the query-builder to eager-load the nodes that are connected to
-// the "chat_callback" edge. The optional arguments are used to configure the query builder of the edge.
-func (cuq *ChatUserQuery) WithChatCallback(opts ...func(*ChatCallbackQuery)) *ChatUserQuery {
-	query := &ChatCallbackQuery{config: cuq.config}
-	for _, opt := range opts {
-		opt(query)
-	}
-	cuq.withChatCallback = query
-	return cuq
 }
 
 // WithUser tells the query-builder to eager-load the nodes that are connected to
@@ -388,8 +351,7 @@ func (cuq *ChatUserQuery) sqlAll(ctx context.Context) ([]*ChatUser, error) {
 	var (
 		nodes       = []*ChatUser{}
 		_spec       = cuq.querySpec()
-		loadedTypes = [2]bool{
-			cuq.withChatCallback != nil,
+		loadedTypes = [1]bool{
 			cuq.withUser != nil,
 		}
 	)
@@ -414,31 +376,6 @@ func (cuq *ChatUserQuery) sqlAll(ctx context.Context) ([]*ChatUser, error) {
 	}
 	if len(nodes) == 0 {
 		return nodes, nil
-	}
-
-	if query := cuq.withChatCallback; query != nil {
-		fks := make([]driver.Value, 0, len(nodes))
-		nodeids := make(map[string]*ChatUser)
-		for i := range nodes {
-			fks = append(fks, nodes[i].ID)
-			nodeids[nodes[i].ID] = nodes[i]
-			nodes[i].Edges.ChatCallback = []*ChatCallback{}
-		}
-		query.Where(predicate.ChatCallback(func(s *sql.Selector) {
-			s.Where(sql.InValues(chatuser.ChatCallbackColumn, fks...))
-		}))
-		neighbors, err := query.All(ctx)
-		if err != nil {
-			return nil, err
-		}
-		for _, n := range neighbors {
-			fk := n.ChatUserID
-			node, ok := nodeids[fk]
-			if !ok {
-				return nil, fmt.Errorf(`unexpected foreign-key "chat_user_id" returned %v for node %v`, fk, n.ID)
-			}
-			node.Edges.ChatCallback = append(node.Edges.ChatCallback, n)
-		}
 	}
 
 	if query := cuq.withUser; query != nil {

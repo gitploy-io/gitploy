@@ -47,8 +47,8 @@ type RepoEdges struct {
 	Perms []*Perm `json:"perms,omitempty"`
 	// Deployments holds the value of the deployments edge.
 	Deployments []*Deployment `json:"deployments,omitempty"`
-	// ChatCallback holds the value of the chat_callback edge.
-	ChatCallback []*ChatCallback `json:"chat_callback,omitempty"`
+	// Callback holds the value of the callback edge.
+	Callback []*Callback `json:"callback,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [3]bool
@@ -72,13 +72,13 @@ func (e RepoEdges) DeploymentsOrErr() ([]*Deployment, error) {
 	return nil, &NotLoadedError{edge: "deployments"}
 }
 
-// ChatCallbackOrErr returns the ChatCallback value or an error if the edge
+// CallbackOrErr returns the Callback value or an error if the edge
 // was not loaded in eager-loading.
-func (e RepoEdges) ChatCallbackOrErr() ([]*ChatCallback, error) {
+func (e RepoEdges) CallbackOrErr() ([]*Callback, error) {
 	if e.loadedTypes[2] {
-		return e.ChatCallback, nil
+		return e.Callback, nil
 	}
-	return nil, &NotLoadedError{edge: "chat_callback"}
+	return nil, &NotLoadedError{edge: "callback"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -190,9 +190,9 @@ func (r *Repo) QueryDeployments() *DeploymentQuery {
 	return (&RepoClient{config: r.config}).QueryDeployments(r)
 }
 
-// QueryChatCallback queries the "chat_callback" edge of the Repo entity.
-func (r *Repo) QueryChatCallback() *ChatCallbackQuery {
-	return (&RepoClient{config: r.config}).QueryChatCallback(r)
+// QueryCallback queries the "callback" edge of the Repo entity.
+func (r *Repo) QueryCallback() *CallbackQuery {
+	return (&RepoClient{config: r.config}).QueryCallback(r)
 }
 
 // Update returns a builder for updating this Repo.

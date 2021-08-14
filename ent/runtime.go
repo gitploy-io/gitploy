@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/hanjunlee/gitploy/ent/approval"
-	"github.com/hanjunlee/gitploy/ent/chatcallback"
+	"github.com/hanjunlee/gitploy/ent/callback"
 	"github.com/hanjunlee/gitploy/ent/chatuser"
 	"github.com/hanjunlee/gitploy/ent/deployment"
 	"github.com/hanjunlee/gitploy/ent/deploymentstatus"
@@ -33,26 +33,22 @@ func init() {
 	approval.DefaultUpdatedAt = approvalDescUpdatedAt.Default.(func() time.Time)
 	// approval.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	approval.UpdateDefaultUpdatedAt = approvalDescUpdatedAt.UpdateDefault.(func() time.Time)
-	chatcallbackFields := schema.ChatCallback{}.Fields()
-	_ = chatcallbackFields
-	// chatcallbackDescHash is the schema descriptor for hash field.
-	chatcallbackDescHash := chatcallbackFields[0].Descriptor()
-	// chatcallback.DefaultHash holds the default value on creation for the hash field.
-	chatcallback.DefaultHash = chatcallbackDescHash.Default.(func() string)
-	// chatcallbackDescIsOpened is the schema descriptor for is_opened field.
-	chatcallbackDescIsOpened := chatcallbackFields[2].Descriptor()
-	// chatcallback.DefaultIsOpened holds the default value on creation for the is_opened field.
-	chatcallback.DefaultIsOpened = chatcallbackDescIsOpened.Default.(bool)
-	// chatcallbackDescCreatedAt is the schema descriptor for created_at field.
-	chatcallbackDescCreatedAt := chatcallbackFields[3].Descriptor()
-	// chatcallback.DefaultCreatedAt holds the default value on creation for the created_at field.
-	chatcallback.DefaultCreatedAt = chatcallbackDescCreatedAt.Default.(func() time.Time)
-	// chatcallbackDescUpdatedAt is the schema descriptor for updated_at field.
-	chatcallbackDescUpdatedAt := chatcallbackFields[4].Descriptor()
-	// chatcallback.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	chatcallback.DefaultUpdatedAt = chatcallbackDescUpdatedAt.Default.(func() time.Time)
-	// chatcallback.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
-	chatcallback.UpdateDefaultUpdatedAt = chatcallbackDescUpdatedAt.UpdateDefault.(func() time.Time)
+	callbackFields := schema.Callback{}.Fields()
+	_ = callbackFields
+	// callbackDescHash is the schema descriptor for hash field.
+	callbackDescHash := callbackFields[0].Descriptor()
+	// callback.DefaultHash holds the default value on creation for the hash field.
+	callback.DefaultHash = callbackDescHash.Default.(func() string)
+	// callbackDescCreatedAt is the schema descriptor for created_at field.
+	callbackDescCreatedAt := callbackFields[2].Descriptor()
+	// callback.DefaultCreatedAt holds the default value on creation for the created_at field.
+	callback.DefaultCreatedAt = callbackDescCreatedAt.Default.(func() time.Time)
+	// callbackDescUpdatedAt is the schema descriptor for updated_at field.
+	callbackDescUpdatedAt := callbackFields[3].Descriptor()
+	// callback.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	callback.DefaultUpdatedAt = callbackDescUpdatedAt.Default.(func() time.Time)
+	// callback.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	callback.UpdateDefaultUpdatedAt = callbackDescUpdatedAt.UpdateDefault.(func() time.Time)
 	chatuserFields := schema.ChatUser{}.Fields()
 	_ = chatuserFields
 	// chatuserDescCreatedAt is the schema descriptor for created_at field.

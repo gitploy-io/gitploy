@@ -9,7 +9,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/hanjunlee/gitploy/ent/approval"
-	"github.com/hanjunlee/gitploy/ent/chatcallback"
+	"github.com/hanjunlee/gitploy/ent/callback"
 	"github.com/hanjunlee/gitploy/ent/chatuser"
 	"github.com/hanjunlee/gitploy/ent/deployment"
 	"github.com/hanjunlee/gitploy/ent/deploymentstatus"
@@ -39,7 +39,7 @@ type OrderFunc func(*sql.Selector)
 func columnChecker(table string) func(string) error {
 	checks := map[string]func(string) bool{
 		approval.Table:           approval.ValidColumn,
-		chatcallback.Table:       chatcallback.ValidColumn,
+		callback.Table:           callback.ValidColumn,
 		chatuser.Table:           chatuser.ValidColumn,
 		deployment.Table:         deployment.ValidColumn,
 		deploymentstatus.Table:   deploymentstatus.ValidColumn,

@@ -21,9 +21,8 @@ type (
 
 		FindRepoOfUserByNamespaceName(ctx context.Context, u *ent.User, namespace, name string) (*ent.Repo, error)
 
-		CreateChatCallback(ctx context.Context, cu *ent.ChatUser, repo *ent.Repo, cb *ent.ChatCallback) (*ent.ChatCallback, error)
-		FindChatCallbackByHash(ctx context.Context, state string) (*ent.ChatCallback, error)
-		CloseChatCallback(ctx context.Context, cb *ent.ChatCallback) (*ent.ChatCallback, error)
+		CreateCallback(ctx context.Context, cb *ent.Callback) (*ent.Callback, error)
+		FindCallbackByHash(ctx context.Context, hash string) (*ent.Callback, error)
 
 		ListDeploymentsOfRepo(ctx context.Context, r *ent.Repo, env string, status string, page, perPage int) ([]*ent.Deployment, error)
 		FindDeploymentByID(ctx context.Context, id int) (*ent.Deployment, error)

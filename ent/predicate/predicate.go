@@ -9,8 +9,8 @@ import (
 // Approval is the predicate function for approval builders.
 type Approval func(*sql.Selector)
 
-// ChatCallback is the predicate function for chatcallback builders.
-type ChatCallback func(*sql.Selector)
+// Callback is the predicate function for callback builders.
+type Callback func(*sql.Selector)
 
 // ChatUser is the predicate function for chatuser builders.
 type ChatUser func(*sql.Selector)

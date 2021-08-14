@@ -25,19 +25,10 @@ const (
 	FieldUpdatedAt = "updated_at"
 	// FieldUserID holds the string denoting the user_id field in the database.
 	FieldUserID = "user_id"
-	// EdgeChatCallback holds the string denoting the chat_callback edge name in mutations.
-	EdgeChatCallback = "chat_callback"
 	// EdgeUser holds the string denoting the user edge name in mutations.
 	EdgeUser = "user"
 	// Table holds the table name of the chatuser in the database.
 	Table = "chat_users"
-	// ChatCallbackTable is the table that holds the chat_callback relation/edge.
-	ChatCallbackTable = "chat_callbacks"
-	// ChatCallbackInverseTable is the table name for the ChatCallback entity.
-	// It exists in this package in order to avoid circular dependency with the "chatcallback" package.
-	ChatCallbackInverseTable = "chat_callbacks"
-	// ChatCallbackColumn is the table column denoting the chat_callback relation/edge.
-	ChatCallbackColumn = "chat_user_id"
 	// UserTable is the table that holds the user relation/edge.
 	UserTable = "chat_users"
 	// UserInverseTable is the table name for the User entity.

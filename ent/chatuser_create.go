@@ -10,7 +10,6 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/hanjunlee/gitploy/ent/chatcallback"
 	"github.com/hanjunlee/gitploy/ent/chatuser"
 	"github.com/hanjunlee/gitploy/ent/user"
 )
@@ -84,21 +83,6 @@ func (cuc *ChatUserCreate) SetUserID(s string) *ChatUserCreate {
 func (cuc *ChatUserCreate) SetID(s string) *ChatUserCreate {
 	cuc.mutation.SetID(s)
 	return cuc
-}
-
-// AddChatCallbackIDs adds the "chat_callback" edge to the ChatCallback entity by IDs.
-func (cuc *ChatUserCreate) AddChatCallbackIDs(ids ...int) *ChatUserCreate {
-	cuc.mutation.AddChatCallbackIDs(ids...)
-	return cuc
-}
-
-// AddChatCallback adds the "chat_callback" edges to the ChatCallback entity.
-func (cuc *ChatUserCreate) AddChatCallback(c ...*ChatCallback) *ChatUserCreate {
-	ids := make([]int, len(c))
-	for i := range c {
-		ids[i] = c[i].ID
-	}
-	return cuc.AddChatCallbackIDs(ids...)
 }
 
 // SetUser sets the "user" edge to the User entity.
@@ -289,25 +273,6 @@ func (cuc *ChatUserCreate) createSpec() (*ChatUser, *sqlgraph.CreateSpec) {
 			Column: chatuser.FieldUpdatedAt,
 		})
 		_node.UpdatedAt = value
-	}
-	if nodes := cuc.mutation.ChatCallbackIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   chatuser.ChatCallbackTable,
-			Columns: []string{chatuser.ChatCallbackColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: chatcallback.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := cuc.mutation.UserIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

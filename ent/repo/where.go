@@ -1113,25 +1113,25 @@ func HasDeploymentsWith(preds ...predicate.Deployment) predicate.Repo {
 	})
 }
 
-// HasChatCallback applies the HasEdge predicate on the "chat_callback" edge.
-func HasChatCallback() predicate.Repo {
+// HasCallback applies the HasEdge predicate on the "callback" edge.
+func HasCallback() predicate.Repo {
 	return predicate.Repo(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(ChatCallbackTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, ChatCallbackTable, ChatCallbackColumn),
+			sqlgraph.To(CallbackTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, CallbackTable, CallbackColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasChatCallbackWith applies the HasEdge predicate on the "chat_callback" edge with a given conditions (other predicates).
-func HasChatCallbackWith(preds ...predicate.ChatCallback) predicate.Repo {
+// HasCallbackWith applies the HasEdge predicate on the "callback" edge with a given conditions (other predicates).
+func HasCallbackWith(preds ...predicate.Callback) predicate.Repo {
 	return predicate.Repo(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(ChatCallbackInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, ChatCallbackTable, ChatCallbackColumn),
+			sqlgraph.To(CallbackInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, CallbackTable, CallbackColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

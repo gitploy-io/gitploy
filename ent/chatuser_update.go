@@ -11,7 +11,6 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/hanjunlee/gitploy/ent/chatcallback"
 	"github.com/hanjunlee/gitploy/ent/chatuser"
 	"github.com/hanjunlee/gitploy/ent/predicate"
 	"github.com/hanjunlee/gitploy/ent/user"
@@ -80,21 +79,6 @@ func (cuu *ChatUserUpdate) SetUserID(s string) *ChatUserUpdate {
 	return cuu
 }
 
-// AddChatCallbackIDs adds the "chat_callback" edge to the ChatCallback entity by IDs.
-func (cuu *ChatUserUpdate) AddChatCallbackIDs(ids ...int) *ChatUserUpdate {
-	cuu.mutation.AddChatCallbackIDs(ids...)
-	return cuu
-}
-
-// AddChatCallback adds the "chat_callback" edges to the ChatCallback entity.
-func (cuu *ChatUserUpdate) AddChatCallback(c ...*ChatCallback) *ChatUserUpdate {
-	ids := make([]int, len(c))
-	for i := range c {
-		ids[i] = c[i].ID
-	}
-	return cuu.AddChatCallbackIDs(ids...)
-}
-
 // SetUser sets the "user" edge to the User entity.
 func (cuu *ChatUserUpdate) SetUser(u *User) *ChatUserUpdate {
 	return cuu.SetUserID(u.ID)
@@ -103,27 +87,6 @@ func (cuu *ChatUserUpdate) SetUser(u *User) *ChatUserUpdate {
 // Mutation returns the ChatUserMutation object of the builder.
 func (cuu *ChatUserUpdate) Mutation() *ChatUserMutation {
 	return cuu.mutation
-}
-
-// ClearChatCallback clears all "chat_callback" edges to the ChatCallback entity.
-func (cuu *ChatUserUpdate) ClearChatCallback() *ChatUserUpdate {
-	cuu.mutation.ClearChatCallback()
-	return cuu
-}
-
-// RemoveChatCallbackIDs removes the "chat_callback" edge to ChatCallback entities by IDs.
-func (cuu *ChatUserUpdate) RemoveChatCallbackIDs(ids ...int) *ChatUserUpdate {
-	cuu.mutation.RemoveChatCallbackIDs(ids...)
-	return cuu
-}
-
-// RemoveChatCallback removes "chat_callback" edges to ChatCallback entities.
-func (cuu *ChatUserUpdate) RemoveChatCallback(c ...*ChatCallback) *ChatUserUpdate {
-	ids := make([]int, len(c))
-	for i := range c {
-		ids[i] = c[i].ID
-	}
-	return cuu.RemoveChatCallbackIDs(ids...)
 }
 
 // ClearUser clears the "user" edge to the User entity.
@@ -269,60 +232,6 @@ func (cuu *ChatUserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: chatuser.FieldUpdatedAt,
 		})
 	}
-	if cuu.mutation.ChatCallbackCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   chatuser.ChatCallbackTable,
-			Columns: []string{chatuser.ChatCallbackColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: chatcallback.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := cuu.mutation.RemovedChatCallbackIDs(); len(nodes) > 0 && !cuu.mutation.ChatCallbackCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   chatuser.ChatCallbackTable,
-			Columns: []string{chatuser.ChatCallbackColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: chatcallback.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := cuu.mutation.ChatCallbackIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   chatuser.ChatCallbackTable,
-			Columns: []string{chatuser.ChatCallbackColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: chatcallback.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
 	if cuu.mutation.UserCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2O,
@@ -427,21 +336,6 @@ func (cuuo *ChatUserUpdateOne) SetUserID(s string) *ChatUserUpdateOne {
 	return cuuo
 }
 
-// AddChatCallbackIDs adds the "chat_callback" edge to the ChatCallback entity by IDs.
-func (cuuo *ChatUserUpdateOne) AddChatCallbackIDs(ids ...int) *ChatUserUpdateOne {
-	cuuo.mutation.AddChatCallbackIDs(ids...)
-	return cuuo
-}
-
-// AddChatCallback adds the "chat_callback" edges to the ChatCallback entity.
-func (cuuo *ChatUserUpdateOne) AddChatCallback(c ...*ChatCallback) *ChatUserUpdateOne {
-	ids := make([]int, len(c))
-	for i := range c {
-		ids[i] = c[i].ID
-	}
-	return cuuo.AddChatCallbackIDs(ids...)
-}
-
 // SetUser sets the "user" edge to the User entity.
 func (cuuo *ChatUserUpdateOne) SetUser(u *User) *ChatUserUpdateOne {
 	return cuuo.SetUserID(u.ID)
@@ -450,27 +344,6 @@ func (cuuo *ChatUserUpdateOne) SetUser(u *User) *ChatUserUpdateOne {
 // Mutation returns the ChatUserMutation object of the builder.
 func (cuuo *ChatUserUpdateOne) Mutation() *ChatUserMutation {
 	return cuuo.mutation
-}
-
-// ClearChatCallback clears all "chat_callback" edges to the ChatCallback entity.
-func (cuuo *ChatUserUpdateOne) ClearChatCallback() *ChatUserUpdateOne {
-	cuuo.mutation.ClearChatCallback()
-	return cuuo
-}
-
-// RemoveChatCallbackIDs removes the "chat_callback" edge to ChatCallback entities by IDs.
-func (cuuo *ChatUserUpdateOne) RemoveChatCallbackIDs(ids ...int) *ChatUserUpdateOne {
-	cuuo.mutation.RemoveChatCallbackIDs(ids...)
-	return cuuo
-}
-
-// RemoveChatCallback removes "chat_callback" edges to ChatCallback entities.
-func (cuuo *ChatUserUpdateOne) RemoveChatCallback(c ...*ChatCallback) *ChatUserUpdateOne {
-	ids := make([]int, len(c))
-	for i := range c {
-		ids[i] = c[i].ID
-	}
-	return cuuo.RemoveChatCallbackIDs(ids...)
 }
 
 // ClearUser clears the "user" edge to the User entity.
@@ -639,60 +512,6 @@ func (cuuo *ChatUserUpdateOne) sqlSave(ctx context.Context) (_node *ChatUser, er
 			Value:  value,
 			Column: chatuser.FieldUpdatedAt,
 		})
-	}
-	if cuuo.mutation.ChatCallbackCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   chatuser.ChatCallbackTable,
-			Columns: []string{chatuser.ChatCallbackColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: chatcallback.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := cuuo.mutation.RemovedChatCallbackIDs(); len(nodes) > 0 && !cuuo.mutation.ChatCallbackCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   chatuser.ChatCallbackTable,
-			Columns: []string{chatuser.ChatCallbackColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: chatcallback.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := cuuo.mutation.ChatCallbackIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   chatuser.ChatCallbackTable,
-			Columns: []string{chatuser.ChatCallbackColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: chatcallback.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if cuuo.mutation.UserCleared() {
 		edge := &sqlgraph.EdgeSpec{

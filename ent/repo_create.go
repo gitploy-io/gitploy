@@ -10,7 +10,7 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/hanjunlee/gitploy/ent/chatcallback"
+	"github.com/hanjunlee/gitploy/ent/callback"
 	"github.com/hanjunlee/gitploy/ent/deployment"
 	"github.com/hanjunlee/gitploy/ent/perm"
 	"github.com/hanjunlee/gitploy/ent/repo"
@@ -183,19 +183,19 @@ func (rc *RepoCreate) AddDeployments(d ...*Deployment) *RepoCreate {
 	return rc.AddDeploymentIDs(ids...)
 }
 
-// AddChatCallbackIDs adds the "chat_callback" edge to the ChatCallback entity by IDs.
-func (rc *RepoCreate) AddChatCallbackIDs(ids ...int) *RepoCreate {
-	rc.mutation.AddChatCallbackIDs(ids...)
+// AddCallbackIDs adds the "callback" edge to the Callback entity by IDs.
+func (rc *RepoCreate) AddCallbackIDs(ids ...int) *RepoCreate {
+	rc.mutation.AddCallbackIDs(ids...)
 	return rc
 }
 
-// AddChatCallback adds the "chat_callback" edges to the ChatCallback entity.
-func (rc *RepoCreate) AddChatCallback(c ...*ChatCallback) *RepoCreate {
+// AddCallback adds the "callback" edges to the Callback entity.
+func (rc *RepoCreate) AddCallback(c ...*Callback) *RepoCreate {
 	ids := make([]int, len(c))
 	for i := range c {
 		ids[i] = c[i].ID
 	}
-	return rc.AddChatCallbackIDs(ids...)
+	return rc.AddCallbackIDs(ids...)
 }
 
 // Mutation returns the RepoMutation object of the builder.
@@ -454,17 +454,17 @@ func (rc *RepoCreate) createSpec() (*Repo, *sqlgraph.CreateSpec) {
 		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := rc.mutation.ChatCallbackIDs(); len(nodes) > 0 {
+	if nodes := rc.mutation.CallbackIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   repo.ChatCallbackTable,
-			Columns: []string{repo.ChatCallbackColumn},
+			Table:   repo.CallbackTable,
+			Columns: []string{repo.CallbackColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: chatcallback.FieldID,
+					Column: callback.FieldID,
 				},
 			},
 		}

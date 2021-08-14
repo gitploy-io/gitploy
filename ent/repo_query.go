@@ -13,7 +13,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/hanjunlee/gitploy/ent/chatcallback"
+	"github.com/hanjunlee/gitploy/ent/callback"
 	"github.com/hanjunlee/gitploy/ent/deployment"
 	"github.com/hanjunlee/gitploy/ent/perm"
 	"github.com/hanjunlee/gitploy/ent/predicate"
@@ -30,10 +30,10 @@ type RepoQuery struct {
 	fields     []string
 	predicates []predicate.Repo
 	// eager-loading edges.
-	withPerms        *PermQuery
-	withDeployments  *DeploymentQuery
-	withChatCallback *ChatCallbackQuery
-	modifiers        []func(s *sql.Selector)
+	withPerms       *PermQuery
+	withDeployments *DeploymentQuery
+	withCallback    *CallbackQuery
+	modifiers       []func(s *sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -114,9 +114,9 @@ func (rq *RepoQuery) QueryDeployments() *DeploymentQuery {
 	return query
 }
 
-// QueryChatCallback chains the current query on the "chat_callback" edge.
-func (rq *RepoQuery) QueryChatCallback() *ChatCallbackQuery {
-	query := &ChatCallbackQuery{config: rq.config}
+// QueryCallback chains the current query on the "callback" edge.
+func (rq *RepoQuery) QueryCallback() *CallbackQuery {
+	query := &CallbackQuery{config: rq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := rq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -127,8 +127,8 @@ func (rq *RepoQuery) QueryChatCallback() *ChatCallbackQuery {
 		}
 		step := sqlgraph.NewStep(
 			sqlgraph.From(repo.Table, repo.FieldID, selector),
-			sqlgraph.To(chatcallback.Table, chatcallback.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, repo.ChatCallbackTable, repo.ChatCallbackColumn),
+			sqlgraph.To(callback.Table, callback.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, repo.CallbackTable, repo.CallbackColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(rq.driver.Dialect(), step)
 		return fromU, nil
@@ -312,14 +312,14 @@ func (rq *RepoQuery) Clone() *RepoQuery {
 		return nil
 	}
 	return &RepoQuery{
-		config:           rq.config,
-		limit:            rq.limit,
-		offset:           rq.offset,
-		order:            append([]OrderFunc{}, rq.order...),
-		predicates:       append([]predicate.Repo{}, rq.predicates...),
-		withPerms:        rq.withPerms.Clone(),
-		withDeployments:  rq.withDeployments.Clone(),
-		withChatCallback: rq.withChatCallback.Clone(),
+		config:          rq.config,
+		limit:           rq.limit,
+		offset:          rq.offset,
+		order:           append([]OrderFunc{}, rq.order...),
+		predicates:      append([]predicate.Repo{}, rq.predicates...),
+		withPerms:       rq.withPerms.Clone(),
+		withDeployments: rq.withDeployments.Clone(),
+		withCallback:    rq.withCallback.Clone(),
 		// clone intermediate query.
 		sql:  rq.sql.Clone(),
 		path: rq.path,
@@ -348,14 +348,14 @@ func (rq *RepoQuery) WithDeployments(opts ...func(*DeploymentQuery)) *RepoQuery 
 	return rq
 }
 
-// WithChatCallback tells the query-builder to eager-load the nodes that are connected to
-// the "chat_callback" edge. The optional arguments are used to configure the query builder of the edge.
-func (rq *RepoQuery) WithChatCallback(opts ...func(*ChatCallbackQuery)) *RepoQuery {
-	query := &ChatCallbackQuery{config: rq.config}
+// WithCallback tells the query-builder to eager-load the nodes that are connected to
+// the "callback" edge. The optional arguments are used to configure the query builder of the edge.
+func (rq *RepoQuery) WithCallback(opts ...func(*CallbackQuery)) *RepoQuery {
+	query := &CallbackQuery{config: rq.config}
 	for _, opt := range opts {
 		opt(query)
 	}
-	rq.withChatCallback = query
+	rq.withCallback = query
 	return rq
 }
 
@@ -427,7 +427,7 @@ func (rq *RepoQuery) sqlAll(ctx context.Context) ([]*Repo, error) {
 		loadedTypes = [3]bool{
 			rq.withPerms != nil,
 			rq.withDeployments != nil,
-			rq.withChatCallback != nil,
+			rq.withCallback != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -503,16 +503,16 @@ func (rq *RepoQuery) sqlAll(ctx context.Context) ([]*Repo, error) {
 		}
 	}
 
-	if query := rq.withChatCallback; query != nil {
+	if query := rq.withCallback; query != nil {
 		fks := make([]driver.Value, 0, len(nodes))
 		nodeids := make(map[string]*Repo)
 		for i := range nodes {
 			fks = append(fks, nodes[i].ID)
 			nodeids[nodes[i].ID] = nodes[i]
-			nodes[i].Edges.ChatCallback = []*ChatCallback{}
+			nodes[i].Edges.Callback = []*Callback{}
 		}
-		query.Where(predicate.ChatCallback(func(s *sql.Selector) {
-			s.Where(sql.InValues(repo.ChatCallbackColumn, fks...))
+		query.Where(predicate.Callback(func(s *sql.Selector) {
+			s.Where(sql.InValues(repo.CallbackColumn, fks...))
 		}))
 		neighbors, err := query.All(ctx)
 		if err != nil {
@@ -524,7 +524,7 @@ func (rq *RepoQuery) sqlAll(ctx context.Context) ([]*Repo, error) {
 			if !ok {
 				return nil, fmt.Errorf(`unexpected foreign-key "repo_id" returned %v for node %v`, fk, n.ID)
 			}
-			node.Edges.ChatCallback = append(node.Edges.ChatCallback, n)
+			node.Edges.Callback = append(node.Edges.Callback, n)
 		}
 	}
 
