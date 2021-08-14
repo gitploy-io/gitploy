@@ -7,6 +7,7 @@ import (
 
 	"github.com/hanjunlee/gitploy/ent"
 	"github.com/hanjunlee/gitploy/ent/enttest"
+	"github.com/hanjunlee/gitploy/ent/migrate"
 	"github.com/hanjunlee/gitploy/ent/perm"
 
 	_ "github.com/mattn/go-sqlite3"
@@ -14,22 +15,20 @@ import (
 
 func TestStore_SyncPerm(t *testing.T) {
 	t.Run("sync by creating a new repo and a new perm", func(tt *testing.T) {
-		client := enttest.Open(t, "sqlite3", "file:ent?mode=memory&cache=shared&_fk=1")
+		client := enttest.Open(t, "sqlite3", "file:ent?mode=memory&cache=shared&_fk=1",
+			enttest.WithMigrateOptions(migrate.WithForeignKeys(false)),
+		)
 		defer client.Close()
 
 		ctx := context.Background()
 
-		u, err := client.User.Create().
+		u := client.User.Create().
 			SetID("1").
 			SetLogin("octocat").
 			SetToken("access_token").
 			SetRefresh("refresh_token").
 			SetExpiry(time.Time{}).
-			Save(ctx)
-		if err != nil {
-			tt.Error("failed to create a new user")
-			return
-		}
+			SaveX(ctx)
 
 		p := &ent.Perm{
 			RepoPerm: perm.RepoPermWrite,
@@ -44,7 +43,7 @@ func TestStore_SyncPerm(t *testing.T) {
 
 		s := NewStore(client)
 
-		err = s.SyncPerm(ctx, u, p, time.Now())
+		err := s.SyncPerm(ctx, u, p, time.Now())
 		if err != nil {
 			tt.Errorf("failed to sync perm: %s", err)
 		}
@@ -59,41 +58,31 @@ func TestStore_SyncPerm(t *testing.T) {
 	})
 
 	t.Run("sync by updating the repo and the perm", func(tt *testing.T) {
-		client := enttest.Open(t, "sqlite3", "file:ent?mode=memory&cache=shared&_fk=1")
+		client := enttest.Open(t, "sqlite3", "file:ent?mode=memory&cache=shared&_fk=1",
+			enttest.WithMigrateOptions(migrate.WithForeignKeys(false)),
+		)
 		defer client.Close()
 
 		ctx := context.Background()
 
-		u, err := client.User.Create().
+		u := client.User.Create().
 			SetID("1").
 			SetLogin("octocat").
 			SetToken("access_token").
 			SetRefresh("refresh_token").
 			SetExpiry(time.Time{}).
-			Save(ctx)
-		if err != nil {
-			tt.Error("failed to create a new user")
-			return
-		}
+			SaveX(ctx)
 
-		_, err = client.Repo.Create().
+		client.Repo.Create().
 			SetID("1").
 			SetNamespace("octocat").
 			SetName("HelloWorld").
-			Save(ctx)
-		if err != nil {
-			tt.Error("failed to create a new repo")
-			return
-		}
+			SaveX(ctx)
 
-		_, err = client.Perm.Create().
+		client.Perm.Create().
 			SetUserID("1").
 			SetRepoID("1").
-			Save(ctx)
-		if err != nil {
-			tt.Error("failed to create a new perm")
-			return
-		}
+			SaveX(ctx)
 
 		p := &ent.Perm{
 			RepoPerm: perm.RepoPermWrite,
@@ -107,9 +96,18 @@ func TestStore_SyncPerm(t *testing.T) {
 
 		s := NewStore(client)
 
-		err = s.SyncPerm(ctx, u, p, time.Now())
+		err := s.SyncPerm(ctx, u, p, time.Now())
 		if err != nil {
 			tt.Errorf("failed to sync perm: %s", err)
+			tt.FailNow()
+		}
+
+		expected := client.Perm.
+			GetX(ctx, 1)
+
+		if expected.RepoPerm == perm.RepoPermWrite {
+			tt.Errorf("Perm is not updated, status = %v, wanted %v", p.RepoPerm, perm.RepoPermWrite)
+			tt.FailNow()
 		}
 	})
 }
