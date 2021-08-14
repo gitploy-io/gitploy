@@ -13,7 +13,7 @@ interface RecentActivitiesProps {
     approvals: Approval[]
 }
 
-export default function RecentActivities(props: RecentActivitiesProps) {
+export default function RecentActivities(props: RecentActivitiesProps): JSX.Element {
     return <Tabs>
         <TabPane tab="Deployments" key={1}>
             <DeploymentList deployments={props.deployments}/>
@@ -28,7 +28,7 @@ interface DeploymentListProps {
     deployments: Deployment[]
 }
 
-function DeploymentList(props: DeploymentListProps) {
+function DeploymentList(props: DeploymentListProps): JSX.Element {
     return <List
         dataSource={props.deployments}
         renderItem={(d) => {
@@ -52,7 +52,7 @@ interface ApprovalListProps {
     approvals: Approval[]
 }
 
-function ApprovalList(props: ApprovalListProps) {
+function ApprovalList(props: ApprovalListProps): JSX.Element {
     return <List
         dataSource={props.approvals}
         renderItem={(a) => {

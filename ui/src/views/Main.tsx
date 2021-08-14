@@ -4,7 +4,9 @@ import { Layout, Menu, Row, Col, Result, Button, Drawer, Avatar, Dropdown, Badge
 import { SettingFilled } from "@ant-design/icons"
 
 import { useAppSelector, useAppDispatch } from "../redux/hooks"
-import { init, searchDeployments, searchApprovals } from "../redux/main"
+import { init, searchDeployments, searchApprovals, mainSlice } from "../redux/main"
+import { subscribeDeploymentEvent, subscribeApprovalEvent } from "../apis"
+
 import RecentActivities from "../components/RecentActivities"
 
 const { Header, Content, Footer } = Layout
@@ -24,6 +26,19 @@ export default function Main(props: any) {
         dispatch(init())
         dispatch(searchDeployments())
         dispatch(searchApprovals())
+
+        const de = subscribeDeploymentEvent((d) => {
+            dispatch(mainSlice.actions.handleDeploymentEvent(d))
+        })
+
+        const ae = subscribeApprovalEvent((a) => {
+            dispatch(mainSlice.actions.handleApprovalEvent(a))
+        })
+
+        return () => {
+            de.close()
+            ae.close()
+        }
     }, [dispatch])
 
     const [ isRecentActivitiesVisible, setRecentActivitiesVisible ] = useState(false)
