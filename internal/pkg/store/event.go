@@ -10,6 +10,10 @@ import (
 	"github.com/hanjunlee/gitploy/ent/notificationrecord"
 )
 
+// ListEventsGreaterThanTime returns all events for deployment and approval
+// that are greater than the time.
+//
+// It processes eager loading, especially, Approval loads a repository of deployment.
 func (s *Store) ListEventsGreaterThanTime(ctx context.Context, t time.Time) ([]*ent.Event, error) {
 	const limit = 100
 
@@ -18,8 +22,18 @@ func (s *Store) ListEventsGreaterThanTime(ctx context.Context, t time.Time) ([]*
 		Where(
 			event.CreatedAtGT(t),
 		).
-		WithApproval().
-		WithDeployment().
+		WithApproval(func(aq *ent.ApprovalQuery) {
+			aq.
+				WithUser().
+				WithDeployment(func(dq *ent.DeploymentQuery) {
+					dq.WithRepo()
+				})
+		}).
+		WithDeployment(func(dq *ent.DeploymentQuery) {
+			dq.
+				WithUser().
+				WithRepo()
+		}).
 		Limit(limit).
 		All(ctx)
 }
