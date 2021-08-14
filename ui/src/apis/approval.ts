@@ -61,6 +61,38 @@ const mapDataToApprovalStatus = (status: string): ApprovalStatus => {
     }
 }
 
+function mapApprovalStatusToString(status: ApprovalStatus): string {
+    switch (status) {
+        case ApprovalStatus.Pending:
+            return "pending"
+        case ApprovalStatus.Approved:
+            return "approved"
+        case ApprovalStatus.Declined:
+            return "declined"
+        default:
+            return "pending"
+    }
+}
+
+export const searchApprovals = async (statuses: ApprovalStatus[], from?: Date, to?: Date, page = 1, perPage = 30): Promise<Approval[]> => {
+    const ss: string[] = []
+    statuses.forEach((status) => {
+        ss.push(mapApprovalStatusToString(status))
+    })
+
+    const fromParam = (from)? `from=${from.toISOString()}` : ""
+    const toParam = (to)? `to=${to.toISOString()}` : ""
+
+    const approvals: Approval[] = await _fetch(`${instance}/api/v1/search/approvals?statuses=${ss.join(",")}&${fromParam}&${toParam}&page=${page}&per_page=${perPage}`, {
+        credentials: "same-origin",
+        headers,
+    })
+        .then(res => res.json())
+        .then(data => data.map((d:any): Approval => mapDataToApproval(d)))
+
+    return approvals
+}
+
 export const listApprovals = async (id: string, number: number): Promise<Approval[]> => {
     const res = await _fetch(`${instance}/api/v1/repos/${id}/deployments/${number}/approvals`, {
         credentials: "same-origin",
@@ -68,7 +100,7 @@ export const listApprovals = async (id: string, number: number): Promise<Approva
     })
 
     if (res.status === StatusCodes.NOT_FOUND) {
-        throw new HttpNotFoundError("There is no requested approval.")
+        throw new HttpNotFoundError("There is no such a deployment.")
     }
 
     const approvals: Approval[] = await res.json()
