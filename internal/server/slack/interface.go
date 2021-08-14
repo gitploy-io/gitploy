@@ -40,7 +40,6 @@ type (
 		ListUsersOfEvent(ctx context.Context, e *ent.Event) ([]*ent.User, error)
 		CheckNotificationRecordOfEvent(ctx context.Context, e *ent.Event) bool
 		CreateEvent(ctx context.Context, e *ent.Event) (*ent.Event, error)
-		ConvertEventToNotification(ctx context.Context, e *ent.Event) (*vo.Notification, error)
 
 		GetCommit(ctx context.Context, u *ent.User, r *ent.Repo, sha string) (*vo.Commit, error)
 		GetBranch(ctx context.Context, u *ent.User, r *ent.Repo, branch string) (*vo.Branch, error)
