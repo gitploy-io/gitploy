@@ -149,6 +149,7 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 	{
 		u := users.NewUser(c.Interactor)
 		userv1.GET("", u.GetMyUser)
+		userv1.GET("/rate-limit", u.GetRateLimit)
 	}
 
 	streamv1 := v1.Group("/stream")

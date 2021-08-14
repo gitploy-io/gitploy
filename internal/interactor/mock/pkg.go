@@ -807,6 +807,21 @@ func (mr *MockSCMMockRecorder) GetConfig(ctx, u, r interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetConfig", reflect.TypeOf((*MockSCM)(nil).GetConfig), ctx, u, r)
 }
 
+// GetRateLimit mocks base method.
+func (m *MockSCM) GetRateLimit(ctx context.Context, u *ent.User) (*vo.RateLimit, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetRateLimit", ctx, u)
+	ret0, _ := ret[0].(*vo.RateLimit)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetRateLimit indicates an expected call of GetRateLimit.
+func (mr *MockSCMMockRecorder) GetRateLimit(ctx, u interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetRateLimit", reflect.TypeOf((*MockSCM)(nil).GetRateLimit), ctx, u)
+}
+
 // GetTag mocks base method.
 func (m *MockSCM) GetTag(ctx context.Context, u *ent.User, r *ent.Repo, tag string) (*vo.Tag, error) {
 	m.ctrl.T.Helper()

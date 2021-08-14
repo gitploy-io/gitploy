@@ -948,6 +948,24 @@ paths:
           $ref: '#/components/responses/401Unauthorized'
         '500':
           $ref: '#/components/responses/500InternalError'
+  /user/rate-limit:
+    get:
+      tags:
+        - User
+      summary: Get rate-limit of SCM.
+      responses:
+        '200':
+          description: Rate Limit
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RateLimit'
+        '401': 
+          $ref: '#/components/responses/401Unauthorized'
+        '403':
+          $ref: '#/components/responses/403Forbidden'
+        '500':
+          $ref: '#/components/responses/500InternalError'
   /search/deployments:
     get:
       tags:
@@ -1321,6 +1339,13 @@ components:
               $ref: '#/components/schemas/User'
             deployment:
               $ref: '#/components/schemas/Deployment'
+    RateLimit:
+      type: object
+      properties:
+        remaining:
+          type: number
+        reset:
+          type: number
     Error:
       type: object
       properties:
