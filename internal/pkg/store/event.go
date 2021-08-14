@@ -26,7 +26,9 @@ func (s *Store) ListEventsGreaterThanTime(ctx context.Context, t time.Time) ([]*
 			aq.
 				WithUser().
 				WithDeployment(func(dq *ent.DeploymentQuery) {
-					dq.WithRepo()
+					dq.
+						WithUser().
+						WithRepo()
 				})
 		}).
 		WithDeployment(func(dq *ent.DeploymentQuery) {

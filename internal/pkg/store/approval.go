@@ -21,7 +21,9 @@ func (s *Store) SearchApprovals(ctx context.Context, u *ent.User, ss []approval.
 		).
 		WithUser().
 		WithDeployment(func(dq *ent.DeploymentQuery) {
-			dq.WithRepo()
+			dq.
+				WithRepo().
+				WithUser()
 		}).
 		Offset(offset(page, perPage)).
 		Limit(perPage).
@@ -36,7 +38,9 @@ func (s *Store) ListApprovals(ctx context.Context, d *ent.Deployment) ([]*ent.Ap
 		).
 		WithUser().
 		WithDeployment(func(dq *ent.DeploymentQuery) {
-			dq.WithRepo()
+			dq.
+				WithRepo().
+				WithUser()
 		}).
 		All(ctx)
 }
@@ -49,7 +53,9 @@ func (s *Store) FindApprovalByID(ctx context.Context, id int) (*ent.Approval, er
 		).
 		WithUser().
 		WithDeployment(func(dq *ent.DeploymentQuery) {
-			dq.WithRepo()
+			dq.
+				WithRepo().
+				WithUser()
 		}).
 		First(ctx)
 }
@@ -65,7 +71,9 @@ func (s *Store) FindApprovalOfUser(ctx context.Context, d *ent.Deployment, u *en
 		).
 		WithUser().
 		WithDeployment(func(dq *ent.DeploymentQuery) {
-			dq.WithRepo()
+			dq.
+				WithRepo().
+				WithUser()
 		}).
 		First(ctx)
 }

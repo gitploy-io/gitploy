@@ -65,21 +65,6 @@ func (mr *MockInteractorMockRecorder) CloseChatCallback(ctx, cb interface{}) *go
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CloseChatCallback", reflect.TypeOf((*MockInteractor)(nil).CloseChatCallback), ctx, cb)
 }
 
-// ConvertEventToNotification mocks base method.
-func (m *MockInteractor) ConvertEventToNotification(ctx context.Context, e *ent.Event) (*vo.Notification, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ConvertEventToNotification", ctx, e)
-	ret0, _ := ret[0].(*vo.Notification)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// ConvertEventToNotification indicates an expected call of ConvertEventToNotification.
-func (mr *MockInteractorMockRecorder) ConvertEventToNotification(ctx, e interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ConvertEventToNotification", reflect.TypeOf((*MockInteractor)(nil).ConvertEventToNotification), ctx, e)
-}
-
 // CreateApproval mocks base method.
 func (m *MockInteractor) CreateApproval(ctx context.Context, a *ent.Approval) (*ent.Approval, error) {
 	m.ctrl.T.Helper()

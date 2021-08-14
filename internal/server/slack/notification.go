@@ -10,7 +10,7 @@ import (
 	"github.com/hanjunlee/gitploy/ent"
 	"github.com/hanjunlee/gitploy/ent/approval"
 	"github.com/hanjunlee/gitploy/ent/deployment"
-	"github.com/hanjunlee/gitploy/vo"
+	"github.com/hanjunlee/gitploy/ent/event"
 )
 
 const (
@@ -26,143 +26,109 @@ func (s *Slack) Notify(ctx context.Context, e *ent.Event) error {
 	}
 
 	var (
-		n     *vo.Notification
 		users []*ent.User
 		err   error
 	)
-
-	if n, err = s.i.ConvertEventToNotification(ctx, e); err != nil {
-		return err
-	}
 
 	if users, err = s.i.ListUsersOfEvent(ctx, e); err != nil {
 		return err
 	}
 
 	for _, u := range users {
-		// Load edges.
+		// Eager loading for chat user.
 		if u, err = s.i.FindUserByID(ctx, u.ID); err != nil {
-			s.log.Error("It has failed to get the user.", zap.Error(err))
+			s.log.Error("It has failed to eager load.", zap.Error(err))
+			continue
+		}
+		if u.Edges.ChatUser == nil {
 			continue
 		}
 
-		if u.Edges.ChatUser != nil {
-			if err := s.notify(ctx, u.Edges.ChatUser, n); err != nil {
-				s.log.Error("It has failed to notify the event.", zap.Error(err))
-			}
+		if err := s.notify(ctx, u.Edges.ChatUser, e); err != nil {
+			s.log.Error("It has failed to notify the event.", zap.Error(err))
 		}
 	}
 
 	return nil
 }
 
-func (s *Slack) notify(ctx context.Context, cu *ent.ChatUser, n *vo.Notification) error {
-	if n.Kind == vo.KindDeployment && n.Type == vo.TypeCreated {
-		return s.notifyDeploymentCreated(ctx, cu, n)
+func (s *Slack) notify(ctx context.Context, cu *ent.ChatUser, e *ent.Event) error {
+	var option slack.MsgOption
+
+	// Check the event has processed eager loading.
+	if err := e.CheckEagerLoading(); err != nil {
+		return err
 	}
 
-	if n.Kind == vo.KindDeployment && n.Type == vo.TypeUpdated {
-		return s.notifyDeploymentUpdated(ctx, cu, n)
+	if e.Kind == event.KindDeployment {
+		d := e.Edges.Deployment
+		if err := d.CheckEagerLoading(); err != nil {
+			return err
+		}
+
+		var (
+			r = d.Edges.Repo
+			u = d.Edges.User
+		)
+
+		if e.Type == event.TypeCreated {
+			option = slack.MsgOptionAttachments(
+				slack.Attachment{
+					Color:   mapDeploymentStatusToColor(d.Status),
+					Pretext: fmt.Sprintf("*New Deployment #%d*", d.Number),
+					Text:    fmt.Sprintf("*%s* deploys `%s` to the `%s` environment of `%s`. <%s|• View Details> ", u.Login, d.Ref, d.Env, r.GetFullName(), s.buildDeploymentLink(r, d)),
+				},
+			)
+		} else if e.Type == event.TypeUpdated {
+			option = slack.MsgOptionAttachments(
+				slack.Attachment{
+					Color:   mapDeploymentStatusToColor(d.Status),
+					Pretext: fmt.Sprintf("*Deployment Updated #%d*", d.Number),
+					Text:    fmt.Sprintf("The deployment <%s|#%d> of `%s` is updated %s.", s.buildDeploymentLink(r, d), d.Number, r.GetFullName(), d.Status),
+				},
+			)
+		}
+	} else if e.Kind == event.KindApproval {
+		a := e.Edges.Approval
+		if err := a.CheckEagerLoading(); err != nil {
+			return err
+		}
+
+		var (
+			u *ent.User       = a.Edges.User
+			d *ent.Deployment = a.Edges.Deployment
+			r *ent.Repo
+		)
+
+		// Approval have to process eager loading for the deployment, too.
+		if err := d.CheckEagerLoading(); err != nil {
+			return err
+		}
+		r = d.Edges.Repo
+
+		if e.Type == event.TypeCreated {
+			option = slack.MsgOptionAttachments(slack.Attachment{
+				Color:   colorPurple,
+				Pretext: "*Approval Requested*",
+				Text:    fmt.Sprintf("%s has requested the approval for the deployment <%s|#%d> of `%s`.", u.Login, s.buildDeploymentLink(r, d), d.Number, r.GetFullName()),
+			})
+		} else if e.Type == event.TypeUpdated {
+			option = slack.MsgOptionAttachments(slack.Attachment{
+				Color:   mapApprovalStatusToColor(a.Status),
+				Pretext: "*Approval Responded*",
+				Text:    fmt.Sprintf("%s has *%s* for the deployment <%s|#%d> of `%s`.", u.Login, a.Status, s.buildDeploymentLink(r, d), d.Number, r.GetFullName()),
+			})
+		}
 	}
 
-	if n.Kind == vo.KindApproval && n.Type == vo.TypeCreated {
-		return s.notifyApprovalRequested(ctx, cu, n)
-	}
-
-	if n.Kind == vo.KindApproval && n.Type == vo.TypeUpdated {
-		return s.notifyApprovalResponded(ctx, cu, n)
-	}
-
-	return fmt.Errorf("It is out of cases - kind: %s, type: %s.", n.Kind, n.Type)
-}
-
-func (s *Slack) notifyDeploymentCreated(ctx context.Context, cu *ent.ChatUser, n *vo.Notification) error {
-	var (
-		repoName = fmt.Sprintf("%s/%s", n.Repo.Namespace, n.Repo.Name)
-		number   = n.Deployment.Number
-		ref      = n.Deployment.Ref
-		env      = n.Deployment.Env
-		deployer = n.Deployment.Login
-		link     = s.buildLink(n)
-	)
-
-	if n.Deployment.Type == string(deployment.TypeCommit) && len(n.Deployment.Ref) > 7 {
-		ref = n.Deployment.Ref[:7]
-	}
-
-	client := slack.New(cu.BotToken)
-	_, _, err := client.
-		PostMessageContext(ctx, cu.ID, slack.MsgOptionAttachments(slack.Attachment{
-			Color:   mapDeploymentStatusToColor(deployment.Status(n.Deployment.Status)),
-			Pretext: fmt.Sprintf("*New Deployment #%d*", number),
-			Text:    fmt.Sprintf("*%s* deploys `%s` to the `%s` environment of `%s`. <%s|• View Details> ", deployer, ref, env, repoName, link),
-		}))
-
+	_, _, err := slack.
+		New(cu.BotToken).
+		PostMessageContext(ctx, cu.ID, option)
 	return err
 }
 
-func (s *Slack) notifyDeploymentUpdated(ctx context.Context, cu *ent.ChatUser, n *vo.Notification) error {
-	var (
-		repoName = fmt.Sprintf("%s/%s", n.Repo.Namespace, n.Repo.Name)
-		number   = n.Deployment.Number
-		status   = n.Deployment.Status
-		link     = s.buildLink(n)
-	)
-
-	client := slack.New(cu.BotToken)
-	_, _, err := client.
-		PostMessageContext(ctx, cu.ID, slack.MsgOptionAttachments(slack.Attachment{
-			Color:   mapDeploymentStatusToColor(deployment.Status(n.Deployment.Status)),
-			Pretext: fmt.Sprintf("*Deployment Updated #%d*", number),
-			Text:    fmt.Sprintf("The deployment <%s|#%d> of `%s` is updated %s.", link, number, repoName, status),
-		}))
-
-	return err
-}
-
-func (s *Slack) notifyApprovalRequested(ctx context.Context, cu *ent.ChatUser, n *vo.Notification) error {
-	var (
-		repoName = fmt.Sprintf("%s/%s", n.Repo.Namespace, n.Repo.Name)
-		number   = n.Deployment.Number
-		approver = n.Approval.Login
-		link     = s.buildLink(n)
-	)
-
-	client := slack.New(cu.BotToken)
-
-	_, _, err := client.
-		PostMessageContext(ctx, cu.ID, slack.MsgOptionAttachments(slack.Attachment{
-			Color:   colorPurple,
-			Pretext: "*Approval Requested*",
-			Text:    fmt.Sprintf("%s has requested the approval for the deployment <%s|#%d> of `%s`.", approver, link, number, repoName),
-		}))
-
-	return err
-}
-
-func (s *Slack) notifyApprovalResponded(ctx context.Context, cu *ent.ChatUser, n *vo.Notification) error {
-	var (
-		repoName = fmt.Sprintf("%s/%s", n.Repo.Namespace, n.Repo.Name)
-		number   = n.Deployment.Number
-		action   = string(n.Approval.Status)
-		approver = n.Approval.Login
-		link     = s.buildLink(n)
-	)
-
-	client := slack.New(cu.BotToken)
-
-	_, _, err := client.
-		PostMessageContext(ctx, cu.ID, slack.MsgOptionAttachments(slack.Attachment{
-			Color:   mapApprovalStatusToColor(approval.Status(n.Approval.Status)),
-			Pretext: "*Approval Responded*",
-			Text:    fmt.Sprintf("%s has *%s* for the deployment <%s|#%d> of `%s`.", approver, action, link, number, repoName),
-		}))
-
-	return err
-}
-
-func (s *Slack) buildLink(n *vo.Notification) string {
-	return fmt.Sprintf("%s://%s/%s/%s/deployments/%d", s.proto, s.host, n.Repo.Namespace, n.Repo.Name, n.Deployment.Number)
+func (s *Slack) buildDeploymentLink(r *ent.Repo, d *ent.Deployment) string {
+	return fmt.Sprintf("%s://%s/%s/deployments/%d", s.proto, s.host, r.GetFullName(), d.Number)
 }
 
 func mapDeploymentStatusToColor(status deployment.Status) string {
