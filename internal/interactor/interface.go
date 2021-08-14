@@ -88,5 +88,7 @@ type (
 
 		ListTags(ctx context.Context, u *ent.User, r *ent.Repo, page, perPage int) ([]*vo.Tag, error)
 		GetTag(ctx context.Context, u *ent.User, r *ent.Repo, tag string) (*vo.Tag, error)
+
+		GetRateLimit(ctx context.Context, u *ent.User) (*vo.RateLimit, error)
 	}
 )

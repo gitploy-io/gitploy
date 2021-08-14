@@ -1,15 +1,17 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
 
-import { User } from "../models"
-import { getMe, checkSlack as _checkSlack } from "../apis"
+import { User, RateLimit } from "../models"
+import { getMe, getRateLimit, checkSlack as _checkSlack } from "../apis"
 
 interface SettingsState {
     user: User | null
+    rateLimit: RateLimit | null
     isSlackEnabled: boolean
 }
 
 const initialState: SettingsState = {
     user: null,
+    rateLimit: null,
     isSlackEnabled: false
 }
 
@@ -19,6 +21,18 @@ export const fetchMe = createAsyncThunk<User, void, { state: { settings: Setting
         try {
             const user = await getMe()
             return user
+        } catch (e) {
+            return rejectWithValue(e)
+        }
+    }
+)
+
+export const fetchRateLimit = createAsyncThunk<RateLimit, void, { state: { settings: SettingsState } }>(
+    "settings/fetchRateLimit",
+    async (_, { rejectWithValue }) => {
+        try {
+            const rateLimit = await getRateLimit()
+            return rateLimit
         } catch (e) {
             return rejectWithValue(e)
         }
@@ -45,7 +59,11 @@ export const settingsSlice = createSlice({
             .addCase(fetchMe.fulfilled, (state, action) => {
                 state.user = action.payload
             }) 
-        builder
+
+            .addCase(fetchRateLimit.fulfilled, (state, action) => {
+                state.rateLimit = action.payload
+            })
+
             .addCase(checkSlack.fulfilled, (state, action) => {
                 state.isSlackEnabled = action.payload
             }) 

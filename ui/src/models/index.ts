@@ -9,7 +9,7 @@ import Config, { Env } from "./Config"
 import Commit, { Status, StatusState } from "./Commit"
 import Branch from "./Branch"
 import Tag from "./Tag"
-import User, { ChatUser } from "./User"
+import User, { ChatUser, RateLimit } from "./User"
 import Approval, { ApprovalStatus } from "./Approval"
 import { 
     HttpRequestError, 
@@ -36,6 +36,7 @@ export type {
     Tag,
     User,
     ChatUser,
+    RateLimit,
     Approval,
 }
 

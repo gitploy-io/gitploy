@@ -2,6 +2,7 @@ package server
 
 import (
 	"fmt"
+	"net/http"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -90,11 +91,12 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 	sm := mw.NewSessMiddleware(c.Interactor)
 	r.Use(sm.User())
 
-	root := r.Group("/")
+	root := r.Group("")
 	{
 		w := web.NewWeb(newGithubOauthConfig(c), c.Interactor)
-		root.GET("", w.Index)
-		root.GET("signin", w.Signin)
+		root.GET("/", w.Index)
+		root.GET("/signin", w.Signin)
+		root.GET("/signout", w.SignOut)
 	}
 
 	v1 := r.Group("/api/v1")
@@ -149,6 +151,7 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 	{
 		u := users.NewUser(c.Interactor)
 		userv1.GET("", u.GetMyUser)
+		userv1.GET("/rate-limit", u.GetRateLimit)
 	}
 
 	streamv1 := v1.Group("/stream")
@@ -185,8 +188,11 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 			})
 			slackapi.GET("", slack.Index)
 			slackapi.GET("/signin", slack.SigninSlack)
+			// TODO: add signout
 			slackapi.POST("/interact", m.Verify(), slack.Interact)
 			slackapi.POST("/command", m.Verify(), slack.Cmd)
+			// Check Slack is enabled or not.
+			slackapi.GET("/ping", func(c *gin.Context) { c.Status(http.StatusOK) })
 		}
 	}
 
