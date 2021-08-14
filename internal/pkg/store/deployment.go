@@ -8,7 +8,6 @@ import (
 	"github.com/hanjunlee/gitploy/ent"
 	"github.com/hanjunlee/gitploy/ent/deployment"
 	"github.com/hanjunlee/gitploy/ent/perm"
-	"github.com/hanjunlee/gitploy/ent/repo"
 )
 
 func (s *Store) SearchDeployments(ctx context.Context, u *ent.User, ss []deployment.Status, owned bool, from time.Time, to time.Time, page, perPage int) ([]*ent.Deployment, error) {
@@ -83,7 +82,7 @@ func (s *Store) ListDeploymentsOfRepo(ctx context.Context, r *ent.Repo, env stri
 		Query()
 
 	q = q.Where(
-		deployment.HasRepoWith(repo.IDEQ(r.ID)),
+		deployment.RepoIDEQ(r.ID),
 	)
 
 	if env != "" {
