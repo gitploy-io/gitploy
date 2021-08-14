@@ -2,6 +2,7 @@ package server
 
 import (
 	"fmt"
+	"net/http"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -188,6 +189,8 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 			slackapi.GET("/signin", slack.SigninSlack)
 			slackapi.POST("/interact", m.Verify(), slack.Interact)
 			slackapi.POST("/command", m.Verify(), slack.Cmd)
+			// Check Slack is enabled or not.
+			slackapi.GET("/ping", func(c *gin.Context) { c.Status(http.StatusOK) })
 		}
 	}
 

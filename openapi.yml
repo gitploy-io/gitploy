@@ -1342,10 +1342,12 @@ components:
     RateLimit:
       type: object
       properties:
+        limit:
+          type: number
         remaining:
           type: number
         reset:
-          type: number
+          type: string
     Error:
       type: object
       properties:

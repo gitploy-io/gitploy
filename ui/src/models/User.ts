@@ -13,3 +13,9 @@ export interface ChatUser {
     createdAt: Date
     updatedAt: Date
 }
+
+export interface RateLimit {
+    limit: number
+    remaining: number
+    reset: Date
+}

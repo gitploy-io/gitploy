@@ -3,7 +3,7 @@ import { instance, headers } from "./setting"
 import { StatusCodes } from "http-status-codes"
 
 export const checkSlack = async (): Promise<boolean> => {
-    const res = await _fetch(`${instance}/slack`, {
+    const res = await _fetch(`${instance}/slack/ping`, {
         headers,
         credentials: "same-origin",
     })

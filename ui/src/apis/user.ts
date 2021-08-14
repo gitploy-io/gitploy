@@ -1,6 +1,6 @@
 import { _fetch } from "./_base"
 import { instance, headers } from "./setting"
-import { User, ChatUser } from "../models"
+import { User, ChatUser, RateLimit } from "../models"
 
 export interface UserData {
     id: string
@@ -18,6 +18,12 @@ interface ChatUserData {
     id: string
     created_at: string
     updated_at: string
+}
+
+interface RateLimitData {
+    limit: number
+    remaining: number
+    reset: string
 }
 
 export const mapDataToUser = (data: UserData): User => {
@@ -45,6 +51,14 @@ export const mapDataToUser = (data: UserData): User => {
     }
 }
 
+export const mapDataToRateLimit = (data: RateLimitData): RateLimit => {
+    return {
+        limit: data.limit,
+        remaining: data.remaining,
+        reset: new Date(data.reset)
+    }
+}
+
 export const getMe = async (): Promise<User> => {
     const user:User = await _fetch(`${instance}/api/v1/user`, {
         headers,
@@ -54,4 +68,15 @@ export const getMe = async (): Promise<User> => {
         .then(data => (mapDataToUser(data)))
 
     return user
+}
+
+export const getRateLimit = async (): Promise<RateLimit> => {
+    const rateLimit:RateLimit = await _fetch(`${instance}/api/v1/user/rate-limit`, {
+        headers,
+        credentials: "same-origin",
+    })
+        .then(response => response.json())
+        .then(data => (mapDataToRateLimit(data)))
+
+    return rateLimit
 }
