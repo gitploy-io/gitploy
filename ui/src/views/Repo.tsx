@@ -62,7 +62,7 @@ export default function Repo(): JSX.Element {
 
     return (
         <Main>
-            <div style={{"marginTop": "20px"}}>
+            <div >
                 <Breadcrumb>
                     <Breadcrumb.Item>
                         <a href="/">Repositories</a>

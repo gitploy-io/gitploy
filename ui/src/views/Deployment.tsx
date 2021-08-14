@@ -125,7 +125,7 @@ export default function DeploymentView(): JSX.Element {
 
     return (
         <Main>
-            <div style={{"marginTop": "20px"}}>
+            <div>
                 <PageHeader
                     title={`Deployment #${number}`}
                     breadcrumb={
@@ -143,7 +143,8 @@ export default function DeploymentView(): JSX.Element {
                     extra={[
                         approvalDropdown,
                     ]}
-                    onBack={onBack} />
+                    onBack={onBack} 
+                />
             </div>
             {/* TODO: support mobile view */}
             <div style={{marginTop: "20px", marginBottom: "30px"}}>

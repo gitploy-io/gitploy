@@ -127,7 +127,7 @@ export default function Main(props: any) {
                     </Col>
                 </Row>
             </Header>
-            <Content style={{ padding: '0 50px' }}>
+            <Content style={{ padding: '50px 50px' }}>
                 <Row>
                     <Col 
                         span={22}
