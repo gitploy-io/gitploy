@@ -106,6 +106,17 @@ func (w *Web) Signin(c *gin.Context) {
 	c.Redirect(http.StatusFound, "/")
 }
 
+func (w *Web) SignOut(c *gin.Context) {
+	const (
+		secure   = false
+		httpOnly = true
+	)
+
+	// Delete the cookie
+	c.SetCookie(gb.CookieSession, "", -1, "/", "", secure, httpOnly)
+	c.Redirect(http.StatusFound, "/")
+}
+
 func randState() string {
 	b := make([]byte, 16)
 	rand.Read(b)
