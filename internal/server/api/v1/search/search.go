@@ -86,7 +86,9 @@ func (s *Search) SearchDeployments(c *gin.Context) {
 	}
 
 	// Search deployments with parameters.
-	ds := make([]*ent.Deployment, 0)
+	var (
+		ds []*ent.Deployment
+	)
 
 	v, _ := c.Get(gb.KeyUser)
 	u := v.(*ent.User)
@@ -146,7 +148,9 @@ func (s *Search) SearchApprovals(c *gin.Context) {
 	}
 
 	// Search deployments with parameters.
-	ds := make([]*ent.Approval, 0)
+	var (
+		ds []*ent.Approval
+	)
 
 	v, _ := c.Get(gb.KeyUser)
 	u := v.(*ent.User)
