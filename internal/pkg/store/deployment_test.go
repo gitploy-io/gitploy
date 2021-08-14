@@ -14,7 +14,6 @@ import (
 )
 
 func TestStore_SearchDeployments(t *testing.T) {
-
 	client := enttest.Open(t, "sqlite3", "file:ent?mode=memory&cache=shared&_fk=1",
 		enttest.WithMigrateOptions(migrate.WithForeignKeys(false)),
 	)

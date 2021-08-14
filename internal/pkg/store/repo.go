@@ -3,27 +3,33 @@ package store
 import (
 	"context"
 
+	"entgo.io/ent/dialect/sql"
 	"github.com/hanjunlee/gitploy/ent"
 	"github.com/hanjunlee/gitploy/ent/deployment"
 	"github.com/hanjunlee/gitploy/ent/perm"
 	"github.com/hanjunlee/gitploy/ent/repo"
-	"github.com/hanjunlee/gitploy/ent/user"
 )
 
 func (s *Store) ListReposOfUser(ctx context.Context, u *ent.User, q string, page, perPage int) ([]*ent.Repo, error) {
 	return s.c.Repo.
 		Query().
+		Where(func(s *sql.Selector) {
+			t := sql.Table(perm.Table)
+			s.
+				Join(t).
+				On(t.C(perm.FieldRepoID), s.C(repo.FieldID)).
+				Where(sql.EQ(t.C(perm.FieldUserID), u.ID))
+		}).
 		Where(
-			repo.And(
-				repo.HasPermsWith(perm.HasUserWith(user.IDEQ(u.ID))),
-				repo.NameContains(q),
-			),
+			repo.NameContains(q),
 		).
 		Limit(perPage).
 		Offset(offset(page, perPage)).
 		WithDeployments(func(dq *ent.DeploymentQuery) {
-			dq.Order(ent.Desc(deployment.FieldCreatedAt)).
-				Limit(5)
+			dq.
+				WithUser().
+				Order(ent.Desc(deployment.FieldCreatedAt)).
+				Limit(3)
 		}).
 		All(ctx)
 }
@@ -31,9 +37,15 @@ func (s *Store) ListReposOfUser(ctx context.Context, u *ent.User, q string, page
 func (s *Store) ListSortedReposOfUser(ctx context.Context, u *ent.User, q string, page, perPage int) ([]*ent.Repo, error) {
 	return s.c.Repo.
 		Query().
+		Where(func(s *sql.Selector) {
+			t := sql.Table(perm.Table)
+			s.
+				Join(t).
+				On(t.C(perm.FieldRepoID), s.C(repo.FieldID)).
+				Where(sql.EQ(t.C(perm.FieldUserID), u.ID))
+		}).
 		Where(
 			repo.And(
-				repo.HasPermsWith(perm.HasUserWith(user.IDEQ(u.ID))),
 				repo.NameContains(q),
 			),
 		).
@@ -41,9 +53,12 @@ func (s *Store) ListSortedReposOfUser(ctx context.Context, u *ent.User, q string
 		Limit(perPage).
 		Offset(offset(page, perPage)).
 		WithDeployments(func(dq *ent.DeploymentQuery) {
-			dq.Order(ent.Desc(deployment.FieldCreatedAt)).
-				Limit(5)
+			dq.
+				WithUser().
+				Order(ent.Desc(deployment.FieldCreatedAt)).
+				Limit(3)
 		}).
+		Order(ent.Desc(deployment.FieldCreatedAt)).
 		All(ctx)
 }
 
@@ -57,11 +72,15 @@ func (s *Store) UpdateRepo(ctx context.Context, r *ent.Repo) (*ent.Repo, error) 
 func (s *Store) FindRepoOfUserByID(ctx context.Context, u *ent.User, id string) (*ent.Repo, error) {
 	return s.c.Repo.
 		Query().
+		Where(func(s *sql.Selector) {
+			t := sql.Table(perm.Table)
+			s.
+				Join(t).
+				On(t.C(perm.FieldRepoID), s.C(repo.FieldID)).
+				Where(sql.EQ(t.C(perm.FieldUserID), u.ID))
+		}).
 		Where(
-			repo.And(
-				repo.HasPermsWith(perm.HasUserWith(user.IDEQ(u.ID))),
-				repo.IDEQ(id),
-			),
+			repo.IDEQ(id),
 		).
 		Only(ctx)
 }
@@ -69,9 +88,15 @@ func (s *Store) FindRepoOfUserByID(ctx context.Context, u *ent.User, id string) 
 func (s *Store) FindRepoOfUserByNamespaceName(ctx context.Context, u *ent.User, namespace, name string) (*ent.Repo, error) {
 	r, err := s.c.Repo.
 		Query().
+		Where(func(s *sql.Selector) {
+			t := sql.Table(perm.Table)
+			s.
+				Join(t).
+				On(t.C(perm.FieldRepoID), s.C(repo.FieldID)).
+				Where(sql.EQ(t.C(perm.FieldUserID), u.ID))
+		}).
 		Where(
 			repo.And(
-				repo.HasPermsWith(perm.HasUserWith(user.IDEQ(u.ID))),
 				repo.NamespaceEQ(namespace),
 				repo.NameEQ(name),
 			),
