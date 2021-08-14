@@ -202,6 +202,20 @@ func (mr *MockStoreMockRecorder) DeleteApproval(ctx, a interface{}) *gomock.Call
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteApproval", reflect.TypeOf((*MockStore)(nil).DeleteApproval), ctx, a)
 }
 
+// DeleteUser mocks base method.
+func (m *MockStore) DeleteUser(ctx context.Context, u *ent.User) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteUser", ctx, u)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteUser indicates an expected call of DeleteUser.
+func (mr *MockStoreMockRecorder) DeleteUser(ctx, u interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteUser", reflect.TypeOf((*MockStore)(nil).DeleteUser), ctx, u)
+}
+
 // FindApprovalByID mocks base method.
 func (m *MockStore) FindApprovalByID(ctx context.Context, id int) (*ent.Approval, error) {
 	m.ctrl.T.Helper()
@@ -530,6 +544,21 @@ func (m *MockStore) ListSortedReposOfUser(ctx context.Context, u *ent.User, q st
 func (mr *MockStoreMockRecorder) ListSortedReposOfUser(ctx, u, q, page, perPage interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListSortedReposOfUser", reflect.TypeOf((*MockStore)(nil).ListSortedReposOfUser), ctx, u, q, page, perPage)
+}
+
+// ListUsers mocks base method.
+func (m *MockStore) ListUsers(ctx context.Context, login string, page, perPage int) ([]*ent.User, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListUsers", ctx, login, page, perPage)
+	ret0, _ := ret[0].([]*ent.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListUsers indicates an expected call of ListUsers.
+func (mr *MockStoreMockRecorder) ListUsers(ctx, login, page, perPage interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListUsers", reflect.TypeOf((*MockStore)(nil).ListUsers), ctx, login, page, perPage)
 }
 
 // SearchApprovals mocks base method.

@@ -7,6 +7,19 @@ import (
 	"github.com/hanjunlee/gitploy/ent/user"
 )
 
+func (s *Store) ListUsers(ctx context.Context, login string, page, perPage int) ([]*ent.User, error) {
+	return s.c.User.
+		Query().
+		Where(
+			user.LoginContains(login),
+		).
+		WithChatUser().
+		Order(ent.Asc(user.FieldLogin)).
+		Offset(offset(page, perPage)).
+		Limit(perPage).
+		All(ctx)
+}
+
 // FindUserByID return the user with chat_user,
 // but it returns nil if chat_user is not found.
 //
@@ -62,4 +75,10 @@ func (s *Store) UpdateUser(ctx context.Context, u *ent.User) (*ent.User, error) 
 		SetRefresh(u.Refresh).
 		SetExpiry(u.Expiry).
 		Save(ctx)
+}
+
+func (s *Store) DeleteUser(ctx context.Context, u *ent.User) error {
+	return s.c.User.
+		DeleteOneID(u.ID).
+		Exec(ctx)
 }

@@ -12,7 +12,11 @@ type (
 	UserMiddleware struct{}
 )
 
-func Admin() gin.HandlerFunc {
+func NewUserMiddleware() *UserMiddleware {
+	return &UserMiddleware{}
+}
+
+func (m *UserMiddleware) AdminOnly() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		v, _ := c.Get(gb.KeyUser)
 		u, _ := v.(*ent.User)

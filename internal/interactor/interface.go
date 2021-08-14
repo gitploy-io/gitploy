@@ -14,11 +14,13 @@ import (
 
 type (
 	Store interface {
+		ListUsers(ctx context.Context, login string, page, perPage int) ([]*ent.User, error)
 		FindUserByID(ctx context.Context, id string) (*ent.User, error)
 		FindUserByHash(ctx context.Context, hash string) (*ent.User, error)
 		FindUserByLogin(ctx context.Context, login string) (*ent.User, error)
 		CreateUser(ctx context.Context, u *ent.User) (*ent.User, error)
 		UpdateUser(ctx context.Context, u *ent.User) (*ent.User, error)
+		DeleteUser(ctx context.Context, u *ent.User) error
 
 		FindChatUserByID(ctx context.Context, id string) (*ent.ChatUser, error)
 		CreateChatUser(ctx context.Context, u *ent.User, cu *ent.ChatUser) (*ent.ChatUser, error)

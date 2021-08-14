@@ -147,9 +147,13 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 		repov1.GET("/:id/config", rm.ReadPerm(), r.GetConfig)
 	}
 
+	usersv1 := v1.Group("/users")
 	userv1 := v1.Group("/user")
 	{
+		m := users.NewUserMiddleware()
 		u := users.NewUser(c.Interactor)
+		usersv1.GET("", m.AdminOnly(), u.ListUsers)
+		usersv1.DELETE("/:id", m.AdminOnly(), u.DeleteUser)
 		userv1.GET("", u.GetMyUser)
 		userv1.GET("/rate-limit", u.GetRateLimit)
 	}
