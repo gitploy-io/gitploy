@@ -37,32 +37,24 @@ var (
 			},
 		},
 	}
-	// ChatCallbacksColumns holds the columns for the "chat_callbacks" table.
-	ChatCallbacksColumns = []*schema.Column{
+	// CallbacksColumns holds the columns for the "callbacks" table.
+	CallbacksColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "hash", Type: field.TypeString, Unique: true},
 		{Name: "type", Type: field.TypeEnum, Enums: []string{"deploy", "rollback"}},
-		{Name: "is_opened", Type: field.TypeBool, Default: true},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "chat_user_id", Type: field.TypeString, Nullable: true},
 		{Name: "repo_id", Type: field.TypeString, Nullable: true},
 	}
-	// ChatCallbacksTable holds the schema information for the "chat_callbacks" table.
-	ChatCallbacksTable = &schema.Table{
-		Name:       "chat_callbacks",
-		Columns:    ChatCallbacksColumns,
-		PrimaryKey: []*schema.Column{ChatCallbacksColumns[0]},
+	// CallbacksTable holds the schema information for the "callbacks" table.
+	CallbacksTable = &schema.Table{
+		Name:       "callbacks",
+		Columns:    CallbacksColumns,
+		PrimaryKey: []*schema.Column{CallbacksColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "chat_callbacks_chat_users_chat_callback",
-				Columns:    []*schema.Column{ChatCallbacksColumns[6]},
-				RefColumns: []*schema.Column{ChatUsersColumns[0]},
-				OnDelete:   schema.SetNull,
-			},
-			{
-				Symbol:     "chat_callbacks_repos_chat_callback",
-				Columns:    []*schema.Column{ChatCallbacksColumns[7]},
+				Symbol:     "callbacks_repos_callback",
+				Columns:    []*schema.Column{CallbacksColumns[5]},
 				RefColumns: []*schema.Column{ReposColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
@@ -323,7 +315,7 @@ var (
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		ApprovalsTable,
-		ChatCallbacksTable,
+		CallbacksTable,
 		ChatUsersTable,
 		DeploymentsTable,
 		DeploymentStatusTable,
@@ -338,8 +330,7 @@ var (
 func init() {
 	ApprovalsTable.ForeignKeys[0].RefTable = DeploymentsTable
 	ApprovalsTable.ForeignKeys[1].RefTable = UsersTable
-	ChatCallbacksTable.ForeignKeys[0].RefTable = ChatUsersTable
-	ChatCallbacksTable.ForeignKeys[1].RefTable = ReposTable
+	CallbacksTable.ForeignKeys[0].RefTable = ReposTable
 	ChatUsersTable.ForeignKeys[0].RefTable = UsersTable
 	DeploymentsTable.ForeignKeys[0].RefTable = ReposTable
 	DeploymentsTable.ForeignKeys[1].RefTable = UsersTable

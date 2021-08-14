@@ -68,21 +68,6 @@ func (mr *MockStoreMockRecorder) CheckNotificationRecordOfEvent(ctx, e interface
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CheckNotificationRecordOfEvent", reflect.TypeOf((*MockStore)(nil).CheckNotificationRecordOfEvent), ctx, e)
 }
 
-// CloseChatCallback mocks base method.
-func (m *MockStore) CloseChatCallback(ctx context.Context, cb *ent.ChatCallback) (*ent.ChatCallback, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CloseChatCallback", ctx, cb)
-	ret0, _ := ret[0].(*ent.ChatCallback)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// CloseChatCallback indicates an expected call of CloseChatCallback.
-func (mr *MockStoreMockRecorder) CloseChatCallback(ctx, cb interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CloseChatCallback", reflect.TypeOf((*MockStore)(nil).CloseChatCallback), ctx, cb)
-}
-
 // CreateApproval mocks base method.
 func (m *MockStore) CreateApproval(ctx context.Context, a *ent.Approval) (*ent.Approval, error) {
 	m.ctrl.T.Helper()
@@ -98,19 +83,19 @@ func (mr *MockStoreMockRecorder) CreateApproval(ctx, a interface{}) *gomock.Call
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateApproval", reflect.TypeOf((*MockStore)(nil).CreateApproval), ctx, a)
 }
 
-// CreateChatCallback mocks base method.
-func (m *MockStore) CreateChatCallback(ctx context.Context, cu *ent.ChatUser, repo *ent.Repo, cb *ent.ChatCallback) (*ent.ChatCallback, error) {
+// CreateCallback mocks base method.
+func (m *MockStore) CreateCallback(ctx context.Context, cb *ent.Callback) (*ent.Callback, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateChatCallback", ctx, cu, repo, cb)
-	ret0, _ := ret[0].(*ent.ChatCallback)
+	ret := m.ctrl.Call(m, "CreateCallback", ctx, cb)
+	ret0, _ := ret[0].(*ent.Callback)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// CreateChatCallback indicates an expected call of CreateChatCallback.
-func (mr *MockStoreMockRecorder) CreateChatCallback(ctx, cu, repo, cb interface{}) *gomock.Call {
+// CreateCallback indicates an expected call of CreateCallback.
+func (mr *MockStoreMockRecorder) CreateCallback(ctx, cb interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateChatCallback", reflect.TypeOf((*MockStore)(nil).CreateChatCallback), ctx, cu, repo, cb)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateCallback", reflect.TypeOf((*MockStore)(nil).CreateCallback), ctx, cb)
 }
 
 // CreateChatUser mocks base method.
@@ -247,19 +232,19 @@ func (mr *MockStoreMockRecorder) FindApprovalOfUser(ctx, d, u interface{}) *gomo
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindApprovalOfUser", reflect.TypeOf((*MockStore)(nil).FindApprovalOfUser), ctx, d, u)
 }
 
-// FindChatCallbackByHash mocks base method.
-func (m *MockStore) FindChatCallbackByHash(ctx context.Context, state string) (*ent.ChatCallback, error) {
+// FindCallbackByHash mocks base method.
+func (m *MockStore) FindCallbackByHash(ctx context.Context, hash string) (*ent.Callback, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FindChatCallbackByHash", ctx, state)
-	ret0, _ := ret[0].(*ent.ChatCallback)
+	ret := m.ctrl.Call(m, "FindCallbackByHash", ctx, hash)
+	ret0, _ := ret[0].(*ent.Callback)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// FindChatCallbackByHash indicates an expected call of FindChatCallbackByHash.
-func (mr *MockStoreMockRecorder) FindChatCallbackByHash(ctx, state interface{}) *gomock.Call {
+// FindCallbackByHash indicates an expected call of FindCallbackByHash.
+func (mr *MockStoreMockRecorder) FindCallbackByHash(ctx, hash interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindChatCallbackByHash", reflect.TypeOf((*MockStore)(nil).FindChatCallbackByHash), ctx, state)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindCallbackByHash", reflect.TypeOf((*MockStore)(nil).FindCallbackByHash), ctx, hash)
 }
 
 // FindChatUserByID mocks base method.

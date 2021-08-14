@@ -52,7 +52,7 @@ func (Repo) Edges() []ent.Edge {
 			Annotations(entsql.Annotation{
 				OnDelete: entsql.Cascade,
 			}),
-		edge.To("chat_callback", ChatCallback.Type).
+		edge.To("callback", Callback.Type).
 			Annotations(entsql.Annotation{
 				OnDelete: entsql.Cascade,
 			}),

@@ -14,8 +14,8 @@ type Tx struct {
 	config
 	// Approval is the client for interacting with the Approval builders.
 	Approval *ApprovalClient
-	// ChatCallback is the client for interacting with the ChatCallback builders.
-	ChatCallback *ChatCallbackClient
+	// Callback is the client for interacting with the Callback builders.
+	Callback *CallbackClient
 	// ChatUser is the client for interacting with the ChatUser builders.
 	ChatUser *ChatUserClient
 	// Deployment is the client for interacting with the Deployment builders.
@@ -168,7 +168,7 @@ func (tx *Tx) Client() *Client {
 
 func (tx *Tx) init() {
 	tx.Approval = NewApprovalClient(tx.config)
-	tx.ChatCallback = NewChatCallbackClient(tx.config)
+	tx.Callback = NewCallbackClient(tx.config)
 	tx.ChatUser = NewChatUserClient(tx.config)
 	tx.Deployment = NewDeploymentClient(tx.config)
 	tx.DeploymentStatus = NewDeploymentStatusClient(tx.config)

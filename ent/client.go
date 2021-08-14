@@ -10,7 +10,7 @@ import (
 	"github.com/hanjunlee/gitploy/ent/migrate"
 
 	"github.com/hanjunlee/gitploy/ent/approval"
-	"github.com/hanjunlee/gitploy/ent/chatcallback"
+	"github.com/hanjunlee/gitploy/ent/callback"
 	"github.com/hanjunlee/gitploy/ent/chatuser"
 	"github.com/hanjunlee/gitploy/ent/deployment"
 	"github.com/hanjunlee/gitploy/ent/deploymentstatus"
@@ -32,8 +32,8 @@ type Client struct {
 	Schema *migrate.Schema
 	// Approval is the client for interacting with the Approval builders.
 	Approval *ApprovalClient
-	// ChatCallback is the client for interacting with the ChatCallback builders.
-	ChatCallback *ChatCallbackClient
+	// Callback is the client for interacting with the Callback builders.
+	Callback *CallbackClient
 	// ChatUser is the client for interacting with the ChatUser builders.
 	ChatUser *ChatUserClient
 	// Deployment is the client for interacting with the Deployment builders.
@@ -64,7 +64,7 @@ func NewClient(opts ...Option) *Client {
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
 	c.Approval = NewApprovalClient(c.config)
-	c.ChatCallback = NewChatCallbackClient(c.config)
+	c.Callback = NewCallbackClient(c.config)
 	c.ChatUser = NewChatUserClient(c.config)
 	c.Deployment = NewDeploymentClient(c.config)
 	c.DeploymentStatus = NewDeploymentStatusClient(c.config)
@@ -107,7 +107,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		ctx:                ctx,
 		config:             cfg,
 		Approval:           NewApprovalClient(cfg),
-		ChatCallback:       NewChatCallbackClient(cfg),
+		Callback:           NewCallbackClient(cfg),
 		ChatUser:           NewChatUserClient(cfg),
 		Deployment:         NewDeploymentClient(cfg),
 		DeploymentStatus:   NewDeploymentStatusClient(cfg),
@@ -135,7 +135,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	return &Tx{
 		config:             cfg,
 		Approval:           NewApprovalClient(cfg),
-		ChatCallback:       NewChatCallbackClient(cfg),
+		Callback:           NewCallbackClient(cfg),
 		ChatUser:           NewChatUserClient(cfg),
 		Deployment:         NewDeploymentClient(cfg),
 		DeploymentStatus:   NewDeploymentStatusClient(cfg),
@@ -174,7 +174,7 @@ func (c *Client) Close() error {
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
 	c.Approval.Use(hooks...)
-	c.ChatCallback.Use(hooks...)
+	c.Callback.Use(hooks...)
 	c.ChatUser.Use(hooks...)
 	c.Deployment.Use(hooks...)
 	c.DeploymentStatus.Use(hooks...)
@@ -323,84 +323,84 @@ func (c *ApprovalClient) Hooks() []Hook {
 	return c.hooks.Approval
 }
 
-// ChatCallbackClient is a client for the ChatCallback schema.
-type ChatCallbackClient struct {
+// CallbackClient is a client for the Callback schema.
+type CallbackClient struct {
 	config
 }
 
-// NewChatCallbackClient returns a client for the ChatCallback from the given config.
-func NewChatCallbackClient(c config) *ChatCallbackClient {
-	return &ChatCallbackClient{config: c}
+// NewCallbackClient returns a client for the Callback from the given config.
+func NewCallbackClient(c config) *CallbackClient {
+	return &CallbackClient{config: c}
 }
 
 // Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `chatcallback.Hooks(f(g(h())))`.
-func (c *ChatCallbackClient) Use(hooks ...Hook) {
-	c.hooks.ChatCallback = append(c.hooks.ChatCallback, hooks...)
+// A call to `Use(f, g, h)` equals to `callback.Hooks(f(g(h())))`.
+func (c *CallbackClient) Use(hooks ...Hook) {
+	c.hooks.Callback = append(c.hooks.Callback, hooks...)
 }
 
-// Create returns a create builder for ChatCallback.
-func (c *ChatCallbackClient) Create() *ChatCallbackCreate {
-	mutation := newChatCallbackMutation(c.config, OpCreate)
-	return &ChatCallbackCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Create returns a create builder for Callback.
+func (c *CallbackClient) Create() *CallbackCreate {
+	mutation := newCallbackMutation(c.config, OpCreate)
+	return &CallbackCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// CreateBulk returns a builder for creating a bulk of ChatCallback entities.
-func (c *ChatCallbackClient) CreateBulk(builders ...*ChatCallbackCreate) *ChatCallbackCreateBulk {
-	return &ChatCallbackCreateBulk{config: c.config, builders: builders}
+// CreateBulk returns a builder for creating a bulk of Callback entities.
+func (c *CallbackClient) CreateBulk(builders ...*CallbackCreate) *CallbackCreateBulk {
+	return &CallbackCreateBulk{config: c.config, builders: builders}
 }
 
-// Update returns an update builder for ChatCallback.
-func (c *ChatCallbackClient) Update() *ChatCallbackUpdate {
-	mutation := newChatCallbackMutation(c.config, OpUpdate)
-	return &ChatCallbackUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Update returns an update builder for Callback.
+func (c *CallbackClient) Update() *CallbackUpdate {
+	mutation := newCallbackMutation(c.config, OpUpdate)
+	return &CallbackUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // UpdateOne returns an update builder for the given entity.
-func (c *ChatCallbackClient) UpdateOne(cc *ChatCallback) *ChatCallbackUpdateOne {
-	mutation := newChatCallbackMutation(c.config, OpUpdateOne, withChatCallback(cc))
-	return &ChatCallbackUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+func (c *CallbackClient) UpdateOne(ca *Callback) *CallbackUpdateOne {
+	mutation := newCallbackMutation(c.config, OpUpdateOne, withCallback(ca))
+	return &CallbackUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *ChatCallbackClient) UpdateOneID(id int) *ChatCallbackUpdateOne {
-	mutation := newChatCallbackMutation(c.config, OpUpdateOne, withChatCallbackID(id))
-	return &ChatCallbackUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+func (c *CallbackClient) UpdateOneID(id int) *CallbackUpdateOne {
+	mutation := newCallbackMutation(c.config, OpUpdateOne, withCallbackID(id))
+	return &CallbackUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// Delete returns a delete builder for ChatCallback.
-func (c *ChatCallbackClient) Delete() *ChatCallbackDelete {
-	mutation := newChatCallbackMutation(c.config, OpDelete)
-	return &ChatCallbackDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Delete returns a delete builder for Callback.
+func (c *CallbackClient) Delete() *CallbackDelete {
+	mutation := newCallbackMutation(c.config, OpDelete)
+	return &CallbackDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // DeleteOne returns a delete builder for the given entity.
-func (c *ChatCallbackClient) DeleteOne(cc *ChatCallback) *ChatCallbackDeleteOne {
-	return c.DeleteOneID(cc.ID)
+func (c *CallbackClient) DeleteOne(ca *Callback) *CallbackDeleteOne {
+	return c.DeleteOneID(ca.ID)
 }
 
 // DeleteOneID returns a delete builder for the given id.
-func (c *ChatCallbackClient) DeleteOneID(id int) *ChatCallbackDeleteOne {
-	builder := c.Delete().Where(chatcallback.ID(id))
+func (c *CallbackClient) DeleteOneID(id int) *CallbackDeleteOne {
+	builder := c.Delete().Where(callback.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
-	return &ChatCallbackDeleteOne{builder}
+	return &CallbackDeleteOne{builder}
 }
 
-// Query returns a query builder for ChatCallback.
-func (c *ChatCallbackClient) Query() *ChatCallbackQuery {
-	return &ChatCallbackQuery{
+// Query returns a query builder for Callback.
+func (c *CallbackClient) Query() *CallbackQuery {
+	return &CallbackQuery{
 		config: c.config,
 	}
 }
 
-// Get returns a ChatCallback entity by its id.
-func (c *ChatCallbackClient) Get(ctx context.Context, id int) (*ChatCallback, error) {
-	return c.Query().Where(chatcallback.ID(id)).Only(ctx)
+// Get returns a Callback entity by its id.
+func (c *CallbackClient) Get(ctx context.Context, id int) (*Callback, error) {
+	return c.Query().Where(callback.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *ChatCallbackClient) GetX(ctx context.Context, id int) *ChatCallback {
+func (c *CallbackClient) GetX(ctx context.Context, id int) *Callback {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -408,41 +408,25 @@ func (c *ChatCallbackClient) GetX(ctx context.Context, id int) *ChatCallback {
 	return obj
 }
 
-// QueryChatUser queries the chat_user edge of a ChatCallback.
-func (c *ChatCallbackClient) QueryChatUser(cc *ChatCallback) *ChatUserQuery {
-	query := &ChatUserQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := cc.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(chatcallback.Table, chatcallback.FieldID, id),
-			sqlgraph.To(chatuser.Table, chatuser.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, chatcallback.ChatUserTable, chatcallback.ChatUserColumn),
-		)
-		fromV = sqlgraph.Neighbors(cc.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryRepo queries the repo edge of a ChatCallback.
-func (c *ChatCallbackClient) QueryRepo(cc *ChatCallback) *RepoQuery {
+// QueryRepo queries the repo edge of a Callback.
+func (c *CallbackClient) QueryRepo(ca *Callback) *RepoQuery {
 	query := &RepoQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := cc.ID
+		id := ca.ID
 		step := sqlgraph.NewStep(
-			sqlgraph.From(chatcallback.Table, chatcallback.FieldID, id),
+			sqlgraph.From(callback.Table, callback.FieldID, id),
 			sqlgraph.To(repo.Table, repo.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, chatcallback.RepoTable, chatcallback.RepoColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, callback.RepoTable, callback.RepoColumn),
 		)
-		fromV = sqlgraph.Neighbors(cc.driver.Dialect(), step)
+		fromV = sqlgraph.Neighbors(ca.driver.Dialect(), step)
 		return fromV, nil
 	}
 	return query
 }
 
 // Hooks returns the client hooks.
-func (c *ChatCallbackClient) Hooks() []Hook {
-	return c.hooks.ChatCallback
+func (c *CallbackClient) Hooks() []Hook {
+	return c.hooks.Callback
 }
 
 // ChatUserClient is a client for the ChatUser schema.
@@ -528,22 +512,6 @@ func (c *ChatUserClient) GetX(ctx context.Context, id string) *ChatUser {
 		panic(err)
 	}
 	return obj
-}
-
-// QueryChatCallback queries the chat_callback edge of a ChatUser.
-func (c *ChatUserClient) QueryChatCallback(cu *ChatUser) *ChatCallbackQuery {
-	query := &ChatCallbackQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := cu.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(chatuser.Table, chatuser.FieldID, id),
-			sqlgraph.To(chatcallback.Table, chatcallback.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, chatuser.ChatCallbackTable, chatuser.ChatCallbackColumn),
-		)
-		fromV = sqlgraph.Neighbors(cu.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
 }
 
 // QueryUser queries the user edge of a ChatUser.
@@ -1326,15 +1294,15 @@ func (c *RepoClient) QueryDeployments(r *Repo) *DeploymentQuery {
 	return query
 }
 
-// QueryChatCallback queries the chat_callback edge of a Repo.
-func (c *RepoClient) QueryChatCallback(r *Repo) *ChatCallbackQuery {
-	query := &ChatCallbackQuery{config: c.config}
+// QueryCallback queries the callback edge of a Repo.
+func (c *RepoClient) QueryCallback(r *Repo) *CallbackQuery {
+	query := &CallbackQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
 		id := r.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(repo.Table, repo.FieldID, id),
-			sqlgraph.To(chatcallback.Table, chatcallback.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, repo.ChatCallbackTable, repo.ChatCallbackColumn),
+			sqlgraph.To(callback.Table, callback.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, repo.CallbackTable, repo.CallbackColumn),
 		)
 		fromV = sqlgraph.Neighbors(r.driver.Dialect(), step)
 		return fromV, nil

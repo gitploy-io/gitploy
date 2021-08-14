@@ -35,13 +35,11 @@ func TestSlack_interactDeploy(t *testing.T) {
 			},
 		}
 
-		cb := &ent.ChatCallback{
-			ID:         1,
-			RepoID:     r.ID,
-			ChatUserID: cu.ID,
-			Edges: ent.ChatCallbackEdges{
-				ChatUser: cu,
-				Repo:     r,
+		cb := &ent.Callback{
+			ID:     1,
+			RepoID: r.ID,
+			Edges: ent.CallbackEdges{
+				Repo: r,
 			},
 		}
 
@@ -58,7 +56,7 @@ func TestSlack_interactDeploy(t *testing.T) {
 
 		m.
 			EXPECT().
-			FindChatCallbackByHash(gomock.Any(), callbackID).
+			FindCallbackByHash(gomock.Any(), callbackID).
 			Return(cb, nil)
 
 		m.

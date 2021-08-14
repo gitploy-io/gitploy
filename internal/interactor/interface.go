@@ -49,9 +49,8 @@ type (
 
 		CreateDeploymentStatus(ctx context.Context, s *ent.DeploymentStatus) (*ent.DeploymentStatus, error)
 
-		CreateChatCallback(ctx context.Context, cu *ent.ChatUser, repo *ent.Repo, cb *ent.ChatCallback) (*ent.ChatCallback, error)
-		FindChatCallbackByHash(ctx context.Context, state string) (*ent.ChatCallback, error)
-		CloseChatCallback(ctx context.Context, cb *ent.ChatCallback) (*ent.ChatCallback, error)
+		CreateCallback(ctx context.Context, cb *ent.Callback) (*ent.Callback, error)
+		FindCallbackByHash(ctx context.Context, hash string) (*ent.Callback, error)
 
 		SearchApprovals(ctx context.Context, u *ent.User, s []approval.Status, from time.Time, to time.Time, page, perPage int) ([]*ent.Approval, error)
 		ListApprovals(ctx context.Context, d *ent.Deployment) ([]*ent.Approval, error)
