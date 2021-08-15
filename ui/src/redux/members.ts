@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit"
 
 import { User } from "../models"
-import { listUsers, deleteUser as _deleteUser } from "../apis"
+import { listUsers, updateUser as _updateUser, deleteUser as _deleteUser } from "../apis"
 import { message } from "antd"
 
 export const perPage = 30
@@ -26,6 +26,18 @@ export const fetchUsers = createAsyncThunk<User[], void, { state: {members: Memb
         try {
             const users = await listUsers(q, page)
             return users
+        } catch(e) {
+            return rejectWithValue(e)
+        }
+    },
+)
+
+export const updateUser = createAsyncThunk<User, {user: User, admin: boolean}, { state: {members: MembersState} }>(
+    "members/updateUser", 
+    async ({user, admin}, { rejectWithValue } ) => {
+        try {
+            const u = await _updateUser(user.id, {admin})
+            return u
         } catch(e) {
             return rejectWithValue(e)
         }
@@ -67,6 +79,18 @@ export const membersSlice = createSlice({
         builder
             .addCase(fetchUsers.fulfilled, (state, action) => {
                 state.users = action.payload
+            })
+
+            .addCase(updateUser.fulfilled, (state, action) => {
+                const idx = state.users.findIndex((u) => {
+                    return u.id === action.payload.id
+                })
+                if (idx === -1) {
+                    console.log("The updated user is not found.")
+                    return
+                }
+
+                state.users[idx] = action.payload
             })
 
             .addCase(deleteUser.fulfilled, (state, action) => {

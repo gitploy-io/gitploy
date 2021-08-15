@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 	"go.uber.org/zap"
 
 	"github.com/hanjunlee/gitploy/ent"
@@ -16,6 +17,10 @@ type (
 	User struct {
 		i   Interactor
 		log *zap.Logger
+	}
+
+	userPatchPayload struct {
+		Admin bool `json:"admin"`
 	}
 )
 
@@ -52,6 +57,43 @@ func (u *User) ListUsers(c *gin.Context) {
 	}
 
 	gb.Response(c, http.StatusOK, us)
+}
+
+func (u *User) UpdateUser(c *gin.Context) {
+	ctx := c.Request.Context()
+
+	var (
+		id = c.Param("id")
+	)
+
+	p := &userPatchPayload{}
+	if err := c.ShouldBindBodyWith(p, binding.JSON); err != nil {
+		u.log.Error("It has failed to binding the payload.", zap.Error(err))
+		gb.ErrorResponse(c, http.StatusBadRequest, "It has failed to binding the payload.")
+		return
+	}
+
+	du, err := u.i.FindUserByID(ctx, id)
+	if ent.IsNotFound(err) {
+		u.log.Warn("The deleting user is not found.", zap.Error(err))
+		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "The deleting user is not found.")
+		return
+	} else if err != nil {
+		u.log.Error("It has failed to get the user.", zap.Error(err))
+		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to get the user.")
+		return
+	}
+
+	if du.Admin != p.Admin {
+		du.Admin = p.Admin
+		if du, err = u.i.UpdateUser(ctx, du); err != nil {
+			u.log.Error("It has failed to patch the user.", zap.Error(err))
+			gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to delete the user.")
+			return
+		}
+	}
+
+	gb.Response(c, http.StatusOK, du)
 }
 
 func (u *User) DeleteUser(c *gin.Context) {

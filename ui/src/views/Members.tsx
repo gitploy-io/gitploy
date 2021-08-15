@@ -1,9 +1,9 @@
 import { useEffect } from "react"
 import { shallowEqual } from "react-redux"
-import { Input, Row, Col } from "antd"
+import { Input } from "antd"
 
 import { useAppSelector, useAppDispatch } from "../redux/hooks"
-import { membersSlice as slice, fetchUsers, deleteUser, perPage } from "../redux/members"
+import { membersSlice as slice, fetchUsers, updateUser, deleteUser, perPage } from "../redux/members"
 
 import { User } from "../models"
 
@@ -24,6 +24,10 @@ export default function Member(): JSX.Element {
     const onSearch = (value: string) => {
         dispatch(slice.actions.setQuery(value))
         dispatch(fetchUsers())
+    }
+
+    const onChangeSwitch = (user: User, checked: boolean) => {
+        dispatch(updateUser({user, admin: checked}))
     }
 
     const onClickDelete = (user: User) => {
@@ -50,7 +54,7 @@ export default function Member(): JSX.Element {
         <div style={{marginTop: "40px"}}>
             <MemberList
                 users={users}
-                onChangeSwitch={(u, c) => {console.log(u, c)}}
+                onChangeSwitch={onChangeSwitch}
                 onClickDelete={onClickDelete}
             />
         </div>
