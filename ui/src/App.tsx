@@ -9,6 +9,7 @@ import Home from "./views/Home"
 import Repo from "./views/Repo"
 import Deployment from "./views/Deployment"
 import Settings from "./views/Settings"
+import Members from "./views/Members"
 
 function App(): JSX.Element {
     return (
@@ -23,6 +24,9 @@ function App(): JSX.Element {
                     </Route>
                     <Route path="/settings">
                         <Settings />
+                    </Route>
+                    <Route path="/members">
+                        <Members />
                     </Route>
                     <Route path="/">
                         <Home />

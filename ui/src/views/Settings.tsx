@@ -1,4 +1,4 @@
-import { PageHeader, Avatar, Button, Tag } from "antd"
+import { Avatar, Button, Tag } from "antd"
 import moment from "moment"
 import { useEffect } from "react"
 import { shallowEqual } from "react-redux"

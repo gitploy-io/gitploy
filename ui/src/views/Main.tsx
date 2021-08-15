@@ -80,8 +80,9 @@ export default function Main(props: any) {
                 <Row>
                     <Col span="16">
                         <Menu theme="dark" mode="horizontal" defaultActiveFirst>
-                            <Menu.Item key="1">Gitploy</Menu.Item>
-                            <Menu.Item key="2"><a href="/">Home</a></Menu.Item>
+                            <Menu.Item key={0}>Gitploy</Menu.Item>
+                            <Menu.Item key={1}><a href="/">Home</a></Menu.Item>
+                            {(user?.admin)? <Menu.Item key={2}><a href="/members">Members</a></Menu.Item>: null}
                         </Menu>
                     </Col>
                     <Col span="8" style={{textAlign: "right"}}>

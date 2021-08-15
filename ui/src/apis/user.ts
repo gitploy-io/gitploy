@@ -1,6 +1,8 @@
+import { StatusCodes } from 'http-status-codes'
+
 import { _fetch } from "./_base"
 import { instance, headers } from "./setting"
-import { User, ChatUser, RateLimit } from "../models"
+import { User, ChatUser, RateLimit, HttpRequestError, HttpForbiddenError } from "../models"
 
 export interface UserData {
     id: string
@@ -56,6 +58,36 @@ export const mapDataToRateLimit = (data: RateLimitData): RateLimit => {
         limit: data.limit,
         remaining: data.remaining,
         reset: new Date(data.reset)
+    }
+}
+
+export const listUsers = async (q: string, page = 1, perPage = 30): Promise<User[]> => {
+    const res = await _fetch(`${instance}/api/v1/users?q=${q}&page=${page}&per_page=${perPage}&`, {
+        headers,
+        credentials: "same-origin",
+    })
+
+    if (res.status === StatusCodes.FORBIDDEN) {
+        throw new HttpForbiddenError("Only admin can access.")
+    }
+
+    const users = await res
+        .json()
+        .then((data: UserData[]) => (data.map(d => mapDataToUser(d))))
+
+    return users
+}
+
+export const deleteUser = async (id: string): Promise<void> => {
+    const res = await _fetch(`${instance}/api/v1/users/${id}`, {
+        headers,
+        credentials: "same-origin",
+        method: "DELETE"
+    })
+
+    if (res.status !== StatusCodes.OK) {
+        const message = await res.json().then(data => data.message)
+        throw new HttpRequestError(res.status, message)
     }
 }
 
