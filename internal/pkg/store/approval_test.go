@@ -54,16 +54,14 @@ func TestStore_SearchApprovals(t *testing.T) {
 		const (
 			owned   = false
 			page    = 1
-			perPage = 2
+			perPage = 30
 		)
 
 		store := NewStore(client)
 
 		res, err := store.SearchApprovals(ctx,
 			&ent.User{ID: u1},
-			[]approval.Status{
-				approval.StatusPending,
-			},
+			[]approval.Status{},
 			time.Now().Add(-time.Minute),
 			time.Now(),
 			page,
