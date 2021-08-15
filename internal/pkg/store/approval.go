@@ -37,6 +37,7 @@ func (s *Store) SearchApprovals(ctx context.Context, u *ent.User, ss []approval.
 				WithRepo().
 				WithUser()
 		}).
+		Order(ent.Desc(approval.FieldCreatedAt)).
 		Offset(offset(page, perPage)).
 		Limit(perPage).
 		All(ctx)

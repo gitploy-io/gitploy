@@ -35,6 +35,7 @@ func (s *Store) SearchDeployments(ctx context.Context, u *ent.User, ss []deploym
 			).
 			WithRepo().
 			WithUser().
+			Order(ent.Desc(deployment.FieldCreatedAt)).
 			Offset(offset(page, perPage)).
 			Limit(perPage).
 			All(ctx)
@@ -67,6 +68,7 @@ func (s *Store) SearchDeployments(ctx context.Context, u *ent.User, ss []deploym
 		).
 		WithRepo().
 		WithUser().
+		Order(ent.Desc(deployment.FieldCreatedAt)).
 		Offset(offset(page, perPage)).
 		Limit(perPage).
 		All(ctx)
