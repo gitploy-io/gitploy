@@ -49,7 +49,7 @@ export default function Home(): JSX.Element {
     if (loading) {
         return (
             <Main>
-                <div style={{"marginTop": "20px"}}>
+                <div >
                     <Breadcrumb>
                         <Breadcrumb.Item>
                             <a href="/">Repositories</a>
@@ -62,7 +62,7 @@ export default function Home(): JSX.Element {
 
     return (
         <Main>
-            <div style={{"marginTop": "20px"}}>
+            <div >
                 <Breadcrumb>
                     <Breadcrumb.Item>
                         <a href="/">Repositories</a>

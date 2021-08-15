@@ -1,4 +1,4 @@
-import { PageHeader, Avatar, Button, Tag } from "antd"
+import { Avatar, Button, Tag } from "antd"
 import moment from "moment"
 import { useEffect } from "react"
 import { shallowEqual } from "react-redux"
@@ -23,11 +23,10 @@ export default function Settings(): JSX.Element {
 
     return (
         <Main>
-            <div style={{"marginTop": "20px"}}>
-                <PageHeader 
-                    title="Settings"/>
+            <div >
+                <h1>Settings</h1>
             </div>
-            <div style={{marginTop: "20px", padding: "16px 24px"}}>
+            <div style={{marginTop: "40px"}}>
                 <h2>User</h2>
                 <p>
                     Login: <Avatar src={user?.avatar}/> <b>{user?.login}</b> 
@@ -36,14 +35,14 @@ export default function Settings(): JSX.Element {
                     Role: {(user?.admin)? <Tag color="purple">Admin</Tag> : <Tag color="purple">Member</Tag>}
                 </p>
             </div>
-            <div style={{marginTop: "20px", padding: "16px 24px"}}>
+            <div style={{marginTop: "40px"}}>
                 <h2>Rate Limit</h2>
                 <p>Limit: {rateLimit?.limit}</p>
                 <p>Remaining: {rateLimit?.remaining}</p>
                 <p>Reset: {moment(rateLimit?.reset).fromNow()}</p>
             </div>
             {(isSlackEnabled)?
-                <div style={{marginTop: "20px", marginBottom: "20px", padding: "16px 24px"}}>
+                <div style={{marginTop: "40px", marginBottom: "20px"}}>
                     <h2>Slack</h2>
                     {(connected)? 
                         <Button href="#" type="primary" danger>DISCONNECTED</Button>:

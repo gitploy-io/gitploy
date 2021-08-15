@@ -932,6 +932,98 @@ paths:
           $ref: '#/components/responses/422UnprocessableEntity'
         '500':
           $ref: '#/components/responses/500InternalError'
+  /users:
+    get:
+      tags:
+        - User
+      summary: Get user list.
+      parameters:
+        - in: query
+          name: q
+          schema:
+            type: string
+            description: Search users by login.
+        - in: query
+          name: page
+          schema:
+            type: number
+            default: 1
+        - in: query
+          name: per_page
+          schema:
+            type: number
+            default: 30
+      responses:
+        '200':
+          description: User
+          content:
+            application/json:
+              schema:
+               $ref: '#/components/schemas/User'
+        '401': 
+          $ref: '#/components/responses/401Unauthorized'
+        '403':
+          $ref: '#/components/responses/403Forbidden'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+  /users/{id}:
+    patch:
+      tags:
+        - User
+      summary: Update the user.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            description: User id.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                admin: 
+                  type: boolean
+                  default: false
+      responses:
+        '200':
+          description: User
+          content:
+            application/json:
+              schema:
+               $ref: '#/components/schemas/User'
+        '401': 
+          $ref: '#/components/responses/401Unauthorized'
+        '403':
+          $ref: '#/components/responses/403Forbidden'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+    delete:
+      tags:
+        - User
+      summary: Delete the user.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            description: User id.
+      responses:
+        '200':
+          description: User
+          content:
+            application/json:
+              schema:
+               $ref: '#/components/schemas/User'
+        '401': 
+          $ref: '#/components/responses/401Unauthorized'
+        '403':
+          $ref: '#/components/responses/403Forbidden'
+        '500':
+          $ref: '#/components/responses/500InternalError'
   /user:
     get:
       tags:
@@ -1083,6 +1175,10 @@ security:
 
 components:
   schemas:
+    Users:
+      type: array
+      items:
+        $ref: '#/components/schemas/User'
     User:
       type: object
       properties:

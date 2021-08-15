@@ -6,7 +6,7 @@ import { getConfig } from './config'
 import { listCommits, getCommit, listStatuses } from './commit'
 import { listBranches, getBranch } from './branch'
 import { listTags, getTag } from './tag'
-import { getMe, getRateLimit } from "./user"
+import { listUsers, updateUser, deleteUser, getMe, getRateLimit } from "./user"
 import { checkSlack } from "./chat"
 import { searchApprovals, listApprovals, getMyApproval, createApproval, deleteApproval, setApprovalApproved, setApprovalDeclined } from "./approval"
 import { subscribeDeploymentEvent, subscribeApprovalEvent } from "./events"
@@ -34,6 +34,9 @@ export {
     getBranch,
     listTags,
     getTag,
+    listUsers,
+    updateUser,
+    deleteUser,
     getMe,
     getRateLimit,
     checkSlack,

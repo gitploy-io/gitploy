@@ -16,6 +16,7 @@ export default function Main(props: any) {
     const { 
         available, 
         authorized, 
+        permitted,
         user,
         deployments,
         approvals
@@ -60,15 +61,22 @@ export default function Main(props: any) {
             style={{paddingTop: '120px'}}
             status="error"
             title="Server Internal Error"
-            subTitle="Sorry, something went wrong."
+            subTitle="Sorry, something went wrong. Contact administrator."
         />
     } else if (!authorized) {
         content = <Result
             style={{paddingTop: '120px'}}
             status="warning"
             title="Unauthorized Error"
-            subTitle="Sorry, you are not authorized to access."
+            subTitle="Sorry, you are not authorized."
             extra={[<Button key="console" type="primary" href="/">Sign in</Button>]}
+        />
+    } else if (!permitted) {
+        content = <Result
+            style={{paddingTop: '120px'}}
+            status="warning"
+            title="Permission Error"
+            subTitle="Sorry, you are not permitted. Check your permission."
         />
     } else {
         content = props.children
@@ -80,8 +88,9 @@ export default function Main(props: any) {
                 <Row>
                     <Col span="16">
                         <Menu theme="dark" mode="horizontal" defaultActiveFirst>
-                            <Menu.Item key="1">Gitploy</Menu.Item>
-                            <Menu.Item key="2"><a href="/">Home</a></Menu.Item>
+                            <Menu.Item key={0}>Gitploy</Menu.Item>
+                            <Menu.Item key={1}><a href="/">Home</a></Menu.Item>
+                            {(user?.admin)? <Menu.Item key={2}><a href="/members">Members</a></Menu.Item>: null}
                         </Menu>
                     </Col>
                     <Col span="8" style={{textAlign: "right"}}>
@@ -118,7 +127,7 @@ export default function Main(props: any) {
                                     </Menu.Item>
                                     <Menu.Divider />
                                     <Menu.Item key="1">
-                                        <a href="/signout">Sign Out</a>
+                                        <a href="/signout">Sign out</a>
                                     </Menu.Item>
                                 </Menu> }>
                                 <Avatar  src={user?.avatar}/>
@@ -127,7 +136,7 @@ export default function Main(props: any) {
                     </Col>
                 </Row>
             </Header>
-            <Content style={{ padding: '0 50px' }}>
+            <Content style={{ padding: '50px 50px' }}>
                 <Row>
                     <Col 
                         span={22}

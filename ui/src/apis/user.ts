@@ -59,6 +59,40 @@ export const mapDataToRateLimit = (data: RateLimitData): RateLimit => {
     }
 }
 
+export const listUsers = async (q: string, page = 1, perPage = 30): Promise<User[]> => {
+    const res = await _fetch(`${instance}/api/v1/users?q=${q}&page=${page}&per_page=${perPage}`, {
+        headers,
+        credentials: "same-origin",
+    })
+
+    const users = await res
+        .json()
+        .then((data: UserData[]) => (data.map(d => mapDataToUser(d))))
+
+    return users
+}
+
+export const updateUser = async (id: string, payload: {admin: boolean}): Promise<User> => {
+    const user: User = await _fetch(`${instance}/api/v1/users/${id}`, {
+        headers,
+        credentials: "same-origin",
+        method: "PATCH",
+        body: JSON.stringify(payload)
+    }) 
+        .then(res => res.json())
+        .then((data: UserData) => mapDataToUser(data))
+
+    return user
+}
+
+export const deleteUser = async (id: string): Promise<void> => {
+    await _fetch(`${instance}/api/v1/users/${id}`, {
+        headers,
+        credentials: "same-origin",
+        method: "DELETE"
+    })
+}
+
 export const getMe = async (): Promise<User> => {
     const user:User = await _fetch(`${instance}/api/v1/user`, {
         headers,
