@@ -12,49 +12,28 @@ interface ActivityLogsProps {
 }
 
 export default function ActivityLogs(props: ActivityLogsProps): JSX.Element {
+    return <Timeline>
+        {props.deployments.map((d, idx) => {
+            const dot = (d.lastStatus === LastDeploymentStatus.Running)? 
+                <SyncOutlined spin />: 
+                null
+            const ref = (d.type === DeploymentType.Commit)? 
+                d.ref.substr(0, 7): 
+                d.ref
+            const avatar = (d.deployer)? 
+                <span><Avatar size="small" src={d.deployer.avatar} /> <Text strong>{d.deployer.login}</Text></span> :
+                <span><Avatar size="small">U</Avatar> </span> 
 
-    return (
-        <Timeline>
-            {props.deployments.map((d, idx) => {
-                const dot = (d.lastStatus === LastDeploymentStatus.Running) ? <SyncOutlined spin /> : null
-                const ref = (d.type === DeploymentType.Commit)? d.ref.substr(0, 7) : d.ref
-                let description: React.ReactElement 
-
-                if (d.deployer) {
-                    description = <p>
-                        Deployed by &nbsp;
-                        <Avatar size="small" src={d.deployer.avatar} /> &nbsp;
-                        <Text strong>{d.deployer.login}</Text> &nbsp;
-                        {moment(d.createdAt).fromNow()} &nbsp;
-                        <DeploymentStatusBadge deployment={d}/>
-                    </p>
-                } else {
-                    // deployer is removed by admin.
-                    description = <p>
-                        Deployed by &nbsp;
-                        <Avatar size="small">U</Avatar>&nbsp;
-                        {moment(d.createdAt).fromNow()} &nbsp;
-                        <DeploymentStatusBadge deployment={d}/>
-                    </p>
-
-                }
-
-                return <Timeline.Item key={idx} color={getStatusColor(d.lastStatus)} dot={dot}>
-                    <p>
-                        <Text strong>{d.env}</Text>&nbsp;
-                        {(d.lastStatus !== LastDeploymentStatus.Failure) 
-                            ? <Text code>{ref}</Text>
-                            : null}&nbsp;
-                        {(d.repo)? 
-                            <a href={`/${d.repo.namespace}/${d.repo.name}/deployments/${d.number}`}>• View detail #{d.number}</a>:
-                            null}
-                    </p>
-                    {description}
-                    
-                </Timeline.Item>
-            })}
-        </Timeline>
-    )
+            return <Timeline.Item key={idx} color={getStatusColor(d.lastStatus)} dot={dot}>
+                <p>
+                    <Text strong>{d.env}</Text> <Text code>{ref}</Text> <a href={`/${d.repo?.namespace}/${d.repo?.name}/deployments/${d.number}`}>• View detail #{d.number}</a>
+                </p>
+                <p>
+                    Deployed by {avatar} {moment(d.createdAt).fromNow()} <DeploymentStatusBadge deployment={d}/>
+                </p>
+            </Timeline.Item>
+        })}
+    </Timeline>
 }
 
 // https://ant.design/components/timeline/#Timeline.Item
