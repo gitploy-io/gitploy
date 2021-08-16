@@ -81,21 +81,6 @@ func (mr *MockInteractorMockRecorder) CreateApproval(ctx, a interface{}) *gomock
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateApproval", reflect.TypeOf((*MockInteractor)(nil).CreateApproval), ctx, a)
 }
 
-// CreateDeploymentToSCM mocks base method.
-func (m *MockInteractor) CreateDeploymentToSCM(ctx context.Context, u *ent.User, re *ent.Repo, d *ent.Deployment, env *vo.Env) (*ent.Deployment, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateDeploymentToSCM", ctx, u, re, d, env)
-	ret0, _ := ret[0].(*ent.Deployment)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// CreateDeploymentToSCM indicates an expected call of CreateDeploymentToSCM.
-func (mr *MockInteractorMockRecorder) CreateDeploymentToSCM(ctx, u, re, d, env interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateDeploymentToSCM", reflect.TypeOf((*MockInteractor)(nil).CreateDeploymentToSCM), ctx, u, re, d, env)
-}
-
 // CreateEvent mocks base method.
 func (m *MockInteractor) CreateEvent(ctx context.Context, e *ent.Event) (*ent.Event, error) {
 	m.ctrl.T.Helper()
@@ -109,6 +94,21 @@ func (m *MockInteractor) CreateEvent(ctx context.Context, e *ent.Event) (*ent.Ev
 func (mr *MockInteractorMockRecorder) CreateEvent(ctx, e interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateEvent", reflect.TypeOf((*MockInteractor)(nil).CreateEvent), ctx, e)
+}
+
+// CreateRemoteDeployment mocks base method.
+func (m *MockInteractor) CreateRemoteDeployment(ctx context.Context, u *ent.User, re *ent.Repo, d *ent.Deployment, env *vo.Env) (*ent.Deployment, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateRemoteDeployment", ctx, u, re, d, env)
+	ret0, _ := ret[0].(*ent.Deployment)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreateRemoteDeployment indicates an expected call of CreateRemoteDeployment.
+func (mr *MockInteractorMockRecorder) CreateRemoteDeployment(ctx, u, re, d, env interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateRemoteDeployment", reflect.TypeOf((*MockInteractor)(nil).CreateRemoteDeployment), ctx, u, re, d, env)
 }
 
 // DeactivateRepo mocks base method.

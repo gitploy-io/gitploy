@@ -732,19 +732,19 @@ func (mr *MockSCMMockRecorder) CompareCommits(ctx, u, r, base, head, page, perPa
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CompareCommits", reflect.TypeOf((*MockSCM)(nil).CompareCommits), ctx, u, r, base, head, page, perPage)
 }
 
-// CreateDeployment mocks base method.
-func (m *MockSCM) CreateDeployment(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, e *vo.Env) (*vo.RemoteDeployment, error) {
+// CreateRemoteDeployment mocks base method.
+func (m *MockSCM) CreateRemoteDeployment(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, e *vo.Env) (*vo.RemoteDeployment, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateDeployment", ctx, u, r, d, e)
+	ret := m.ctrl.Call(m, "CreateRemoteDeployment", ctx, u, r, d, e)
 	ret0, _ := ret[0].(*vo.RemoteDeployment)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// CreateDeployment indicates an expected call of CreateDeployment.
-func (mr *MockSCMMockRecorder) CreateDeployment(ctx, u, r, d, e interface{}) *gomock.Call {
+// CreateRemoteDeployment indicates an expected call of CreateRemoteDeployment.
+func (mr *MockSCMMockRecorder) CreateRemoteDeployment(ctx, u, r, d, e interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateDeployment", reflect.TypeOf((*MockSCM)(nil).CreateDeployment), ctx, u, r, d, e)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateRemoteDeployment", reflect.TypeOf((*MockSCM)(nil).CreateRemoteDeployment), ctx, u, r, d, e)
 }
 
 // CreateWebhook mocks base method.

@@ -62,7 +62,7 @@ func TestInteractor_Deploy(t *testing.T) {
 
 		scm.
 			EXPECT().
-			CreateDeployment(ctx, any, any, any, any).
+			CreateRemoteDeployment(ctx, any, any, any, any).
 			Return(rd, nil)
 
 		store.
@@ -99,7 +99,7 @@ func TestInteractor_Deploy(t *testing.T) {
 	})
 }
 
-func TestInteractor_CreateDeploymentToSCM(t *testing.T) {
+func TestInteractor_CreateRemoteDeployment(t *testing.T) {
 	ctx := gomock.Any()
 	any := gomock.Any()
 
@@ -129,7 +129,7 @@ func TestInteractor_CreateDeploymentToSCM(t *testing.T) {
 
 		scm.
 			EXPECT().
-			CreateDeployment(ctx, any, any, any, any).
+			CreateRemoteDeployment(ctx, any, any, any, any).
 			Return(rd, nil)
 
 		store.
@@ -145,9 +145,9 @@ func TestInteractor_CreateDeploymentToSCM(t *testing.T) {
 
 		i := newMockInteractor(store, scm)
 
-		d, err := i.CreateDeploymentToSCM(context.Background(), input.u, input.r, input.d, input.env)
+		d, err := i.CreateRemoteDeployment(context.Background(), input.u, input.r, input.d, input.env)
 		if err != nil {
-			t.Errorf("CreateDeploymentToSCM returns a error: %s", err)
+			t.Errorf("CreateRemoteDeployment returns a error: %s", err)
 			t.FailNow()
 		}
 
@@ -159,7 +159,7 @@ func TestInteractor_CreateDeploymentToSCM(t *testing.T) {
 			Status:  deployment.StatusCreated,
 		}
 		if !reflect.DeepEqual(d, expected) {
-			t.Errorf("CreateDeploymentToSCM = %v, wanted %v", d, expected)
+			t.Errorf("CreateRemoteDeployment = %v, wanted %v", d, expected)
 		}
 	})
 }
