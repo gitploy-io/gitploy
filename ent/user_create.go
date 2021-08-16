@@ -90,20 +90,6 @@ func (uc *UserCreate) SetNillableHash(s *string) *UserCreate {
 	return uc
 }
 
-// SetSyncedAt sets the "synced_at" field.
-func (uc *UserCreate) SetSyncedAt(t time.Time) *UserCreate {
-	uc.mutation.SetSyncedAt(t)
-	return uc
-}
-
-// SetNillableSyncedAt sets the "synced_at" field if the given value is not nil.
-func (uc *UserCreate) SetNillableSyncedAt(t *time.Time) *UserCreate {
-	if t != nil {
-		uc.SetSyncedAt(*t)
-	}
-	return uc
-}
-
 // SetCreatedAt sets the "created_at" field.
 func (uc *UserCreate) SetCreatedAt(t time.Time) *UserCreate {
 	uc.mutation.SetCreatedAt(t)
@@ -401,14 +387,6 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 			Column: user.FieldHash,
 		})
 		_node.Hash = value
-	}
-	if value, ok := uc.mutation.SyncedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: user.FieldSyncedAt,
-		})
-		_node.SyncedAt = value
 	}
 	if value, ok := uc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

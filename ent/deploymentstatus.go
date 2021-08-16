@@ -20,9 +20,9 @@ type DeploymentStatus struct {
 	// Status holds the value of the "status" field.
 	Status string `json:"status"`
 	// Description holds the value of the "description" field.
-	Description string `json:"description"`
+	Description string `json:"description,omitemtpy"`
 	// LogURL holds the value of the "log_url" field.
-	LogURL string `json:"log_url"`
+	LogURL string `json:"log_url,omitemtpy"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at"`
 	// UpdatedAt holds the value of the "updated_at" field.

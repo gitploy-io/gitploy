@@ -26,9 +26,9 @@ type Event struct {
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at"`
 	// DeploymentID holds the value of the "deployment_id" field.
-	DeploymentID int `json:"deployment_id"`
+	DeploymentID int `json:"deployment_id,omitemtpy"`
 	// ApprovalID holds the value of the "approval_id" field.
-	ApprovalID int `json:"approval_id"`
+	ApprovalID int `json:"approval_id,omitemtpy"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the EventQuery when eager-loading is set.
 	Edges EventEdges `json:"edges"`

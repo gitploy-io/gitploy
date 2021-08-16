@@ -89,26 +89,6 @@ func (uu *UserUpdate) SetExpiry(t time.Time) *UserUpdate {
 	return uu
 }
 
-// SetSyncedAt sets the "synced_at" field.
-func (uu *UserUpdate) SetSyncedAt(t time.Time) *UserUpdate {
-	uu.mutation.SetSyncedAt(t)
-	return uu
-}
-
-// SetNillableSyncedAt sets the "synced_at" field if the given value is not nil.
-func (uu *UserUpdate) SetNillableSyncedAt(t *time.Time) *UserUpdate {
-	if t != nil {
-		uu.SetSyncedAt(*t)
-	}
-	return uu
-}
-
-// ClearSyncedAt clears the value of the "synced_at" field.
-func (uu *UserUpdate) ClearSyncedAt() *UserUpdate {
-	uu.mutation.ClearSyncedAt()
-	return uu
-}
-
 // SetCreatedAt sets the "created_at" field.
 func (uu *UserUpdate) SetCreatedAt(t time.Time) *UserUpdate {
 	uu.mutation.SetCreatedAt(t)
@@ -396,19 +376,6 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: user.FieldExpiry,
 		})
 	}
-	if value, ok := uu.mutation.SyncedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: user.FieldSyncedAt,
-		})
-	}
-	if uu.mutation.SyncedAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: user.FieldSyncedAt,
-		})
-	}
 	if value, ok := uu.mutation.CreatedAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
@@ -694,26 +661,6 @@ func (uuo *UserUpdateOne) SetRefresh(s string) *UserUpdateOne {
 // SetExpiry sets the "expiry" field.
 func (uuo *UserUpdateOne) SetExpiry(t time.Time) *UserUpdateOne {
 	uuo.mutation.SetExpiry(t)
-	return uuo
-}
-
-// SetSyncedAt sets the "synced_at" field.
-func (uuo *UserUpdateOne) SetSyncedAt(t time.Time) *UserUpdateOne {
-	uuo.mutation.SetSyncedAt(t)
-	return uuo
-}
-
-// SetNillableSyncedAt sets the "synced_at" field if the given value is not nil.
-func (uuo *UserUpdateOne) SetNillableSyncedAt(t *time.Time) *UserUpdateOne {
-	if t != nil {
-		uuo.SetSyncedAt(*t)
-	}
-	return uuo
-}
-
-// ClearSyncedAt clears the value of the "synced_at" field.
-func (uuo *UserUpdateOne) ClearSyncedAt() *UserUpdateOne {
-	uuo.mutation.ClearSyncedAt()
 	return uuo
 }
 
@@ -1026,19 +973,6 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			Type:   field.TypeTime,
 			Value:  value,
 			Column: user.FieldExpiry,
-		})
-	}
-	if value, ok := uuo.mutation.SyncedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: user.FieldSyncedAt,
-		})
-	}
-	if uuo.mutation.SyncedAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: user.FieldSyncedAt,
 		})
 	}
 	if value, ok := uuo.mutation.CreatedAt(); ok {

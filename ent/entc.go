@@ -34,7 +34,11 @@ func TagFields(name string) gen.Hook {
 		return gen.GenerateFunc(func(g *gen.Graph) error {
 			for _, node := range g.Nodes {
 				for _, field := range node.Fields {
-					field.StructTag = fmt.Sprintf("%s:%q", name, field.Name)
+					if field.Optional {
+						field.StructTag = fmt.Sprintf("%s:\"%s,omitemtpy\"", name, field.Name)
+					} else {
+						field.StructTag = fmt.Sprintf("%s:%q", name, field.Name)
+					}
 				}
 			}
 			return next.Generate(g)

@@ -302,7 +302,6 @@ var (
 		{Name: "refresh", Type: field.TypeString},
 		{Name: "expiry", Type: field.TypeTime},
 		{Name: "hash", Type: field.TypeString, Unique: true},
-		{Name: "synced_at", Type: field.TypeTime, Nullable: true},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 	}

@@ -7116,7 +7116,6 @@ type UserMutation struct {
 	refresh            *string
 	expiry             *time.Time
 	hash               *string
-	synced_at          *time.Time
 	created_at         *time.Time
 	updated_at         *time.Time
 	clearedFields      map[string]struct{}
@@ -7486,55 +7485,6 @@ func (m *UserMutation) ResetHash() {
 	m.hash = nil
 }
 
-// SetSyncedAt sets the "synced_at" field.
-func (m *UserMutation) SetSyncedAt(t time.Time) {
-	m.synced_at = &t
-}
-
-// SyncedAt returns the value of the "synced_at" field in the mutation.
-func (m *UserMutation) SyncedAt() (r time.Time, exists bool) {
-	v := m.synced_at
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldSyncedAt returns the old "synced_at" field's value of the User entity.
-// If the User object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UserMutation) OldSyncedAt(ctx context.Context) (v time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, fmt.Errorf("OldSyncedAt is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, fmt.Errorf("OldSyncedAt requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldSyncedAt: %w", err)
-	}
-	return oldValue.SyncedAt, nil
-}
-
-// ClearSyncedAt clears the value of the "synced_at" field.
-func (m *UserMutation) ClearSyncedAt() {
-	m.synced_at = nil
-	m.clearedFields[user.FieldSyncedAt] = struct{}{}
-}
-
-// SyncedAtCleared returns if the "synced_at" field was cleared in this mutation.
-func (m *UserMutation) SyncedAtCleared() bool {
-	_, ok := m.clearedFields[user.FieldSyncedAt]
-	return ok
-}
-
-// ResetSyncedAt resets all changes to the "synced_at" field.
-func (m *UserMutation) ResetSyncedAt() {
-	m.synced_at = nil
-	delete(m.clearedFields, user.FieldSyncedAt)
-}
-
 // SetCreatedAt sets the "created_at" field.
 func (m *UserMutation) SetCreatedAt(t time.Time) {
 	m.created_at = &t
@@ -7827,7 +7777,7 @@ func (m *UserMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *UserMutation) Fields() []string {
-	fields := make([]string, 0, 10)
+	fields := make([]string, 0, 9)
 	if m.login != nil {
 		fields = append(fields, user.FieldLogin)
 	}
@@ -7848,9 +7798,6 @@ func (m *UserMutation) Fields() []string {
 	}
 	if m.hash != nil {
 		fields = append(fields, user.FieldHash)
-	}
-	if m.synced_at != nil {
-		fields = append(fields, user.FieldSyncedAt)
 	}
 	if m.created_at != nil {
 		fields = append(fields, user.FieldCreatedAt)
@@ -7880,8 +7827,6 @@ func (m *UserMutation) Field(name string) (ent.Value, bool) {
 		return m.Expiry()
 	case user.FieldHash:
 		return m.Hash()
-	case user.FieldSyncedAt:
-		return m.SyncedAt()
 	case user.FieldCreatedAt:
 		return m.CreatedAt()
 	case user.FieldUpdatedAt:
@@ -7909,8 +7854,6 @@ func (m *UserMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldExpiry(ctx)
 	case user.FieldHash:
 		return m.OldHash(ctx)
-	case user.FieldSyncedAt:
-		return m.OldSyncedAt(ctx)
 	case user.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case user.FieldUpdatedAt:
@@ -7973,13 +7916,6 @@ func (m *UserMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetHash(v)
 		return nil
-	case user.FieldSyncedAt:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetSyncedAt(v)
-		return nil
 	case user.FieldCreatedAt:
 		v, ok := value.(time.Time)
 		if !ok {
@@ -8027,9 +7963,6 @@ func (m *UserMutation) ClearedFields() []string {
 	if m.FieldCleared(user.FieldAvatar) {
 		fields = append(fields, user.FieldAvatar)
 	}
-	if m.FieldCleared(user.FieldSyncedAt) {
-		fields = append(fields, user.FieldSyncedAt)
-	}
 	return fields
 }
 
@@ -8046,9 +7979,6 @@ func (m *UserMutation) ClearField(name string) error {
 	switch name {
 	case user.FieldAvatar:
 		m.ClearAvatar()
-		return nil
-	case user.FieldSyncedAt:
-		m.ClearSyncedAt()
 		return nil
 	}
 	return fmt.Errorf("unknown User nullable field %s", name)
@@ -8078,9 +8008,6 @@ func (m *UserMutation) ResetField(name string) error {
 		return nil
 	case user.FieldHash:
 		m.ResetHash()
-		return nil
-	case user.FieldSyncedAt:
-		m.ResetSyncedAt()
 		return nil
 	case user.FieldCreatedAt:
 		m.ResetCreatedAt()

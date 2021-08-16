@@ -20,7 +20,7 @@ type User struct {
 	// Login holds the value of the "login" field.
 	Login string `json:"login"`
 	// Avatar holds the value of the "avatar" field.
-	Avatar string `json:"avatar"`
+	Avatar string `json:"avatar,omitemtpy"`
 	// Admin holds the value of the "admin" field.
 	Admin bool `json:"admin"`
 	// Token holds the value of the "token" field.
@@ -31,8 +31,6 @@ type User struct {
 	Expiry time.Time `json:"expiry"`
 	// Hash holds the value of the "hash" field.
 	Hash string `json:"-"`
-	// SyncedAt holds the value of the "synced_at" field.
-	SyncedAt time.Time `json:"synced_at"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -107,7 +105,7 @@ func (*User) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(sql.NullBool)
 		case user.FieldID, user.FieldLogin, user.FieldAvatar, user.FieldToken, user.FieldRefresh, user.FieldHash:
 			values[i] = new(sql.NullString)
-		case user.FieldExpiry, user.FieldSyncedAt, user.FieldCreatedAt, user.FieldUpdatedAt:
+		case user.FieldExpiry, user.FieldCreatedAt, user.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type User", columns[i])
@@ -171,12 +169,6 @@ func (u *User) assignValues(columns []string, values []interface{}) error {
 				return fmt.Errorf("unexpected type %T for field hash", values[i])
 			} else if value.Valid {
 				u.Hash = value.String
-			}
-		case user.FieldSyncedAt:
-			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field synced_at", values[i])
-			} else if value.Valid {
-				u.SyncedAt = value.Time
 			}
 		case user.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -249,8 +241,6 @@ func (u *User) String() string {
 	builder.WriteString(", expiry=")
 	builder.WriteString(u.Expiry.Format(time.ANSIC))
 	builder.WriteString(", hash=<sensitive>")
-	builder.WriteString(", synced_at=")
-	builder.WriteString(u.SyncedAt.Format(time.ANSIC))
 	builder.WriteString(", created_at=")
 	builder.WriteString(u.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", updated_at=")
