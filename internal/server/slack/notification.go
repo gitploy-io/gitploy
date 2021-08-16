@@ -76,7 +76,7 @@ func (s *Slack) notify(ctx context.Context, cu *ent.ChatUser, e *ent.Event) erro
 				slack.Attachment{
 					Color:   mapDeploymentStatusToColor(d.Status),
 					Pretext: fmt.Sprintf("*New Deployment #%d*", d.Number),
-					Text:    fmt.Sprintf("*%s* deploys `%s` to the `%s` environment of `%s`. <%s|• View Details> ", u.Login, d.Ref, d.Env, r.GetFullName(), s.buildDeploymentLink(r, d)),
+					Text:    fmt.Sprintf("*%s* deploys `%s` to the `%s` environment of `%s`. <%s|• View Details> ", u.Login, d.GetShortRef(), d.Env, r.GetFullName(), s.buildDeploymentLink(r, d)),
 				},
 			)
 		} else if e.Type == event.TypeUpdated {
@@ -84,7 +84,7 @@ func (s *Slack) notify(ctx context.Context, cu *ent.ChatUser, e *ent.Event) erro
 				slack.Attachment{
 					Color:   mapDeploymentStatusToColor(d.Status),
 					Pretext: fmt.Sprintf("*Deployment Updated #%d*", d.Number),
-					Text:    fmt.Sprintf("The deployment <%s|#%d> of `%s` is updated %s.", s.buildDeploymentLink(r, d), d.Number, r.GetFullName(), d.Status),
+					Text:    fmt.Sprintf("The deployment <%s|#%d> of `%s` is updated `%s`.", s.buildDeploymentLink(r, d), d.Number, r.GetFullName(), d.Status),
 				},
 			)
 		}

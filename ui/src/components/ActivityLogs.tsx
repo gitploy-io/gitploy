@@ -15,7 +15,7 @@ export default function ActivityLogs(props: ActivityLogsProps): JSX.Element {
     return <Timeline>
         {props.deployments.map((d, idx) => {
             const dot = (d.lastStatus === LastDeploymentStatus.Running)? 
-                <SyncOutlined spin />: 
+                <SyncOutlined style={{color: "purple"}} spin />: 
                 null
             const ref = (d.type === DeploymentType.Commit)? 
                 d.ref.substr(0, 7): 
