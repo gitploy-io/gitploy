@@ -195,9 +195,13 @@ func (s *Store) CreateDeployment(ctx context.Context, d *ent.Deployment) (*ent.D
 		SetType(d.Type).
 		SetRef(d.Ref).
 		SetEnv(d.Env).
+		SetUID(d.UID).
+		SetSha(d.Sha).
+		SetHTMLURL(d.HTMLURL).
 		SetIsRollback(d.IsRollback).
 		SetIsApprovalEnabled(d.IsApprovalEnabled).
 		SetRequiredApprovalCount(d.RequiredApprovalCount).
+		SetStatus(d.Status).
 		SetUserID(d.UserID).
 		SetRepoID(d.RepoID).
 		Save(ctx)
