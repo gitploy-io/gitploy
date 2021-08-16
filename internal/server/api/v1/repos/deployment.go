@@ -204,7 +204,7 @@ func (r *Repo) UpdateDeployment(c *gin.Context) {
 			return
 		}
 
-		if d, err = r.i.CreateDeploymentToSCM(ctx, u, re, d, cf.GetEnv(d.Env)); err != nil {
+		if d, err = r.i.CreateRemoteDeployment(ctx, u, re, d, cf.GetEnv(d.Env)); err != nil {
 			r.log.Error("failed to deploy to SCM.", zap.Error(err))
 			gb.ErrorResponse(c, http.StatusUnprocessableEntity, "It has failed to deploy to SCM.")
 			return
@@ -343,7 +343,11 @@ func (r *Repo) ListDeploymentChanges(c *gin.Context) {
 	sha := d.Sha
 	if sha == "" {
 		sha, err = r.getCommitSha(ctx, u, re, d.Type, d.Ref)
-		if err != nil {
+		if vo.IsRefNotFoundError(err) {
+			r.log.Warn("The REF is not found.", zap.Error(err))
+			gb.Response(c, http.StatusOK, nil)
+			return
+		} else if err != nil {
 			r.log.Error("It has failed to get the SHA of deployment.", zap.Error(err))
 			gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to get the SHA of deployment.")
 			return

@@ -32,7 +32,7 @@ func (i *Interactor) deploy(ctx context.Context, u *ent.User, r *ent.Repo, d *en
 	}
 
 	if !env.IsApprovalEabled() {
-		return i.createDeploymentToSCM(ctx, u, r, d, env)
+		return i.createRemoteDeployment(ctx, u, r, d, env)
 	}
 
 	d.IsApprovalEnabled = true
@@ -55,11 +55,11 @@ func (i *Interactor) IsApproved(ctx context.Context, d *ent.Deployment) bool {
 	return approved >= d.RequiredApprovalCount
 }
 
-func (i *Interactor) CreateDeploymentToSCM(ctx context.Context, u *ent.User, re *ent.Repo, d *ent.Deployment, env *vo.Env) (*ent.Deployment, error) {
-	return i.createDeploymentToSCM(ctx, u, re, d, env)
+func (i *Interactor) CreateRemoteDeployment(ctx context.Context, u *ent.User, re *ent.Repo, d *ent.Deployment, env *vo.Env) (*ent.Deployment, error) {
+	return i.createRemoteDeployment(ctx, u, re, d, env)
 }
 
-func (i *Interactor) createDeploymentToSCM(ctx context.Context, u *ent.User, re *ent.Repo, d *ent.Deployment, e *vo.Env) (*ent.Deployment, error) {
+func (i *Interactor) createRemoteDeployment(ctx context.Context, u *ent.User, re *ent.Repo, d *ent.Deployment, e *vo.Env) (*ent.Deployment, error) {
 
 	// Rollback configures it can deploy the ref without any constraints.
 	// 1) Set auto_merge false to avoid the merge conflict.
@@ -70,7 +70,7 @@ func (i *Interactor) createDeploymentToSCM(ctx context.Context, u *ent.User, re 
 		e.RequiredContexts = []string{}
 	}
 
-	rd, err := i.SCM.CreateDeployment(ctx, u, re, d, e)
+	rd, err := i.SCM.CreateRemoteDeployment(ctx, u, re, d, e)
 	if err != nil {
 		d.Status = deployment.StatusFailure
 		if _, err := i.UpdateDeployment(ctx, d); err != nil {

@@ -11,7 +11,7 @@ import (
 	"github.com/hanjunlee/gitploy/vo"
 )
 
-func (g *Github) CreateDeployment(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, e *vo.Env) (*vo.RemoteDeployment, error) {
+func (g *Github) CreateRemoteDeployment(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, e *vo.Env) (*vo.RemoteDeployment, error) {
 	gd, _, err := g.Client(ctx, u.Token).
 		Repositories.
 		CreateDeployment(ctx, r.Namespace, r.Name, &github.DeploymentRequest{
