@@ -41,14 +41,6 @@ func (rc *RepoCreate) SetDescription(s string) *RepoCreate {
 	return rc
 }
 
-// SetNillableDescription sets the "description" field if the given value is not nil.
-func (rc *RepoCreate) SetNillableDescription(s *string) *RepoCreate {
-	if s != nil {
-		rc.SetDescription(*s)
-	}
-	return rc
-}
-
 // SetConfigPath sets the "config_path" field.
 func (rc *RepoCreate) SetConfigPath(s string) *RepoCreate {
 	rc.mutation.SetConfigPath(s)
@@ -294,6 +286,9 @@ func (rc *RepoCreate) check() error {
 	}
 	if _, ok := rc.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "name"`)}
+	}
+	if _, ok := rc.mutation.Description(); !ok {
+		return &ValidationError{Name: "description", err: errors.New(`ent: missing required field "description"`)}
 	}
 	if _, ok := rc.mutation.ConfigPath(); !ok {
 		return &ValidationError{Name: "config_path", err: errors.New(`ent: missing required field "config_path"`)}

@@ -6164,22 +6164,9 @@ func (m *RepoMutation) OldDescription(ctx context.Context) (v string, err error)
 	return oldValue.Description, nil
 }
 
-// ClearDescription clears the value of the "description" field.
-func (m *RepoMutation) ClearDescription() {
-	m.description = nil
-	m.clearedFields[repo.FieldDescription] = struct{}{}
-}
-
-// DescriptionCleared returns if the "description" field was cleared in this mutation.
-func (m *RepoMutation) DescriptionCleared() bool {
-	_, ok := m.clearedFields[repo.FieldDescription]
-	return ok
-}
-
 // ResetDescription resets all changes to the "description" field.
 func (m *RepoMutation) ResetDescription() {
 	m.description = nil
-	delete(m.clearedFields, repo.FieldDescription)
 }
 
 // SetConfigPath sets the "config_path" field.
@@ -6887,9 +6874,6 @@ func (m *RepoMutation) AddField(name string, value ent.Value) error {
 // mutation.
 func (m *RepoMutation) ClearedFields() []string {
 	var fields []string
-	if m.FieldCleared(repo.FieldDescription) {
-		fields = append(fields, repo.FieldDescription)
-	}
 	if m.FieldCleared(repo.FieldWebhookID) {
 		fields = append(fields, repo.FieldWebhookID)
 	}
@@ -6913,9 +6897,6 @@ func (m *RepoMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *RepoMutation) ClearField(name string) error {
 	switch name {
-	case repo.FieldDescription:
-		m.ClearDescription()
-		return nil
 	case repo.FieldWebhookID:
 		m.ClearWebhookID()
 		return nil
@@ -7287,22 +7268,9 @@ func (m *UserMutation) OldAvatar(ctx context.Context) (v string, err error) {
 	return oldValue.Avatar, nil
 }
 
-// ClearAvatar clears the value of the "avatar" field.
-func (m *UserMutation) ClearAvatar() {
-	m.avatar = nil
-	m.clearedFields[user.FieldAvatar] = struct{}{}
-}
-
-// AvatarCleared returns if the "avatar" field was cleared in this mutation.
-func (m *UserMutation) AvatarCleared() bool {
-	_, ok := m.clearedFields[user.FieldAvatar]
-	return ok
-}
-
 // ResetAvatar resets all changes to the "avatar" field.
 func (m *UserMutation) ResetAvatar() {
 	m.avatar = nil
-	delete(m.clearedFields, user.FieldAvatar)
 }
 
 // SetAdmin sets the "admin" field.
@@ -7959,11 +7927,7 @@ func (m *UserMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *UserMutation) ClearedFields() []string {
-	var fields []string
-	if m.FieldCleared(user.FieldAvatar) {
-		fields = append(fields, user.FieldAvatar)
-	}
-	return fields
+	return nil
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -7976,11 +7940,6 @@ func (m *UserMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *UserMutation) ClearField(name string) error {
-	switch name {
-	case user.FieldAvatar:
-		m.ClearAvatar()
-		return nil
-	}
 	return fmt.Errorf("unknown User nullable field %s", name)
 }
 

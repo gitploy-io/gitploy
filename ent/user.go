@@ -20,7 +20,7 @@ type User struct {
 	// Login holds the value of the "login" field.
 	Login string `json:"login"`
 	// Avatar holds the value of the "avatar" field.
-	Avatar string `json:"avatar,omitemtpy"`
+	Avatar string `json:"avatar"`
 	// Admin holds the value of the "admin" field.
 	Admin bool `json:"admin"`
 	// Token holds the value of the "token" field.

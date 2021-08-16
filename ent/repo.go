@@ -21,7 +21,7 @@ type Repo struct {
 	// Name holds the value of the "name" field.
 	Name string `json:"name"`
 	// Description holds the value of the "description" field.
-	Description string `json:"description,omitemtpy"`
+	Description string `json:"description"`
 	// ConfigPath holds the value of the "config_path" field.
 	ConfigPath string `json:"config_path"`
 	// Active holds the value of the "active" field.

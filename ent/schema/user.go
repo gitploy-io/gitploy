@@ -21,8 +21,7 @@ func (User) Fields() []ent.Field {
 		field.String("id"),
 		field.String("login").
 			Unique(),
-		field.String("avatar").
-			Optional(),
+		field.String("avatar"),
 		field.Bool("admin").
 			Default(false),
 		field.String("token").

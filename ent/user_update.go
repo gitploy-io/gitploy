@@ -43,20 +43,6 @@ func (uu *UserUpdate) SetAvatar(s string) *UserUpdate {
 	return uu
 }
 
-// SetNillableAvatar sets the "avatar" field if the given value is not nil.
-func (uu *UserUpdate) SetNillableAvatar(s *string) *UserUpdate {
-	if s != nil {
-		uu.SetAvatar(*s)
-	}
-	return uu
-}
-
-// ClearAvatar clears the value of the "avatar" field.
-func (uu *UserUpdate) ClearAvatar() *UserUpdate {
-	uu.mutation.ClearAvatar()
-	return uu
-}
-
 // SetAdmin sets the "admin" field.
 func (uu *UserUpdate) SetAdmin(b bool) *UserUpdate {
 	uu.mutation.SetAdmin(b)
@@ -342,12 +328,6 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: user.FieldAvatar,
 		})
 	}
-	if uu.mutation.AvatarCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: user.FieldAvatar,
-		})
-	}
 	if value, ok := uu.mutation.Admin(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeBool,
@@ -615,20 +595,6 @@ func (uuo *UserUpdateOne) SetLogin(s string) *UserUpdateOne {
 // SetAvatar sets the "avatar" field.
 func (uuo *UserUpdateOne) SetAvatar(s string) *UserUpdateOne {
 	uuo.mutation.SetAvatar(s)
-	return uuo
-}
-
-// SetNillableAvatar sets the "avatar" field if the given value is not nil.
-func (uuo *UserUpdateOne) SetNillableAvatar(s *string) *UserUpdateOne {
-	if s != nil {
-		uuo.SetAvatar(*s)
-	}
-	return uuo
-}
-
-// ClearAvatar clears the value of the "avatar" field.
-func (uuo *UserUpdateOne) ClearAvatar() *UserUpdateOne {
-	uuo.mutation.ClearAvatar()
 	return uuo
 }
 
@@ -938,12 +904,6 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
-			Column: user.FieldAvatar,
-		})
-	}
-	if uuo.mutation.AvatarCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
 			Column: user.FieldAvatar,
 		})
 	}

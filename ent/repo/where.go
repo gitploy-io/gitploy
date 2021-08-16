@@ -482,20 +482,6 @@ func DescriptionHasSuffix(v string) predicate.Repo {
 	})
 }
 
-// DescriptionIsNil applies the IsNil predicate on the "description" field.
-func DescriptionIsNil() predicate.Repo {
-	return predicate.Repo(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldDescription)))
-	})
-}
-
-// DescriptionNotNil applies the NotNil predicate on the "description" field.
-func DescriptionNotNil() predicate.Repo {
-	return predicate.Repo(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldDescription)))
-	})
-}
-
 // DescriptionEqualFold applies the EqualFold predicate on the "description" field.
 func DescriptionEqualFold(v string) predicate.Repo {
 	return predicate.Repo(func(s *sql.Selector) {

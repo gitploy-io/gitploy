@@ -364,20 +364,6 @@ func AvatarHasSuffix(v string) predicate.User {
 	})
 }
 
-// AvatarIsNil applies the IsNil predicate on the "avatar" field.
-func AvatarIsNil() predicate.User {
-	return predicate.User(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldAvatar)))
-	})
-}
-
-// AvatarNotNil applies the NotNil predicate on the "avatar" field.
-func AvatarNotNil() predicate.User {
-	return predicate.User(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldAvatar)))
-	})
-}
-
 // AvatarEqualFold applies the EqualFold predicate on the "avatar" field.
 func AvatarEqualFold(v string) predicate.User {
 	return predicate.User(func(s *sql.Selector) {

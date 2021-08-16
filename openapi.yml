@@ -1203,6 +1203,7 @@ components:
         - id
         - login
         - admin
+        - avatar
         - created_at
         - updated_at
         - edges
@@ -1258,6 +1259,7 @@ components:
         - id
         - namespace
         - name
+        - description
         - config_path
         - active
         - created_at

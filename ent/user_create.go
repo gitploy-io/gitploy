@@ -36,14 +36,6 @@ func (uc *UserCreate) SetAvatar(s string) *UserCreate {
 	return uc
 }
 
-// SetNillableAvatar sets the "avatar" field if the given value is not nil.
-func (uc *UserCreate) SetNillableAvatar(s *string) *UserCreate {
-	if s != nil {
-		uc.SetAvatar(*s)
-	}
-	return uc
-}
-
 // SetAdmin sets the "admin" field.
 func (uc *UserCreate) SetAdmin(b bool) *UserCreate {
 	uc.mutation.SetAdmin(b)
@@ -281,6 +273,9 @@ func (uc *UserCreate) defaults() {
 func (uc *UserCreate) check() error {
 	if _, ok := uc.mutation.Login(); !ok {
 		return &ValidationError{Name: "login", err: errors.New(`ent: missing required field "login"`)}
+	}
+	if _, ok := uc.mutation.Avatar(); !ok {
+		return &ValidationError{Name: "avatar", err: errors.New(`ent: missing required field "avatar"`)}
 	}
 	if _, ok := uc.mutation.Admin(); !ok {
 		return &ValidationError{Name: "admin", err: errors.New(`ent: missing required field "admin"`)}
