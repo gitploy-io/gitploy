@@ -63,6 +63,8 @@ func (User) Edges() []ent.Edge {
 }
 
 func generateHash() string {
+	rand.Seed(time.Now().UnixNano())
+
 	var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
 	b := make([]rune, 32)
 	for i := range b {

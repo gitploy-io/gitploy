@@ -13,33 +13,52 @@ import (
 )
 
 func (i *Interactor) Deploy(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, env *vo.Env) (*ent.Deployment, error) {
+	d.UserID = u.ID
+	d.RepoID = r.ID
+
 	return i.deploy(ctx, u, r, d, env)
 }
 
 func (i *Interactor) Rollback(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, env *vo.Env) (*ent.Deployment, error) {
+	d.UserID = u.ID
+	d.RepoID = r.ID
 	d.IsRollback = true
 
 	return i.deploy(ctx, u, r, d, env)
 }
 
-func (i *Interactor) deploy(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, env *vo.Env) (*ent.Deployment, error) {
-	d.UserID = u.ID
-	d.RepoID = r.ID
+func (i *Interactor) deploy(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, e *vo.Env) (*ent.Deployment, error) {
+	if !e.IsApprovalEabled() {
+		rd, err := i.SCM.CreateRemoteDeployment(ctx, u, r, d, e)
+		if err != nil {
+			return nil, err
+		}
 
-	d, err := i.Store.CreateDeployment(ctx, d)
-	if err != nil {
-		return nil, fmt.Errorf("It failed to save a new deployment to the store: %w", err)
-	}
+		// Save the state of the remote deployment.
+		d.UID = rd.UID
+		d.Sha = rd.SHA
+		d.HTMLURL = rd.HTLMURL
+		d.Status = deployment.StatusCreated
 
-	if !env.IsApprovalEabled() {
-		return i.createRemoteDeployment(ctx, u, r, d, env)
+		d, err := i.Store.CreateDeployment(ctx, d)
+		if err != nil {
+			return nil, fmt.Errorf("It failed to save a new deployment.: %w", err)
+		}
+
+		i.CreateDeploymentStatus(ctx, &ent.DeploymentStatus{
+			Status:       string(deployment.StatusCreated),
+			Description:  "Gitploy starts to deploy.",
+			DeploymentID: d.ID,
+		})
+
+		return d, nil
 	}
 
 	d.IsApprovalEnabled = true
-	d.RequiredApprovalCount = env.Approval.RequiredCount
-	d, _ = i.Store.UpdateDeployment(ctx, d)
+	d.RequiredApprovalCount = e.Approval.RequiredCount
+	d.Status = deployment.StatusWaiting
 
-	return d, nil
+	return i.Store.CreateDeployment(ctx, d)
 }
 
 func (i *Interactor) IsApproved(ctx context.Context, d *ent.Deployment) bool {
@@ -55,12 +74,7 @@ func (i *Interactor) IsApproved(ctx context.Context, d *ent.Deployment) bool {
 	return approved >= d.RequiredApprovalCount
 }
 
-func (i *Interactor) CreateRemoteDeployment(ctx context.Context, u *ent.User, re *ent.Repo, d *ent.Deployment, env *vo.Env) (*ent.Deployment, error) {
-	return i.createRemoteDeployment(ctx, u, re, d, env)
-}
-
-func (i *Interactor) createRemoteDeployment(ctx context.Context, u *ent.User, re *ent.Repo, d *ent.Deployment, e *vo.Env) (*ent.Deployment, error) {
-
+func (i *Interactor) CreateRemoteDeployment(ctx context.Context, u *ent.User, re *ent.Repo, d *ent.Deployment, e *vo.Env) (*ent.Deployment, error) {
 	// Rollback configures it can deploy the ref without any constraints.
 	// 1) Set auto_merge false to avoid the merge conflict.
 	// 2) Set required_contexts empty to skip the verfication.
@@ -76,13 +90,6 @@ func (i *Interactor) createRemoteDeployment(ctx context.Context, u *ent.User, re
 		if _, err := i.UpdateDeployment(ctx, d); err != nil {
 			return nil, err
 		}
-
-		i.CreateDeploymentStatus(ctx, &ent.DeploymentStatus{
-			Status:       string(deployment.StatusFailure),
-			Description:  "Gitploy failed to create a deployment.",
-			DeploymentID: d.ID,
-		})
-		return nil, err
 	}
 
 	// Save the state of the remote deployment.
@@ -100,6 +107,7 @@ func (i *Interactor) createRemoteDeployment(ctx context.Context, u *ent.User, re
 		Description:  "Gitploy creates a new deployment.",
 		DeploymentID: d.ID,
 	})
+
 	return d, nil
 }
 
@@ -127,11 +135,9 @@ L:
 				// cancel the remote deployment if it has.
 				if d.Status == deployment.StatusCreated {
 					if d.Edges.User != nil && d.Edges.Repo != nil {
-						r := d.Edges.Repo
 						s := &ent.DeploymentStatus{
 							Status:       "canceled",
 							Description:  "Gitploy cancels the inactive deployment.",
-							LogURL:       fmt.Sprintf("%s://%s/%s/%s/deployments/%d", i.ServerProto, i.ServerHost, r.Namespace, r.Name, d.Number),
 							DeploymentID: d.ID,
 						}
 						if err := i.SCM.CancelDeployment(ctx, d.Edges.User, d.Edges.Repo, d, s); err != nil {
