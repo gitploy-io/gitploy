@@ -1490,7 +1490,10 @@ components:
             - required_count
       required:
         - name
+        - task
+        - description
         - auto_merge
+        - payload
         - production_environment
     Approvals:
       type: array

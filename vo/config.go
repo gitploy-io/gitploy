@@ -13,14 +13,19 @@ type (
 	}
 
 	Env struct {
-		Name                  string    `json:"name" yaml:"name"`
-		Task                  string    `json:"task,omitempty" yaml:"task" default:"deploy"`
-		Description           string    `json:"description,omitempty" yaml:"description"`
+		Name string `json:"name" yaml:"name"`
+
+		// Github parameters of deployment.
+		Task                  string    `json:"task" yaml:"task" default:"deploy"`
+		Description           string    `json:"description" yaml:"description" default:"Gitploy starts to deploy."`
 		AutoMerge             bool      `json:"auto_merge" default:"true"`
-		RequiredContexts      []string  `json:"required_contexts,omitempty" yaml:"required_contexts"`
-		Payload               string    `json:"payload,omitempty" yaml:"payload"`
-		ProductionEnvironment bool      `json:"production_environment,omitempty" yaml:"production_environment"`
-		Approval              *Approval `json:"approval,omitempty" yaml:"approval"`
+		RequiredContexts      *[]string `json:"required_contexts,omitempty" yaml:"required_contexts"`
+		Payload               string    `json:"payload" yaml:"payload"`
+		ProductionEnvironment bool      `json:"production_environment" yaml:"production_environment"`
+
+		// Approval is the configuration of Approval,
+		// It is disabled when it is empty.
+		Approval *Approval `json:"approval,omitempty" yaml:"approval"`
 
 		// The type of auto_merge must be string to avoid
 		// that the value of auto_merge is always set true
