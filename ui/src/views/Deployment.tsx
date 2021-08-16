@@ -109,14 +109,14 @@ export default function DeploymentView(): JSX.Element {
         dispatch(createApproval(candidate))
     }
 
-    if (deployment === null) {
+    if (!deployment) {
         return <Main>
             <div style={{textAlign: "center", marginTop: "100px"}}><Spin /></div>
         </Main>
     }
 
     // buttons
-    const approvalDropdown = (hasRequestedApproval(myApproval))?
+    const approvalDropdown = (myApproval)?
         <ApprovalDropdown 
             key="approval" 
             onClickApprove={onClickApprove}
@@ -189,8 +189,4 @@ function isDeployable(deployment: Deployment, approvals: Approval[]): boolean {
     })
 
     return approved >= deployment.requiredApprovalCount
-}
-
-function hasRequestedApproval(approval: Approval | null): boolean {
-    return approval !== null
 }

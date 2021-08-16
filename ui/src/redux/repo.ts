@@ -7,13 +7,12 @@ import { HttpForbiddenError } from '../models/errors'
 
 interface RepoState {
     key: string
-    repo: Repo | null
+    repo?: Repo
     activating: RequestStatus
 }
 
 const initialState: RepoState = {
     key: "home",
-    repo: null,
     activating: RequestStatus.Idle
 }
 
@@ -29,7 +28,7 @@ export const activate = createAsyncThunk<Repo, void, { state: {repo: RepoState} 
     'repo/activate', 
     async (_, { getState, rejectWithValue } ) => {
         const { repo } = getState().repo
-        if (repo === null) throw new Error("There is no repo.")
+        if (!repo) throw new Error("There is no repo.")
 
         try {
             const nr =  await activateRepo(repo)

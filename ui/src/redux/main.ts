@@ -7,7 +7,7 @@ interface MainState {
     available: boolean
     authorized: boolean
     permitted: boolean
-    user: User | null
+    user?: User 
     deployments: Deployment[]
     approvals: Approval[]
 }
@@ -16,7 +16,6 @@ const initialState: MainState = {
     available: true,
     authorized: true,
     permitted: true,
-    user: null,
     deployments: [],
     approvals: []
 }
@@ -101,7 +100,7 @@ export const mainSlice = createSlice({
         },
         handleDeploymentEvent: (state, action: PayloadAction<Deployment>) => {
             const user = state.user
-            if (user === null) {
+            if (!user) {
                 throw new Error("Unauthorized user.")
             }
 
@@ -130,7 +129,7 @@ export const mainSlice = createSlice({
         },
         handleApprovalEvent: (state, action: PayloadAction<Approval>) => {
             const user = state.user
-            if (user === null) {
+            if (!user) {
                 throw new Error("Unauthorized user.")
             }
 

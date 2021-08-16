@@ -35,19 +35,19 @@ const firstPage = 1
 const perPage = 100
 
 interface RepoDeployState {
-    repo: Repo | null
+    repo?: Repo
     hasConfig: boolean
-    config: Config | null
+    config?: Config 
     env?: Env
     envs: Env[]
-    type: DeploymentType | null
-    branch: Branch | null
+    type?: DeploymentType 
+    branch?: Branch 
     branchStatuses: Status[]
     branches: Branch[]
-    commit: Commit | null
+    commit?: Commit 
     commitStatuses: Status[]
     commits: Commit[]
-    tag: Tag | null
+    tag?: Tag 
     tagStatuses: Status[]
     tags: Tag[]
     /**
@@ -62,18 +62,12 @@ interface RepoDeployState {
 }
 
 const initialState: RepoDeployState = {
-    repo: null,
     hasConfig: true,
-    config: null,
     envs: [],
-    type: null,
-    branch: null,
     branchStatuses: [],
     branches: [],
-    commit: null,
     commitStatuses: [],
     commits: [],
-    tag: null,
     tagStatuses: [],
     tags: [],
     approvers: [],
@@ -94,7 +88,7 @@ export const fetchConfig = createAsyncThunk<Config, void, { state: {repoDeploy: 
     "repoDeploy/fetchConfig", 
     async (_, { getState, rejectWithValue } ) => {
         const { repo } = getState().repoDeploy
-        if (repo === null) throw new Error("The repo is not set.")
+        if (!repo) throw new Error("The repo is not set.")
 
         try {
             const config = await getConfig(repo.id)
@@ -109,7 +103,7 @@ export const fetchBranches = createAsyncThunk<Branch[], void, { state: {repoDepl
     "repoDeploy/fetchBranches",
     async (_, { getState }) => {
         const { repo } = getState().repoDeploy
-        if (repo === null) throw new Error("The repo is not set.")
+        if (!repo) throw new Error("The repo is not set.")
 
         const branches = await listBranches(repo.id, firstPage, perPage)
         return branches
@@ -120,7 +114,7 @@ export const checkBranch = createAsyncThunk<Status[], void, { state: {repoDeploy
     "repoDeploy/checkBranch",
     async (_, { getState }) => {
         const { repo, branch } = getState().repoDeploy
-        if (repo === null || branch === null) throw new Error("The repo and branch are not set.") 
+        if (!repo || !branch) throw new Error("The repo and branch are not set.") 
 
         const { statuses } = await listStatuses(repo.id, branch.commitSha)
         return statuses
@@ -131,7 +125,7 @@ export const addBranchManually = createAsyncThunk<Branch, string, { state: {repo
     "repoDeploy/addBranchManually",
     async (name: string, { getState, rejectWithValue }) => {
         const { repo } = getState().repoDeploy
-        if (repo === null) throw new Error("The repo is not set.")
+        if (!repo) throw new Error("The repo is not set.")
 
         try {
             const branch = await getBranch(repo.id, name)
@@ -151,9 +145,9 @@ export const fetchCommits = createAsyncThunk<Commit[], void, { state: {repoDeplo
     "repoDeploy/fetchCommits",
     async (_, { getState }) => {
         const { repo, branch } = getState().repoDeploy
-        if (repo === null) throw new Error("The repo is not set.")
+        if (!repo) throw new Error("The repo is not set.")
 
-        const name = (branch !== null)? branch.name : ""
+        const name = (branch)? branch.name : ""
         const commits = await listCommits(repo.id, name, firstPage, perPage)
         return commits
     }
@@ -163,7 +157,7 @@ export const checkCommit = createAsyncThunk<Status[], void, { state: {repoDeploy
     "repoDeploy/checkCommit",
     async (_, { getState }) => {
         const { repo, commit } = getState().repoDeploy
-        if (repo === null || commit === null) throw new Error("The repo and commit are not set.") 
+        if (!repo || !commit) throw new Error("The repo and commit are not set.") 
 
         const { statuses } = await listStatuses(repo.id, commit.sha)
         return statuses
@@ -174,7 +168,7 @@ export const addCommitManually = createAsyncThunk<Commit, string, { state: {repo
     "repoDeploy/addCommitManually",
     async (sha: string, { getState, rejectWithValue }) => {
         const { repo } = getState().repoDeploy
-        if (repo === null) throw new Error("The repo is not set.")
+        if (!repo) throw new Error("The repo is not set.")
 
         try {
             const commit = await getCommit(repo.id, sha)
@@ -194,7 +188,7 @@ export const fetchTags = createAsyncThunk<Tag[], void, { state: {repoDeploy: Rep
     "repoDeploy/fetchTags",
     async (_, { getState }) => {
         const { repo } = getState().repoDeploy
-        if (repo === null) throw new Error("The repo is not set.")
+        if (!repo) throw new Error("The repo is not set.")
 
         const tags = await listTags(repo.id, firstPage, perPage)
         return tags
@@ -205,7 +199,7 @@ export const checkTag = createAsyncThunk<Status[], void, { state: {repoDeploy: R
     "repoDeploy/checkTag",
     async (_, { getState }) => {
         const { repo, tag } = getState().repoDeploy
-        if (repo === null || tag === null) throw new Error("The repo and tag are not set.") 
+        if (!repo || !tag) throw new Error("The repo and tag are not set.") 
 
         const { statuses } = await listStatuses(repo.id, tag.commitSha)
         return statuses
@@ -216,7 +210,7 @@ export const addTagManually = createAsyncThunk<Tag, string, { state: {repoDeploy
     "repoDeploy/addTagManually",
     async (name: string, { getState, rejectWithValue }) => {
         const { repo } = getState().repoDeploy
-        if (repo === null) throw new Error("The repo is not set.")
+        if (!repo) throw new Error("The repo is not set.")
 
         try {
             const tag = await getTag(repo.id, name)
@@ -236,7 +230,7 @@ export const searchCandidates = createAsyncThunk<User[], string, { state: {repoD
     "repoDeploy/searchCandidates",
     async (q, { getState, rejectWithValue }) => {
         const { repo } = getState().repoDeploy
-        if (repo === null) {
+        if (!repo) {
             throw new Error("The repo is not set.")
         }
 
@@ -256,7 +250,7 @@ export const deploy = createAsyncThunk<void, void, { state: {repoDeploy: RepoDep
     "repoDeploy/deploy",
     async (_ , { getState, rejectWithValue, requestId }) => {
         const { repo, env, type, branch, commit, tag, approvers, deploying, deployId } = getState().repoDeploy
-        if (repo === null) {
+        if (!repo) {
             throw new Error("The repo is not set.")
         }
         if (!env) {
@@ -268,11 +262,11 @@ export const deploy = createAsyncThunk<void, void, { state: {repoDeploy: RepoDep
 
         try {
             let deployment: Deployment
-            if (type === DeploymentType.Commit && commit !== null) {
+            if (type === DeploymentType.Commit && typeof commit !== "undefined") {
                 deployment = await createDeployment(repo.id, type, commit.sha, env.name)
-            } else if (type === DeploymentType.Branch && branch !== null) {
+            } else if (type === DeploymentType.Branch && typeof branch !== "undefined") {
                 deployment = await createDeployment(repo.id, type, branch.name, env.name)
-            } else if (type === DeploymentType.Tag && tag !== null) {
+            } else if (type === DeploymentType.Tag && typeof tag !== "undefined" ) {
                 deployment = await createDeployment(repo.id, type, tag.name, env.name)
             } 
 

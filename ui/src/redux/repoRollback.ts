@@ -26,12 +26,12 @@ const page = 1
 const perPage = 100
 
 interface RepoRollbackState {
-    repo: Repo | null
-    config: Config | null
+    repo?: Repo 
+    config?: Config 
     hasConfig: boolean
     env?: Env
     envs: Env[]
-    deployment: Deployment | null
+    deployment?: Deployment 
     deployments: Deployment[]
     /**
      * Approval selecter.
@@ -45,11 +45,8 @@ interface RepoRollbackState {
 }
 
 const initialState: RepoRollbackState = {
-    repo: null,
-    config: null,
     hasConfig: true,
     envs: [],
-    deployment: null,
     deployments: [],
     approvers: [],
     candidates: [],
@@ -69,7 +66,7 @@ export const fetchConfig = createAsyncThunk<Config, void, { state: {repoRollback
     "repoRollback/fetchEnvs", 
     async (_, { getState, rejectWithValue } ) => {
         const { repo } = getState().repoRollback
-        if (repo === null) throw new Error("The repo is not set.")
+        if (!repo) throw new Error("The repo is not set.")
 
         try {
             const config = await getConfig(repo.id)
@@ -84,7 +81,7 @@ export const fetchDeployments = createAsyncThunk<Deployment[], void, { state: {r
     "repoRollback/fetchDeployments",
     async (_, { getState }) => {
         const { repo, env } = getState().repoRollback
-        if (repo === null) throw new Error("The repo is not set.")
+        if (!repo) throw new Error("The repo is not set.")
         if (!env) throw new Error("The env is not selected.")
 
         const deployments = await listDeployments(repo.id, env.name, DeploymentStatusEnum.Success, page, perPage)
@@ -96,7 +93,7 @@ export const searchCandidates = createAsyncThunk<User[], string, { state: {repoR
     "repoRollback/searchCandidates",
     async (q, { getState, rejectWithValue }) => {
         const { repo } = getState().repoRollback
-        if (repo === null) {
+        if (!repo) {
             throw new Error("The repo is not set.")
         }
 
@@ -116,8 +113,8 @@ export const rollback = createAsyncThunk<void, void, { state: {repoRollback: Rep
     "repoRollback/deploy",
     async (_ , { getState, rejectWithValue, requestId }) => {
         const { repo, deployment, env, approvers, deployId, deploying } = getState().repoRollback
-        if (repo === null) throw new Error("The repo is not set.")
-        if (deployment === null) throw new Error("The deployment is null.")
+        if (!repo) throw new Error("The repo is not set.")
+        if (!deployment) throw new Error("The deployment is null.")
 
         if (!(deploying === RequestStatus.Pending && requestId === deployId )) {
             return

@@ -36,7 +36,7 @@ export default function RepoSettings(): JSX.Element {
         dispatch(deactivate())
     }
 
-    if (repo === null) {
+    if (!repo) {
         return <div><Spin /></div>
     }
 

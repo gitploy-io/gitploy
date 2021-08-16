@@ -26,9 +26,9 @@ import {
 } from "../apis"
 
 interface DeploymentState {
-    repo: Repo | null
+    repo?: Repo 
     number: number
-    deployment: Deployment | null
+    deployment?: Deployment
     changes: Commit[]
     deploying: RequestStatus
     deployId: string
@@ -37,19 +37,16 @@ interface DeploymentState {
     approvals: Approval[]
     candidates: User[]
     // myApproval exist if user have requested.
-    myApproval: Approval | null
+    myApproval?: Approval
 }
 
 const initialState: DeploymentState = {
-    repo: null,
     number: 0,
-    deployment: null,
     changes: [],
     deploying: RequestStatus.Idle,
     deployId: "",
     approvals: [],
     candidates: [],
-    myApproval: null,
 }
 
 export const init = createAsyncThunk<Repo, {namespace: string, name: string}, { state: {deployment: DeploymentState} }>(
@@ -64,7 +61,7 @@ export const fetchDeployment = createAsyncThunk<Deployment, void, { state: {depl
     'deployment/fetchDeployment', 
     async (_, { getState, rejectWithValue } ) => {
         const { repo, number } = getState().deployment
-        if (repo === null) throw new Error("There is no repo.")
+        if (!repo) throw new Error("There is no repo.")
 
         try {
             const deployment = await getDeployment(repo.id, number)
@@ -79,7 +76,7 @@ export const fetchDeploymentChanges = createAsyncThunk<Commit[], void, { state: 
     'deployment/fetchDeploymentChanges', 
     async (_, { getState, rejectWithValue } ) => {
         const { repo, number } = getState().deployment
-        if (repo === null) throw new Error("There is no repo.")
+        if (!repo) throw new Error("There is no repo.")
 
         try {
             const commits = await listDeploymentChanges(repo.id, number)
@@ -94,7 +91,7 @@ export const deployToSCM = createAsyncThunk<Deployment, void, { state: {deployme
     'deployment/deployToSCM', 
     async (_, { getState, rejectWithValue, requestId } ) => {
         const { repo, number, deploying, deployId } = getState().deployment
-        if (repo === null) {
+        if (!repo) {
             throw new Error("There is no repo.")
         }
 
@@ -121,7 +118,7 @@ export const fetchApprovals = createAsyncThunk<Approval[], void, { state: {deplo
     'deployment/fetchApprovals', 
     async (_, { getState, rejectWithValue } ) => {
         const { repo, number } = getState().deployment
-        if (repo === null) throw new Error("There is no repo.")
+        if (!repo) throw new Error("There is no repo.")
 
         try {
             const approvals = await listApprovals(repo.id, number)
@@ -136,7 +133,7 @@ export const searchCandidates = createAsyncThunk<User[], string, { state: {deplo
     "deployment/fetchCandidates",
     async (q, { getState, rejectWithValue }) => {
         const { repo } = getState().deployment
-        if (repo === null) {
+        if (!repo) {
             throw new Error("The repo is not set.")
         }
 
@@ -156,10 +153,10 @@ export const createApproval = createAsyncThunk<Approval, User, { state: {deploym
     "deployment/createApprover",
     async (candidate, { getState, rejectWithValue }) => {
         const { repo, deployment } = getState().deployment
-        if (repo === null) {
+        if (!repo) {
             throw new Error("The repo is not set.")
         }
-        if (deployment === null) {
+        if (!deployment) {
             throw new Error("The deployment is not set.")
         }
 
@@ -177,7 +174,7 @@ export const deleteApproval = createAsyncThunk<Approval, Approval, { state: {dep
     "deployment/deleteApprover",
     async (approval, { getState, rejectWithValue }) => {
         const { repo } = getState().deployment
-        if (repo === null) {
+        if (!repo) {
             throw new Error("The repo is not set.")
         }
 
@@ -194,7 +191,7 @@ export const fetchMyApproval = createAsyncThunk<Approval, void, { state: {deploy
     'deployment/fetchMyApproval', 
     async (_, { getState, rejectWithValue } ) => {
         const { repo, number } = getState().deployment
-        if (repo === null) throw new Error("There is no repo.")
+        if (!repo) throw new Error("There is no repo.")
 
         try {
             const approval = await getMyApproval(repo.id, number)
@@ -213,7 +210,7 @@ export const approve = createAsyncThunk<Approval, void, { state: {deployment: De
     'deployment/approve', 
     async (_, { getState, rejectWithValue } ) => {
         const { repo, number } = getState().deployment
-        if (repo === null) throw new Error("There is no repo.")
+        if (!repo) throw new Error("There is no repo.")
 
         try {
             const approval = await setApprovalApproved(repo.id, number)
@@ -228,7 +225,7 @@ export const decline = createAsyncThunk<Approval, void, { state: {deployment: De
     'deployment/decline', 
     async (_, { getState, rejectWithValue } ) => {
         const { repo, number } = getState().deployment
-        if (repo === null) throw new Error("There is no repo.")
+        if (!repo) throw new Error("There is no repo.")
 
         try {
             const approval = await setApprovalDeclined(repo.id, number)

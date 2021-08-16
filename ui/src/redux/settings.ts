@@ -4,14 +4,12 @@ import { User, RateLimit } from "../models"
 import { getMe, getRateLimit, checkSlack as _checkSlack } from "../apis"
 
 interface SettingsState {
-    user: User | null
-    rateLimit: RateLimit | null
+    user?: User
+    rateLimit?: RateLimit
     isSlackEnabled: boolean
 }
 
 const initialState: SettingsState = {
-    user: null,
-    rateLimit: null,
     isSlackEnabled: false
 }
 

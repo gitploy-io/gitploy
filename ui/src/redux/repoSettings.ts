@@ -5,14 +5,13 @@ import { searchRepo, updateRepo, deactivateRepo } from "../apis"
 import { Repo, RepoPayload, RequestStatus, HttpForbiddenError  } from "../models"
 
 interface RepoSettingsState {
-    repo: Repo | null
+    repo?: Repo
     saveId: string,
     saving: RequestStatus
     deactivating: RequestStatus
 }
 
 const initialState: RepoSettingsState = {
-    repo: null,
     saveId: "",
     saving: RequestStatus.Idle,
     deactivating: RequestStatus.Idle,
@@ -30,7 +29,7 @@ export const save = createAsyncThunk<Repo, RepoPayload, { state: {repoSettings: 
     'repoSettings/save', 
     async (payload, { getState, rejectWithValue, requestId } ) => {
         const { repo, saveId, saving } = getState().repoSettings
-        if (repo === null) {
+        if (!repo) {
             throw new Error("There is no repo.")
         }
 
@@ -53,7 +52,7 @@ export const deactivate = createAsyncThunk<Repo, void, { state: {repoSettings: R
     'repoSettings/deactivate', 
     async (_, { getState, rejectWithValue } ) => {
         const { repo } = getState().repoSettings
-        if (repo === null) throw new Error("There is no repo.")
+        if (!repo) throw new Error("There is no repo.")
 
         try {
             const nr = await deactivateRepo(repo)
