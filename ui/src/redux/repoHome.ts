@@ -7,7 +7,7 @@ export const perPage = 20;
 
 interface RepoHomeState {
     loading: boolean
-    repo: Repo | null
+    repo?: Repo
     envs: string[]
     env: string
     deployments: Deployment[]
@@ -16,7 +16,6 @@ interface RepoHomeState {
 
 const initialState: RepoHomeState = {
     loading: true,
-    repo: null,
     envs: [],
     env: "",
     deployments: [],
@@ -36,7 +35,7 @@ export const fetchEnvs = createAsyncThunk<string[], void, { state: {repoHome: Re
     async (_, { getState, rejectWithValue } ) => {
         const { repo, } = getState().repoHome
 
-        if (repo === null) {
+        if (!repo) {
             rejectWithValue(new Error("repo doesn't exist."))
             return []
         }
@@ -51,7 +50,7 @@ export const fetchDeployments = createAsyncThunk<Deployment[], void, { state: {r
     async (_, { getState, rejectWithValue } ) => {
         const { repo, env, page} = getState().repoHome
 
-        if (repo === null) {
+        if (!repo) {
             rejectWithValue(new Error("repo doesn't exist."))
             return []
         }
