@@ -1,3 +1,5 @@
+import Deployment from "./Deployment"
+
 export default interface Repo { 
     id: string
     namespace: string
@@ -9,6 +11,7 @@ export default interface Repo {
     syncedAt: Date
     createdAt: Date
     updatedAt: Date 
+    deployments?: Deployment[]
 }
 
 export interface RepoPayload {

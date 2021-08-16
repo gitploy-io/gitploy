@@ -10,7 +10,8 @@ interface DeploymentStatusStepsProps {
 }
 
 export default function DeploymentStatusSteps(props: DeploymentStatusStepsProps): JSX.Element {
-    if (props.deployment.statuses.length === 0) {
+    if (typeof props.deployment.statuses === "undefined" 
+        || props.deployment.statuses.length === 0) {
         return (
             <DeploymentStatusBadge deployment={props.deployment}/>
         )

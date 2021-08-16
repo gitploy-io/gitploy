@@ -33,9 +33,9 @@ export interface DeploymentData {
     created_at: string
     updated_at: string
     edges: {
-        user: UserData,
-        repo: RepoData,
-        deployment_statuses: DeploymentStatusData[]
+        user?: UserData,
+        repo?: RepoData,
+        deployment_statuses?: DeploymentStatusData[]
     }
 }
 
@@ -49,19 +49,19 @@ interface DeploymentStatusData {
 }
 
 export const mapDataToDeployment = (data: DeploymentData): Deployment => {
-    let deployer: User | null = null
-    let repo: Repo | null = null
+    let deployer: User | undefined
+    let repo: Repo | undefined
     let statuses: DeploymentStatus[] = []
 
-    if ("user" in data.edges) {
+    if (typeof data.edges.user !== "undefined") {
         deployer = mapDataToUser(data.edges.user)
     }
 
-    if ("repo" in data.edges) {
+    if (typeof data.edges.repo !== "undefined") {
         repo = mapDataToRepo(data.edges.repo) 
     }
 
-    if ("deployment_statuses" in data.edges) {
+    if (typeof data.edges.deployment_statuses !== "undefined") {
         statuses =  data.edges.deployment_statuses
             .map((data: any) => mapDataToDeploymentStatus(data))
     }

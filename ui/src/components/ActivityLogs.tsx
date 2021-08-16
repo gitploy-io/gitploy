@@ -1,9 +1,10 @@
-import { Timeline, Typography, Avatar } from 'antd'
+import { Timeline, Typography } from 'antd'
 import { SyncOutlined } from '@ant-design/icons'
 import moment from "moment"
 
 import { Deployment, DeploymentType, DeploymentStatusEnum } from "../models"
 import DeploymentStatusBadge from "./DeploymentStatusBadge"
+import UserAvatar from './UserAvatar'
 
 const { Text } = Typography
 
@@ -20,9 +21,7 @@ export default function ActivityLogs(props: ActivityLogsProps): JSX.Element {
             const ref = (d.type === DeploymentType.Commit)? 
                 d.ref.substr(0, 7): 
                 d.ref
-            const avatar = (d.deployer)? 
-                <span><Avatar size="small" src={d.deployer.avatar} /> <Text strong>{d.deployer.login}</Text></span> :
-                <span><Avatar size="small">U</Avatar> </span> 
+            const avatar = <UserAvatar user={d.deployer} />
 
             return <Timeline.Item key={idx} color={getStatusColor(d.lastStatus)} dot={dot}>
                 <p>

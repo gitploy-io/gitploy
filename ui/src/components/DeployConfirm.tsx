@@ -51,7 +51,7 @@ export default function DeployConfirm(props: DeployConfirmProps): JSX.Element {
                 {...layout}
                 label="Deployer"
             >
-                {(props.deployment.deployer !== null)?
+                {(props.deployment.deployer)?
                      <Text >
                         <Avatar size="small" src={props.deployment.deployer.avatar} /> {props.deployment.deployer.login}
                     </Text> :

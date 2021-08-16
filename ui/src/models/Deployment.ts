@@ -15,9 +15,9 @@ export default interface Deployment {
     requiredApprovalCount: number
     createdAt: Date
     updatedAt: Date
-    deployer: User | null
-    repo: Repo | null
-    statuses: DeploymentStatus[]
+    deployer?: User
+    repo?: Repo
+    statuses?: DeploymentStatus[]
 }
 
 export enum DeploymentType {

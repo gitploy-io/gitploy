@@ -1,9 +1,10 @@
 import { StatusCodes } from 'http-status-codes'
-import { HttpForbiddenError } from '../models/errors'
 
 import { instance, headers } from './setting'
 import { _fetch } from "./_base"
-import { Repo, RepoPayload } from '../models'
+import { DeploymentData, mapDataToDeployment } from "./deployment"
+
+import { Repo, RepoPayload, HttpForbiddenError, Deployment } from '../models'
 
 export interface RepoData {
     id: string
@@ -16,10 +17,19 @@ export interface RepoData {
     synced_at: string
     created_at: string
     updated_at: string
+    edges: {
+        deployments?: DeploymentData[]
+    }
 }
 
 // eslint-disable-next-line
 export const mapDataToRepo = (data: RepoData): Repo => {
+    let deployments: Deployment[] | undefined
+
+    if (typeof data.edges.deployments !== "undefined") {
+        deployments = data.edges.deployments.map(data => mapDataToDeployment(data))
+    }
+
     return {
         id: data.id,
         namespace: data.namespace,
@@ -31,11 +41,12 @@ export const mapDataToRepo = (data: RepoData): Repo => {
         syncedAt: new Date(data.synced_at),
         createdAt: new Date(data.created_at),
         updatedAt: new Date(data.updated_at),
+        deployments,
     }
 }
 
 export const listRepos = async (q: string, page = 1, perPage = 30): Promise<Repo[]> => {
-    const repos = await _fetch(`${instance}/api/v1/repos?q=${q}&page=${page}&per_page=${perPage}`, {
+    const repos = await _fetch(`${instance}/api/v1/repos?q=${q}&sort=true&page=${page}&per_page=${perPage}`, {
         headers,
         credentials: 'same-origin',
     })
