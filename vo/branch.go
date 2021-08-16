@@ -2,7 +2,7 @@ package vo
 
 type (
 	Branch struct {
-		Name      string `json:"name,omitempty"`
-		CommitSHA string `json:"commit_sha,omitempty"`
+		Name      string `json:"name"`
+		CommitSHA string `json:"commit_sha"`
 	}
 )
