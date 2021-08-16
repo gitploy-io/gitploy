@@ -190,7 +190,7 @@ func (s *Store) FindLatestSuccessfulDeployment(ctx context.Context, d *ent.Deplo
 // CreateDeployment always set the next number of deployment
 // when it creates.
 func (s *Store) CreateDeployment(ctx context.Context, d *ent.Deployment) (*ent.Deployment, error) {
-	return s.c.Deployment.Create().
+	d, err := s.c.Deployment.Create().
 		SetNumber(d.Number).
 		SetType(d.Type).
 		SetRef(d.Ref).
@@ -205,6 +205,15 @@ func (s *Store) CreateDeployment(ctx context.Context, d *ent.Deployment) (*ent.D
 		SetUserID(d.UserID).
 		SetRepoID(d.RepoID).
 		Save(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	s.c.Repo.
+		UpdateOneID(d.RepoID).
+		SetLatestDeployedAt(d.CreatedAt).
+		Save(ctx)
+	return d, nil
 }
 
 func (s *Store) UpdateDeployment(ctx context.Context, d *ent.Deployment) (*ent.Deployment, error) {

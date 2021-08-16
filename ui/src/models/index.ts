@@ -1,7 +1,7 @@
 import Repo, { RepoPayload } from './Repo'
 import Perm from "./Perm"
 import Deployment, { 
-    LastDeploymentStatus, 
+    DeploymentStatusEnum, 
     DeploymentType,
     DeploymentStatus,
 } from "./Deployment"
@@ -48,7 +48,7 @@ export {
     HttpNotFoundError,
     HttpConflictError,
     HttpUnprocessableEntityError,
-    LastDeploymentStatus,
+    DeploymentStatusEnum,
     DeploymentType,
     StatusState,
     RequestStatus,

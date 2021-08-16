@@ -23,14 +23,14 @@ func (s *Store) ListReposOfUser(ctx context.Context, u *ent.User, q string, page
 		Where(
 			repo.NameContains(q),
 		).
-		Limit(perPage).
-		Offset(offset(page, perPage)).
 		WithDeployments(func(dq *ent.DeploymentQuery) {
 			dq.
 				WithUser().
 				Order(ent.Desc(deployment.FieldCreatedAt)).
 				Limit(3)
 		}).
+		Limit(perPage).
+		Offset(offset(page, perPage)).
 		All(ctx)
 }
 
@@ -49,16 +49,15 @@ func (s *Store) ListSortedReposOfUser(ctx context.Context, u *ent.User, q string
 				repo.NameContains(q),
 			),
 		).
-		Order(ent.Desc(repo.FieldLatestDeployedAt)).
-		Limit(perPage).
-		Offset(offset(page, perPage)).
 		WithDeployments(func(dq *ent.DeploymentQuery) {
 			dq.
 				WithUser().
 				Order(ent.Desc(deployment.FieldCreatedAt)).
 				Limit(3)
 		}).
-		Order(ent.Desc(deployment.FieldCreatedAt)).
+		Order(ent.Desc(repo.FieldLatestDeployedAt)).
+		Limit(perPage).
+		Offset(offset(page, perPage)).
 		All(ctx)
 }
 

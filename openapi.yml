@@ -1236,6 +1236,11 @@ components:
           type: string
         latest_deployed_at:
           type: string
+        edges:
+          type: object
+          properties:
+            deployments:
+              $ref: '#/components/schemas/Deployments'
     Perms:
       type: array
       items:

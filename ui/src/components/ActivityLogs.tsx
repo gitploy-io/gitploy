@@ -1,9 +1,10 @@
-import { Timeline, Typography, Avatar } from 'antd'
+import { Timeline, Typography } from 'antd'
 import { SyncOutlined } from '@ant-design/icons'
 import moment from "moment"
 
-import { Deployment, DeploymentType, LastDeploymentStatus } from "../models"
+import { Deployment, DeploymentType, DeploymentStatusEnum } from "../models"
 import DeploymentStatusBadge from "./DeploymentStatusBadge"
+import UserAvatar from './UserAvatar'
 
 const { Text } = Typography
 
@@ -14,15 +15,13 @@ interface ActivityLogsProps {
 export default function ActivityLogs(props: ActivityLogsProps): JSX.Element {
     return <Timeline>
         {props.deployments.map((d, idx) => {
-            const dot = (d.lastStatus === LastDeploymentStatus.Running)? 
+            const dot = (d.lastStatus === DeploymentStatusEnum.Running)? 
                 <SyncOutlined style={{color: "purple"}} spin />: 
                 null
             const ref = (d.type === DeploymentType.Commit)? 
                 d.ref.substr(0, 7): 
                 d.ref
-            const avatar = (d.deployer)? 
-                <span><Avatar size="small" src={d.deployer.avatar} /> <Text strong>{d.deployer.login}</Text></span> :
-                <span><Avatar size="small">U</Avatar> </span> 
+            const avatar = <UserAvatar user={d.deployer} />
 
             return <Timeline.Item key={idx} color={getStatusColor(d.lastStatus)} dot={dot}>
                 <p>
@@ -37,19 +36,19 @@ export default function ActivityLogs(props: ActivityLogsProps): JSX.Element {
 }
 
 // https://ant.design/components/timeline/#Timeline.Item
-const getStatusColor = (status: LastDeploymentStatus) => {
+const getStatusColor = (status: DeploymentStatusEnum) => {
     switch (status) {
-        case LastDeploymentStatus.Waiting:
+        case DeploymentStatusEnum.Waiting:
             return "gray"
-        case LastDeploymentStatus.Created:
+        case DeploymentStatusEnum.Created:
             return "purple"
-        case LastDeploymentStatus.Running:
+        case DeploymentStatusEnum.Running:
             return "purple"
-        case LastDeploymentStatus.Success:
+        case DeploymentStatusEnum.Success:
             return "green"
-        case LastDeploymentStatus.Failure:
+        case DeploymentStatusEnum.Failure:
             return "red"
-        case LastDeploymentStatus.Canceled:
+        case DeploymentStatusEnum.Canceled:
             return "gray"
         default:
             return "gray"

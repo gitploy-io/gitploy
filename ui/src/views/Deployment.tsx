@@ -21,7 +21,7 @@ import {
 import { 
     User, 
     Deployment, 
-    LastDeploymentStatus, 
+    DeploymentStatusEnum, 
     Approval,
     ApprovalStatus,
     RequestStatus
@@ -176,7 +176,7 @@ export default function DeploymentView(): JSX.Element {
 }
 
 function isDeployable(deployment: Deployment, approvals: Approval[]): boolean {
-    if (deployment.lastStatus !== LastDeploymentStatus.Waiting) {
+    if (deployment.lastStatus !== DeploymentStatusEnum.Waiting) {
         return false
     }
 
