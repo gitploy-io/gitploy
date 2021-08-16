@@ -3,7 +3,7 @@ import { PageHeader, Result, Button } from "antd";
 import { shallowEqual } from "react-redux";
 
 import { useAppSelector, useAppDispatch } from "../redux/hooks"
-import { User,DeploymentType, Branch, Commit, Tag, RequestStatus } from "../models";
+import { User,DeploymentType, Branch, Commit, Tag, RequestStatus, Env } from "../models";
 import { fetchDeployments } from "../redux/repoHome";
 import { 
     init, 
@@ -35,6 +35,7 @@ export default function RepoDeploy(): JSX.Element {
     const { namespace, name } = useParams<Params>()
     const { 
         hasConfig, 
+        env,
         envs, 
         branches, 
         branchStatuses,
@@ -42,7 +43,6 @@ export default function RepoDeploy(): JSX.Element {
         commitStatuses,
         tags, 
         tagStatuses,
-        approvalEnabled,
         candidates,
         deploying } = useAppSelector(state => state.repoDeploy, shallowEqual)
     const dispatch = useAppDispatch()
@@ -58,7 +58,7 @@ export default function RepoDeploy(): JSX.Element {
         // eslint-disable-next-line 
     }, [dispatch])
 
-    const onSelectEnv = (env: string) => {
+    const onSelectEnv = (env: Env) => {
         dispatch(actions.setEnv(env))
     }
 
@@ -156,7 +156,7 @@ export default function RepoDeploy(): JSX.Element {
                     tagStatuses={tagStatuses}
                     deploying={deploying === RequestStatus.Pending}
                     onClickDeploy={onClickDeploy} 
-                    approvalEnabled={approvalEnabled}
+                    approvalEnabled={(env?.approval?.enabled)? true : false}
                     candidates={candidates}
                     onSearchCandidates={onSearchCandidates}
                     onSelectCandidate={onSelectCandidate}

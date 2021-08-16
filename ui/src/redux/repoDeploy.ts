@@ -9,6 +9,7 @@ import {
     Commit, 
     Tag, 
     Config,
+    Env,
     Status,
     DeploymentType, 
     RequestStatus, 
@@ -37,8 +38,8 @@ interface RepoDeployState {
     repo: Repo | null
     hasConfig: boolean
     config: Config | null
-    env: string
-    envs: string[]
+    env?: Env
+    envs: Env[]
     type: DeploymentType | null
     branch: Branch | null
     branchStatuses: Status[]
@@ -54,7 +55,6 @@ interface RepoDeployState {
      * approvalEnabled - The approvers field is displayed when it is enabled.
      * approvers - selected approvers from candidates.
     */
-    approvalEnabled: boolean,
     approvers: User[]
     candidates: User[]
     deploying: RequestStatus
@@ -65,7 +65,6 @@ const initialState: RepoDeployState = {
     repo: null,
     hasConfig: true,
     config: null,
-    env: "",
     envs: [],
     type: null,
     branch: null,
@@ -77,7 +76,6 @@ const initialState: RepoDeployState = {
     tag: null,
     tagStatuses: [],
     tags: [],
-    approvalEnabled: false,
     approvers: [],
     candidates: [],
     deploying: RequestStatus.Idle,
@@ -257,9 +255,12 @@ export const searchCandidates = createAsyncThunk<User[], string, { state: {repoD
 export const deploy = createAsyncThunk<void, void, { state: {repoDeploy: RepoDeployState}}> (
     "repoDeploy/deploy",
     async (_ , { getState, rejectWithValue, requestId }) => {
-        const { repo, env, type, branch, commit, tag, approvalEnabled, approvers, deploying, deployId } = getState().repoDeploy
+        const { repo, env, type, branch, commit, tag, approvers, deploying, deployId } = getState().repoDeploy
         if (repo === null) {
             throw new Error("The repo is not set.")
+        }
+        if (!env) {
+            throw new Error("The env is not set.")
         }
         if (deploying !== RequestStatus.Pending || requestId !== deployId ) {
             return
@@ -268,14 +269,14 @@ export const deploy = createAsyncThunk<void, void, { state: {repoDeploy: RepoDep
         try {
             let deployment: Deployment
             if (type === DeploymentType.Commit && commit !== null) {
-                deployment = await createDeployment(repo.id, type, commit.sha, env)
+                deployment = await createDeployment(repo.id, type, commit.sha, env.name)
             } else if (type === DeploymentType.Branch && branch !== null) {
-                deployment = await createDeployment(repo.id, type, branch.name, env)
+                deployment = await createDeployment(repo.id, type, branch.name, env.name)
             } else if (type === DeploymentType.Tag && tag !== null) {
-                deployment = await createDeployment(repo.id, type, tag.name, env)
+                deployment = await createDeployment(repo.id, type, tag.name, env.name)
             } 
 
-            if (!approvalEnabled) {
+            if (!env.approval?.enabled) {
                 message.success("It starts to deploy.", 3)
                 return
             }
@@ -295,18 +296,8 @@ export const repoDeploySlice = createSlice({
     name: "repoDeploy",
     initialState,
     reducers: {
-        setEnv: (state, action: PayloadAction<string>) => {
-            const name = action.payload
-            state.env = name
-
-            if (state.config === null) {
-                return
-            }
-
-            const env = state.config.envs.find(env => env.name === name)
-            if (env !== undefined) {
-                state.approvalEnabled = env.approvalEnabled
-            }
+        setEnv: (state, action: PayloadAction<Env>) => {
+            state.env =  action.payload
         },
         setType: (state, action: PayloadAction<DeploymentType>) => {
             state.type = action.payload
@@ -345,7 +336,7 @@ export const repoDeploySlice = createSlice({
             })
             .addCase(fetchConfig.fulfilled, (state, action) => {
                 const config = action.payload
-                state.envs = config.envs.map(e => e.name)
+                state.envs = config.envs.map(e => e)
                 state.config = config
                 state.hasConfig = true
             })

@@ -7,7 +7,7 @@ import { useAppDispatch, useAppSelector } from "../redux/hooks"
 import { fetchDeployments as refreshDeployments } from "../redux/repoHome";
 import { repoRollbackSlice, init, fetchConfig, fetchDeployments, searchCandidates, rollback } from "../redux/repoRollback"
 
-import { User, Deployment, RequestStatus } from '../models'
+import { User, Deployment, RequestStatus, Env } from '../models'
 import RollbackForm from "../components/RollbackForm";
 
 const { actions } = repoRollbackSlice
@@ -21,8 +21,8 @@ export default function RepoHome(): JSX.Element {
     const { namespace, name } = useParams<Params>()
     const {
         hasConfig,
+        env,
         envs,
-        approvalEnabled,
         candidates,
         deployments, 
         deploying } = useAppSelector(state => state.repoRollback, shallowEqual)
@@ -37,7 +37,7 @@ export default function RepoHome(): JSX.Element {
         // eslint-disable-next-line
     }, [dispatch])
 
-    const onSelectEnv = (env: string) => {
+    const onSelectEnv = (env: Env) => {
         dispatch(actions.setEnv(env))
         dispatch(fetchDeployments())
     }
@@ -95,7 +95,7 @@ export default function RepoHome(): JSX.Element {
                     onSelectDeployment={onSelectDeployment}
                     onClickRollback={onClickRollback}
                     deploying={deploying === RequestStatus.Pending} 
-                    approvalEnabled={approvalEnabled}
+                    approvalEnabled={(env?.approval?.enabled)? true : false}
                     candidates={candidates}
                     onSearchCandidates={onSearchCandidates}
                     onSelectCandidate={onSelectCandidate}
