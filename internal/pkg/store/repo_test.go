@@ -27,6 +27,7 @@ func TestStore_ListReposOfUser(t *testing.T) {
 		SetID("1").
 		SetNamespace("octocat").
 		SetName("Hello").
+		SetDescription("").
 		SaveX(ctx)
 
 	r2 := client.Repo.
@@ -34,6 +35,7 @@ func TestStore_ListReposOfUser(t *testing.T) {
 		SetID("2").
 		SetNamespace("octocat").
 		SetName("World").
+		SetDescription("").
 		SaveX(ctx)
 
 	client.Repo.
@@ -41,6 +43,7 @@ func TestStore_ListReposOfUser(t *testing.T) {
 		SetID("3").
 		SetNamespace("coco").
 		SetName("Bye").
+		SetDescription("").
 		SaveX(ctx)
 
 	t.Log("Create permissions for r1, r2.")
@@ -115,6 +118,7 @@ func TestStore_ListSortedReposOfUser(t *testing.T) {
 		SetID("1").
 		SetNamespace("octocat").
 		SetName("Hello").
+		SetDescription("").
 		SaveX(ctx)
 
 	r2 := client.Repo.
@@ -122,6 +126,7 @@ func TestStore_ListSortedReposOfUser(t *testing.T) {
 		SetID("2").
 		SetNamespace("octocat").
 		SetName("World").
+		SetDescription("").
 		SaveX(ctx)
 
 	client.Repo.
@@ -129,6 +134,7 @@ func TestStore_ListSortedReposOfUser(t *testing.T) {
 		SetID("3").
 		SetNamespace("coco").
 		SetName("Bye").
+		SetDescription("").
 		SaveX(ctx)
 
 	t.Log("Create permissions for r1, r2.")
@@ -221,6 +227,7 @@ func TestStore_FindRepoOfUserByID(t *testing.T) {
 		SetID("1").
 		SetNamespace("octocat").
 		SetName("Hello").
+		SetDescription("").
 		SaveX(ctx)
 
 	r2 := client.Repo.
@@ -228,6 +235,7 @@ func TestStore_FindRepoOfUserByID(t *testing.T) {
 		SetID("2").
 		SetNamespace("octocat").
 		SetName("World").
+		SetDescription("").
 		SaveX(ctx)
 
 	client.Repo.
@@ -235,6 +243,7 @@ func TestStore_FindRepoOfUserByID(t *testing.T) {
 		SetID("3").
 		SetNamespace("coco").
 		SetName("Bye").
+		SetDescription("").
 		SaveX(ctx)
 
 	t.Log("Create permissions for r1, r2.")

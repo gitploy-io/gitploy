@@ -48,20 +48,6 @@ func (ru *RepoUpdate) SetDescription(s string) *RepoUpdate {
 	return ru
 }
 
-// SetNillableDescription sets the "description" field if the given value is not nil.
-func (ru *RepoUpdate) SetNillableDescription(s *string) *RepoUpdate {
-	if s != nil {
-		ru.SetDescription(*s)
-	}
-	return ru
-}
-
-// ClearDescription clears the value of the "description" field.
-func (ru *RepoUpdate) ClearDescription() *RepoUpdate {
-	ru.mutation.ClearDescription()
-	return ru
-}
-
 // SetConfigPath sets the "config_path" field.
 func (ru *RepoUpdate) SetConfigPath(s string) *RepoUpdate {
 	ru.mutation.SetConfigPath(s)
@@ -392,12 +378,6 @@ func (ru *RepoUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: repo.FieldDescription,
 		})
 	}
-	if ru.mutation.DescriptionCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: repo.FieldDescription,
-		})
-	}
 	if value, ok := ru.mutation.ConfigPath(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -668,20 +648,6 @@ func (ruo *RepoUpdateOne) SetName(s string) *RepoUpdateOne {
 // SetDescription sets the "description" field.
 func (ruo *RepoUpdateOne) SetDescription(s string) *RepoUpdateOne {
 	ruo.mutation.SetDescription(s)
-	return ruo
-}
-
-// SetNillableDescription sets the "description" field if the given value is not nil.
-func (ruo *RepoUpdateOne) SetNillableDescription(s *string) *RepoUpdateOne {
-	if s != nil {
-		ruo.SetDescription(*s)
-	}
-	return ruo
-}
-
-// ClearDescription clears the value of the "description" field.
-func (ruo *RepoUpdateOne) ClearDescription() *RepoUpdateOne {
-	ruo.mutation.ClearDescription()
 	return ruo
 }
 
@@ -1036,12 +1002,6 @@ func (ruo *RepoUpdateOne) sqlSave(ctx context.Context) (_node *Repo, err error) 
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
-			Column: repo.FieldDescription,
-		})
-	}
-	if ruo.mutation.DescriptionCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
 			Column: repo.FieldDescription,
 		})
 	}

@@ -6164,22 +6164,9 @@ func (m *RepoMutation) OldDescription(ctx context.Context) (v string, err error)
 	return oldValue.Description, nil
 }
 
-// ClearDescription clears the value of the "description" field.
-func (m *RepoMutation) ClearDescription() {
-	m.description = nil
-	m.clearedFields[repo.FieldDescription] = struct{}{}
-}
-
-// DescriptionCleared returns if the "description" field was cleared in this mutation.
-func (m *RepoMutation) DescriptionCleared() bool {
-	_, ok := m.clearedFields[repo.FieldDescription]
-	return ok
-}
-
 // ResetDescription resets all changes to the "description" field.
 func (m *RepoMutation) ResetDescription() {
 	m.description = nil
-	delete(m.clearedFields, repo.FieldDescription)
 }
 
 // SetConfigPath sets the "config_path" field.
@@ -6887,9 +6874,6 @@ func (m *RepoMutation) AddField(name string, value ent.Value) error {
 // mutation.
 func (m *RepoMutation) ClearedFields() []string {
 	var fields []string
-	if m.FieldCleared(repo.FieldDescription) {
-		fields = append(fields, repo.FieldDescription)
-	}
 	if m.FieldCleared(repo.FieldWebhookID) {
 		fields = append(fields, repo.FieldWebhookID)
 	}
@@ -6913,9 +6897,6 @@ func (m *RepoMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *RepoMutation) ClearField(name string) error {
 	switch name {
-	case repo.FieldDescription:
-		m.ClearDescription()
-		return nil
 	case repo.FieldWebhookID:
 		m.ClearWebhookID()
 		return nil
@@ -7116,7 +7097,6 @@ type UserMutation struct {
 	refresh            *string
 	expiry             *time.Time
 	hash               *string
-	synced_at          *time.Time
 	created_at         *time.Time
 	updated_at         *time.Time
 	clearedFields      map[string]struct{}
@@ -7288,22 +7268,9 @@ func (m *UserMutation) OldAvatar(ctx context.Context) (v string, err error) {
 	return oldValue.Avatar, nil
 }
 
-// ClearAvatar clears the value of the "avatar" field.
-func (m *UserMutation) ClearAvatar() {
-	m.avatar = nil
-	m.clearedFields[user.FieldAvatar] = struct{}{}
-}
-
-// AvatarCleared returns if the "avatar" field was cleared in this mutation.
-func (m *UserMutation) AvatarCleared() bool {
-	_, ok := m.clearedFields[user.FieldAvatar]
-	return ok
-}
-
 // ResetAvatar resets all changes to the "avatar" field.
 func (m *UserMutation) ResetAvatar() {
 	m.avatar = nil
-	delete(m.clearedFields, user.FieldAvatar)
 }
 
 // SetAdmin sets the "admin" field.
@@ -7484,55 +7451,6 @@ func (m *UserMutation) OldHash(ctx context.Context) (v string, err error) {
 // ResetHash resets all changes to the "hash" field.
 func (m *UserMutation) ResetHash() {
 	m.hash = nil
-}
-
-// SetSyncedAt sets the "synced_at" field.
-func (m *UserMutation) SetSyncedAt(t time.Time) {
-	m.synced_at = &t
-}
-
-// SyncedAt returns the value of the "synced_at" field in the mutation.
-func (m *UserMutation) SyncedAt() (r time.Time, exists bool) {
-	v := m.synced_at
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldSyncedAt returns the old "synced_at" field's value of the User entity.
-// If the User object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UserMutation) OldSyncedAt(ctx context.Context) (v time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, fmt.Errorf("OldSyncedAt is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, fmt.Errorf("OldSyncedAt requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldSyncedAt: %w", err)
-	}
-	return oldValue.SyncedAt, nil
-}
-
-// ClearSyncedAt clears the value of the "synced_at" field.
-func (m *UserMutation) ClearSyncedAt() {
-	m.synced_at = nil
-	m.clearedFields[user.FieldSyncedAt] = struct{}{}
-}
-
-// SyncedAtCleared returns if the "synced_at" field was cleared in this mutation.
-func (m *UserMutation) SyncedAtCleared() bool {
-	_, ok := m.clearedFields[user.FieldSyncedAt]
-	return ok
-}
-
-// ResetSyncedAt resets all changes to the "synced_at" field.
-func (m *UserMutation) ResetSyncedAt() {
-	m.synced_at = nil
-	delete(m.clearedFields, user.FieldSyncedAt)
 }
 
 // SetCreatedAt sets the "created_at" field.
@@ -7827,7 +7745,7 @@ func (m *UserMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *UserMutation) Fields() []string {
-	fields := make([]string, 0, 10)
+	fields := make([]string, 0, 9)
 	if m.login != nil {
 		fields = append(fields, user.FieldLogin)
 	}
@@ -7848,9 +7766,6 @@ func (m *UserMutation) Fields() []string {
 	}
 	if m.hash != nil {
 		fields = append(fields, user.FieldHash)
-	}
-	if m.synced_at != nil {
-		fields = append(fields, user.FieldSyncedAt)
 	}
 	if m.created_at != nil {
 		fields = append(fields, user.FieldCreatedAt)
@@ -7880,8 +7795,6 @@ func (m *UserMutation) Field(name string) (ent.Value, bool) {
 		return m.Expiry()
 	case user.FieldHash:
 		return m.Hash()
-	case user.FieldSyncedAt:
-		return m.SyncedAt()
 	case user.FieldCreatedAt:
 		return m.CreatedAt()
 	case user.FieldUpdatedAt:
@@ -7909,8 +7822,6 @@ func (m *UserMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldExpiry(ctx)
 	case user.FieldHash:
 		return m.OldHash(ctx)
-	case user.FieldSyncedAt:
-		return m.OldSyncedAt(ctx)
 	case user.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case user.FieldUpdatedAt:
@@ -7973,13 +7884,6 @@ func (m *UserMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetHash(v)
 		return nil
-	case user.FieldSyncedAt:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetSyncedAt(v)
-		return nil
 	case user.FieldCreatedAt:
 		v, ok := value.(time.Time)
 		if !ok {
@@ -8023,14 +7927,7 @@ func (m *UserMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *UserMutation) ClearedFields() []string {
-	var fields []string
-	if m.FieldCleared(user.FieldAvatar) {
-		fields = append(fields, user.FieldAvatar)
-	}
-	if m.FieldCleared(user.FieldSyncedAt) {
-		fields = append(fields, user.FieldSyncedAt)
-	}
-	return fields
+	return nil
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -8043,14 +7940,6 @@ func (m *UserMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *UserMutation) ClearField(name string) error {
-	switch name {
-	case user.FieldAvatar:
-		m.ClearAvatar()
-		return nil
-	case user.FieldSyncedAt:
-		m.ClearSyncedAt()
-		return nil
-	}
 	return fmt.Errorf("unknown User nullable field %s", name)
 }
 
@@ -8078,9 +7967,6 @@ func (m *UserMutation) ResetField(name string) error {
 		return nil
 	case user.FieldHash:
 		m.ResetHash()
-		return nil
-	case user.FieldSyncedAt:
-		m.ResetSyncedAt()
 		return nil
 	case user.FieldCreatedAt:
 		m.ResetCreatedAt()

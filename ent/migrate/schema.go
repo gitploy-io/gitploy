@@ -277,7 +277,7 @@ var (
 		{Name: "id", Type: field.TypeString},
 		{Name: "namespace", Type: field.TypeString},
 		{Name: "name", Type: field.TypeString},
-		{Name: "description", Type: field.TypeString, Nullable: true},
+		{Name: "description", Type: field.TypeString},
 		{Name: "config_path", Type: field.TypeString, Default: "deploy.yml"},
 		{Name: "active", Type: field.TypeBool, Default: false},
 		{Name: "webhook_id", Type: field.TypeInt64, Nullable: true},
@@ -296,13 +296,12 @@ var (
 	UsersColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString},
 		{Name: "login", Type: field.TypeString, Unique: true},
-		{Name: "avatar", Type: field.TypeString, Nullable: true},
+		{Name: "avatar", Type: field.TypeString},
 		{Name: "admin", Type: field.TypeBool, Default: false},
 		{Name: "token", Type: field.TypeString},
 		{Name: "refresh", Type: field.TypeString},
 		{Name: "expiry", Type: field.TypeTime},
 		{Name: "hash", Type: field.TypeString, Unique: true},
-		{Name: "synced_at", Type: field.TypeTime, Nullable: true},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 	}

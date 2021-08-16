@@ -25,6 +25,7 @@ func TestStore_SyncPerm(t *testing.T) {
 		u := client.User.Create().
 			SetID("1").
 			SetLogin("octocat").
+			SetAvatar("").
 			SetToken("access_token").
 			SetRefresh("refresh_token").
 			SetExpiry(time.Time{}).
@@ -34,9 +35,10 @@ func TestStore_SyncPerm(t *testing.T) {
 			RepoPerm: perm.RepoPermWrite,
 			Edges: ent.PermEdges{
 				Repo: &ent.Repo{
-					ID:        "1",
-					Namespace: "octocat",
-					Name:      "HelloWorld",
+					ID:          "1",
+					Namespace:   "octocat",
+					Name:        "HelloWorld",
+					Description: "",
 				},
 			},
 		}
@@ -68,6 +70,7 @@ func TestStore_SyncPerm(t *testing.T) {
 		u := client.User.Create().
 			SetID("1").
 			SetLogin("octocat").
+			SetAvatar("").
 			SetToken("access_token").
 			SetRefresh("refresh_token").
 			SetExpiry(time.Time{}).
@@ -77,6 +80,7 @@ func TestStore_SyncPerm(t *testing.T) {
 			SetID("1").
 			SetNamespace("octocat").
 			SetName("HelloWorld").
+			SetDescription("").
 			SaveX(ctx)
 
 		client.Perm.Create().

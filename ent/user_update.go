@@ -43,20 +43,6 @@ func (uu *UserUpdate) SetAvatar(s string) *UserUpdate {
 	return uu
 }
 
-// SetNillableAvatar sets the "avatar" field if the given value is not nil.
-func (uu *UserUpdate) SetNillableAvatar(s *string) *UserUpdate {
-	if s != nil {
-		uu.SetAvatar(*s)
-	}
-	return uu
-}
-
-// ClearAvatar clears the value of the "avatar" field.
-func (uu *UserUpdate) ClearAvatar() *UserUpdate {
-	uu.mutation.ClearAvatar()
-	return uu
-}
-
 // SetAdmin sets the "admin" field.
 func (uu *UserUpdate) SetAdmin(b bool) *UserUpdate {
 	uu.mutation.SetAdmin(b)
@@ -86,26 +72,6 @@ func (uu *UserUpdate) SetRefresh(s string) *UserUpdate {
 // SetExpiry sets the "expiry" field.
 func (uu *UserUpdate) SetExpiry(t time.Time) *UserUpdate {
 	uu.mutation.SetExpiry(t)
-	return uu
-}
-
-// SetSyncedAt sets the "synced_at" field.
-func (uu *UserUpdate) SetSyncedAt(t time.Time) *UserUpdate {
-	uu.mutation.SetSyncedAt(t)
-	return uu
-}
-
-// SetNillableSyncedAt sets the "synced_at" field if the given value is not nil.
-func (uu *UserUpdate) SetNillableSyncedAt(t *time.Time) *UserUpdate {
-	if t != nil {
-		uu.SetSyncedAt(*t)
-	}
-	return uu
-}
-
-// ClearSyncedAt clears the value of the "synced_at" field.
-func (uu *UserUpdate) ClearSyncedAt() *UserUpdate {
-	uu.mutation.ClearSyncedAt()
 	return uu
 }
 
@@ -362,12 +328,6 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: user.FieldAvatar,
 		})
 	}
-	if uu.mutation.AvatarCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: user.FieldAvatar,
-		})
-	}
 	if value, ok := uu.mutation.Admin(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeBool,
@@ -394,19 +354,6 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Type:   field.TypeTime,
 			Value:  value,
 			Column: user.FieldExpiry,
-		})
-	}
-	if value, ok := uu.mutation.SyncedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: user.FieldSyncedAt,
-		})
-	}
-	if uu.mutation.SyncedAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: user.FieldSyncedAt,
 		})
 	}
 	if value, ok := uu.mutation.CreatedAt(); ok {
@@ -651,20 +598,6 @@ func (uuo *UserUpdateOne) SetAvatar(s string) *UserUpdateOne {
 	return uuo
 }
 
-// SetNillableAvatar sets the "avatar" field if the given value is not nil.
-func (uuo *UserUpdateOne) SetNillableAvatar(s *string) *UserUpdateOne {
-	if s != nil {
-		uuo.SetAvatar(*s)
-	}
-	return uuo
-}
-
-// ClearAvatar clears the value of the "avatar" field.
-func (uuo *UserUpdateOne) ClearAvatar() *UserUpdateOne {
-	uuo.mutation.ClearAvatar()
-	return uuo
-}
-
 // SetAdmin sets the "admin" field.
 func (uuo *UserUpdateOne) SetAdmin(b bool) *UserUpdateOne {
 	uuo.mutation.SetAdmin(b)
@@ -694,26 +627,6 @@ func (uuo *UserUpdateOne) SetRefresh(s string) *UserUpdateOne {
 // SetExpiry sets the "expiry" field.
 func (uuo *UserUpdateOne) SetExpiry(t time.Time) *UserUpdateOne {
 	uuo.mutation.SetExpiry(t)
-	return uuo
-}
-
-// SetSyncedAt sets the "synced_at" field.
-func (uuo *UserUpdateOne) SetSyncedAt(t time.Time) *UserUpdateOne {
-	uuo.mutation.SetSyncedAt(t)
-	return uuo
-}
-
-// SetNillableSyncedAt sets the "synced_at" field if the given value is not nil.
-func (uuo *UserUpdateOne) SetNillableSyncedAt(t *time.Time) *UserUpdateOne {
-	if t != nil {
-		uuo.SetSyncedAt(*t)
-	}
-	return uuo
-}
-
-// ClearSyncedAt clears the value of the "synced_at" field.
-func (uuo *UserUpdateOne) ClearSyncedAt() *UserUpdateOne {
-	uuo.mutation.ClearSyncedAt()
 	return uuo
 }
 
@@ -994,12 +907,6 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			Column: user.FieldAvatar,
 		})
 	}
-	if uuo.mutation.AvatarCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: user.FieldAvatar,
-		})
-	}
 	if value, ok := uuo.mutation.Admin(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeBool,
@@ -1026,19 +933,6 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			Type:   field.TypeTime,
 			Value:  value,
 			Column: user.FieldExpiry,
-		})
-	}
-	if value, ok := uuo.mutation.SyncedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: user.FieldSyncedAt,
-		})
-	}
-	if uuo.mutation.SyncedAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: user.FieldSyncedAt,
 		})
 	}
 	if value, ok := uuo.mutation.CreatedAt(); ok {

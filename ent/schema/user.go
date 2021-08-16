@@ -21,8 +21,7 @@ func (User) Fields() []ent.Field {
 		field.String("id"),
 		field.String("login").
 			Unique(),
-		field.String("avatar").
-			Optional(),
+		field.String("avatar"),
 		field.Bool("admin").
 			Default(false),
 		field.String("token").
@@ -35,8 +34,6 @@ func (User) Fields() []ent.Field {
 			Unique().
 			DefaultFunc(generateHash).
 			Sensitive(),
-		field.Time("synced_at").
-			Optional(),
 		field.Time("created_at").
 			Default(time.Now),
 		field.Time("updated_at").

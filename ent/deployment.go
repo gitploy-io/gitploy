@@ -29,11 +29,11 @@ type Deployment struct {
 	// Status holds the value of the "status" field.
 	Status deployment.Status `json:"status"`
 	// UID holds the value of the "uid" field.
-	UID int64 `json:"uid"`
+	UID int64 `json:"uid,omitemtpy"`
 	// Sha holds the value of the "sha" field.
-	Sha string `json:"sha"`
+	Sha string `json:"sha,omitemtpy"`
 	// HTMLURL holds the value of the "html_url" field.
-	HTMLURL string `json:"html_url"`
+	HTMLURL string `json:"html_url,omitemtpy"`
 	// IsRollback holds the value of the "is_rollback" field.
 	IsRollback bool `json:"is_rollback"`
 	// IsApprovalEnabled holds the value of the "is_approval_enabled" field.

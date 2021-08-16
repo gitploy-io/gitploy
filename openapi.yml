@@ -1199,6 +1199,14 @@ components:
           properties:
             chat_user:
               $ref: '#/components/schemas/ChatUser'
+      required:
+        - id
+        - login
+        - admin
+        - avatar
+        - created_at
+        - updated_at
+        - edges
     ChatUser:
       type: object
       properties:
@@ -1208,6 +1216,10 @@ components:
           type: string
         updated_at:
           type: string
+      required:
+        - id
+        - created_at
+        - updated_at
     Repositories:
       type: array
       items:
@@ -1223,6 +1235,8 @@ components:
         name:
           type: string
         description:
+          type: string
+        config_path:
           type: string
         active:
           type: boolean
@@ -1241,6 +1255,15 @@ components:
           properties:
             deployments:
               $ref: '#/components/schemas/Deployments'
+      required:
+        - id
+        - namespace
+        - name
+        - description
+        - config_path
+        - active
+        - created_at
+        - updated_at
     Perms:
       type: array
       items:
@@ -1265,6 +1288,11 @@ components:
               $ref: '#/components/schemas/User'
             repo:
               $ref: '#/components/schemas/Repository'
+      required:
+        - id
+        - repo_perm
+        - created_at
+        - updated_at
     Commits:
       type: array
       items:
@@ -1280,6 +1308,11 @@ components:
           type: boolean
         html_url:
           type: string  
+      required:
+        - sha
+        - message
+        - is_pull_request
+        - html_url
     Statuses:
       type: array
       items:
@@ -1300,6 +1333,11 @@ components:
             - pending
             - failure
             - success
+      required:
+        - context
+        - avatar_url
+        - target_url
+        - state
     Branches:
       type: array
       items:
@@ -1311,6 +1349,9 @@ components:
           type: string
         commit_sha:
           type: string
+      required:
+        - name
+        - commit_sha
     Tags:
       type: array
       items:
@@ -1322,6 +1363,9 @@ components:
           type: string
         commit_sha:
           type: string
+      required:
+        - name
+        - commit_sha
     Deployments:
       type: array
       items:
@@ -1356,6 +1400,12 @@ components:
           type: string
         html_url:
           type: string
+        is_rollback:
+          type: boolean
+        is_approval_enabled:
+          type: boolean
+        required_approval_count:
+          type: number
         created_at:
           type: string
         updated_at:
@@ -1371,6 +1421,17 @@ components:
               type: array
               items:
                 $ref: '#/components/schemas/DeploymentStatus'
+      required:
+        - id
+        - type
+        - ref
+        - env
+        - status
+        - is_rollback
+        - is_approval_enabled
+        - required_approval_count
+        - created_at
+        - updated_at
     DeploymentStatus:
       type: object
       properties:
@@ -1386,6 +1447,11 @@ components:
           type: string
         updated_at:
           type: string
+      required:
+        - id
+        - status
+        - created_at
+        - updated_at
     Config:
       type: object
       properties:
@@ -1419,6 +1485,13 @@ components:
               type: boolean
             required_count:
               type: number
+          required:
+            - enabled
+            - required_count
+      required:
+        - name
+        - auto_merge
+        - production_environment
     Approvals:
       type: array
       items:
@@ -1428,9 +1501,6 @@ components:
       properties:
         id:
           type: integer
-        # TODO: remove after migrate status field.
-        is_approved:
-          type: boolean
         status:
           type: string
           enum:
@@ -1448,6 +1518,11 @@ components:
               $ref: '#/components/schemas/User'
             deployment:
               $ref: '#/components/schemas/Deployment'
+      required:
+        - id
+        - status
+        - created_at
+        - updated_at
     RateLimit:
       type: object
       properties:
@@ -1457,11 +1532,17 @@ components:
           type: number
         reset:
           type: string
+      required:
+        - limit
+        - remaining
+        - reset
     Error:
       type: object
       properties:
         message: 
           type: string
+      required:
+        - message
 
   securitySchemes:
     BearerAuth:

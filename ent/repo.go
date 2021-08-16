@@ -27,15 +27,15 @@ type Repo struct {
 	// Active holds the value of the "active" field.
 	Active bool `json:"active"`
 	// WebhookID holds the value of the "webhook_id" field.
-	WebhookID int64 `json:"webhook_id"`
+	WebhookID int64 `json:"webhook_id,omitemtpy"`
 	// SyncedAt holds the value of the "synced_at" field.
-	SyncedAt time.Time `json:"synced_at"`
+	SyncedAt time.Time `json:"synced_at,omitemtpy"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at"`
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updated_at"`
 	// LatestDeployedAt holds the value of the "latest_deployed_at" field.
-	LatestDeployedAt time.Time `json:"latest_deployed_at"`
+	LatestDeployedAt time.Time `json:"latest_deployed_at,omitemtpy"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the RepoQuery when eager-loading is set.
 	Edges RepoEdges `json:"edges"`

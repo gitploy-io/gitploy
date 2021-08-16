@@ -36,14 +36,6 @@ func (uc *UserCreate) SetAvatar(s string) *UserCreate {
 	return uc
 }
 
-// SetNillableAvatar sets the "avatar" field if the given value is not nil.
-func (uc *UserCreate) SetNillableAvatar(s *string) *UserCreate {
-	if s != nil {
-		uc.SetAvatar(*s)
-	}
-	return uc
-}
-
 // SetAdmin sets the "admin" field.
 func (uc *UserCreate) SetAdmin(b bool) *UserCreate {
 	uc.mutation.SetAdmin(b)
@@ -86,20 +78,6 @@ func (uc *UserCreate) SetHash(s string) *UserCreate {
 func (uc *UserCreate) SetNillableHash(s *string) *UserCreate {
 	if s != nil {
 		uc.SetHash(*s)
-	}
-	return uc
-}
-
-// SetSyncedAt sets the "synced_at" field.
-func (uc *UserCreate) SetSyncedAt(t time.Time) *UserCreate {
-	uc.mutation.SetSyncedAt(t)
-	return uc
-}
-
-// SetNillableSyncedAt sets the "synced_at" field if the given value is not nil.
-func (uc *UserCreate) SetNillableSyncedAt(t *time.Time) *UserCreate {
-	if t != nil {
-		uc.SetSyncedAt(*t)
 	}
 	return uc
 }
@@ -296,6 +274,9 @@ func (uc *UserCreate) check() error {
 	if _, ok := uc.mutation.Login(); !ok {
 		return &ValidationError{Name: "login", err: errors.New(`ent: missing required field "login"`)}
 	}
+	if _, ok := uc.mutation.Avatar(); !ok {
+		return &ValidationError{Name: "avatar", err: errors.New(`ent: missing required field "avatar"`)}
+	}
 	if _, ok := uc.mutation.Admin(); !ok {
 		return &ValidationError{Name: "admin", err: errors.New(`ent: missing required field "admin"`)}
 	}
@@ -401,14 +382,6 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 			Column: user.FieldHash,
 		})
 		_node.Hash = value
-	}
-	if value, ok := uc.mutation.SyncedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: user.FieldSyncedAt,
-		})
-		_node.SyncedAt = value
 	}
 	if value, ok := uc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

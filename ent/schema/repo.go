@@ -20,8 +20,7 @@ func (Repo) Fields() []ent.Field {
 		field.String("id"),
 		field.String("namespace"),
 		field.String("name"),
-		field.String("description").
-			Optional(),
+		field.String("description"),
 		field.String("config_path").
 			Default("deploy.yml"),
 		field.Bool("active").
