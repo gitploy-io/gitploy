@@ -2,24 +2,36 @@ import { StatusCodes } from 'http-status-codes'
 
 import { instance, headers } from './setting'
 import { _fetch } from "./_base"
-import { Config, Env, HttpNotFoundError } from '../models'
+import { Config, Env, EnvApproval, HttpNotFoundError } from '../models'
 
 interface ConfigData {
-    envs: Array<{
-        name: string
-        required_contexts: string[]
-        approval: {
-            enabled: boolean
-        }
-    }>
+    envs: EnvData[]
+}
+
+interface EnvData {
+    name: string
+    required_contexts?: string[]
+    approval?: {
+        enabled: boolean
+        required_count: number
+    }
 }
 
 const mapDataToConfig = (data: ConfigData): Config => {
-    const envs: Env[] = data.envs.map(e => {
+    const envs: Env[] = data.envs.map((e: EnvData) => {
+        let approval: EnvApproval | undefined
+
+        if (e.approval) {
+            approval = {
+                enabled: e.approval.enabled,
+                required_count: e.approval.required_count,
+            }
+        }
+
         return {
             name: e.name,
             requiredContexts: e.required_contexts,
-            approvalEnabled: e.approval? e.approval.enabled : false,
+            approval
         }
     })
 

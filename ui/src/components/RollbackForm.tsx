@@ -1,12 +1,12 @@
 import { Form, Select, Button, Avatar } from 'antd'
 import moment from 'moment'
 
-import { User, Deployment, DeploymentType } from "../models"
+import { User, Deployment, DeploymentType, Env } from "../models"
 import ApproversSelect from "./ApproversSelect"
 
 interface RollbackFormProps {
-    envs: string[]
-    onSelectEnv(env: string): void
+    envs: Env[]
+    onSelectEnv(env: Env): void
     deployments: Deployment[]
     onSelectDeployment(deployment: Deployment): void
     onClickRollback(): void
@@ -33,6 +33,13 @@ export default function RollbackForm(props: RollbackFormProps): JSX.Element {
       wrapperCol: { offset: 5, span: 16 },
     };
 
+    const onSelectEnv = (value: string) => {
+        const env = props.envs.find((e) => e.name === value)
+        if (env === undefined) throw new Error("The deployment doesn't exist.")
+
+        props.onSelectEnv(env)
+    }
+
     const onSelectDeployment = (id: number) => {
         const deployment = props.deployments.find((d) => (d.id === id))
         if (deployment === undefined) throw new Error("The deployment doesn't exist.")
@@ -54,10 +61,10 @@ export default function RollbackForm(props: RollbackFormProps): JSX.Element {
                 {...selectLayout}
                 rules={[{required: true}]} >
                 <Select 
-                    onSelect={props.onSelectEnv}
+                    onSelect={onSelectEnv}
                     placeholder="Select target environment">
                         {props.envs.map((env, idx) => {
-                            return <Select.Option key={idx} value={env}>{env}</Select.Option>
+                            return <Select.Option key={idx} value={env.name}>{env.name}</Select.Option>
                         })}
                 </Select>
             </Form.Item>

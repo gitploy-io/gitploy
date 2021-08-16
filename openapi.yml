@@ -1398,19 +1398,27 @@ components:
       properties:
         name:
           type: string
+        task:
+          type: string
+        description:
+          type: string
+        auto_merge:
+          type: boolean
         required_contexts:
           type: array
           items:
-            type: integer
+            type: string
+        payload:
+          type: string
+        production_environment:
+          type: boolean
         approval:
           type: object
           properties:
-            approvers:
-              type: array
-              items:
-                type: string
-            wait_minute:
-              type: integer
+            enabled: 
+              type: boolean
+            required_count:
+              type: number
     Approvals:
       type: array
       items:

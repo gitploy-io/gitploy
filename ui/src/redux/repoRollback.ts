@@ -16,6 +16,7 @@ import {
     Deployment, 
     DeploymentStatusEnum, 
     Config,
+    Env,
     RequestStatus, 
     HttpNotFoundError, 
     HttpRequestError 
@@ -28,8 +29,8 @@ interface RepoRollbackState {
     repo: Repo | null
     config: Config | null
     hasConfig: boolean
-    env: string
-    envs: string[]
+    env?: Env
+    envs: Env[]
     deployment: Deployment | null
     deployments: Deployment[]
     /**
@@ -37,7 +38,6 @@ interface RepoRollbackState {
      * approvalEnabled - The approvers field is displayed when it is enabled.
      * approvers - selected approvers from candidates.
     */
-    approvalEnabled: boolean,
     approvers: User[]
     candidates: User[]
     deployId: string
@@ -48,11 +48,9 @@ const initialState: RepoRollbackState = {
     repo: null,
     config: null,
     hasConfig: true,
-    env: "",
     envs: [],
     deployment: null,
     deployments: [],
-    approvalEnabled: false,
     approvers: [],
     candidates: [],
     deployId: "",
@@ -87,9 +85,9 @@ export const fetchDeployments = createAsyncThunk<Deployment[], void, { state: {r
     async (_, { getState }) => {
         const { repo, env } = getState().repoRollback
         if (repo === null) throw new Error("The repo is not set.")
-        if (env === "") throw new Error("The env is not selected.")
+        if (!env) throw new Error("The env is not selected.")
 
-        const deployments = await listDeployments(repo.id, env, DeploymentStatusEnum.Success, page, perPage)
+        const deployments = await listDeployments(repo.id, env.name, DeploymentStatusEnum.Success, page, perPage)
         return deployments
     }
 )
@@ -117,7 +115,7 @@ export const searchCandidates = createAsyncThunk<User[], string, { state: {repoR
 export const rollback = createAsyncThunk<void, void, { state: {repoRollback: RepoRollbackState}}> (
     "repoRollback/deploy",
     async (_ , { getState, rejectWithValue, requestId }) => {
-        const { repo, deployment, approvalEnabled, approvers, deployId, deploying } = getState().repoRollback
+        const { repo, deployment, env, approvers, deployId, deploying } = getState().repoRollback
         if (repo === null) throw new Error("The repo is not set.")
         if (deployment === null) throw new Error("The deployment is null.")
 
@@ -128,7 +126,7 @@ export const rollback = createAsyncThunk<void, void, { state: {repoRollback: Rep
         try {
             const rollback = await rollbackDeployment(repo.id, deployment.number)
 
-            if (!approvalEnabled) {
+            if (!env?.approval?.enabled) {
                 message.success("It starts to rollback.", 3)
                 return
             }
@@ -153,18 +151,8 @@ export const repoRollbackSlice = createSlice({
     name: "repoRollback",
     initialState,
     reducers: {
-        setEnv: (state, action: PayloadAction<string>) => {
-            const name = action.payload
-            state.env = name
-
-            if (state.config === null) {
-                return
-            }
-
-            const env = state.config.envs.find(env => env.name === name)
-            if (env !== undefined) {
-                state.approvalEnabled = env.approvalEnabled
-            }
+        setEnv: (state, action: PayloadAction<Env>) => {
+            state.env = action.payload
         },
         setDeployment: (state, action: PayloadAction<Deployment>) => {
             state.deployment = action.payload
@@ -194,7 +182,7 @@ export const repoRollbackSlice = createSlice({
             })
             .addCase(fetchConfig.fulfilled, (state, action) => {
                 const config = action.payload
-                state.envs = config.envs.map(e => e.name)
+                state.envs = config.envs.map(e => e)
                 state.config = config
                 state.hasConfig = true
             })

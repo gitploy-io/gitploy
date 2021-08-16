@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { Form, Select, Radio, Button } from "antd"
 
-import { Branch, Commit, Tag, DeploymentType, Status, User } from "../models"
+import { Branch, Commit, Tag, DeploymentType, Status, User, Env } from "../models"
 
 import CreatableSelect, {Option as Op} from "./CreatableSelect"
 import StatusStateIcon from "./StatusStateIcon"
@@ -10,8 +10,8 @@ import ApproversSelect from "./ApproversSelect"
 export type Option = Op
 
 interface DeployFormProps {
-    envs: string[]
-    onSelectEnv(env: string): void
+    envs: Env[]
+    onSelectEnv(env: Env): void
     onChangeType(type: DeploymentType): void
     branches: Branch[]
     onSelectBranch(branch: Branch): void
@@ -118,6 +118,13 @@ export default function DeployForm(props: DeployFormProps): JSX.Element {
         } as Option
     }
 
+    const onSelectEnv = (value: string) => {
+        const env = props.envs.find(env => env.name === value)
+        if (env === undefined) throw new Error("The env doesn't exist.")
+
+        props.onSelectEnv(env)
+    }
+
     const onSelectBranch = (option: Option) => {
         const branch = props.branches.find(b => b.name === option.value)
         if (branch === undefined) throw new Error("The branch doesn't exist.")
@@ -167,10 +174,10 @@ export default function DeployForm(props: DeployFormProps): JSX.Element {
                 label="Environment"
                 name="environment">
                 <Select 
-                    onSelect={props.onSelectEnv}
+                    onSelect={onSelectEnv}
                     placeholder="Select target environment">
                     {props.envs.map((env, idx) => {
-                        return <Select.Option key={idx} value={env}>{env}</Select.Option>
+                        return <Select.Option key={idx} value={env.name}>{env.name}</Select.Option>
                     })}
                 </Select>
             </Form.Item>

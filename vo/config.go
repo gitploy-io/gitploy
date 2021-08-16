@@ -20,7 +20,7 @@ type (
 		RequiredContexts      []string  `json:"required_contexts" yaml:"required_contexts"`
 		Payload               string    `json:"payload" yaml:"payload"`
 		ProductionEnvironment bool      `json:"production_environment" yaml:"production_environment"`
-		Approval              *Approval `json:"approval" yaml:"approval"`
+		Approval              *Approval `json:"approval,omitempty" yaml:"approval"`
 
 		// The type of auto_merge must be string to avoid
 		// that the value of auto_merge is always set true
