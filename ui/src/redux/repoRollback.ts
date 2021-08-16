@@ -14,7 +14,7 @@ import {
     User,
     Repo, 
     Deployment, 
-    LastDeploymentStatus, 
+    DeploymentStatusEnum, 
     Config,
     RequestStatus, 
     HttpNotFoundError, 
@@ -89,7 +89,7 @@ export const fetchDeployments = createAsyncThunk<Deployment[], void, { state: {r
         if (repo === null) throw new Error("The repo is not set.")
         if (env === "") throw new Error("The env is not selected.")
 
-        const deployments = await listDeployments(repo.id, env, LastDeploymentStatus.Success, page, perPage)
+        const deployments = await listDeployments(repo.id, env, DeploymentStatusEnum.Success, page, perPage)
         return deployments
     }
 )

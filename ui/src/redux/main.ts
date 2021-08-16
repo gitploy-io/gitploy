@@ -1,6 +1,6 @@
 import { createSlice, Middleware, MiddlewareAPI, isRejectedWithValue, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit"
 
-import { User, Deployment, LastDeploymentStatus, Approval, ApprovalStatus, HttpInternalServerError, HttpUnauthorizedError, HttpForbiddenError,  } from "../models"
+import { User, Deployment, DeploymentStatusEnum, Approval, ApprovalStatus, HttpInternalServerError, HttpUnauthorizedError, HttpForbiddenError,  } from "../models"
 import { getMe, searchDeployments as _searchDeployments, searchApprovals as _searchApprovals } from "../apis"
 
 interface MainState {
@@ -21,10 +21,10 @@ const initialState: MainState = {
     approvals: []
 }
 
-const runningDeploymentStatus: LastDeploymentStatus[] = [
-    LastDeploymentStatus.Waiting,
-    LastDeploymentStatus.Created,
-    LastDeploymentStatus.Running,
+const runningDeploymentStatus: DeploymentStatusEnum[] = [
+    DeploymentStatusEnum.Waiting,
+    DeploymentStatusEnum.Created,
+    DeploymentStatusEnum.Running,
 ]
 
 const pendingApprovalStatus: ApprovalStatus[] = [

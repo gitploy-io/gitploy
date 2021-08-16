@@ -8,7 +8,7 @@ import {
     Deployment, 
     DeploymentType, 
     DeploymentStatus,
-    LastDeploymentStatus, 
+    DeploymentStatusEnum, 
     Commit,
     HttpRequestError, 
     HttpUnprocessableEntityError 
@@ -73,7 +73,7 @@ export const mapDataToDeployment = (data: DeploymentData): Deployment => {
         ref: data.ref,
         sha: data.sha,
         env: data.env,
-        lastStatus: mapLastDeploymentStatus(data.status),
+        lastStatus: mapDeploymentStatusEnum(data.status),
         uid: data.uid,
         isRollback: data.is_rollback,
         isApprovalEanbled: data.is_approval_enabled,
@@ -99,22 +99,22 @@ function mapDeploymentType(t: string) {
     }
 }
 
-function mapLastDeploymentStatus(s: string) {
+function mapDeploymentStatusEnum(s: string) {
     switch (s) {
         case "waiting":
-            return LastDeploymentStatus.Waiting
+            return DeploymentStatusEnum.Waiting
         case "created":
-            return LastDeploymentStatus.Created
+            return DeploymentStatusEnum.Created
         case "running":
-            return LastDeploymentStatus.Running
+            return DeploymentStatusEnum.Running
         case "success":
-            return LastDeploymentStatus.Success
+            return DeploymentStatusEnum.Success
         case "failure":
-            return LastDeploymentStatus.Failure
+            return DeploymentStatusEnum.Failure
         case "canceled":
-            return LastDeploymentStatus.Canceled
+            return DeploymentStatusEnum.Canceled
         default:
-            return LastDeploymentStatus.Waiting
+            return DeploymentStatusEnum.Waiting
     }
 }
 
@@ -129,19 +129,19 @@ function mapDataToDeploymentStatus(data: any): DeploymentStatus {
     }
 }
 
-function mapDeploymentStatusToString(status: LastDeploymentStatus): string {
+function mapDeploymentStatusToString(status: DeploymentStatusEnum): string {
     switch (status) {
-        case LastDeploymentStatus.Waiting:
+        case DeploymentStatusEnum.Waiting:
             return "waiting"
-        case LastDeploymentStatus.Created:
+        case DeploymentStatusEnum.Created:
             return "created"
-        case LastDeploymentStatus.Running:
+        case DeploymentStatusEnum.Running:
             return "running"
-        case LastDeploymentStatus.Success:
+        case DeploymentStatusEnum.Success:
             return "success"
-        case LastDeploymentStatus.Failure:
+        case DeploymentStatusEnum.Failure:
             return "failure"
-        case LastDeploymentStatus.Canceled:
+        case DeploymentStatusEnum.Canceled:
             return "canceled"
         default:
             return "waiting"
@@ -149,7 +149,7 @@ function mapDeploymentStatusToString(status: LastDeploymentStatus): string {
 
 }
 
-export const searchDeployments = async (statuses: LastDeploymentStatus[], owned: boolean, from?: Date, to?: Date, page = 1, perPage = 30): Promise<Deployment[]> => {
+export const searchDeployments = async (statuses: DeploymentStatusEnum[], owned: boolean, from?: Date, to?: Date, page = 1, perPage = 30): Promise<Deployment[]> => {
     const ss: string[] = []
     statuses.forEach((status) => {
         ss.push(mapDeploymentStatusToString(status))
