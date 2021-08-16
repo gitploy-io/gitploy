@@ -22,6 +22,7 @@ func TestStore_ListUsers(t *testing.T) {
 		Create().
 		SetID("1").
 		SetLogin("banana").
+		SetAvatar("").
 		SetToken("").
 		SetRefresh("").
 		SetExpiry(time.Time{}).
@@ -31,6 +32,7 @@ func TestStore_ListUsers(t *testing.T) {
 		Create().
 		SetID("2").
 		SetLogin("apple").
+		SetAvatar("").
 		SetToken("").
 		SetRefresh("").
 		SetExpiry(time.Time{}).
