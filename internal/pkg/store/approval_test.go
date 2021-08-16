@@ -15,7 +15,6 @@ func TestStore_SearchApprovals(t *testing.T) {
 	client := enttest.Open(t,
 		"sqlite3",
 		"file:ent?mode=memory&cache=shared&_fk=1",
-		enttest.WithOptions(ent.Debug()),
 		enttest.WithMigrateOptions(migrate.WithForeignKeys(false)),
 	)
 	defer client.Close()
@@ -72,7 +71,7 @@ func TestStore_SearchApprovals(t *testing.T) {
 			t.FailNow()
 		}
 
-		expected := 2
+		expected := 3
 		if len(res) != expected {
 			t.Fatalf("SearchApprovals = %v, wanted %v", res, expected)
 			t.FailNow()
