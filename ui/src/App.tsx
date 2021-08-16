@@ -19,6 +19,9 @@ function App(): JSX.Element {
                     <Route path="/:namespace/:name/deployments/:number">
                         <Deployment />
                     </Route>
+                    <Route path="/:namespace/:name/:tab">
+                        <Repo />
+                    </Route>
                     <Route path="/:namespace/:name">
                         <Repo />
                     </Route>

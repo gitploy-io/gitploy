@@ -4,7 +4,6 @@ import { shallowEqual } from "react-redux";
 
 import { useAppSelector, useAppDispatch } from "../redux/hooks"
 import { User,DeploymentType, Branch, Commit, Tag, RequestStatus, Env } from "../models";
-import { fetchDeployments } from "../redux/repoHome";
 import { 
     init, 
     fetchConfig, 
@@ -109,9 +108,6 @@ export default function RepoDeploy(): JSX.Element {
     const onClickDeploy = () => {
         const f = async () => {
             await dispatch(deploy())
-            // TODO: replace procedure into event stream.
-            // Rollback also have to be replaced.
-            await dispatch(fetchDeployments())
         }
         f()
     }
