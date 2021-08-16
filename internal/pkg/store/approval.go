@@ -4,17 +4,29 @@ import (
 	"context"
 	"time"
 
+	"entgo.io/ent/dialect/sql"
 	"github.com/hanjunlee/gitploy/ent"
 	"github.com/hanjunlee/gitploy/ent/approval"
+	"github.com/hanjunlee/gitploy/ent/predicate"
 )
 
 func (s *Store) SearchApprovals(ctx context.Context, u *ent.User, ss []approval.Status, from time.Time, to time.Time, page, perPage int) ([]*ent.Approval, error) {
+	statusIn := func(ss []approval.Status) predicate.Approval {
+		if len(ss) == 0 {
+			// if not status were provided,
+			// it always make this predicate truly.
+			return func(s *sql.Selector) {}
+		}
+
+		return approval.StatusIn(ss...)
+	}
+
 	return s.c.Approval.
 		Query().
 		Where(
 			approval.And(
 				approval.UserID(u.ID),
-				approval.StatusIn(ss...),
+				statusIn(ss),
 				approval.CreatedAtGTE(from),
 				approval.CreatedAtLT(to),
 			),
@@ -25,6 +37,7 @@ func (s *Store) SearchApprovals(ctx context.Context, u *ent.User, ss []approval.
 				WithRepo().
 				WithUser()
 		}).
+		Order(ent.Desc(approval.FieldCreatedAt)).
 		Offset(offset(page, perPage)).
 		Limit(perPage).
 		All(ctx)

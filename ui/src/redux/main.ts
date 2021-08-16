@@ -126,7 +126,7 @@ export const mainSlice = createSlice({
                 return
             } 
             
-            state.deployments.push(deployment)
+            state.deployments.unshift(deployment)
         },
         handleApprovalEvent: (state, action: PayloadAction<Approval>) => {
             const user = state.user
@@ -156,7 +156,7 @@ export const mainSlice = createSlice({
                 return
             } 
 
-            state.approvals.push(approval)
+            state.approvals.unshift(approval)
         },
     },
     extraReducers: builder => {

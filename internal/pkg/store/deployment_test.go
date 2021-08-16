@@ -38,7 +38,6 @@ func TestStore_SearchDeployments(t *testing.T) {
 		SetType(deployment.TypeBranch).
 		SetNumber(1).
 		SetRef("main").
-		SetSha("7e555a2").
 		SetEnv("local").
 		SetUserID(u1).
 		SetRepoID(r1).
@@ -48,17 +47,53 @@ func TestStore_SearchDeployments(t *testing.T) {
 		SetType(deployment.TypeBranch).
 		SetNumber(2).
 		SetRef("main").
-		SetSha("a20052a").
 		SetEnv("dev").
 		SetUserID(u2).
 		SetRepoID(r1).
+		SaveX(ctx)
+
+	client.Deployment.Create().
+		SetType(deployment.TypeBranch).
+		SetNumber(3).
+		SetRef("main").
+		SetEnv("dev").
+		SetUserID(u2).
+		SetRepoID(r1).
+		SetStatus(deployment.StatusCreated).
 		SaveX(ctx)
 
 	t.Run("u1 searchs all deployments of r1.", func(t *testing.T) {
 		const (
 			owned   = false
 			page    = 1
-			perPage = 2
+			perPage = 30
+		)
+
+		store := NewStore(client)
+
+		res, err := store.SearchDeployments(ctx,
+			&ent.User{ID: u1},
+			[]deployment.Status{},
+			owned,
+			time.Now().Add(-time.Minute),
+			time.Now(),
+			page,
+			perPage)
+		if err != nil {
+			t.Fatalf("SearchDeployments return an error: %s", err)
+		}
+
+		expected := 3
+		if len(res) != expected {
+			t.Fatalf("SearchDeployments = %v, wanted %v", res, expected)
+		}
+	})
+
+	t.Run("u1 searchs waiting deployments of r1.", func(t *testing.T) {
+		const (
+			owned   = false
+			page    = 1
+			perPage = 30
 		)
 
 		store := NewStore(client)
@@ -75,13 +110,11 @@ func TestStore_SearchDeployments(t *testing.T) {
 			perPage)
 		if err != nil {
 			t.Fatalf("SearchDeployments return an error: %s", err)
-			t.FailNow()
 		}
 
 		expected := 2
 		if len(res) != expected {
-			t.Fatalf("SearchDeployments = %v, wanted %v", res, expected)
-			t.FailNow()
+			t.Fatalf("SearchDeployments = %v, wanted %v", len(res), expected)
 		}
 	})
 
@@ -89,16 +122,14 @@ func TestStore_SearchDeployments(t *testing.T) {
 		const (
 			owned   = true
 			page    = 1
-			perPage = 2
+			perPage = 30
 		)
 
 		store := NewStore(client)
 
 		res, err := store.SearchDeployments(ctx,
 			&ent.User{ID: u1},
-			[]deployment.Status{
-				deployment.StatusWaiting,
-			},
+			[]deployment.Status{},
 			owned,
 			time.Now().Add(-time.Minute),
 			time.Now(),
@@ -106,13 +137,11 @@ func TestStore_SearchDeployments(t *testing.T) {
 			perPage)
 		if err != nil {
 			t.Fatalf("SearchDeployments return an error: %s", err)
-			t.FailNow()
 		}
 
 		expected := 1
 		if len(res) != expected {
 			t.Fatalf("SearchDeployments = %v, wanted %v", res, expected)
-			t.FailNow()
 		}
 	})
 }

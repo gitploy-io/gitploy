@@ -8,22 +8,34 @@ import (
 	"github.com/hanjunlee/gitploy/ent"
 	"github.com/hanjunlee/gitploy/ent/deployment"
 	"github.com/hanjunlee/gitploy/ent/perm"
+	"github.com/hanjunlee/gitploy/ent/predicate"
 )
 
 func (s *Store) SearchDeployments(ctx context.Context, u *ent.User, ss []deployment.Status, owned bool, from time.Time, to time.Time, page, perPage int) ([]*ent.Deployment, error) {
+	statusIn := func(ss []deployment.Status) predicate.Deployment {
+		if len(ss) == 0 {
+			// if not status were provided,
+			// it always make this predicate truly.
+			return func(s *sql.Selector) {}
+		}
+
+		return deployment.StatusIn(ss...)
+	}
+
 	if owned {
 		return s.c.Deployment.
 			Query().
 			Where(
 				deployment.And(
 					deployment.UserIDEQ(u.ID),
-					deployment.StatusIn(ss...),
+					statusIn(ss),
 					deployment.CreatedAtGTE(from),
 					deployment.CreatedAtLT(to),
 				),
 			).
 			WithRepo().
 			WithUser().
+			Order(ent.Desc(deployment.FieldCreatedAt)).
 			Offset(offset(page, perPage)).
 			Limit(perPage).
 			All(ctx)
@@ -49,13 +61,14 @@ func (s *Store) SearchDeployments(ctx context.Context, u *ent.User, ss []deploym
 		}).
 		Where(
 			deployment.And(
-				deployment.StatusIn(ss...),
+				statusIn(ss),
 				deployment.CreatedAtGTE(from),
 				deployment.CreatedAtLT(to),
 			),
 		).
 		WithRepo().
 		WithUser().
+		Order(ent.Desc(deployment.FieldCreatedAt)).
 		Offset(offset(page, perPage)).
 		Limit(perPage).
 		All(ctx)

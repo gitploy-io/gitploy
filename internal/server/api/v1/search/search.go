@@ -57,7 +57,9 @@ func (s *Search) SearchDeployments(c *gin.Context) {
 
 	// Validate query parameters.
 	for _, st := range strings.Split(statuses, ",") {
-		ss = append(ss, deployment.Status(st))
+		if st != "" {
+			ss = append(ss, deployment.Status(st))
+		}
 	}
 
 	if o, err = strconv.ParseBool(owned); err != nil {
@@ -124,7 +126,9 @@ func (s *Search) SearchApprovals(c *gin.Context) {
 
 	// Validate query parameters.
 	for _, st := range strings.Split(statuses, ",") {
-		ss = append(ss, approval.Status(st))
+		if st != "" {
+			ss = append(ss, approval.Status(st))
+		}
 	}
 
 	if f, err = time.Parse(time.RFC3339, from); err != nil {
