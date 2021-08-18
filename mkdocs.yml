@@ -1,6 +1,16 @@
 site_name: Gitploy
+site_url: https://doc.gitploy.io
 theme: 
   name: material
   palette:
     primary: deep purple
     accent: deep purple 
+nav:
+  - Home: index.md
+  - Concepts: 
+    - Overview: concepts/overview.md
+    - "deploy.yaml": concepts/deploy.yml.md
+  - Tasks:
+    - Installation: tasks/installation.md
+    - References: 
+      - GITPLOY_SERVER_HOST: tasks/references/GITPLOY_SERVER_HOST.md

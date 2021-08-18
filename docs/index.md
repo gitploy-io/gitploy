@@ -1,17 +1,3 @@
-# Welcome to MkDocs
+# Gitploy
 
-For full documentation visit [mkdocs.org](https://www.mkdocs.org).
-
-## Commands
-
-* `mkdocs new [dir-name]` - Create a new project.
-* `mkdocs serve` - Start the live-reloading docs server.
-* `mkdocs build` - Build the documentation site.
-* `mkdocs -h` - Print help message and exit.
-
-## Project layout
-
-    mkdocs.yml    # The configuration file.
-    docs/
-        index.md  # The documentation homepage.
-        ...       # Other markdown pages, images and other files.
+Gitploy helps **you can build the advanced deployment pipeline in minutes** based on [Github Deployments](https://docs.github.com/en/rest/reference/repos#deployments). Gitploy is responsible for building the deployment pipeline enables teams to deploy the application with lower risk and faster when to trigger a deployment. 
