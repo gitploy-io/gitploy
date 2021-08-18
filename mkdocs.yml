@@ -1,2 +1,6 @@
 site_name: Gitploy
-theme: readthedocs
+theme: 
+  name: material
+  palette:
+    primary: deep purple
+    accent: deep purple 
