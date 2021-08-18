@@ -4,7 +4,7 @@ import { shallowEqual } from "react-redux";
 import { useEffect } from "react";
 
 import { useAppSelector, useAppDispatch } from '../redux/hooks'
-import { repoSlice, init, activate } from '../redux/repo'
+import { init, activate } from '../redux/repo'
 
 import ActivateButton from "../components/ActivateButton"
 import Main from './Main'
@@ -13,20 +13,15 @@ import RepoDeploy from './RepoDeploy'
 import RepoRollabck from './RepoRollback'
 import RepoSettings from "./RepoSettings"
 
-const { actions } = repoSlice
-
-const hide = {
-    display: "none"
-}
-
 interface Params {
     namespace: string
     name: string
+    tab: string
 }
 
 export default function Repo(): JSX.Element {
-    const { namespace, name } = useParams<Params>()
-    const { key, repo } = useAppSelector(state => state.repo, shallowEqual)
+    const { namespace, name, tab } = useParams<Params>()
+    const { repo } = useAppSelector(state => state.repo, shallowEqual)
     const dispatch = useAppDispatch()
 
     useEffect(() => {
@@ -36,11 +31,6 @@ export default function Repo(): JSX.Element {
         f()
         // eslint-disable-next-line
     }, [dispatch])
-
-    const onClickMenu = (e: any) => {
-        const key: string = e.key
-        dispatch(actions.setKey(key))
-    }
 
     const onClickActivate = () => {
         dispatch(activate())
@@ -74,18 +64,18 @@ export default function Repo(): JSX.Element {
                 </Breadcrumb>
             </div>
             <div style={{"marginTop": "20px"}}>
-                <Menu mode="horizontal" onClick={onClickMenu} selectedKeys={[key]}>
+                <Menu mode="horizontal" selectedKeys={[(tab)? tab : "home"]}>
                     <Menu.Item key="home">
-                        Home
+                        <a href={`/${namespace}/${name}`}>Home</a>
                     </Menu.Item>
                     <Menu.Item key="deploy">
-                        Deploy
+                        <a href={`/${namespace}/${name}/deploy`}>Deploy</a>
                     </Menu.Item>
                     <Menu.Item key="rollback">
-                        Rollback
+                        <a href={`/${namespace}/${name}/rollback`}>Rollback</a>
                     </Menu.Item>
                     <Menu.Item key="settings">
-                        Settings
+                        <a href={`/${namespace}/${name}/settings`}>Settings</a>
                     </Menu.Item>
                 </Menu>
             </div>
@@ -93,18 +83,18 @@ export default function Repo(): JSX.Element {
                 <ActivateButton onClickActivate={onClickActivate}/>
             </div>
             <div style={styleContent}>
-                {(key === "home")? 
-                    <div><RepoHome /></div> : 
-                    <div style={hide}><RepoHome /></div>}
-                {(key === "deploy")?
-                    <div><RepoDeploy /></div> :
-                    <div style={hide}><RepoDeploy /></div>}
-                {(key === "rollback")?
-                    <div><RepoRollabck /></div> :
-                    <div style={hide}><RepoRollabck /></div>}
-                {(key === "settings")?
-                    <div><RepoSettings /></div> :
-                    <div style={hide}><RepoSettings /></div>}
+                <div>
+                    {(!tab || tab === "home") ? <RepoHome /> : null}
+                </div>
+                <div>
+                    {(tab === "deploy") ? <RepoDeploy /> : null}
+                </div> 
+                <div>
+                    {(tab === "rollback")? <RepoRollabck /> : null}
+                </div> 
+                <div>
+                    {(tab === "settings")? <RepoSettings /> : null}
+                </div> 
             </div>
         </Main>
     )
