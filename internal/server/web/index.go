@@ -15,18 +15,30 @@ import (
 
 type (
 	Web struct {
-		// SCM oAuth
-		c   *oauth2.Config
-		i   Interactor
+		// OAuth Configuration to sign in.
+		c *oauth2.Config
+
+		// Identify user as admin when user sign in.
+		adminUsers []string
+
+		i Interactor
+
 		log *zap.Logger
+	}
+
+	WebConfig struct {
+		Config     *oauth2.Config
+		Interactor Interactor
+		AdminUsers []string
 	}
 )
 
-func NewWeb(c *oauth2.Config, i Interactor) *Web {
+func NewWeb(c *WebConfig) *Web {
 	return &Web{
-		c:   c,
-		i:   i,
-		log: zap.L().Named("web"),
+		c:          c.Config,
+		adminUsers: c.AdminUsers,
+		i:          c.Interactor,
+		log:        zap.L().Named("web"),
 	}
 }
 
@@ -95,6 +107,7 @@ func (w *Web) Signin(c *gin.Context) {
 		Token:   t.AccessToken,
 		Refresh: t.RefreshToken,
 		Expiry:  t.Expiry,
+		Admin:   w.isAdmin(ru.Login),
 	}
 
 	if u, err = w.i.SaveUser(ctx, u); err != nil {
@@ -110,6 +123,16 @@ func (w *Web) Signin(c *gin.Context) {
 	)
 	c.SetCookie(gb.CookieSession, u.Hash, 0, "/", "", secure, httpOnly)
 	c.Redirect(http.StatusFound, "/")
+}
+
+func (w *Web) isAdmin(login string) bool {
+	for _, au := range w.adminUsers {
+		if login == au {
+			return true
+		}
+	}
+
+	return false
 }
 
 func (w *Web) SignOut(c *gin.Context) {
