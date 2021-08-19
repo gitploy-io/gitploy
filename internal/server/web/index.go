@@ -9,6 +9,7 @@ import (
 	"go.uber.org/zap"
 	"golang.org/x/oauth2"
 
+	"github.com/hanjunlee/gitploy/ent"
 	gb "github.com/hanjunlee/gitploy/internal/server/global"
 )
 
@@ -63,14 +64,14 @@ func (w *Web) Signin(c *gin.Context) {
 		return
 	}
 
-	token, err := w.c.Exchange(c, code)
+	t, err := w.c.Exchange(c, code)
 	if err != nil {
 		w.log.Error("failed to exchange the code.", zap.Error(err))
 		c.String(http.StatusInternalServerError, "There is an issue to exchange the code.")
 		return
 	}
 
-	if !token.Valid() {
+	if !t.Valid() {
 		w.log.Error("invalid token.", zap.Error(err))
 		c.String(http.StatusInternalServerError, "It's a invalid token.")
 		return
@@ -78,20 +79,25 @@ func (w *Web) Signin(c *gin.Context) {
 
 	ctx := c.Request.Context()
 
-	u, err := w.i.GetSCMUserByToken(ctx, token.AccessToken)
+	ru, err := w.i.GetRemoteUserByToken(ctx, t.AccessToken)
 	if err != nil {
 		w.log.Error("failed to fetch a user from SCM.", zap.Error(err))
 		c.String(http.StatusInternalServerError, "It has failed to fetch a user from SCM.")
 		return
 	}
 
-	// Set authorization token, and
-	// save the user with the token.
-	u.Token = token.AccessToken
-	u.Refresh = token.RefreshToken
-	u.Expiry = token.Expiry
+	// Synchronize from the remote user. It synchronizes
+	// user information and save generated OAuth token.
+	u := &ent.User{
+		ID:      ru.ID,
+		Login:   ru.Login,
+		Avatar:  ru.AvatarURL,
+		Token:   t.AccessToken,
+		Refresh: t.RefreshToken,
+		Expiry:  t.Expiry,
+	}
 
-	if u, err = w.i.SaveSCMUser(ctx, u); err != nil {
+	if u, err = w.i.SaveUser(ctx, u); err != nil {
 		w.log.Error("failed to save the user.", zap.Error(err))
 		c.String(http.StatusInternalServerError, "It has failed to save the user.")
 		return

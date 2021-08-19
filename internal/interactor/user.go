@@ -4,13 +4,14 @@ import (
 	"context"
 
 	"github.com/hanjunlee/gitploy/ent"
+	"github.com/hanjunlee/gitploy/vo"
 )
 
-func (i *Interactor) GetSCMUserByToken(ctx context.Context, token string) (*ent.User, error) {
+func (i *Interactor) GetRemoteUserByToken(ctx context.Context, token string) (*vo.RemoteUser, error) {
 	return i.SCM.GetUser(ctx, token)
 }
 
-func (i *Interactor) SaveSCMUser(ctx context.Context, u *ent.User) (*ent.User, error) {
+func (i *Interactor) SaveUser(ctx context.Context, u *ent.User) (*ent.User, error) {
 	_, err := i.FindUserByID(ctx, u.ID)
 	if ent.IsNotFound(err) {
 		u, _ = i.CreateUser(ctx, u)
