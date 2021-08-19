@@ -61,22 +61,22 @@ func newRouterConfig(c *Config) *server.RouterConfig {
 
 func newServerConfig(c *Config) *server.ServerConfig {
 	var (
-		webhookHost  string
-		WebhookProto string
+		proxyHost  string
+		proxyProto string
 	)
 	if c.ServerProxyHost != "" {
-		webhookHost = c.ServerProxyHost
-		WebhookProto = c.ServerProxyProto
+		proxyHost = c.ServerProxyHost
+		proxyProto = c.ServerProxyProto
 	} else {
-		webhookHost = c.ServerHost
-		WebhookProto = c.ServerProto
+		proxyHost = c.ServerHost
+		proxyProto = c.ServerProto
 	}
 
 	return &server.ServerConfig{
 		Host:          c.ServerHost,
 		Proto:         c.ServerProto,
-		WebhookHost:   webhookHost,
-		WebhookProto:  WebhookProto,
+		ProxyHost:     proxyHost,
+		ProxyProto:    proxyProto,
 		WebhookSecret: c.WebhookSecret,
 	}
 }

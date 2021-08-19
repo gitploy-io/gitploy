@@ -33,11 +33,11 @@ type (
 	}
 
 	ServerConfig struct {
-		Host  string
-		Proto string
+		Host       string
+		Proto      string
+		ProxyHost  string
+		ProxyProto string
 
-		WebhookHost   string
-		WebhookProto  string
 		WebhookSecret string
 	}
 
@@ -115,7 +115,7 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 		rm := repos.NewRepoMiddleware(c.Interactor)
 		r := repos.NewRepo(
 			repos.RepoConfig{
-				WebhookURL:    fmt.Sprintf("%s://%s/hooks", c.WebhookProto, c.WebhookHost),
+				WebhookURL:    fmt.Sprintf("%s://%s/hooks", c.ProxyHost, c.ProxyProto),
 				WebhookSecret: c.WebhookSecret,
 			},
 			c.Interactor,
