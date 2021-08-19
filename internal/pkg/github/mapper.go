@@ -10,11 +10,11 @@ import (
 	"github.com/hanjunlee/gitploy/vo"
 )
 
-func mapGithubUserToUser(u *github.User) *ent.User {
-	return &ent.User{
-		ID:     strconv.FormatInt(*u.ID, 10),
-		Login:  *u.Login,
-		Avatar: *u.AvatarURL,
+func mapGithubUserToUser(u *github.User) *vo.RemoteUser {
+	return &vo.RemoteUser{
+		ID:        strconv.FormatInt(*u.ID, 10),
+		Login:     *u.Login,
+		AvatarURL: *u.AvatarURL,
 	}
 }
 

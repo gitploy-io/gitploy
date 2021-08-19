@@ -19,6 +19,8 @@ type (
 		ServerProxyHost  string `split_words:"true"`
 		ServerProxyProto string `default:"https" split_words:"true"`
 		ServerProxyPort  string `default:"8081" split_words:"true"`
+
+		AdminUsers []string `split_words:"true"`
 	}
 
 	Store struct {

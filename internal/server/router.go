@@ -33,12 +33,12 @@ type (
 	}
 
 	ServerConfig struct {
-		Host       string
-		Proto      string
-		ProxyHost  string
-		ProxyProto string
-
+		Host          string
+		Proto         string
+		ProxyHost     string
+		ProxyProto    string
 		WebhookSecret string
+		AdminUsers    []string
 	}
 
 	SCMType string
@@ -93,7 +93,11 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 
 	root := r.Group("")
 	{
-		w := web.NewWeb(newGithubOauthConfig(c), c.Interactor)
+		w := web.NewWeb(&web.WebConfig{
+			Config:     newGithubOauthConfig(c),
+			AdminUsers: c.AdminUsers,
+			Interactor: c.Interactor,
+		})
 		root.GET("/", w.Index)
 		root.GET("/signin", w.Signin)
 		root.GET("/signout", w.SignOut)

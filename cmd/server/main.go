@@ -78,6 +78,7 @@ func newServerConfig(c *Config) *server.ServerConfig {
 		ProxyHost:     proxyHost,
 		ProxyProto:    proxyProto,
 		WebhookSecret: c.WebhookSecret,
+		AdminUsers:    c.AdminUsers,
 	}
 }
 

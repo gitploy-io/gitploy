@@ -68,7 +68,7 @@ type (
 	}
 
 	SCM interface {
-		GetUser(ctx context.Context, token string) (*ent.User, error)
+		GetUser(ctx context.Context, token string) (*vo.RemoteUser, error)
 		// TODO: fix type of return value to prevent using the ent package.
 		GetAllPermsWithRepo(ctx context.Context, token string) ([]*ent.Perm, error)
 

@@ -867,10 +867,10 @@ func (mr *MockSCMMockRecorder) GetTag(ctx, u, r, tag interface{}) *gomock.Call {
 }
 
 // GetUser mocks base method.
-func (m *MockSCM) GetUser(ctx context.Context, token string) (*ent.User, error) {
+func (m *MockSCM) GetUser(ctx context.Context, token string) (*vo.RemoteUser, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetUser", ctx, token)
-	ret0, _ := ret[0].(*ent.User)
+	ret0, _ := ret[0].(*vo.RemoteUser)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
