@@ -3,6 +3,7 @@ package server
 import (
 	"fmt"
 	"net/http"
+	"os"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -90,18 +91,6 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 	}))
 	sm := mw.NewSessMiddleware(c.Interactor)
 	r.Use(sm.User())
-
-	root := r.Group("")
-	{
-		w := web.NewWeb(&web.WebConfig{
-			Config:     newGithubOauthConfig(c),
-			AdminUsers: c.AdminUsers,
-			Interactor: c.Interactor,
-		})
-		root.GET("/", w.Index)
-		root.GET("/signin", w.Signin)
-		root.GET("/signout", w.SignOut)
-	}
 
 	v1 := r.Group("/api/v1")
 	{
@@ -205,6 +194,35 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 			// Check Slack is enabled or not.
 			slackapi.GET("/ping", func(c *gin.Context) { c.Status(http.StatusOK) })
 		}
+	}
+
+	root := r.Group("")
+	{
+		w := web.NewWeb(&web.WebConfig{
+			Config:     newGithubOauthConfig(c),
+			AdminUsers: c.AdminUsers,
+			Interactor: c.Interactor,
+		})
+
+		if _, err := os.Stat("./index.html"); err == nil {
+			r.LoadHTMLFiles("./index.html")
+			root.GET("/", w.IndexHTML)
+		} else {
+			root.GET("/", w.IndexString)
+		}
+
+		root.GET("/signin", w.Signin)
+		root.GET("/signout", w.SignOut)
+
+		// Static files
+		// Files in ui/public
+		r.StaticFile("/favicon.ico", "./favicon.ico")
+		r.StaticFile("/logo192.png", "./logo192.png")
+		r.StaticFile("/logo512.png", "./logo512.png")
+		r.StaticFile("/manifest.json", "./manifest.json")
+		r.StaticFile("/robots.txt", "./robots.txt")
+		r.Static("/static", "./static")
+		r.NoRoute(w.IndexHTML)
 	}
 
 	return r
