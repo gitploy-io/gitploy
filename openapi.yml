@@ -1565,7 +1565,8 @@ components:
     
   responses:
     400BadRequest:
-      description: Bad request
+      description: |
+        The request could not be understood by the server due to malformed syntax.
       content:
         application/json:
           schema:
@@ -1600,7 +1601,8 @@ components:
             $ref: '#/components/schemas/Error'
 
     422UnprocessableEntity:
-      description: Validation Failed
+      description: |
+        the syntax of the request entity is correct but was unable to process the contained instructions. 
       content:
         application/json:
           schema:
