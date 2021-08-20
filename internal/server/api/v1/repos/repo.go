@@ -1,8 +1,8 @@
 package repos
 
 import (
+	"fmt"
 	"net/http"
-	"net/url"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -21,7 +21,9 @@ type (
 	}
 
 	RepoConfig struct {
-		WebhookURL    string
+		ProxyProto    string
+		ProxyHost     string
+		WebhookPath   string
 		WebhookSecret string
 	}
 
@@ -91,12 +93,14 @@ func (r *Repo) UpdateRepo(c *gin.Context) {
 	// Create a new webhook when it activates the repository,
 	// in contrast it remove the webhook when it deactivates.
 	if p.Active && !re.Active {
+		url := fmt.Sprintf("%s://%s%s", r.ProxyProto, r.ProxyHost, r.WebhookPath)
+
 		if re, err = r.i.ActivateRepo(ctx, u, re, &vo.WebhookConfig{
-			URL:         r.WebhookURL,
+			URL:         url,
 			Secret:      r.WebhookSecret,
-			InsecureSSL: isSecure(r.WebhookURL),
+			InsecureSSL: isSecure(r.ProxyProto),
 		}); err != nil {
-			r.log.Error("failed to activate the repo", zap.Error(err))
+			r.log.Error("It has failed to activate the repo.", zap.Error(err), zap.String("url", url))
 			gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to activate the repository.")
 			return
 		}
@@ -158,7 +162,6 @@ func atoi(s string) int {
 	return i
 }
 
-func isSecure(raw string) bool {
-	u, _ := url.Parse(raw)
-	return u.Scheme == "https"
+func isSecure(proto string) bool {
+	return proto == "https"
 }

@@ -76,6 +76,7 @@ func TestHook_HandleHook(t *testing.T) {
 		}
 		req, _ := http.NewRequest("POST", "/hooks", json)
 		req.Header.Set(headerGithubDelivery, "72d3162e")
+		req.Header.Set(headerGtihubEvent, "deployment_status")
 
 		w := httptest.NewRecorder()
 		r.ServeHTTP(w, req)
