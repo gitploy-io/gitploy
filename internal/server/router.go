@@ -119,7 +119,9 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 		rm := repos.NewRepoMiddleware(c.Interactor)
 		r := repos.NewRepo(
 			repos.RepoConfig{
-				WebhookURL:    fmt.Sprintf("%s://%s/hooks", c.ProxyHost, c.ProxyProto),
+				ProxyHost:     c.ProxyHost,
+				ProxyProto:    c.ProxyProto,
+				WebhookPath:   "/hooks",
 				WebhookSecret: c.WebhookSecret,
 			},
 			c.Interactor,
