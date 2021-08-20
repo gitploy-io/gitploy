@@ -16,12 +16,12 @@ type (
 		Name string `json:"name" yaml:"name"`
 
 		// Github parameters of deployment.
-		Task                  string    `json:"task" yaml:"task" default:"deploy"`
-		Description           string    `json:"description" yaml:"description" default:"Gitploy starts to deploy."`
-		AutoMerge             bool      `json:"auto_merge" default:"true"`
-		RequiredContexts      *[]string `json:"required_contexts,omitempty" yaml:"required_contexts"`
-		Payload               string    `json:"payload" yaml:"payload"`
-		ProductionEnvironment bool      `json:"production_environment" yaml:"production_environment"`
+		Task                  string   `json:"task" yaml:"task" default:"deploy"`
+		Description           string   `json:"description" yaml:"description" default:"Gitploy starts to deploy."`
+		AutoMerge             bool     `json:"auto_merge" default:"true"`
+		RequiredContexts      []string `json:"required_contexts,omitempty" yaml:"required_contexts"`
+		Payload               string   `json:"payload" yaml:"payload"`
+		ProductionEnvironment bool     `json:"production_environment" yaml:"production_environment"`
 
 		// Approval is the configuration of Approval,
 		// It is disabled when it is empty.

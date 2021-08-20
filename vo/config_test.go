@@ -29,7 +29,7 @@ envs:
 					Task:                  "deploy",
 					Description:           "Gitploy starts to deploy.",
 					AutoMerge:             true,
-					RequiredContexts:      &[]string{"github-action"},
+					RequiredContexts:      []string{"github-action"},
 					Payload:               "",
 					ProductionEnvironment: false,
 					Approval:              nil,
