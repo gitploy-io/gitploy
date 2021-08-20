@@ -42,14 +42,24 @@ func NewWeb(c *WebConfig) *Web {
 	}
 }
 
-func (w *Web) Index(c *gin.Context) {
+func (w *Web) IndexHTML(c *gin.Context) {
 	_, ok := c.Get(gb.KeyUser)
 	if !ok {
 		w.redirectToAuth(c)
 		return
 	}
 
-	c.String(http.StatusOK, "OK")
+	c.HTML(http.StatusOK, "index.html", nil)
+}
+
+func (w *Web) IndexString(c *gin.Context) {
+	_, ok := c.Get(gb.KeyUser)
+	if !ok {
+		w.redirectToAuth(c)
+		return
+	}
+
+	c.String(http.StatusOK, "Ok")
 }
 
 func (w *Web) redirectToAuth(c *gin.Context) {

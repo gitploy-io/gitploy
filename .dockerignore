@@ -1,0 +1,15 @@
+# server
+.editorconfig
+.git
+docs/
+LICENSE
+README.md
+.env
+falcon9.db
+
+# ui
+ui/node_modules
+ui/build
+ui/dist
+ui/.env.development.local
+ui/.env
