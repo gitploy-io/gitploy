@@ -20,7 +20,7 @@ func (g *Github) CreateRemoteDeployment(ctx context.Context, u *ent.User, r *ent
 			Task:                  github.String(e.Task),
 			Description:           github.String(e.Description),
 			AutoMerge:             github.Bool(e.AutoMerge),
-			RequiredContexts:      e.RequiredContexts,
+			RequiredContexts:      &e.RequiredContexts,
 			Payload:               github.String(e.Payload),
 			ProductionEnvironment: github.Bool(e.ProductionEnvironment),
 		})

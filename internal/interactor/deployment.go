@@ -81,7 +81,7 @@ func (i *Interactor) CreateRemoteDeployment(ctx context.Context, u *ent.User, re
 	if d.IsRollback {
 		e.Task = "rollback"
 		e.AutoMerge = false
-		e.RequiredContexts = &[]string{}
+		e.RequiredContexts = []string{}
 	}
 
 	rd, err := i.SCM.CreateRemoteDeployment(ctx, u, re, d, e)
