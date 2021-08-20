@@ -31,6 +31,7 @@ const (
 	// Github webhook payload
 	// https://docs.github.com/en/developers/webhooks-and-events/webhooks/webhook-events-and-payloads
 	headerGithubDelivery  = "X-GitHub-Delivery"
+	headerGtihubEvent     = "X-GitHub-Event"
 	headerGithubSignature = "X-Hub-Signature-256"
 )
 
@@ -55,6 +56,11 @@ func (h *Hooks) HandleHook(c *gin.Context) {
 
 func (h *Hooks) handleGithubHook(c *gin.Context) {
 	ctx := c.Request.Context()
+
+	if !isGithubDeploymentStatusEvent(c) {
+		c.String(http.StatusOK, "It is not deployment status event.")
+		return
+	}
 
 	e := &github.DeploymentStatusEvent{}
 	if err := c.ShouldBindBodyWith(e, binding.JSON); err != nil {
@@ -118,6 +124,10 @@ func (h *Hooks) handleGithubHook(c *gin.Context) {
 
 func isFromGithub(c *gin.Context) bool {
 	return c.GetHeader(headerGithubDelivery) != ""
+}
+
+func isGithubDeploymentStatusEvent(c *gin.Context) bool {
+	return c.GetHeader(headerGtihubEvent) == "deployment_status"
 }
 
 func mapGithubDeploymentStatus(gds *github.DeploymentStatusEvent) *ent.DeploymentStatus {
