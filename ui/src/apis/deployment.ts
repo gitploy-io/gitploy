@@ -10,8 +10,9 @@ import {
     DeploymentStatus,
     DeploymentStatusEnum, 
     Commit,
-    HttpRequestError, 
-    HttpUnprocessableEntityError 
+    HttpUnprocessableEntityError, 
+    HttpForbiddenError,
+    HttpConflictError
 } from "../models"
 import { UserData, mapDataToUser } from "./user"
 import { RepoData, mapDataToRepo } from "./repo"
@@ -202,9 +203,16 @@ export const createDeployment = async (repoId: string, type: DeploymentType = De
         method: "POST",
         body: body,
     })
-    if (response.status !== StatusCodes.CREATED) {
-        throw new HttpRequestError(response.status, "It has failed to deploy.")
-    } 
+    if (response.status === StatusCodes.FORBIDDEN) {
+        const message = await response.json().then(data => data.message)
+        throw new HttpForbiddenError(message)
+    } else if (response.status === StatusCodes.UNPROCESSABLE_ENTITY) {
+        const message = await response.json().then(data => data.message)
+        throw new HttpUnprocessableEntityError(message)
+    } else if (response.status === StatusCodes.CONFLICT) {
+        const message = await response.json().then(data => data.message)
+        throw new HttpConflictError(message)
+    }
 
     const deployment = response
         .json()
@@ -222,10 +230,13 @@ export const updateDeploymentStatusCreated = async (id: string, number: number):
         method: "PATCH",
         body: body,
     })
-    if (response.status === StatusCodes.UNPROCESSABLE_ENTITY) {
-        const { message } = await response.json()
+    if (response.status === StatusCodes.FORBIDDEN) {
+        const message = await response.json().then(data => data.message)
+        throw new HttpForbiddenError(message)
+    } else if (response.status === StatusCodes.UNPROCESSABLE_ENTITY) {
+        const message = await response.json().then(data => data.message)
         throw new HttpUnprocessableEntityError(message)
-    } 
+    }
 
     const deployment = response
         .json()
@@ -239,8 +250,15 @@ export const rollbackDeployment = async (repoId: string, number: number): Promis
         credentials: 'same-origin',
         method: "POST",
     })
-    if (response.status !== StatusCodes.CREATED) {
-        throw new HttpRequestError(response.status, "It has failed to rollback.")
+    if (response.status === StatusCodes.FORBIDDEN) {
+        const message = await response.json().then(data => data.message)
+        throw new HttpForbiddenError(message)
+    } else if (response.status === StatusCodes.UNPROCESSABLE_ENTITY) {
+        const message = await response.json().then(data => data.message)
+        throw new HttpUnprocessableEntityError(message)
+    } else if (response.status === StatusCodes.CONFLICT) {
+        const message = await response.json().then(data => data.message)
+        throw new HttpConflictError(message)
     }
 
     const deployment = response

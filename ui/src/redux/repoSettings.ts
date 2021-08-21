@@ -42,7 +42,11 @@ export const save = createAsyncThunk<Repo, RepoPayload, { state: {repoSettings: 
             message.success("Success to save.", 3)
             return nr
         } catch(e) {
-            message.error("It has failed to save.", 3)
+            if (e instanceof HttpForbiddenError) {
+                message.error("Only admin permission can update.", 3)
+            } else {
+                message.error("It has failed to save.", 3)
+            }
             return rejectWithValue(e)
         }
     },

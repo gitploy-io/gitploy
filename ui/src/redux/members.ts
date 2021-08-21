@@ -28,7 +28,7 @@ export const fetchUsers = createAsyncThunk<User[], void, { state: {members: Memb
             return users
         } catch(e) {
             if (e instanceof HttpForbiddenError) {
-                message.error(e.message, 3)
+                message.error("Only admin can access.", 3)
             }
 
             return rejectWithValue(e)
@@ -44,7 +44,7 @@ export const updateUser = createAsyncThunk<User, {user: User, admin: boolean}, {
             return u
         } catch(e) {
             if (e instanceof HttpForbiddenError) {
-                message.error(e.message, 3)
+                message.error("Only admin can access.", 3)
             }
 
             return rejectWithValue(e)
@@ -60,7 +60,7 @@ export const deleteUser = createAsyncThunk<string, User, { state: {members: Memb
             return user.id
         } catch(e) {
             if (e instanceof HttpForbiddenError) {
-                message.error(e.message, 3)
+                message.error("Only admin can access.", 3)
             }
 
             return rejectWithValue(e)

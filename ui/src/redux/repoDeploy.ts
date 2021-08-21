@@ -13,7 +13,10 @@ import {
     Status,
     DeploymentType, 
     RequestStatus, 
-    HttpNotFoundError 
+    HttpNotFoundError, 
+    HttpForbiddenError,
+    HttpConflictError,
+    HttpUnprocessableEntityError
 } from '../models'
 import { 
     searchRepo, 
@@ -280,7 +283,13 @@ export const deploy = createAsyncThunk<void, void, { state: {repoDeploy: RepoDep
             })
             message.success("It starts to deploy.", 3)
         } catch(e) {
-            message.error("It has failed to deploy.", 3)
+            if (e instanceof HttpForbiddenError) {
+                message.error("Only write permission can deploy.", 3)
+            } else if (e instanceof HttpUnprocessableEntityError)  {
+                message.error("It's unprocessable entity.", 3)
+            } else if (e instanceof HttpConflictError) {
+                message.error("It has conflicted, please retry it.", 3)
+            }
             return rejectWithValue(e)
         }
     }

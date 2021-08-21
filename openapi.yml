@@ -141,6 +141,12 @@ paths:
       responses:
         '200':
           description: Ok
+        '401': 
+          $ref: '#/components/responses/401Unauthorized'
+        '403': 
+          $ref: '#/components/responses/403Forbidden'
+        '500':
+          $ref: '#/components/responses/500InternalError'
   /repos/{id}/commits:
     get:
       tags:
