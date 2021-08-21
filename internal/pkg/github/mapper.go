@@ -41,6 +41,9 @@ func splitNamespaceName(fullName string) (string, string) {
 func mapGithubPermToPerm(perms map[string]bool) *ent.Perm {
 	var p perm.RepoPerm
 
+	// Github represent the permission of the repository with these enums:
+	// "admin", "push", and "pull".
+	// https://docs.github.com/en/rest/reference/repos#list-repositories-for-the-authenticated-user
 	if admin, ok := perms["admin"]; ok && admin {
 		p = perm.RepoPermAdmin
 	} else if push, ok := perms["push"]; ok && push {
