@@ -1,6 +1,8 @@
+import { StatusCodes } from "http-status-codes"
+
 import { _fetch } from "./_base"
 import { instance, headers } from "./setting"
-import { User, ChatUser, RateLimit } from "../models"
+import { User, ChatUser, RateLimit, HttpForbiddenError } from "../models"
 
 export interface UserData {
     id: string
@@ -59,11 +61,18 @@ export const mapDataToRateLimit = (data: RateLimitData): RateLimit => {
     }
 }
 
+/**
+ * Only admin can access to users API.
+*/
 export const listUsers = async (q: string, page = 1, perPage = 30): Promise<User[]> => {
     const res = await _fetch(`${instance}/api/v1/users?q=${q}&page=${page}&per_page=${perPage}`, {
         headers,
         credentials: "same-origin",
     })
+    if (res.status === StatusCodes.FORBIDDEN) {
+        const message = await res.json().then(data => data.message)
+        throw new HttpForbiddenError(message)
+    }
 
     const users = await res
         .json()
@@ -73,24 +82,34 @@ export const listUsers = async (q: string, page = 1, perPage = 30): Promise<User
 }
 
 export const updateUser = async (id: string, payload: {admin: boolean}): Promise<User> => {
-    const user: User = await _fetch(`${instance}/api/v1/users/${id}`, {
+    const res = await _fetch(`${instance}/api/v1/users/${id}`, {
         headers,
         credentials: "same-origin",
         method: "PATCH",
         body: JSON.stringify(payload)
     }) 
-        .then(res => res.json())
+    if (res.status === StatusCodes.FORBIDDEN) {
+        const message = await res.json().then(data => data.message)
+        throw new HttpForbiddenError(message)
+    }
+
+    const user:User = await res
+        .json()
         .then((data: UserData) => mapDataToUser(data))
 
     return user
 }
 
 export const deleteUser = async (id: string): Promise<void> => {
-    await _fetch(`${instance}/api/v1/users/${id}`, {
+    const res = await _fetch(`${instance}/api/v1/users/${id}`, {
         headers,
         credentials: "same-origin",
         method: "DELETE"
     })
+    if (res.status === StatusCodes.FORBIDDEN) {
+        const message = await res.json().then(data => data.message)
+        throw new HttpForbiddenError(message)
+    }
 }
 
 export const getMe = async (): Promise<User> => {

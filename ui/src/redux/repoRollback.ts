@@ -19,7 +19,9 @@ import {
     Env,
     RequestStatus, 
     HttpNotFoundError, 
-    HttpRequestError 
+    HttpForbiddenError,
+    HttpUnprocessableEntityError,
+    HttpConflictError
 } from "../models"
 
 const page = 1
@@ -133,12 +135,13 @@ export const rollback = createAsyncThunk<void, void, { state: {repoRollback: Rep
             })
             message.success("It starts to rollback.", 3)
         } catch(e) {
-            if (e instanceof HttpRequestError && e.code === StatusCodes.CONFLICT) {
-                message.error("The rollback is conflicted, please retry.", 3)
-                return rejectWithValue(e)
+            if (e instanceof HttpForbiddenError) {
+                message.error("Only write permission can deploy.", 3)
+            } else if (e instanceof HttpUnprocessableEntityError)  {
+                message.error("It's unprocessable entity.", 3)
+            } else if (e instanceof HttpConflictError) {
+                message.error("It has conflicted, please retry it.", 3)
             }
-            
-            message.error("It has failed to rollback.", 3)
             return rejectWithValue(e)
         }
     }

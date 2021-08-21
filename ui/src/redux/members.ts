@@ -1,8 +1,8 @@
 import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit"
-
-import { User } from "../models"
-import { listUsers, updateUser as _updateUser, deleteUser as _deleteUser } from "../apis"
 import { message } from "antd"
+
+import { User, HttpForbiddenError } from "../models"
+import { listUsers, updateUser as _updateUser, deleteUser as _deleteUser } from "../apis"
 
 export const perPage = 30
 
@@ -27,6 +27,10 @@ export const fetchUsers = createAsyncThunk<User[], void, { state: {members: Memb
             const users = await listUsers(q, page)
             return users
         } catch(e) {
+            if (e instanceof HttpForbiddenError) {
+                message.error("Only admin can access.", 3)
+            }
+
             return rejectWithValue(e)
         }
     },
@@ -39,6 +43,10 @@ export const updateUser = createAsyncThunk<User, {user: User, admin: boolean}, {
             const u = await _updateUser(user.id, {admin})
             return u
         } catch(e) {
+            if (e instanceof HttpForbiddenError) {
+                message.error("Only admin can access.", 3)
+            }
+
             return rejectWithValue(e)
         }
     },
@@ -51,7 +59,10 @@ export const deleteUser = createAsyncThunk<string, User, { state: {members: Memb
             await _deleteUser(user.id)
             return user.id
         } catch(e) {
-            message.error(`Failed to delete.`, 3000)
+            if (e instanceof HttpForbiddenError) {
+                message.error("Only admin can access.", 3)
+            }
+
             return rejectWithValue(e)
         }
     },

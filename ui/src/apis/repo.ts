@@ -72,16 +72,22 @@ export const updateRepo = async (repo: Repo, payload: RepoPayload): Promise<Repo
         "config_path": payload.configPath,
         "active": repo.active
     }
-    repo = await _fetch(`${instance}/api/v1/repos/${repo.id}`, {
+    const res = await _fetch(`${instance}/api/v1/repos/${repo.id}`, {
         headers,
         credentials: 'same-origin',
         method: "PATCH",
         body: JSON.stringify(body)
     })
-        .then(response => response.json())
+    if (res.status === StatusCodes.FORBIDDEN) {
+        const message = await res.json().then(data => data.message)
+        throw new HttpForbiddenError(message)
+    }
+
+    const ret: Repo = await res
+        .json()
         .then((repo: any) => (mapDataToRepo(repo)))
 
-    return repo
+    return ret
 }
 
 export const activateRepo = async (repo: Repo): Promise<Repo> => {
@@ -95,9 +101,9 @@ export const activateRepo = async (repo: Repo): Promise<Repo> => {
         method: "PATCH",
         body: JSON.stringify(body)
     })
-
     if (response.status === StatusCodes.FORBIDDEN) {
-        throw new HttpForbiddenError("Only admin permssion can access.")
+        const message = await response.json().then(data => data.message)
+        throw new HttpForbiddenError(message)
     }
 
     repo = await response
@@ -117,9 +123,9 @@ export const deactivateRepo = async (repo: Repo): Promise<Repo> => {
         method: "PATCH",
         body: JSON.stringify(body)
     })
-
     if (response.status === StatusCodes.FORBIDDEN) {
-        throw new HttpForbiddenError("Only admin permssion can access.")
+        const message = await response.json().then(data => data.message)
+        throw new HttpForbiddenError(message)
     }
 
     repo = await response

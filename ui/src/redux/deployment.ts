@@ -9,6 +9,7 @@ import {
     Approval, 
     RequestStatus, 
     HttpNotFoundError, 
+    HttpForbiddenError,
     HttpUnprocessableEntityError 
 } from "../models"
 import { 
@@ -105,10 +106,12 @@ export const deployToSCM = createAsyncThunk<Deployment, void, { state: {deployme
 
             return deployment
         } catch(e) { 
-            if (e instanceof HttpUnprocessableEntityError) {
-                message.error(`Deploy Failure: ${e.message}`)
-                return rejectWithValue(e)
-            }
+            if (e instanceof HttpForbiddenError) {
+                message.error("Only write permission can deploy.", 3)
+            } else if (e instanceof HttpUnprocessableEntityError)  {
+                message.error("It's unprocessable entity.", 3)
+            } 
+
             return rejectWithValue(e)
         }
     },
