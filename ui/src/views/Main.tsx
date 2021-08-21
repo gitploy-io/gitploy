@@ -16,7 +16,6 @@ export default function Main(props: any) {
     const { 
         available, 
         authorized, 
-        permitted,
         user,
         deployments,
         approvals
@@ -70,13 +69,6 @@ export default function Main(props: any) {
             title="Unauthorized Error"
             subTitle="Sorry, you are not authorized."
             extra={[<Button key="console" type="primary" href="/">Sign in</Button>]}
-        />
-    } else if (!permitted) {
-        content = <Result
-            style={{paddingTop: '120px'}}
-            status="warning"
-            title="Permission Error"
-            subTitle="Sorry, you are not permitted. Check your permission."
         />
     } else {
         content = props.children

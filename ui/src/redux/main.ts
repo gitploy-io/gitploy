@@ -1,12 +1,11 @@
 import { createSlice, Middleware, MiddlewareAPI, isRejectedWithValue, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit"
 
-import { User, Deployment, DeploymentStatusEnum, Approval, ApprovalStatus, HttpInternalServerError, HttpUnauthorizedError, HttpForbiddenError,  } from "../models"
+import { User, Deployment, DeploymentStatusEnum, Approval, ApprovalStatus, HttpInternalServerError, HttpUnauthorizedError } from "../models"
 import { getMe, searchDeployments as _searchDeployments, searchApprovals as _searchApprovals } from "../apis"
 
 interface MainState {
     available: boolean
     authorized: boolean
-    permitted: boolean
     user?: User 
     deployments: Deployment[]
     approvals: Approval[]
@@ -15,7 +14,6 @@ interface MainState {
 const initialState: MainState = {
     available: true,
     authorized: true,
-    permitted: true,
     deployments: [],
     approvals: []
 }
@@ -42,9 +40,7 @@ export const apiMiddleware: Middleware = (api: MiddlewareAPI) => (
         api.dispatch(mainSlice.actions.setAuthorized(false))
     } else if (action.payload instanceof HttpInternalServerError) {
         api.dispatch(mainSlice.actions.setAvailable(false))
-    } else if (action.payload instanceof HttpForbiddenError) {
-        api.dispatch(mainSlice.actions.setPermitted(false))
-    }
+    } 
 
     next(action)
 }
@@ -94,9 +90,6 @@ export const mainSlice = createSlice({
         },
         setAuthorized: (state, action: PayloadAction<boolean>) => {
             state.authorized = action.payload
-        },
-        setPermitted: (state, action: PayloadAction<boolean>) => {
-            state.permitted = action.payload
         },
         handleDeploymentEvent: (state, action: PayloadAction<Deployment>) => {
             const user = state.user
