@@ -10,6 +10,7 @@ nav:
   - Concepts: 
     - Overview: concepts/overview.md
     - "deploy.yaml": concepts/deploy.yml.md
+    - Permission: concepts/permission.md
   - Tasks:
     - Installation: tasks/installation.md
     - References: 
