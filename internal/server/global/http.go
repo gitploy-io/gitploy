@@ -11,3 +11,9 @@ func ErrorResponse(c *gin.Context, httpCode int, message string) {
 		"message": message,
 	})
 }
+
+func AbortWithErrorResponse(c *gin.Context, httpCode int, message string) {
+	c.AbortWithStatusJSON(httpCode, map[string]string{
+		"message": message,
+	})
+}
