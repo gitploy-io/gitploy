@@ -11,7 +11,7 @@ nav:
     - Overview: concepts/overview.md
     - "deploy.yaml": concepts/deploy.yml.md
     - Permission: concepts/permission.md
+    - License: concepts/license.md
   - Tasks:
     - Installation: tasks/installation.md
-    - References: 
-      - GITPLOY_SERVER_HOST: tasks/references/GITPLOY_SERVER_HOST.md
+  - References: references/index.md
