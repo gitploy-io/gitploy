@@ -18,6 +18,7 @@ type (
 		FindUserByID(ctx context.Context, id string) (*ent.User, error)
 		FindUserByHash(ctx context.Context, hash string) (*ent.User, error)
 		FindUserByLogin(ctx context.Context, login string) (*ent.User, error)
+		CountUsers(context.Context) (int, error)
 		CreateUser(ctx context.Context, u *ent.User) (*ent.User, error)
 		UpdateUser(ctx context.Context, u *ent.User) (*ent.User, error)
 		DeleteUser(ctx context.Context, u *ent.User) error

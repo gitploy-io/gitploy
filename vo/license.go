@@ -17,8 +17,8 @@ type (
 	License struct {
 		Kind        LicenseKind `json:"kind"`
 		MemberCount int         `json:"member_count"`
-		MemberLimit int         `json:"memeber_limit,omitemtpy"`
-		ExpiredAt   time.Time   `json:"expired_at,omitemtpy"`
+		MemberLimit int         `json:"memeber_limit"`
+		ExpiredAt   time.Time   `json:"expired_at"`
 	}
 
 	// SigningData marshal and unmarshal the content of license.
@@ -32,6 +32,7 @@ func NewTrialLicense(cnt int) *License {
 	return &License{
 		Kind:        LicenseKindTrial,
 		MemberCount: cnt,
+		MemberLimit: TrialMemberLimit,
 	}
 }
 

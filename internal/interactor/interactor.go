@@ -2,6 +2,7 @@ package interactor
 
 import (
 	evbus "github.com/asaskevich/EventBus"
+	"github.com/hanjunlee/gitploy/vo"
 	"go.uber.org/zap"
 )
 
@@ -10,6 +11,10 @@ type (
 		// Host and protocol of server for Log URL of deployment status.
 		ServerHost  string
 		ServerProto string
+
+		// License
+		licenseKey string
+		license    *vo.License
 
 		Store
 		SCM
@@ -25,6 +30,8 @@ type (
 		ServerHost  string
 		ServerProto string
 
+		LicenseKey string
+
 		Store
 		SCM
 	}
@@ -34,6 +41,7 @@ func NewInteractor(c *InteractorConfig) *Interactor {
 	i := &Interactor{
 		ServerHost:  c.ServerHost,
 		ServerProto: c.ServerProto,
+		licenseKey:  c.LicenseKey,
 		Store:       c.Store,
 		SCM:         c.SCM,
 		stopCh:      make(chan struct{}),
