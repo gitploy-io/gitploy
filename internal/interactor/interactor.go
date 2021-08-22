@@ -2,7 +2,6 @@ package interactor
 
 import (
 	evbus "github.com/asaskevich/EventBus"
-	"github.com/hanjunlee/gitploy/vo"
 	"go.uber.org/zap"
 )
 
@@ -14,7 +13,6 @@ type (
 
 		// License
 		licenseKey string
-		license    *vo.License
 
 		Store
 		SCM

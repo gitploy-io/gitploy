@@ -8,10 +8,6 @@ import (
 )
 
 func (i *Interactor) GetLicense(ctx context.Context) (*vo.License, error) {
-	if i.license != nil {
-		return i.license, nil
-	}
-
 	var (
 		cnt int
 		d   *vo.SigningData
@@ -23,14 +19,14 @@ func (i *Interactor) GetLicense(ctx context.Context) (*vo.License, error) {
 	}
 
 	if i.licenseKey == "" {
-		i.license = vo.NewTrialLicense(cnt)
-		return i.license, nil
+		lic := vo.NewTrialLicense(cnt)
+		return lic, nil
 	}
 
 	if d, err = license.Decode(i.licenseKey); err != nil {
 		return nil, err
 	}
 
-	i.license = vo.NewStandardLicense(cnt, d)
-	return i.license, nil
+	lic := vo.NewStandardLicense(cnt, d)
+	return lic, nil
 }
