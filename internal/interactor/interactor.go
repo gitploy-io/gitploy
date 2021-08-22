@@ -11,6 +11,9 @@ type (
 		ServerHost  string
 		ServerProto string
 
+		// License
+		licenseKey string
+
 		Store
 		SCM
 
@@ -25,6 +28,8 @@ type (
 		ServerHost  string
 		ServerProto string
 
+		LicenseKey string
+
 		Store
 		SCM
 	}
@@ -34,6 +39,7 @@ func NewInteractor(c *InteractorConfig) *Interactor {
 	i := &Interactor{
 		ServerHost:  c.ServerHost,
 		ServerProto: c.ServerProto,
+		licenseKey:  c.LicenseKey,
 		Store:       c.Store,
 		SCM:         c.SCM,
 		stopCh:      make(chan struct{}),

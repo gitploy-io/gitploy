@@ -9,13 +9,29 @@ paths:
   /sync:
     post:
       tags:
-        - common
+        - Sync
       summary: Synchronize with SCM.
       responses:
         '200':
           description: OK
         '401': 
           $ref: '#/components/responses/401Unauthorized'
+        '402':
+          $ref: '#/components/responses/402PaymentRequired'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+  /license:
+    get:
+      tags:
+        - License
+      summary: Return license
+      responses:
+        '200':
+          description: Licnese
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/License'
         '500':
           $ref: '#/components/responses/500InternalError'
   /repos:
@@ -57,6 +73,8 @@ paths:
           $ref: '#/components/responses/400BadRequest'
         '401': 
           $ref: '#/components/responses/401Unauthorized'
+        '402':
+          $ref: '#/components/responses/402PaymentRequired'
         '500':
           $ref: '#/components/responses/500InternalError'
   /repos/search:
@@ -84,6 +102,8 @@ paths:
                 $ref: '#/components/schemas/Repository'
         '401': 
           $ref: '#/components/responses/401Unauthorized'
+        '402':
+          $ref: '#/components/responses/402PaymentRequired'
         '403': 
           $ref: '#/components/responses/403Forbidden'
         '404': 
@@ -111,6 +131,8 @@ paths:
                 $ref: '#/components/schemas/Repository'
         '401': 
           $ref: '#/components/responses/401Unauthorized'
+        '402':
+          $ref: '#/components/responses/402PaymentRequired'
         '403': 
           $ref: '#/components/responses/403Forbidden'
         '500':
@@ -143,6 +165,8 @@ paths:
           description: Ok
         '401': 
           $ref: '#/components/responses/401Unauthorized'
+        '402':
+          $ref: '#/components/responses/402PaymentRequired'
         '403': 
           $ref: '#/components/responses/403Forbidden'
         '500':
@@ -188,6 +212,8 @@ paths:
                 $ref: '#/components/schemas/Commits'
         '401': 
           $ref: '#/components/responses/401Unauthorized'
+        '402':
+          $ref: '#/components/responses/402PaymentRequired'
         '403': 
           $ref: '#/components/responses/403Forbidden'
         '500':
@@ -219,6 +245,8 @@ paths:
                 $ref: '#/components/schemas/Commit'
         '401': 
           $ref: '#/components/responses/401Unauthorized'
+        '402':
+          $ref: '#/components/responses/402PaymentRequired'
         '403': 
           $ref: '#/components/responses/403Forbidden'
         '404':
@@ -257,6 +285,8 @@ paths:
                     $ref: '#/components/schemas/Statuses'
         '401': 
           $ref: '#/components/responses/401Unauthorized'
+        '402':
+          $ref: '#/components/responses/402PaymentRequired'
         '403': 
           $ref: '#/components/responses/403Forbidden'
         '404':
@@ -296,6 +326,8 @@ paths:
                 $ref: '#/components/schemas/Branches'
         '401': 
           $ref: '#/components/responses/401Unauthorized'
+        '402':
+          $ref: '#/components/responses/402PaymentRequired'
         '403': 
           $ref: '#/components/responses/403Forbidden'
         '500':
@@ -327,6 +359,8 @@ paths:
                 $ref: '#/components/schemas/Branch'
         '401': 
           $ref: '#/components/responses/401Unauthorized'
+        '402':
+          $ref: '#/components/responses/402PaymentRequired'
         '403': 
           $ref: '#/components/responses/403Forbidden'
         '404':
@@ -366,6 +400,8 @@ paths:
                 $ref: '#/components/schemas/Tags'
         '401': 
           $ref: '#/components/responses/401Unauthorized'
+        '402':
+          $ref: '#/components/responses/402PaymentRequired'
         '403': 
           $ref: '#/components/responses/403Forbidden'
         '500':
@@ -397,6 +433,8 @@ paths:
                 $ref: '#/components/schemas/Tag'
         '401': 
           $ref: '#/components/responses/401Unauthorized'
+        '402':
+          $ref: '#/components/responses/402PaymentRequired'
         '403': 
           $ref: '#/components/responses/403Forbidden'
         '404': 
@@ -448,6 +486,8 @@ paths:
                 $ref: '#/components/schemas/Deployments'
         '401': 
           $ref: '#/components/responses/401Unauthorized'
+        '402':
+          $ref: '#/components/responses/402PaymentRequired'
         '403': 
           $ref: '#/components/responses/403Forbidden'
         '500':
@@ -481,6 +521,8 @@ paths:
           description: Created
         '400': 
           $ref: '#/components/responses/400BadRequest'
+        '402':
+          $ref: '#/components/responses/402PaymentRequired'
         '401': 
           $ref: '#/components/responses/401Unauthorized'
         '403': 
@@ -520,6 +562,8 @@ paths:
                 $ref: '#/components/schemas/Deployment'
         '401': 
           $ref: '#/components/responses/401Unauthorized'
+        '402':
+          $ref: '#/components/responses/402PaymentRequired'
         '403': 
           $ref: '#/components/responses/403Forbidden'
         '404': 
@@ -561,6 +605,8 @@ paths:
                 $ref: '#/components/schemas/Deployment'
         '401': 
           $ref: '#/components/responses/401Unauthorized'
+        '402':
+          $ref: '#/components/responses/402PaymentRequired'
         '403': 
           $ref: '#/components/responses/403Forbidden'
         '404': 
@@ -610,6 +656,8 @@ paths:
                 $ref: '#/components/schemas/Commits'
         '401': 
           $ref: '#/components/responses/401Unauthorized'
+        '402':
+          $ref: '#/components/responses/402PaymentRequired'
         '403': 
           $ref: '#/components/responses/403Forbidden'
         '404': 
@@ -643,6 +691,8 @@ paths:
                 $ref: '#/components/schemas/Deployment'
         '401': 
           $ref: '#/components/responses/401Unauthorized'
+        '402':
+          $ref: '#/components/responses/402PaymentRequired'
         '403': 
           $ref: '#/components/responses/403Forbidden'
         '404': 
@@ -681,6 +731,8 @@ paths:
                 $ref: '#/components/schemas/Approvals'
         '401': 
           $ref: '#/components/responses/401Unauthorized'
+        '402':
+          $ref: '#/components/responses/402PaymentRequired'
         '403': 
           $ref: '#/components/responses/403Forbidden'
         '500':
@@ -719,6 +771,8 @@ paths:
                 $ref: '#/components/schemas/Approval'
         '401': 
           $ref: '#/components/responses/401Unauthorized'
+        '402':
+          $ref: '#/components/responses/402PaymentRequired'
         '403': 
           $ref: '#/components/responses/403Forbidden'
         '404':
@@ -754,6 +808,8 @@ paths:
                 $ref: '#/components/schemas/Approval'
         '401': 
           $ref: '#/components/responses/401Unauthorized'
+        '402':
+          $ref: '#/components/responses/402PaymentRequired'
         '403': 
           $ref: '#/components/responses/403Forbidden'
         '404': 
@@ -796,6 +852,8 @@ paths:
           $ref: '#/components/responses/400BadRequest'
         '401': 
           $ref: '#/components/responses/401Unauthorized'
+        '402':
+          $ref: '#/components/responses/402PaymentRequired'
         '403': 
           $ref: '#/components/responses/403Forbidden'
         '404': 
@@ -831,6 +889,8 @@ paths:
                 $ref: '#/components/schemas/Approval'
         '401': 
           $ref: '#/components/responses/401Unauthorized'
+        '402':
+          $ref: '#/components/responses/402PaymentRequired'
         '403': 
           $ref: '#/components/responses/403Forbidden'
         '404':
@@ -865,6 +925,8 @@ paths:
           description: Approval deleted
         '401': 
           $ref: '#/components/responses/401Unauthorized'
+        '402':
+          $ref: '#/components/responses/402PaymentRequired'
         '403': 
           $ref: '#/components/responses/403Forbidden'
         '404':
@@ -905,6 +967,8 @@ paths:
                 $ref: '#/components/schemas/Perms'
         '401': 
           $ref: '#/components/responses/401Unauthorized'
+        '402':
+          $ref: '#/components/responses/402PaymentRequired'
         '403': 
           $ref: '#/components/responses/403Forbidden'
         '500':
@@ -930,6 +994,8 @@ paths:
                 $ref: '#/components/schemas/Config'
         '401': 
           $ref: '#/components/responses/401Unauthorized'
+        '402':
+          $ref: '#/components/responses/402PaymentRequired'
         '403': 
           $ref: '#/components/responses/403Forbidden'
         '404': 
@@ -968,6 +1034,8 @@ paths:
                $ref: '#/components/schemas/User'
         '401': 
           $ref: '#/components/responses/401Unauthorized'
+        '402':
+          $ref: '#/components/responses/402PaymentRequired'
         '403':
           $ref: '#/components/responses/403Forbidden'
         '500':
@@ -1002,6 +1070,8 @@ paths:
                $ref: '#/components/schemas/User'
         '401': 
           $ref: '#/components/responses/401Unauthorized'
+        '402':
+          $ref: '#/components/responses/402PaymentRequired'
         '403':
           $ref: '#/components/responses/403Forbidden'
         '500':
@@ -1026,6 +1096,8 @@ paths:
                $ref: '#/components/schemas/User'
         '401': 
           $ref: '#/components/responses/401Unauthorized'
+        '402':
+          $ref: '#/components/responses/402PaymentRequired'
         '403':
           $ref: '#/components/responses/403Forbidden'
         '500':
@@ -1044,6 +1116,8 @@ paths:
                $ref: '#/components/schemas/User'
         '401': 
           $ref: '#/components/responses/401Unauthorized'
+        '402':
+          $ref: '#/components/responses/402PaymentRequired'
         '500':
           $ref: '#/components/responses/500InternalError'
   /user/rate-limit:
@@ -1118,6 +1192,8 @@ paths:
                 $ref: '#/components/schemas/Deployments'
         '400':
           $ref: '#/components/responses/400BadRequest'
+        '402':
+          $ref: '#/components/responses/402PaymentRequired'
         '401': 
           $ref: '#/components/responses/401Unauthorized'
         '500':
@@ -1172,6 +1248,8 @@ paths:
           $ref: '#/components/responses/400BadRequest'
         '401': 
           $ref: '#/components/responses/401Unauthorized'
+        '402':
+          $ref: '#/components/responses/402PaymentRequired'
         '500':
           $ref: '#/components/responses/500InternalError'
 security:
@@ -1545,6 +1623,20 @@ components:
         - limit
         - remaining
         - reset
+    License:
+      type: object
+      properties:
+        kind: 
+          type: string
+        member_count:
+          type: number
+        member_limit:
+          type: number
+        expired_at:
+          type: string
+      required:
+        - kind
+        - member_count
     Error:
       type: object
       properties:
@@ -1580,6 +1672,13 @@ components:
 
     401Unauthorized:
       description: Unauthorized access
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    402PaymentRequired:
+      description: License is expired
       content:
         application/json:
           schema:

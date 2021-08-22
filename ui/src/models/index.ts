@@ -11,6 +11,7 @@ import Branch from "./Branch"
 import Tag from "./Tag"
 import User, { ChatUser, RateLimit } from "./User"
 import Approval, { ApprovalStatus } from "./Approval"
+import License from "./License"
 import { 
     HttpRequestError, 
     HttpInternalServerError, 
@@ -39,6 +40,7 @@ export type {
     ChatUser,
     RateLimit,
     Approval,
+    License,
 }
 
 export {

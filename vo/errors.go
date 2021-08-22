@@ -45,6 +45,7 @@ func IsEnvNotFoundError(err error) bool {
 	return errors.As(err, &e)
 }
 
+// RefNotFoundError is returned when SHA, branch, or tag are not found.
 type RefNotFoundError struct {
 	Ref string
 }

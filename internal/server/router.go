@@ -9,6 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"golang.org/x/oauth2"
 
+	"github.com/hanjunlee/gitploy/internal/server/api/v1/license"
 	"github.com/hanjunlee/gitploy/internal/server/api/v1/repos"
 	"github.com/hanjunlee/gitploy/internal/server/api/v1/search"
 	"github.com/hanjunlee/gitploy/internal/server/api/v1/stream"
@@ -34,12 +35,14 @@ type (
 	}
 
 	ServerConfig struct {
-		Host          string
-		Proto         string
-		ProxyHost     string
-		ProxyProto    string
+		Host       string
+		Proto      string
+		ProxyHost  string
+		ProxyProto string
+
 		WebhookSecret string
-		AdminUsers    []string
+
+		AdminUsers []string
 	}
 
 	SCMType string
@@ -72,6 +75,7 @@ type (
 		stream.Interactor
 		hooks.Interactor
 		search.Interactor
+		license.Interactor
 	}
 )
 
@@ -90,11 +94,16 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 		AllowHeaders:     []string{"Origin", "Authorization", "Accept", "Content-Length", "Content-Type"},
 	}))
 	sm := mw.NewSessMiddleware(c.Interactor)
+	lm := mw.NewLicenseMiddleware(c.Interactor)
+
 	r.Use(sm.User())
 
 	v1 := r.Group("/api/v1")
 	{
+		// Only authorized user can access to API.
 		v1.Use(mw.OnlyAuthorized())
+		// Check license expired.
+		v1.Use(lm.IsExpired())
 	}
 
 	syncv1 := v1.Group("/sync")
@@ -165,6 +174,12 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 		s := search.NewSearch(c.Interactor)
 		searchapi.GET("/deployments", s.SearchDeployments)
 		searchapi.GET("/approvals", s.SearchApprovals)
+	}
+
+	licenseapi := v1.Group("/license")
+	{
+		l := license.NewLicenser(c.Interactor)
+		licenseapi.GET("", l.GetLicense)
 	}
 
 	hooksapi := r.Group("/hooks")
