@@ -4,10 +4,11 @@ import { Layout, Menu, Row, Col, Result, Button, Drawer, Avatar, Dropdown, Badge
 import { SettingFilled } from "@ant-design/icons"
 
 import { useAppSelector, useAppDispatch } from "../redux/hooks"
-import { init, searchDeployments, searchApprovals, mainSlice } from "../redux/main"
+import { init, searchDeployments, searchApprovals, fetchLicense, mainSlice } from "../redux/main"
 import { subscribeDeploymentEvent, subscribeApprovalEvent } from "../apis"
 
 import RecentActivities from "../components/RecentActivities"
+import LicenseFooter from "../components/LicenseFooter"
 
 const { Header, Content, Footer } = Layout
 
@@ -16,9 +17,11 @@ export default function Main(props: any) {
     const { 
         available, 
         authorized, 
+        expired,
         user,
         deployments,
-        approvals
+        approvals,
+        license,
     } = useAppSelector(state => state.main, shallowEqual)
     const dispatch = useAppDispatch()
 
@@ -26,6 +29,7 @@ export default function Main(props: any) {
         dispatch(init())
         dispatch(searchDeployments())
         dispatch(searchApprovals())
+        dispatch(fetchLicense())
 
         const de = subscribeDeploymentEvent((d) => {
             dispatch(mainSlice.actions.handleDeploymentEvent(d))
@@ -69,6 +73,13 @@ export default function Main(props: any) {
             title="Unauthorized Error"
             subTitle="Sorry, you are not authorized."
             extra={[<Button key="console" type="primary" href="/">Sign in</Button>]}
+        />
+    } else if (expired) {
+        content = <Result
+            style={{paddingTop: '120px'}}
+            status="warning"
+            title="License Expired"
+            subTitle="Sorry, the license is expired."
         />
     } else {
         content = props.children
@@ -139,7 +150,10 @@ export default function Main(props: any) {
                     </Col>
                 </Row>
             </Content>
-            <Footer style={{ textAlign: 'center' }}>Gitploy ©2021 Created by Gitploy.io </Footer>
+            <Footer style={{ textAlign: 'center' }}>
+                <LicenseFooter license={license} />
+                Gitploy ©2021 Created by Gitploy.io 
+            </Footer>
         </Layout>
     )
 }

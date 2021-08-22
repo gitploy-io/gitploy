@@ -54,6 +54,12 @@ func (s *Store) FindUserByLogin(ctx context.Context, login string) (*ent.User, e
 		Only(ctx)
 }
 
+func (s *Store) CountUsers(ctx context.Context) (int, error) {
+	return s.c.User.
+		Query().
+		Count(ctx)
+}
+
 func (s *Store) CreateUser(ctx context.Context, u *ent.User) (*ent.User, error) {
 	return s.c.User.Create().
 		SetID(u.ID).
