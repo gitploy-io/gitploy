@@ -1,21 +1,25 @@
 import { createSlice, Middleware, MiddlewareAPI, isRejectedWithValue, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit"
 
-import { User, Deployment, DeploymentStatusEnum, Approval, ApprovalStatus, HttpInternalServerError, HttpUnauthorizedError } from "../models"
-import { getMe, searchDeployments as _searchDeployments, searchApprovals as _searchApprovals } from "../apis"
+import { User, Deployment, DeploymentStatusEnum, Approval, ApprovalStatus, HttpInternalServerError, HttpUnauthorizedError, License } from "../models"
+import { getMe, searchDeployments as _searchDeployments, searchApprovals as _searchApprovals, getLicense } from "../apis"
+import { HttpPaymentRequiredError } from "../models/errors"
 
 interface MainState {
     available: boolean
     authorized: boolean
+    expired: boolean
     user?: User 
     deployments: Deployment[]
     approvals: Approval[]
+    license?: License
 }
 
 const initialState: MainState = {
     available: true,
     authorized: true,
+    expired: false,
     deployments: [],
-    approvals: []
+    approvals: [],
 }
 
 const runningDeploymentStatus: DeploymentStatusEnum[] = [
@@ -40,7 +44,9 @@ export const apiMiddleware: Middleware = (api: MiddlewareAPI) => (
         api.dispatch(mainSlice.actions.setAuthorized(false))
     } else if (action.payload instanceof HttpInternalServerError) {
         api.dispatch(mainSlice.actions.setAvailable(false))
-    } 
+    } else if (action.payload instanceof HttpPaymentRequiredError) {
+        api.dispatch(mainSlice.actions.setExpired(true))
+    }
 
     next(action)
 }
@@ -81,6 +87,18 @@ export const searchApprovals = createAsyncThunk<Approval[], void, { state: { mai
     }
 )
 
+export const fetchLicense = createAsyncThunk<License, void, { state: { main: MainState } }>(
+    "main/fetchLicense",
+    async (_, { rejectWithValue }) => {
+        try {
+            const lic = await getLicense()
+            return lic
+        } catch (e) {
+            return rejectWithValue(e)
+        }
+    }
+)
+
 export const mainSlice = createSlice({
     name: "main",
     initialState,
@@ -90,6 +108,9 @@ export const mainSlice = createSlice({
         },
         setAuthorized: (state, action: PayloadAction<boolean>) => {
             state.authorized = action.payload
+        },
+        setExpired: (state, action: PayloadAction<boolean>) => {
+            state.expired = action.payload
         },
         handleDeploymentEvent: (state, action: PayloadAction<Deployment>) => {
             const user = state.user
@@ -163,6 +184,10 @@ export const mainSlice = createSlice({
 
             .addCase(searchApprovals.fulfilled, (state, action) => {
                 state.approvals = action.payload
+            })
+
+            .addCase(fetchLicense.fulfilled, (state, action) => {
+                state.license = action.payload
             })
     }
 })
