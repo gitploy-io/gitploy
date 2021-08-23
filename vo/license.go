@@ -50,7 +50,7 @@ func (l *License) IsTrial() bool {
 }
 
 func (l *License) IsOverLimit() bool {
-	return l.MemberCount > TrialMemberLimit
+	return l.MemberCount > l.MemberLimit
 }
 
 func (l *License) IsExpired() bool {
