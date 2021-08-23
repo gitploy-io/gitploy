@@ -120,10 +120,28 @@ func (w *Web) Signin(c *gin.Context) {
 		Admin:   w.isAdmin(ru.Login),
 	}
 
-	if u, err = w.i.SaveUser(ctx, u); err != nil {
-		w.log.Error("failed to save the user.", zap.Error(err))
+	if _, err = w.i.FindUserByID(ctx, u.ID); ent.IsNotFound(err) {
+		lic, err := w.i.GetLicense(ctx)
+		if err != nil {
+			w.log.Error("It has failed to check the license.", zap.Error(err))
+			c.String(http.StatusInternalServerError, "It has failed to check the license.")
+			return
+		}
+
+		if lic.IsOverLimit() {
+			w.log.Error("There are no more seats.", zap.Error(err))
+			c.String(http.StatusPaymentRequired, "There are no more seats.")
+			return
+		}
+
+		w.log.Debug("Check the count of member.", zap.Int("member_count", lic.MemberCount), zap.Int("member_limit", lic.MemberLimit))
+		u, _ = w.i.CreateUser(ctx, u)
+	} else if err != nil {
+		w.log.Error("It failed to save the user.", zap.Error(err))
 		c.String(http.StatusInternalServerError, "It has failed to save the user.")
 		return
+	} else {
+		u, _ = w.i.UpdateUser(ctx, u)
 	}
 
 	// Register cookie.
