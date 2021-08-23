@@ -78,7 +78,6 @@ func newServerConfig(c *Config) *server.ServerConfig {
 		ProxyHost:     proxyHost,
 		ProxyProto:    proxyProto,
 		WebhookSecret: c.WebhookSecret,
-		AdminUsers:    c.AdminUsers,
 	}
 }
 
@@ -119,6 +118,7 @@ func NewInteractor(c *Config) server.Interactor {
 		&interactor.InteractorConfig{
 			ServerHost:  c.ServerHost,
 			ServerProto: c.ServerProto,
+			AdminUsers:  c.AdminUsers,
 			LicenseKey:  c.License,
 			Store:       newStore(c),
 			SCM:         newSCM(c),

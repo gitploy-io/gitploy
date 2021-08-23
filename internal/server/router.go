@@ -41,8 +41,6 @@ type (
 		ProxyProto string
 
 		WebhookSecret string
-
-		AdminUsers []string
 	}
 
 	SCMType string
@@ -215,7 +213,6 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 	{
 		w := web.NewWeb(&web.WebConfig{
 			Config:     newGithubOauthConfig(c),
-			AdminUsers: c.AdminUsers,
 			Interactor: c.Interactor,
 		})
 

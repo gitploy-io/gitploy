@@ -18,9 +18,6 @@ type (
 		// OAuth Configuration to sign in.
 		c *oauth2.Config
 
-		// Identify user as admin when user sign in.
-		adminUsers []string
-
 		i Interactor
 
 		log *zap.Logger
@@ -35,10 +32,9 @@ type (
 
 func NewWeb(c *WebConfig) *Web {
 	return &Web{
-		c:          c.Config,
-		adminUsers: c.AdminUsers,
-		i:          c.Interactor,
-		log:        zap.L().Named("web"),
+		c:   c.Config,
+		i:   c.Interactor,
+		log: zap.L().Named("web"),
 	}
 }
 
@@ -117,7 +113,7 @@ func (w *Web) Signin(c *gin.Context) {
 		Token:   t.AccessToken,
 		Refresh: t.RefreshToken,
 		Expiry:  t.Expiry,
-		Admin:   w.isAdmin(ru.Login),
+		Admin:   w.i.IsAdminUser(ctx, ru.Login),
 	}
 
 	if _, err = w.i.FindUserByID(ctx, u.ID); ent.IsNotFound(err) {
@@ -151,16 +147,6 @@ func (w *Web) Signin(c *gin.Context) {
 	)
 	c.SetCookie(gb.CookieSession, u.Hash, 0, "/", "", secure, httpOnly)
 	c.Redirect(http.StatusFound, "/")
-}
-
-func (w *Web) isAdmin(login string) bool {
-	for _, au := range w.adminUsers {
-		if login == au {
-			return true
-		}
-	}
-
-	return false
 }
 
 func (w *Web) SignOut(c *gin.Context) {
