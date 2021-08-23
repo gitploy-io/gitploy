@@ -32,8 +32,8 @@ func main() {
 	setGlobalLogger(true)
 
 	r := server.NewRouter(newRouterConfig(c))
-	log.Printf("Run server with port %s ...", c.ServerPort)
-	r.Run(fmt.Sprintf(":%s", c.ServerPort))
+	log.Printf("Run server with port %d ...", c.ServerPort)
+	r.Run(fmt.Sprintf(":%d", c.ServerPort))
 }
 
 func setGlobalLogger(debug bool) {

@@ -1,7 +1,6 @@
 package repos
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -21,9 +20,8 @@ type (
 	}
 
 	RepoConfig struct {
-		ProxyProto    string
-		ProxyHost     string
-		WebhookPath   string
+		WebhookURL    string
+		WebhookSSL    bool
 		WebhookSecret string
 	}
 
@@ -93,14 +91,12 @@ func (r *Repo) UpdateRepo(c *gin.Context) {
 	// Create a new webhook when it activates the repository,
 	// in contrast it remove the webhook when it deactivates.
 	if p.Active && !re.Active {
-		url := fmt.Sprintf("%s://%s%s", r.ProxyProto, r.ProxyHost, r.WebhookPath)
-
 		if re, err = r.i.ActivateRepo(ctx, u, re, &vo.WebhookConfig{
-			URL:         url,
+			URL:         r.WebhookURL,
 			Secret:      r.WebhookSecret,
-			InsecureSSL: isSecure(r.ProxyProto),
+			InsecureSSL: r.WebhookSSL,
 		}); err != nil {
-			r.log.Error("It has failed to activate the repo.", zap.Error(err), zap.String("url", url))
+			r.log.Error("It has failed to activate the repo.", zap.Error(err), zap.String("url", r.WebhookURL))
 			gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to activate the repository.")
 			return
 		}
@@ -160,8 +156,4 @@ func (r *Repo) GetRepoByNamespaceName(c *gin.Context) {
 func atoi(s string) int {
 	i, _ := strconv.Atoi(s)
 	return i
-}
-
-func isSecure(proto string) bool {
-	return proto == "https"
 }
