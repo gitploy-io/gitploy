@@ -41,8 +41,6 @@ type (
 		ProxyProto string
 
 		WebhookSecret string
-
-		AdminUsers []string
 	}
 
 	SCMType string
@@ -117,9 +115,8 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 		rm := repos.NewRepoMiddleware(c.Interactor)
 		r := repos.NewRepo(
 			repos.RepoConfig{
-				ProxyHost:     c.ProxyHost,
-				ProxyProto:    c.ProxyProto,
-				WebhookPath:   "/hooks",
+				WebhookURL:    fmt.Sprintf("%s://%s/hooks", c.ProxyProto, c.ProxyHost),
+				WebhookSSL:    c.ProxyProto == "https",
 				WebhookSecret: c.WebhookSecret,
 			},
 			c.Interactor,
@@ -215,7 +212,6 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 	{
 		w := web.NewWeb(&web.WebConfig{
 			Config:     newGithubOauthConfig(c),
-			AdminUsers: c.AdminUsers,
 			Interactor: c.Interactor,
 		})
 

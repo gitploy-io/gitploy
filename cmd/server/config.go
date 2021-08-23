@@ -1,6 +1,10 @@
 package main
 
-import "github.com/kelseyhightower/envconfig"
+import (
+	"log"
+
+	"github.com/kelseyhightower/envconfig"
+)
 
 type (
 	Config struct {
@@ -15,7 +19,7 @@ type (
 	Server struct {
 		ServerHost       string `required:"true" split_words:"true"`
 		ServerProto      string `required:"true" default:"https" split_words:"true"`
-		ServerPort       string `required:"true" default:"8080" split_words:"true"`
+		ServerPort       int    `required:"true" default:"8080" split_words:"true"`
 		ServerProxyHost  string `split_words:"true"`
 		ServerProxyProto string `default:"https" split_words:"true"`
 		ServerProxyPort  string `default:"8081" split_words:"true"`
@@ -53,6 +57,12 @@ func NewConfigFromEnv() (*Config, error) {
 	c := &Config{}
 	err := envconfig.Process("gitploy", c)
 	return c, err
+}
+
+func (c *Config) Validate() {
+	if !(c.ServerProto == "http" || c.ServerProto == "https") {
+		log.Fatal("GITPLOY_SERVER_PROTO should be \"http\" or \"https\".")
+	}
 }
 
 func (c *Config) isGithubEnabled() bool {
