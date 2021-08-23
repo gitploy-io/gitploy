@@ -16,13 +16,22 @@ func TestLicense_IsOverLimit(t *testing.T) {
 	})
 
 	t.Run("Return true when the count of member is under the limit.", func(t *testing.T) {
-		l := NewTrialLicense(5)
+		tl := NewTrialLicense(5)
 
-		expected := false
-		if finished := l.IsOverLimit(); finished != expected {
-			t.Fatalf("IsOverLimit = %v, wanted %v", finished, expected)
+		if finished := tl.IsOverLimit(); finished != false {
+			t.Fatalf("IsOverLimit = %v, wanted %v", finished, false)
+		}
+
+		sl := NewStandardLicense(10, &SigningData{
+			MemberLimit: 20,
+			ExpiredAt:   time.Now(),
+		})
+
+		if finished := sl.IsOverLimit(); finished != false {
+			t.Fatalf("IsOverLimit = %v, wanted %v", finished, false)
 		}
 	})
+
 }
 
 func TestLicense_IsExpired(t *testing.T) {

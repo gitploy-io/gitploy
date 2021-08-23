@@ -9,7 +9,6 @@ import (
 )
 
 const (
-	extraMember   int           = 1
 	extraDuration time.Duration = 30 * 24 * time.Hour
 )
 
@@ -36,10 +35,8 @@ func (lm *LicenseMiddleware) IsExpired() gin.HandlerFunc {
 		}
 
 		if lic.IsOverLimit() {
-			if lic.MemberCount > lic.MemberLimit+extraMember {
-				gb.AbortWithErrorResponse(c, http.StatusPaymentRequired, "The member count is over the limit.")
-				return
-			}
+			gb.AbortWithErrorResponse(c, http.StatusPaymentRequired, "The member count is over the limit.")
+			return
 		}
 
 		if !lic.IsTrial() && lic.IsExpired() {
