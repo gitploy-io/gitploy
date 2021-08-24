@@ -8,6 +8,20 @@ import (
 	"github.com/hanjunlee/gitploy/vo"
 )
 
+func (i *Interactor) IsEntryOrg(ctx context.Context, namespace string) bool {
+	if i.orgEntries == nil {
+		return true
+	}
+
+	for _, r := range i.orgEntries {
+		if namespace == r {
+			return true
+		}
+	}
+
+	return false
+}
+
 func (i *Interactor) SyncRemoteRepo(ctx context.Context, u *ent.User, re *vo.RemoteRepo) error {
 	var (
 		r   *ent.Repo

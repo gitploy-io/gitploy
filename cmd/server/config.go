@@ -24,7 +24,8 @@ type (
 		ServerProxyProto string `default:"https" split_words:"true"`
 		ServerProxyPort  string `default:"8081" split_words:"true"`
 
-		AdminUsers []string `split_words:"true"`
+		OrganizationEntries []string `split_words:"true"`
+		AdminUsers          []string `split_words:"true"`
 
 		License string `split_words:"true"`
 	}
