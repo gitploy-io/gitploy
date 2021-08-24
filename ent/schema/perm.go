@@ -55,6 +55,9 @@ func (Perm) Edges() []ent.Edge {
 
 func (Perm) Indexes() []ent.Index {
 	return []ent.Index{
+		// Find the perm for the repository.
 		index.Fields("repo_id", "user_id"),
+		// Delete staled perms after synchronization
+		index.Fields("user_id", "updated_at"),
 	}
 }

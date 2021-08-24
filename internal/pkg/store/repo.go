@@ -8,6 +8,7 @@ import (
 	"github.com/hanjunlee/gitploy/ent/deployment"
 	"github.com/hanjunlee/gitploy/ent/perm"
 	"github.com/hanjunlee/gitploy/ent/repo"
+	"github.com/hanjunlee/gitploy/vo"
 )
 
 func (s *Store) ListReposOfUser(ctx context.Context, u *ent.User, q string, page, perPage int) ([]*ent.Repo, error) {
@@ -59,6 +60,20 @@ func (s *Store) ListSortedReposOfUser(ctx context.Context, u *ent.User, q string
 		Limit(perPage).
 		Offset(offset(page, perPage)).
 		All(ctx)
+}
+
+func (s *Store) FindRepoByID(ctx context.Context, id string) (*ent.Repo, error) {
+	return s.c.Repo.Get(ctx, id)
+}
+
+func (s *Store) SyncRepo(ctx context.Context, r *vo.RemoteRepo) (*ent.Repo, error) {
+	return s.c.Repo.
+		Create().
+		SetID(r.ID).
+		SetNamespace(r.Namespace).
+		SetName(r.Name).
+		SetDescription(r.Description).
+		Save(ctx)
 }
 
 func (s *Store) UpdateRepo(ctx context.Context, r *ent.Repo) (*ent.Repo, error) {

@@ -173,6 +173,21 @@ func (mr *MockStoreMockRecorder) CreateEvent(ctx, e interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateEvent", reflect.TypeOf((*MockStore)(nil).CreateEvent), ctx, e)
 }
 
+// CreatePerm mocks base method.
+func (m *MockStore) CreatePerm(ctx context.Context, p *ent.Perm) (*ent.Perm, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreatePerm", ctx, p)
+	ret0, _ := ret[0].(*ent.Perm)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreatePerm indicates an expected call of CreatePerm.
+func (mr *MockStoreMockRecorder) CreatePerm(ctx, p interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreatePerm", reflect.TypeOf((*MockStore)(nil).CreatePerm), ctx, p)
+}
+
 // CreateUser mocks base method.
 func (m *MockStore) CreateUser(ctx context.Context, u *ent.User) (*ent.User, error) {
 	m.ctrl.T.Helper()
@@ -215,6 +230,20 @@ func (m *MockStore) DeleteApproval(ctx context.Context, a *ent.Approval) error {
 func (mr *MockStoreMockRecorder) DeleteApproval(ctx, a interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteApproval", reflect.TypeOf((*MockStore)(nil).DeleteApproval), ctx, a)
+}
+
+// DeletePermsOfUserLessThanUpdatedAt mocks base method.
+func (m *MockStore) DeletePermsOfUserLessThanUpdatedAt(ctx context.Context, u *ent.User, t time.Time) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeletePermsOfUserLessThanUpdatedAt", ctx, u, t)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeletePermsOfUserLessThanUpdatedAt indicates an expected call of DeletePermsOfUserLessThanUpdatedAt.
+func (mr *MockStoreMockRecorder) DeletePermsOfUserLessThanUpdatedAt(ctx, u, t interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeletePermsOfUserLessThanUpdatedAt", reflect.TypeOf((*MockStore)(nil).DeletePermsOfUserLessThanUpdatedAt), ctx, u, t)
 }
 
 // DeleteUser mocks base method.
@@ -364,6 +393,21 @@ func (m *MockStore) FindPermOfRepo(ctx context.Context, r *ent.Repo, u *ent.User
 func (mr *MockStoreMockRecorder) FindPermOfRepo(ctx, r, u interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindPermOfRepo", reflect.TypeOf((*MockStore)(nil).FindPermOfRepo), ctx, r, u)
+}
+
+// FindRepoByID mocks base method.
+func (m *MockStore) FindRepoByID(ctx context.Context, id string) (*ent.Repo, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindRepoByID", ctx, id)
+	ret0, _ := ret[0].(*ent.Repo)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindRepoByID indicates an expected call of FindRepoByID.
+func (mr *MockStoreMockRecorder) FindRepoByID(ctx, id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindRepoByID", reflect.TypeOf((*MockStore)(nil).FindRepoByID), ctx, id)
 }
 
 // FindRepoOfUserByID mocks base method.
@@ -620,6 +664,21 @@ func (mr *MockStoreMockRecorder) SyncPerm(ctx, user, perm, sync interface{}) *go
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SyncPerm", reflect.TypeOf((*MockStore)(nil).SyncPerm), ctx, user, perm, sync)
 }
 
+// SyncRepo mocks base method.
+func (m *MockStore) SyncRepo(ctx context.Context, r *vo.RemoteRepo) (*ent.Repo, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SyncRepo", ctx, r)
+	ret0, _ := ret[0].(*ent.Repo)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// SyncRepo indicates an expected call of SyncRepo.
+func (mr *MockStoreMockRecorder) SyncRepo(ctx, r interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SyncRepo", reflect.TypeOf((*MockStore)(nil).SyncRepo), ctx, r)
+}
+
 // UpdateApproval mocks base method.
 func (m *MockStore) UpdateApproval(ctx context.Context, a *ent.Approval) (*ent.Approval, error) {
 	m.ctrl.T.Helper()
@@ -663,6 +722,21 @@ func (m *MockStore) UpdateDeployment(ctx context.Context, d *ent.Deployment) (*e
 func (mr *MockStoreMockRecorder) UpdateDeployment(ctx, d interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateDeployment", reflect.TypeOf((*MockStore)(nil).UpdateDeployment), ctx, d)
+}
+
+// UpdatePerm mocks base method.
+func (m *MockStore) UpdatePerm(ctx context.Context, p *ent.Perm) (*ent.Perm, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdatePerm", ctx, p)
+	ret0, _ := ret[0].(*ent.Perm)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdatePerm indicates an expected call of UpdatePerm.
+func (mr *MockStoreMockRecorder) UpdatePerm(ctx, p interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdatePerm", reflect.TypeOf((*MockStore)(nil).UpdatePerm), ctx, p)
 }
 
 // UpdateRepo mocks base method.
@@ -939,6 +1013,21 @@ func (m *MockSCM) ListCommits(ctx context.Context, u *ent.User, r *ent.Repo, bra
 func (mr *MockSCMMockRecorder) ListCommits(ctx, u, r, branch, page, perPage interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListCommits", reflect.TypeOf((*MockSCM)(nil).ListCommits), ctx, u, r, branch, page, perPage)
+}
+
+// ListRemoteRepos mocks base method.
+func (m *MockSCM) ListRemoteRepos(ctx context.Context, u *ent.User) ([]*vo.RemoteRepo, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListRemoteRepos", ctx, u)
+	ret0, _ := ret[0].([]*vo.RemoteRepo)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListRemoteRepos indicates an expected call of ListRemoteRepos.
+func (mr *MockSCMMockRecorder) ListRemoteRepos(ctx, u interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListRemoteRepos", reflect.TypeOf((*MockSCM)(nil).ListRemoteRepos), ctx, u)
 }
 
 // ListTags mocks base method.

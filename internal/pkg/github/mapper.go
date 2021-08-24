@@ -38,6 +38,41 @@ func splitNamespaceName(fullName string) (string, string) {
 	return ss[0], ss[1]
 }
 
+func mapGithubRepoToRemotePerm(r *github.Repository) *vo.RemoteRepo {
+	namespace, name := splitNamespaceName(*r.FullName)
+
+	if r.Description == nil {
+		r.Description = github.String("")
+	}
+
+	return &vo.RemoteRepo{
+		ID:          strconv.FormatInt(*r.ID, 10),
+		Namespace:   namespace,
+		Name:        name,
+		Description: *r.Description,
+		Perm:        mapGithubPermToRepoPerm(*r.Permissions),
+	}
+}
+
+func mapGithubPermToRepoPerm(perms map[string]bool) vo.RemoteRepoPerm {
+	var p vo.RemoteRepoPerm
+
+	// Github represent the permission of the repository with these enums:
+	// "admin", "push", and "pull".
+	// https://docs.github.com/en/rest/reference/repos#list-repositories-for-the-authenticated-user
+	if admin, ok := perms["admin"]; ok && admin {
+		p = vo.RemoteRepoPermAdmin
+	} else if push, ok := perms["push"]; ok && push {
+		p = vo.RemoteRepoPermWrite
+	} else if pull, ok := perms["pull"]; ok && pull {
+		p = vo.RemoteRepoPermRead
+	} else {
+		p = vo.RemoteRepoPermRead
+	}
+
+	return p
+}
+
 func mapGithubPermToPerm(perms map[string]bool) *ent.Perm {
 	var p perm.RepoPerm
 
