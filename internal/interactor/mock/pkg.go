@@ -650,20 +650,6 @@ func (mr *MockStoreMockRecorder) SearchDeployments(ctx, u, s, owned, from, to, p
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SearchDeployments", reflect.TypeOf((*MockStore)(nil).SearchDeployments), ctx, u, s, owned, from, to, page, perPage)
 }
 
-// SyncPerm mocks base method.
-func (m *MockStore) SyncPerm(ctx context.Context, user *ent.User, perm *ent.Perm, sync time.Time) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SyncPerm", ctx, user, perm, sync)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// SyncPerm indicates an expected call of SyncPerm.
-func (mr *MockStoreMockRecorder) SyncPerm(ctx, user, perm, sync interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SyncPerm", reflect.TypeOf((*MockStore)(nil).SyncPerm), ctx, user, perm, sync)
-}
-
 // SyncRepo mocks base method.
 func (m *MockStore) SyncRepo(ctx context.Context, r *vo.RemoteRepo) (*ent.Repo, error) {
 	m.ctrl.T.Helper()

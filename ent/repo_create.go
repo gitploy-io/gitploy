@@ -83,20 +83,6 @@ func (rc *RepoCreate) SetNillableWebhookID(i *int64) *RepoCreate {
 	return rc
 }
 
-// SetSyncedAt sets the "synced_at" field.
-func (rc *RepoCreate) SetSyncedAt(t time.Time) *RepoCreate {
-	rc.mutation.SetSyncedAt(t)
-	return rc
-}
-
-// SetNillableSyncedAt sets the "synced_at" field if the given value is not nil.
-func (rc *RepoCreate) SetNillableSyncedAt(t *time.Time) *RepoCreate {
-	if t != nil {
-		rc.SetSyncedAt(*t)
-	}
-	return rc
-}
-
 // SetCreatedAt sets the "created_at" field.
 func (rc *RepoCreate) SetCreatedAt(t time.Time) *RepoCreate {
 	rc.mutation.SetCreatedAt(t)
@@ -378,14 +364,6 @@ func (rc *RepoCreate) createSpec() (*Repo, *sqlgraph.CreateSpec) {
 			Column: repo.FieldWebhookID,
 		})
 		_node.WebhookID = value
-	}
-	if value, ok := rc.mutation.SyncedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: repo.FieldSyncedAt,
-		})
-		_node.SyncedAt = value
 	}
 	if value, ok := rc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

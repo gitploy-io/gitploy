@@ -28,8 +28,6 @@ type Repo struct {
 	Active bool `json:"active"`
 	// WebhookID holds the value of the "webhook_id" field.
 	WebhookID int64 `json:"webhook_id,omitemtpy"`
-	// SyncedAt holds the value of the "synced_at" field.
-	SyncedAt time.Time `json:"synced_at,omitemtpy"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -92,7 +90,7 @@ func (*Repo) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(sql.NullInt64)
 		case repo.FieldID, repo.FieldNamespace, repo.FieldName, repo.FieldDescription, repo.FieldConfigPath:
 			values[i] = new(sql.NullString)
-		case repo.FieldSyncedAt, repo.FieldCreatedAt, repo.FieldUpdatedAt, repo.FieldLatestDeployedAt:
+		case repo.FieldCreatedAt, repo.FieldUpdatedAt, repo.FieldLatestDeployedAt:
 			values[i] = new(sql.NullTime)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Repo", columns[i])
@@ -150,12 +148,6 @@ func (r *Repo) assignValues(columns []string, values []interface{}) error {
 				return fmt.Errorf("unexpected type %T for field webhook_id", values[i])
 			} else if value.Valid {
 				r.WebhookID = value.Int64
-			}
-		case repo.FieldSyncedAt:
-			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field synced_at", values[i])
-			} else if value.Valid {
-				r.SyncedAt = value.Time
 			}
 		case repo.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -230,8 +222,6 @@ func (r *Repo) String() string {
 	builder.WriteString(fmt.Sprintf("%v", r.Active))
 	builder.WriteString(", webhook_id=")
 	builder.WriteString(fmt.Sprintf("%v", r.WebhookID))
-	builder.WriteString(", synced_at=")
-	builder.WriteString(r.SyncedAt.Format(time.ANSIC))
 	builder.WriteString(", created_at=")
 	builder.WriteString(r.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", updated_at=")

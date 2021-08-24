@@ -24,8 +24,6 @@ func (Perm) Fields() []ent.Field {
 				"admin",
 			).
 			Default("read"),
-		field.Time("synced_at").
-			Optional(),
 		field.Time("created_at").
 			Default(time.Now),
 		field.Time("updated_at").

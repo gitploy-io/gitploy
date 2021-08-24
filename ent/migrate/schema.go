@@ -239,7 +239,6 @@ var (
 	PermsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "repo_perm", Type: field.TypeEnum, Enums: []string{"read", "write", "admin"}, Default: "read"},
-		{Name: "synced_at", Type: field.TypeTime, Nullable: true},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "repo_id", Type: field.TypeString, Nullable: true},
@@ -253,13 +252,13 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "perms_repos_perms",
-				Columns:    []*schema.Column{PermsColumns[5]},
+				Columns:    []*schema.Column{PermsColumns[4]},
 				RefColumns: []*schema.Column{ReposColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
 			{
 				Symbol:     "perms_users_perms",
-				Columns:    []*schema.Column{PermsColumns[6]},
+				Columns:    []*schema.Column{PermsColumns[5]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
@@ -268,7 +267,12 @@ var (
 			{
 				Name:    "perm_repo_id_user_id",
 				Unique:  false,
-				Columns: []*schema.Column{PermsColumns[5], PermsColumns[6]},
+				Columns: []*schema.Column{PermsColumns[4], PermsColumns[5]},
+			},
+			{
+				Name:    "perm_user_id_updated_at",
+				Unique:  false,
+				Columns: []*schema.Column{PermsColumns[5], PermsColumns[3]},
 			},
 		},
 	}
@@ -281,7 +285,6 @@ var (
 		{Name: "config_path", Type: field.TypeString, Default: "deploy.yml"},
 		{Name: "active", Type: field.TypeBool, Default: false},
 		{Name: "webhook_id", Type: field.TypeInt64, Nullable: true},
-		{Name: "synced_at", Type: field.TypeTime, Nullable: true},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "latest_deployed_at", Type: field.TypeTime, Nullable: true},

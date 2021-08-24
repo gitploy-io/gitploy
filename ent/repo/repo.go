@@ -23,8 +23,6 @@ const (
 	FieldActive = "active"
 	// FieldWebhookID holds the string denoting the webhook_id field in the database.
 	FieldWebhookID = "webhook_id"
-	// FieldSyncedAt holds the string denoting the synced_at field in the database.
-	FieldSyncedAt = "synced_at"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
@@ -71,7 +69,6 @@ var Columns = []string{
 	FieldConfigPath,
 	FieldActive,
 	FieldWebhookID,
-	FieldSyncedAt,
 	FieldCreatedAt,
 	FieldUpdatedAt,
 	FieldLatestDeployedAt,

@@ -2,32 +2,11 @@ package interactor
 
 import (
 	"context"
-	"fmt"
-	"time"
 
 	"github.com/hanjunlee/gitploy/ent"
 	"github.com/hanjunlee/gitploy/ent/perm"
 	"github.com/hanjunlee/gitploy/vo"
 )
-
-func (i *Interactor) Sync(ctx context.Context, u *ent.User) error {
-	perms, err := i.GetAllPermsWithRepo(ctx, u.Token)
-	if err != nil {
-		return fmt.Errorf("failed to get all permissions: %w", err)
-	}
-	i.log.Debug("get all permissions.")
-
-	sync := time.Now()
-
-	for _, perm := range perms {
-		re := perm.Edges.Repo
-		if err := i.SyncPerm(ctx, u, perm, sync); err != nil {
-			return fmt.Errorf("failed to sync with the \"%s\" repo: %w", re.Name, err)
-		}
-	}
-
-	return nil
-}
 
 func (i *Interactor) SyncRemoteRepo(ctx context.Context, u *ent.User, re *vo.RemoteRepo) error {
 	var (

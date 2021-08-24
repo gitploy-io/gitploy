@@ -14,8 +14,6 @@ const (
 	FieldID = "id"
 	// FieldRepoPerm holds the string denoting the repo_perm field in the database.
 	FieldRepoPerm = "repo_perm"
-	// FieldSyncedAt holds the string denoting the synced_at field in the database.
-	FieldSyncedAt = "synced_at"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
@@ -50,7 +48,6 @@ const (
 var Columns = []string{
 	FieldID,
 	FieldRepoPerm,
-	FieldSyncedAt,
 	FieldCreatedAt,
 	FieldUpdatedAt,
 	FieldUserID,
