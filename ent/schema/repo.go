@@ -27,8 +27,6 @@ func (Repo) Fields() []ent.Field {
 			Default(false),
 		field.Int64("webhook_id").
 			Optional(),
-		field.Time("synced_at").
-			Optional(),
 		field.Time("created_at").
 			Default(time.Now),
 		field.Time("updated_at").

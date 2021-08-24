@@ -8,6 +8,7 @@ import (
 	"github.com/hanjunlee/gitploy/ent"
 	"github.com/hanjunlee/gitploy/ent/enttest"
 	"github.com/hanjunlee/gitploy/ent/migrate"
+	"github.com/hanjunlee/gitploy/vo"
 )
 
 func TestStore_ListReposOfUser(t *testing.T) {
@@ -288,5 +289,25 @@ func TestStore_FindRepoOfUserByID(t *testing.T) {
 			t.Fatalf("FindRepoOfUserByID didn't returns an NotFoundError: %s", err)
 		}
 
+	})
+}
+
+func TestStore_SyncRepo(t *testing.T) {
+	t.Run("Create a new repo.", func(t *testing.T) {
+		client := enttest.Open(t, "sqlite3", "file:ent?mode=memory&cache=shared&_fk=1",
+			enttest.WithMigrateOptions(migrate.WithForeignKeys(false)),
+		)
+		defer client.Close()
+
+		s := NewStore(client)
+		if _, err := s.SyncRepo(context.Background(), &vo.RemoteRepo{
+			ID:          "1",
+			Namespace:   "octocat",
+			Name:        "HelloWorld",
+			Description: "nothing",
+			Perm:        vo.RemoteRepoPermAdmin,
+		}); err != nil {
+			t.Fatalf("SyncRepo return an error: %s", err)
+		}
 	})
 }

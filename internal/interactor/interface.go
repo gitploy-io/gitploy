@@ -31,13 +31,17 @@ type (
 		ListSortedReposOfUser(ctx context.Context, u *ent.User, q string, page, perPage int) ([]*ent.Repo, error)
 		FindRepoOfUserByID(ctx context.Context, u *ent.User, id string) (*ent.Repo, error)
 		FindRepoOfUserByNamespaceName(ctx context.Context, u *ent.User, namespace, name string) (*ent.Repo, error)
+		FindRepoByID(ctx context.Context, id string) (*ent.Repo, error)
+		SyncRepo(ctx context.Context, r *vo.RemoteRepo) (*ent.Repo, error)
 		UpdateRepo(ctx context.Context, r *ent.Repo) (*ent.Repo, error)
 		Activate(ctx context.Context, r *ent.Repo) (*ent.Repo, error)
 		Deactivate(ctx context.Context, r *ent.Repo) (*ent.Repo, error)
 
 		ListPermsOfRepo(ctx context.Context, r *ent.Repo, q string, page, perPage int) ([]*ent.Perm, error)
 		FindPermOfRepo(ctx context.Context, r *ent.Repo, u *ent.User) (*ent.Perm, error)
-		SyncPerm(ctx context.Context, user *ent.User, perm *ent.Perm, sync time.Time) error
+		CreatePerm(ctx context.Context, p *ent.Perm) (*ent.Perm, error)
+		UpdatePerm(ctx context.Context, p *ent.Perm) (*ent.Perm, error)
+		DeletePermsOfUserLessThanUpdatedAt(ctx context.Context, u *ent.User, t time.Time) (int, error)
 
 		SearchDeployments(ctx context.Context, u *ent.User, s []deployment.Status, owned bool, from time.Time, to time.Time, page, perPage int) ([]*ent.Deployment, error)
 		ListInactiveDeploymentsLessThanTime(ctx context.Context, t time.Time, page, perPage int) ([]*ent.Deployment, error)
@@ -70,8 +74,8 @@ type (
 
 	SCM interface {
 		GetUser(ctx context.Context, token string) (*vo.RemoteUser, error)
-		// TODO: fix type of return value to prevent using the ent package.
-		GetAllPermsWithRepo(ctx context.Context, token string) ([]*ent.Perm, error)
+
+		ListRemoteRepos(ctx context.Context, u *ent.User) ([]*vo.RemoteRepo, error)
 
 		// SCM returns the deployment with UID and SHA.
 		CreateRemoteDeployment(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, e *vo.Env) (*vo.RemoteDeployment, error)

@@ -103,26 +103,6 @@ func (ru *RepoUpdate) ClearWebhookID() *RepoUpdate {
 	return ru
 }
 
-// SetSyncedAt sets the "synced_at" field.
-func (ru *RepoUpdate) SetSyncedAt(t time.Time) *RepoUpdate {
-	ru.mutation.SetSyncedAt(t)
-	return ru
-}
-
-// SetNillableSyncedAt sets the "synced_at" field if the given value is not nil.
-func (ru *RepoUpdate) SetNillableSyncedAt(t *time.Time) *RepoUpdate {
-	if t != nil {
-		ru.SetSyncedAt(*t)
-	}
-	return ru
-}
-
-// ClearSyncedAt clears the value of the "synced_at" field.
-func (ru *RepoUpdate) ClearSyncedAt() *RepoUpdate {
-	ru.mutation.ClearSyncedAt()
-	return ru
-}
-
 // SetCreatedAt sets the "created_at" field.
 func (ru *RepoUpdate) SetCreatedAt(t time.Time) *RepoUpdate {
 	ru.mutation.SetCreatedAt(t)
@@ -412,19 +392,6 @@ func (ru *RepoUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: repo.FieldWebhookID,
 		})
 	}
-	if value, ok := ru.mutation.SyncedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: repo.FieldSyncedAt,
-		})
-	}
-	if ru.mutation.SyncedAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: repo.FieldSyncedAt,
-		})
-	}
 	if value, ok := ru.mutation.CreatedAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
@@ -703,26 +670,6 @@ func (ruo *RepoUpdateOne) AddWebhookID(i int64) *RepoUpdateOne {
 // ClearWebhookID clears the value of the "webhook_id" field.
 func (ruo *RepoUpdateOne) ClearWebhookID() *RepoUpdateOne {
 	ruo.mutation.ClearWebhookID()
-	return ruo
-}
-
-// SetSyncedAt sets the "synced_at" field.
-func (ruo *RepoUpdateOne) SetSyncedAt(t time.Time) *RepoUpdateOne {
-	ruo.mutation.SetSyncedAt(t)
-	return ruo
-}
-
-// SetNillableSyncedAt sets the "synced_at" field if the given value is not nil.
-func (ruo *RepoUpdateOne) SetNillableSyncedAt(t *time.Time) *RepoUpdateOne {
-	if t != nil {
-		ruo.SetSyncedAt(*t)
-	}
-	return ruo
-}
-
-// ClearSyncedAt clears the value of the "synced_at" field.
-func (ruo *RepoUpdateOne) ClearSyncedAt() *RepoUpdateOne {
-	ruo.mutation.ClearSyncedAt()
 	return ruo
 }
 
@@ -1037,19 +984,6 @@ func (ruo *RepoUpdateOne) sqlSave(ctx context.Context) (_node *Repo, err error) 
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeInt64,
 			Column: repo.FieldWebhookID,
-		})
-	}
-	if value, ok := ruo.mutation.SyncedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: repo.FieldSyncedAt,
-		})
-	}
-	if ruo.mutation.SyncedAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: repo.FieldSyncedAt,
 		})
 	}
 	if value, ok := ruo.mutation.CreatedAt(); ok {

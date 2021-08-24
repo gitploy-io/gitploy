@@ -1,7 +1,9 @@
 package sync
 
 import (
+	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/hanjunlee/gitploy/ent"
@@ -34,11 +36,30 @@ func (s *Syncher) Sync(c *gin.Context) {
 	v, _ := c.Get(gb.KeyUser)
 	u := v.(*ent.User)
 
-	if err := s.i.Sync(ctx, u); err != nil {
-		s.log.Error("failed to synchronize.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to synchronize.")
+	remotes, err := s.i.ListRemoteRepos(ctx, u)
+	if err != nil {
+		s.log.Error("It has failed to list remote repositories.", zap.Error(err))
+		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to list remote repositories.")
+		return
 	}
 
-	s.log.Debug("success to synchronize.", zap.String("user", u.Login))
+	syncTime := time.Now()
+	for _, re := range remotes {
+		if err := s.i.SyncRemoteRepo(ctx, u, re); err != nil {
+			s.log.Error("It has failed to sync with the remote repository.", zap.Error(err), zap.String("repo_id", re.ID))
+		}
+	}
+	s.log.Debug(fmt.Sprintf("Schronize with %d repositories.", len(remotes)), zap.String("user_id", u.ID))
+
+	// Delete staled perms.
+	var cnt int
+	if cnt, err = s.i.DeletePermsOfUserLessThanUpdatedAt(ctx, u, syncTime); err != nil {
+		s.log.Error("It has failed to delete staled repositories.", zap.Error(err))
+		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to delete staled repositories.")
+		return
+	}
+	s.log.Debug(fmt.Sprintf("Delete %d staled perms.", cnt))
+
+	s.log.Debug("Success to synchronize.", zap.String("user", u.Login))
 	c.Status(http.StatusOK)
 }

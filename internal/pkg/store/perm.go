@@ -2,6 +2,7 @@ package store
 
 import (
 	"context"
+	"time"
 
 	"github.com/hanjunlee/gitploy/ent"
 	"github.com/hanjunlee/gitploy/ent/perm"
@@ -37,4 +38,44 @@ func (s *Store) FindPermOfRepo(ctx context.Context, r *ent.Repo, u *ent.User) (*
 		WithRepo().
 		WithUser().
 		Only(ctx)
+}
+
+func (s *Store) CreatePerm(ctx context.Context, p *ent.Perm) (*ent.Perm, error) {
+	return s.c.Perm.
+		Create().
+		SetRepoPerm(p.RepoPerm).
+		SetUserID(p.UserID).
+		SetRepoID(p.RepoID).
+		Save(ctx)
+}
+
+func (s *Store) UpdatePerm(ctx context.Context, p *ent.Perm) (*ent.Perm, error) {
+	return s.c.Perm.
+		UpdateOne(p).
+		SetRepoPerm(p.RepoPerm).
+		Save(ctx)
+}
+
+func (s *Store) DeletePermsOfUserLessThanUpdatedAt(ctx context.Context, u *ent.User, t time.Time) (int, error) {
+	var (
+		cnt int
+		err error
+	)
+
+	if err = s.WithTx(ctx, func(tx *ent.Tx) error {
+		cnt, err = tx.Perm.
+			Delete().
+			Where(
+				perm.And(
+					perm.UserIDEQ(u.ID),
+					perm.UpdatedAtLT(t),
+				),
+			).
+			Exec(ctx)
+		return err
+	}); err != nil {
+		return 0, err
+	}
+
+	return cnt, nil
 }

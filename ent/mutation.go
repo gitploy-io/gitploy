@@ -5267,7 +5267,6 @@ type PermMutation struct {
 	typ           string
 	id            *int
 	repo_perm     *perm.RepoPerm
-	synced_at     *time.Time
 	created_at    *time.Time
 	updated_at    *time.Time
 	clearedFields map[string]struct{}
@@ -5393,55 +5392,6 @@ func (m *PermMutation) OldRepoPerm(ctx context.Context) (v perm.RepoPerm, err er
 // ResetRepoPerm resets all changes to the "repo_perm" field.
 func (m *PermMutation) ResetRepoPerm() {
 	m.repo_perm = nil
-}
-
-// SetSyncedAt sets the "synced_at" field.
-func (m *PermMutation) SetSyncedAt(t time.Time) {
-	m.synced_at = &t
-}
-
-// SyncedAt returns the value of the "synced_at" field in the mutation.
-func (m *PermMutation) SyncedAt() (r time.Time, exists bool) {
-	v := m.synced_at
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldSyncedAt returns the old "synced_at" field's value of the Perm entity.
-// If the Perm object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PermMutation) OldSyncedAt(ctx context.Context) (v time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, fmt.Errorf("OldSyncedAt is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, fmt.Errorf("OldSyncedAt requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldSyncedAt: %w", err)
-	}
-	return oldValue.SyncedAt, nil
-}
-
-// ClearSyncedAt clears the value of the "synced_at" field.
-func (m *PermMutation) ClearSyncedAt() {
-	m.synced_at = nil
-	m.clearedFields[perm.FieldSyncedAt] = struct{}{}
-}
-
-// SyncedAtCleared returns if the "synced_at" field was cleared in this mutation.
-func (m *PermMutation) SyncedAtCleared() bool {
-	_, ok := m.clearedFields[perm.FieldSyncedAt]
-	return ok
-}
-
-// ResetSyncedAt resets all changes to the "synced_at" field.
-func (m *PermMutation) ResetSyncedAt() {
-	m.synced_at = nil
-	delete(m.clearedFields, perm.FieldSyncedAt)
 }
 
 // SetCreatedAt sets the "created_at" field.
@@ -5659,12 +5609,9 @@ func (m *PermMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *PermMutation) Fields() []string {
-	fields := make([]string, 0, 6)
+	fields := make([]string, 0, 5)
 	if m.repo_perm != nil {
 		fields = append(fields, perm.FieldRepoPerm)
-	}
-	if m.synced_at != nil {
-		fields = append(fields, perm.FieldSyncedAt)
 	}
 	if m.created_at != nil {
 		fields = append(fields, perm.FieldCreatedAt)
@@ -5688,8 +5635,6 @@ func (m *PermMutation) Field(name string) (ent.Value, bool) {
 	switch name {
 	case perm.FieldRepoPerm:
 		return m.RepoPerm()
-	case perm.FieldSyncedAt:
-		return m.SyncedAt()
 	case perm.FieldCreatedAt:
 		return m.CreatedAt()
 	case perm.FieldUpdatedAt:
@@ -5709,8 +5654,6 @@ func (m *PermMutation) OldField(ctx context.Context, name string) (ent.Value, er
 	switch name {
 	case perm.FieldRepoPerm:
 		return m.OldRepoPerm(ctx)
-	case perm.FieldSyncedAt:
-		return m.OldSyncedAt(ctx)
 	case perm.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case perm.FieldUpdatedAt:
@@ -5734,13 +5677,6 @@ func (m *PermMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetRepoPerm(v)
-		return nil
-	case perm.FieldSyncedAt:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetSyncedAt(v)
 		return nil
 	case perm.FieldCreatedAt:
 		v, ok := value.(time.Time)
@@ -5799,11 +5735,7 @@ func (m *PermMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *PermMutation) ClearedFields() []string {
-	var fields []string
-	if m.FieldCleared(perm.FieldSyncedAt) {
-		fields = append(fields, perm.FieldSyncedAt)
-	}
-	return fields
+	return nil
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -5816,11 +5748,6 @@ func (m *PermMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *PermMutation) ClearField(name string) error {
-	switch name {
-	case perm.FieldSyncedAt:
-		m.ClearSyncedAt()
-		return nil
-	}
 	return fmt.Errorf("unknown Perm nullable field %s", name)
 }
 
@@ -5830,9 +5757,6 @@ func (m *PermMutation) ResetField(name string) error {
 	switch name {
 	case perm.FieldRepoPerm:
 		m.ResetRepoPerm()
-		return nil
-	case perm.FieldSyncedAt:
-		m.ResetSyncedAt()
 		return nil
 	case perm.FieldCreatedAt:
 		m.ResetCreatedAt()
@@ -5957,7 +5881,6 @@ type RepoMutation struct {
 	active             *bool
 	webhook_id         *int64
 	addwebhook_id      *int64
-	synced_at          *time.Time
 	created_at         *time.Time
 	updated_at         *time.Time
 	latest_deployed_at *time.Time
@@ -6311,55 +6234,6 @@ func (m *RepoMutation) ResetWebhookID() {
 	delete(m.clearedFields, repo.FieldWebhookID)
 }
 
-// SetSyncedAt sets the "synced_at" field.
-func (m *RepoMutation) SetSyncedAt(t time.Time) {
-	m.synced_at = &t
-}
-
-// SyncedAt returns the value of the "synced_at" field in the mutation.
-func (m *RepoMutation) SyncedAt() (r time.Time, exists bool) {
-	v := m.synced_at
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldSyncedAt returns the old "synced_at" field's value of the Repo entity.
-// If the Repo object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *RepoMutation) OldSyncedAt(ctx context.Context) (v time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, fmt.Errorf("OldSyncedAt is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, fmt.Errorf("OldSyncedAt requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldSyncedAt: %w", err)
-	}
-	return oldValue.SyncedAt, nil
-}
-
-// ClearSyncedAt clears the value of the "synced_at" field.
-func (m *RepoMutation) ClearSyncedAt() {
-	m.synced_at = nil
-	m.clearedFields[repo.FieldSyncedAt] = struct{}{}
-}
-
-// SyncedAtCleared returns if the "synced_at" field was cleared in this mutation.
-func (m *RepoMutation) SyncedAtCleared() bool {
-	_, ok := m.clearedFields[repo.FieldSyncedAt]
-	return ok
-}
-
-// ResetSyncedAt resets all changes to the "synced_at" field.
-func (m *RepoMutation) ResetSyncedAt() {
-	m.synced_at = nil
-	delete(m.clearedFields, repo.FieldSyncedAt)
-}
-
 // SetCreatedAt sets the "created_at" field.
 func (m *RepoMutation) SetCreatedAt(t time.Time) {
 	m.created_at = &t
@@ -6662,7 +6536,7 @@ func (m *RepoMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *RepoMutation) Fields() []string {
-	fields := make([]string, 0, 10)
+	fields := make([]string, 0, 9)
 	if m.namespace != nil {
 		fields = append(fields, repo.FieldNamespace)
 	}
@@ -6680,9 +6554,6 @@ func (m *RepoMutation) Fields() []string {
 	}
 	if m.webhook_id != nil {
 		fields = append(fields, repo.FieldWebhookID)
-	}
-	if m.synced_at != nil {
-		fields = append(fields, repo.FieldSyncedAt)
 	}
 	if m.created_at != nil {
 		fields = append(fields, repo.FieldCreatedAt)
@@ -6713,8 +6584,6 @@ func (m *RepoMutation) Field(name string) (ent.Value, bool) {
 		return m.Active()
 	case repo.FieldWebhookID:
 		return m.WebhookID()
-	case repo.FieldSyncedAt:
-		return m.SyncedAt()
 	case repo.FieldCreatedAt:
 		return m.CreatedAt()
 	case repo.FieldUpdatedAt:
@@ -6742,8 +6611,6 @@ func (m *RepoMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldActive(ctx)
 	case repo.FieldWebhookID:
 		return m.OldWebhookID(ctx)
-	case repo.FieldSyncedAt:
-		return m.OldSyncedAt(ctx)
 	case repo.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case repo.FieldUpdatedAt:
@@ -6800,13 +6667,6 @@ func (m *RepoMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetWebhookID(v)
-		return nil
-	case repo.FieldSyncedAt:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetSyncedAt(v)
 		return nil
 	case repo.FieldCreatedAt:
 		v, ok := value.(time.Time)
@@ -6877,9 +6737,6 @@ func (m *RepoMutation) ClearedFields() []string {
 	if m.FieldCleared(repo.FieldWebhookID) {
 		fields = append(fields, repo.FieldWebhookID)
 	}
-	if m.FieldCleared(repo.FieldSyncedAt) {
-		fields = append(fields, repo.FieldSyncedAt)
-	}
 	if m.FieldCleared(repo.FieldLatestDeployedAt) {
 		fields = append(fields, repo.FieldLatestDeployedAt)
 	}
@@ -6899,9 +6756,6 @@ func (m *RepoMutation) ClearField(name string) error {
 	switch name {
 	case repo.FieldWebhookID:
 		m.ClearWebhookID()
-		return nil
-	case repo.FieldSyncedAt:
-		m.ClearSyncedAt()
 		return nil
 	case repo.FieldLatestDeployedAt:
 		m.ClearLatestDeployedAt()
@@ -6931,9 +6785,6 @@ func (m *RepoMutation) ResetField(name string) error {
 		return nil
 	case repo.FieldWebhookID:
 		m.ResetWebhookID()
-		return nil
-	case repo.FieldSyncedAt:
-		m.ResetSyncedAt()
 		return nil
 	case repo.FieldCreatedAt:
 		m.ResetCreatedAt()

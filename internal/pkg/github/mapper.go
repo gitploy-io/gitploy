@@ -5,8 +5,6 @@ import (
 	"strings"
 
 	"github.com/google/go-github/v32/github"
-	"github.com/hanjunlee/gitploy/ent"
-	"github.com/hanjunlee/gitploy/ent/perm"
 	"github.com/hanjunlee/gitploy/vo"
 )
 
@@ -18,45 +16,44 @@ func mapGithubUserToUser(u *github.User) *vo.RemoteUser {
 	}
 }
 
-func mapGithubRepoToRepo(r *github.Repository) *ent.Repo {
+func splitNamespaceName(fullName string) (string, string) {
+	ss := strings.Split(fullName, "/")
+	return ss[0], ss[1]
+}
+
+func mapGithubRepoToRemotePerm(r *github.Repository) *vo.RemoteRepo {
 	namespace, name := splitNamespaceName(*r.FullName)
 
 	if r.Description == nil {
 		r.Description = github.String("")
 	}
 
-	return &ent.Repo{
+	return &vo.RemoteRepo{
 		ID:          strconv.FormatInt(*r.ID, 10),
 		Namespace:   namespace,
 		Name:        name,
 		Description: *r.Description,
+		Perm:        mapGithubPermToRepoPerm(*r.Permissions),
 	}
 }
 
-func splitNamespaceName(fullName string) (string, string) {
-	ss := strings.Split(fullName, "/")
-	return ss[0], ss[1]
-}
-
-func mapGithubPermToPerm(perms map[string]bool) *ent.Perm {
-	var p perm.RepoPerm
+func mapGithubPermToRepoPerm(perms map[string]bool) vo.RemoteRepoPerm {
+	var p vo.RemoteRepoPerm
 
 	// Github represent the permission of the repository with these enums:
 	// "admin", "push", and "pull".
 	// https://docs.github.com/en/rest/reference/repos#list-repositories-for-the-authenticated-user
 	if admin, ok := perms["admin"]; ok && admin {
-		p = perm.RepoPermAdmin
+		p = vo.RemoteRepoPermAdmin
 	} else if push, ok := perms["push"]; ok && push {
-		p = perm.RepoPermWrite
+		p = vo.RemoteRepoPermWrite
 	} else if pull, ok := perms["pull"]; ok && pull {
-		p = perm.RepoPermRead
+		p = vo.RemoteRepoPermRead
 	} else {
-		p = perm.RepoPermRead
+		p = vo.RemoteRepoPermRead
 	}
 
-	return &ent.Perm{
-		RepoPerm: p,
-	}
+	return p
 }
 
 func mapGithubCommitToCommit(cm *github.RepositoryCommit) *vo.Commit {
