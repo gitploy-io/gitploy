@@ -47,7 +47,7 @@ func (s *Syncher) Sync(c *gin.Context) {
 	syncCnt := 0
 	for _, re := range remotes {
 		// Skip un-selected repositories.
-		if !s.i.IsEntryRepo(ctx, re.Namespace) {
+		if !s.i.IsEntryOrg(ctx, re.Namespace) {
 			continue
 		}
 

@@ -13,7 +13,7 @@ import (
 type (
 	Interactor interface {
 		ListRemoteRepos(ctx context.Context, u *ent.User) ([]*vo.RemoteRepo, error)
-		IsEntryRepo(ctx context.Context, namespace string) bool
+		IsEntryOrg(ctx context.Context, namespace string) bool
 		SyncRemoteRepo(ctx context.Context, u *ent.User, re *vo.RemoteRepo) error
 		DeletePermsOfUserLessThanUpdatedAt(ctx context.Context, u *ent.User, t time.Time) (int, error)
 	}

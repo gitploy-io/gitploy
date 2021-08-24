@@ -52,18 +52,18 @@ func (mr *MockInteractorMockRecorder) DeletePermsOfUserLessThanUpdatedAt(ctx, u,
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeletePermsOfUserLessThanUpdatedAt", reflect.TypeOf((*MockInteractor)(nil).DeletePermsOfUserLessThanUpdatedAt), ctx, u, t)
 }
 
-// IsEntryRepo mocks base method.
-func (m *MockInteractor) IsEntryRepo(ctx context.Context, namespace string) bool {
+// IsEntryOrg mocks base method.
+func (m *MockInteractor) IsEntryOrg(ctx context.Context, namespace string) bool {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "IsEntryRepo", ctx, namespace)
+	ret := m.ctrl.Call(m, "IsEntryOrg", ctx, namespace)
 	ret0, _ := ret[0].(bool)
 	return ret0
 }
 
-// IsEntryRepo indicates an expected call of IsEntryRepo.
-func (mr *MockInteractorMockRecorder) IsEntryRepo(ctx, namespace interface{}) *gomock.Call {
+// IsEntryOrg indicates an expected call of IsEntryOrg.
+func (mr *MockInteractorMockRecorder) IsEntryOrg(ctx, namespace interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "IsEntryRepo", reflect.TypeOf((*MockInteractor)(nil).IsEntryRepo), ctx, namespace)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "IsEntryOrg", reflect.TypeOf((*MockInteractor)(nil).IsEntryOrg), ctx, namespace)
 }
 
 // ListRemoteRepos mocks base method.

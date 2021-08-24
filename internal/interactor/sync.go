@@ -8,12 +8,12 @@ import (
 	"github.com/hanjunlee/gitploy/vo"
 )
 
-func (i *Interactor) IsEntryRepo(ctx context.Context, namespace string) bool {
-	if i.repoEntries == nil {
+func (i *Interactor) IsEntryOrg(ctx context.Context, namespace string) bool {
+	if i.orgEntries == nil {
 		return true
 	}
 
-	for _, r := range i.repoEntries {
+	for _, r := range i.orgEntries {
 		if namespace == r {
 			return true
 		}

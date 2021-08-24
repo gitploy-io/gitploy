@@ -11,7 +11,7 @@ type (
 		ServerHost  string
 		ServerProto string
 
-		repoEntries []string
+		orgEntries []string
 		// Admin Users
 		admins []string
 
@@ -32,8 +32,8 @@ type (
 		ServerHost  string
 		ServerProto string
 
-		RepoEntries []string
-		AdminUsers  []string
+		OrgEntries []string
+		AdminUsers []string
 
 		LicenseKey string
 
@@ -46,7 +46,7 @@ func NewInteractor(c *InteractorConfig) *Interactor {
 	i := &Interactor{
 		ServerHost:  c.ServerHost,
 		ServerProto: c.ServerProto,
-		repoEntries: c.RepoEntries,
+		orgEntries:  c.OrgEntries,
 		admins:      c.AdminUsers,
 		licenseKey:  c.LicenseKey,
 		Store:       c.Store,

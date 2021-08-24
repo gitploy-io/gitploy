@@ -118,7 +118,7 @@ func NewInteractor(c *Config) server.Interactor {
 		&interactor.InteractorConfig{
 			ServerHost:  c.ServerHost,
 			ServerProto: c.ServerProto,
-			RepoEntries: c.RepositoryEntries,
+			OrgEntries:  c.OrganizationEntries,
 			AdminUsers:  c.AdminUsers,
 			LicenseKey:  c.License,
 			Store:       newStore(c),

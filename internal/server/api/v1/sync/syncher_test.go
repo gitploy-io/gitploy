@@ -41,7 +41,7 @@ func TestSyncher_Sync(t *testing.T) {
 		t.Log("Only octocat is trusted namespace.")
 		m.
 			EXPECT().
-			IsEntryRepo(ctx, gomock.Any()).
+			IsEntryOrg(ctx, gomock.Any()).
 			DoAndReturn(func(ctx context.Context, namespace string) bool {
 				return namespace == "octocat"
 			}).
