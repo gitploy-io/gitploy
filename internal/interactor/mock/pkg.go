@@ -233,11 +233,12 @@ func (mr *MockStoreMockRecorder) DeleteApproval(ctx, a interface{}) *gomock.Call
 }
 
 // DeletePermsOfUserLessThanUpdatedAt mocks base method.
-func (m *MockStore) DeletePermsOfUserLessThanUpdatedAt(ctx context.Context, u *ent.User, t time.Time) error {
+func (m *MockStore) DeletePermsOfUserLessThanUpdatedAt(ctx context.Context, u *ent.User, t time.Time) (int, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "DeletePermsOfUserLessThanUpdatedAt", ctx, u, t)
-	ret0, _ := ret[0].(error)
-	return ret0
+	ret0, _ := ret[0].(int)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // DeletePermsOfUserLessThanUpdatedAt indicates an expected call of DeletePermsOfUserLessThanUpdatedAt.
@@ -849,21 +850,6 @@ func (m *MockSCM) DeleteWebhook(ctx context.Context, u *ent.User, r *ent.Repo, i
 func (mr *MockSCMMockRecorder) DeleteWebhook(ctx, u, r, id interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteWebhook", reflect.TypeOf((*MockSCM)(nil).DeleteWebhook), ctx, u, r, id)
-}
-
-// GetAllPermsWithRepo mocks base method.
-func (m *MockSCM) GetAllPermsWithRepo(ctx context.Context, token string) ([]*ent.Perm, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetAllPermsWithRepo", ctx, token)
-	ret0, _ := ret[0].([]*ent.Perm)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetAllPermsWithRepo indicates an expected call of GetAllPermsWithRepo.
-func (mr *MockSCMMockRecorder) GetAllPermsWithRepo(ctx, token interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllPermsWithRepo", reflect.TypeOf((*MockSCM)(nil).GetAllPermsWithRepo), ctx, token)
 }
 
 // GetBranch mocks base method.

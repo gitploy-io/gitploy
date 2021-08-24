@@ -56,9 +56,14 @@ func (s *Store) UpdatePerm(ctx context.Context, p *ent.Perm) (*ent.Perm, error) 
 		Save(ctx)
 }
 
-func (s *Store) DeletePermsOfUserLessThanUpdatedAt(ctx context.Context, u *ent.User, t time.Time) error {
-	return s.WithTx(ctx, func(tx *ent.Tx) error {
-		_, err := tx.Perm.
+func (s *Store) DeletePermsOfUserLessThanUpdatedAt(ctx context.Context, u *ent.User, t time.Time) (int, error) {
+	var (
+		cnt int
+		err error
+	)
+
+	if err = s.WithTx(ctx, func(tx *ent.Tx) error {
+		cnt, err = tx.Perm.
 			Delete().
 			Where(
 				perm.And(
@@ -68,5 +73,9 @@ func (s *Store) DeletePermsOfUserLessThanUpdatedAt(ctx context.Context, u *ent.U
 			).
 			Exec(ctx)
 		return err
-	})
+	}); err != nil {
+		return 0, err
+	}
+
+	return cnt, nil
 }

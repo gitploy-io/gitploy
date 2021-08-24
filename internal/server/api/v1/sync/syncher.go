@@ -52,12 +52,13 @@ func (s *Syncher) Sync(c *gin.Context) {
 	s.log.Debug(fmt.Sprintf("Schronize with %d repositories.", len(remotes)), zap.String("user_id", u.ID))
 
 	// Delete staled perms.
-	if err = s.i.DeletePermsOfUserLessThanUpdatedAt(ctx, u, syncTime); err != nil {
+	var cnt int
+	if cnt, err = s.i.DeletePermsOfUserLessThanUpdatedAt(ctx, u, syncTime); err != nil {
 		s.log.Error("It has failed to delete staled repositories.", zap.Error(err))
 		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to delete staled repositories.")
 		return
 	}
-	s.log.Debug("Delete staled perms.")
+	s.log.Debug(fmt.Sprintf("Delete %d staled perms.", cnt))
 
 	s.log.Debug("Success to synchronize.", zap.String("user", u.Login))
 	c.Status(http.StatusOK)
