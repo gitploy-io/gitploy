@@ -10,7 +10,8 @@ import {
     RequestStatus, 
     HttpNotFoundError, 
     HttpForbiddenError,
-    HttpUnprocessableEntityError 
+    HttpUnprocessableEntityError, 
+    DeploymentStatusEnum
 } from "../models"
 import { 
     searchRepo, 
@@ -109,7 +110,7 @@ export const deployToSCM = createAsyncThunk<Deployment, void, { state: {deployme
             if (e instanceof HttpForbiddenError) {
                 message.error("Only write permission can deploy.", 3)
             } else if (e instanceof HttpUnprocessableEntityError)  {
-                message.error("It's unprocessable entity.", 3)
+                message.error(`It's unprocessable deployment.`, 3)
             } 
 
             return rejectWithValue(e)
@@ -275,6 +276,10 @@ export const deploymentSlice = createSlice({
 
             .addCase(deployToSCM.rejected, (state) => {
                 state.deploying = RequestStatus.Idle
+
+                if (state.deployment) {
+                    state.deployment.lastStatus = DeploymentStatusEnum.Failure
+                }
             })
 
             .addCase(fetchApprovals.fulfilled, (state, action) => {

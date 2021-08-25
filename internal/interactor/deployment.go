@@ -90,6 +90,8 @@ func (i *Interactor) CreateRemoteDeployment(ctx context.Context, u *ent.User, re
 		if _, err := i.UpdateDeployment(ctx, d); err != nil {
 			return nil, err
 		}
+
+		return nil, err
 	}
 
 	// Save the state of the remote deployment.

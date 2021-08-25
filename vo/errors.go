@@ -58,3 +58,16 @@ func IsRefNotFoundError(err error) bool {
 	var e *RefNotFoundError
 	return errors.As(err, &e)
 }
+
+type UnprocessibleDeploymentError struct {
+	Message string
+}
+
+func (e *UnprocessibleDeploymentError) Error() string {
+	return e.Message
+}
+
+func IsUnprocessibleDeploymentError(err error) bool {
+	var e *UnprocessibleDeploymentError
+	return errors.As(err, &e)
+}

@@ -12,7 +12,7 @@ import (
 )
 
 func (g *Github) CreateRemoteDeployment(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, e *vo.Env) (*vo.RemoteDeployment, error) {
-	gd, _, err := g.Client(ctx, u.Token).
+	gd, res, err := g.Client(ctx, u.Token).
 		Repositories.
 		CreateDeployment(ctx, r.Namespace, r.Name, &github.DeploymentRequest{
 			Ref:                   github.String(d.Ref),
@@ -24,6 +24,15 @@ func (g *Github) CreateRemoteDeployment(ctx context.Context, u *ent.User, r *ent
 			Payload:               github.String(e.Payload),
 			ProductionEnvironment: github.Bool(e.ProductionEnvironment),
 		})
+	if res.StatusCode == http.StatusConflict {
+		return nil, &vo.UnprocessibleDeploymentError{
+			Message: "Merge Conflict.",
+		}
+	} else if res.StatusCode == http.StatusUnprocessableEntity {
+		return nil, &vo.UnprocessibleDeploymentError{
+			Message: "Unprocessible entity.",
+		}
+	}
 	if err != nil {
 		return nil, err
 	}

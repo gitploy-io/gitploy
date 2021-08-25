@@ -204,11 +204,17 @@ func (r *Repo) UpdateDeployment(c *gin.Context) {
 			return
 		}
 
-		if d, err = r.i.CreateRemoteDeployment(ctx, u, re, d, cf.GetEnv(d.Env)); err != nil {
-			r.log.Error("failed to deploy to SCM.", zap.Error(err))
-			gb.ErrorResponse(c, http.StatusUnprocessableEntity, "It has failed to deploy to SCM.")
+		if d, err = r.i.CreateRemoteDeployment(ctx, u, re, d, cf.GetEnv(d.Env)); vo.IsUnprocessibleDeploymentError(err) {
+			r.log.Warn("It is unprocessible deployment.", zap.Error(err))
+			gb.ErrorResponse(c, http.StatusUnprocessableEntity, "It is unprocessible deployment.")
+			return
+		} else if err != nil {
+			r.log.Error("It has failed to create the remote deployment.", zap.Error(err))
+			gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to create the remote deployment.")
 			return
 		}
+
+		// TODO: Deployment event.
 	}
 
 	// Get the deployment with edges.
