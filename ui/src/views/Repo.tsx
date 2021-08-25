@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import { Menu, Breadcrumb } from 'antd'
+import { Menu, Breadcrumb, Result, } from 'antd'
 import { shallowEqual } from "react-redux";
 import { useEffect } from "react";
 
@@ -21,7 +21,7 @@ interface Params {
 
 export default function Repo(): JSX.Element {
     const { namespace, name, tab } = useParams<Params>()
-    const { repo } = useAppSelector(state => state.repo, shallowEqual)
+    const { hasInit, repo } = useAppSelector(state => state.repo, shallowEqual)
     const dispatch = useAppDispatch()
 
     useEffect(() => {
@@ -36,8 +36,20 @@ export default function Repo(): JSX.Element {
         dispatch(activate())
     }
 
-    const hasInit = (repo)? true : false
     const active = (repo?.active)? true : false
+    
+    if (!hasInit) {
+        return <div />
+    } else if (hasInit && !repo) {
+        return <Main>
+            <Result
+                style={{paddingTop: '120px'}}
+                status="warning"
+                title="The page is not found."
+                subTitle="Please check the URL."
+            />
+        </Main>
+    }
 
     const styleActivateButton: React.CSSProperties = {
         display: (hasInit && !active)? "" : "none",

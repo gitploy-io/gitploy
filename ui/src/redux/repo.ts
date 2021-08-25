@@ -6,13 +6,13 @@ import { Repo, RequestStatus } from "../models"
 import { HttpForbiddenError } from '../models/errors'
 
 interface RepoState {
-    key: string
+    hasInit: boolean
     repo?: Repo
     activating: RequestStatus
 }
 
 const initialState: RepoState = {
-    key: "home",
+    hasInit: false,
     activating: RequestStatus.Idle
 }
 
@@ -47,16 +47,16 @@ export const activate = createAsyncThunk<Repo, void, { state: {repo: RepoState} 
 export const repoSlice = createSlice({
     name: "repo",
     initialState,
-    reducers: {
-        setKey: (state, action: PayloadAction<string>) => {
-            state.key = action.payload
-        },
-    },
+    reducers: {},
     extraReducers: builder => {
         builder
             .addCase(init.fulfilled, (state, action) => {
                 const repo = action.payload
                 state.repo = repo
+                state.hasInit = true
+            })
+            .addCase(init.rejected, (state) => {
+                state.hasInit = true
             })
             .addCase(activate.pending, (state) => {
                 state.activating = RequestStatus.Pending
