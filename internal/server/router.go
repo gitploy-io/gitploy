@@ -188,6 +188,13 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 		hooksapi.POST("", h.HandleHook)
 	}
 
+	r.HEAD("/slack", func(gc *gin.Context) {
+		if isSlackEnabled(c) {
+			gc.Status(http.StatusOK)
+			return
+		}
+		gc.Status(http.StatusNotFound)
+	})
 	if isSlackEnabled(c) {
 		slackapi := r.Group("/slack")
 		{
@@ -203,8 +210,6 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 			// TODO: add signout
 			slackapi.POST("/interact", m.Verify(), slack.Interact)
 			slackapi.POST("/command", m.Verify(), slack.Cmd)
-			// Check Slack is enabled or not.
-			slackapi.GET("/ping", func(c *gin.Context) { c.Status(http.StatusOK) })
 		}
 	}
 
