@@ -6,13 +6,13 @@ import { Repo, RequestStatus } from "../models"
 import { HttpForbiddenError } from '../models/errors'
 
 interface RepoState {
-    key: string
+    display: boolean
     repo?: Repo
     activating: RequestStatus
 }
 
 const initialState: RepoState = {
-    key: "home",
+    display: false,
     activating: RequestStatus.Idle
 }
 
@@ -48,9 +48,9 @@ export const repoSlice = createSlice({
     name: "repo",
     initialState,
     reducers: {
-        setKey: (state, action: PayloadAction<string>) => {
-            state.key = action.payload
-        },
+        setDisplay: (state, action: PayloadAction<boolean>) => {
+            state.display = action.payload
+        }
     },
     extraReducers: builder => {
         builder

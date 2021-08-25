@@ -38,8 +38,8 @@ const firstPage = 1
 const perPage = 100
 
 interface RepoDeployState {
+    display: boolean
     repo?: Repo
-    hasConfig: boolean
     config?: Config 
     env?: Env
     envs: Env[]
@@ -65,7 +65,7 @@ interface RepoDeployState {
 }
 
 const initialState: RepoDeployState = {
-    hasConfig: true,
+    display: false,
     envs: [],
     branchStatuses: [],
     branches: [],
@@ -299,6 +299,9 @@ export const repoDeploySlice = createSlice({
     name: "repoDeploy",
     initialState,
     reducers: {
+        setDisplay: (state, action: PayloadAction<boolean>) => {
+            state.display = action.payload
+        },
         setEnv: (state, action: PayloadAction<Env>) => {
             state.env =  action.payload
         },
@@ -341,10 +344,6 @@ export const repoDeploySlice = createSlice({
                 const config = action.payload
                 state.envs = config.envs.map(e => e)
                 state.config = config
-                state.hasConfig = true
-            })
-            .addCase(fetchConfig.rejected, (state) => {
-                state.hasConfig = false
             })
             .addCase(fetchBranches.fulfilled, (state, action) => {
                 state.branches = action.payload

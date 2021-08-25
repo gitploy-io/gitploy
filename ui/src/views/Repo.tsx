@@ -1,10 +1,10 @@
 import { useParams } from "react-router-dom";
-import { Menu, Breadcrumb } from 'antd'
+import { Menu, Breadcrumb, Result, } from 'antd'
 import { shallowEqual } from "react-redux";
 import { useEffect } from "react";
 
 import { useAppSelector, useAppDispatch } from '../redux/hooks'
-import { init, activate } from '../redux/repo'
+import { init, activate, repoSlice as slice } from '../redux/repo'
 
 import ActivateButton from "../components/ActivateButton"
 import Main from './Main'
@@ -21,12 +21,13 @@ interface Params {
 
 export default function Repo(): JSX.Element {
     const { namespace, name, tab } = useParams<Params>()
-    const { repo } = useAppSelector(state => state.repo, shallowEqual)
+    const { display, repo } = useAppSelector(state => state.repo, shallowEqual)
     const dispatch = useAppDispatch()
 
     useEffect(() => {
         const f = async () => {
             await dispatch(init({namespace, name}))
+            await dispatch(slice.actions.setDisplay(true))
         }
         f()
         // eslint-disable-next-line
@@ -36,17 +37,31 @@ export default function Repo(): JSX.Element {
         dispatch(activate())
     }
 
-    const hasInit = (repo)? true : false
     const active = (repo?.active)? true : false
+    
+    if (!display) {
+        return <Main>
+            <div />
+        </Main>
+    } else if (display && !repo) {
+        return <Main>
+            <Result
+                style={{paddingTop: '120px'}}
+                status="warning"
+                title="The page is not found."
+                subTitle="Please check the URL."
+            />
+        </Main>
+    }
 
     const styleActivateButton: React.CSSProperties = {
-        display: (hasInit && !active)? "" : "none",
+        display: (!active)? "" : "none",
         marginTop: "20px", 
         textAlign: "center"
     }
 
     const styleContent: React.CSSProperties = {
-        display: (hasInit && active)? "" : "none",
+        display: (active)? "" : "none",
         marginTop: "20px", 
     }
 

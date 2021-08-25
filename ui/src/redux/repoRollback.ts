@@ -1,5 +1,4 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit'
-import { StatusCodes } from 'http-status-codes'
 import { message } from "antd"
 
 import { 
@@ -18,7 +17,6 @@ import {
     Config,
     Env,
     RequestStatus, 
-    HttpNotFoundError, 
     HttpForbiddenError,
     HttpUnprocessableEntityError,
     HttpConflictError
@@ -28,9 +26,9 @@ const page = 1
 const perPage = 100
 
 interface RepoRollbackState {
+    display: boolean,
     repo?: Repo 
     config?: Config 
-    hasConfig: boolean
     env?: Env
     envs: Env[]
     deployment?: Deployment 
@@ -47,7 +45,7 @@ interface RepoRollbackState {
 }
 
 const initialState: RepoRollbackState = {
-    hasConfig: true,
+    display: false,
     envs: [],
     deployments: [],
     approvers: [],
@@ -151,6 +149,9 @@ export const repoRollbackSlice = createSlice({
     name: "repoRollback",
     initialState,
     reducers: {
+        setDisplay: (state, action: PayloadAction<boolean>) => {
+            state.display = action.payload
+        },
         setEnv: (state, action: PayloadAction<Env>) => {
             state.env = action.payload
         },
@@ -184,12 +185,6 @@ export const repoRollbackSlice = createSlice({
                 const config = action.payload
                 state.envs = config.envs.map(e => e)
                 state.config = config
-                state.hasConfig = true
-            })
-            .addCase(fetchConfig.rejected, (state, action: PayloadAction<unknown> | PayloadAction<typeof HttpNotFoundError>) => {
-                if (action.payload instanceof HttpNotFoundError && action.payload.code === StatusCodes.NOT_FOUND) {
-                    state.hasConfig = false
-                }
             })
             .addCase(fetchDeployments.fulfilled, (state, action) => {
                 state.deployments = action.payload
