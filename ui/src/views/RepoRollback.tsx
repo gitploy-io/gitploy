@@ -19,6 +19,7 @@ export interface Params {
 export default function RepoHome(): JSX.Element {
     const { namespace, name } = useParams<Params>()
     const {
+        display,
         repo,
         config,
         env,
@@ -32,6 +33,7 @@ export default function RepoHome(): JSX.Element {
         const f = async () => {
             await dispatch(init({namespace, name}))
             await dispatch(fetchConfig())
+            await dispatch(actions.setDisplay(true))
         }
         f()
         // eslint-disable-next-line
@@ -65,7 +67,7 @@ export default function RepoHome(): JSX.Element {
         f()
     }
 
-    if (!repo) {
+    if (!display || !repo) {
         return <div />
     } if (repo && !config) {
         return (

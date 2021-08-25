@@ -26,6 +26,7 @@ const page = 1
 const perPage = 100
 
 interface RepoRollbackState {
+    display: boolean,
     repo?: Repo 
     config?: Config 
     env?: Env
@@ -44,6 +45,7 @@ interface RepoRollbackState {
 }
 
 const initialState: RepoRollbackState = {
+    display: false,
     envs: [],
     deployments: [],
     approvers: [],
@@ -147,6 +149,9 @@ export const repoRollbackSlice = createSlice({
     name: "repoRollback",
     initialState,
     reducers: {
+        setDisplay: (state, action: PayloadAction<boolean>) => {
+            state.display = action.payload
+        },
         setEnv: (state, action: PayloadAction<Env>) => {
             state.env = action.payload
         },

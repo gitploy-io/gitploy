@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
+import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit'
 import { message } from "antd"
 
 import { searchRepo, activateRepo } from "../apis/repo"
@@ -6,13 +6,13 @@ import { Repo, RequestStatus } from "../models"
 import { HttpForbiddenError } from '../models/errors'
 
 interface RepoState {
-    hasInit: boolean
+    display: boolean
     repo?: Repo
     activating: RequestStatus
 }
 
 const initialState: RepoState = {
-    hasInit: false,
+    display: false,
     activating: RequestStatus.Idle
 }
 
@@ -47,16 +47,16 @@ export const activate = createAsyncThunk<Repo, void, { state: {repo: RepoState} 
 export const repoSlice = createSlice({
     name: "repo",
     initialState,
-    reducers: {},
+    reducers: {
+        setDisplay: (state, action: PayloadAction<boolean>) => {
+            state.display = action.payload
+        }
+    },
     extraReducers: builder => {
         builder
             .addCase(init.fulfilled, (state, action) => {
                 const repo = action.payload
                 state.repo = repo
-                state.hasInit = true
-            })
-            .addCase(init.rejected, (state) => {
-                state.hasInit = true
             })
             .addCase(activate.pending, (state) => {
                 state.activating = RequestStatus.Pending

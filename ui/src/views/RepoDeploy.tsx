@@ -33,6 +33,7 @@ interface Params {
 export default function RepoDeploy(): JSX.Element {
     const { namespace, name } = useParams<Params>()
     const { 
+        display,
         repo,
         config, 
         env,
@@ -51,6 +52,7 @@ export default function RepoDeploy(): JSX.Element {
         const f = async () => {
             await dispatch(init({namespace, name}))
             await dispatch(fetchConfig())
+            await dispatch(actions.setDisplay(true))
             await dispatch(fetchBranches())
             await dispatch(fetchTags())
         }
@@ -113,7 +115,7 @@ export default function RepoDeploy(): JSX.Element {
         f()
     }
 
-    if (!repo) {
+    if (!display || !repo) {
         return <div />
     } if (repo && !config) {
         return (
