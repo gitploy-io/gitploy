@@ -45,7 +45,7 @@ export default function Settings(): JSX.Element {
                 <div style={{marginTop: "40px", marginBottom: "20px"}}>
                     <h2>Slack</h2>
                     {(connected)? 
-                        <Button href="#" type="primary" danger>DISCONNECTED</Button>:
+                        <Button href="/slack/signout" type="primary" danger>DISCONNECTED</Button>:
                         <Button href="/slack/" type="primary">CONNECT</Button>}
                 </div>:
                 null}

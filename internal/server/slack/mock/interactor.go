@@ -80,6 +80,21 @@ func (mr *MockInteractorMockRecorder) CreateCallback(ctx, cb interface{}) *gomoc
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateCallback", reflect.TypeOf((*MockInteractor)(nil).CreateCallback), ctx, cb)
 }
 
+// CreateChatUser mocks base method.
+func (m *MockInteractor) CreateChatUser(ctx context.Context, cu *ent.ChatUser) (*ent.ChatUser, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateChatUser", ctx, cu)
+	ret0, _ := ret[0].(*ent.ChatUser)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreateChatUser indicates an expected call of CreateChatUser.
+func (mr *MockInteractorMockRecorder) CreateChatUser(ctx, cu interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateChatUser", reflect.TypeOf((*MockInteractor)(nil).CreateChatUser), ctx, cu)
+}
+
 // CreateEvent mocks base method.
 func (m *MockInteractor) CreateEvent(ctx context.Context, e *ent.Event) (*ent.Event, error) {
 	m.ctrl.T.Helper()
@@ -93,6 +108,20 @@ func (m *MockInteractor) CreateEvent(ctx context.Context, e *ent.Event) (*ent.Ev
 func (mr *MockInteractorMockRecorder) CreateEvent(ctx, e interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateEvent", reflect.TypeOf((*MockInteractor)(nil).CreateEvent), ctx, e)
+}
+
+// DeleteChatUser mocks base method.
+func (m *MockInteractor) DeleteChatUser(ctx context.Context, cu *ent.ChatUser) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteChatUser", ctx, cu)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteChatUser indicates an expected call of DeleteChatUser.
+func (mr *MockInteractorMockRecorder) DeleteChatUser(ctx, cu interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteChatUser", reflect.TypeOf((*MockInteractor)(nil).DeleteChatUser), ctx, cu)
 }
 
 // Deploy mocks base method.
@@ -335,21 +364,6 @@ func (mr *MockInteractorMockRecorder) Rollback(ctx, u, re, d, env interface{}) *
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Rollback", reflect.TypeOf((*MockInteractor)(nil).Rollback), ctx, u, re, d, env)
 }
 
-// SaveChatUser mocks base method.
-func (m *MockInteractor) SaveChatUser(ctx context.Context, u *ent.User, cu *ent.ChatUser) (*ent.ChatUser, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SaveChatUser", ctx, u, cu)
-	ret0, _ := ret[0].(*ent.ChatUser)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// SaveChatUser indicates an expected call of SaveChatUser.
-func (mr *MockInteractorMockRecorder) SaveChatUser(ctx, u, cu interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SaveChatUser", reflect.TypeOf((*MockInteractor)(nil).SaveChatUser), ctx, u, cu)
-}
-
 // SubscribeEvent mocks base method.
 func (m *MockInteractor) SubscribeEvent(fn func(*ent.Event)) error {
 	m.ctrl.T.Helper()
@@ -376,4 +390,19 @@ func (m *MockInteractor) UnsubscribeEvent(fn func(*ent.Event)) error {
 func (mr *MockInteractorMockRecorder) UnsubscribeEvent(fn interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UnsubscribeEvent", reflect.TypeOf((*MockInteractor)(nil).UnsubscribeEvent), fn)
+}
+
+// UpdateChatUser mocks base method.
+func (m *MockInteractor) UpdateChatUser(ctx context.Context, cu *ent.ChatUser) (*ent.ChatUser, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateChatUser", ctx, cu)
+	ret0, _ := ret[0].(*ent.ChatUser)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdateChatUser indicates an expected call of UpdateChatUser.
+func (mr *MockInteractorMockRecorder) UpdateChatUser(ctx, cu interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateChatUser", reflect.TypeOf((*MockInteractor)(nil).UpdateChatUser), ctx, cu)
 }

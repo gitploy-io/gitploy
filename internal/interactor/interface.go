@@ -24,8 +24,9 @@ type (
 		DeleteUser(ctx context.Context, u *ent.User) error
 
 		FindChatUserByID(ctx context.Context, id string) (*ent.ChatUser, error)
-		CreateChatUser(ctx context.Context, u *ent.User, cu *ent.ChatUser) (*ent.ChatUser, error)
-		UpdateChatUser(ctx context.Context, u *ent.User, cu *ent.ChatUser) (*ent.ChatUser, error)
+		CreateChatUser(ctx context.Context, cu *ent.ChatUser) (*ent.ChatUser, error)
+		UpdateChatUser(ctx context.Context, cu *ent.ChatUser) (*ent.ChatUser, error)
+		DeleteChatUser(ctx context.Context, cu *ent.ChatUser) error
 
 		ListReposOfUser(ctx context.Context, u *ent.User, q string, page, perPage int) ([]*ent.Repo, error)
 		ListSortedReposOfUser(ctx context.Context, u *ent.User, q string, page, perPage int) ([]*ent.Repo, error)

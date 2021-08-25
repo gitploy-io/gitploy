@@ -39,9 +39,12 @@ export default function Home(): JSX.Element {
     }
 
     const onClickSync = () => {
-        dispatch(sync())
-        dispatch(actions.setFirstPage())
-        dispatch(listRepos())
+        const f = async () => {
+            await dispatch(sync())
+            await dispatch(actions.setFirstPage())
+            await dispatch(listRepos())
+        }
+        f()
     }
 
     const isLast = repos.length < perPage
