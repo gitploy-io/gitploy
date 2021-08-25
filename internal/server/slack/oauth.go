@@ -57,9 +57,9 @@ func (s *Slack) redirectToAuth(c *gin.Context) {
 	c.Redirect(http.StatusFound, url)
 }
 
-// SigninSlack authenticate by Slack oAuth
+// Signin authenticate by Slack oAuth
 // https://api.slack.com/authentication/oauth-v2#exchanging
-func (s *Slack) SigninSlack(c *gin.Context) {
+func (s *Slack) Signin(c *gin.Context) {
 	var (
 		state = c.Query("state")
 		code  = c.Query("code")
@@ -83,19 +83,31 @@ func (s *Slack) SigninSlack(c *gin.Context) {
 	v, _ := c.Get(gb.KeyUser)
 	u := v.(*ent.User)
 
-	_, err = s.i.SaveChatUser(ctx, u, &ent.ChatUser{
+	cu := &ent.ChatUser{
 		ID:       sr.User.ID,
 		Token:    sr.User.AccessToken,
 		BotToken: sr.AccessToken,
-	})
-	if err != nil {
-		s.log.Error("It has failed to save the chat user.", zap.Error(err))
-		c.String(http.StatusInternalServerError, "It has failed to save the chat user.")
+		UserID:   u.ID,
+	}
+	if _, err := s.i.FindChatUserByID(ctx, sr.User.ID); ent.IsNotFound(err) {
+		if _, err = s.i.CreateChatUser(ctx, cu); err != nil {
+			s.log.Error("It has failed to create a new chat-user.", zap.Error(err))
+			c.String(http.StatusInternalServerError, "It has failed to create a new chat-user.")
+			return
+		}
+	} else if err != nil {
+		s.log.Error("It has failed to find the chat-user.", zap.Error(err))
+		c.String(http.StatusInternalServerError, "It has failed to find the chat-user.")
 		return
+	} else {
+		if _, err = s.i.UpdateChatUser(ctx, cu); err != nil {
+			s.log.Error("It has failed to update the chat-user.", zap.Error(err))
+			c.String(http.StatusInternalServerError, "It has failed to update the chat-user.")
+			return
+		}
 	}
 
-	// TODO: redirect to settings page.
-	c.Redirect(http.StatusFound, "/")
+	c.Redirect(http.StatusFound, "/settings")
 }
 
 func (s *Slack) exchangeSlackCode(ctx context.Context, code string) (*SlackTokenResponse, error) {
@@ -119,6 +131,34 @@ func (s *Slack) exchangeSlackCode(ctx context.Context, code string) (*SlackToken
 	}
 
 	return sr, nil
+}
+
+func (s *Slack) Signout(c *gin.Context) {
+	ctx := c.Request.Context()
+
+	v, _ := c.Get(gb.KeyUser)
+	u := v.(*ent.User)
+
+	var err error
+	if u, err = s.i.FindUserByID(ctx, u.ID); err != nil {
+		s.log.Error("You're not authorized.", zap.Error(err))
+		c.String(http.StatusUnauthorized, "You're not authorized.")
+		return
+	}
+
+	if u.Edges.ChatUser == nil {
+		s.log.Error("The chat-user is not found.", zap.Error(err))
+		c.String(http.StatusNotFound, "The chat-user is not found.")
+		return
+	}
+
+	if err = s.i.DeleteChatUser(ctx, u.Edges.ChatUser); err != nil {
+		s.log.Error("It has failed to delete the chat-user.", zap.Error(err))
+		c.String(http.StatusInternalServerError, "It has failed to delete the chat-user.")
+		return
+	}
+
+	c.Redirect(http.StatusFound, "/settings")
 }
 
 func randState() string {

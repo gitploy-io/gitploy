@@ -206,8 +206,8 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 				Interactor:  c.Interactor,
 			})
 			slackapi.GET("", slack.Index)
-			slackapi.GET("/signin", slack.SigninSlack)
-			// TODO: add signout
+			slackapi.GET("/signin", slack.Signin)
+			slackapi.GET("/signout", slack.Signout)
 			slackapi.POST("/interact", m.Verify(), slack.Interact)
 			slackapi.POST("/command", m.Verify(), slack.Cmd)
 		}
@@ -238,7 +238,11 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 		r.StaticFile("/manifest.json", "./manifest.json")
 		r.StaticFile("/robots.txt", "./robots.txt")
 		r.Static("/static", "./static")
-		r.NoRoute(w.IndexHTML)
+		if _, err := os.Stat("./index.html"); err == nil {
+			r.NoRoute(w.IndexHTML)
+		} else {
+			r.NoRoute(w.IndexString)
+		}
 	}
 
 	return r

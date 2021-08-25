@@ -14,7 +14,9 @@ type (
 		FindUserByID(ctx context.Context, id string) (*ent.User, error)
 
 		FindChatUserByID(ctx context.Context, id string) (*ent.ChatUser, error)
-		SaveChatUser(ctx context.Context, u *ent.User, cu *ent.ChatUser) (*ent.ChatUser, error)
+		CreateChatUser(ctx context.Context, cu *ent.ChatUser) (*ent.ChatUser, error)
+		UpdateChatUser(ctx context.Context, cu *ent.ChatUser) (*ent.ChatUser, error)
+		DeleteChatUser(ctx context.Context, cu *ent.ChatUser) error
 
 		ListPermsOfRepo(ctx context.Context, r *ent.Repo, q string, page, perPage int) ([]*ent.Perm, error)
 		FindPermOfRepo(ctx context.Context, r *ent.Repo, u *ent.User) (*ent.Perm, error)

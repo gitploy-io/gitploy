@@ -114,18 +114,18 @@ func (mr *MockStoreMockRecorder) CreateCallback(ctx, cb interface{}) *gomock.Cal
 }
 
 // CreateChatUser mocks base method.
-func (m *MockStore) CreateChatUser(ctx context.Context, u *ent.User, cu *ent.ChatUser) (*ent.ChatUser, error) {
+func (m *MockStore) CreateChatUser(ctx context.Context, cu *ent.ChatUser) (*ent.ChatUser, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateChatUser", ctx, u, cu)
+	ret := m.ctrl.Call(m, "CreateChatUser", ctx, cu)
 	ret0, _ := ret[0].(*ent.ChatUser)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // CreateChatUser indicates an expected call of CreateChatUser.
-func (mr *MockStoreMockRecorder) CreateChatUser(ctx, u, cu interface{}) *gomock.Call {
+func (mr *MockStoreMockRecorder) CreateChatUser(ctx, cu interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateChatUser", reflect.TypeOf((*MockStore)(nil).CreateChatUser), ctx, u, cu)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateChatUser", reflect.TypeOf((*MockStore)(nil).CreateChatUser), ctx, cu)
 }
 
 // CreateDeployment mocks base method.
@@ -230,6 +230,20 @@ func (m *MockStore) DeleteApproval(ctx context.Context, a *ent.Approval) error {
 func (mr *MockStoreMockRecorder) DeleteApproval(ctx, a interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteApproval", reflect.TypeOf((*MockStore)(nil).DeleteApproval), ctx, a)
+}
+
+// DeleteChatUser mocks base method.
+func (m *MockStore) DeleteChatUser(ctx context.Context, cu *ent.ChatUser) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteChatUser", ctx, cu)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteChatUser indicates an expected call of DeleteChatUser.
+func (mr *MockStoreMockRecorder) DeleteChatUser(ctx, cu interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteChatUser", reflect.TypeOf((*MockStore)(nil).DeleteChatUser), ctx, cu)
 }
 
 // DeletePermsOfUserLessThanUpdatedAt mocks base method.
@@ -682,18 +696,18 @@ func (mr *MockStoreMockRecorder) UpdateApproval(ctx, a interface{}) *gomock.Call
 }
 
 // UpdateChatUser mocks base method.
-func (m *MockStore) UpdateChatUser(ctx context.Context, u *ent.User, cu *ent.ChatUser) (*ent.ChatUser, error) {
+func (m *MockStore) UpdateChatUser(ctx context.Context, cu *ent.ChatUser) (*ent.ChatUser, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UpdateChatUser", ctx, u, cu)
+	ret := m.ctrl.Call(m, "UpdateChatUser", ctx, cu)
 	ret0, _ := ret[0].(*ent.ChatUser)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // UpdateChatUser indicates an expected call of UpdateChatUser.
-func (mr *MockStoreMockRecorder) UpdateChatUser(ctx, u, cu interface{}) *gomock.Call {
+func (mr *MockStoreMockRecorder) UpdateChatUser(ctx, cu interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateChatUser", reflect.TypeOf((*MockStore)(nil).UpdateChatUser), ctx, u, cu)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateChatUser", reflect.TypeOf((*MockStore)(nil).UpdateChatUser), ctx, cu)
 }
 
 // UpdateDeployment mocks base method.

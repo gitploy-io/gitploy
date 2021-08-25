@@ -17,7 +17,7 @@ func (s *Store) FindChatUserByID(ctx context.Context, id string) (*ent.ChatUser,
 		First(ctx)
 }
 
-func (s *Store) CreateChatUser(ctx context.Context, u *ent.User, cu *ent.ChatUser) (*ent.ChatUser, error) {
+func (s *Store) CreateChatUser(ctx context.Context, cu *ent.ChatUser) (*ent.ChatUser, error) {
 	return s.c.ChatUser.
 		Create().
 		SetID(cu.ID).
@@ -25,17 +25,22 @@ func (s *Store) CreateChatUser(ctx context.Context, u *ent.User, cu *ent.ChatUse
 		SetBotToken(cu.BotToken).
 		SetRefresh(cu.Refresh).
 		SetExpiry(cu.Expiry).
-		SetUserID(u.ID).
+		SetUserID(cu.UserID).
 		Save(ctx)
 }
 
-func (s *Store) UpdateChatUser(ctx context.Context, u *ent.User, cu *ent.ChatUser) (*ent.ChatUser, error) {
+func (s *Store) UpdateChatUser(ctx context.Context, cu *ent.ChatUser) (*ent.ChatUser, error) {
 	return s.c.ChatUser.
 		UpdateOneID(cu.ID).
 		SetToken(cu.Token).
 		SetBotToken(cu.BotToken).
 		SetRefresh(cu.Refresh).
 		SetExpiry(cu.Expiry).
-		SetUserID(u.ID).
 		Save(ctx)
+}
+
+func (s *Store) DeleteChatUser(ctx context.Context, cu *ent.ChatUser) error {
+	return s.c.ChatUser.
+		DeleteOneID(cu.ID).
+		Exec(ctx)
 }
