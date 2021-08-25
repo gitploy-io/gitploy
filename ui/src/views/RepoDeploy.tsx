@@ -33,7 +33,8 @@ interface Params {
 export default function RepoDeploy(): JSX.Element {
     const { namespace, name } = useParams<Params>()
     const { 
-        hasConfig, 
+        repo,
+        config, 
         env,
         envs, 
         branches, 
@@ -112,11 +113,13 @@ export default function RepoDeploy(): JSX.Element {
         f()
     }
 
-    if (!hasConfig) {
+    if (!repo) {
+        return <div />
+    } if (repo && !config) {
         return (
             <Result
                 status="warning"
-                title="There isn't the configuration file."
+                title="There is no configuration file."
                 extra={
                     <Button type="primary" key="console">
                       Read Document
