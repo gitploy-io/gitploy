@@ -55,7 +55,7 @@ func (w *Web) IndexString(c *gin.Context) {
 		return
 	}
 
-	c.String(http.StatusOK, "Ok")
+	c.String(http.StatusOK, "Index page")
 }
 
 func (w *Web) redirectToAuth(c *gin.Context) {
@@ -149,7 +149,7 @@ func (w *Web) Signin(c *gin.Context) {
 	c.Redirect(http.StatusFound, "/")
 }
 
-func (w *Web) SignOut(c *gin.Context) {
+func (w *Web) SignOutHTML(c *gin.Context) {
 	const (
 		secure   = false
 		httpOnly = true
@@ -157,7 +157,18 @@ func (w *Web) SignOut(c *gin.Context) {
 
 	// Delete the cookie
 	c.SetCookie(gb.CookieSession, "", -1, "/", "", secure, httpOnly)
-	c.Redirect(http.StatusFound, "/")
+	c.HTML(http.StatusOK, "index.html", nil)
+}
+
+func (w *Web) SignOutString(c *gin.Context) {
+	const (
+		secure   = false
+		httpOnly = true
+	)
+
+	// Delete the cookie
+	c.SetCookie(gb.CookieSession, "", -1, "/", "", secure, httpOnly)
+	c.String(http.StatusOK, "Signed out")
 }
 
 func randState() string {
