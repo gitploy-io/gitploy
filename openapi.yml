@@ -516,6 +516,10 @@ paths:
                   type: string
                 env:
                   type: string
+              required:
+                - type
+                - ref
+                - env
       responses:
         '201':
           description: Created
@@ -596,6 +600,8 @@ paths:
                 status: 
                   type: string
                   default: created
+              required:
+                - status
       responses:
         '200':
           description: Deployment 
@@ -762,6 +768,8 @@ paths:
               properties:
                 user_id:
                   type: string
+              required:
+                - user_id
       responses:
         '201':
           description: Approval created.
@@ -841,6 +849,8 @@ paths:
               properties:
                 status:
                   type: string
+              required:
+                - status
       responses:
         '200':
           description: Approval

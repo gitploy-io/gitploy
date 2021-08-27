@@ -1,4 +1,4 @@
-import Repo, { RepoPayload } from './Repo'
+import Repo from './Repo'
 import Perm from "./Perm"
 import Deployment, { 
     DeploymentStatusEnum, 
@@ -25,7 +25,6 @@ import { RequestStatus } from './Request'
 
 export type {
     Repo,
-    RepoPayload,
     Perm,
     Deployment,
     DeploymentStatus,
