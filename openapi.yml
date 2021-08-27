@@ -600,6 +600,8 @@ paths:
                 status: 
                   type: string
                   default: created
+              required:
+                - status
       responses:
         '200':
           description: Deployment 
@@ -847,6 +849,8 @@ paths:
               properties:
                 status:
                   type: string
+              required:
+                - status
       responses:
         '200':
           description: Approval

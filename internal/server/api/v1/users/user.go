@@ -20,7 +20,7 @@ type (
 	}
 
 	userPatchPayload struct {
-		Admin bool `json:"admin"`
+		Admin *bool `json:"admin"`
 	}
 )
 
@@ -84,8 +84,8 @@ func (u *User) UpdateUser(c *gin.Context) {
 		return
 	}
 
-	if du.Admin != p.Admin {
-		du.Admin = p.Admin
+	if p.Admin != nil {
+		du.Admin = *p.Admin
 		if du, err = u.i.UpdateUser(ctx, du); err != nil {
 			u.log.Error("It has failed to patch the user.", zap.Error(err))
 			gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to delete the user.")

@@ -19,8 +19,7 @@ type (
 	}
 
 	approvalPatchPayload struct {
-		IsApproved bool   `json:"is_approved"`
-		Status     string `json:"status"`
+		Status string `json:"status"`
 	}
 )
 

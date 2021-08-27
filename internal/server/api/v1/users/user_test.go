@@ -9,6 +9,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/AlekSi/pointer"
 	"github.com/gin-gonic/gin"
 	"github.com/golang/mock/gomock"
 	"github.com/hanjunlee/gitploy/ent"
@@ -22,7 +23,7 @@ func TestUser_UpdateUser(t *testing.T) {
 	}{
 		ID: "1",
 		Payload: &userPatchPayload{
-			Admin: true,
+			Admin: pointer.ToBool(true),
 		},
 	}
 
