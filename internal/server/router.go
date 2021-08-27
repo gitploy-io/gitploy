@@ -224,12 +224,13 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 		if _, err := os.Stat("./index.html"); err == nil {
 			r.LoadHTMLFiles("./index.html")
 			root.GET("/", w.IndexHTML)
+			root.GET("/signout", w.SignOutHTML)
 		} else {
 			root.GET("/", w.IndexString)
+			root.GET("/signout", w.SignOutString)
 		}
 
 		root.GET("/signin", w.Signin)
-		root.GET("/signout", w.SignOut)
 
 		// Static files
 		// Files in ui/public
