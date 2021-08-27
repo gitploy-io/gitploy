@@ -25,9 +25,9 @@ type (
 		WebhookSecret string
 	}
 
-	RepoPayload struct {
-		ConfigPath string `json:"config_path"`
-		Active     bool   `json:"active"`
+	repoPatchPayload struct {
+		ConfigPath *string `json:"config_path"`
+		Active     *bool   `json:"active"`
 	}
 )
 
@@ -80,7 +80,7 @@ func (r *Repo) UpdateRepo(c *gin.Context) {
 	rv, _ := c.Get(KeyRepo)
 	re := rv.(*ent.Repo)
 
-	p := &RepoPayload{}
+	p := &repoPatchPayload{}
 	var err error
 	if err := c.ShouldBindBodyWith(p, binding.JSON); err != nil {
 		gb.ErrorResponse(c, http.StatusBadRequest, "It has failed to bind the body")
@@ -90,31 +90,35 @@ func (r *Repo) UpdateRepo(c *gin.Context) {
 	// Activate (or Deactivate) the repository:
 	// Create a new webhook when it activates the repository,
 	// in contrast it remove the webhook when it deactivates.
-	if p.Active && !re.Active {
-		if re, err = r.i.ActivateRepo(ctx, u, re, &vo.WebhookConfig{
-			URL:         r.WebhookURL,
-			Secret:      r.WebhookSecret,
-			InsecureSSL: r.WebhookSSL,
-		}); err != nil {
-			r.log.Error("It has failed to activate the repo.", zap.Error(err), zap.String("url", r.WebhookURL))
-			gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to activate the repository.")
-			return
-		}
-	} else if !p.Active && re.Active {
-		if re, err = r.i.DeactivateRepo(ctx, u, re); err != nil {
-			r.log.Error("failed to deactivate the repo.", zap.Error(err))
-			gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to deactivate the repository.")
-			return
+	if p.Active != nil {
+		if *p.Active && !re.Active {
+			if re, err = r.i.ActivateRepo(ctx, u, re, &vo.WebhookConfig{
+				URL:         r.WebhookURL,
+				Secret:      r.WebhookSecret,
+				InsecureSSL: r.WebhookSSL,
+			}); err != nil {
+				r.log.Error("It has failed to activate the repo.", zap.Error(err), zap.String("url", r.WebhookURL))
+				gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to activate the repository.")
+				return
+			}
+		} else if !*p.Active && re.Active {
+			if re, err = r.i.DeactivateRepo(ctx, u, re); err != nil {
+				r.log.Error("failed to deactivate the repo.", zap.Error(err))
+				gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to deactivate the repository.")
+				return
+			}
 		}
 	}
 
-	if re.ConfigPath != p.ConfigPath {
-		re.ConfigPath = p.ConfigPath
+	if p.ConfigPath != nil {
+		if *p.ConfigPath != re.ConfigPath {
+			re.ConfigPath = *p.ConfigPath
 
-		if re, err = r.i.UpdateRepo(ctx, re); err != nil {
-			r.log.Error("failed to update the repo", zap.Error(err))
-			gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to update the repository.")
-			return
+			if re, err = r.i.UpdateRepo(ctx, re); err != nil {
+				r.log.Error("failed to update the repo", zap.Error(err))
+				gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to update the repository.")
+				return
+			}
 		}
 	}
 

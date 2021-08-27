@@ -4,7 +4,7 @@ import { instance, headers } from './setting'
 import { _fetch } from "./_base"
 import { DeploymentData, mapDataToDeployment } from "./deployment"
 
-import { Repo, RepoPayload, HttpForbiddenError, Deployment } from '../models'
+import { Repo, HttpForbiddenError, Deployment } from '../models'
 
 export interface RepoData {
     id: string
@@ -67,16 +67,16 @@ export const searchRepo = async (namespace: string, name: string): Promise<Repo>
     return repo
 }
 
-export const updateRepo = async (repo: Repo, payload: RepoPayload): Promise<Repo> => {
-    const body = {
-        "config_path": payload.configPath,
-        "active": repo.active
+export const updateRepo = async (repo: Repo): Promise<Repo> => {
+    const payload = {
+        "config_path": repo.configPath,
     }
+
     const res = await _fetch(`${instance}/api/v1/repos/${repo.id}`, {
         headers,
         credentials: 'same-origin',
         method: "PATCH",
-        body: JSON.stringify(body)
+        body: JSON.stringify(payload)
     })
     if (res.status === StatusCodes.FORBIDDEN) {
         const message = await res.json().then(data => data.message)
@@ -92,7 +92,6 @@ export const updateRepo = async (repo: Repo, payload: RepoPayload): Promise<Repo
 
 export const activateRepo = async (repo: Repo): Promise<Repo> => {
     const body = {
-        "config_path": repo.configPath,
         "active": true,
     }
     const response = await _fetch(`${instance}/api/v1/repos/${repo.id}`, {
@@ -114,7 +113,6 @@ export const activateRepo = async (repo: Repo): Promise<Repo> => {
 
 export const deactivateRepo = async (repo: Repo): Promise<Repo> => {
     const body = {
-        "config_path": repo.configPath,
         "active": false,
     }
     const response = await _fetch(`${instance}/api/v1/repos/${repo.id}`, {

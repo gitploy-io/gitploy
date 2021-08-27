@@ -13,7 +13,3 @@ export default interface Repo {
     updatedAt: Date 
     deployments?: Deployment[]
 }
-
-export interface RepoPayload {
-    configPath: string
-}

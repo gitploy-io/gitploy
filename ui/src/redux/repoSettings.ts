@@ -1,8 +1,8 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
+import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit"
 import { message } from "antd"
 
 import { searchRepo, updateRepo, deactivateRepo } from "../apis"
-import { Repo, RepoPayload, RequestStatus, HttpForbiddenError  } from "../models"
+import { Repo, RequestStatus, HttpForbiddenError  } from "../models"
 
 interface RepoSettingsState {
     repo?: Repo
@@ -25,9 +25,9 @@ export const init = createAsyncThunk<Repo, {namespace: string, name: string}, { 
     },
 )
 
-export const save = createAsyncThunk<Repo, RepoPayload, { state: {repoSettings: RepoSettingsState} }>(
+export const save = createAsyncThunk<Repo, void, { state: {repoSettings: RepoSettingsState} }>(
     'repoSettings/save', 
-    async (payload, { getState, rejectWithValue, requestId } ) => {
+    async (_, { getState, rejectWithValue, requestId } ) => {
         const { repo, saveId, saving } = getState().repoSettings
         if (!repo) {
             throw new Error("There is no repo.")
@@ -38,7 +38,7 @@ export const save = createAsyncThunk<Repo, RepoPayload, { state: {repoSettings: 
         }
 
         try {
-            const nr = await updateRepo(repo, payload)
+            const nr = await updateRepo(repo)
             message.success("Success to save.", 3)
             return nr
         } catch(e) {
@@ -76,7 +76,15 @@ export const deactivate = createAsyncThunk<Repo, void, { state: {repoSettings: R
 export const repoSettingsSlice = createSlice({
     name: "repoSettings",
     initialState,
-    reducers: {},
+    reducers: {
+        setConfigPath: (state, action: PayloadAction<string>) => {
+            if (!state.repo) {
+                return
+            }
+
+            state.repo.configPath = action.payload
+        }
+    },
     extraReducers: builder => {
         builder
             .addCase(init.fulfilled, (state, action) => {

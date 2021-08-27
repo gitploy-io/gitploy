@@ -4,8 +4,8 @@ import { useParams } from "react-router-dom";
 import { PageHeader } from "antd"
 
 import { useAppSelector, useAppDispatch } from "../redux/hooks"
-import { init, save, deactivate } from "../redux/repoSettings"
-import { RepoPayload, RequestStatus } from "../models";
+import { init, save, deactivate, repoSettingsSlice as slice } from "../redux/repoSettings"
+import { RequestStatus } from "../models";
 
 import SettingsForm from "../components/SettingsForm"
 import Spin from "../components/Spin";
@@ -28,8 +28,9 @@ export default function RepoSettings(): JSX.Element {
         // eslint-disable-next-line
     }, [dispatch])
 
-    const onClickSave = (payload: RepoPayload) => {
-        dispatch(save(payload))
+    const onClickSave = (payload: {configPath: string}) => {
+        dispatch(slice.actions.setConfigPath(payload.configPath))
+        dispatch(save())
     }
 
     const onClickDeactivate = () => {

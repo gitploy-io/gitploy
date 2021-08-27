@@ -1,10 +1,10 @@
 import { Form, Input, Button, Space } from "antd"
-import { Repo, RepoPayload } from "../models"
+import { Repo } from "../models"
 
 export interface SettingsFormProps {
     repo: Repo
     saving: boolean
-    onClickSave(payload:RepoPayload): void
+    onClickSave(payload: {configPath: string}): void
     onClickDeactivate(): void
 }
 
@@ -19,7 +19,7 @@ export default function SettingForm(props: SettingsFormProps): JSX.Element {
     };
 
     const onFinish = (values: any) => {
-        const payload: RepoPayload = {
+        const payload = {
             configPath: values.config
         }
         props.onClickSave(payload)

@@ -516,6 +516,10 @@ paths:
                   type: string
                 env:
                   type: string
+              required:
+                - type
+                - ref
+                - env
       responses:
         '201':
           description: Created
@@ -762,6 +766,8 @@ paths:
               properties:
                 user_id:
                   type: string
+              required:
+                - user_id
       responses:
         '201':
           description: Approval created.
