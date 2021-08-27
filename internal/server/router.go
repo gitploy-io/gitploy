@@ -86,6 +86,7 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 	r := gin.New()
 
 	r.Use(cors.New(cors.Config{
+		// AllowOrigins:     []string{"http://localhost:3000"},
 		AllowAllOrigins:  true,
 		AllowCredentials: true,
 		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"},
