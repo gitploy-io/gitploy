@@ -3,8 +3,9 @@ import { shallowEqual } from 'react-redux'
 import { Input, Breadcrumb } from 'antd'
 
 import { useAppSelector, useAppDispatch } from '../redux/hooks'
-import { homeSlice, listRepos, perPage, sync } from '../redux/home'
+import { homeSlice, listRepos, perPage, sync, homeSlice as slice } from '../redux/home'
 import { RequestStatus } from '../models'
+import { subscribeDeploymentEvent } from "../apis"
 
 import Main from './Main'
 import SyncButton from "../components/SyncButton"
@@ -20,6 +21,14 @@ export default function Home(): JSX.Element {
 
     useEffect(() => {
         dispatch(listRepos())
+
+        const de = subscribeDeploymentEvent((d) => {
+            dispatch(slice.actions.handleDeploymentEvent(d))
+        })
+
+        return () => {
+            de.close()
+        }
     }, [dispatch])
 
     const search = (q: string) => {
