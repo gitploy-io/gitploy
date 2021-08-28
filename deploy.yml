@@ -1,5 +1,5 @@
 envs:
-  - name: local
-    approval:
-      enabled: true
-      required_count: 0
+  - name: dev
+    # Disable "auto_merge" to avoid merge conflict
+    # when it deploys the tag behind the head.
+    auto_merge: false

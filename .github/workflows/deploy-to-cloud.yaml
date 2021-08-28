@@ -1,0 +1,49 @@
+name: deploy-to-cloud
+
+on:
+  deployment
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v2
+      # TODO: Support to deploy to multi-environments.
+      - 
+        name: Create values.yaml 
+        uses: finnp/create-file-action@master
+        env:
+          FILE_NAME: "./.github/values.yaml"
+          FILE_BASE64: "aW5ncmVzczoKICBlbmFibGVkOiB0cnVlCiAgYW5ub3RhdGlvbnM6CiAgICBrdWJlcm5ldGVzLmlvL2luZ3Jlc3MuY2xhc3M6IG5naW54CiAgICBjZXJ0LW1hbmFnZXIuaW8vY2x1c3Rlci1pc3N1ZXI6ICJsZXRzZW5jcnlwdC1wcm9kIgogIGhvc3RzOgogICAgLSBob3N0OiBkZXYuZ2l0cGxveS5pbwogICAgICBwYXRoczoKICAgICAgICAtIC8KICB0bHM6CiAgIC0gc2VjcmV0TmFtZTogZ2l0cGxveS1kZXYtdGxzCiAgICAgaG9zdHM6CiAgICAgICAtIGRldi5naXRwbG95LmlvCgpyZXNvdXJjZXM6CiAgcmVxdWVzdHM6CiAgICBjcHU6IDUwbQogICAgbWVtb3J5OiAxMjhNaQoKZW52OgogIEdJVFBMT1lfREVCVUdfTU9ERTogInRydWUiCiAgR0lUUExPWV9TRVJWRVJfSE9TVDogImRldi5naXRwbG95LmlvIgogIEdJVFBMT1lfU0VSVkVSX1BST1RPOiBodHRwcwogIEdJVFBMT1lfQURNSU5fVVNFUlM6ICJoYW5qdW5sZWUiCgpleHRyYVNlY3JldE5hbWVzRm9yRW52RnJvbToKICAtIGdpdHBsb3ktZGV2LXNlY3JldAoKcGVyc2lzdGVudFZvbHVtZToKICAjIElmIHlvdSBhcmUgdXNpbmcgU1FMaXRlIGFzIHlvdXIgREIgZm9yIEdpdHBsb3ksIGl0IGlzIHJlY29tbWVuZGVkIHRvIGVuYWJsZSBwZXJzaXN0ZW5jZS4gCiAgZW5hYmxlZDogdHJ1ZQ=="
+      - 
+        name: Deploy Dev
+        uses: WyriHaximus/github-action-helm3@v2
+        with:
+          # Upgrade to the version.
+          exec: >
+            helm repo add gitployio https://gitploy-io.github.io/helm-chart/;
+            helm upgrade gitploy-dev gitployio/gitploy 
+            --install
+            --atomic 
+            --namespace=gitploy
+            -f .github/values.yaml
+            --set=image.tag=${GITHUB_REF#refs/tags/}
+            --description="Upgrade to ${GITHUB_REF#refs/tags/}"
+          kubeconfig: '${{ secrets.KUBECONFIG }}'
+      - 
+        name: Deploy success
+        if: success()
+        uses: deliverybot/deployment-status@v1
+        with:
+          state: success
+          token: ${{ github.token }}
+      - 
+        name: Deploy failed
+        if: failure()
+        uses: deliverybot/deployment-status@v1
+        with:
+          state: failure
+          token: ${{ github.token }}
+    
