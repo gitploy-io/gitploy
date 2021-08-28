@@ -27,6 +27,9 @@ FROM golang:1.15-buster AS gitploy
 
 WORKDIR /app
 
+# Create DB
+RUN mkdir /data
+
 COPY --from=server --chown=root:root /go/bin/server /go/bin/server
 
 # Copy UI output into the assets directory.

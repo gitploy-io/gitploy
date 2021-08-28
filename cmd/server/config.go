@@ -32,7 +32,7 @@ type (
 
 	Store struct {
 		StoreDriver string `required:"true" default:"sqlite3" split_words:"true"`
-		StoreSource string `required:"true" default:"file:./data/sqlite3.db?cache=shared&_fk=1" split_words:"true"`
+		StoreSource string `required:"true" default:"file:/data/sqlite3.db?cache=shared&_fk=1" split_words:"true"`
 	}
 
 	Github struct {
