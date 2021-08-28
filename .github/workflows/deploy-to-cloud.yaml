@@ -4,7 +4,7 @@ on:
   deployment
 
 jobs:
-  docker:
+  deploy-dev:
     runs-on: ubuntu-latest
     steps:
       -
@@ -29,8 +29,8 @@ jobs:
             --atomic 
             --namespace=gitploy
             -f .github/values.yaml
-            --set=image.tag=${GITHUB_REF#refs/tags/}
-            --description="Upgrade to ${GITHUB_REF#refs/tags/}"
+            --set=image.tag=${GITHUB_REF#refs/tags/v}
+            --description="Upgrade to ${GITHUB_REF#refs/tags/v}"
           kubeconfig: '${{ secrets.KUBECONFIG }}'
       - 
         name: Deploy success
