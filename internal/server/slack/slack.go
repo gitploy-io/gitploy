@@ -81,12 +81,28 @@ func (s *Slack) handleHelpCmd(channelID, responseURL string) {
 		"`/gitploy rollback OWNER/REPO` - Rollback by the deployment for OWNER/REPO.",
 	}, "\n")
 
-	responseMessage(channelID, responseURL, msg)
+	postResponseMessage(channelID, responseURL, msg)
 }
 
-func responseMessage(channelID, responseURL, message string) {
-	slack.New("").
-		SendMessage(channelID, slack.MsgOptionResponseURL(responseURL, "ephemeral"), slack.MsgOptionText(message, true))
+func postResponseMessage(channelID, responseURL, message string) error {
+	_, _, _, err := slack.
+		New("").
+		SendMessage(
+			channelID,
+			slack.MsgOptionResponseURL(responseURL, "ephemeral"),
+			slack.MsgOptionText(message, false),
+		)
+	return err
+}
+
+func postBotMessage(cu *ent.ChatUser, message string) error {
+	_, _, _, err := slack.
+		New(cu.BotToken).
+		SendMessage(
+			cu.ID,
+			slack.MsgOptionText(message, false),
+		)
+	return err
 }
 
 // Interact interacts interactive components (dialog, button).
@@ -101,11 +117,7 @@ func (s *Slack) Interact(c *gin.Context) {
 	}
 
 	cb, err := s.i.FindCallbackByHash(ctx, itr.View.CallbackID)
-	if ent.IsNotFound(err) {
-		responseMessage(itr.Channel.ID, itr.ResponseURL, "The callback is not found. You can interact with Slack by only `/gitploy`.")
-		c.Status(http.StatusOK)
-		return
-	} else if err != nil {
+	if err != nil {
 		s.log.Error("It has failed to find the callback.", zap.Error(err))
 		c.Status(http.StatusInternalServerError)
 		return

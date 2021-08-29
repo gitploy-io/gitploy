@@ -18,6 +18,10 @@ import (
 )
 
 const (
+	linkUnprocessalbeEntity = "https://github.com/gitploy-io/gitploy/discussions/64"
+)
+
+const (
 	// When creating a view, set unique block_ids for all blocks
 	// and unique action_ids for each block element.
 	blockEnv        = "block_env"
@@ -55,7 +59,7 @@ func (s *Slack) handleDeployCmd(c *gin.Context) {
 
 	cu, err := s.i.FindChatUserByID(ctx, cmd.UserID)
 	if ent.IsNotFound(err) {
-		responseMessage(cmd.ChannelID, cmd.ResponseURL, "Slack is not connected with Gitploy.")
+		postResponseMessage(cmd.ChannelID, cmd.ResponseURL, "Slack is not connected with Gitploy.")
 		c.Status(http.StatusOK)
 		return
 	} else if err != nil {
@@ -69,14 +73,14 @@ func (s *Slack) handleDeployCmd(c *gin.Context) {
 	// The length of args is always equal to two.
 	ns, n, err := parseFullName(args[1])
 	if err != nil {
-		responseMessage(cmd.ChannelID, cmd.ResponseURL, fmt.Sprintf("`%s` is invalid repository format.", args[1]))
+		postResponseMessage(cmd.ChannelID, cmd.ResponseURL, fmt.Sprintf("`%s` is invalid repository format.", args[1]))
 		c.Status(http.StatusOK)
 		return
 	}
 
 	r, err := s.i.FindRepoOfUserByNamespaceName(ctx, cu.Edges.User, ns, n)
 	if ent.IsNotFound(err) {
-		responseMessage(cmd.ChannelID, cmd.ResponseURL, fmt.Sprintf("The `%s` repository is not found.", args[1]))
+		postResponseMessage(cmd.ChannelID, cmd.ResponseURL, fmt.Sprintf("The `%s` repository is not found.", args[1]))
 		c.Status(http.StatusOK)
 		return
 	} else if err != nil {
@@ -87,11 +91,11 @@ func (s *Slack) handleDeployCmd(c *gin.Context) {
 
 	config, err := s.i.GetConfig(ctx, cu.Edges.User, r)
 	if vo.IsConfigNotFoundError(err) {
-		responseMessage(cmd.ChannelID, cmd.ResponseURL, "The config file is not found.")
+		postResponseMessage(cmd.ChannelID, cmd.ResponseURL, "The config file is not found.")
 		c.Status(http.StatusOK)
 		return
 	} else if vo.IsConfigParseError(err) {
-		responseMessage(cmd.ChannelID, cmd.ResponseURL, "The config file is invliad format.")
+		postResponseMessage(cmd.ChannelID, cmd.ResponseURL, "The config file is invliad format.")
 		c.Status(http.StatusOK)
 		return
 	} else if err != nil {
@@ -306,15 +310,23 @@ func (s *Slack) interactDeploy(c *gin.Context) {
 	}
 
 	cf, err := s.i.GetConfig(ctx, cu.Edges.User, cb.Edges.Repo)
-	if err != nil {
-		s.log.Error("It has failed to get the config file.", zap.Error(err))
+	if vo.IsConfigNotFoundError(err) {
+		postBotMessage(cu, "The config file is not found.")
+		c.Status(http.StatusOK)
+		return
+	} else if vo.IsConfigParseError(err) {
+		postBotMessage(cu, "The config file is invliad format.")
+		c.Status(http.StatusOK)
+		return
+	} else if err != nil {
+		s.log.Error("It has failed to get the config.", zap.Error(err))
 		c.Status(http.StatusInternalServerError)
 		return
 	}
 
 	if !cf.HasEnv(sm.Env) {
-		s.log.Error("It has failed to find the environment.", zap.Error(err))
-		c.Status(http.StatusInternalServerError)
+		postBotMessage(cu, "The environment is not defined.")
+		c.Status(http.StatusOK)
 		return
 	}
 
@@ -333,7 +345,15 @@ func (s *Slack) interactDeploy(c *gin.Context) {
 		Env:    sm.Env,
 		Ref:    sm.Ref,
 	}, env)
-	if err != nil {
+	if ent.IsConstraintError(err) {
+		postBotMessage(cu, "The conflict occurs, please retry.")
+		c.Status(http.StatusOK)
+		return
+	} else if vo.IsUnprocessibleDeploymentError(err) {
+		postBotMessage(cu, fmt.Sprintf("It is unprocessible entity. (Discussion <%s|#64>)", linkUnprocessalbeEntity))
+		c.Status(http.StatusOK)
+		return
+	} else if err != nil {
 		s.log.Error("It has failed to deploy.", zap.Error(err))
 		c.Status(http.StatusInternalServerError)
 		return

@@ -1,6 +1,7 @@
 package slack
 
 import (
+	"context"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
@@ -18,98 +19,70 @@ import (
 )
 
 func TestSlack_interactDeploy(t *testing.T) {
-	t.Run("deploy the branch and request to approvers successfully.", func(t *testing.T) {
-		r := &ent.Repo{
-			ID: "1",
-		}
-
-		u := &ent.User{
-			ID: "1",
-		}
-
-		cu := &ent.ChatUser{
-			ID:     "U025KUBB2",
-			UserID: u.ID,
-			Edges: ent.ChatUserEdges{
-				User: u,
-			},
-		}
-
-		cb := &ent.Callback{
-			ID:     1,
-			RepoID: r.ID,
-			Edges: ent.CallbackEdges{
-				Repo: r,
-			},
-		}
-
+	t.Run("Create a new deployment with payload.", func(t *testing.T) {
 		m := mock.NewMockInteractor(gomock.NewController(t))
 
-		// These values are equal to the mocking payload.
+		// These values are in "./testdata/deploy-interact.json"
 		const (
 			callbackID = "nafyVuEqzcchuVmV"
 			chatUserID = "U025KUBB2"
 			branch     = "main"
 			env        = "prod"
-			number     = 4
 		)
 
+		t.Log("Find the callback which was stored by the Slash command.")
 		m.
 			EXPECT().
 			FindCallbackByHash(gomock.Any(), callbackID).
-			Return(cb, nil)
+			Return(&ent.Callback{}, nil)
 
+		t.Log("Find the chat-user who sent the payload.")
 		m.
 			EXPECT().
 			FindChatUserByID(gomock.Any(), chatUserID).
-			Return(cu, nil)
+			Return(&ent.ChatUser{}, nil)
 
+		t.Log("Get branch to validate the payload.")
 		m.
 			EXPECT().
-			GetBranch(gomock.Any(), u, r, branch).
+			GetBranch(gomock.Any(), gomock.AssignableToTypeOf(&ent.User{}), gomock.AssignableToTypeOf(&ent.Repo{}), branch).
 			Return(&vo.Branch{
-				Name:      branch,
-				CommitSHA: "commit_sha",
+				Name: branch,
 			}, nil)
 
+		t.Log("Get the config file of the repository.")
 		m.
 			EXPECT().
-			GetConfig(gomock.Any(), u, r).
+			GetConfig(gomock.Any(), gomock.AssignableToTypeOf(&ent.User{}), gomock.AssignableToTypeOf(&ent.Repo{})).
 			Return(&vo.Config{
 				Envs: []*vo.Env{
-					{
-						Name: env,
-						Approval: &vo.Approval{
-							Enabled: false,
-						},
-					},
+					{Name: env},
 				},
 			}, nil)
 
+		t.Log("Get the next number of deployment.")
 		m.
 			EXPECT().
-			GetNextDeploymentNumberOfRepo(gomock.Any(), r).
-			Return(number, nil)
+			GetNextDeploymentNumberOfRepo(gomock.Any(), gomock.AssignableToTypeOf(&ent.Repo{})).
+			Return(4, nil)
 
+		t.Log("Deploy with the payload.")
 		m.
 			EXPECT().
-			Deploy(gomock.Any(), u, r, &ent.Deployment{
-				Number: number,
+			Deploy(gomock.Any(), gomock.AssignableToTypeOf(&ent.User{}), gomock.AssignableToTypeOf(&ent.Repo{}), &ent.Deployment{
+				Number: 4,
 				Type:   deployment.TypeBranch,
 				Ref:    branch,
 				Env:    env,
-			}, gomock.Any()).
-			Return(&ent.Deployment{
-				ID:     10,
-				Number: number,
-				Type:   deployment.TypeBranch,
-				Ref:    branch,
-				Env:    env,
-			}, nil)
+			}, gomock.AssignableToTypeOf(&vo.Env{})).
+			DoAndReturn(func(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, e *vo.Env) (*ent.Deployment, error) {
+				return d, nil
+			})
 
+		t.Log("Create a new event")
 		m.
 			EXPECT().
-			CreateEvent(gomock.Any(), gomock.Any()).
+			CreateEvent(gomock.Any(), gomock.AssignableToTypeOf(&ent.Event{})).
 			Return(&ent.Event{}, nil)
 
 		s := &Slack{
