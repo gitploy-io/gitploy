@@ -2,9 +2,10 @@ import { Component } from "react"
 import { List, Typography } from 'antd'
 import moment from "moment"
 
-import { Deployment, DeploymentType, Repo } from '../models'
+import { Deployment, Repo } from '../models'
 import UserAvatar from './UserAvatar'
 import DeploymentStatusBadge from "./DeploymentStatusBadge"
+import DeploymentRefCode from "./DeploymentRefCode"
 
 const { Text, Paragraph } = Typography
 
@@ -48,11 +49,7 @@ function Description(props: DescriptionProps): JSX.Element {
         return <p></p>
     }
 
-    const ref = (props.deployment.type === DeploymentType.Commit)? 
-        props.deployment.ref.substr(0, 7): 
-        props.deployment.ref
-
     return <Paragraph style={{marginTop: "10px", marginBottom: 0}}>
-        <UserAvatar user={props.deployment.deployer} /> deployed <Text code>{ref}</Text> to the <Text strong>{props.deployment.env}</Text> environment {moment(props.deployment.createdAt).fromNow()} <DeploymentStatusBadge deployment={props.deployment}/>
+        <UserAvatar user={props.deployment.deployer} /> deployed <DeploymentRefCode deployment={props.deployment}/> to the <Text strong>{props.deployment.env}</Text> environment {moment(props.deployment.createdAt).fromNow()} <DeploymentStatusBadge deployment={props.deployment}/>
     </Paragraph>
 }

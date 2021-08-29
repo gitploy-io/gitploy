@@ -2,9 +2,10 @@ import { Timeline, Typography } from 'antd'
 import { SyncOutlined } from '@ant-design/icons'
 import moment from "moment"
 
-import { Deployment, DeploymentType, DeploymentStatusEnum } from "../models"
+import { Deployment, DeploymentStatusEnum } from "../models"
 import DeploymentStatusBadge from "./DeploymentStatusBadge"
 import UserAvatar from './UserAvatar'
+import DeploymentRefCode from './DeploymentRefCode'
 
 const { Text } = Typography
 
@@ -18,14 +19,11 @@ export default function ActivityLogs(props: ActivityLogsProps): JSX.Element {
             const dot = (d.lastStatus === DeploymentStatusEnum.Running)? 
                 <SyncOutlined style={{color: "purple"}} spin />: 
                 null
-            const ref = (d.type === DeploymentType.Commit)? 
-                d.ref.substr(0, 7): 
-                d.ref
             const avatar = <UserAvatar user={d.deployer} />
 
             return <Timeline.Item key={idx} color={getStatusColor(d.lastStatus)} dot={dot}>
                 <p>
-                    <Text strong>{d.env}</Text> <Text code>{ref}</Text> <a href={`/${d.repo?.namespace}/${d.repo?.name}/deployments/${d.number}`}>• View detail #{d.number}</a>
+                    <Text strong>{d.env}</Text> <DeploymentRefCode deployment={d}/> <a href={`/${d.repo?.namespace}/${d.repo?.name}/deployments/${d.number}`}>• View detail #{d.number}</a>
                 </p>
                 <p>
                     Deployed by {avatar} {moment(d.createdAt).fromNow()} <DeploymentStatusBadge deployment={d}/>

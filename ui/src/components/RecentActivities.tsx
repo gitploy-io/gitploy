@@ -3,6 +3,7 @@ import moment from "moment"
 
 import { Deployment, DeploymentType, Approval } from "../models"
 
+import DeploymentRefCode from "./DeploymentRefCode"
 import DeploymentStatusBadge from "./DeploymentStatusBadge"
 
 const { TabPane } = Tabs
@@ -34,13 +35,12 @@ function DeploymentList(props: DeploymentListProps): JSX.Element {
         renderItem={(d) => {
             const title = (d.repo) ? `${d.repo.namespace}/${d.repo.name} #${d.number}` : `Deployment #${d.number}`
             const link = (d.repo) ? `/${d.repo.namespace}/${d.repo.name}/deployments/${d.number}` : `#`
-            const ref = (d.type === DeploymentType.Commit) ? d.ref.substr(0, 7) : d.ref
 
             return <List.Item>
                 <List.Item.Meta
                     title={<a href={link}>{title}</a>}
                     description={<Paragraph>
-                        Deployed <Text code>{ref}</Text> to the <Text code>{d.env}</Text> environment {moment(d.createdAt).fromNow()} <DeploymentStatusBadge deployment={d}/>
+                        Deployed <DeploymentRefCode deployment={d}/> to the <Text className="gitploy-code" code>{d.env}</Text> environment {moment(d.createdAt).fromNow()} <DeploymentStatusBadge deployment={d}/>
                     </Paragraph>}
                 />
             </List.Item>
@@ -62,13 +62,12 @@ function ApprovalList(props: ApprovalListProps): JSX.Element {
             const d = a.deployment
             const title = (d.repo) ? `${d.repo.namespace}/${d.repo.name} #${d.number}` : `Deployment #${d.number}`
             const link = (d.repo) ? `/${d.repo.namespace}/${d.repo.name}/deployments/${d.number}` : `#`
-            const ref = (d.type === DeploymentType.Commit) ? d.ref.substr(0, 7) : d.ref
 
             return <List.Item>
                 <List.Item.Meta
                     title={<a href={link}>{title}</a>}
                     description={<Paragraph>
-                        Requested the approval to deploy <Text code>{ref}</Text> to the <Text code>{d.env}</Text> environment {moment(d.createdAt).fromNow()}
+                        Requested the approval to deploy <DeploymentRefCode deployment={d}/> to the <Text className="gitploy-code" code>{d.env}</Text> environment {moment(d.createdAt).fromNow()}
                     </Paragraph>}
                 />
             </List.Item>
