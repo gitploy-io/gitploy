@@ -2,8 +2,8 @@
 
 @gitploy-prefix: ~'gitploy';
 
-// Link changes color when it is hover.
 .@{gitploy-prefix} {
+  // Link changes color when it is hover.
   &-link {
     margin-bottom: 4px;
     color: @text-color;
@@ -18,4 +18,10 @@
     }
   }
 
+  // Override border of code.
+  &-code {
+    > code {
+      border: 0
+    }
+  }
 }

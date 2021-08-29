@@ -1,6 +1,7 @@
 import { Form, Typography, Avatar, Button, Collapse, Timeline } from "antd"
 
-import { Deployment, DeploymentType, Commit } from "../models"
+import { Deployment, Commit } from "../models"
+import DeploymentRefCode from "./DeploymentRefCode"
 import DeploymentStatusSteps from "./DeploymentStatusSteps"
 
 const { Text } = Typography
@@ -39,7 +40,7 @@ export default function DeployConfirm(props: DeployConfirmProps): JSX.Element {
                 {...layout}
                 label="Ref"
             >
-                <Text code>{(props.deployment.type === DeploymentType.Commit)? props.deployment.ref.substr(0, 7) : props.deployment.ref}</Text>
+                <DeploymentRefCode deployment={props.deployment}/>
             </Form.Item>
             <Form.Item
                 {...layout}
