@@ -5,14 +5,13 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/hanjunlee/gitploy/ent"
-	"github.com/hanjunlee/gitploy/ent/deployment"
 	"github.com/hanjunlee/gitploy/ent/perm"
 	"github.com/hanjunlee/gitploy/ent/repo"
 	"github.com/hanjunlee/gitploy/vo"
 )
 
 func (s *Store) ListReposOfUser(ctx context.Context, u *ent.User, q string, page, perPage int) ([]*ent.Repo, error) {
-	return s.c.Repo.
+	repos, err := s.c.Repo.
 		Query().
 		Where(func(s *sql.Selector) {
 			t := sql.Table(perm.Table)
@@ -24,19 +23,30 @@ func (s *Store) ListReposOfUser(ctx context.Context, u *ent.User, q string, page
 		Where(
 			repo.NameContains(q),
 		).
-		WithDeployments(func(dq *ent.DeploymentQuery) {
-			dq.
-				WithUser().
-				Order(ent.Desc(deployment.FieldCreatedAt)).
-				Limit(3)
-		}).
 		Limit(perPage).
 		Offset(offset(page, perPage)).
 		All(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, r := range repos {
+		deployments, err := r.
+			QueryDeployments().
+			WithUser().
+			Limit(3).
+			All(ctx)
+		if err != nil {
+			return nil, err
+		}
+
+		r.Edges.Deployments = deployments
+	}
+	return repos, nil
 }
 
 func (s *Store) ListSortedReposOfUser(ctx context.Context, u *ent.User, q string, page, perPage int) ([]*ent.Repo, error) {
-	return s.c.Repo.
+	repos, err := s.c.Repo.
 		Query().
 		Where(func(s *sql.Selector) {
 			t := sql.Table(perm.Table)
@@ -50,16 +60,27 @@ func (s *Store) ListSortedReposOfUser(ctx context.Context, u *ent.User, q string
 				repo.NameContains(q),
 			),
 		).
-		WithDeployments(func(dq *ent.DeploymentQuery) {
-			dq.
-				WithUser().
-				Order(ent.Desc(deployment.FieldCreatedAt)).
-				Limit(3)
-		}).
 		Order(ent.Desc(repo.FieldLatestDeployedAt)).
 		Limit(perPage).
 		Offset(offset(page, perPage)).
 		All(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, r := range repos {
+		deployments, err := r.
+			QueryDeployments().
+			WithUser().
+			Limit(3).
+			All(ctx)
+		if err != nil {
+			return nil, err
+		}
+
+		r.Edges.Deployments = deployments
+	}
+	return repos, nil
 }
 
 func (s *Store) FindRepoByID(ctx context.Context, id string) (*ent.Repo, error) {
