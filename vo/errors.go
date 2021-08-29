@@ -60,11 +60,11 @@ func IsRefNotFoundError(err error) bool {
 }
 
 type UnprocessibleDeploymentError struct {
-	Message string
+	Err error
 }
 
 func (e *UnprocessibleDeploymentError) Error() string {
-	return e.Message
+	return e.Err.Error()
 }
 
 func IsUnprocessibleDeploymentError(err error) bool {

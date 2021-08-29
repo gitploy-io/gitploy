@@ -124,8 +124,12 @@ func (r *Repo) CreateDeployment(c *gin.Context) {
 		Ref:    p.Ref,
 	}, cf.GetEnv(p.Env))
 	if ent.IsConstraintError(err) {
-		r.log.Warn("deployment number conflict.", zap.Error(err))
+		r.log.Warn("The conflict occurs.", zap.Error(err))
 		gb.ErrorResponse(c, http.StatusConflict, "The conflict occurs, please retry.")
+		return
+	} else if vo.IsUnprocessibleDeploymentError(err) {
+		r.log.Warn("It is unprocessable entity.", zap.Error(err))
+		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "It is unprocessable entity.")
 		return
 	} else if err != nil {
 		r.log.Error("failed to deploy.", zap.Error(err))
@@ -214,7 +218,13 @@ func (r *Repo) UpdateDeployment(c *gin.Context) {
 			return
 		}
 
-		// TODO: Deployment event.
+		if _, err := r.i.CreateEvent(ctx, &ent.Event{
+			Kind:         event.KindDeployment,
+			Type:         event.TypeUpdated,
+			DeploymentID: d.ID,
+		}); err != nil {
+			r.log.Error("It has failed to create an event.", zap.Error(err))
+		}
 	}
 
 	// Get the deployment with edges.
@@ -283,12 +293,16 @@ func (r *Repo) RollbackDeployment(c *gin.Context) {
 		Ref:    d.Ref,
 	}, cf.GetEnv(d.Env))
 	if ent.IsConstraintError(err) {
-		r.log.Warn("deployment number conflict.", zap.Error(err))
+		r.log.Warn("The conflict occurs.", zap.Error(err))
 		gb.ErrorResponse(c, http.StatusConflict, "The conflict occurs, please retry.")
 		return
+	} else if vo.IsUnprocessibleDeploymentError(err) {
+		r.log.Warn("It is unprocessable entity.", zap.Error(err))
+		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "It is unprocessable entity.")
+		return
 	} else if err != nil {
-		r.log.Error("failed to deploy.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to deploy.")
+		r.log.Error("It has failed to rollback.", zap.Error(err))
+		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to rollback.")
 		return
 	}
 

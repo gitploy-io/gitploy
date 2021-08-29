@@ -123,20 +123,23 @@ export const rollback = createAsyncThunk<void, void, { state: {repoRollback: Rep
         try {
             const rollback = await rollbackDeployment(repo.id, deployment.number)
 
+            const msg = <span>
+                It starts to rollback. <a href={`/${repo.namespace}/${repo.name}/deployments/${deployment.number}`}>#{deployment.number}</a>
+            </span>
             if (!env?.approval?.enabled) {
-                message.success("It starts to rollback.", 3)
+                message.success(msg, 3)
                 return
             }
 
             approvers.forEach(async (approver) => {
                 await createApproval(repo, rollback, approver)
             })
-            message.success("It starts to rollback.", 3)
+            message.success(msg, 3)
         } catch(e) {
             if (e instanceof HttpForbiddenError) {
                 message.error("Only write permission can deploy.", 3)
             } else if (e instanceof HttpUnprocessableEntityError)  {
-                message.error("It's unprocessable entity.", 3)
+                message.error(<span>It is unprocesable entity. Discussions <a href="https://github.com/gitploy-io/gitploy/discussions/64">#64</a></span>, 3)
             } else if (e instanceof HttpConflictError) {
                 message.error("It has conflicted, please retry it.", 3)
             }

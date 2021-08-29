@@ -1,7 +1,7 @@
 import { Tabs, List, Typography } from "antd"
 import moment from "moment"
 
-import { Deployment, DeploymentType, Approval } from "../models"
+import { Deployment, Approval } from "../models"
 
 import DeploymentRefCode from "./DeploymentRefCode"
 import DeploymentStatusBadge from "./DeploymentStatusBadge"

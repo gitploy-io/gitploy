@@ -26,11 +26,11 @@ func (g *Github) CreateRemoteDeployment(ctx context.Context, u *ent.User, r *ent
 		})
 	if res.StatusCode == http.StatusConflict {
 		return nil, &vo.UnprocessibleDeploymentError{
-			Message: "Merge Conflict.",
+			Err: err,
 		}
 	} else if res.StatusCode == http.StatusUnprocessableEntity {
 		return nil, &vo.UnprocessibleDeploymentError{
-			Message: "Unprocessible entity.",
+			Err: err,
 		}
 	}
 	if err != nil {
