@@ -6,7 +6,7 @@ on:
 jobs:
   deploy-local:
     runs-on: ubuntu-latest
-    if: ${{ github.event.environment == 'local' }}
+    if: ${{ github.event.deployment.environment == 'local' }}
     steps:
       -
         name: Checkout
@@ -24,7 +24,7 @@ jobs:
   deploy-dev:
     runs-on: ubuntu-latest
     # https://docs.github.com/en/developers/webhooks-and-events/webhooks/webhook-events-and-payloads#deployment
-    if: ${{ github.event.environment == 'dev' }}
+    if: ${{ github.event.deployment.environment == 'dev' }}
     steps:
       -
         name: Checkout
