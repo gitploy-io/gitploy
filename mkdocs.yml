@@ -11,7 +11,10 @@ nav:
     - Overview: concepts/overview.md
     - "deploy.yaml": concepts/deploy.yml.md
     - Permission: concepts/permission.md
+    - Chatops: concepts/chatops.md
     - License: concepts/license.md
   - Tasks:
     - Installation: tasks/installation.md
-  - References: references/index.md
+    - Integration: tasks/integration.md
+  - References: 
+    - Environments: references/environments.md
