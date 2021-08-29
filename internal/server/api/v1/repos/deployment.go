@@ -205,8 +205,8 @@ func (r *Repo) UpdateDeployment(c *gin.Context) {
 		}
 
 		if d, err = r.i.CreateRemoteDeployment(ctx, u, re, d, cf.GetEnv(d.Env)); vo.IsUnprocessibleDeploymentError(err) {
-			r.log.Warn("It is unprocessible deployment.", zap.Error(err))
-			gb.ErrorResponse(c, http.StatusUnprocessableEntity, "It is unprocessible deployment.")
+			r.log.Warn("It is unprocessible entity.", zap.Error(err))
+			gb.ErrorResponse(c, http.StatusUnprocessableEntity, "It is unprocessible entity.")
 			return
 		} else if err != nil {
 			r.log.Error("It has failed to create the remote deployment.", zap.Error(err))
