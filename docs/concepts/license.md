@@ -6,7 +6,4 @@ After purchase, you can unlock the Gtiploy Enterprise edition by setting [the en
 
 ## Expiry
 
-The license is expired for one of the cases:
-
-* **Seat** - The count of members hits the seat count. In this case, you need to purchase more seats.
-* **Expiry date** - The license reaches the expiry date. You need to renew the license when it is expired.
+The license will be expired when it reaches the expiry date. You have to renew the license when it is expired.

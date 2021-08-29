@@ -14,4 +14,5 @@ nav:
     - License: concepts/license.md
   - Tasks:
     - Installation: tasks/installation.md
-  - References: references/index.md
+  - References: 
+    - Environments: references/environments.md
