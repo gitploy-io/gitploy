@@ -4,21 +4,39 @@ on:
   deployment
 
 jobs:
-  deploy-dev:
+  deploy-local:
     runs-on: ubuntu-latest
+    if: ${{ github.event.environment == 'local' }}
     steps:
       -
         name: Checkout
         uses: actions/checkout@v2
-      # TODO: Support to deploy to multi-environments.
+      # Deploy 
       - 
-        name: Create values.yaml 
+        name: Deploy success
+        if: success()
+        uses: deliverybot/deployment-status@v1
+        with:
+          state: success
+          token: ${{ github.token }}
+          description: Deployment is finished successfully.
+    
+  deploy-dev:
+    runs-on: ubuntu-latest
+    # https://docs.github.com/en/developers/webhooks-and-events/webhooks/webhook-events-and-payloads#deployment
+    if: ${{ github.event.environment == 'dev' }}
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v2
+      - 
+        name: Create values.yaml
         uses: finnp/create-file-action@master
         env:
           FILE_NAME: "./.github/values.yaml"
           FILE_BASE64: "aW5ncmVzczoKICBlbmFibGVkOiB0cnVlCiAgYW5ub3RhdGlvbnM6CiAgICBrdWJlcm5ldGVzLmlvL2luZ3Jlc3MuY2xhc3M6IG5naW54CiAgICBjZXJ0LW1hbmFnZXIuaW8vY2x1c3Rlci1pc3N1ZXI6ICJsZXRzZW5jcnlwdC1wcm9kIgogIGhvc3RzOgogICAgLSBob3N0OiBkZXYuZ2l0cGxveS5pbwogICAgICBwYXRoczoKICAgICAgICAtIC8KICB0bHM6CiAgIC0gc2VjcmV0TmFtZTogZ2l0cGxveS1kZXYtdGxzCiAgICAgaG9zdHM6CiAgICAgICAtIGRldi5naXRwbG95LmlvCgpyZXNvdXJjZXM6CiAgcmVxdWVzdHM6CiAgICBjcHU6IDUwbQogICAgbWVtb3J5OiAxMjhNaQoKZW52OgogIEdJVFBMT1lfREVCVUdfTU9ERTogInRydWUiCiAgR0lUUExPWV9TRVJWRVJfSE9TVDogImRldi5naXRwbG95LmlvIgogIEdJVFBMT1lfU0VSVkVSX1BST1RPOiBodHRwcwogIEdJVFBMT1lfQURNSU5fVVNFUlM6ICJoYW5qdW5sZWUiCgpleHRyYVNlY3JldE5hbWVzRm9yRW52RnJvbToKICAtIGdpdHBsb3ktZGV2LXNlY3JldAoKcGVyc2lzdGVudFZvbHVtZToKICAjIElmIHlvdSBhcmUgdXNpbmcgU1FMaXRlIGFzIHlvdXIgREIgZm9yIEdpdHBsb3ksIGl0IGlzIHJlY29tbWVuZGVkIHRvIGVuYWJsZSBwZXJzaXN0ZW5jZS4gCiAgZW5hYmxlZDogdHJ1ZQ=="
       - 
-        name: Deploy Dev
+        name: Deploy 
         uses: WyriHaximus/github-action-helm3@v2
         with:
           # Upgrade to the version.
@@ -39,6 +57,7 @@ jobs:
         with:
           state: success
           token: ${{ github.token }}
+          description: Deployment is finished successfully.
       - 
         name: Deploy failed
         if: failure()
@@ -46,4 +65,5 @@ jobs:
         with:
           state: failure
           token: ${{ github.token }}
+          description: Deployment has failed.
     
