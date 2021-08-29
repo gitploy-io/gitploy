@@ -1,4 +1,8 @@
 envs:
+  # local environment is used to test features.
+  - name: local
+    auto_merge: false
+
   - name: dev
     # Disable "auto_merge" to avoid merge conflict
     # when it deploys the tag behind the head.
