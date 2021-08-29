@@ -525,10 +525,10 @@ paths:
           description: Created
         '400': 
           $ref: '#/components/responses/400BadRequest'
-        '402':
-          $ref: '#/components/responses/402PaymentRequired'
         '401': 
           $ref: '#/components/responses/401Unauthorized'
+        '402':
+          $ref: '#/components/responses/402PaymentRequired'
         '403': 
           $ref: '#/components/responses/403Forbidden'
         '409':
@@ -536,7 +536,7 @@ paths:
           description: The deployment number is conflicted.
         '422':
           $ref: '#/components/responses/422UnprocessableEntity'
-          description: The deployment payload or the configuration are invalid.
+          description: The deployment payload or the configuration is invalid.
         '500':
           $ref: '#/components/responses/500InternalError'
   /repos/{id}/deployments/{number}:
@@ -572,6 +572,9 @@ paths:
           $ref: '#/components/responses/403Forbidden'
         '404': 
           $ref: '#/components/responses/404NotFound'
+        '422':
+          $ref: '#/components/responses/422UnprocessableEntity'
+          description: The deployment payload or the configuration is invalid.
         '500':
           $ref: '#/components/responses/500InternalError'
     patch: 
