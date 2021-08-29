@@ -123,15 +123,18 @@ export const rollback = createAsyncThunk<void, void, { state: {repoRollback: Rep
         try {
             const rollback = await rollbackDeployment(repo.id, deployment.number)
 
+            const msg = <span>
+                It starts to rollback. <a href={`/${repo.namespace}/${repo.name}/deployments/${deployment.number}`}>#{deployment.number}</a>
+            </span>
             if (!env?.approval?.enabled) {
-                message.success("It starts to rollback.", 3)
+                message.success(msg, 3)
                 return
             }
 
             approvers.forEach(async (approver) => {
                 await createApproval(repo, rollback, approver)
             })
-            message.success("It starts to rollback.", 3)
+            message.success(msg, 3)
         } catch(e) {
             if (e instanceof HttpForbiddenError) {
                 message.error("Only write permission can deploy.", 3)

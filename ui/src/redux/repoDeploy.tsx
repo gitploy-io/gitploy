@@ -265,28 +265,33 @@ export const deploy = createAsyncThunk<void, void, { state: {repoDeploy: RepoDep
 
         try {
             let deployment: Deployment
-            if (type === DeploymentType.Commit && typeof commit !== "undefined") {
+            if (type === DeploymentType.Commit && commit) {
                 deployment = await createDeployment(repo.id, type, commit.sha, env.name)
-            } else if (type === DeploymentType.Branch && typeof branch !== "undefined") {
+            } else if (type === DeploymentType.Branch && branch) {
                 deployment = await createDeployment(repo.id, type, branch.name, env.name)
-            } else if (type === DeploymentType.Tag && typeof tag !== "undefined" ) {
+            } else if (type === DeploymentType.Tag && tag) {
                 deployment = await createDeployment(repo.id, type, tag.name, env.name)
-            } 
+            } else {
+                throw new Error("The type should be one of them: commit, branch, and tag.")
+            }
 
+            const msg = <span>
+                It starts to deploy. <a href={`/${repo.namespace}/${repo.name}/deployments/${deployment.number}`}>#{deployment.number}</a>
+            </span>
             if (!env.approval?.enabled) {
-                message.success("It starts to deploy.", 3)
+                message.success(msg, 3)
                 return
             }
 
             approvers.forEach(async (approver) => {
                 await createApproval(repo, deployment, approver)
             })
-            message.success("It starts to deploy.", 3)
+            message.success(msg, 3)
         } catch(e) {
             if (e instanceof HttpForbiddenError) {
                 message.error("Only write permission can deploy.", 3)
             } else if (e instanceof HttpUnprocessableEntityError)  {
-                message.error("It's unprocessable entity.", 3)
+                message.error(<span>It is unprocesable untity. Discussions <a href="https://github.com/gitploy-io/gitploy/discussions/64">#64</a></span>, 3)
             } else if (e instanceof HttpConflictError) {
                 message.error("It has conflicted, please retry it.", 3)
             }
