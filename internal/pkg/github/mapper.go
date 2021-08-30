@@ -103,17 +103,20 @@ func mapGithubCheckRunToStatus(c *github.CheckRun) *vo.Status {
 		state vo.StatusState
 	)
 
-	switch *c.Conclusion {
-	case "failure":
-		state = vo.StatusStateFailure
-	case "cancelled":
-		state = vo.StatusStateFailure
-	case "timed_out":
-		state = vo.StatusStateFailure
-	case "success":
+	// Conclusion exist when the status is 'completed', only.
+	if c.Conclusion == nil {
+		return &vo.Status{
+			Context:   *c.Name,
+			AvatarURL: *c.App.Owner.AvatarURL,
+			TargetURL: *c.HTMLURL,
+			State:     vo.StatusStatePending,
+		}
+	}
+
+	if *c.Conclusion == "success" {
 		state = vo.StatusStateSuccess
-	default:
-		state = vo.StatusStatePending
+	} else {
+		state = vo.StatusStateFailure
 	}
 
 	return &vo.Status{

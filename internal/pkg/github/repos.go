@@ -112,10 +112,6 @@ func (g *Github) ListCommitStatuses(ctx context.Context, u *ent.User, r *ent.Rep
 	}
 
 	for _, c := range result.CheckRuns {
-		if c.Conclusion == nil {
-			continue
-		}
-
 		ss = append(ss, mapGithubCheckRunToStatus(c))
 	}
 
