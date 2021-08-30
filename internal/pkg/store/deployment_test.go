@@ -419,3 +419,73 @@ func TestStore_FindLatestSuccessfulDeployment(t *testing.T) {
 		}
 	})
 }
+
+func TestStore_FindPrevSuccessDeployment(t *testing.T) {
+	ca := time.Now()
+
+	client := enttest.Open(t, "sqlite3", "file:ent?mode=memory&cache=shared&_fk=1",
+		enttest.WithMigrateOptions(migrate.WithForeignKeys(false)),
+	)
+	defer client.Close()
+
+	ctx := context.Background()
+
+	first := client.Deployment.Create().
+		SetType(deployment.TypeBranch).
+		SetNumber(1).
+		SetType("branch").
+		SetRef("main").
+		SetEnv("prod").
+		SetStatus(deployment.StatusSuccess).
+		SetCreatedAt(ca.Add(-2 * time.Hour)).
+		SetUserID("1").
+		SetRepoID("1").
+		SaveX(ctx)
+
+	client.Deployment.Create().
+		SetType(deployment.TypeBranch).
+		SetNumber(2).
+		SetType("branch").
+		SetRef("main").
+		SetEnv("prod").
+		SetStatus(deployment.StatusSuccess).
+		SetCreatedAt(ca.Add(-time.Hour)).
+		SetUserID("1").
+		SetRepoID("1").
+		SaveX(ctx)
+
+	latest := client.Deployment.Create().
+		SetType(deployment.TypeBranch).
+		SetNumber(3).
+		SetType("branch").
+		SetRef("main").
+		SetEnv("prod").
+		SetStatus(deployment.StatusSuccess).
+		SetCreatedAt(ca).
+		SetUserID("1").
+		SetRepoID("1").
+		SaveX(ctx)
+
+	t.Run("First deployment returns not found error.", func(t *testing.T) {
+		s := NewStore(client)
+
+		_, err := s.FindPrevSuccessDeployment(ctx, first)
+		if !ent.IsNotFound(err) {
+			t.Fatalf("FindPrevSuccessDeployment does not return NotFoundError: %s", err)
+		}
+	})
+
+	t.Run("Return the latest succeed deployment.", func(t *testing.T) {
+		s := NewStore(client)
+
+		d, err := s.FindPrevSuccessDeployment(ctx, latest)
+		if err != nil {
+			t.Fatalf("FindPrevSuccessDeployment returns an error: %s", err)
+		}
+
+		expected := 2
+		if d.ID != expected {
+			t.Fatalf("FindPrevSuccessDeployment = %v, wanted %v", d.ID, expected)
+		}
+	})
+}

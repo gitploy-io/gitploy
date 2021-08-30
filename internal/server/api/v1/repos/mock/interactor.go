@@ -245,6 +245,21 @@ func (mr *MockInteractorMockRecorder) FindPermOfRepo(ctx, r, u interface{}) *gom
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindPermOfRepo", reflect.TypeOf((*MockInteractor)(nil).FindPermOfRepo), ctx, r, u)
 }
 
+// FindPrevSuccessDeployment mocks base method.
+func (m *MockInteractor) FindPrevSuccessDeployment(ctx context.Context, d *ent.Deployment) (*ent.Deployment, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindPrevSuccessDeployment", ctx, d)
+	ret0, _ := ret[0].(*ent.Deployment)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindPrevSuccessDeployment indicates an expected call of FindPrevSuccessDeployment.
+func (mr *MockInteractorMockRecorder) FindPrevSuccessDeployment(ctx, d interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindPrevSuccessDeployment", reflect.TypeOf((*MockInteractor)(nil).FindPrevSuccessDeployment), ctx, d)
+}
+
 // FindRepoOfUserByID mocks base method.
 func (m *MockInteractor) FindRepoOfUserByID(ctx context.Context, u *ent.User, id string) (*ent.Repo, error) {
 	m.ctrl.T.Helper()
