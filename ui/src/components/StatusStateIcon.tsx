@@ -3,25 +3,27 @@ import { CheckOutlined, CloseOutlined } from "@ant-design/icons"
 
 import { Status, StatusState } from "../models"
 
+const colorSuccess = "#1a7f37"
+const colorFailure = "#cf222e"
+const colorPending = "#bf8700"
+
 const { Text, Link } = Typography
+
 interface StatusStateIconProps {
 	statuses: Status[]
 }
 
-
 export default function StatusStateIcon(props: StatusStateIconProps): JSX.Element {
 	const states = props.statuses.map((status) => status.state)
-	const content: JSX.Element = <div style={{width: "250px"}}>
+	const content: JSX.Element = <div style={{width: "350px"}}>
 		{props.statuses.map((status, idx) => {
 			return <Row key={idx}>
-				<Col offset="1" span="3">
-					{mapStateToIcon(status.state)}
-				</Col>
 				<Col span="12">
+					{mapStateToIcon(status.state)}&nbsp;&nbsp;
 					<Avatar size="small" src={status.avatarUrl} shape="square"/>&nbsp;&nbsp;
 					<Text strong>{status.context}</Text>
 				</Col>
-				<Col span="8" style={{textAlign: "right"}}>
+				<Col span="10" style={{textAlign: "right"}}>
 					<Link href={status.targetUrl} target="_blank">Details</Link>
 				</Col>
 				{(idx !== props.statuses.length - 1)? 
@@ -42,13 +44,17 @@ function mapStateToIcon(state: StatusState): JSX.Element {
 		case StatusState.Null:
 			return <span></span>
 		case StatusState.Pending:
-			return <span style={{color: "yellow"}}>•</span>
+			return <span>
+				<span className="gitploy-pending-icon"  style={{color: colorPending}}></span>&nbsp;&nbsp;
+			</span>
 		case StatusState.Success:
-			return <CheckOutlined style={{ color: "green"}}/>
+			return <CheckOutlined style={{color: colorSuccess}}/>
 		case StatusState.Failure:
-			return <CloseOutlined style={{color: "red"}}/>
+			return <CloseOutlined style={{color: colorFailure}}/>
 		default:
-			return <span style={{color: "yellow"}}>•</span>
+			return <span>
+				<span className="gitploy-pending-icon"  style={{color: colorPending}}></span>&nbsp;&nbsp;
+			</span>
 	}
 }
 
