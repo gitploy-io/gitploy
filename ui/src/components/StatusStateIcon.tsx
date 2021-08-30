@@ -5,7 +5,6 @@ import { Status, StatusState } from "../models"
 
 const colorSuccess = "#1a7f37"
 const colorFailure = "#cf222e"
-const colorPending = "#bf8700"
 
 const { Text, Link } = Typography
 
@@ -45,7 +44,7 @@ function mapStateToIcon(state: StatusState): JSX.Element {
 			return <span></span>
 		case StatusState.Pending:
 			return <span>
-				<span className="gitploy-pending-icon"  style={{color: colorPending}}></span>&nbsp;&nbsp;
+				<span className="gitploy-pending-icon"></span>&nbsp;&nbsp;
 			</span>
 		case StatusState.Success:
 			return <CheckOutlined style={{color: colorSuccess}}/>
@@ -53,7 +52,7 @@ function mapStateToIcon(state: StatusState): JSX.Element {
 			return <CloseOutlined style={{color: colorFailure}}/>
 		default:
 			return <span>
-				<span className="gitploy-pending-icon"  style={{color: colorPending}}></span>&nbsp;&nbsp;
+				<span className="gitploy-pending-icon"></span>&nbsp;&nbsp;
 			</span>
 	}
 }
