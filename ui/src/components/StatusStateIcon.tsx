@@ -22,7 +22,7 @@ export default function StatusStateIcon(props: StatusStateIconProps): JSX.Elemen
 					<Avatar size="small" src={status.avatarUrl} shape="square"/>&nbsp;&nbsp;
 					<Text strong>{status.context}</Text>
 				</Col>
-				<Col span="10" style={{textAlign: "right"}}>
+				<Col span="11" style={{textAlign: "right"}}>
 					<Link href={status.targetUrl} target="_blank">Details</Link>
 				</Col>
 				{(idx !== props.statuses.length - 1)? 
