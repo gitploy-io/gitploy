@@ -7,3 +7,9 @@ envs:
     # Disable "auto_merge" to avoid merge conflict
     # when it deploys the tag behind the head.
     auto_merge: false
+    # Check test and publish is succeed.
+    required_contexts:
+      - "go-test"
+      - "react-test"
+      - "publish-image"
+

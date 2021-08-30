@@ -8,7 +8,6 @@ on:
 
 jobs:
   go-test:
-    name: go test
     runs-on: ubuntu-latest
     steps:
       - 
@@ -29,7 +28,6 @@ jobs:
           GIN_MODE: release
 
   react-test:
-    name: react test
     runs-on: ubuntu-latest
     steps:
       - 
