@@ -5,6 +5,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/hanjunlee/gitploy/ent"
+	"github.com/hanjunlee/gitploy/ent/deployment"
 	"github.com/hanjunlee/gitploy/ent/perm"
 	"github.com/hanjunlee/gitploy/ent/repo"
 	"github.com/hanjunlee/gitploy/vo"
@@ -33,8 +34,9 @@ func (s *Store) ListReposOfUser(ctx context.Context, u *ent.User, q string, page
 	for _, r := range repos {
 		deployments, err := r.
 			QueryDeployments().
-			WithUser().
+			Order(ent.Desc(deployment.FieldID)).
 			Limit(3).
+			WithUser().
 			All(ctx)
 		if err != nil {
 			return nil, err
@@ -71,8 +73,9 @@ func (s *Store) ListSortedReposOfUser(ctx context.Context, u *ent.User, q string
 	for _, r := range repos {
 		deployments, err := r.
 			QueryDeployments().
-			WithUser().
+			Order(ent.Desc(deployment.FieldID)).
 			Limit(3).
+			WithUser().
 			All(ctx)
 		if err != nil {
 			return nil, err
