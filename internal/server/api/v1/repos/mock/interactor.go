@@ -215,21 +215,6 @@ func (mr *MockInteractorMockRecorder) FindDeploymentOfRepoByNumber(ctx, r, numbe
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindDeploymentOfRepoByNumber", reflect.TypeOf((*MockInteractor)(nil).FindDeploymentOfRepoByNumber), ctx, r, number)
 }
 
-// FindLatestSuccessfulDeployment mocks base method.
-func (m *MockInteractor) FindLatestSuccessfulDeployment(ctx context.Context, d *ent.Deployment) (*ent.Deployment, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FindLatestSuccessfulDeployment", ctx, d)
-	ret0, _ := ret[0].(*ent.Deployment)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// FindLatestSuccessfulDeployment indicates an expected call of FindLatestSuccessfulDeployment.
-func (mr *MockInteractorMockRecorder) FindLatestSuccessfulDeployment(ctx, d interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindLatestSuccessfulDeployment", reflect.TypeOf((*MockInteractor)(nil).FindLatestSuccessfulDeployment), ctx, d)
-}
-
 // FindPermOfRepo mocks base method.
 func (m *MockInteractor) FindPermOfRepo(ctx context.Context, r *ent.Repo, u *ent.User) (*ent.Perm, error) {
 	m.ctrl.T.Helper()
