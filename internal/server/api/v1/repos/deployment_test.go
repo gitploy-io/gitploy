@@ -54,7 +54,7 @@ func TestRepo_ListDeploymentChanges(t *testing.T) {
 
 		m.
 			EXPECT().
-			FindLatestSuccessfulDeployment(ctx, any).
+			FindPrevSuccessDeployment(ctx, any).
 			Return(&ent.Deployment{
 				ID:     5,
 				Sha:    base,

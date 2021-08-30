@@ -380,21 +380,6 @@ func (mr *MockStoreMockRecorder) FindDeploymentOfRepoByNumber(ctx, r, number int
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindDeploymentOfRepoByNumber", reflect.TypeOf((*MockStore)(nil).FindDeploymentOfRepoByNumber), ctx, r, number)
 }
 
-// FindLatestSuccessfulDeployment mocks base method.
-func (m *MockStore) FindLatestSuccessfulDeployment(ctx context.Context, d *ent.Deployment) (*ent.Deployment, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FindLatestSuccessfulDeployment", ctx, d)
-	ret0, _ := ret[0].(*ent.Deployment)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// FindLatestSuccessfulDeployment indicates an expected call of FindLatestSuccessfulDeployment.
-func (mr *MockStoreMockRecorder) FindLatestSuccessfulDeployment(ctx, d interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindLatestSuccessfulDeployment", reflect.TypeOf((*MockStore)(nil).FindLatestSuccessfulDeployment), ctx, d)
-}
-
 // FindPermOfRepo mocks base method.
 func (m *MockStore) FindPermOfRepo(ctx context.Context, r *ent.Repo, u *ent.User) (*ent.Perm, error) {
 	m.ctrl.T.Helper()
@@ -408,6 +393,21 @@ func (m *MockStore) FindPermOfRepo(ctx context.Context, r *ent.Repo, u *ent.User
 func (mr *MockStoreMockRecorder) FindPermOfRepo(ctx, r, u interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindPermOfRepo", reflect.TypeOf((*MockStore)(nil).FindPermOfRepo), ctx, r, u)
+}
+
+// FindPrevSuccessDeployment mocks base method.
+func (m *MockStore) FindPrevSuccessDeployment(ctx context.Context, d *ent.Deployment) (*ent.Deployment, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindPrevSuccessDeployment", ctx, d)
+	ret0, _ := ret[0].(*ent.Deployment)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindPrevSuccessDeployment indicates an expected call of FindPrevSuccessDeployment.
+func (mr *MockStoreMockRecorder) FindPrevSuccessDeployment(ctx, d interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindPrevSuccessDeployment", reflect.TypeOf((*MockStore)(nil).FindPrevSuccessDeployment), ctx, d)
 }
 
 // FindRepoByID mocks base method.

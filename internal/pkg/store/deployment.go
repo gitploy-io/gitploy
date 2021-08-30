@@ -173,7 +173,8 @@ func (s *Store) GetNextDeploymentNumberOfRepo(ctx context.Context, r *ent.Repo) 
 
 	return cnt + 1, nil
 }
-func (s *Store) FindLatestSuccessfulDeployment(ctx context.Context, d *ent.Deployment) (*ent.Deployment, error) {
+
+func (s *Store) FindPrevSuccessDeployment(ctx context.Context, d *ent.Deployment) (*ent.Deployment, error) {
 	return s.c.Deployment.
 		Query().
 		Where(
@@ -181,9 +182,10 @@ func (s *Store) FindLatestSuccessfulDeployment(ctx context.Context, d *ent.Deplo
 				deployment.RepoIDEQ(d.RepoID),
 				deployment.EnvEQ(d.Env),
 				deployment.StatusEQ(deployment.StatusSuccess),
+				deployment.CreatedAtLT(d.CreatedAt),
 			),
 		).
-		Order(ent.Desc(deployment.FieldUpdatedAt)).
+		Order(ent.Desc(deployment.FieldCreatedAt)).
 		First(ctx)
 }
 
