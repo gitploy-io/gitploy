@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 
+	"entgo.io/ent/dialect"
 	"github.com/kelseyhightower/envconfig"
 )
 
@@ -61,7 +62,13 @@ func NewConfigFromEnv() (*Config, error) {
 
 func (c *Config) Validate() {
 	if !(c.ServerProto == "http" || c.ServerProto == "https") {
-		log.Fatal("GITPLOY_SERVER_PROTO should be \"http\" or \"https\".")
+		log.Fatal("GITPLOY_SERVER_PROTO have to be \"http\" or \"https\".")
+	}
+
+	if driver := c.Store.StoreDriver; driver != dialect.SQLite &&
+		driver != dialect.MySQL &&
+		driver != dialect.Postgres {
+		log.Fatal("GITPLOY_STORE_DRIVER have to be one of them: sqlite3, mysql, or postgres.")
 	}
 }
 
