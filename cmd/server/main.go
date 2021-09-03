@@ -9,12 +9,12 @@ import (
 	"github.com/joho/godotenv"
 	"go.uber.org/zap"
 
-	"github.com/hanjunlee/gitploy/ent"
 	"github.com/hanjunlee/gitploy/internal/interactor"
 	"github.com/hanjunlee/gitploy/internal/pkg/github"
 	"github.com/hanjunlee/gitploy/internal/pkg/store"
 	"github.com/hanjunlee/gitploy/internal/server"
 
+	_ "github.com/jackc/pgx/v4/stdlib"
 	_ "github.com/mattn/go-sqlite3"
 )
 
@@ -128,16 +128,16 @@ func NewInteractor(c *Config) server.Interactor {
 }
 
 func newStore(c *Config) interactor.Store {
-	client, err := ent.Open(c.StoreDriver, c.StoreSource)
+	client, err := OpenDB(c.StoreDriver, c.StoreSource)
 	if err != nil {
-		log.Fatalf("failed create the connection for store: %v", err)
+		log.Fatalf("It has failed to open the DB: %v", err)
 	}
 
 	err = client.Schema.Create(
 		context.Background(),
 	)
 	if err != nil {
-		log.Fatalf("failed creating schema resources: %v", err)
+		log.Fatalf("It has failed to migrate the table schema: %v", err)
 	}
 
 	return store.NewStore(client)
