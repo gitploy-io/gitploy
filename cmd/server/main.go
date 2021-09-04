@@ -3,9 +3,11 @@ package main
 import (
 	"context"
 	"flag"
-	"fmt"
 	"log"
+	"net/http"
 
+	"github.com/fvbock/endless"
+	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"go.uber.org/zap"
 
@@ -29,11 +31,26 @@ func main() {
 		log.Fatalf("main: invalid configuration: %s", err)
 	}
 
-	setGlobalLogger(true)
+	setGlobalLogger(c.DebugMode)
 
 	r := server.NewRouter(newRouterConfig(c))
-	log.Printf("Run server with port %d ...", c.ServerPort)
-	r.Run(fmt.Sprintf(":%d", c.ServerPort))
+	if err := runServer(r, c); err != nil {
+		log.Printf("The server is down: %s.", err)
+	}
+}
+
+func runServer(r *gin.Engine, c *Config) error {
+	if !c.hasTLS() {
+		return endless.ListenAndServe(":http", r)
+	}
+
+	// Redirect http request to https server.
+	endless.ListenAndServe(":http", http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+		target := "https://" + req.Host + req.URL.Path
+		http.Redirect(w, req, target, http.StatusTemporaryRedirect)
+	}))
+
+	return endless.ListenAndServeTLS(":https", c.TLSCert, c.TLSKey, r)
 }
 
 func setGlobalLogger(debug bool) {

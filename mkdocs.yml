@@ -17,4 +17,4 @@ nav:
     - Installation: tasks/installation.md
     - Integration: tasks/integration.md
   - References: 
-    - Environments: references/environments.md
+    - Configurations: references/configurations.md

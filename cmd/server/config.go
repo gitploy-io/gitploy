@@ -9,7 +9,6 @@ import (
 
 type (
 	Config struct {
-		DebugMode bool `default:"false"`
 		Server
 		Store
 		Github
@@ -18,9 +17,10 @@ type (
 	}
 
 	Server struct {
+		DebugMode bool `default:"false"`
+
 		ServerHost       string `required:"true" split_words:"true"`
 		ServerProto      string `required:"true" default:"https" split_words:"true"`
-		ServerPort       int    `required:"true" default:"8080" split_words:"true"`
 		ServerProxyHost  string `split_words:"true"`
 		ServerProxyProto string `default:"https" split_words:"true"`
 
@@ -28,6 +28,9 @@ type (
 		AdminUsers          []string `split_words:"true"`
 
 		License string `split_words:"true"`
+
+		TLSCert string `split_words:"true"`
+		TLSKey  string `split_words:"true"`
 	}
 
 	Store struct {
@@ -78,4 +81,8 @@ func (c *Config) isGithubEnabled() bool {
 
 func (c *Config) isSlackEnabled() bool {
 	return c.SlackClientID != "" && c.SlackClientSecret != "" && c.SlackSigningSecret != ""
+}
+
+func (c *Config) hasTLS() bool {
+	return c.TLSCert != "" && c.TLSKey != ""
 }
