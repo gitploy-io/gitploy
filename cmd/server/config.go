@@ -9,7 +9,6 @@ import (
 
 type (
 	Config struct {
-		DebugMode bool `default:"false"`
 		Server
 		Store
 		Github
@@ -18,6 +17,8 @@ type (
 	}
 
 	Server struct {
+		DebugMode bool `default:"false"`
+
 		ServerHost       string `required:"true" split_words:"true"`
 		ServerProto      string `required:"true" default:"https" split_words:"true"`
 		ServerProxyHost  string `split_words:"true"`

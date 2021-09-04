@@ -31,7 +31,7 @@ func main() {
 		log.Fatalf("main: invalid configuration: %s", err)
 	}
 
-	setGlobalLogger(true)
+	setGlobalLogger(c.DebugMode)
 
 	r := server.NewRouter(newRouterConfig(c))
 	if err := runServer(r, c); err != nil {
