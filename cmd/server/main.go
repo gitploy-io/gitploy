@@ -4,6 +4,7 @@ import (
 	"context"
 	"flag"
 	"log"
+	"net/http"
 
 	"github.com/fvbock/endless"
 	"github.com/gin-gonic/gin"
@@ -42,6 +43,12 @@ func runServer(r *gin.Engine, c *Config) error {
 	if !c.hasTLS() {
 		return endless.ListenAndServe(":http", r)
 	}
+
+	// Redirect http request to https server.
+	endless.ListenAndServe(":http", http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+		target := "https://" + req.Host + req.URL.Path
+		http.Redirect(w, req, target, http.StatusTemporaryRedirect)
+	}))
 
 	return endless.ListenAndServeTLS(":https", c.TLSCert, c.TLSKey, r)
 }
