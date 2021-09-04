@@ -152,7 +152,7 @@ export default function Main(props: any) {
             </Content>
             <Footer style={{ textAlign: 'center' }}>
                 <LicenseFooter license={license} />
-                Gitploy ©2021 Created by Gitploy.io 
+                Gitploy ©2021 Created by Gitploy.IO 
             </Footer>
         </Layout>
     )
