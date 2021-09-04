@@ -17,7 +17,7 @@ type (
 	}
 
 	Server struct {
-		DebugMode bool `default:"false"`
+		DebugMode bool `default:"false" split_words:"true"`
 
 		ServerHost       string `required:"true" split_words:"true"`
 		ServerProto      string `required:"true" default:"https" split_words:"true"`
