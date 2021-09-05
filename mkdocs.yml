@@ -8,7 +8,7 @@ theme:
 nav:
   - Home: index.md
   - Concepts: 
-    - Overview: concepts/overview.md
+    - "How it works": concepts/how-it-work.md
     - "deploy.yaml": concepts/deploy.yml.md
     - Permission: concepts/permission.md
     - Chatops: concepts/chatops.md
