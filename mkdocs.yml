@@ -12,6 +12,7 @@ nav:
   - Concepts: 
     - "How it works": concepts/how-it-work.md
     - "deploy.yml": concepts/deploy.yml.md
+    - Deployment: concepts/deployment.md
     - Permission: concepts/permission.md
     - "Self-hosted Server": concepts/self-hosted-server.md
     - Chatops: concepts/chatops.md

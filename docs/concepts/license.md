@@ -6,4 +6,4 @@ After purchase, you can unlock the Gtiploy Enterprise edition by setting [the co
 
 ## Expiry
 
-The license will be expired when it reaches the expiry date. You have to renew the license when it is expired.
+The license will be expired when it reaches the expiry date. You have to renew the license before it is expired.
