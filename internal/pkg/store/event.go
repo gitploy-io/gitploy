@@ -5,9 +5,9 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect"
-	"github.com/hanjunlee/gitploy/ent"
-	"github.com/hanjunlee/gitploy/ent/event"
-	"github.com/hanjunlee/gitploy/ent/notificationrecord"
+	"github.com/gitploy-io/gitploy/ent"
+	"github.com/gitploy-io/gitploy/ent/event"
+	"github.com/gitploy-io/gitploy/ent/notificationrecord"
 )
 
 // ListEventsGreaterThanTime returns all events for deployment and approval

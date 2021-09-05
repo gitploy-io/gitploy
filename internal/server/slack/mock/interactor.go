@@ -8,9 +8,9 @@ import (
 	context "context"
 	reflect "reflect"
 
+	ent "github.com/gitploy-io/gitploy/ent"
+	vo "github.com/gitploy-io/gitploy/vo"
 	gomock "github.com/golang/mock/gomock"
-	ent "github.com/hanjunlee/gitploy/ent"
-	vo "github.com/hanjunlee/gitploy/vo"
 )
 
 // MockInteractor is a mock of Interactor interface.

@@ -13,11 +13,11 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/hanjunlee/gitploy/ent/callback"
-	"github.com/hanjunlee/gitploy/ent/deployment"
-	"github.com/hanjunlee/gitploy/ent/perm"
-	"github.com/hanjunlee/gitploy/ent/predicate"
-	"github.com/hanjunlee/gitploy/ent/repo"
+	"github.com/gitploy-io/gitploy/ent/callback"
+	"github.com/gitploy-io/gitploy/ent/deployment"
+	"github.com/gitploy-io/gitploy/ent/perm"
+	"github.com/gitploy-io/gitploy/ent/predicate"
+	"github.com/gitploy-io/gitploy/ent/repo"
 )
 
 // RepoQuery is the builder for querying Repo entities.

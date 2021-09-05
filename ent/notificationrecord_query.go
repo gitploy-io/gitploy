@@ -12,9 +12,9 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/hanjunlee/gitploy/ent/event"
-	"github.com/hanjunlee/gitploy/ent/notificationrecord"
-	"github.com/hanjunlee/gitploy/ent/predicate"
+	"github.com/gitploy-io/gitploy/ent/event"
+	"github.com/gitploy-io/gitploy/ent/notificationrecord"
+	"github.com/gitploy-io/gitploy/ent/predicate"
 )
 
 // NotificationRecordQuery is the builder for querying NotificationRecord entities.

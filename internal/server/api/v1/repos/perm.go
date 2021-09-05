@@ -6,8 +6,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 
-	"github.com/hanjunlee/gitploy/ent"
-	gb "github.com/hanjunlee/gitploy/internal/server/global"
+	"github.com/gitploy-io/gitploy/ent"
+	gb "github.com/gitploy-io/gitploy/internal/server/global"
 )
 
 func (r *Repo) ListPerms(c *gin.Context) {

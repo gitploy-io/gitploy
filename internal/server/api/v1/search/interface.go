@@ -4,9 +4,9 @@ import (
 	"context"
 	"time"
 
-	"github.com/hanjunlee/gitploy/ent"
-	"github.com/hanjunlee/gitploy/ent/approval"
-	"github.com/hanjunlee/gitploy/ent/deployment"
+	"github.com/gitploy-io/gitploy/ent"
+	"github.com/gitploy-io/gitploy/ent/approval"
+	"github.com/gitploy-io/gitploy/ent/deployment"
 )
 
 type (

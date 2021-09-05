@@ -8,8 +8,8 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/hanjunlee/gitploy/ent/chatuser"
-	"github.com/hanjunlee/gitploy/ent/user"
+	"github.com/gitploy-io/gitploy/ent/chatuser"
+	"github.com/gitploy-io/gitploy/ent/user"
 )
 
 // ChatUser is the model entity for the ChatUser schema.

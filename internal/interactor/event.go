@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/hanjunlee/gitploy/ent"
-	"github.com/hanjunlee/gitploy/ent/event"
+	"github.com/gitploy-io/gitploy/ent"
+	"github.com/gitploy-io/gitploy/ent/event"
 	"go.uber.org/zap"
 )
 

@@ -9,8 +9,8 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/hanjunlee/gitploy/ent/event"
-	"github.com/hanjunlee/gitploy/ent/notificationrecord"
+	"github.com/gitploy-io/gitploy/ent/event"
+	"github.com/gitploy-io/gitploy/ent/notificationrecord"
 )
 
 // NotificationRecordCreate is the builder for creating a NotificationRecord entity.

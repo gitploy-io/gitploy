@@ -8,9 +8,9 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/hanjunlee/gitploy/ent/perm"
-	"github.com/hanjunlee/gitploy/ent/repo"
-	"github.com/hanjunlee/gitploy/ent/user"
+	"github.com/gitploy-io/gitploy/ent/perm"
+	"github.com/gitploy-io/gitploy/ent/repo"
+	"github.com/gitploy-io/gitploy/ent/user"
 )
 
 // Perm is the model entity for the Perm schema.

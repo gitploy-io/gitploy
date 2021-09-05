@@ -3,7 +3,7 @@ package github
 import (
 	"context"
 
-	"github.com/hanjunlee/gitploy/vo"
+	"github.com/gitploy-io/gitploy/vo"
 )
 
 func (g *Github) GetUser(ctx context.Context, token string) (*vo.RemoteUser, error) {

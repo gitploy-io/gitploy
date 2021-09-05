@@ -10,10 +10,10 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/hanjunlee/gitploy/ent/approval"
-	"github.com/hanjunlee/gitploy/ent/deployment"
-	"github.com/hanjunlee/gitploy/ent/event"
-	"github.com/hanjunlee/gitploy/ent/user"
+	"github.com/gitploy-io/gitploy/ent/approval"
+	"github.com/gitploy-io/gitploy/ent/deployment"
+	"github.com/gitploy-io/gitploy/ent/event"
+	"github.com/gitploy-io/gitploy/ent/user"
 )
 
 // ApprovalCreate is the builder for creating a Approval entity.

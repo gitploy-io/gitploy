@@ -9,8 +9,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/hanjunlee/gitploy/ent/deploymentstatus"
-	"github.com/hanjunlee/gitploy/ent/predicate"
+	"github.com/gitploy-io/gitploy/ent/deploymentstatus"
+	"github.com/gitploy-io/gitploy/ent/predicate"
 )
 
 // DeploymentStatusDelete is the builder for deleting a DeploymentStatus entity.

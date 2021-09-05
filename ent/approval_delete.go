@@ -9,8 +9,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/hanjunlee/gitploy/ent/approval"
-	"github.com/hanjunlee/gitploy/ent/predicate"
+	"github.com/gitploy-io/gitploy/ent/approval"
+	"github.com/gitploy-io/gitploy/ent/predicate"
 )
 
 // ApprovalDelete is the builder for deleting a Approval entity.

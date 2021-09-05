@@ -7,11 +7,11 @@ import (
 	"testing"
 
 	"github.com/gin-gonic/gin"
+	"github.com/gitploy-io/gitploy/ent"
+	"github.com/gitploy-io/gitploy/internal/server/api/v1/sync/mock"
+	"github.com/gitploy-io/gitploy/internal/server/global"
+	"github.com/gitploy-io/gitploy/vo"
 	"github.com/golang/mock/gomock"
-	"github.com/hanjunlee/gitploy/ent"
-	"github.com/hanjunlee/gitploy/internal/server/api/v1/sync/mock"
-	"github.com/hanjunlee/gitploy/internal/server/global"
-	"github.com/hanjunlee/gitploy/vo"
 )
 
 func TestSyncher_Sync(t *testing.T) {

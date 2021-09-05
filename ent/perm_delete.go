@@ -9,8 +9,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/hanjunlee/gitploy/ent/perm"
-	"github.com/hanjunlee/gitploy/ent/predicate"
+	"github.com/gitploy-io/gitploy/ent/perm"
+	"github.com/gitploy-io/gitploy/ent/predicate"
 )
 
 // PermDelete is the builder for deleting a Perm entity.

@@ -7,7 +7,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/hanjunlee/gitploy/vo"
+	"github.com/gitploy-io/gitploy/vo"
 )
 
 const (

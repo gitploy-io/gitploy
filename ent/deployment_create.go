@@ -10,12 +10,12 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/hanjunlee/gitploy/ent/approval"
-	"github.com/hanjunlee/gitploy/ent/deployment"
-	"github.com/hanjunlee/gitploy/ent/deploymentstatus"
-	"github.com/hanjunlee/gitploy/ent/event"
-	"github.com/hanjunlee/gitploy/ent/repo"
-	"github.com/hanjunlee/gitploy/ent/user"
+	"github.com/gitploy-io/gitploy/ent/approval"
+	"github.com/gitploy-io/gitploy/ent/deployment"
+	"github.com/gitploy-io/gitploy/ent/deploymentstatus"
+	"github.com/gitploy-io/gitploy/ent/event"
+	"github.com/gitploy-io/gitploy/ent/repo"
+	"github.com/gitploy-io/gitploy/ent/user"
 )
 
 // DeploymentCreate is the builder for creating a Deployment entity.

@@ -8,16 +8,16 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-	"github.com/hanjunlee/gitploy/ent/approval"
-	"github.com/hanjunlee/gitploy/ent/callback"
-	"github.com/hanjunlee/gitploy/ent/chatuser"
-	"github.com/hanjunlee/gitploy/ent/deployment"
-	"github.com/hanjunlee/gitploy/ent/deploymentstatus"
-	"github.com/hanjunlee/gitploy/ent/event"
-	"github.com/hanjunlee/gitploy/ent/notificationrecord"
-	"github.com/hanjunlee/gitploy/ent/perm"
-	"github.com/hanjunlee/gitploy/ent/repo"
-	"github.com/hanjunlee/gitploy/ent/user"
+	"github.com/gitploy-io/gitploy/ent/approval"
+	"github.com/gitploy-io/gitploy/ent/callback"
+	"github.com/gitploy-io/gitploy/ent/chatuser"
+	"github.com/gitploy-io/gitploy/ent/deployment"
+	"github.com/gitploy-io/gitploy/ent/deploymentstatus"
+	"github.com/gitploy-io/gitploy/ent/event"
+	"github.com/gitploy-io/gitploy/ent/notificationrecord"
+	"github.com/gitploy-io/gitploy/ent/perm"
+	"github.com/gitploy-io/gitploy/ent/repo"
+	"github.com/gitploy-io/gitploy/ent/user"
 )
 
 // ent aliases to avoid import conflicts in user's code.

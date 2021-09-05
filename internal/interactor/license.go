@@ -3,8 +3,8 @@ package interactor
 import (
 	"context"
 
-	"github.com/hanjunlee/gitploy/pkg/license"
-	"github.com/hanjunlee/gitploy/vo"
+	"github.com/gitploy-io/gitploy/pkg/license"
+	"github.com/gitploy-io/gitploy/vo"
 )
 
 func (i *Interactor) GetLicense(ctx context.Context) (*vo.License, error) {

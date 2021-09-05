@@ -3,9 +3,9 @@ package interactor
 import (
 	"context"
 
-	"github.com/hanjunlee/gitploy/ent"
-	"github.com/hanjunlee/gitploy/ent/perm"
-	"github.com/hanjunlee/gitploy/vo"
+	"github.com/gitploy-io/gitploy/ent"
+	"github.com/gitploy-io/gitploy/ent/perm"
+	"github.com/gitploy-io/gitploy/vo"
 )
 
 func (i *Interactor) IsEntryOrg(ctx context.Context, namespace string) bool {

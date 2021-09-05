@@ -3,7 +3,7 @@ package license
 import (
 	"context"
 
-	"github.com/hanjunlee/gitploy/vo"
+	"github.com/gitploy-io/gitploy/vo"
 )
 
 type (

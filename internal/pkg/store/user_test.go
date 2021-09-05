@@ -5,9 +5,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hanjunlee/gitploy/ent"
-	"github.com/hanjunlee/gitploy/ent/enttest"
-	"github.com/hanjunlee/gitploy/ent/migrate"
+	"github.com/gitploy-io/gitploy/ent"
+	"github.com/gitploy-io/gitploy/ent/enttest"
+	"github.com/gitploy-io/gitploy/ent/migrate"
 )
 
 func TestStore_ListUsers(t *testing.T) {

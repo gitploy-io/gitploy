@@ -9,11 +9,11 @@ import (
 	reflect "reflect"
 	time "time"
 
+	ent "github.com/gitploy-io/gitploy/ent"
+	approval "github.com/gitploy-io/gitploy/ent/approval"
+	deployment "github.com/gitploy-io/gitploy/ent/deployment"
+	vo "github.com/gitploy-io/gitploy/vo"
 	gomock "github.com/golang/mock/gomock"
-	ent "github.com/hanjunlee/gitploy/ent"
-	approval "github.com/hanjunlee/gitploy/ent/approval"
-	deployment "github.com/hanjunlee/gitploy/ent/deployment"
-	vo "github.com/hanjunlee/gitploy/vo"
 )
 
 // MockStore is a mock of Store interface.

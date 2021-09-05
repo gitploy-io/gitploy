@@ -4,8 +4,8 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/gitploy-io/gitploy/vo"
 	"github.com/google/go-github/v32/github"
-	"github.com/hanjunlee/gitploy/vo"
 )
 
 func mapGithubUserToUser(u *github.User) *vo.RemoteUser {

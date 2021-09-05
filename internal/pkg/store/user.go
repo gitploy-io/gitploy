@@ -3,8 +3,8 @@ package store
 import (
 	"context"
 
-	"github.com/hanjunlee/gitploy/ent"
-	"github.com/hanjunlee/gitploy/ent/user"
+	"github.com/gitploy-io/gitploy/ent"
+	"github.com/gitploy-io/gitploy/ent/user"
 )
 
 func (s *Store) ListUsers(ctx context.Context, login string, page, perPage int) ([]*ent.User, error) {

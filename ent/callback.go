@@ -8,8 +8,8 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/hanjunlee/gitploy/ent/callback"
-	"github.com/hanjunlee/gitploy/ent/repo"
+	"github.com/gitploy-io/gitploy/ent/callback"
+	"github.com/gitploy-io/gitploy/ent/repo"
 )
 
 // Callback is the model entity for the Callback schema.

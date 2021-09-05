@@ -10,8 +10,8 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/hanjunlee/gitploy/ent"
-	gb "github.com/hanjunlee/gitploy/internal/server/global"
+	"github.com/gitploy-io/gitploy/ent"
+	gb "github.com/gitploy-io/gitploy/internal/server/global"
 	"go.uber.org/zap"
 )
 

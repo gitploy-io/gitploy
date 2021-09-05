@@ -1,4 +1,4 @@
-module github.com/hanjunlee/gitploy
+module github.com/gitploy-io/gitploy
 
 go 1.15
 

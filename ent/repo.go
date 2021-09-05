@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/hanjunlee/gitploy/ent/repo"
+	"github.com/gitploy-io/gitploy/ent/repo"
 )
 
 // Repo is the model entity for the Repo schema.

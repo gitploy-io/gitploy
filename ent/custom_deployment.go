@@ -1,7 +1,7 @@
 package ent
 
 import (
-	"github.com/hanjunlee/gitploy/ent/deployment"
+	"github.com/gitploy-io/gitploy/ent/deployment"
 )
 
 // CheckEagerLoading checks the deployment has required edges; Repo and User.

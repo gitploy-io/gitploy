@@ -6,7 +6,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/hanjunlee/gitploy/ent"
+	"github.com/gitploy-io/gitploy/ent"
 )
 
 // The ApprovalFunc type is an adapter to allow the use of ordinary

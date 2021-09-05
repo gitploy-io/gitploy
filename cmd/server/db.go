@@ -11,7 +11,7 @@ import (
 	entsql "entgo.io/ent/dialect/sql"
 	"github.com/go-sql-driver/mysql"
 
-	"github.com/hanjunlee/gitploy/ent"
+	"github.com/gitploy-io/gitploy/ent"
 )
 
 type (

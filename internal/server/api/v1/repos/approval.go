@@ -7,10 +7,10 @@ import (
 	"github.com/gin-gonic/gin/binding"
 	"go.uber.org/zap"
 
-	"github.com/hanjunlee/gitploy/ent"
-	"github.com/hanjunlee/gitploy/ent/approval"
-	"github.com/hanjunlee/gitploy/ent/event"
-	gb "github.com/hanjunlee/gitploy/internal/server/global"
+	"github.com/gitploy-io/gitploy/ent"
+	"github.com/gitploy-io/gitploy/ent/approval"
+	"github.com/gitploy-io/gitploy/ent/event"
+	gb "github.com/gitploy-io/gitploy/internal/server/global"
 )
 
 type (

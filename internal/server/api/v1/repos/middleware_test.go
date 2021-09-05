@@ -7,11 +7,11 @@ import (
 	"testing"
 
 	"github.com/gin-gonic/gin"
+	"github.com/gitploy-io/gitploy/ent"
+	"github.com/gitploy-io/gitploy/ent/perm"
+	"github.com/gitploy-io/gitploy/internal/server/api/v1/repos/mock"
+	"github.com/gitploy-io/gitploy/internal/server/global"
 	"github.com/golang/mock/gomock"
-	"github.com/hanjunlee/gitploy/ent"
-	"github.com/hanjunlee/gitploy/ent/perm"
-	"github.com/hanjunlee/gitploy/internal/server/api/v1/repos/mock"
-	"github.com/hanjunlee/gitploy/internal/server/global"
 )
 
 func TestRepoMiddleware_RepoWritePerm(t *testing.T) {

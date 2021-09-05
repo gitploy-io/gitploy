@@ -6,9 +6,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 
-	"github.com/hanjunlee/gitploy/ent"
-	gb "github.com/hanjunlee/gitploy/internal/server/global"
-	"github.com/hanjunlee/gitploy/vo"
+	"github.com/gitploy-io/gitploy/ent"
+	gb "github.com/gitploy-io/gitploy/internal/server/global"
+	"github.com/gitploy-io/gitploy/vo"
 )
 
 func (r *Repo) ListBranches(c *gin.Context) {

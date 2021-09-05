@@ -5,10 +5,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hanjunlee/gitploy/ent"
-	"github.com/hanjunlee/gitploy/ent/enttest"
-	"github.com/hanjunlee/gitploy/ent/migrate"
-	"github.com/hanjunlee/gitploy/ent/perm"
+	"github.com/gitploy-io/gitploy/ent"
+	"github.com/gitploy-io/gitploy/ent/enttest"
+	"github.com/gitploy-io/gitploy/ent/migrate"
+	"github.com/gitploy-io/gitploy/ent/perm"
 )
 
 func TestStore_DeletePermsOfUserLessThanUpdatedAt(t *testing.T) {

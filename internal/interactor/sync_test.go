@@ -4,11 +4,11 @@ import (
 	"context"
 	"testing"
 
+	"github.com/gitploy-io/gitploy/ent"
+	"github.com/gitploy-io/gitploy/ent/perm"
+	"github.com/gitploy-io/gitploy/internal/interactor/mock"
+	"github.com/gitploy-io/gitploy/vo"
 	"github.com/golang/mock/gomock"
-	"github.com/hanjunlee/gitploy/ent"
-	"github.com/hanjunlee/gitploy/ent/perm"
-	"github.com/hanjunlee/gitploy/internal/interactor/mock"
-	"github.com/hanjunlee/gitploy/vo"
 )
 
 func TestInteractor_SyncRemoteRepo(t *testing.T) {

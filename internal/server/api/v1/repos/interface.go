@@ -5,8 +5,8 @@ package repos
 import (
 	"context"
 
-	"github.com/hanjunlee/gitploy/ent"
-	"github.com/hanjunlee/gitploy/vo"
+	"github.com/gitploy-io/gitploy/ent"
+	"github.com/gitploy-io/gitploy/vo"
 )
 
 type (

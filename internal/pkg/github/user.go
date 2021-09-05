@@ -3,9 +3,9 @@ package github
 import (
 	"context"
 
+	"github.com/gitploy-io/gitploy/ent"
+	"github.com/gitploy-io/gitploy/vo"
 	"github.com/google/go-github/v32/github"
-	"github.com/hanjunlee/gitploy/ent"
-	"github.com/hanjunlee/gitploy/vo"
 )
 
 func (g *Github) GetRateLimit(ctx context.Context, u *ent.User) (*vo.RateLimit, error) {

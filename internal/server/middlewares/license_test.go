@@ -7,9 +7,9 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/gitploy-io/gitploy/internal/server/middlewares/mock"
+	"github.com/gitploy-io/gitploy/vo"
 	"github.com/golang/mock/gomock"
-	"github.com/hanjunlee/gitploy/internal/server/middlewares/mock"
-	"github.com/hanjunlee/gitploy/vo"
 )
 
 func TestLicenseMiddleware_IsExpired(t *testing.T) {

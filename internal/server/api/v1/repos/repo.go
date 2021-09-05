@@ -6,9 +6,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
-	"github.com/hanjunlee/gitploy/ent"
-	gb "github.com/hanjunlee/gitploy/internal/server/global"
-	"github.com/hanjunlee/gitploy/vo"
+	"github.com/gitploy-io/gitploy/ent"
+	gb "github.com/gitploy-io/gitploy/internal/server/global"
+	"github.com/gitploy-io/gitploy/vo"
 	"go.uber.org/zap"
 )
 

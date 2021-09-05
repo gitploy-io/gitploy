@@ -10,8 +10,8 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/hanjunlee/gitploy/ent/chatuser"
-	"github.com/hanjunlee/gitploy/ent/user"
+	"github.com/gitploy-io/gitploy/ent/chatuser"
+	"github.com/gitploy-io/gitploy/ent/user"
 )
 
 // ChatUserCreate is the builder for creating a ChatUser entity.

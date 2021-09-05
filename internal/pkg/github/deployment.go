@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/gitploy-io/gitploy/ent"
+	"github.com/gitploy-io/gitploy/vo"
 	"github.com/google/go-github/v32/github"
-	"github.com/hanjunlee/gitploy/ent"
-	"github.com/hanjunlee/gitploy/vo"
 )
 
 func (g *Github) CreateRemoteDeployment(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, e *vo.Env) (*vo.RemoteDeployment, error) {

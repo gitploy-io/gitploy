@@ -3,7 +3,7 @@ package store
 import (
 	"context"
 
-	"github.com/hanjunlee/gitploy/ent"
+	"github.com/gitploy-io/gitploy/ent"
 )
 
 func (s *Store) CreateDeploymentStatus(ctx context.Context, ds *ent.DeploymentStatus) (*ent.DeploymentStatus, error) {

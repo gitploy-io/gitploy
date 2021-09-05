@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/hanjunlee/gitploy/ent"
-	"github.com/hanjunlee/gitploy/vo"
+	"github.com/gitploy-io/gitploy/ent"
+	"github.com/gitploy-io/gitploy/vo"
 )
 
 func (i *Interactor) ListReposOfUser(ctx context.Context, u *ent.User, sorted bool, q string, page, perPage int) (repos []*ent.Repo, err error) {

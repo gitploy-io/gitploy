@@ -5,7 +5,7 @@ package hooks
 import (
 	"context"
 
-	"github.com/hanjunlee/gitploy/ent"
+	"github.com/gitploy-io/gitploy/ent"
 )
 
 type (

@@ -3,7 +3,7 @@ package interactor
 import (
 	"context"
 
-	"github.com/hanjunlee/gitploy/vo"
+	"github.com/gitploy-io/gitploy/vo"
 )
 
 func (i *Interactor) GetRemoteUserByToken(ctx context.Context, token string) (*vo.RemoteUser, error) {

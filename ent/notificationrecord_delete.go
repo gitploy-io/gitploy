@@ -9,8 +9,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/hanjunlee/gitploy/ent/notificationrecord"
-	"github.com/hanjunlee/gitploy/ent/predicate"
+	"github.com/gitploy-io/gitploy/ent/notificationrecord"
+	"github.com/gitploy-io/gitploy/ent/predicate"
 )
 
 // NotificationRecordDelete is the builder for deleting a NotificationRecord entity.

@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	gb "github.com/hanjunlee/gitploy/internal/server/global"
+	gb "github.com/gitploy-io/gitploy/internal/server/global"
 )
 
 const (

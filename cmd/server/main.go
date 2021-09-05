@@ -11,10 +11,10 @@ import (
 	"github.com/joho/godotenv"
 	"go.uber.org/zap"
 
-	"github.com/hanjunlee/gitploy/internal/interactor"
-	"github.com/hanjunlee/gitploy/internal/pkg/github"
-	"github.com/hanjunlee/gitploy/internal/pkg/store"
-	"github.com/hanjunlee/gitploy/internal/server"
+	"github.com/gitploy-io/gitploy/internal/interactor"
+	"github.com/gitploy-io/gitploy/internal/pkg/github"
+	"github.com/gitploy-io/gitploy/internal/pkg/store"
+	"github.com/gitploy-io/gitploy/internal/server"
 
 	_ "github.com/jackc/pgx/v4/stdlib"
 	_ "github.com/mattn/go-sqlite3"

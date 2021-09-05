@@ -5,9 +5,9 @@ package enttest
 import (
 	"context"
 
-	"github.com/hanjunlee/gitploy/ent"
+	"github.com/gitploy-io/gitploy/ent"
 	// required by schema hooks.
-	_ "github.com/hanjunlee/gitploy/ent/runtime"
+	_ "github.com/gitploy-io/gitploy/ent/runtime"
 
 	"entgo.io/ent/dialect/sql/schema"
 )

@@ -3,8 +3,8 @@ package store
 import (
 	"context"
 
-	"github.com/hanjunlee/gitploy/ent"
-	"github.com/hanjunlee/gitploy/ent/callback"
+	"github.com/gitploy-io/gitploy/ent"
+	"github.com/gitploy-io/gitploy/ent/callback"
 )
 
 func (s *Store) CreateCallback(ctx context.Context, cb *ent.Callback) (*ent.Callback, error) {

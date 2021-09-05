@@ -5,11 +5,11 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/gitploy-io/gitploy/ent"
+	"github.com/gitploy-io/gitploy/ent/deployment"
+	"github.com/gitploy-io/gitploy/internal/interactor/mock"
+	"github.com/gitploy-io/gitploy/vo"
 	"github.com/golang/mock/gomock"
-	"github.com/hanjunlee/gitploy/ent"
-	"github.com/hanjunlee/gitploy/ent/deployment"
-	"github.com/hanjunlee/gitploy/internal/interactor/mock"
-	"github.com/hanjunlee/gitploy/vo"
 	"go.uber.org/zap"
 )
 

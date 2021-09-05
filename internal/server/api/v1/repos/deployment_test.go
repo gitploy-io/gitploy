@@ -10,11 +10,11 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/golang/mock/gomock"
 
-	"github.com/hanjunlee/gitploy/ent"
-	"github.com/hanjunlee/gitploy/ent/deployment"
-	"github.com/hanjunlee/gitploy/internal/server/api/v1/repos/mock"
-	"github.com/hanjunlee/gitploy/internal/server/global"
-	"github.com/hanjunlee/gitploy/vo"
+	"github.com/gitploy-io/gitploy/ent"
+	"github.com/gitploy-io/gitploy/ent/deployment"
+	"github.com/gitploy-io/gitploy/internal/server/api/v1/repos/mock"
+	"github.com/gitploy-io/gitploy/internal/server/global"
+	"github.com/gitploy-io/gitploy/vo"
 )
 
 func TestRepo_ListDeploymentChanges(t *testing.T) {

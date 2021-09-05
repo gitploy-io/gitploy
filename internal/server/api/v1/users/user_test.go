@@ -11,9 +11,9 @@ import (
 
 	"github.com/AlekSi/pointer"
 	"github.com/gin-gonic/gin"
+	"github.com/gitploy-io/gitploy/ent"
+	"github.com/gitploy-io/gitploy/internal/server/api/v1/users/mock"
 	"github.com/golang/mock/gomock"
-	"github.com/hanjunlee/gitploy/ent"
-	"github.com/hanjunlee/gitploy/internal/server/api/v1/users/mock"
 )
 
 func TestUser_UpdateUser(t *testing.T) {

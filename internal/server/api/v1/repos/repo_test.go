@@ -11,11 +11,11 @@ import (
 
 	"github.com/AlekSi/pointer"
 	"github.com/gin-gonic/gin"
+	"github.com/gitploy-io/gitploy/ent"
+	"github.com/gitploy-io/gitploy/internal/server/api/v1/repos/mock"
+	"github.com/gitploy-io/gitploy/internal/server/global"
+	"github.com/gitploy-io/gitploy/vo"
 	"github.com/golang/mock/gomock"
-	"github.com/hanjunlee/gitploy/ent"
-	"github.com/hanjunlee/gitploy/internal/server/api/v1/repos/mock"
-	"github.com/hanjunlee/gitploy/internal/server/global"
-	"github.com/hanjunlee/gitploy/vo"
 )
 
 func TestRepo_UpdateRepo(t *testing.T) {

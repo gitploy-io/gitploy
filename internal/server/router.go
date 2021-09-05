@@ -9,16 +9,16 @@ import (
 	"github.com/gin-gonic/gin"
 	"golang.org/x/oauth2"
 
-	"github.com/hanjunlee/gitploy/internal/server/api/v1/license"
-	"github.com/hanjunlee/gitploy/internal/server/api/v1/repos"
-	"github.com/hanjunlee/gitploy/internal/server/api/v1/search"
-	"github.com/hanjunlee/gitploy/internal/server/api/v1/stream"
-	"github.com/hanjunlee/gitploy/internal/server/api/v1/sync"
-	"github.com/hanjunlee/gitploy/internal/server/api/v1/users"
-	"github.com/hanjunlee/gitploy/internal/server/hooks"
-	mw "github.com/hanjunlee/gitploy/internal/server/middlewares"
-	s "github.com/hanjunlee/gitploy/internal/server/slack"
-	"github.com/hanjunlee/gitploy/internal/server/web"
+	"github.com/gitploy-io/gitploy/internal/server/api/v1/license"
+	"github.com/gitploy-io/gitploy/internal/server/api/v1/repos"
+	"github.com/gitploy-io/gitploy/internal/server/api/v1/search"
+	"github.com/gitploy-io/gitploy/internal/server/api/v1/stream"
+	"github.com/gitploy-io/gitploy/internal/server/api/v1/sync"
+	"github.com/gitploy-io/gitploy/internal/server/api/v1/users"
+	"github.com/gitploy-io/gitploy/internal/server/hooks"
+	mw "github.com/gitploy-io/gitploy/internal/server/middlewares"
+	s "github.com/gitploy-io/gitploy/internal/server/slack"
+	"github.com/gitploy-io/gitploy/internal/server/web"
 )
 
 const (
