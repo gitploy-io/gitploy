@@ -10,4 +10,4 @@ Currently, Gitploy supports Slack only, but it will support Microsoft Teams near
 
 ## Limit
 
-Cloud doesn't support Chatops. *Only self-managed is available.* You can check [how to integrate with Chatops](../tasks/integration.md) for details.
+Cloud doesn't support Chatops. *Only self-hosted is available.* You can check [how to integrate with Chatops](../tasks/integration.md) for details.
