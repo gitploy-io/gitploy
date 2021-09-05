@@ -5,6 +5,8 @@ theme:
   palette:
     primary: deep purple
     accent: deep purple 
+  icon:
+    repo: fontawesome/brands/github
 nav:
   - Home: index.md
   - Concepts: 
@@ -19,3 +21,16 @@ nav:
   - References: 
     - Configurations: references/configurations.md
     - "deploy.yml": references/deploy.yml.md
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/gitploy-io
+  version:
+    provider: mike
+copyright: Copyright &copy; 2021 Gitploy.IO
+repo_name: gitploy-io/gitploy
+repo_url: https://github.com/gitploy-io/gitploy
+edit_uri: edit/main/docs/
+markdown_extensions:
+  - pymdownx.highlight
+  - pymdownx.superfences
