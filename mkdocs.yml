@@ -5,16 +5,35 @@ theme:
   palette:
     primary: deep purple
     accent: deep purple 
+  icon:
+    repo: fontawesome/brands/github
 nav:
   - Home: index.md
   - Concepts: 
-    - Overview: concepts/overview.md
-    - "deploy.yaml": concepts/deploy.yml.md
+    - "How it works": concepts/how-it-work.md
+    - "deploy.yml": concepts/deploy.yml.md
+    - Deployment: concepts/deployment.md
     - Permission: concepts/permission.md
+    - "Self-hosted Server": concepts/self-hosted-server.md
     - Chatops: concepts/chatops.md
     - License: concepts/license.md
   - Tasks:
     - Installation: tasks/installation.md
+    - "First Deployment": tasks/first-deployment.md
     - Integration: tasks/integration.md
   - References: 
     - Configurations: references/configurations.md
+    - "deploy.yml": references/deploy.yml.md
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/gitploy-io
+  version:
+    provider: mike
+copyright: Copyright &copy; 2021 Gitploy.IO
+repo_name: gitploy-io/gitploy
+repo_url: https://github.com/gitploy-io/gitploy
+edit_uri: edit/main/docs/
+markdown_extensions:
+  - pymdownx.highlight
+  - pymdownx.superfences

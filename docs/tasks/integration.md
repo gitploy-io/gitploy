@@ -1,7 +1,8 @@
 # Integration
 
-
 ## Slack
+
+Slack integration provides Chatops (i.e. deploy, rollback) and notification alert for events.
 
 ### Step 1: Create App
 
@@ -9,7 +10,7 @@ Firstly, we have to create [Slack App](https://api.slack.com/apps). Let’s clic
 
 ### Step 2: Configure Permissions
 
-After creating App let’s move to the *OAuth & Permissions* page. In this section, we have to set up *the redirect URLs* and *Bot Token scopes*. Firstly, let’s add a new redirect URL with the `GITPLOY_SERVER_PROTO://GITPLOY_SERVER_HOST/slack/signin` format; secondly, add `chat:write` and `commands` scopes into the Bot Token scopes.
+After creating App let’s move to the *OAuth & Permissions* page. On this page, we have to set up *the redirect URLs* and *Bot Token scopes*. Firstly, let’s add a new redirect URL with the `GITPLOY_SERVER_PROTO://GITPLOY_SERVER_HOST/slack/signin` format; secondly, add `chat:write` and `commands` scopes into the Bot Token scopes.
 
 Figure) Slack Bot Token Scopes
 
@@ -38,5 +39,7 @@ Figure) Slack Interactivity
 
 ### Step 5: Run Server With App Credentials
 
-To enable Slack integration, you have to set up these environments when you run the server: `GITPLOY_SLACK_CLIENT_ID`, `GITPLOY_SLACK_CLIENT_SECRET`, and `GITPLOY_SLACK_SIGNING_SECRET`. You can get these credentials from *App Credentials* section of *Basic Information* page.
+To enable Slack integration, you have to set up these environments when you run the server: `GITPLOY_SLACK_CLIENT_ID`, `GITPLOY_SLACK_CLIENT_SECRET`, and `GITPLOY_SLACK_SIGNING_SECRET`. You can get these credentials from *App Credentials* section of *Basic Information* page. 
+
+On settings page, you can find the button to connect with Slack. Now, you can run the slash command `/gitploy` in Slack.
 
