@@ -19,6 +19,7 @@ nav:
     - License: concepts/license.md
   - Tasks:
     - Installation: tasks/installation.md
+    - "First Deployment": tasks/first-deployment.md
     - Integration: tasks/integration.md
   - References: 
     - Configurations: references/configurations.md
