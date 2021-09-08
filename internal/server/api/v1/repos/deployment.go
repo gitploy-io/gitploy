@@ -87,6 +87,12 @@ func (r *Repo) CreateDeployment(c *gin.Context) {
 	vr, _ := c.Get(KeyRepo)
 	re := vr.(*ent.Repo)
 
+	if re.Locked {
+		r.log.Warn("The repository is locked. It blocks to deploy.")
+		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "The repository is locked. It blocks to deploy.")
+		return
+	}
+
 	cf, err := r.i.GetConfig(ctx, u, re)
 	if vo.IsConfigNotFoundError(err) {
 		r.log.Warn("failed to get the config.", zap.Error(err))
@@ -153,6 +159,8 @@ func (r *Repo) CreateDeployment(c *gin.Context) {
 	gb.Response(c, http.StatusCreated, d)
 }
 
+// UpdateDeployment creates a new remote deployment and
+// patch the deployment status 'created'.
 func (r *Repo) UpdateDeployment(c *gin.Context) {
 	ctx := c.Request.Context()
 
@@ -176,6 +184,12 @@ func (r *Repo) UpdateDeployment(c *gin.Context) {
 	if ent.IsNotFound(err) {
 		r.log.Warn("the deployment is not found.", zap.Error(err))
 		gb.ErrorResponse(c, http.StatusNotFound, "The deployment is not found.")
+	}
+
+	if re.Locked {
+		r.log.Warn("The repository is locked. It blocks to deploy.")
+		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "The repository is locked. It blocks to deploy.")
+		return
 	}
 
 	cf, err := r.i.GetConfig(ctx, u, re)
@@ -252,6 +266,12 @@ func (r *Repo) RollbackDeployment(c *gin.Context) {
 	if ent.IsNotFound(err) {
 		r.log.Warn("the deployment is not found.", zap.Error(err))
 		gb.ErrorResponse(c, http.StatusNotFound, "The deployment is not found.")
+		return
+	}
+
+	if re.Locked {
+		r.log.Warn("The repository is locked. It blocks to deploy.")
+		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "The repository is locked. It blocks to deploy.")
 		return
 	}
 
