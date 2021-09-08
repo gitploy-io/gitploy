@@ -5881,6 +5881,7 @@ type RepoMutation struct {
 	active             *bool
 	webhook_id         *int64
 	addwebhook_id      *int64
+	locked             *bool
 	created_at         *time.Time
 	updated_at         *time.Time
 	latest_deployed_at *time.Time
@@ -6234,6 +6235,42 @@ func (m *RepoMutation) ResetWebhookID() {
 	delete(m.clearedFields, repo.FieldWebhookID)
 }
 
+// SetLocked sets the "locked" field.
+func (m *RepoMutation) SetLocked(b bool) {
+	m.locked = &b
+}
+
+// Locked returns the value of the "locked" field in the mutation.
+func (m *RepoMutation) Locked() (r bool, exists bool) {
+	v := m.locked
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLocked returns the old "locked" field's value of the Repo entity.
+// If the Repo object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RepoMutation) OldLocked(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldLocked is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldLocked requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLocked: %w", err)
+	}
+	return oldValue.Locked, nil
+}
+
+// ResetLocked resets all changes to the "locked" field.
+func (m *RepoMutation) ResetLocked() {
+	m.locked = nil
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (m *RepoMutation) SetCreatedAt(t time.Time) {
 	m.created_at = &t
@@ -6536,7 +6573,7 @@ func (m *RepoMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *RepoMutation) Fields() []string {
-	fields := make([]string, 0, 9)
+	fields := make([]string, 0, 10)
 	if m.namespace != nil {
 		fields = append(fields, repo.FieldNamespace)
 	}
@@ -6554,6 +6591,9 @@ func (m *RepoMutation) Fields() []string {
 	}
 	if m.webhook_id != nil {
 		fields = append(fields, repo.FieldWebhookID)
+	}
+	if m.locked != nil {
+		fields = append(fields, repo.FieldLocked)
 	}
 	if m.created_at != nil {
 		fields = append(fields, repo.FieldCreatedAt)
@@ -6584,6 +6624,8 @@ func (m *RepoMutation) Field(name string) (ent.Value, bool) {
 		return m.Active()
 	case repo.FieldWebhookID:
 		return m.WebhookID()
+	case repo.FieldLocked:
+		return m.Locked()
 	case repo.FieldCreatedAt:
 		return m.CreatedAt()
 	case repo.FieldUpdatedAt:
@@ -6611,6 +6653,8 @@ func (m *RepoMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldActive(ctx)
 	case repo.FieldWebhookID:
 		return m.OldWebhookID(ctx)
+	case repo.FieldLocked:
+		return m.OldLocked(ctx)
 	case repo.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case repo.FieldUpdatedAt:
@@ -6667,6 +6711,13 @@ func (m *RepoMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetWebhookID(v)
+		return nil
+	case repo.FieldLocked:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLocked(v)
 		return nil
 	case repo.FieldCreatedAt:
 		v, ok := value.(time.Time)
@@ -6785,6 +6836,9 @@ func (m *RepoMutation) ResetField(name string) error {
 		return nil
 	case repo.FieldWebhookID:
 		m.ResetWebhookID()
+		return nil
+	case repo.FieldLocked:
+		m.ResetLocked()
 		return nil
 	case repo.FieldCreatedAt:
 		m.ResetCreatedAt()

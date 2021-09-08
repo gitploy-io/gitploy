@@ -23,10 +23,13 @@ func (Repo) Fields() []ent.Field {
 		field.String("description"),
 		field.String("config_path").
 			Default("deploy.yml"),
+		// Activated repo has the webhook to update the deployment status.
 		field.Bool("active").
 			Default(false),
 		field.Int64("webhook_id").
 			Optional(),
+		field.Bool("locked").
+			Default(false),
 		field.Time("created_at").
 			Default(time.Now),
 		field.Time("updated_at").
