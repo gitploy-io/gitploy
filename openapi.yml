@@ -153,6 +153,8 @@ paths:
                   default: deploy.yml
                 active:
                   type: boolean
+                locked:
+                  type: boolean
       parameters:
         - in: path
           name: id
@@ -1339,6 +1341,8 @@ components:
           type: boolean
         webhook_id:
           type: integer
+        locked:
+          type: boolean
         synced_at:
           type: string
         created_at:
@@ -1359,6 +1363,7 @@ components:
         - description
         - config_path
         - active
+        - locked
         - created_at
         - updated_at
     Perms:
