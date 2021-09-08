@@ -297,6 +297,7 @@ func (s *Slack) interactDeploy(c *gin.Context) {
 	// validate values.
 	sm := parseViewSubmissions(itr)
 
+	// Validate the entity is processible.
 	_, err := s.getCommitSha(ctx, cu.Edges.User, cb.Edges.Repo, sm.Type, sm.Ref)
 	if vo.IsRefNotFoundError(err) {
 		c.JSON(http.StatusOK, buildErrorsPayload(map[string]string{
@@ -306,6 +307,12 @@ func (s *Slack) interactDeploy(c *gin.Context) {
 	} else if err != nil {
 		s.log.Error("It has failed to get the SHA of commit.", zap.Error(err))
 		c.Status(http.StatusInternalServerError)
+		return
+	}
+
+	if cb.Edges.Repo.Locked {
+		postBotMessage(cu, fmt.Sprintf("The `%s` repository is locked. It blocks to deploy.", cb.Edges.Repo.GetFullName()))
+		c.Status(http.StatusOK)
 		return
 	}
 
