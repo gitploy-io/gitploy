@@ -113,4 +113,52 @@ func TestRepo_UpdateRepo(t *testing.T) {
 			t.Fatalf("Code = %v, wanted %v", w.Code, http.StatusOK)
 		}
 	})
+
+	t.Run("Patch locked field.", func(t *testing.T) {
+		input := struct {
+			payload *repoPatchPayload
+		}{
+			payload: &repoPatchPayload{
+				Locked: pointer.ToBool(true),
+			},
+		}
+
+		const (
+			r1 = "1"
+		)
+
+		ctrl := gomock.NewController(t)
+		m := mock.NewMockInteractor(ctrl)
+
+		t.Log("Update the repe to set locked field true.")
+		m.
+			EXPECT().
+			UpdateRepo(gomock.Any(), gomock.Eq(&ent.Repo{
+				ID:     r1,
+				Locked: *input.payload.Locked,
+			})).
+			DoAndReturn(func(ctx context.Context, r *ent.Repo) (*ent.Repo, error) {
+				return r, nil
+			})
+
+		gin.SetMode(gin.ReleaseMode)
+		router := gin.New()
+
+		r := NewRepo(RepoConfig{}, m)
+		router.PATCH("/repos/:id", func(c *gin.Context) {
+			t.Log("Set up fake middleware")
+			c.Set(global.KeyUser, &ent.User{})
+			c.Set(KeyRepo, &ent.Repo{ID: r1})
+		}, r.UpdateRepo)
+
+		p, _ := json.Marshal(input.payload)
+		req, _ := http.NewRequest("PATCH", fmt.Sprintf("/repos/%s", r1), bytes.NewBuffer(p))
+		w := httptest.NewRecorder()
+
+		router.ServeHTTP(w, req)
+
+		if w.Code != http.StatusOK {
+			t.Fatalf("Code = %v, wanted %v", w.Code, http.StatusOK)
+		}
+	})
 }
