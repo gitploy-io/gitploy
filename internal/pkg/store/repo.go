@@ -104,6 +104,7 @@ func (s *Store) UpdateRepo(ctx context.Context, r *ent.Repo) (*ent.Repo, error) 
 	return s.c.Repo.
 		UpdateOne(r).
 		SetConfigPath(r.ConfigPath).
+		SetLocked(r.Locked).
 		Save(ctx)
 }
 
