@@ -14,7 +14,7 @@ export interface RepoData {
     config_path: string
     active: boolean
     webhook_id: number
-    synced_at: string
+    locked: boolean
     created_at: string
     updated_at: string
     edges: {
@@ -38,7 +38,7 @@ export const mapDataToRepo = (data: RepoData): Repo => {
         configPath: data.config_path,
         active: data.active,
         webhookId: data.webhook_id,
-        syncedAt: new Date(data.synced_at),
+        locked: data.locked,
         createdAt: new Date(data.created_at),
         updatedAt: new Date(data.updated_at),
         deployments,
@@ -114,6 +114,48 @@ export const activateRepo = async (repo: Repo): Promise<Repo> => {
 export const deactivateRepo = async (repo: Repo): Promise<Repo> => {
     const body = {
         "active": false,
+    }
+    const response = await _fetch(`${instance}/api/v1/repos/${repo.id}`, {
+        headers,
+        credentials: 'same-origin',
+        method: "PATCH",
+        body: JSON.stringify(body)
+    })
+    if (response.status === StatusCodes.FORBIDDEN) {
+        const message = await response.json().then(data => data.message)
+        throw new HttpForbiddenError(message)
+    }
+
+    repo = await response
+        .json()
+        .then((r:any) => mapDataToRepo(r))
+    return repo
+}
+
+export const lockRepo = async (repo: Repo): Promise<Repo> => {
+    const body = {
+        "locked": true,
+    }
+    const response = await _fetch(`${instance}/api/v1/repos/${repo.id}`, {
+        headers,
+        credentials: 'same-origin',
+        method: "PATCH",
+        body: JSON.stringify(body)
+    })
+    if (response.status === StatusCodes.FORBIDDEN) {
+        const message = await response.json().then(data => data.message)
+        throw new HttpForbiddenError(message)
+    }
+
+    repo = await response
+        .json()
+        .then((r:any) => mapDataToRepo(r))
+    return repo
+}
+
+export const unlockRepo = async (repo: Repo): Promise<Repo> => {
+    const body = {
+        "locked": false,
     }
     const response = await _fetch(`${instance}/api/v1/repos/${repo.id}`, {
         headers,
