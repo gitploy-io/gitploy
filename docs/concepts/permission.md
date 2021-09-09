@@ -13,6 +13,6 @@ Here are capabilities for each permission:
 
 * **Write** - Users can deploy and rollback for the `REF`. 
 
-* **Admin** - Users can modify repository settings, including activate and deactivate. 
+* **Admin** - Users can configures the repository, such as activating and locking.
 
 Of course, write and admin permission cover the ability of read permission.

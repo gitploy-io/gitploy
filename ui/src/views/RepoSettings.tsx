@@ -4,10 +4,10 @@ import { useParams } from "react-router-dom";
 import { PageHeader } from "antd"
 
 import { useAppSelector, useAppDispatch } from "../redux/hooks"
-import { init, save, deactivate, repoSettingsSlice as slice } from "../redux/repoSettings"
+import { init, save, deactivate, lock, unlock, repoSettingsSlice as slice } from "../redux/repoSettings"
 import { RequestStatus } from "../models";
 
-import SettingsForm from "../components/SettingsForm"
+import RepoSettingsForm from "../components/RepoSettingsForm"
 import Spin from "../components/Spin";
 
 interface Params {
@@ -33,6 +33,14 @@ export default function RepoSettings(): JSX.Element {
         dispatch(save())
     }
 
+    const onClickLock = () => {
+        dispatch(lock())
+    }
+
+    const onClickUnlock = () => {
+        dispatch(unlock())
+    }
+
     const onClickDeactivate = () => {
         dispatch(deactivate())
     }
@@ -48,11 +56,14 @@ export default function RepoSettings(): JSX.Element {
                     title="Settings"/>
             </div>
             <div>
-                <SettingsForm 
+                <RepoSettingsForm 
                     repo={repo}
                     saving={saving === RequestStatus.Pending}
                     onClickSave={onClickSave}
-                    onClickDeactivate={onClickDeactivate}/>
+                    onClickLock={onClickLock}
+                    onClickUnlock={onClickUnlock}
+                    onClickDeactivate={onClickDeactivate}
+                />
             </div>
         </div>
     )

@@ -1,14 +1,38 @@
 import { sync } from "./sync"
-import { listRepos, searchRepo, updateRepo, activateRepo, deactivateRepo } from "./repo"
+import { 
+    listRepos, 
+    searchRepo, 
+    updateRepo, 
+    activateRepo, 
+    deactivateRepo,
+    lockRepo,
+    unlockRepo,
+} from "./repo"
 import { listPerms } from "./perm"
-import { searchDeployments, listDeployments, getDeployment ,createDeployment, updateDeploymentStatusCreated, rollbackDeployment, listDeploymentChanges } from './deployment'
+import { 
+    searchDeployments, 
+    listDeployments, 
+    getDeployment,
+    createDeployment, 
+    updateDeploymentStatusCreated, 
+    rollbackDeployment, 
+    listDeploymentChanges 
+} from './deployment'
 import { getConfig } from './config'
 import { listCommits, getCommit, listStatuses } from './commit'
 import { listBranches, getBranch } from './branch'
 import { listTags, getTag } from './tag'
 import { listUsers, updateUser, deleteUser, getMe, getRateLimit } from "./user"
 import { checkSlack } from "./chat"
-import { searchApprovals, listApprovals, getMyApproval, createApproval, deleteApproval, setApprovalApproved, setApprovalDeclined } from "./approval"
+import { 
+    searchApprovals, 
+    listApprovals, 
+    getMyApproval, 
+    createApproval, 
+    deleteApproval, 
+    setApprovalApproved, 
+    setApprovalDeclined 
+} from "./approval"
 import { getLicense  } from "./license"
 import { subscribeDeploymentEvent, subscribeApprovalEvent } from "./events"
 
@@ -19,6 +43,8 @@ export {
     updateRepo,
     activateRepo,
     deactivateRepo,
+    lockRepo,
+    unlockRepo,
     listPerms,
     searchDeployments,
     listDeployments,

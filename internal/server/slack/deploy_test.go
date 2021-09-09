@@ -34,7 +34,11 @@ func TestSlack_interactDeploy(t *testing.T) {
 		m.
 			EXPECT().
 			FindCallbackByHash(gomock.Any(), callbackID).
-			Return(&ent.Callback{}, nil)
+			Return(&ent.Callback{
+				Edges: ent.CallbackEdges{
+					Repo: &ent.Repo{ID: "1"},
+				},
+			}, nil)
 
 		t.Log("Find the chat-user who sent the payload.")
 		m.

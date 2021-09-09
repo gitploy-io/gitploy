@@ -3,7 +3,7 @@ info:
   title: gitploy.
   version: '1.0'
 servers:
-  - url: http://localhost:8080/api/v1
+  - url: http://localhost/api/v1
   - url: https://gitploy.jp.ngrok.io/api/v1
 paths:
   /sync:
@@ -152,6 +152,8 @@ paths:
                   type: string
                   default: deploy.yml
                 active:
+                  type: boolean
+                locked:
                   type: boolean
       parameters:
         - in: path
@@ -1339,6 +1341,8 @@ components:
           type: boolean
         webhook_id:
           type: integer
+        locked:
+          type: boolean
         synced_at:
           type: string
         created_at:
@@ -1359,6 +1363,7 @@ components:
         - description
         - config_path
         - active
+        - locked
         - created_at
         - updated_at
     Perms:
