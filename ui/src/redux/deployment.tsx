@@ -278,7 +278,7 @@ export const deploymentSlice = createSlice({
                 state.deploying = RequestStatus.Idle
 
                 if (state.deployment) {
-                    state.deployment.lastStatus = DeploymentStatusEnum.Failure
+                    state.deployment.status = DeploymentStatusEnum.Failure
                 }
             })
 

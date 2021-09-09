@@ -130,7 +130,7 @@ export const mainSlice = createSlice({
             })
 
             if (idx !== -1 ) {
-                if (!runningDeploymentStatus.includes(deployment.lastStatus)) {
+                if (!runningDeploymentStatus.includes(deployment.status)) {
                     state.deployments.splice(idx, 1)
                     return
                 } 

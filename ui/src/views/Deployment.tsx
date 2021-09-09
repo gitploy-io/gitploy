@@ -177,7 +177,7 @@ export default function DeploymentView(): JSX.Element {
 }
 
 function isDeployable(deployment: Deployment, approvals: Approval[]): boolean {
-    if (deployment.lastStatus !== DeploymentStatusEnum.Waiting) {
+    if (deployment.status !== DeploymentStatusEnum.Waiting) {
         return false
     }
 

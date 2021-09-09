@@ -9,7 +9,7 @@ interface DeploymentStatusBadgeProps {
 export default function DeploymentStatusBadge(props: DeploymentStatusBadgeProps): JSX.Element {
     const deployment = props.deployment
     return (
-        <Badge color={getStatusColor(deployment.lastStatus)}text={deployment.lastStatus}/>
+        <Badge color={getStatusColor(deployment.status)}text={deployment.status}/>
     )
 }
 

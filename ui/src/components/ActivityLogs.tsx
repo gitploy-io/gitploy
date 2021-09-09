@@ -16,12 +16,12 @@ interface ActivityLogsProps {
 export default function ActivityLogs(props: ActivityLogsProps): JSX.Element {
     return <Timeline>
         {props.deployments.map((d, idx) => {
-            const dot = (d.lastStatus === DeploymentStatusEnum.Running)? 
+            const dot = (d.status === DeploymentStatusEnum.Running)? 
                 <SyncOutlined style={{color: "purple"}} spin />: 
                 null
             const avatar = <UserAvatar user={d.deployer} />
 
-            return <Timeline.Item key={idx} color={getStatusColor(d.lastStatus)} dot={dot}>
+            return <Timeline.Item key={idx} color={getStatusColor(d.status)} dot={dot}>
                 <p>
                     <Text strong>{d.env}</Text> <DeploymentRefCode deployment={d}/> <a href={`/${d.repo?.namespace}/${d.repo?.name}/deployments/${d.number}`}>• View detail #{d.number}</a>
                 </p>

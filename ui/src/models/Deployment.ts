@@ -8,7 +8,7 @@ export default interface Deployment {
     ref: string
     sha: string
     env: string
-    lastStatus: DeploymentStatusEnum
+    status: DeploymentStatusEnum
     uid: number
     isRollback: boolean 
     isApprovalEanbled: boolean

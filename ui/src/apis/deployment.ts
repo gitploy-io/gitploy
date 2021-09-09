@@ -74,7 +74,7 @@ export const mapDataToDeployment = (data: DeploymentData): Deployment => {
         ref: data.ref,
         sha: data.sha,
         env: data.env,
-        lastStatus: mapDeploymentStatusEnum(data.status),
+        status: mapDeploymentStatusEnum(data.status),
         uid: data.uid,
         isRollback: data.is_rollback,
         isApprovalEanbled: data.is_approval_enabled,
