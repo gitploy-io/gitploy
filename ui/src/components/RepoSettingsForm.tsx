@@ -60,13 +60,13 @@ export default function RepoSettingForm(props: RepoSettingsFormProps): JSX.Eleme
                         {(props.repo.locked)? 
                             <Button
                                 danger
-                                type="primary"
                                 onClick={props.onClickUnlock}
                             >
                                 UNLOCK REPOSITORY
                             </Button>:
                             <Button
                                 danger
+                                type="primary"
                                 onClick={props.onClickLock}
                             >
                                 LOCK REPOSITORY

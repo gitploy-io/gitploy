@@ -34,6 +34,7 @@ export default function RepoHome(): JSX.Element {
             await dispatch(init({namespace, name}))
             await dispatch(fetchConfig())
             await dispatch(actions.setDisplay(true))
+            await dispatch(searchCandidates(""))
         }
         f()
         // eslint-disable-next-line
