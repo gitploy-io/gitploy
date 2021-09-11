@@ -115,8 +115,10 @@ func mapGithubCheckRunToStatus(c *github.CheckRun) *vo.Status {
 
 	if *c.Conclusion == "success" {
 		state = vo.StatusStateSuccess
-	} else {
+	} else if *c.Conclusion == "failure" {
 		state = vo.StatusStateFailure
+	} else {
+		state = vo.StatusStatePending
 	}
 
 	return &vo.Status{
