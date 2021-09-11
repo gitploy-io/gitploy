@@ -11,15 +11,15 @@ jobs:
       -
         name: Checkout
         uses: actions/checkout@v2
-      # Deploy 
+
       - 
-        name: Deploy success
+        name: Deploy successfully
         if: success()
-        uses: deliverybot/deployment-status@v1
+        uses: chrnorm/deployment-status@releases/v1
         with:
-          state: success
-          token: ${{ github.token }}
-          description: Deployment is finished successfully.
+          deployment_id: ${{ github.event.deployment.id }}
+          state: "success"
+          token: "${{ github.token }}"
     
   deploy-dev:
     runs-on: ubuntu-latest
@@ -36,6 +36,13 @@ jobs:
           FILE_NAME: "./.github/values.yaml"
           FILE_BASE64: "aW5ncmVzczoKICBlbmFibGVkOiB0cnVlCiAgYW5ub3RhdGlvbnM6CiAgICBrdWJlcm5ldGVzLmlvL2luZ3Jlc3MuY2xhc3M6IG5naW54CiAgICBjZXJ0LW1hbmFnZXIuaW8vY2x1c3Rlci1pc3N1ZXI6ICJsZXRzZW5jcnlwdC1wcm9kIgogIGhvc3RzOgogICAgLSBob3N0OiBkZXYuZ2l0cGxveS5pbwogICAgICBwYXRoczoKICAgICAgICAtIC8KICB0bHM6CiAgIC0gc2VjcmV0TmFtZTogZ2l0cGxveS1kZXYtdGxzCiAgICAgaG9zdHM6CiAgICAgICAtIGRldi5naXRwbG95LmlvCgpyZXNvdXJjZXM6CiAgcmVxdWVzdHM6CiAgICBjcHU6IDUwbQogICAgbWVtb3J5OiAxMjhNaQoKZW52OgogIEdJVFBMT1lfREVCVUdfTU9ERTogInRydWUiCiAgR0lUUExPWV9TRVJWRVJfSE9TVDogImRldi5naXRwbG95LmlvIgogIEdJVFBMT1lfU0VSVkVSX1BST1RPOiBodHRwcwogIEdJVFBMT1lfQURNSU5fVVNFUlM6ICJoYW5qdW5sZWUiCgpleHRyYVNlY3JldE5hbWVzRm9yRW52RnJvbToKICAtIGdpdHBsb3ktZGV2LXNlY3JldAoKcGVyc2lzdGVudFZvbHVtZToKICAjIElmIHlvdSBhcmUgdXNpbmcgU1FMaXRlIGFzIHlvdXIgREIgZm9yIEdpdHBsb3ksIGl0IGlzIHJlY29tbWVuZGVkIHRvIGVuYWJsZSBwZXJzaXN0ZW5jZS4gCiAgZW5hYmxlZDogdHJ1ZQ=="
       - 
+        name: Start to deploy
+        uses: chrnorm/deployment-status@releases/v1
+        with:
+          deployment_id: ${{ github.event.deployment.id }}
+          state: "in_progress"
+          token: "${{ github.token }}"
+      - 
         name: Deploy 
         uses: WyriHaximus/github-action-helm3@v2
         with:
@@ -51,19 +58,19 @@ jobs:
             --description="Upgrade to ${GITHUB_REF#refs/tags/v}"
           kubeconfig: '${{ secrets.KUBECONFIG }}'
       - 
-        name: Deploy success
+        name: Deploy successfully
         if: success()
-        uses: deliverybot/deployment-status@v1
+        uses: chrnorm/deployment-status@releases/v1
         with:
-          state: success
-          token: ${{ github.token }}
-          description: Deployment is finished successfully.
+          deployment_id: ${{ github.event.deployment.id }}
+          state: "success"
+          token: "${{ github.token }}"
       - 
         name: Deploy failed
         if: failure()
-        uses: deliverybot/deployment-status@v1
+        uses: chrnorm/deployment-status@releases/v1
         with:
-          state: failure
-          token: ${{ github.token }}
-          description: Deployment has failed.
+          deployment_id: ${{ github.event.deployment.id }}
+          state: "failure"
+          token: "${{ github.token }}"
     
