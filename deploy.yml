@@ -12,4 +12,6 @@ envs:
       - "go-test"
       - "react-test"
       - "publish-image"
-
+    approval:
+      enabled: true
+      required_count: 0
