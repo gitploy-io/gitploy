@@ -173,109 +173,64 @@ func buildDeployView(callbackID string, c *vo.Config, perms []*ent.Perm) slack.M
 	return slack.ModalViewRequest{
 		Type:       slack.VTModal,
 		CallbackID: callbackID,
-		Title: &slack.TextBlockObject{
-			Type: slack.PlainTextType,
-			Text: "Deploy",
-		},
-		Submit: &slack.TextBlockObject{
-			Type: slack.PlainTextType,
-			Text: "Submit",
-		},
-		Close: &slack.TextBlockObject{
-			Type: slack.PlainTextType,
-			Text: "Close",
-		},
+		Title:      slack.NewTextBlockObject(slack.PlainTextType, "Deploy", false, false),
+		Submit:     slack.NewTextBlockObject(slack.PlainTextType, "Submit", false, false),
+		Close:      slack.NewTextBlockObject(slack.PlainTextType, "Close", false, false),
 		Blocks: slack.Blocks{
 			BlockSet: []slack.Block{
+				slack.NewInputBlock(
+					blockEnv,
+					slack.NewTextBlockObject(slack.PlainTextType, "Environment", false, false),
+					slack.NewOptionsSelectBlockElement(
+						slack.OptTypeStatic,
+						slack.NewTextBlockObject(slack.PlainTextType, "Select target environment", false, false),
+						actionEnv,
+						envs...,
+					),
+				),
+				slack.NewInputBlock(
+					blockType,
+					slack.NewTextBlockObject(slack.PlainTextType, "Type", false, false),
+					slack.NewOptionsSelectBlockElement(
+						slack.OptTypeStatic,
+						slack.NewTextBlockObject(slack.PlainTextType, "Select your ref type", false, false),
+						actionType,
+						slack.NewOptionBlockObject(
+							"commit",
+							slack.NewTextBlockObject(slack.PlainTextType, "Commit", false, false),
+							nil,
+						),
+						slack.NewOptionBlockObject(
+							"branch",
+							slack.NewTextBlockObject(slack.PlainTextType, "Branch", false, false),
+							nil,
+						),
+						slack.NewOptionBlockObject(
+							"tag",
+							slack.NewTextBlockObject(slack.PlainTextType, "Tag", false, false),
+							nil,
+						),
+					),
+				),
+				slack.NewInputBlock(
+					blockRef,
+					slack.NewTextBlockObject(slack.PlainTextType, "Ref", false, false),
+					slack.NewPlainTextInputBlockElement(
+						slack.NewTextBlockObject(slack.PlainTextType, "E.g. Commit - 25a667d6, Branch - main, Tag - v0.1.2", false, false),
+						actionRef,
+					),
+				),
 				slack.InputBlock{
-					Type:    slack.MBTInput,
-					BlockID: blockEnv,
-					Label: &slack.TextBlockObject{
-						Type: slack.PlainTextType,
-						Text: "Environment",
-					},
-					Element: slack.SelectBlockElement{
-						Type:     slack.OptTypeStatic,
-						ActionID: actionEnv,
-						Placeholder: &slack.TextBlockObject{
-							Type: slack.PlainTextType,
-							Text: "Select target environment",
-						},
-						Options: envs,
-					},
-				},
-				slack.InputBlock{
-					Type:    slack.MBTInput,
-					BlockID: blockType,
-					Label: &slack.TextBlockObject{
-						Type: slack.PlainTextType,
-						Text: "Reference Type",
-					},
-					Element: slack.SelectBlockElement{
-						Type:     slack.OptTypeStatic,
-						ActionID: actionType,
-						Placeholder: &slack.TextBlockObject{
-							Type: slack.PlainTextType,
-							Text: "Select your reference type",
-						},
-						Options: []*slack.OptionBlockObject{
-							{
-								Text: &slack.TextBlockObject{
-									Type: slack.PlainTextType,
-									Text: "Commit",
-								},
-								Value: "commit",
-							},
-							{
-								Text: &slack.TextBlockObject{
-									Type: slack.PlainTextType,
-									Text: "Branch",
-								},
-								Value: "branch",
-							},
-							{
-								Text: &slack.TextBlockObject{
-									Type: slack.PlainTextType,
-									Text: "Tag",
-								},
-								Value: "tag",
-							},
-						},
-					},
-				},
-				slack.InputBlock{
-					Type:    slack.MBTInput,
-					BlockID: blockRef,
-					Label: &slack.TextBlockObject{
-						Type: slack.PlainTextType,
-						Text: "Reference",
-					},
-					Element: slack.PlainTextInputBlockElement{
-						Type:     slack.METPlainTextInput,
-						ActionID: actionRef,
-						Placeholder: &slack.TextBlockObject{
-							Type: slack.PlainTextType,
-							Text: "E.g. Commit - 25a667d6, Branch - main, Tag - v0.1.2",
-						},
-					},
-				},
-				slack.InputBlock{
-					Type:    slack.MBTInput,
-					BlockID: blockApprovers,
-					Label: &slack.TextBlockObject{
-						Type: slack.PlainTextType,
-						Text: "Approvers",
-					},
+					Type:     slack.MBTInput,
+					BlockID:  blockApprovers,
+					Label:    slack.NewTextBlockObject(slack.PlainTextType, "Approvers", false, false),
 					Optional: true,
-					Element: slack.SelectBlockElement{
-						Type:     slack.MultiOptTypeStatic,
-						ActionID: actionApprovers,
-						Placeholder: &slack.TextBlockObject{
-							Type: slack.PlainTextType,
-							Text: "Select approvers",
-						},
-						Options: approvers,
-					},
+					Element: slack.NewOptionsSelectBlockElement(
+						slack.MultiOptTypeStatic,
+						slack.NewTextBlockObject(slack.PlainTextType, "Select approvers", false, false),
+						actionApprovers,
+						approvers...,
+					),
 				},
 			},
 		},
