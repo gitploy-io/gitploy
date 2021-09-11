@@ -65,6 +65,10 @@ func (s *Slack) Cmd(c *gin.Context) {
 		s.handleDeployCmd(c)
 	} else if args[0] == "rollback" && len(args) == 2 {
 		s.handleRollbackCmd(c)
+	} else if args[0] == "lock" && len(args) == 2 {
+		s.handleLockCmd(c)
+	} else if args[0] == "unlock" && len(args) == 2 {
+		s.handleUnlockCmd(c)
 	} else {
 		s.handleHelpCmd(cmd.ChannelID, cmd.ResponseURL)
 	}
@@ -72,13 +76,14 @@ func (s *Slack) Cmd(c *gin.Context) {
 
 func (s *Slack) handleHelpCmd(channelID, responseURL string) {
 	msg := strings.Join([]string{
-		"Below are the commands you can use:",
-		"",
+		"Below are the commands you can use:\n",
 		"*Deploy*",
-		"`/gitploy deploy OWNER/REPO` - Create a new deployment for OWNER/REPO.",
-		"",
+		"`/gitploy deploy OWNER/REPO` - Create a new deployment for OWNER/REPO.\n",
 		"*Rollback*",
-		"`/gitploy rollback OWNER/REPO` - Rollback by the deployment for OWNER/REPO.",
+		"`/gitploy rollback OWNER/REPO` - Rollback by the deployment for OWNER/REPO.\n",
+		"*Lock/Unlock*",
+		"`/gitploy lock OWNER/REPO` - Lock the repository to disable deploying.",
+		"`/gitploy unlock OWNER/REPO` - Unlock the repository to enable deploying.\n",
 	}, "\n")
 
 	postResponseMessage(channelID, responseURL, msg)

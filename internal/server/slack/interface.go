@@ -22,6 +22,7 @@ type (
 		FindPermOfRepo(ctx context.Context, r *ent.Repo, u *ent.User) (*ent.Perm, error)
 
 		FindRepoOfUserByNamespaceName(ctx context.Context, u *ent.User, namespace, name string) (*ent.Repo, error)
+		UpdateRepo(ctx context.Context, r *ent.Repo) (*ent.Repo, error)
 
 		CreateCallback(ctx context.Context, cb *ent.Callback) (*ent.Callback, error)
 		FindCallbackByHash(ctx context.Context, hash string) (*ent.Callback, error)
