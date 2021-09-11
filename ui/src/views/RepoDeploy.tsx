@@ -55,6 +55,7 @@ export default function RepoDeploy(): JSX.Element {
             await dispatch(actions.setDisplay(true))
             await dispatch(fetchBranches())
             await dispatch(fetchTags())
+            await dispatch(searchCandidates(""))
         }
         f()
         // eslint-disable-next-line 
