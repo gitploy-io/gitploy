@@ -20,7 +20,7 @@ jobs:
           deployment_id: ${{ github.event.deployment.id }}
           state: "success"
           token: "${{ github.token }}"
-          description: Success to deploy ${GITHUB_REF} successfully.
+          description: Success to deploy ${{ github.ref }} successfully.
     
   deploy-dev:
     runs-on: ubuntu-latest
