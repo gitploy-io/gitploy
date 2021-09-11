@@ -406,3 +406,18 @@ func (mr *MockInteractorMockRecorder) UpdateChatUser(ctx, cu interface{}) *gomoc
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateChatUser", reflect.TypeOf((*MockInteractor)(nil).UpdateChatUser), ctx, cu)
 }
+
+// UpdateRepo mocks base method.
+func (m *MockInteractor) UpdateRepo(ctx context.Context, r *ent.Repo) (*ent.Repo, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateRepo", ctx, r)
+	ret0, _ := ret[0].(*ent.Repo)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdateRepo indicates an expected call of UpdateRepo.
+func (mr *MockInteractorMockRecorder) UpdateRepo(ctx, r interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateRepo", reflect.TypeOf((*MockInteractor)(nil).UpdateRepo), ctx, r)
+}

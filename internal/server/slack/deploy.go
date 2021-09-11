@@ -54,7 +54,7 @@ func (s *Slack) handleDeployCmd(c *gin.Context) {
 	ctx := c.Request.Context()
 
 	// SlashCommandParse hvae to be success because
-	// it was called in the Cmd method.
+	// it has parsed in the Cmd method.
 	cmd, _ := slack.SlashCommandParse(c.Request)
 
 	cu, err := s.i.FindChatUserByID(ctx, cmd.UserID)
