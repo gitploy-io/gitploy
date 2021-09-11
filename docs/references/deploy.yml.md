@@ -15,9 +15,9 @@ Field                    |Type                    |Tag       |Description
 ## Approval
 
 Field            |Type      |Tag   |Description
----              |---       |---   |
+---              |---       |---   |---
 `enabled`        |*boolean* |      |This parameter make to enable the approval feature. The default value is `false`.
-`required_count` |*integer* |      |This parameter determine how many the required approving approvals is needs to deploy. The default value is `0`. 
+`required_count` |*integer* |      |This parameter determine how many the required approving approvals is needs to deploy. The default value is `0`.
 
 ## Tags
 
