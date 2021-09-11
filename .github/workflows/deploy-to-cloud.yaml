@@ -20,7 +20,7 @@ jobs:
           deployment_id: ${{ github.event.deployment.id }}
           state: "success"
           token: "${{ github.token }}"
-          description: Success to deploy ${{ github.ref }} successfully.
+          description: Success to deploy successfully.
     
   deploy-dev:
     runs-on: ubuntu-latest
@@ -65,7 +65,7 @@ jobs:
         uses: chrnorm/deployment-status@releases/v1
         with:
           deployment_id: ${{ github.event.deployment.id }}
-          description: Success to deploy ${GITHUB_REF} successfully.
+          description: Success to deploy successfully.
           state: "success"
           token: "${{ github.token }}"
       - 
@@ -74,7 +74,7 @@ jobs:
         uses: chrnorm/deployment-status@releases/v1
         with:
           deployment_id: ${{ github.event.deployment.id }}
-          description: Failed to deploy ${GITHUB_REF}.
+          description: Failed to deploy.
           state: "failure"
           token: "${{ github.token }}"
     
