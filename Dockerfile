@@ -30,6 +30,7 @@ WORKDIR /app
 # Create DB
 RUN mkdir /data
 
+COPY --from=server --chown=root:root /server/LICENSE /server/NOTICE .
 COPY --from=server --chown=root:root /go/bin/server /go/bin/server
 
 # Copy UI output into the assets directory.

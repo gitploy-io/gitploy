@@ -2,7 +2,6 @@
 .editorconfig
 .git
 docs/
-LICENSE
 README.md
 .env
 falcon9.db
