@@ -21,23 +21,18 @@ import (
 	"github.com/gitploy-io/gitploy/vo"
 )
 
-const (
-	pathPostMessage string = "chat.postMessage"
-)
-
-func TestSlack_interactDeploy(t *testing.T) {
+func TestSlack_interactRollback(t *testing.T) {
 	t.Run("Post a message when the repository is locked.", func(t *testing.T) {
 		m := mock.NewMockInteractor(gomock.NewController(t))
 
-		// These values are in "./testdata/deploy-interact.json"
+		// These values are in "./testdata/rollback-interact.json"
 		const (
-			callbackID = "nafyVuEqzcchuVmV"
-			chatUserID = "U025KUBB2"
-			branch     = "main"
-			env        = "prod"
+			callbackID   = "hZUZvJgWhxYvdekUGESXKjSusKWWIRKr"
+			chatUserID   = "U025KUBB2"
+			deploymentID = 33
 		)
 
-		t.Log("Find the callback which was stored by the Slash command.")
+		t.Log("Find the callback which has the locked repository.")
 		m.
 			EXPECT().
 			FindCallbackByHash(gomock.Any(), callbackID).
@@ -56,12 +51,12 @@ func TestSlack_interactDeploy(t *testing.T) {
 			FindChatUserByID(gomock.Any(), chatUserID).
 			Return(&ent.ChatUser{}, nil)
 
-		t.Log("Get branch to validate the payload.")
+		t.Log("Find the deployment by ID.")
 		m.
 			EXPECT().
-			GetBranch(gomock.Any(), gomock.AssignableToTypeOf(&ent.User{}), gomock.AssignableToTypeOf(&ent.Repo{}), branch).
-			Return(&vo.Branch{
-				Name: branch,
+			FindDeploymentByID(gomock.Any(), deploymentID).
+			Return(&ent.Deployment{
+				ID: deploymentID,
 			}, nil)
 
 		t.Log("Post a message when the repository is locked.")
@@ -74,10 +69,10 @@ func TestSlack_interactDeploy(t *testing.T) {
 
 		gin.SetMode(gin.ReleaseMode)
 		router := gin.New()
-		router.POST("/interact", s.interactDeploy)
+		router.POST("/interact", s.interactRollback)
 
-		// Build the Slack payload.
-		bytes, err := ioutil.ReadFile("./testdata/deploy-interact.json")
+		// Build the payload to interact.
+		bytes, err := ioutil.ReadFile("./testdata/rollback-interact.json")
 		if err != nil {
 			t.Errorf("It has failed to open the JSON file: %s", err)
 			t.FailNow()
@@ -97,15 +92,14 @@ func TestSlack_interactDeploy(t *testing.T) {
 		}
 	})
 
-	t.Run("Create a new deployment with payload.", func(t *testing.T) {
+	t.Run("Rollback with the returned deployment.", func(t *testing.T) {
 		m := mock.NewMockInteractor(gomock.NewController(t))
 
-		// These values are in "./testdata/deploy-interact.json"
+		// These values are in "./testdata/rollback-interact.json"
 		const (
-			callbackID = "nafyVuEqzcchuVmV"
-			chatUserID = "U025KUBB2"
-			branch     = "main"
-			env        = "prod"
+			callbackID   = "hZUZvJgWhxYvdekUGESXKjSusKWWIRKr"
+			chatUserID   = "U025KUBB2"
+			deploymentID = 33
 		)
 
 		t.Log("Find the callback which was stored by the Slash command.")
@@ -124,12 +118,16 @@ func TestSlack_interactDeploy(t *testing.T) {
 			FindChatUserByID(gomock.Any(), chatUserID).
 			Return(&ent.ChatUser{}, nil)
 
-		t.Log("Get branch to validate the payload.")
+		t.Log("Find the deployment by ID.")
 		m.
 			EXPECT().
-			GetBranch(gomock.Any(), gomock.AssignableToTypeOf(&ent.User{}), gomock.AssignableToTypeOf(&ent.Repo{}), branch).
-			Return(&vo.Branch{
-				Name: branch,
+			FindDeploymentByID(gomock.Any(), deploymentID).
+			Return(&ent.Deployment{
+				ID:   deploymentID,
+				Type: deployment.TypeCommit,
+				Ref:  "main",
+				Sha:  "ee411aa",
+				Env:  "prod",
 			}, nil)
 
 		t.Log("Get the config file of the repository.")
@@ -138,7 +136,7 @@ func TestSlack_interactDeploy(t *testing.T) {
 			GetConfig(gomock.Any(), gomock.AssignableToTypeOf(&ent.User{}), gomock.AssignableToTypeOf(&ent.Repo{})).
 			Return(&vo.Config{
 				Envs: []*vo.Env{
-					{Name: env},
+					{Name: "prod"},
 				},
 			}, nil)
 
@@ -148,16 +146,18 @@ func TestSlack_interactDeploy(t *testing.T) {
 			GetNextDeploymentNumberOfRepo(gomock.Any(), gomock.AssignableToTypeOf(&ent.Repo{})).
 			Return(4, nil)
 
-		t.Log("Deploy with the payload.")
+		t.Log("Roll back with the returned deployment.")
 		m.
 			EXPECT().
-			Deploy(gomock.Any(), gomock.AssignableToTypeOf(&ent.User{}), gomock.AssignableToTypeOf(&ent.Repo{}), &ent.Deployment{
+			Rollback(gomock.Any(), gomock.AssignableToTypeOf(&ent.User{}), gomock.AssignableToTypeOf(&ent.Repo{}), &ent.Deployment{
 				Number: 4,
-				Type:   deployment.TypeBranch,
-				Ref:    branch,
-				Env:    env,
+				Type:   deployment.TypeCommit,
+				Ref:    "main",
+				Sha:    "ee411aa",
+				Env:    "prod",
 			}, gomock.AssignableToTypeOf(&vo.Env{})).
 			DoAndReturn(func(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, e *vo.Env) (*ent.Deployment, error) {
+				d.ID = deploymentID + 1
 				return d, nil
 			})
 
@@ -167,17 +167,14 @@ func TestSlack_interactDeploy(t *testing.T) {
 			CreateEvent(gomock.Any(), gomock.AssignableToTypeOf(&ent.Event{})).
 			Return(&ent.Event{}, nil)
 
-		s := &Slack{
-			i:   m,
-			log: zap.L(),
-		}
+		s := &Slack{i: m, log: zap.L()}
 
 		gin.SetMode(gin.ReleaseMode)
 		router := gin.New()
-		router.POST("/interact", s.interactDeploy)
+		router.POST("/interact", s.interactRollback)
 
-		// Build the Slack payload.
-		bytes, err := ioutil.ReadFile("./testdata/deploy-interact.json")
+		// Build the payload to interact.
+		bytes, err := ioutil.ReadFile("./testdata/rollback-interact.json")
 		if err != nil {
 			t.Errorf("It has failed to open the JSON file: %s", err)
 			t.FailNow()
@@ -185,6 +182,7 @@ func TestSlack_interactDeploy(t *testing.T) {
 
 		form := url.Values{}
 		form.Add("payload", string(bytes))
+
 		req, _ := http.NewRequest("POST", "/interact", strings.NewReader(form.Encode()))
 		req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 

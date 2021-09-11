@@ -1,0 +1,161 @@
+{
+  "type": "view_submission",
+  "team": {
+    "id": "T024EKG6ZE3",
+    "domain": "gitploy"
+  },
+  "user": {
+    "id": "U025KUBB2",
+    "username": "octocat",
+    "name": "octocat",
+    "team_id": "T024EKG6ZE3"
+  },
+  "api_app_id": "A024NKFBZT8",
+  "token": "KPuw2gHb31oG2GDX5mjbsw6O",
+  "trigger_id": "2479998291107.2150662237479.a6afd8db96b07e504c2a4dfb22d70e82",
+  "view": {
+    "id": "V02E0V16N13",
+    "team_id": "T024EKG6ZE3",
+    "type": "modal",
+    "blocks": [
+      {
+        "type": "input",
+        "block_id": "block_deployment",
+        "label": {
+          "type": "plain_text",
+          "text": "Deployments",
+          "emoji": true
+        },
+        "optional": false,
+        "dispatch_action": false,
+        "element": {
+          "type": "static_select",
+          "action_id": "aciton_deployment",
+          "placeholder": {
+            "type": "plain_text",
+            "text": "Select target deployment",
+            "emoji": true
+          },
+          "option_groups": [
+            {
+              "label": {
+                "type": "plain_text",
+                "text": "local",
+                "emoji": true
+              },
+              "options": [
+                {
+                  "text": {
+                    "type": "plain_text",
+                    "text": "#33 - 36644dd deployed at 15 days ago",
+                    "emoji": true
+                  },
+                  "value": "33"
+                },
+                {
+                  "text": {
+                    "type": "plain_text",
+                    "text": "#32 - 36644dd deployed at 15 days ago",
+                    "emoji": true
+                  },
+                  "value": "32"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "type": "input",
+        "block_id": "block_approvers",
+        "label": {
+          "type": "plain_text",
+          "text": "Approvers",
+          "emoji": true
+        },
+        "optional": true,
+        "dispatch_action": false,
+        "element": {
+          "type": "multi_static_select",
+          "action_id": "action_approver_ids",
+          "placeholder": {
+            "type": "plain_text",
+            "text": "Select approvers",
+            "emoji": true
+          },
+          "options": [
+            {
+              "text": {
+                "type": "plain_text",
+                "text": "hanjunlee",
+                "emoji": true
+              },
+              "value": "17633736"
+            }
+          ]
+        }
+      }
+    ],
+    "private_metadata": "",
+    "callback_id": "hZUZvJgWhxYvdekUGESXKjSusKWWIRKr",
+    "state": {
+      "values": {
+        "block_deployment": {
+          "aciton_deployment": {
+            "type": "static_select",
+            "selected_option": {
+              "text": {
+                "type": "plain_text",
+                "text": "#33 - 36644dd deployed at 15 days ago",
+                "emoji": true
+              },
+              "value": "33"
+            }
+          }
+        },
+        "block_approvers": {
+          "action_approver_ids": {
+            "type": "multi_static_select",
+            "selected_options": [
+              {
+                "text": {
+                  "type": "plain_text",
+                  "text": "hanjunlee",
+                  "emoji": true
+                },
+                "value": "17633736"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "hash": "1631327008.N96kHN5Y",
+    "title": {
+      "type": "plain_text",
+      "text": "Rollback",
+      "emoji": true
+    },
+    "clear_on_close": false,
+    "notify_on_close": false,
+    "close": {
+      "type": "plain_text",
+      "text": "Close",
+      "emoji": true
+    },
+    "submit": {
+      "type": "plain_text",
+      "text": "Submit",
+      "emoji": true
+    },
+    "previous_view_id": null,
+    "root_view_id": "V02E0V16N13",
+    "app_id": "A024NKFBZT8",
+    "external_id": "",
+    "app_installed_team_id": "T024EKG6ZE3",
+    "bot_id": "B02582YBE1F"
+  },
+  "response_urls": [],
+  "is_enterprise_install": false,
+  "enterprise": null
+}
