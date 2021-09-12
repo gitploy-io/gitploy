@@ -26,6 +26,7 @@ import {
     ApprovalStatus,
     RequestStatus
 } from "../models"
+import { subscribeDeploymentEvent } from "../apis"
 
 import Main from "./Main"
 import ApproversSelector from "../components/ApproversSelector"
@@ -64,6 +65,19 @@ export default function DeploymentView(): JSX.Element {
             await dispatch(fetchMyApproval())
         }
         f()
+
+        const de = subscribeDeploymentEvent((d) => {
+            if (d.number !== parseInt(number, 10)) {
+                return
+            }
+
+            // Fetch the deployment with statuses.
+            dispatch(fetchDeployment())
+        })
+
+        return () => {
+            de.close()
+        }
         // eslint-disable-next-line 
     }, [dispatch])
 
