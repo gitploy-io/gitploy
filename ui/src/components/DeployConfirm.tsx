@@ -1,4 +1,5 @@
 import { Form, Typography, Avatar, Button, Collapse, Timeline } from "antd"
+import moment from "moment"
 
 import { Deployment, Commit } from "../models"
 import DeploymentRefCode from "./DeploymentRefCode"
@@ -59,6 +60,12 @@ export default function DeployConfirm(props: DeployConfirmProps): JSX.Element {
                     <Avatar size="small" >
                         U
                     </Avatar>}
+            </Form.Item>
+            <Form.Item
+                {...layout}
+                label="Deployed At"
+            >
+                <Text>{moment(props.deployment.createdAt).format()}</Text>
             </Form.Item>
             {(props.deployment.isApprovalEanbled) ?
                 <Form.Item
