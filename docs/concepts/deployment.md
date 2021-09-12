@@ -12,6 +12,6 @@ With approval, Gitploy waits until it matches the required approving approvals. 
 
 Rollback is the best way to recover while you fix the problems. Gitploy supports the rollback, and you can choose one of the successful deployments to rollback. 
 
-For best practice, you should lock the repository to block deploying by others. And the admin user has to take care of the repository until finishing to fix the problems.
+For best practice, you should lock the repository to block deploying by others until finishing to fix the problems. Gitploy provide the 'lock' feature in UI and Chatops.
 
 *Note that if the ref of the selected deployment is a branch, Gitploy automatically references the commit SHA to prevent deploying the head of the branch.*
