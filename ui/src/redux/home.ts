@@ -77,11 +77,11 @@ export const homeSlice = createSlice({
                 }
 
                 if (!repo.deployments) {
-                    return repo
+                    repo.deployments = []
                 }
 
                 // Unshift a new deployment when the event is create.
-                if (repo.deployments.length >= 1 && event.id > repo.deployments[0].id) {
+                if (event.createdAt.getTime() === event.updatedAt.getTime()) {
                     repo.deployments.unshift(event)
                     return repo
                 }
