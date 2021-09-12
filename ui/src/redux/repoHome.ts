@@ -73,6 +73,27 @@ export const repoHomeSlice = createSlice({
         decreasePage: (state) => {
             state.page = state.page - 1
         },
+        handleDeploymentEvent: (state, action: PayloadAction<Deployment>) => {
+            const event = action.payload
+
+            if (event.repo?.id !== state.repo?.id) {
+                return
+            }
+
+            if (!(state.env === "" || event.env === state.env)) {
+                return
+            }
+
+            // Unshift a new deployment when the event is create.
+            if (event.createdAt.getTime() === event.updatedAt.getTime()) {
+                state.deployments.unshift(event)
+                return
+            }
+
+            state.deployments = state.deployments.map((deployment) => {
+                return (deployment.id === event.id)? event : deployment
+            })
+        },
     },
     extraReducers: builder => {
         builder

@@ -87,12 +87,7 @@ export const homeSlice = createSlice({
                 }
 
                 repo.deployments = repo.deployments.map((deployment) => {
-                    // Update the deployment if the deployment event is matched.
-                    if (deployment.id === event.id) {
-                        return event
-                    }
-
-                    return deployment
+                    return (deployment.id === event.id)? event : deployment
                 })
                 return repo
             })

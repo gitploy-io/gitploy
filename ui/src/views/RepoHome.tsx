@@ -4,13 +4,13 @@ import { shallowEqual } from "react-redux";
 import { PageHeader, Select } from 'antd'
 
 import { useAppSelector, useAppDispatch } from '../redux/hooks'
-import { repoHomeSlice, init, fetchEnvs, fetchDeployments, perPage } from '../redux/repoHome'
+import { repoHomeSlice as slice, init, fetchEnvs, fetchDeployments, perPage } from '../redux/repoHome'
+import { subscribeDeploymentEvent } from "../apis"
 
 import ActivityLogs from '../components/ActivityLogs'
 import Spin from '../components/Spin'
 import Pagination from '../components/Pagination'
 
-const { actions } = repoHomeSlice
 const { Option } = Select
 
 interface Params {
@@ -35,23 +35,31 @@ export default function RepoHome(): JSX.Element {
             await dispatch(fetchDeployments())
         }
         f()
+
+        const de = subscribeDeploymentEvent((d) => {
+            dispatch(slice.actions.handleDeploymentEvent(d))
+        })
+
+        return () => {
+            de.close()
+        }
         // eslint-disable-next-line
     }, [dispatch])
 
     const isLast = deployments.length < perPage
 
     const onChangeEnv = (env: string) => {
-        dispatch(actions.setEnv(env))
+        dispatch(slice.actions.setEnv(env))
         dispatch(fetchDeployments())
     }
 
     const onClickPrev = () => {
-        dispatch(actions.decreasePage())
+        dispatch(slice.actions.decreasePage())
         dispatch(fetchDeployments())
     }
 
     const onClickNext = () => {
-        dispatch(actions.increasePage())
+        dispatch(slice.actions.increasePage())
         dispatch(fetchDeployments())
     }
 
