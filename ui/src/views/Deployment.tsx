@@ -6,7 +6,7 @@ import { useParams } from "react-router-dom"
 import { useAppSelector, useAppDispatch } from "../redux/hooks"
 import { 
     init, 
-    deploymentSlice, 
+    deploymentSlice as slice, 
     fetchDeployment, 
     fetchDeploymentChanges,
     fetchApprovals, 
@@ -34,8 +34,6 @@ import ApprovalDropdown from "../components/ApprovalDropdown"
 import Spin from "../components/Spin"
 import DeployConfirm from "../components/DeployConfirm"
 
-const { actions } = deploymentSlice
-
 interface Params {
     namespace: string
     name: string
@@ -58,7 +56,7 @@ export default function DeploymentView(): JSX.Element {
     useEffect(() => {
         const f = async () => {
             await dispatch(init({namespace, name}))
-            await dispatch(actions.setNumber(parseInt(number, 10)))
+            await dispatch(slice.actions.setNumber(parseInt(number, 10)))
             await dispatch(fetchDeployment())
             await dispatch(fetchDeploymentChanges())
             await dispatch(fetchApprovals())
@@ -67,12 +65,7 @@ export default function DeploymentView(): JSX.Element {
         f()
 
         const de = subscribeDeploymentEvent((d) => {
-            if (d.number !== parseInt(number, 10)) {
-                return
-            }
-
-            // Fetch the deployment with statuses.
-            dispatch(fetchDeployment())
+            dispatch(slice.actions.handleDeploymentEvent(d))
         })
 
         return () => {

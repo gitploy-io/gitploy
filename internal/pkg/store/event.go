@@ -34,7 +34,8 @@ func (s *Store) ListEventsGreaterThanTime(ctx context.Context, t time.Time) ([]*
 		WithDeployment(func(dq *ent.DeploymentQuery) {
 			dq.
 				WithUser().
-				WithRepo()
+				WithRepo().
+				WithDeploymentStatuses()
 		}).
 		Limit(limit).
 		All(ctx)
