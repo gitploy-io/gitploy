@@ -1,5 +1,5 @@
 import { useEffect } from "react"
-import { Breadcrumb, PageHeader, Row, Col } from "antd"
+import { Breadcrumb, PageHeader, Row, Col, Divider } from "antd"
 import { shallowEqual } from 'react-redux'
 import { useParams } from "react-router-dom"
 
@@ -154,10 +154,22 @@ export default function DeploymentView(): JSX.Element {
                     onBack={onBack} 
                 />
             </div>
-            {/* TODO: support mobile view */}
             <div style={{marginTop: "20px", marginBottom: "30px"}}>
                 <Row>
-                    <Col span="18">
+                    <Col xs={{span: 24}} md={{span: 0}}>
+                        {/* Mobile view */}
+                        {(deployment.isApprovalEanbled) ? 
+                            <ApproversSelector 
+                                approvers={approvers}
+                                candidates={candidates}
+                                approvals={approvals}
+                                onSearchCandidates={onSearchCandidates}
+                                onSelectCandidate={onSelectCandidate}
+                            /> :
+                            null}
+                        <Divider />
+                    </Col>
+                    <Col xs={{span: 24}} md={{span: 18}}>
                         <DeployConfirm 
                             isDeployable={(repo?.locked)? false : isDeployable(deployment, approvals)}
                             deploying={RequestStatus.Pending === deploying}
@@ -166,7 +178,8 @@ export default function DeploymentView(): JSX.Element {
                             onClickDeploy={onClickDeploy}
                         />
                     </Col>
-                    <Col span="6">
+                    <Col xs={{span: 0}} md={{span: 6}}>
+                        {/* Desktop view */}
                         {(deployment.isApprovalEanbled) ? 
                             <ApproversSelector 
                                 approvers={approvers}
