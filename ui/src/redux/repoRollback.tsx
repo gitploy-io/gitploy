@@ -124,7 +124,7 @@ export const rollback = createAsyncThunk<void, void, { state: {repoRollback: Rep
             const rollback = await rollbackDeployment(repo.id, deployment.number)
 
             const msg = <span>
-                It starts to rollback. <a href={`/${repo.namespace}/${repo.name}/deployments/${deployment.number}`}>#{deployment.number}</a>
+                It starts to rollback. <a href={`/${repo.namespace}/${repo.name}/deployments/${rollback.number}`}>#{rollback.number}</a>
             </span>
             if (!env?.approval?.enabled) {
                 message.success(msg, 3)
