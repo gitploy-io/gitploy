@@ -246,6 +246,15 @@ export const deploymentSlice = createSlice({
     reducers: {
         setNumber: (state, action: PayloadAction<number>) => {
             state.number = action.payload
+        },
+        handleDeploymentEvent: (state, action: PayloadAction<Deployment>) => {
+            const event = action.payload
+
+            if (event.id !== state.deployment?.id) {
+                return
+            }
+
+            state.deployment = event
         }
     },
     extraReducers: builder => {

@@ -6,7 +6,7 @@ import { useParams } from "react-router-dom"
 import { useAppSelector, useAppDispatch } from "../redux/hooks"
 import { 
     init, 
-    deploymentSlice, 
+    deploymentSlice as slice, 
     fetchDeployment, 
     fetchDeploymentChanges,
     fetchApprovals, 
@@ -26,14 +26,13 @@ import {
     ApprovalStatus,
     RequestStatus
 } from "../models"
+import { subscribeDeploymentEvent } from "../apis"
 
 import Main from "./Main"
 import ApproversSelector from "../components/ApproversSelector"
 import ApprovalDropdown from "../components/ApprovalDropdown"
 import Spin from "../components/Spin"
 import DeployConfirm from "../components/DeployConfirm"
-
-const { actions } = deploymentSlice
 
 interface Params {
     namespace: string
@@ -57,13 +56,21 @@ export default function DeploymentView(): JSX.Element {
     useEffect(() => {
         const f = async () => {
             await dispatch(init({namespace, name}))
-            await dispatch(actions.setNumber(parseInt(number, 10)))
+            await dispatch(slice.actions.setNumber(parseInt(number, 10)))
             await dispatch(fetchDeployment())
             await dispatch(fetchDeploymentChanges())
             await dispatch(fetchApprovals())
             await dispatch(fetchMyApproval())
         }
         f()
+
+        const de = subscribeDeploymentEvent((d) => {
+            dispatch(slice.actions.handleDeploymentEvent(d))
+        })
+
+        return () => {
+            de.close()
+        }
         // eslint-disable-next-line 
     }, [dispatch])
 

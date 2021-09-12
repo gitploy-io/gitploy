@@ -30,6 +30,9 @@ func NewStream(i Interactor) *Stream {
 	}
 }
 
+// GetEvents streams a deployment or a approval.
+// Subscriber specify the event type, 'created' or 'updated', by comparing
+// the created time and the updated time.
 func (s *Stream) GetEvents(c *gin.Context) {
 	ctx := c.Request.Context()
 
@@ -37,7 +40,6 @@ func (s *Stream) GetEvents(c *gin.Context) {
 	u, _ := v.(*ent.User)
 
 	debugID := randstr()
-	s.log.Debug("create a stream.", zap.String("debug_id", debugID))
 
 	events := make(chan *ent.Event, 10)
 
@@ -73,10 +75,8 @@ L:
 	for {
 		select {
 		case <-w.CloseNotify():
-			s.log.Debug("stream canceled.", zap.String("debug_id", debugID))
 			break L
 		case <-time.After(time.Hour):
-			s.log.Debug("stream canceled.", zap.String("debug_id", debugID))
 			break L
 		case <-time.After(time.Second * 30):
 			c.Render(-1, sse.Event{
