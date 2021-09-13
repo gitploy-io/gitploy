@@ -349,21 +349,6 @@ func (mr *MockInteractorMockRecorder) ListUsersOfEvent(ctx, e interface{}) *gomo
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListUsersOfEvent", reflect.TypeOf((*MockInteractor)(nil).ListUsersOfEvent), ctx, e)
 }
 
-// Rollback mocks base method.
-func (m *MockInteractor) Rollback(ctx context.Context, u *ent.User, re *ent.Repo, d *ent.Deployment, env *vo.Env) (*ent.Deployment, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Rollback", ctx, u, re, d, env)
-	ret0, _ := ret[0].(*ent.Deployment)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// Rollback indicates an expected call of Rollback.
-func (mr *MockInteractorMockRecorder) Rollback(ctx, u, re, d, env interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Rollback", reflect.TypeOf((*MockInteractor)(nil).Rollback), ctx, u, re, d, env)
-}
-
 // SubscribeEvent mocks base method.
 func (m *MockInteractor) SubscribeEvent(fn func(*ent.Event)) error {
 	m.ctrl.T.Helper()

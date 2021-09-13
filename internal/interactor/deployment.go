@@ -19,14 +19,6 @@ func (i *Interactor) Deploy(ctx context.Context, u *ent.User, r *ent.Repo, d *en
 	return i.deploy(ctx, u, r, d, env)
 }
 
-func (i *Interactor) Rollback(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, env *vo.Env) (*ent.Deployment, error) {
-	d.UserID = u.ID
-	d.RepoID = r.ID
-	d.IsRollback = true
-
-	return i.deploy(ctx, u, r, d, env)
-}
-
 func (i *Interactor) deploy(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, e *vo.Env) (*ent.Deployment, error) {
 	if !e.IsApprovalEabled() {
 		rd, err := i.SCM.CreateRemoteDeployment(ctx, u, r, d, e)

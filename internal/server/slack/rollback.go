@@ -264,12 +264,13 @@ func (s *Slack) interactRollback(c *gin.Context) {
 		return
 	}
 
-	d, err = s.i.Rollback(ctx, cu.Edges.User, cb.Edges.Repo, &ent.Deployment{
-		Number: next,
-		Type:   deployment.Type(d.Type),
-		Ref:    d.Ref,
-		Sha:    d.Sha,
-		Env:    d.Env,
+	d, err = s.i.Deploy(ctx, cu.Edges.User, cb.Edges.Repo, &ent.Deployment{
+		Number:     next,
+		Type:       deployment.Type(d.Type),
+		Ref:        d.Ref,
+		Sha:        d.Sha,
+		Env:        d.Env,
+		IsRollback: true,
 	}, env)
 	if ent.IsConstraintError(err) {
 		postBotMessage(cu, "The conflict occurs, please retry.")
