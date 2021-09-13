@@ -7,10 +7,9 @@ require (
 	entgo.io/ent v0.9.0
 	github.com/AlekSi/pointer v1.1.0
 	github.com/asaskevich/EventBus v0.0.0-20200907212545-49d423059eef
-	github.com/creasty/defaults v1.5.1
 	github.com/davecgh/go-spew v1.1.1
-	github.com/drone/envsubst v1.0.3 // indirect
-	github.com/fvbock/endless v0.0.0-20170109170031-447134032cb6 // indirect
+	github.com/drone/envsubst v1.0.3
+	github.com/fvbock/endless v0.0.0-20170109170031-447134032cb6
 	github.com/gin-contrib/cors v1.3.1
 	github.com/gin-contrib/sse v0.1.0
 	github.com/gin-gonic/gin v1.7.2
@@ -34,6 +33,6 @@ require (
 	go.uber.org/zap v1.13.0
 	golang.org/x/net v0.0.0-20210525063256-abc453219eb5 // indirect
 	golang.org/x/oauth2 v0.0.0-20210514164344-f6687ab2804c
-	gopkg.in/h2non/gock.v1 v1.1.2 // indirect
+	gopkg.in/h2non/gock.v1 v1.1.2
 	gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c
 )
