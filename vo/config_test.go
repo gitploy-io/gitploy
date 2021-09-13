@@ -92,10 +92,6 @@ envs:
 
 func TestEnv_Eval(t *testing.T) {
 	t.Run("eval the task.", func(t *testing.T) {
-		const (
-			deployTask = "deploy"
-		)
-
 		cs := []struct {
 			env  *Env
 			want *Env
@@ -105,7 +101,7 @@ func TestEnv_Eval(t *testing.T) {
 					Task: pointer.ToString("${GITPLOY_DEPLOY_TASK}"),
 				},
 				want: &Env{
-					Task: pointer.ToString(deployTask),
+					Task: pointer.ToString(defaultDeployTask),
 				},
 			},
 			{
@@ -113,7 +109,7 @@ func TestEnv_Eval(t *testing.T) {
 					Task: pointer.ToString("${GITPLOY_DEPLOY_TASK}:kubernetes"),
 				},
 				want: &Env{
-					Task: pointer.ToString(fmt.Sprintf("%s:kubernetes", deployTask)),
+					Task: pointer.ToString(fmt.Sprintf("%s:kubernetes", defaultDeployTask)),
 				},
 			},
 			{
@@ -121,52 +117,18 @@ func TestEnv_Eval(t *testing.T) {
 					Task: pointer.ToString("${GITPLOY_DEPLOY_TASK}${GITPLOY_ROLLBACK_TASK}"),
 				},
 				want: &Env{
-					Task: pointer.ToString(deployTask),
+					Task: pointer.ToString(defaultDeployTask),
 				},
 			},
 		}
 
 		for _, c := range cs {
-			err := c.env.Eval(&EvalValues{
-				DeployTask: deployTask,
-			})
+			err := c.env.Eval(&EvalValues{})
 			if err != nil {
 				t.Fatalf("Eval returns an error: %s", err)
 			}
 			if !reflect.DeepEqual(c.env, c.want) {
-				t.Fatalf("Eval = %v, wanted %v", c.env, c.want)
-			}
-		}
-	})
-
-	t.Run("eval the tag.", func(t *testing.T) {
-		const (
-			tag = "a/v0.1.0"
-		)
-
-		cs := []struct {
-			env  *Env
-			want *Env
-		}{
-			{
-				env: &Env{
-					Task: pointer.ToString("${GITPLOY_TAG#a/}"),
-				},
-				want: &Env{
-					Task: pointer.ToString("v0.1.0"),
-				},
-			},
-		}
-
-		for _, c := range cs {
-			err := c.env.Eval(&EvalValues{
-				Tag: tag,
-			})
-			if err != nil {
-				t.Fatalf("Eval returns an error: %s", err)
-			}
-			if !reflect.DeepEqual(c.env, c.want) {
-				t.Fatalf("Eval = %v, wanted %v", c.env, c.want)
+				t.Fatalf("Eval = %v, wanted %v", *c.env.Task, *c.want.Task)
 			}
 		}
 	})

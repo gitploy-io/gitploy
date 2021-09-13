@@ -114,6 +114,12 @@ func (r *Repo) CreateDeployment(c *gin.Context) {
 		return
 	}
 
+	if err := cf.GetEnv(p.Env).Eval(&vo.EvalValues{}); err != nil {
+		r.log.Warn("It has failed to eval the env.", zap.Error(err))
+		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "It has failed to eval the env in the configuration file.")
+		return
+	}
+
 	var (
 		number int
 	)
@@ -213,6 +219,12 @@ func (r *Repo) UpdateDeployment(c *gin.Context) {
 		return
 	}
 
+	if err := cf.GetEnv(d.Env).Eval(&vo.EvalValues{IsRollback: d.IsRollback}); err != nil {
+		r.log.Warn("It has failed to eval the env.", zap.Error(err))
+		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "It has failed to eval the env in the configuration file.")
+		return
+	}
+
 	if p.Status == string(deployment.StatusCreated) && d.Status == deployment.StatusWaiting {
 		// Check the deployment is approved:
 		// Approved >= Required Approval Count
@@ -293,6 +305,12 @@ func (r *Repo) RollbackDeployment(c *gin.Context) {
 	if !cf.HasEnv(d.Env) {
 		r.log.Warn("failed to get the env.", zap.Error(err))
 		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "It has failed to get the env in the configuration file.")
+		return
+	}
+
+	if err := cf.GetEnv(d.Env).Eval(&vo.EvalValues{IsRollback: true}); err != nil {
+		r.log.Warn("It has failed to eval the env.", zap.Error(err))
+		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "It has failed to eval the env in the configuration file.")
 		return
 	}
 

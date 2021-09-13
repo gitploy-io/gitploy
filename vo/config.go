@@ -36,18 +36,19 @@ type (
 	}
 
 	EvalValues struct {
-		DeployTask   string
-		RollbackTask string
-		Tag          string
-		IsRollback   bool
+		IsRollback bool
 	}
 )
 
 const (
 	varnameDeployTask   = "GITPLOY_DEPLOY_TASK"
 	varnameRollbackTask = "GITPLOY_ROLLBACK_TASK"
-	varnameTag          = "GITPLOY_TAG"
 	varnameIsRollback   = "GITPLOY_IS_ROLLBACK"
+)
+
+const (
+	defaultDeployTask   = "deploy"
+	defaultRollbackTask = "rollback"
 )
 
 func UnmarshalYAML(content []byte, c *Config) error {
@@ -94,18 +95,27 @@ func (e *Env) Eval(v *EvalValues) error {
 
 	// Evaluates variables
 	mapper := func(vn string) string {
-		switch vn {
-		case varnameDeployTask:
-			return v.DeployTask
-		case varnameRollbackTask:
-			return v.RollbackTask
-		case varnameIsRollback:
-			return strconv.FormatBool(v.IsRollback)
-		case varnameTag:
-			return v.Tag
-		default:
-			return "ERR_NOT_IMPLEMENTED"
+		if vn == varnameDeployTask {
+			if !v.IsRollback {
+				return defaultDeployTask
+			} else {
+				return ""
+			}
 		}
+
+		if vn == varnameRollbackTask {
+			if v.IsRollback {
+				return defaultRollbackTask
+			} else {
+				return ""
+			}
+		}
+
+		if vn == varnameIsRollback {
+			return strconv.FormatBool(v.IsRollback)
+		}
+
+		return "ERR_NOT_IMPLEMENTED"
 	}
 
 	evalued, err := envsubst.Eval(string(byts), mapper)
@@ -113,8 +123,7 @@ func (e *Env) Eval(v *EvalValues) error {
 		return fmt.Errorf("failed to eval variables: %w", err)
 	}
 
-	ne := &Env{}
-	if err := json.Unmarshal([]byte(evalued), ne); err != nil {
+	if err := json.Unmarshal([]byte(evalued), e); err != nil {
 		return fmt.Errorf("failed to unmarshal to the env: %w", err)
 	}
 

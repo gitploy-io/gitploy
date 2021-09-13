@@ -255,6 +255,12 @@ func (s *Slack) interactRollback(c *gin.Context) {
 		return
 	}
 
+	if err := cf.GetEnv(d.Env).Eval(&vo.EvalValues{IsRollback: true}); err != nil {
+		postBotMessage(cu, "The environment is invalid. It has failed to eval the environment.")
+		c.Status(http.StatusOK)
+		return
+	}
+
 	env := cf.GetEnv(d.Env)
 
 	next, err := s.i.GetNextDeploymentNumberOfRepo(ctx, cb.Edges.Repo)
