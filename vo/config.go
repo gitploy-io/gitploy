@@ -1,9 +1,11 @@
 package vo
 
 import (
+	"encoding/json"
+	"fmt"
 	"strconv"
 
-	"github.com/creasty/defaults"
+	"github.com/drone/envsubst"
 	"gopkg.in/yaml.v3"
 )
 
@@ -16,9 +18,9 @@ type (
 		Name string `json:"name" yaml:"name"`
 
 		// Github parameters of deployment.
-		Task                  string   `json:"task" yaml:"task" default:"deploy"`
-		Description           string   `json:"description" yaml:"description" default:"Gitploy starts to deploy."`
-		AutoMerge             bool     `json:"auto_merge" default:"true"`
+		Task                  string   `json:"task" yaml:"task"`
+		Description           string   `json:"description" yaml:"description"`
+		AutoMerge             bool     `json:"auto_merge"`
 		RequiredContexts      []string `json:"required_contexts,omitempty" yaml:"required_contexts"`
 		Payload               string   `json:"payload" yaml:"payload"`
 		ProductionEnvironment bool     `json:"production_environment" yaml:"production_environment"`
@@ -37,7 +39,39 @@ type (
 		Enabled       bool `json:"enabled" yaml:"enabled"`
 		RequiredCount int  `json:"required_count" yaml:"required_count"`
 	}
+
+	EvalValues struct {
+		DeployTask   string
+		RollbackTask string
+		Tag          string
+		IsRollback   bool
+	}
 )
+
+const (
+	varnameDeployTask   = "GITPLOY_DEPLOY_TASK"
+	varnameRollbackTask = "GITPLOY_ROLLBACK_TASK"
+	varnameTag          = "GITPLOY_TAG"
+	varnameIsRollback   = "GITPLOY_IS_ROLLBACK"
+)
+
+func UnmarshalYAML(content []byte, c *Config) error {
+	if err := yaml.Unmarshal([]byte(content), c); err != nil {
+		return err
+	}
+
+	// Set default value manually.
+	for _, e := range c.Envs {
+		am, err := strconv.ParseBool(e.StrAutoMerge)
+		if err != nil {
+			continue
+		}
+
+		e.AutoMerge = am
+	}
+
+	return nil
+}
 
 func (c *Config) HasEnv(name string) bool {
 	for _, e := range c.Envs {
@@ -67,24 +101,37 @@ func (e *Env) IsApprovalEabled() bool {
 	return e.Approval.Enabled
 }
 
-func UnmarshalYAML(content []byte, c *Config) error {
-	if err := yaml.Unmarshal([]byte(content), c); err != nil {
-		return err
+func (e *Env) Eval(v *EvalValues) (*Env, error) {
+	byts, err := json.Marshal(e)
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal the env: %w", err)
 	}
 
-	if err := defaults.Set(c); err != nil {
-		return err
-	}
-
-	// Set default value manually.
-	for _, e := range c.Envs {
-		am, err := strconv.ParseBool(e.StrAutoMerge)
-		if err != nil {
-			continue
+	// Evaluates variables
+	mapper := func(vn string) string {
+		switch vn {
+		case varnameDeployTask:
+			return v.DeployTask
+		case varnameRollbackTask:
+			return v.RollbackTask
+		case varnameIsRollback:
+			return strconv.FormatBool(v.IsRollback)
+		case varnameTag:
+			return v.Tag
+		default:
+			return "ERR_NOT_IMPLEMENTED"
 		}
-
-		e.AutoMerge = am
 	}
 
-	return nil
+	evalued, err := envsubst.Eval(string(byts), mapper)
+	if err != nil {
+		return nil, fmt.Errorf("failed to eval variables: %w", err)
+	}
+
+	ne := &Env{}
+	if err := json.Unmarshal([]byte(evalued), ne); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal to the env: %w", err)
+	}
+
+	return ne, nil
 }
