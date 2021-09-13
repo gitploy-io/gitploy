@@ -18,21 +18,16 @@ type (
 		Name string `json:"name" yaml:"name"`
 
 		// Github parameters of deployment.
-		Task                  string   `json:"task" yaml:"task"`
-		Description           string   `json:"description" yaml:"description"`
-		AutoMerge             bool     `json:"auto_merge"`
-		RequiredContexts      []string `json:"required_contexts,omitempty" yaml:"required_contexts"`
-		Payload               string   `json:"payload" yaml:"payload"`
-		ProductionEnvironment bool     `json:"production_environment" yaml:"production_environment"`
+		Task                  *string   `json:"task" yaml:"task"`
+		Description           *string   `json:"description" yaml:"description"`
+		AutoMerge             *bool     `json:"auto_merge" yaml:"auto_merge"`
+		RequiredContexts      *[]string `json:"required_contexts,omitempty" yaml:"required_contexts"`
+		Payload               *string   `json:"payload" yaml:"payload"`
+		ProductionEnvironment *bool     `json:"production_environment" yaml:"production_environment"`
 
 		// Approval is the configuration of Approval,
 		// It is disabled when it is empty.
 		Approval *Approval `json:"approval,omitempty" yaml:"approval"`
-
-		// The type of auto_merge must be string to avoid
-		// that the value of auto_merge is always set true
-		// after processing defaults.Set
-		StrAutoMerge string `yaml:"auto_merge"`
 	}
 
 	Approval struct {
@@ -58,16 +53,6 @@ const (
 func UnmarshalYAML(content []byte, c *Config) error {
 	if err := yaml.Unmarshal([]byte(content), c); err != nil {
 		return err
-	}
-
-	// Set default value manually.
-	for _, e := range c.Envs {
-		am, err := strconv.ParseBool(e.StrAutoMerge)
-		if err != nil {
-			continue
-		}
-
-		e.AutoMerge = am
 	}
 
 	return nil
@@ -101,10 +86,10 @@ func (e *Env) IsApprovalEabled() bool {
 	return e.Approval.Enabled
 }
 
-func (e *Env) Eval(v *EvalValues) (*Env, error) {
+func (e *Env) Eval(v *EvalValues) error {
 	byts, err := json.Marshal(e)
 	if err != nil {
-		return nil, fmt.Errorf("failed to marshal the env: %w", err)
+		return fmt.Errorf("failed to marshal the env: %w", err)
 	}
 
 	// Evaluates variables
@@ -125,13 +110,13 @@ func (e *Env) Eval(v *EvalValues) (*Env, error) {
 
 	evalued, err := envsubst.Eval(string(byts), mapper)
 	if err != nil {
-		return nil, fmt.Errorf("failed to eval variables: %w", err)
+		return fmt.Errorf("failed to eval variables: %w", err)
 	}
 
 	ne := &Env{}
 	if err := json.Unmarshal([]byte(evalued), ne); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal to the env: %w", err)
+		return fmt.Errorf("failed to unmarshal to the env: %w", err)
 	}
 
-	return ne, nil
+	return nil
 }

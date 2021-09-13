@@ -17,12 +17,12 @@ func (g *Github) CreateRemoteDeployment(ctx context.Context, u *ent.User, r *ent
 		CreateDeployment(ctx, r.Namespace, r.Name, &github.DeploymentRequest{
 			Ref:                   github.String(d.Ref),
 			Environment:           github.String(e.Name),
-			Task:                  github.String(e.Task),
-			Description:           github.String(e.Description),
-			AutoMerge:             github.Bool(e.AutoMerge),
-			RequiredContexts:      &e.RequiredContexts,
-			Payload:               github.String(e.Payload),
-			ProductionEnvironment: github.Bool(e.ProductionEnvironment),
+			Task:                  e.Task,
+			Description:           e.Description,
+			AutoMerge:             e.AutoMerge,
+			RequiredContexts:      e.RequiredContexts,
+			Payload:               e.Payload,
+			ProductionEnvironment: e.ProductionEnvironment,
 		})
 	if res.StatusCode == http.StatusConflict {
 		return nil, &vo.UnprocessibleDeploymentError{

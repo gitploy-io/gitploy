@@ -5,6 +5,7 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/AlekSi/pointer"
 	"github.com/davecgh/go-spew/spew"
 )
 
@@ -27,7 +28,7 @@ envs:
 			Envs: []*Env{
 				{
 					Name:             "dev",
-					RequiredContexts: []string{"github-action"},
+					RequiredContexts: &[]string{"github-action"},
 				},
 			},
 		}
@@ -52,9 +53,8 @@ envs:
 		e := &Config{
 			Envs: []*Env{
 				{
-					Name:         "dev",
-					AutoMerge:    false,
-					StrAutoMerge: "false",
+					Name:      "dev",
+					AutoMerge: pointer.ToBool(false),
 				},
 			},
 		}
@@ -79,9 +79,8 @@ envs:
 		e := &Config{
 			Envs: []*Env{
 				{
-					Name:         "dev",
-					AutoMerge:    true,
-					StrAutoMerge: "true",
+					Name:      "dev",
+					AutoMerge: pointer.ToBool(true),
 				},
 			},
 		}
@@ -103,39 +102,39 @@ func TestEnv_Eval(t *testing.T) {
 		}{
 			{
 				env: &Env{
-					Task: "${GITPLOY_DEPLOY_TASK}",
+					Task: pointer.ToString("${GITPLOY_DEPLOY_TASK}"),
 				},
 				want: &Env{
-					Task: deployTask,
+					Task: pointer.ToString(deployTask),
 				},
 			},
 			{
 				env: &Env{
-					Task: "${GITPLOY_DEPLOY_TASK}:kubernetes",
+					Task: pointer.ToString("${GITPLOY_DEPLOY_TASK}:kubernetes"),
 				},
 				want: &Env{
-					Task: fmt.Sprintf("%s:kubernetes", deployTask),
+					Task: pointer.ToString(fmt.Sprintf("%s:kubernetes", deployTask)),
 				},
 			},
 			{
 				env: &Env{
-					Task: "${GITPLOY_DEPLOY_TASK}${GITPLOY_ROLLBACK_TASK}",
+					Task: pointer.ToString("${GITPLOY_DEPLOY_TASK}${GITPLOY_ROLLBACK_TASK}"),
 				},
 				want: &Env{
-					Task: deployTask,
+					Task: pointer.ToString(deployTask),
 				},
 			},
 		}
 
 		for _, c := range cs {
-			ret, err := c.env.Eval(&EvalValues{
+			err := c.env.Eval(&EvalValues{
 				DeployTask: deployTask,
 			})
 			if err != nil {
 				t.Fatalf("Eval returns an error: %s", err)
 			}
-			if !reflect.DeepEqual(ret, c.want) {
-				t.Fatalf("Eval = %v, wanted %v", ret, c.want)
+			if !reflect.DeepEqual(c.env, c.want) {
+				t.Fatalf("Eval = %v, wanted %v", c.env, c.want)
 			}
 		}
 	})
@@ -151,23 +150,23 @@ func TestEnv_Eval(t *testing.T) {
 		}{
 			{
 				env: &Env{
-					Task: "${GITPLOY_TAG#a/}",
+					Task: pointer.ToString("${GITPLOY_TAG#a/}"),
 				},
 				want: &Env{
-					Task: "v0.1.0",
+					Task: pointer.ToString("v0.1.0"),
 				},
 			},
 		}
 
 		for _, c := range cs {
-			ret, err := c.env.Eval(&EvalValues{
+			err := c.env.Eval(&EvalValues{
 				Tag: tag,
 			})
 			if err != nil {
 				t.Fatalf("Eval returns an error: %s", err)
 			}
-			if !reflect.DeepEqual(ret, c.want) {
-				t.Fatalf("Eval = %v, wanted %v", ret, c.want)
+			if !reflect.DeepEqual(c.env, c.want) {
+				t.Fatalf("Eval = %v, wanted %v", c.env, c.want)
 			}
 		}
 	})
@@ -183,23 +182,23 @@ func TestEnv_Eval(t *testing.T) {
 		}{
 			{
 				env: &Env{
-					Payload: "{\"is_rollback\": ${GITPLOY_IS_ROLLBACK}}",
+					Payload: pointer.ToString("{\"is_rollback\": ${GITPLOY_IS_ROLLBACK}}"),
 				},
 				want: &Env{
-					Payload: "{\"is_rollback\": true}",
+					Payload: pointer.ToString("{\"is_rollback\": true}"),
 				},
 			},
 		}
 
 		for _, c := range cs {
-			ret, err := c.env.Eval(&EvalValues{
+			err := c.env.Eval(&EvalValues{
 				IsRollback: isRollback,
 			})
 			if err != nil {
 				t.Fatalf("Eval returns an error: %s", err)
 			}
-			if !reflect.DeepEqual(ret, c.want) {
-				t.Fatalf("Eval = %v, wanted %v", ret, c.want)
+			if !reflect.DeepEqual(c.env, c.want) {
+				t.Fatalf("Eval = %v, wanted %v", c.env, c.want)
 			}
 		}
 	})
