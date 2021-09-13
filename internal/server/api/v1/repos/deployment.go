@@ -306,11 +306,12 @@ func (r *Repo) RollbackDeployment(c *gin.Context) {
 		return
 	}
 
-	d, err = r.i.Rollback(ctx, u, re, &ent.Deployment{
-		Number: next,
-		Type:   d.Type,
-		Env:    d.Env,
-		Ref:    d.Ref,
+	d, err = r.i.Deploy(ctx, u, re, &ent.Deployment{
+		Number:     next,
+		Type:       d.Type,
+		Env:        d.Env,
+		Ref:        d.Ref,
+		IsRollback: true,
 	}, cf.GetEnv(d.Env))
 	if ent.IsConstraintError(err) {
 		r.log.Warn("The conflict occurs.", zap.Error(err))

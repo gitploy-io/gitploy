@@ -31,7 +31,6 @@ type (
 		IsApproved(ctx context.Context, d *ent.Deployment) bool
 		Deploy(ctx context.Context, u *ent.User, re *ent.Repo, d *ent.Deployment, env *vo.Env) (*ent.Deployment, error)
 		CreateRemoteDeployment(ctx context.Context, u *ent.User, re *ent.Repo, d *ent.Deployment, env *vo.Env) (*ent.Deployment, error)
-		Rollback(ctx context.Context, u *ent.User, re *ent.Repo, d *ent.Deployment, env *vo.Env) (*ent.Deployment, error)
 		GetConfig(ctx context.Context, u *ent.User, r *ent.Repo) (*vo.Config, error)
 
 		ListApprovals(ctx context.Context, d *ent.Deployment) ([]*ent.Approval, error)
