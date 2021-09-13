@@ -499,21 +499,6 @@ func (mr *MockInteractorMockRecorder) ListTags(ctx, u, r, page, perPage interfac
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListTags", reflect.TypeOf((*MockInteractor)(nil).ListTags), ctx, u, r, page, perPage)
 }
 
-// Rollback mocks base method.
-func (m *MockInteractor) Rollback(ctx context.Context, u *ent.User, re *ent.Repo, d *ent.Deployment, env *vo.Env) (*ent.Deployment, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Rollback", ctx, u, re, d, env)
-	ret0, _ := ret[0].(*ent.Deployment)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// Rollback indicates an expected call of Rollback.
-func (mr *MockInteractorMockRecorder) Rollback(ctx, u, re, d, env interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Rollback", reflect.TypeOf((*MockInteractor)(nil).Rollback), ctx, u, re, d, env)
-}
-
 // UpdateApproval mocks base method.
 func (m *MockInteractor) UpdateApproval(ctx context.Context, a *ent.Approval) (*ent.Approval, error) {
 	m.ctrl.T.Helper()

@@ -149,12 +149,13 @@ func TestSlack_interactRollback(t *testing.T) {
 		t.Log("Roll back with the returned deployment.")
 		m.
 			EXPECT().
-			Rollback(gomock.Any(), gomock.AssignableToTypeOf(&ent.User{}), gomock.AssignableToTypeOf(&ent.Repo{}), &ent.Deployment{
-				Number: 4,
-				Type:   deployment.TypeCommit,
-				Ref:    "main",
-				Sha:    "ee411aa",
-				Env:    "prod",
+			Deploy(gomock.Any(), gomock.AssignableToTypeOf(&ent.User{}), gomock.AssignableToTypeOf(&ent.Repo{}), &ent.Deployment{
+				Number:     4,
+				Type:       deployment.TypeCommit,
+				Ref:        "main",
+				Sha:        "ee411aa",
+				Env:        "prod",
+				IsRollback: true,
 			}, gomock.AssignableToTypeOf(&vo.Env{})).
 			DoAndReturn(func(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, e *vo.Env) (*ent.Deployment, error) {
 				d.ID = deploymentID + 1
