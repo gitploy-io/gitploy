@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/AlekSi/pointer"
 	"github.com/gitploy-io/gitploy/ent"
 	"github.com/gitploy-io/gitploy/ent/approval"
 	"github.com/gitploy-io/gitploy/ent/deployment"
@@ -12,14 +13,10 @@ import (
 	"go.uber.org/zap"
 )
 
-func (i *Interactor) Deploy(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, env *vo.Env) (*ent.Deployment, error) {
+func (i *Interactor) Deploy(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, e *vo.Env) (*ent.Deployment, error) {
 	d.UserID = u.ID
 	d.RepoID = r.ID
 
-	return i.deploy(ctx, u, r, d, env)
-}
-
-func (i *Interactor) deploy(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, e *vo.Env) (*ent.Deployment, error) {
 	if !e.IsApprovalEabled() {
 		rd, err := i.SCM.CreateRemoteDeployment(ctx, u, r, d, e)
 		if err != nil {
@@ -71,9 +68,8 @@ func (i *Interactor) CreateRemoteDeployment(ctx context.Context, u *ent.User, re
 	// 1) Set auto_merge false to avoid the merge conflict.
 	// 2) Set required_contexts empty to skip the verfication.
 	if d.IsRollback {
-		e.Task = "rollback"
-		e.AutoMerge = false
-		e.RequiredContexts = []string{}
+		e.AutoMerge = pointer.ToBool(false)
+		e.RequiredContexts = &[]string{}
 	}
 
 	rd, err := i.SCM.CreateRemoteDeployment(ctx, u, re, d, e)

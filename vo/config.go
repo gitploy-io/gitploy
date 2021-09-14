@@ -1,9 +1,11 @@
 package vo
 
 import (
+	"encoding/json"
+	"fmt"
 	"strconv"
 
-	"github.com/creasty/defaults"
+	"github.com/drone/envsubst"
 	"gopkg.in/yaml.v3"
 )
 
@@ -16,28 +18,46 @@ type (
 		Name string `json:"name" yaml:"name"`
 
 		// Github parameters of deployment.
-		Task                  string   `json:"task" yaml:"task" default:"deploy"`
-		Description           string   `json:"description" yaml:"description" default:"Gitploy starts to deploy."`
-		AutoMerge             bool     `json:"auto_merge" default:"true"`
-		RequiredContexts      []string `json:"required_contexts,omitempty" yaml:"required_contexts"`
-		Payload               string   `json:"payload" yaml:"payload"`
-		ProductionEnvironment bool     `json:"production_environment" yaml:"production_environment"`
+		Task                  *string   `json:"task" yaml:"task"`
+		Description           *string   `json:"description" yaml:"description"`
+		AutoMerge             *bool     `json:"auto_merge" yaml:"auto_merge"`
+		RequiredContexts      *[]string `json:"required_contexts,omitempty" yaml:"required_contexts"`
+		Payload               *string   `json:"payload" yaml:"payload"`
+		ProductionEnvironment *bool     `json:"production_environment" yaml:"production_environment"`
 
 		// Approval is the configuration of Approval,
 		// It is disabled when it is empty.
 		Approval *Approval `json:"approval,omitempty" yaml:"approval"`
-
-		// The type of auto_merge must be string to avoid
-		// that the value of auto_merge is always set true
-		// after processing defaults.Set
-		StrAutoMerge string `yaml:"auto_merge"`
 	}
 
 	Approval struct {
 		Enabled       bool `json:"enabled" yaml:"enabled"`
 		RequiredCount int  `json:"required_count" yaml:"required_count"`
 	}
+
+	EvalValues struct {
+		IsRollback bool
+	}
 )
+
+const (
+	varnameDeployTask   = "GITPLOY_DEPLOY_TASK"
+	varnameRollbackTask = "GITPLOY_ROLLBACK_TASK"
+	varnameIsRollback   = "GITPLOY_IS_ROLLBACK"
+)
+
+const (
+	defaultDeployTask   = "deploy"
+	defaultRollbackTask = "rollback"
+)
+
+func UnmarshalYAML(content []byte, c *Config) error {
+	if err := yaml.Unmarshal([]byte(content), c); err != nil {
+		return err
+	}
+
+	return nil
+}
 
 func (c *Config) HasEnv(name string) bool {
 	for _, e := range c.Envs {
@@ -67,23 +87,44 @@ func (e *Env) IsApprovalEabled() bool {
 	return e.Approval.Enabled
 }
 
-func UnmarshalYAML(content []byte, c *Config) error {
-	if err := yaml.Unmarshal([]byte(content), c); err != nil {
-		return err
+func (e *Env) Eval(v *EvalValues) error {
+	byts, err := json.Marshal(e)
+	if err != nil {
+		return fmt.Errorf("failed to marshal the env: %w", err)
 	}
 
-	if err := defaults.Set(c); err != nil {
-		return err
-	}
-
-	// Set default value manually.
-	for _, e := range c.Envs {
-		am, err := strconv.ParseBool(e.StrAutoMerge)
-		if err != nil {
-			continue
+	// Evaluates variables
+	mapper := func(vn string) string {
+		if vn == varnameDeployTask {
+			if !v.IsRollback {
+				return defaultDeployTask
+			} else {
+				return ""
+			}
 		}
 
-		e.AutoMerge = am
+		if vn == varnameRollbackTask {
+			if v.IsRollback {
+				return defaultRollbackTask
+			} else {
+				return ""
+			}
+		}
+
+		if vn == varnameIsRollback {
+			return strconv.FormatBool(v.IsRollback)
+		}
+
+		return "ERR_NOT_IMPLEMENTED"
+	}
+
+	evalued, err := envsubst.Eval(string(byts), mapper)
+	if err != nil {
+		return fmt.Errorf("failed to eval variables: %w", err)
+	}
+
+	if err := json.Unmarshal([]byte(evalued), e); err != nil {
+		return fmt.Errorf("failed to unmarshal to the env: %w", err)
 	}
 
 	return nil

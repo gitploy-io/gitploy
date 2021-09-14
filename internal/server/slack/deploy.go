@@ -294,6 +294,12 @@ func (s *Slack) interactDeploy(c *gin.Context) {
 
 	env := cf.GetEnv(sm.Env)
 
+	if err := env.Eval(&vo.EvalValues{}); err != nil {
+		postBotMessage(cu, "The environment is invalid. It has failed to eval the environment.")
+		c.Status(http.StatusOK)
+		return
+	}
+
 	number, err := s.i.GetNextDeploymentNumberOfRepo(ctx, cb.Edges.Repo)
 	if err != nil {
 		s.log.Error("It has failed to get the next deployment number.", zap.Error(err))
