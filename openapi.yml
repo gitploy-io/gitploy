@@ -6,20 +6,6 @@ servers:
   - url: http://localhost/api/v1
   - url: https://gitploy.jp.ngrok.io/api/v1
 paths:
-  /sync:
-    post:
-      tags:
-        - Sync
-      summary: Synchronize with SCM.
-      responses:
-        '200':
-          description: OK
-        '401': 
-          $ref: '#/components/responses/401Unauthorized'
-        '402':
-          $ref: '#/components/responses/402PaymentRequired'
-        '500':
-          $ref: '#/components/responses/500InternalError'
   /license:
     get:
       tags:
@@ -996,6 +982,191 @@ paths:
           $ref: '#/components/responses/422UnprocessableEntity'
         '500':
           $ref: '#/components/responses/500InternalError'
+  /search/deployments:
+    get:
+      tags:
+        - Search
+      summary: Search deployments.
+      parameters:
+        - in: query
+          name: statuses
+          required: false
+          schema:
+            type: string
+            description: > 
+              Status list comma separated.
+        - in: query
+          name: owned
+          required: false
+          schema:
+            type: boolean
+            description: Own deployments.
+        - in: query
+          name: from
+          required: false
+          schema:
+            type: string
+            format: date-time
+            description: Begin of created_at.
+        - in: query
+          name: to
+          required: false
+          schema:
+            type: string
+            format: date-time
+            description: End of created_at.
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+            description: The page number
+        - in: query
+          name: per_page
+          schema:
+            type: integer
+            default: 30
+            description: The number per page
+      responses:
+        '200':
+          description: Returns deployments which matches to conditions.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Deployments'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '402':
+          $ref: '#/components/responses/402PaymentRequired'
+        '401': 
+          $ref: '#/components/responses/401Unauthorized'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+  /search/approvals:
+    get:
+      tags:
+        - Search
+      summary: Search assigned approvals.
+      parameters:
+        - in: query
+          name: statuses
+          required: false
+          schema:
+            type: string
+            description: > 
+              Status list comma separated.
+        - in: query
+          name: from
+          required: false
+          schema:
+            type: string
+            format: date-time
+            description: Begin of created_at
+        - in: query
+          name: to
+          required: false
+          schema:
+            type: string
+            format: date-time
+            description: End of created_at
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+            description: The page number
+        - in: query
+          name: per_page
+          schema:
+            type: integer
+            default: 30
+            description: The number per page
+      responses:
+        '200':
+          description: Returns deployments which matches to conditions.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Deployments'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401': 
+          $ref: '#/components/responses/401Unauthorized'
+        '402':
+          $ref: '#/components/responses/402PaymentRequired'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+  /stream/events:
+    get:
+      tags:
+        - Event
+      summary: Subscribes streaming event
+      responses:
+        '200':
+          description: Returns events for deployments and approvals
+          content:
+            text/event-stream:
+              schema:
+                type: array
+                format: chunked
+                items:
+                  type: object
+                  format: text 
+                  required:
+                    - id 
+                    - event 
+                    - data
+                  properties: 
+                    id:
+                      type: integer
+                    event:
+                      type: string
+                    data:
+                      type: object 
+                      format: json 
+                      required:
+                        - id
+                        - kind
+                        - type
+                        - created_at
+                        - edges
+                      properties: 
+                        id:
+                          type: integer
+                        kind:
+                          type: string
+                          enum:
+                            - deployment
+                            - approval
+                        type:
+                          type: string
+                          enum:
+                            - created
+                            - updated
+                            - removed
+                        created_at:
+                          type: string
+                        edges:
+                          type: object
+                          properties:
+                            deployment:
+                              $ref: '#/components/schemas/Deployment'
+                            approval:
+                              $ref: '#/components/schemas/Approval'
+  /sync:
+    post:
+      tags:
+        - Sync
+      summary: Synchronize with SCM.
+      responses:
+        '200':
+          description: OK
+        '401': 
+          $ref: '#/components/responses/401Unauthorized'
+        '402':
+          $ref: '#/components/responses/402PaymentRequired'
+        '500':
+          $ref: '#/components/responses/500InternalError'
   /users:
     get:
       tags:
@@ -1128,120 +1299,6 @@ paths:
           $ref: '#/components/responses/401Unauthorized'
         '403':
           $ref: '#/components/responses/403Forbidden'
-        '500':
-          $ref: '#/components/responses/500InternalError'
-  /search/deployments:
-    get:
-      tags:
-        - Search
-      summary: Search deployments.
-      parameters:
-        - in: query
-          name: statuses
-          required: false
-          schema:
-            type: string
-            description: > 
-              Status list comma separated.
-        - in: query
-          name: owned
-          required: false
-          schema:
-            type: boolean
-            description: Own deployments.
-        - in: query
-          name: from
-          required: false
-          schema:
-            type: string
-            format: date-time
-            description: Begin of created_at.
-        - in: query
-          name: to
-          required: false
-          schema:
-            type: string
-            format: date-time
-            description: End of created_at.
-        - in: query
-          name: page
-          schema:
-            type: integer
-            default: 1
-            description: The page number
-        - in: query
-          name: per_page
-          schema:
-            type: integer
-            default: 30
-            description: The number per page
-      responses:
-        '200':
-          description: Returns deployments which matches to conditions.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Deployments'
-        '400':
-          $ref: '#/components/responses/400BadRequest'
-        '402':
-          $ref: '#/components/responses/402PaymentRequired'
-        '401': 
-          $ref: '#/components/responses/401Unauthorized'
-        '500':
-          $ref: '#/components/responses/500InternalError'
-  /search/approvals:
-    get:
-      tags:
-        - Search
-      summary: Search assigned approvals.
-      parameters:
-        - in: query
-          name: statuses
-          required: false
-          schema:
-            type: string
-            description: > 
-              Status list comma separated.
-        - in: query
-          name: from
-          required: false
-          schema:
-            type: string
-            format: date-time
-            description: Begin of created_at
-        - in: query
-          name: to
-          required: false
-          schema:
-            type: string
-            format: date-time
-            description: End of created_at
-        - in: query
-          name: page
-          schema:
-            type: integer
-            default: 1
-            description: The page number
-        - in: query
-          name: per_page
-          schema:
-            type: integer
-            default: 30
-            description: The number per page
-      responses:
-        '200':
-          description: Returns deployments which matches to conditions.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Deployments'
-        '400':
-          $ref: '#/components/responses/400BadRequest'
-        '401': 
-          $ref: '#/components/responses/401Unauthorized'
-        '402':
-          $ref: '#/components/responses/402PaymentRequired'
         '500':
           $ref: '#/components/responses/500InternalError'
 security:
