@@ -8,16 +8,6 @@ import (
 	"github.com/gitploy-io/gitploy/vo"
 )
 
-func (i *Interactor) ListReposOfUser(ctx context.Context, u *ent.User, sorted bool, q string, page, perPage int) (repos []*ent.Repo, err error) {
-	if sorted {
-		repos, err = i.Store.ListSortedReposOfUser(ctx, u, q, page, perPage)
-	} else {
-		repos, err = i.Store.ListReposOfUser(ctx, u, q, page, perPage)
-	}
-
-	return repos, err
-}
-
 func (i *Interactor) ActivateRepo(ctx context.Context, u *ent.User, r *ent.Repo, c *vo.WebhookConfig) (*ent.Repo, error) {
 	hid, err := i.CreateWebhook(ctx, u, r, c)
 	if err != nil {

@@ -42,12 +42,12 @@ func NewRepo(c RepoConfig, i Interactor) *Repo {
 
 func (r *Repo) ListRepos(c *gin.Context) {
 	var (
-		sort    = c.DefaultQuery("sort", "false")
-		q       = c.Query("q")
-		page    = c.DefaultQuery("page", "1")
-		perPage = c.DefaultQuery("per_page", "30")
-
-		repos []*ent.Repo
+		sort      = c.DefaultQuery("sort", "false")
+		q         = c.Query("q")
+		namespace = c.Query("namespace")
+		name      = c.Query("name")
+		page      = c.DefaultQuery("page", "1")
+		perPage   = c.DefaultQuery("per_page", "30")
 	)
 
 	ctx := c.Request.Context()
@@ -62,7 +62,7 @@ func (r *Repo) ListRepos(c *gin.Context) {
 		return
 	}
 
-	repos, err = r.i.ListReposOfUser(ctx, u, sorted, q, atoi(page), atoi(perPage))
+	repos, err := r.i.ListReposOfUser(ctx, u, q, namespace, name, sorted, atoi(page), atoi(perPage))
 	if err != nil {
 		r.log.Error("failed to list repositories.", zap.Error(err))
 		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to list repositories.")
@@ -141,31 +141,6 @@ func (r *Repo) UpdateRepo(c *gin.Context) {
 func (r *Repo) GetRepo(c *gin.Context) {
 	rv, _ := c.Get(KeyRepo)
 	repo := rv.(*ent.Repo)
-
-	gb.Response(c, http.StatusOK, repo)
-}
-
-func (r *Repo) GetRepoByNamespaceName(c *gin.Context) {
-	ctx := c.Request.Context()
-
-	var (
-		namespace = c.Query("namespace")
-		name      = c.Query("name")
-	)
-
-	v, _ := c.Get(gb.KeyUser)
-	u := v.(*ent.User)
-
-	repo, err := r.i.FindRepoOfUserByNamespaceName(ctx, u, namespace, name)
-	if ent.IsNotFound(err) {
-		r.log.Error("It has failed to find the repo.", zap.String("repo", name), zap.Error(err))
-		gb.ErrorResponse(c, http.StatusNotFound, "The repository is not found.")
-		return
-	} else if err != nil {
-		r.log.Error("failed to get the repository.", zap.String("repo", name), zap.Error(err))
-		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to get the repository.")
-		return
-	}
 
 	gb.Response(c, http.StatusOK, repo)
 }
