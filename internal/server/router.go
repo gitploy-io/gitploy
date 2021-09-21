@@ -123,7 +123,6 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 			c.Interactor,
 		)
 		repov1.GET("", r.ListRepos)
-		repov1.GET("/search", r.GetRepoByNamespaceName)
 		repov1.GET("/:id", rm.RepoReadPerm(), r.GetRepo)
 		repov1.PATCH("/:id", rm.RepoAdminPerm(), r.UpdateRepo)
 		repov1.GET("/:id/commits", rm.RepoReadPerm(), r.ListCommits)

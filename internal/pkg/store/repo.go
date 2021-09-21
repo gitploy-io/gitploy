@@ -69,45 +69,6 @@ func (s *Store) ListReposOfUser(ctx context.Context, u *ent.User, q, namespace, 
 	return repos, nil
 }
 
-func (s *Store) ListSortedReposOfUser(ctx context.Context, u *ent.User, q string, page, perPage int) ([]*ent.Repo, error) {
-	repos, err := s.c.Repo.
-		Query().
-		Where(func(s *sql.Selector) {
-			t := sql.Table(perm.Table)
-			s.
-				Join(t).
-				On(t.C(perm.FieldRepoID), s.C(repo.FieldID)).
-				Where(sql.EQ(t.C(perm.FieldUserID), u.ID))
-		}).
-		Where(
-			repo.And(
-				repo.NameContains(q),
-			),
-		).
-		Order(ent.Desc(repo.FieldLatestDeployedAt)).
-		Limit(perPage).
-		Offset(offset(page, perPage)).
-		All(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	for _, r := range repos {
-		deployments, err := r.
-			QueryDeployments().
-			Order(ent.Desc(deployment.FieldID)).
-			Limit(3).
-			WithUser().
-			All(ctx)
-		if err != nil {
-			return nil, err
-		}
-
-		r.Edges.Deployments = deployments
-	}
-	return repos, nil
-}
-
 func (s *Store) FindRepoByID(ctx context.Context, id string) (*ent.Repo, error) {
 	return s.c.Repo.Get(ctx, id)
 }

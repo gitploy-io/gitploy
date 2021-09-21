@@ -87,39 +87,6 @@ paths:
           $ref: '#/components/responses/402PaymentRequired'
         '500':
           $ref: '#/components/responses/500InternalError'
-  /repos/search:
-    get:
-      tags:
-        - Repo
-      summary: Search repository with namespace and name
-      parameters:
-        - in: query
-          name: namespace
-          required: true
-          schema:
-            type: string
-        - in: query
-          name: name
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Repository
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Repository'
-        '401': 
-          $ref: '#/components/responses/401Unauthorized'
-        '402':
-          $ref: '#/components/responses/402PaymentRequired'
-        '403': 
-          $ref: '#/components/responses/403Forbidden'
-        '404': 
-          $ref: '#/components/responses/404NotFound'
-        '500':
-          $ref: '#/components/responses/500InternalError'
   /repos/{id}:
     get:
       tags:
