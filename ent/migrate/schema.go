@@ -184,7 +184,7 @@ var (
 	EventsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "kind", Type: field.TypeEnum, Enums: []string{"deployment", "approval"}},
-		{Name: "type", Type: field.TypeEnum, Enums: []string{"created", "updated"}},
+		{Name: "type", Type: field.TypeEnum, Enums: []string{"created", "updated", "removed"}},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "approval_id", Type: field.TypeInt, Nullable: true},
 		{Name: "deployment_id", Type: field.TypeInt, Nullable: true},

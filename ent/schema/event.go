@@ -26,6 +26,7 @@ func (Event) Fields() []ent.Field {
 			Values(
 				"created",
 				"updated",
+				"removed",
 			),
 		field.Time("created_at").
 			Default(time.Now),
