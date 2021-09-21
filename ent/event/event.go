@@ -18,6 +18,8 @@ const (
 	FieldType = "type"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
+	// FieldDeletedEntityID holds the string denoting the deleted_entity_id field in the database.
+	FieldDeletedEntityID = "deleted_entity_id"
 	// FieldDeploymentID holds the string denoting the deployment_id field in the database.
 	FieldDeploymentID = "deployment_id"
 	// FieldApprovalID holds the string denoting the approval_id field in the database.
@@ -59,6 +61,7 @@ var Columns = []string{
 	FieldKind,
 	FieldType,
 	FieldCreatedAt,
+	FieldDeletedEntityID,
 	FieldDeploymentID,
 	FieldApprovalID,
 }

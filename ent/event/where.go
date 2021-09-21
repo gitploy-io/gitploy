@@ -100,6 +100,13 @@ func CreatedAt(v time.Time) predicate.Event {
 	})
 }
 
+// DeletedEntityID applies equality check predicate on the "deleted_entity_id" field. It's identical to DeletedEntityIDEQ.
+func DeletedEntityID(v int) predicate.Event {
+	return predicate.Event(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldDeletedEntityID), v))
+	})
+}
+
 // DeploymentID applies equality check predicate on the "deployment_id" field. It's identical to DeploymentIDEQ.
 func DeploymentID(v int) predicate.Event {
 	return predicate.Event(func(s *sql.Selector) {
@@ -283,6 +290,96 @@ func CreatedAtLT(v time.Time) predicate.Event {
 func CreatedAtLTE(v time.Time) predicate.Event {
 	return predicate.Event(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldCreatedAt), v))
+	})
+}
+
+// DeletedEntityIDEQ applies the EQ predicate on the "deleted_entity_id" field.
+func DeletedEntityIDEQ(v int) predicate.Event {
+	return predicate.Event(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldDeletedEntityID), v))
+	})
+}
+
+// DeletedEntityIDNEQ applies the NEQ predicate on the "deleted_entity_id" field.
+func DeletedEntityIDNEQ(v int) predicate.Event {
+	return predicate.Event(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldDeletedEntityID), v))
+	})
+}
+
+// DeletedEntityIDIn applies the In predicate on the "deleted_entity_id" field.
+func DeletedEntityIDIn(vs ...int) predicate.Event {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Event(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldDeletedEntityID), v...))
+	})
+}
+
+// DeletedEntityIDNotIn applies the NotIn predicate on the "deleted_entity_id" field.
+func DeletedEntityIDNotIn(vs ...int) predicate.Event {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Event(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldDeletedEntityID), v...))
+	})
+}
+
+// DeletedEntityIDGT applies the GT predicate on the "deleted_entity_id" field.
+func DeletedEntityIDGT(v int) predicate.Event {
+	return predicate.Event(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldDeletedEntityID), v))
+	})
+}
+
+// DeletedEntityIDGTE applies the GTE predicate on the "deleted_entity_id" field.
+func DeletedEntityIDGTE(v int) predicate.Event {
+	return predicate.Event(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldDeletedEntityID), v))
+	})
+}
+
+// DeletedEntityIDLT applies the LT predicate on the "deleted_entity_id" field.
+func DeletedEntityIDLT(v int) predicate.Event {
+	return predicate.Event(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldDeletedEntityID), v))
+	})
+}
+
+// DeletedEntityIDLTE applies the LTE predicate on the "deleted_entity_id" field.
+func DeletedEntityIDLTE(v int) predicate.Event {
+	return predicate.Event(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldDeletedEntityID), v))
+	})
+}
+
+// DeletedEntityIDIsNil applies the IsNil predicate on the "deleted_entity_id" field.
+func DeletedEntityIDIsNil() predicate.Event {
+	return predicate.Event(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldDeletedEntityID)))
+	})
+}
+
+// DeletedEntityIDNotNil applies the NotNil predicate on the "deleted_entity_id" field.
+func DeletedEntityIDNotNil() predicate.Event {
+	return predicate.Event(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldDeletedEntityID)))
 	})
 }
 

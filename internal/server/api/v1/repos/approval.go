@@ -283,5 +283,13 @@ func (r *Repo) DeleteApproval(c *gin.Context) {
 		return
 	}
 
+	if _, err := r.i.CreateEvent(ctx, &ent.Event{
+		Kind:            event.KindApproval,
+		Type:            event.TypeDeleted,
+		DeletedEntityID: atoi(aid),
+	}); err != nil {
+		r.log.Error("It has failed to create a new event.", zap.Error(err))
+	}
+
 	c.Status(http.StatusOK)
 }

@@ -25,6 +25,8 @@ type Event struct {
 	Type event.Type `json:"type"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at"`
+	// DeletedEntityID holds the value of the "deleted_entity_id" field.
+	DeletedEntityID int `json:"deleted_entity_id,omitemtpy"`
 	// DeploymentID holds the value of the "deployment_id" field.
 	DeploymentID int `json:"deployment_id,omitemtpy"`
 	// ApprovalID holds the value of the "approval_id" field.
@@ -94,7 +96,7 @@ func (*Event) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case event.FieldID, event.FieldDeploymentID, event.FieldApprovalID:
+		case event.FieldID, event.FieldDeletedEntityID, event.FieldDeploymentID, event.FieldApprovalID:
 			values[i] = new(sql.NullInt64)
 		case event.FieldKind, event.FieldType:
 			values[i] = new(sql.NullString)
@@ -138,6 +140,12 @@ func (e *Event) assignValues(columns []string, values []interface{}) error {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
 			} else if value.Valid {
 				e.CreatedAt = value.Time
+			}
+		case event.FieldDeletedEntityID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field deleted_entity_id", values[i])
+			} else if value.Valid {
+				e.DeletedEntityID = int(value.Int64)
 			}
 		case event.FieldDeploymentID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -200,6 +208,8 @@ func (e *Event) String() string {
 	builder.WriteString(fmt.Sprintf("%v", e.Type))
 	builder.WriteString(", created_at=")
 	builder.WriteString(e.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(", deleted_entity_id=")
+	builder.WriteString(fmt.Sprintf("%v", e.DeletedEntityID))
 	builder.WriteString(", deployment_id=")
 	builder.WriteString(fmt.Sprintf("%v", e.DeploymentID))
 	builder.WriteString(", approval_id=")

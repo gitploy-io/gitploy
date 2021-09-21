@@ -30,6 +30,8 @@ func (Event) Fields() []ent.Field {
 			),
 		field.Time("created_at").
 			Default(time.Now),
+		field.Int("deleted_entity_id").
+			Optional(),
 		field.Int("deployment_id").
 			Optional(),
 		field.Int("approval_id").

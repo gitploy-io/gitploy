@@ -49,6 +49,20 @@ func (ec *EventCreate) SetNillableCreatedAt(t *time.Time) *EventCreate {
 	return ec
 }
 
+// SetDeletedEntityID sets the "deleted_entity_id" field.
+func (ec *EventCreate) SetDeletedEntityID(i int) *EventCreate {
+	ec.mutation.SetDeletedEntityID(i)
+	return ec
+}
+
+// SetNillableDeletedEntityID sets the "deleted_entity_id" field if the given value is not nil.
+func (ec *EventCreate) SetNillableDeletedEntityID(i *int) *EventCreate {
+	if i != nil {
+		ec.SetDeletedEntityID(*i)
+	}
+	return ec
+}
+
 // SetDeploymentID sets the "deployment_id" field.
 func (ec *EventCreate) SetDeploymentID(i int) *EventCreate {
 	ec.mutation.SetDeploymentID(i)
@@ -254,6 +268,14 @@ func (ec *EventCreate) createSpec() (*Event, *sqlgraph.CreateSpec) {
 			Column: event.FieldCreatedAt,
 		})
 		_node.CreatedAt = value
+	}
+	if value, ok := ec.mutation.DeletedEntityID(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: event.FieldDeletedEntityID,
+		})
+		_node.DeletedEntityID = value
 	}
 	if nodes := ec.mutation.DeploymentIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

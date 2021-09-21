@@ -8,7 +8,7 @@ interface EventData {
     id: number
     kind: string
     type: string
-    approval_id: number
+    deleted_entity_id: number
     edges: {
         deployment?: DeploymentData
         approval?: ApprovalData
@@ -58,7 +58,7 @@ const mapDataToEvent = (data: EventData): Event => {
         id: data.id,
         kind,
         type,
-        approvalId: data.approval_id,
+        deletedEntityId: data.deleted_entity_id,
         deployment,
         approval
     } 
@@ -72,16 +72,6 @@ export const subscribeEvents = (cb: (event: Event) => void): EventSource => {
     sse.addEventListener("event", (e: any) => {
         const data = JSON.parse(e.data)
         const event = mapDataToEvent(data)
-
-        if (event.kind === EventKindEnum.Deployment
-            && !event.deployment) {
-            throw new Error("The deployment entity doesn't exist.")
-        }
-
-        if (event.kind === EventKindEnum.Approval
-            && !event.approval) {
-            throw new Error("The approval entity doesn't exist.")
-        }
 
         cb(event)
     })

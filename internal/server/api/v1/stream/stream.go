@@ -98,6 +98,10 @@ L:
 
 // hasPermForEvent checks the user has permission for the event.
 func (s *Stream) hasPermForEvent(ctx context.Context, u *ent.User, e *ent.Event) (bool, error) {
+	if e.Type == event.TypeDeleted {
+		return true, nil
+	}
+
 	if e.Kind == event.KindDeployment {
 		d, err := s.i.FindDeploymentByID(ctx, e.DeploymentID)
 		if err != nil {

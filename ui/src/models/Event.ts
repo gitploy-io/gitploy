@@ -7,9 +7,7 @@ export default interface Event {
     type: EventTypeEnum
     deployment?: Deployment
     approval?: Approval
-
-    // This field identifies which approval was deleted.
-    approvalId?: number 
+    deletedEntityId: number 
 }
 
 export enum EventKindEnum {

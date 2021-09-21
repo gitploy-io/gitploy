@@ -1,6 +1,18 @@
 import { createSlice, Middleware, MiddlewareAPI, isRejectedWithValue, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit"
 
-import { User, Deployment, DeploymentStatusEnum, Approval, ApprovalStatus, Event, EventTypeEnum, HttpInternalServerError, HttpUnauthorizedError, License } from "../models"
+import { 
+    User, 
+    Deployment, 
+    DeploymentStatusEnum, 
+    Approval, 
+    ApprovalStatus, 
+    Event, 
+    EventKindEnum, 
+    EventTypeEnum, 
+    HttpInternalServerError, 
+    HttpUnauthorizedError, 
+    License 
+} from "../models"
 import { getMe, searchDeployments as _searchDeployments, searchApprovals as _searchApprovals, getLicense } from "../apis"
 import { HttpPaymentRequiredError } from "../models/errors"
 
@@ -113,15 +125,11 @@ export const mainSlice = createSlice({
             state.expired = action.payload
         },
         handleDeploymentEvent: (state, action: PayloadAction<Event>) => {
-            const user = state.user
-            if (!user) {
-                throw new Error("Unauthorized user.")
-            }
-
             // It updates the status of the deployment if the deployment is found,
             // But if the deployment is not found it pushes to the list.
             const event = action.payload
-            if (event.deployment?.deployer?.id !== user.id) {
+
+            if (!(event.kind === EventKindEnum.Deployment && event.deployment)) {
                 return
             }
 
@@ -130,7 +138,7 @@ export const mainSlice = createSlice({
             })
 
             if (idx !== -1 ) {
-                if (!runningDeploymentStatus.includes(event.deployment.status)) {
+                if (!runningDeploymentStatus.includes(event.deployment?.status)) {
                     state.deployments.splice(idx, 1)
                     return
                 } 
@@ -142,29 +150,31 @@ export const mainSlice = createSlice({
             state.deployments.unshift(event.deployment)
         },
         handleApprovalEvent: (state, action: PayloadAction<Event>) => {
-            const user = state.user
-            if (!user) {
-                throw new Error("Unauthorized user.")
+            const event = action.payload
+
+            if (event.kind === EventKindEnum.Approval && event.type === EventTypeEnum.Deleted) {
+                const idx = state.approvals.findIndex((a) => {
+                    return event.deletedEntityId === a.id 
+                })
+
+                if (idx !== -1) {
+                    state.approvals.splice(idx, 1)
+                }
+                return
             }
 
-            const event = action.payload
-            if (event.approval?.user?.id !== user.id) {
+            if (!(event.kind === EventKindEnum.Approval && event.approval)) {
                 return
             }
 
             const idx = state.approvals.findIndex((a) => {
-                return event.approvalId === a.id 
+                return event.approval?.id === a.id 
             })
 
             // If the apporval is updated,i.e. 'approved' or 'declined', or deleted
             // it should deleted from the list.
             if (idx !== -1) {
-                if (event.type !== EventTypeEnum.Created) {
-                    state.approvals.splice(idx, 1)
-                    return
-                }
-
-                state.approvals[idx] = event.approval
+                state.approvals.splice(idx, 1)
                 return
             } 
 

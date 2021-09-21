@@ -4208,6 +4208,8 @@ type EventMutation struct {
 	kind                       *event.Kind
 	_type                      *event.Type
 	created_at                 *time.Time
+	deleted_entity_id          *int
+	adddeleted_entity_id       *int
 	clearedFields              map[string]struct{}
 	deployment                 *int
 	cleareddeployment          bool
@@ -4405,6 +4407,76 @@ func (m *EventMutation) OldCreatedAt(ctx context.Context) (v time.Time, err erro
 // ResetCreatedAt resets all changes to the "created_at" field.
 func (m *EventMutation) ResetCreatedAt() {
 	m.created_at = nil
+}
+
+// SetDeletedEntityID sets the "deleted_entity_id" field.
+func (m *EventMutation) SetDeletedEntityID(i int) {
+	m.deleted_entity_id = &i
+	m.adddeleted_entity_id = nil
+}
+
+// DeletedEntityID returns the value of the "deleted_entity_id" field in the mutation.
+func (m *EventMutation) DeletedEntityID() (r int, exists bool) {
+	v := m.deleted_entity_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeletedEntityID returns the old "deleted_entity_id" field's value of the Event entity.
+// If the Event object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EventMutation) OldDeletedEntityID(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldDeletedEntityID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldDeletedEntityID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeletedEntityID: %w", err)
+	}
+	return oldValue.DeletedEntityID, nil
+}
+
+// AddDeletedEntityID adds i to the "deleted_entity_id" field.
+func (m *EventMutation) AddDeletedEntityID(i int) {
+	if m.adddeleted_entity_id != nil {
+		*m.adddeleted_entity_id += i
+	} else {
+		m.adddeleted_entity_id = &i
+	}
+}
+
+// AddedDeletedEntityID returns the value that was added to the "deleted_entity_id" field in this mutation.
+func (m *EventMutation) AddedDeletedEntityID() (r int, exists bool) {
+	v := m.adddeleted_entity_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearDeletedEntityID clears the value of the "deleted_entity_id" field.
+func (m *EventMutation) ClearDeletedEntityID() {
+	m.deleted_entity_id = nil
+	m.adddeleted_entity_id = nil
+	m.clearedFields[event.FieldDeletedEntityID] = struct{}{}
+}
+
+// DeletedEntityIDCleared returns if the "deleted_entity_id" field was cleared in this mutation.
+func (m *EventMutation) DeletedEntityIDCleared() bool {
+	_, ok := m.clearedFields[event.FieldDeletedEntityID]
+	return ok
+}
+
+// ResetDeletedEntityID resets all changes to the "deleted_entity_id" field.
+func (m *EventMutation) ResetDeletedEntityID() {
+	m.deleted_entity_id = nil
+	m.adddeleted_entity_id = nil
+	delete(m.clearedFields, event.FieldDeletedEntityID)
 }
 
 // SetDeploymentID sets the "deployment_id" field.
@@ -4615,7 +4687,7 @@ func (m *EventMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *EventMutation) Fields() []string {
-	fields := make([]string, 0, 5)
+	fields := make([]string, 0, 6)
 	if m.kind != nil {
 		fields = append(fields, event.FieldKind)
 	}
@@ -4624,6 +4696,9 @@ func (m *EventMutation) Fields() []string {
 	}
 	if m.created_at != nil {
 		fields = append(fields, event.FieldCreatedAt)
+	}
+	if m.deleted_entity_id != nil {
+		fields = append(fields, event.FieldDeletedEntityID)
 	}
 	if m.deployment != nil {
 		fields = append(fields, event.FieldDeploymentID)
@@ -4645,6 +4720,8 @@ func (m *EventMutation) Field(name string) (ent.Value, bool) {
 		return m.GetType()
 	case event.FieldCreatedAt:
 		return m.CreatedAt()
+	case event.FieldDeletedEntityID:
+		return m.DeletedEntityID()
 	case event.FieldDeploymentID:
 		return m.DeploymentID()
 	case event.FieldApprovalID:
@@ -4664,6 +4741,8 @@ func (m *EventMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldType(ctx)
 	case event.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
+	case event.FieldDeletedEntityID:
+		return m.OldDeletedEntityID(ctx)
 	case event.FieldDeploymentID:
 		return m.OldDeploymentID(ctx)
 	case event.FieldApprovalID:
@@ -4698,6 +4777,13 @@ func (m *EventMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetCreatedAt(v)
 		return nil
+	case event.FieldDeletedEntityID:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeletedEntityID(v)
+		return nil
 	case event.FieldDeploymentID:
 		v, ok := value.(int)
 		if !ok {
@@ -4720,6 +4806,9 @@ func (m *EventMutation) SetField(name string, value ent.Value) error {
 // this mutation.
 func (m *EventMutation) AddedFields() []string {
 	var fields []string
+	if m.adddeleted_entity_id != nil {
+		fields = append(fields, event.FieldDeletedEntityID)
+	}
 	return fields
 }
 
@@ -4728,6 +4817,8 @@ func (m *EventMutation) AddedFields() []string {
 // was not set, or was not defined in the schema.
 func (m *EventMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
+	case event.FieldDeletedEntityID:
+		return m.AddedDeletedEntityID()
 	}
 	return nil, false
 }
@@ -4737,6 +4828,13 @@ func (m *EventMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *EventMutation) AddField(name string, value ent.Value) error {
 	switch name {
+	case event.FieldDeletedEntityID:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddDeletedEntityID(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Event numeric field %s", name)
 }
@@ -4745,6 +4843,9 @@ func (m *EventMutation) AddField(name string, value ent.Value) error {
 // mutation.
 func (m *EventMutation) ClearedFields() []string {
 	var fields []string
+	if m.FieldCleared(event.FieldDeletedEntityID) {
+		fields = append(fields, event.FieldDeletedEntityID)
+	}
 	if m.FieldCleared(event.FieldDeploymentID) {
 		fields = append(fields, event.FieldDeploymentID)
 	}
@@ -4765,6 +4866,9 @@ func (m *EventMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *EventMutation) ClearField(name string) error {
 	switch name {
+	case event.FieldDeletedEntityID:
+		m.ClearDeletedEntityID()
+		return nil
 	case event.FieldDeploymentID:
 		m.ClearDeploymentID()
 		return nil
@@ -4787,6 +4891,9 @@ func (m *EventMutation) ResetField(name string) error {
 		return nil
 	case event.FieldCreatedAt:
 		m.ResetCreatedAt()
+		return nil
+	case event.FieldDeletedEntityID:
+		m.ResetDeletedEntityID()
 		return nil
 	case event.FieldDeploymentID:
 		m.ResetDeploymentID()
