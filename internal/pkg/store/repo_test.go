@@ -60,7 +60,7 @@ func TestStore_ListReposOfUser(t *testing.T) {
 		SetRepoID(r2.ID).
 		SaveX(ctx)
 
-	t.Run("Returns two repos.", func(t *testing.T) {
+	t.Run("List all repositories.", func(t *testing.T) {
 		s := NewStore(client)
 
 		var (
@@ -78,7 +78,7 @@ func TestStore_ListReposOfUser(t *testing.T) {
 		}
 	})
 
-	t.Run("Returns a single repo when it queries.", func(t *testing.T) {
+	t.Run("Search by the query.", func(t *testing.T) {
 		s := NewStore(client)
 
 		var (
@@ -87,15 +87,15 @@ func TestStore_ListReposOfUser(t *testing.T) {
 		)
 
 		const (
-			query = "Hello"
+			query = "octocat"
 		)
 
 		if rs, err = s.ListReposOfUser(ctx, &ent.User{ID: u1}, query, 1, 30); err != nil {
 			t.Fatalf("ListReposOfUser returns an error: %s", err)
 		}
 
-		expected := 1
-		if len(rs) != 1 {
+		expected := 2
+		if len(rs) != expected {
 			t.Fatalf("ListReposOfUser = %v: %v", len(rs), expected)
 		}
 	})
