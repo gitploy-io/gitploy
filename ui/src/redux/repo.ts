@@ -18,9 +18,14 @@ const initialState: RepoState = {
 
 export const init = createAsyncThunk<Repo, {namespace: string, name: string}, { state: {repo: RepoState} }>(
     'repo/init', 
-    async (params) => {
-        const repo = await searchRepo(params.namespace, params.name)
-        return repo
+    async (params, {rejectWithValue}) => {
+        try {
+            const repo = await searchRepo(params.namespace, params.name)
+            return repo
+        } catch (e) {
+            console.log(e)
+            return rejectWithValue(e)
+        }
     },
 )
 
