@@ -11,7 +11,7 @@ import (
 	"github.com/gitploy-io/gitploy/vo"
 )
 
-func (s *Store) ListReposOfUser(ctx context.Context, u *ent.User, q, namespace, name string, page, perPage int) ([]*ent.Repo, error) {
+func (s *Store) ListReposOfUser(ctx context.Context, u *ent.User, q, namespace, name string, sorted bool, page, perPage int) ([]*ent.Repo, error) {
 	// Build the query with parameters.
 	qry := s.c.Repo.
 		Query().
@@ -40,6 +40,12 @@ func (s *Store) ListReposOfUser(ctx context.Context, u *ent.User, q, namespace, 
 
 	if name != "" {
 		qry = qry.Where(repo.NameEQ(name))
+	}
+
+	if sorted {
+		qry = qry.Order(
+			ent.Desc(repo.FieldLatestDeployedAt),
+		)
 	}
 
 	repos, err := qry.All(ctx)
