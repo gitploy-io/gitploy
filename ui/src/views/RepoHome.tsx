@@ -5,7 +5,7 @@ import { PageHeader, Select } from 'antd'
 
 import { useAppSelector, useAppDispatch } from '../redux/hooks'
 import { repoHomeSlice as slice, init, fetchEnvs, fetchDeployments, perPage } from '../redux/repoHome'
-import { subscribeDeploymentEvent } from "../apis"
+import { subscribeEvents } from "../apis"
 
 import ActivityLogs from '../components/ActivityLogs'
 import Spin from '../components/Spin'
@@ -36,12 +36,12 @@ export default function RepoHome(): JSX.Element {
         }
         f()
 
-        const de = subscribeDeploymentEvent((d) => {
-            dispatch(slice.actions.handleDeploymentEvent(d))
+        const sub = subscribeEvents((event) => {
+            dispatch(slice.actions.handleDeploymentEvent(event))
         })
 
         return () => {
-            de.close()
+            sub.close()
         }
         // eslint-disable-next-line
     }, [dispatch])

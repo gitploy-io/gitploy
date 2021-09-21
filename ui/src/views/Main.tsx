@@ -5,7 +5,7 @@ import { SettingFilled } from "@ant-design/icons"
 
 import { useAppSelector, useAppDispatch } from "../redux/hooks"
 import { init, searchDeployments, searchApprovals, fetchLicense, mainSlice } from "../redux/main"
-import { subscribeDeploymentEvent, subscribeApprovalEvent } from "../apis"
+import { subscribeEvents } from "../apis"
 
 import RecentActivities from "../components/RecentActivities"
 import LicenseFooter from "../components/LicenseFooter"
@@ -31,17 +31,13 @@ export default function Main(props: any) {
         dispatch(searchApprovals())
         dispatch(fetchLicense())
 
-        const de = subscribeDeploymentEvent((d) => {
-            dispatch(mainSlice.actions.handleDeploymentEvent(d))
-        })
-
-        const ae = subscribeApprovalEvent((a) => {
-            dispatch(mainSlice.actions.handleApprovalEvent(a))
+        const sub = subscribeEvents((event) => {
+            dispatch(mainSlice.actions.handleDeploymentEvent(event))
+            dispatch(mainSlice.actions.handleApprovalEvent(event))
         })
 
         return () => {
-            de.close()
-            ae.close()
+            sub.close()
         }
     }, [dispatch])
 

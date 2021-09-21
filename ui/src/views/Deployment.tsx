@@ -26,7 +26,7 @@ import {
     ApprovalStatus,
     RequestStatus
 } from "../models"
-import { subscribeDeploymentEvent } from "../apis"
+import { subscribeEvents } from "../apis"
 
 import Main from "./Main"
 import ApproversSelector from "../components/ApproversSelector"
@@ -64,12 +64,12 @@ export default function DeploymentView(): JSX.Element {
         }
         f()
 
-        const de = subscribeDeploymentEvent((d) => {
-            dispatch(slice.actions.handleDeploymentEvent(d))
+        const sub = subscribeEvents((event) => {
+            dispatch(slice.actions.handleDeploymentEvent(event))
         })
 
         return () => {
-            de.close()
+            sub.close()
         }
         // eslint-disable-next-line 
     }, [dispatch])

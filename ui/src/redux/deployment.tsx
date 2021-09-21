@@ -7,6 +7,7 @@ import {
     Deployment, 
     Commit,
     Approval, 
+    Event,
     RequestStatus, 
     HttpNotFoundError, 
     HttpForbiddenError,
@@ -252,14 +253,14 @@ export const deploymentSlice = createSlice({
         setNumber: (state, action: PayloadAction<number>) => {
             state.number = action.payload
         },
-        handleDeploymentEvent: (state, action: PayloadAction<Deployment>) => {
+        handleDeploymentEvent: (state, action: PayloadAction<Event>) => {
             const event = action.payload
 
-            if (event.id !== state.deployment?.id) {
+            if (event.deployment?.id !== state.deployment?.id) {
                 return
             }
 
-            state.deployment = event
+            state.deployment = event.deployment
         }
     },
     extraReducers: builder => {

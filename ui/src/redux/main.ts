@@ -1,6 +1,6 @@
 import { createSlice, Middleware, MiddlewareAPI, isRejectedWithValue, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit"
 
-import { User, Deployment, DeploymentStatusEnum, Approval, ApprovalStatus, HttpInternalServerError, HttpUnauthorizedError, License } from "../models"
+import { User, Deployment, DeploymentStatusEnum, Approval, ApprovalStatus, Event, EventTypeEnum, HttpInternalServerError, HttpUnauthorizedError, License } from "../models"
 import { getMe, searchDeployments as _searchDeployments, searchApprovals as _searchApprovals, getLicense } from "../apis"
 import { HttpPaymentRequiredError } from "../models/errors"
 
@@ -112,7 +112,7 @@ export const mainSlice = createSlice({
         setExpired: (state, action: PayloadAction<boolean>) => {
             state.expired = action.payload
         },
-        handleDeploymentEvent: (state, action: PayloadAction<Deployment>) => {
+        handleDeploymentEvent: (state, action: PayloadAction<Event>) => {
             const user = state.user
             if (!user) {
                 throw new Error("Unauthorized user.")
@@ -120,56 +120,55 @@ export const mainSlice = createSlice({
 
             // It updates the status of the deployment if the deployment is found,
             // But if the deployment is not found it pushes to the list.
-            const deployment = action.payload
-            if (deployment.deployer?.id !== user.id) {
+            const event = action.payload
+            if (event.deployment?.deployer?.id !== user.id) {
                 return
             }
 
             const idx = state.deployments.findIndex((d) => {
-                return d.id === deployment.id
+                return event.deployment?.id === d.id
             })
 
             if (idx !== -1 ) {
-                if (!runningDeploymentStatus.includes(deployment.status)) {
+                if (!runningDeploymentStatus.includes(event.deployment.status)) {
                     state.deployments.splice(idx, 1)
                     return
                 } 
 
-                state.deployments[idx] = deployment
+                state.deployments[idx] = event.deployment
                 return
             } 
             
-            state.deployments.unshift(deployment)
+            state.deployments.unshift(event.deployment)
         },
-        handleApprovalEvent: (state, action: PayloadAction<Approval>) => {
+        handleApprovalEvent: (state, action: PayloadAction<Event>) => {
             const user = state.user
             if (!user) {
                 throw new Error("Unauthorized user.")
             }
 
-            // It updates the status of the approval if the approval is found,
-            // But if the approval is not found it pushes to the list.
-            const approval = action.payload
-            if (approval.user?.id !== user.id) {
+            const event = action.payload
+            if (event.approval?.user?.id !== user.id) {
                 return
             }
 
             const idx = state.approvals.findIndex((a) => {
-                return a.id === approval.id
+                return event.approvalId === a.id 
             })
 
+            // If the apporval is updated,i.e. 'approved' or 'declined', or deleted
+            // it should deleted from the list.
             if (idx !== -1) {
-                if (!pendingApprovalStatus.includes(approval.status)) {
-                    console.log("remove")
+                if (event.type !== EventTypeEnum.Created) {
                     state.approvals.splice(idx, 1)
                     return
                 }
 
-                state.approvals[idx] = approval
+                state.approvals[idx] = event.approval
                 return
             } 
 
-            state.approvals.unshift(approval)
+            state.approvals.unshift(event.approval)
         },
     },
     extraReducers: builder => {
