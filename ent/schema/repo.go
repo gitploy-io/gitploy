@@ -7,6 +7,7 @@ import (
 	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
+	"entgo.io/ent/schema/index"
 )
 
 // Repo holds the schema definition for the Repo entity.
@@ -56,5 +57,13 @@ func (Repo) Edges() []ent.Edge {
 			Annotations(entsql.Annotation{
 				OnDelete: entsql.Cascade,
 			}),
+	}
+}
+
+func (Repo) Indexes() []ent.Index {
+	return []ent.Index{
+		index.Fields("namespace", "name").
+			Unique(),
+		index.Fields("name"),
 	}
 }

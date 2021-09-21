@@ -295,6 +295,18 @@ var (
 		Name:       "repos",
 		Columns:    ReposColumns,
 		PrimaryKey: []*schema.Column{ReposColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "repo_namespace_name",
+				Unique:  true,
+				Columns: []*schema.Column{ReposColumns[1], ReposColumns[2]},
+			},
+			{
+				Name:    "repo_name",
+				Unique:  false,
+				Columns: []*schema.Column{ReposColumns[2]},
+			},
+		},
 	}
 	// UsersColumns holds the columns for the "users" table.
 	UsersColumns = []*schema.Column{
