@@ -42,12 +42,12 @@ func NewRepo(c RepoConfig, i Interactor) *Repo {
 
 func (r *Repo) ListRepos(c *gin.Context) {
 	var (
-		sort    = c.DefaultQuery("sort", "false")
-		q       = c.Query("q")
-		page    = c.DefaultQuery("page", "1")
-		perPage = c.DefaultQuery("per_page", "30")
-
-		repos []*ent.Repo
+		sort      = c.DefaultQuery("sort", "false")
+		q         = c.Query("q")
+		namespace = c.Query("namespace")
+		name      = c.Query("name")
+		page      = c.DefaultQuery("page", "1")
+		perPage   = c.DefaultQuery("per_page", "30")
 	)
 
 	ctx := c.Request.Context()
@@ -62,7 +62,7 @@ func (r *Repo) ListRepos(c *gin.Context) {
 		return
 	}
 
-	repos, err = r.i.ListReposOfUser(ctx, u, sorted, q, atoi(page), atoi(perPage))
+	repos, err := r.i.ListReposOfUser(ctx, u, sorted, q, namespace, name, atoi(page), atoi(perPage))
 	if err != nil {
 		r.log.Error("failed to list repositories.", zap.Error(err))
 		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to list repositories.")

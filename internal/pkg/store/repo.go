@@ -11,7 +11,7 @@ import (
 	"github.com/gitploy-io/gitploy/vo"
 )
 
-func (s *Store) ListReposOfUser(ctx context.Context, u *ent.User, q string, page, perPage int) ([]*ent.Repo, error) {
+func (s *Store) ListReposOfUser(ctx context.Context, u *ent.User, q, namespace, name string, page, perPage int) ([]*ent.Repo, error) {
 	// Build the query with parameters.
 	qry := s.c.Repo.
 		Query().
@@ -32,6 +32,14 @@ func (s *Store) ListReposOfUser(ctx context.Context, u *ent.User, q string, page
 				repo.NameContains(q),
 			),
 		)
+	}
+
+	if namespace != "" {
+		qry = qry.Where(repo.NamespaceEQ(namespace))
+	}
+
+	if name != "" {
+		qry = qry.Where(repo.NameEQ(name))
 	}
 
 	repos, err := qry.All(ctx)

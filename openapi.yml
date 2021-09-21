@@ -51,6 +51,16 @@ paths:
             type: string
             default: ""
         - in: query
+          name: namespace
+          schema:
+            type: string
+            default: ""
+        - in: query
+          name: name
+          schema:
+            type: string
+            default: ""
+        - in: query
           name: page
           schema:
             type: integer

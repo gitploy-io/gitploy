@@ -470,18 +470,18 @@ func (mr *MockInteractorMockRecorder) ListPermsOfRepo(ctx, r, q, page, perPage i
 }
 
 // ListReposOfUser mocks base method.
-func (m *MockInteractor) ListReposOfUser(ctx context.Context, u *ent.User, sorted bool, q string, page, perPage int) ([]*ent.Repo, error) {
+func (m *MockInteractor) ListReposOfUser(ctx context.Context, u *ent.User, sorted bool, q, namespace, name string, page, perPage int) ([]*ent.Repo, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListReposOfUser", ctx, u, sorted, q, page, perPage)
+	ret := m.ctrl.Call(m, "ListReposOfUser", ctx, u, sorted, q, namespace, name, page, perPage)
 	ret0, _ := ret[0].([]*ent.Repo)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // ListReposOfUser indicates an expected call of ListReposOfUser.
-func (mr *MockInteractorMockRecorder) ListReposOfUser(ctx, u, sorted, q, page, perPage interface{}) *gomock.Call {
+func (mr *MockInteractorMockRecorder) ListReposOfUser(ctx, u, sorted, q, namespace, name, page, perPage interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListReposOfUser", reflect.TypeOf((*MockInteractor)(nil).ListReposOfUser), ctx, u, sorted, q, page, perPage)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListReposOfUser", reflect.TypeOf((*MockInteractor)(nil).ListReposOfUser), ctx, u, sorted, q, namespace, name, page, perPage)
 }
 
 // ListTags mocks base method.

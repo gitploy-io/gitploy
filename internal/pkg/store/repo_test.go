@@ -63,12 +63,8 @@ func TestStore_ListReposOfUser(t *testing.T) {
 	t.Run("List all repositories.", func(t *testing.T) {
 		s := NewStore(client)
 
-		var (
-			rs  []*ent.Repo
-			err error
-		)
-
-		if rs, err = s.ListReposOfUser(ctx, &ent.User{ID: u1}, "", 1, 30); err != nil {
+		rs, err := s.ListReposOfUser(ctx, &ent.User{ID: u1}, "", "", "", 1, 30)
+		if err != nil {
 			t.Fatalf("ListReposOfUser returns an error: %s", err)
 		}
 
@@ -81,16 +77,8 @@ func TestStore_ListReposOfUser(t *testing.T) {
 	t.Run("Search by the query.", func(t *testing.T) {
 		s := NewStore(client)
 
-		var (
-			rs  []*ent.Repo
-			err error
-		)
-
-		const (
-			query = "octocat"
-		)
-
-		if rs, err = s.ListReposOfUser(ctx, &ent.User{ID: u1}, query, 1, 30); err != nil {
+		rs, err := s.ListReposOfUser(ctx, &ent.User{ID: u1}, "octocat", "", "", 1, 30)
+		if err != nil {
 			t.Fatalf("ListReposOfUser returns an error: %s", err)
 		}
 
@@ -100,6 +88,33 @@ func TestStore_ListReposOfUser(t *testing.T) {
 		}
 	})
 
+	t.Run("Search by the query and the namespace.", func(t *testing.T) {
+		s := NewStore(client)
+
+		rs, err := s.ListReposOfUser(ctx, &ent.User{ID: u1}, "octocat", "coco", "", 1, 30)
+		if err != nil {
+			t.Fatalf("ListReposOfUser returns an error: %s", err)
+		}
+
+		expected := 0
+		if len(rs) != expected {
+			t.Fatalf("ListReposOfUser = %v: %v", len(rs), expected)
+		}
+	})
+
+	t.Run("Search by the query and the name.", func(t *testing.T) {
+		s := NewStore(client)
+
+		rs, err := s.ListReposOfUser(ctx, &ent.User{ID: u1}, "octocat", "", "Hello", 1, 30)
+		if err != nil {
+			t.Fatalf("ListReposOfUser returns an error: %s", err)
+		}
+
+		expected := 1
+		if len(rs) != expected {
+			t.Fatalf("ListReposOfUser = %v: %v", len(rs), expected)
+		}
+	})
 }
 
 func TestStore_ListSortedReposOfUser(t *testing.T) {
