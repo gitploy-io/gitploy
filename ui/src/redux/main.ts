@@ -154,14 +154,25 @@ export const mainSlice = createSlice({
             state.deployments.unshift(event.deployment)
         },
         handleApprovalEvent: (state, action: PayloadAction<Event>) => {
+            const event = action.payload
+            
+            if (event.type === EventTypeEnum.Deleted) {
+                const idx = state.approvals.findIndex((approval) => {
+                    return event.deletedId === approval.id 
+                })
+
+                if (idx !== -1) {
+                    state.approvals.splice(idx, 1)
+                    return
+                }
+            }
+
             const user = state.user
             if (!user) {
                 throw new Error("Unauthorized user.")
             }
 
             // Handling the event when the owner is same.
-            const event = action.payload
-
             if (event.approval?.user?.id !== user.id) {
                 return
             }
