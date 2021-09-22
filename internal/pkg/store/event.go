@@ -42,18 +42,20 @@ func (s *Store) ListEventsGreaterThanTime(ctx context.Context, t time.Time) ([]*
 }
 
 func (s *Store) CreateEvent(ctx context.Context, e *ent.Event) (*ent.Event, error) {
-	create := s.c.Event.
+	qry := s.c.Event.
 		Create().
 		SetKind(e.Kind).
 		SetType(e.Type)
 
-	if e.Kind == event.KindDeployment {
-		create = create.SetDeploymentID(e.DeploymentID)
+	if e.Type == event.TypeDeleted {
+		qry = qry.SetDeletedID(e.DeletedID)
+	} else if e.Kind == event.KindDeployment {
+		qry = qry.SetDeploymentID(e.DeploymentID)
 	} else if e.Kind == event.KindApproval {
-		create = create.SetApprovalID(e.ApprovalID)
+		qry = qry.SetApprovalID(e.ApprovalID)
 	}
 
-	return create.Save(ctx)
+	return qry.Save(ctx)
 }
 
 func (s *Store) CheckNotificationRecordOfEvent(ctx context.Context, e *ent.Event) bool {

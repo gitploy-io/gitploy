@@ -34,6 +34,7 @@ func (Event) Fields() []ent.Field {
 			Optional(),
 		field.Int("approval_id").
 			Optional(),
+		// This field is filled when the type is 'deleted'.
 		field.Int("deleted_id").
 			Optional(),
 	}

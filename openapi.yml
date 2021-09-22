@@ -1277,9 +1277,12 @@ paths:
                           enum:
                             - created
                             - updated
-                            - removed
+                            - deleted
                         created_at:
                           type: string
+                        deleted_id:
+                          type: integer
+                          description: The ID of deleted resource.
                         edges:
                           type: object
                           properties:

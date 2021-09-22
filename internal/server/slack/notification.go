@@ -21,6 +21,11 @@ const (
 )
 
 func (s *Slack) Notify(ctx context.Context, e *ent.Event) {
+	if e.Type == event.TypeDeleted {
+		s.log.Debug("Skip the deleted type event.")
+		return
+	}
+
 	if e.Kind == event.KindDeployment {
 		s.notifyDeploymentEvent(ctx, e)
 	}

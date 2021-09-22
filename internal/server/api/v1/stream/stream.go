@@ -30,9 +30,7 @@ func NewStream(i Interactor) *Stream {
 	}
 }
 
-// GetEvents streams a deployment or a approval.
-// Subscriber specify the event type, 'created' or 'updated', by comparing
-// the created time and the updated time.
+// GetEvents streams events of deployment, or approval.
 func (s *Stream) GetEvents(c *gin.Context) {
 	ctx := c.Request.Context()
 
@@ -45,15 +43,23 @@ func (s *Stream) GetEvents(c *gin.Context) {
 
 	// Subscribe events
 	// it'll unsubscribe after the connection is closed.
-	sub := func(event *ent.Event) {
-		if ok, err := s.hasPermForEvent(ctx, u, event); !ok {
+	sub := func(e *ent.Event) {
+
+		// Deleted type is always propagated to all.
+		if e.Type == event.TypeDeleted {
+			events <- e
+			return
+		}
+
+		if ok, err := s.hasPermForEvent(ctx, u, e); !ok {
+			s.log.Debug("Skip the event. The user has not the perm.")
 			return
 		} else if err != nil {
 			s.log.Error("It has failed to check the perm.", zap.Error(err))
 			return
 		}
 
-		events <- event
+		events <- e
 	}
 	if err := s.i.SubscribeEvent(sub); err != nil {
 		s.log.Error("failed to subscribe notification events", zap.Error(err))
