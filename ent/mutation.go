@@ -4208,6 +4208,8 @@ type EventMutation struct {
 	kind                       *event.Kind
 	_type                      *event.Type
 	created_at                 *time.Time
+	deleted_id                 *int
+	adddeleted_id              *int
 	clearedFields              map[string]struct{}
 	deployment                 *int
 	cleareddeployment          bool
@@ -4505,6 +4507,76 @@ func (m *EventMutation) ResetApprovalID() {
 	delete(m.clearedFields, event.FieldApprovalID)
 }
 
+// SetDeletedID sets the "deleted_id" field.
+func (m *EventMutation) SetDeletedID(i int) {
+	m.deleted_id = &i
+	m.adddeleted_id = nil
+}
+
+// DeletedID returns the value of the "deleted_id" field in the mutation.
+func (m *EventMutation) DeletedID() (r int, exists bool) {
+	v := m.deleted_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeletedID returns the old "deleted_id" field's value of the Event entity.
+// If the Event object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EventMutation) OldDeletedID(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldDeletedID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldDeletedID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeletedID: %w", err)
+	}
+	return oldValue.DeletedID, nil
+}
+
+// AddDeletedID adds i to the "deleted_id" field.
+func (m *EventMutation) AddDeletedID(i int) {
+	if m.adddeleted_id != nil {
+		*m.adddeleted_id += i
+	} else {
+		m.adddeleted_id = &i
+	}
+}
+
+// AddedDeletedID returns the value that was added to the "deleted_id" field in this mutation.
+func (m *EventMutation) AddedDeletedID() (r int, exists bool) {
+	v := m.adddeleted_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearDeletedID clears the value of the "deleted_id" field.
+func (m *EventMutation) ClearDeletedID() {
+	m.deleted_id = nil
+	m.adddeleted_id = nil
+	m.clearedFields[event.FieldDeletedID] = struct{}{}
+}
+
+// DeletedIDCleared returns if the "deleted_id" field was cleared in this mutation.
+func (m *EventMutation) DeletedIDCleared() bool {
+	_, ok := m.clearedFields[event.FieldDeletedID]
+	return ok
+}
+
+// ResetDeletedID resets all changes to the "deleted_id" field.
+func (m *EventMutation) ResetDeletedID() {
+	m.deleted_id = nil
+	m.adddeleted_id = nil
+	delete(m.clearedFields, event.FieldDeletedID)
+}
+
 // ClearDeployment clears the "deployment" edge to the Deployment entity.
 func (m *EventMutation) ClearDeployment() {
 	m.cleareddeployment = true
@@ -4615,7 +4687,7 @@ func (m *EventMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *EventMutation) Fields() []string {
-	fields := make([]string, 0, 5)
+	fields := make([]string, 0, 6)
 	if m.kind != nil {
 		fields = append(fields, event.FieldKind)
 	}
@@ -4630,6 +4702,9 @@ func (m *EventMutation) Fields() []string {
 	}
 	if m.approval != nil {
 		fields = append(fields, event.FieldApprovalID)
+	}
+	if m.deleted_id != nil {
+		fields = append(fields, event.FieldDeletedID)
 	}
 	return fields
 }
@@ -4649,6 +4724,8 @@ func (m *EventMutation) Field(name string) (ent.Value, bool) {
 		return m.DeploymentID()
 	case event.FieldApprovalID:
 		return m.ApprovalID()
+	case event.FieldDeletedID:
+		return m.DeletedID()
 	}
 	return nil, false
 }
@@ -4668,6 +4745,8 @@ func (m *EventMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldDeploymentID(ctx)
 	case event.FieldApprovalID:
 		return m.OldApprovalID(ctx)
+	case event.FieldDeletedID:
+		return m.OldDeletedID(ctx)
 	}
 	return nil, fmt.Errorf("unknown Event field %s", name)
 }
@@ -4712,6 +4791,13 @@ func (m *EventMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetApprovalID(v)
 		return nil
+	case event.FieldDeletedID:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeletedID(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Event field %s", name)
 }
@@ -4720,6 +4806,9 @@ func (m *EventMutation) SetField(name string, value ent.Value) error {
 // this mutation.
 func (m *EventMutation) AddedFields() []string {
 	var fields []string
+	if m.adddeleted_id != nil {
+		fields = append(fields, event.FieldDeletedID)
+	}
 	return fields
 }
 
@@ -4728,6 +4817,8 @@ func (m *EventMutation) AddedFields() []string {
 // was not set, or was not defined in the schema.
 func (m *EventMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
+	case event.FieldDeletedID:
+		return m.AddedDeletedID()
 	}
 	return nil, false
 }
@@ -4737,6 +4828,13 @@ func (m *EventMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *EventMutation) AddField(name string, value ent.Value) error {
 	switch name {
+	case event.FieldDeletedID:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddDeletedID(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Event numeric field %s", name)
 }
@@ -4750,6 +4848,9 @@ func (m *EventMutation) ClearedFields() []string {
 	}
 	if m.FieldCleared(event.FieldApprovalID) {
 		fields = append(fields, event.FieldApprovalID)
+	}
+	if m.FieldCleared(event.FieldDeletedID) {
+		fields = append(fields, event.FieldDeletedID)
 	}
 	return fields
 }
@@ -4770,6 +4871,9 @@ func (m *EventMutation) ClearField(name string) error {
 		return nil
 	case event.FieldApprovalID:
 		m.ClearApprovalID()
+		return nil
+	case event.FieldDeletedID:
+		m.ClearDeletedID()
 		return nil
 	}
 	return fmt.Errorf("unknown Event nullable field %s", name)
@@ -4793,6 +4897,9 @@ func (m *EventMutation) ResetField(name string) error {
 		return nil
 	case event.FieldApprovalID:
 		m.ResetApprovalID()
+		return nil
+	case event.FieldDeletedID:
+		m.ResetDeletedID()
 		return nil
 	}
 	return fmt.Errorf("unknown Event field %s", name)
