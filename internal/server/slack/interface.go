@@ -38,7 +38,6 @@ type (
 		SubscribeEvent(fn func(e *ent.Event)) error
 		UnsubscribeEvent(fn func(e *ent.Event)) error
 
-		ListUsersOfEvent(ctx context.Context, e *ent.Event) ([]*ent.User, error)
 		CheckNotificationRecordOfEvent(ctx context.Context, e *ent.Event) bool
 		CreateEvent(ctx context.Context, e *ent.Event) (*ent.Event, error)
 
