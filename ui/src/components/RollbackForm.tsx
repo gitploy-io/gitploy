@@ -3,6 +3,7 @@ import moment from 'moment'
 
 import { User, Deployment, DeploymentType, Env } from "../models"
 import ApproversSelect from "./ApproversSelect"
+import DeploymentRefCode from './DeploymentRefCode'
 
 interface RollbackFormProps {
     envs: Env[]
@@ -82,11 +83,11 @@ export default function RollbackForm(props: RollbackFormProps): JSX.Element {
 
                             if (d.deployer) {
                                 option = <Select.Option key={idx} value={d.id}>
-                                   {ref} deployed by <Avatar size="small" src={d.deployer.avatar} /> {d.deployer.login} {moment(d.createdAt).fromNow()}
+                                   #{d.number} - <DeploymentRefCode deployment={d}/> deployed by <Avatar size="small" src={d.deployer.avatar} /> {d.deployer.login} {moment(d.createdAt).fromNow()}
                                 </Select.Option>
                             } else {
                                 option = <Select.Option key={idx} value={d.id}>
-                                   {ref} deployed {moment(d.createdAt).fromNow()}
+                                   #{d.number} - <DeploymentRefCode deployment={d}/> deployed {moment(d.createdAt).fromNow()}
                                 </Select.Option>
                             }
                             return option
