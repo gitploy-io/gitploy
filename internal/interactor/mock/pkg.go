@@ -911,6 +911,21 @@ func (mr *MockSCMMockRecorder) GetRateLimit(ctx, u interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetRateLimit", reflect.TypeOf((*MockSCM)(nil).GetRateLimit), ctx, u)
 }
 
+// GetRemoteUserByToken mocks base method.
+func (m *MockSCM) GetRemoteUserByToken(ctx context.Context, token string) (*vo.RemoteUser, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetRemoteUserByToken", ctx, token)
+	ret0, _ := ret[0].(*vo.RemoteUser)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetRemoteUserByToken indicates an expected call of GetRemoteUserByToken.
+func (mr *MockSCMMockRecorder) GetRemoteUserByToken(ctx, token interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetRemoteUserByToken", reflect.TypeOf((*MockSCM)(nil).GetRemoteUserByToken), ctx, token)
+}
+
 // GetTag mocks base method.
 func (m *MockSCM) GetTag(ctx context.Context, u *ent.User, r *ent.Repo, tag string) (*vo.Tag, error) {
 	m.ctrl.T.Helper()
@@ -924,21 +939,6 @@ func (m *MockSCM) GetTag(ctx context.Context, u *ent.User, r *ent.Repo, tag stri
 func (mr *MockSCMMockRecorder) GetTag(ctx, u, r, tag interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTag", reflect.TypeOf((*MockSCM)(nil).GetTag), ctx, u, r, tag)
-}
-
-// GetUser mocks base method.
-func (m *MockSCM) GetUser(ctx context.Context, token string) (*vo.RemoteUser, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetUser", ctx, token)
-	ret0, _ := ret[0].(*vo.RemoteUser)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetUser indicates an expected call of GetUser.
-func (mr *MockSCMMockRecorder) GetUser(ctx, token interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUser", reflect.TypeOf((*MockSCM)(nil).GetUser), ctx, token)
 }
 
 // ListBranches mocks base method.
@@ -984,6 +984,21 @@ func (m *MockSCM) ListCommits(ctx context.Context, u *ent.User, r *ent.Repo, bra
 func (mr *MockSCMMockRecorder) ListCommits(ctx, u, r, branch, page, perPage interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListCommits", reflect.TypeOf((*MockSCM)(nil).ListCommits), ctx, u, r, branch, page, perPage)
+}
+
+// ListRemoteOrgsByToken mocks base method.
+func (m *MockSCM) ListRemoteOrgsByToken(ctx context.Context, token string) ([]string, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListRemoteOrgsByToken", ctx, token)
+	ret0, _ := ret[0].([]string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListRemoteOrgsByToken indicates an expected call of ListRemoteOrgsByToken.
+func (mr *MockSCMMockRecorder) ListRemoteOrgsByToken(ctx, token interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListRemoteOrgsByToken", reflect.TypeOf((*MockSCM)(nil).ListRemoteOrgsByToken), ctx, token)
 }
 
 // ListRemoteRepos mocks base method.

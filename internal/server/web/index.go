@@ -84,14 +84,14 @@ func (w *Web) Signin(c *gin.Context) {
 
 	t, err := w.c.Exchange(c, code)
 	if err != nil {
-		w.log.Error("failed to exchange the code.", zap.Error(err))
-		c.String(http.StatusInternalServerError, "There is an issue to exchange the code.")
+		w.log.Error("It has failed to exchange the code.", zap.Error(err))
+		c.String(http.StatusUnauthorized, "There is an issue to exchange the code.")
 		return
 	}
 
 	if !t.Valid() {
 		w.log.Error("invalid token.", zap.Error(err))
-		c.String(http.StatusInternalServerError, "It's a invalid token.")
+		c.String(http.StatusUnauthorized, "It's a invalid token.")
 		return
 	}
 
@@ -99,10 +99,28 @@ func (w *Web) Signin(c *gin.Context) {
 
 	ru, err := w.i.GetRemoteUserByToken(ctx, t.AccessToken)
 	if err != nil {
-		w.log.Error("failed to fetch a user from SCM.", zap.Error(err))
-		c.String(http.StatusInternalServerError, "It has failed to fetch a user from SCM.")
+		w.log.Error("It has failed to get the remote user.", zap.Error(err))
+		c.String(http.StatusInternalServerError, "It has failed to get the remote user.")
 		return
 	}
+	w.log.Debug("Get user's login.", zap.String("login", ru.Login))
+
+	orgs, err := w.i.ListRemoteOrgsByToken(ctx, t.AccessToken)
+	if err != nil {
+		w.log.Error("It has failed to list remote orgs.", zap.Error(err))
+		c.String(http.StatusInternalServerError, "It has failed to list remote orgs.")
+		return
+	}
+	w.log.Debug("List remote orgs.", zap.Strings("orgs", orgs))
+
+	// Check the login of user who is member and admin.
+	if !(w.i.IsEntryMember(ctx, ru.Login) || w.i.IsOrgMember(ctx, orgs)) {
+		w.log.Warn("This login not a member of an approved organization.", zap.String("login", ru.Login))
+		c.String(http.StatusUnauthorized, "You are not a member of an approved organization.")
+		return
+	}
+
+	admin := w.i.IsAdminUser(ctx, ru.Login)
 
 	// Synchronize from the remote user. It synchronizes
 	// user information and save generated OAuth token.
@@ -113,7 +131,7 @@ func (w *Web) Signin(c *gin.Context) {
 		Token:   t.AccessToken,
 		Refresh: t.RefreshToken,
 		Expiry:  t.Expiry,
-		Admin:   w.i.IsAdminUser(ctx, ru.Login),
+		Admin:   admin,
 	}
 
 	if _, err = w.i.FindUserByID(ctx, u.ID); ent.IsNotFound(err) {
@@ -124,13 +142,12 @@ func (w *Web) Signin(c *gin.Context) {
 			return
 		}
 
-		if lic.IsOverLimit() {
-			w.log.Error("There are no more seats.", zap.Error(err))
+		if lic.MemberCount >= lic.MemberLimit {
+			w.log.Warn("There are no more seats. It prevents to over the limit.", zap.Int("member_count", lic.MemberCount), zap.Int("member_limit", lic.MemberLimit))
 			c.String(http.StatusPaymentRequired, "There are no more seats.")
 			return
 		}
 
-		w.log.Debug("Check the count of member.", zap.Int("member_count", lic.MemberCount), zap.Int("member_limit", lic.MemberLimit))
 		u, _ = w.i.CreateUser(ctx, u)
 	} else if err != nil {
 		w.log.Error("It failed to save the user.", zap.Error(err))
