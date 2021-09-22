@@ -2,11 +2,9 @@ package interactor
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/gitploy-io/gitploy/ent"
-	"github.com/gitploy-io/gitploy/ent/event"
 	"go.uber.org/zap"
 )
 
@@ -51,42 +49,4 @@ func (i *Interactor) SubscribeEvent(fn func(e *ent.Event)) error {
 
 func (i *Interactor) UnsubscribeEvent(fn func(e *ent.Event)) error {
 	return i.events.Unsubscribe(gitployEvent, fn)
-}
-
-func (i *Interactor) ListUsersOfEvent(ctx context.Context, e *ent.Event) ([]*ent.User, error) {
-	if e.Kind == event.KindDeployment {
-		d, err := i.Store.FindDeploymentByID(ctx, e.DeploymentID)
-		if err != nil {
-			return nil, fmt.Errorf("It has failed to find the deployment: %w", err)
-		}
-
-		return []*ent.User{d.Edges.User}, nil
-	}
-
-	// Notify to who has the request of approval.
-	if e.Kind == event.KindApproval && e.Type == event.TypeCreated {
-		a, err := i.Store.FindApprovalByID(ctx, e.ApprovalID)
-		if err != nil {
-			return nil, fmt.Errorf("It has failed to find the approval: %w", err)
-		}
-
-		return []*ent.User{a.Edges.User}, nil
-	}
-
-	// Notify to who has requested the approval.
-	if e.Kind == event.KindApproval && e.Type == event.TypeUpdated {
-		a, err := i.Store.FindApprovalByID(ctx, e.ApprovalID)
-		if err != nil {
-			return nil, fmt.Errorf("It has failed to find the approval: %w", err)
-		}
-
-		d, err := i.Store.FindDeploymentByID(ctx, a.DeploymentID)
-		if err != nil {
-			return nil, fmt.Errorf("It has failed to find the deployment of the approval: %w", err)
-		}
-
-		return []*ent.User{d.Edges.User}, nil
-	}
-
-	return nil, fmt.Errorf("It is out of use-cases.")
 }

@@ -42,9 +42,7 @@ func NewSlack(c *SlackConfig) *Slack {
 	}
 
 	s.i.SubscribeEvent(func(e *ent.Event) {
-		if err := s.Notify(context.Background(), e); err != nil {
-			s.log.Error("It has failed to push notificaitons.", zap.Error(err))
-		}
+		s.Notify(context.Background(), e)
 	})
 
 	return s
