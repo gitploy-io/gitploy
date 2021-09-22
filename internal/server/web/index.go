@@ -115,8 +115,8 @@ func (w *Web) Signin(c *gin.Context) {
 
 	// Check the login of user who is member and admin.
 	if !(w.i.IsEntryMember(ctx, ru.Login) || w.i.IsOrgMember(ctx, orgs)) {
-		w.log.Warn("This login is not member.", zap.String("login", ru.Login))
-		c.String(http.StatusUnauthorized, "This login is not member. You should ask to the administrator.")
+		w.log.Warn("This login not a member of an approved organization.", zap.String("login", ru.Login))
+		c.String(http.StatusUnauthorized, "You are not a member of an approved organization.")
 		return
 	}
 
