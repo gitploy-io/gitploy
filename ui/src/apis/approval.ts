@@ -14,7 +14,7 @@ import {
     HttpUnprocessableEntityError
  } from '../models'
 
-interface ApprovalData {
+export interface ApprovalData {
     id: number,
     status: string
     created_at: string
