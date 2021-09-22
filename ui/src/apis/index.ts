@@ -34,7 +34,7 @@ import {
     setApprovalDeclined 
 } from "./approval"
 import { getLicense  } from "./license"
-import { subscribeDeploymentEvent, subscribeApprovalEvent } from "./events"
+import { subscribeEvents } from "./events"
 
 export {
     sync,
@@ -75,6 +75,5 @@ export {
     setApprovalApproved,
     setApprovalDeclined,
     getLicense,
-    subscribeDeploymentEvent,
-    subscribeApprovalEvent
+    subscribeEvents
 }

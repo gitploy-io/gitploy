@@ -12,6 +12,7 @@ import Tag from "./Tag"
 import User, { ChatUser, RateLimit } from "./User"
 import Approval, { ApprovalStatus } from "./Approval"
 import License from "./License"
+import Event, {EventKindEnum, EventTypeEnum} from "./Event"
 import { 
     HttpRequestError, 
     HttpInternalServerError, 
@@ -40,6 +41,7 @@ export type {
     RateLimit,
     Approval,
     License,
+    Event
 }
 
 export {
@@ -55,4 +57,6 @@ export {
     StatusState,
     RequestStatus,
     ApprovalStatus,
+    EventKindEnum, 
+    EventTypeEnum
 }
