@@ -84,14 +84,14 @@ func (w *Web) Signin(c *gin.Context) {
 
 	t, err := w.c.Exchange(c, code)
 	if err != nil {
-		w.log.Error("failed to exchange the code.", zap.Error(err))
-		c.String(http.StatusInternalServerError, "There is an issue to exchange the code.")
+		w.log.Error("It has failed to exchange the code.", zap.Error(err))
+		c.String(http.StatusUnauthorized, "There is an issue to exchange the code.")
 		return
 	}
 
 	if !t.Valid() {
 		w.log.Error("invalid token.", zap.Error(err))
-		c.String(http.StatusInternalServerError, "It's a invalid token.")
+		c.String(http.StatusUnauthorized, "It's a invalid token.")
 		return
 	}
 
@@ -104,6 +104,15 @@ func (w *Web) Signin(c *gin.Context) {
 		return
 	}
 
+	// Check the login of user who is member and admin.
+	if !w.i.IsEntryMember(ctx, ru.Login) {
+		w.log.Warn("This login is not member.", zap.String("login", ru.Login))
+		c.String(http.StatusUnauthorized, "This login is not member. You should ask to the administrator.")
+		return
+	}
+
+	admin := w.i.IsAdminUser(ctx, ru.Login)
+
 	// Synchronize from the remote user. It synchronizes
 	// user information and save generated OAuth token.
 	u := &ent.User{
@@ -113,7 +122,7 @@ func (w *Web) Signin(c *gin.Context) {
 		Token:   t.AccessToken,
 		Refresh: t.RefreshToken,
 		Expiry:  t.Expiry,
-		Admin:   w.i.IsAdminUser(ctx, ru.Login),
+		Admin:   admin,
 	}
 
 	if _, err = w.i.FindUserByID(ctx, u.ID); ent.IsNotFound(err) {
@@ -125,12 +134,11 @@ func (w *Web) Signin(c *gin.Context) {
 		}
 
 		if lic.MemberCount >= lic.MemberLimit {
-			w.log.Warn("There are no more seats. It prevents to over the limit.", zap.Error(err))
+			w.log.Warn("There are no more seats. It prevents to over the limit.", zap.Int("member_count", lic.MemberCount), zap.Int("member_limit", lic.MemberLimit))
 			c.String(http.StatusPaymentRequired, "There are no more seats.")
 			return
 		}
 
-		w.log.Debug("Check the count of member.", zap.Int("member_count", lic.MemberCount), zap.Int("member_limit", lic.MemberLimit))
 		u, _ = w.i.CreateUser(ctx, u)
 	} else if err != nil {
 		w.log.Error("It failed to save the user.", zap.Error(err))

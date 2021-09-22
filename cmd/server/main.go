@@ -133,13 +133,14 @@ func newChatConfig(c *Config) *server.ChatConfig {
 func NewInteractor(c *Config) server.Interactor {
 	return interactor.NewInteractor(
 		&interactor.InteractorConfig{
-			ServerHost:  c.ServerHost,
-			ServerProto: c.ServerProto,
-			OrgEntries:  c.OrganizationEntries,
-			AdminUsers:  c.AdminUsers,
-			LicenseKey:  c.License,
-			Store:       newStore(c),
-			SCM:         newSCM(c),
+			ServerHost:    c.ServerHost,
+			ServerProto:   c.ServerProto,
+			OrgEntries:    c.OrganizationEntries,
+			MemberEntries: c.MemberEntries,
+			AdminUsers:    c.AdminUsers,
+			LicenseKey:    c.License,
+			Store:         newStore(c),
+			SCM:           newSCM(c),
 		},
 	)
 }

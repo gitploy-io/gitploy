@@ -17,3 +17,16 @@ func TestInteractor_IsAdminUser(t *testing.T) {
 		}
 	})
 }
+
+func TestInteractor_IsEntryMember(t *testing.T) {
+	t.Run("Return false when the user's login is not includes.", func(t *testing.T) {
+		i := &Interactor{
+			memberEntries: []string{"octocat"},
+		}
+
+		want := false
+		if ret := i.IsEntryMember(context.Background(), "coco"); ret != want {
+			t.Fatalf("IsEntryMember = %v, wanted %v", ret, want)
+		}
+	})
+}

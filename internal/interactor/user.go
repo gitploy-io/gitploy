@@ -19,3 +19,18 @@ func (i *Interactor) IsAdminUser(ctx context.Context, login string) bool {
 
 	return false
 }
+
+func (i *Interactor) IsEntryMember(ctx context.Context, login string) bool {
+	if i.memberEntries == nil {
+		return true
+	}
+
+	for _, m := range i.memberEntries {
+		if login == m {
+			return true
+		}
+	}
+
+	return false
+
+}

@@ -11,7 +11,8 @@ type (
 		ServerHost  string
 		ServerProto string
 
-		orgEntries []string
+		orgEntries    []string
+		memberEntries []string
 		// Admin Users
 		admins []string
 
@@ -32,8 +33,9 @@ type (
 		ServerHost  string
 		ServerProto string
 
-		OrgEntries []string
-		AdminUsers []string
+		OrgEntries    []string
+		MemberEntries []string
+		AdminUsers    []string
 
 		LicenseKey string
 
@@ -44,16 +46,17 @@ type (
 
 func NewInteractor(c *InteractorConfig) *Interactor {
 	i := &Interactor{
-		ServerHost:  c.ServerHost,
-		ServerProto: c.ServerProto,
-		orgEntries:  c.OrgEntries,
-		admins:      c.AdminUsers,
-		licenseKey:  c.LicenseKey,
-		Store:       c.Store,
-		SCM:         c.SCM,
-		stopCh:      make(chan struct{}),
-		events:      evbus.New(),
-		log:         zap.L().Named("interactor"),
+		ServerHost:    c.ServerHost,
+		ServerProto:   c.ServerProto,
+		orgEntries:    c.OrgEntries,
+		memberEntries: c.MemberEntries,
+		admins:        c.AdminUsers,
+		licenseKey:    c.LicenseKey,
+		Store:         c.Store,
+		SCM:           c.SCM,
+		stopCh:        make(chan struct{}),
+		events:        evbus.New(),
+		log:           zap.L().Named("interactor"),
 	}
 
 	go func() {
