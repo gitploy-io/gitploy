@@ -96,6 +96,33 @@ func (eu *EventUpdate) ClearApprovalID() *EventUpdate {
 	return eu
 }
 
+// SetDeletedID sets the "deleted_id" field.
+func (eu *EventUpdate) SetDeletedID(i int) *EventUpdate {
+	eu.mutation.ResetDeletedID()
+	eu.mutation.SetDeletedID(i)
+	return eu
+}
+
+// SetNillableDeletedID sets the "deleted_id" field if the given value is not nil.
+func (eu *EventUpdate) SetNillableDeletedID(i *int) *EventUpdate {
+	if i != nil {
+		eu.SetDeletedID(*i)
+	}
+	return eu
+}
+
+// AddDeletedID adds i to the "deleted_id" field.
+func (eu *EventUpdate) AddDeletedID(i int) *EventUpdate {
+	eu.mutation.AddDeletedID(i)
+	return eu
+}
+
+// ClearDeletedID clears the value of the "deleted_id" field.
+func (eu *EventUpdate) ClearDeletedID() *EventUpdate {
+	eu.mutation.ClearDeletedID()
+	return eu
+}
+
 // SetDeployment sets the "deployment" edge to the Deployment entity.
 func (eu *EventUpdate) SetDeployment(d *Deployment) *EventUpdate {
 	return eu.SetDeploymentID(d.ID)
@@ -260,6 +287,26 @@ func (eu *EventUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Type:   field.TypeTime,
 			Value:  value,
 			Column: event.FieldCreatedAt,
+		})
+	}
+	if value, ok := eu.mutation.DeletedID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: event.FieldDeletedID,
+		})
+	}
+	if value, ok := eu.mutation.AddedDeletedID(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: event.FieldDeletedID,
+		})
+	}
+	if eu.mutation.DeletedIDCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Column: event.FieldDeletedID,
 		})
 	}
 	if eu.mutation.DeploymentCleared() {
@@ -452,6 +499,33 @@ func (euo *EventUpdateOne) ClearApprovalID() *EventUpdateOne {
 	return euo
 }
 
+// SetDeletedID sets the "deleted_id" field.
+func (euo *EventUpdateOne) SetDeletedID(i int) *EventUpdateOne {
+	euo.mutation.ResetDeletedID()
+	euo.mutation.SetDeletedID(i)
+	return euo
+}
+
+// SetNillableDeletedID sets the "deleted_id" field if the given value is not nil.
+func (euo *EventUpdateOne) SetNillableDeletedID(i *int) *EventUpdateOne {
+	if i != nil {
+		euo.SetDeletedID(*i)
+	}
+	return euo
+}
+
+// AddDeletedID adds i to the "deleted_id" field.
+func (euo *EventUpdateOne) AddDeletedID(i int) *EventUpdateOne {
+	euo.mutation.AddDeletedID(i)
+	return euo
+}
+
+// ClearDeletedID clears the value of the "deleted_id" field.
+func (euo *EventUpdateOne) ClearDeletedID() *EventUpdateOne {
+	euo.mutation.ClearDeletedID()
+	return euo
+}
+
 // SetDeployment sets the "deployment" edge to the Deployment entity.
 func (euo *EventUpdateOne) SetDeployment(d *Deployment) *EventUpdateOne {
 	return euo.SetDeploymentID(d.ID)
@@ -640,6 +714,26 @@ func (euo *EventUpdateOne) sqlSave(ctx context.Context) (_node *Event, err error
 			Type:   field.TypeTime,
 			Value:  value,
 			Column: event.FieldCreatedAt,
+		})
+	}
+	if value, ok := euo.mutation.DeletedID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: event.FieldDeletedID,
+		})
+	}
+	if value, ok := euo.mutation.AddedDeletedID(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: event.FieldDeletedID,
+		})
+	}
+	if euo.mutation.DeletedIDCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Column: event.FieldDeletedID,
 		})
 	}
 	if euo.mutation.DeploymentCleared() {

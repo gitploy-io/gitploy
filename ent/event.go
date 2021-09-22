@@ -29,6 +29,8 @@ type Event struct {
 	DeploymentID int `json:"deployment_id,omitemtpy"`
 	// ApprovalID holds the value of the "approval_id" field.
 	ApprovalID int `json:"approval_id,omitemtpy"`
+	// DeletedID holds the value of the "deleted_id" field.
+	DeletedID int `json:"deleted_id,omitemtpy"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the EventQuery when eager-loading is set.
 	Edges EventEdges `json:"edges"`
@@ -94,7 +96,7 @@ func (*Event) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case event.FieldID, event.FieldDeploymentID, event.FieldApprovalID:
+		case event.FieldID, event.FieldDeploymentID, event.FieldApprovalID, event.FieldDeletedID:
 			values[i] = new(sql.NullInt64)
 		case event.FieldKind, event.FieldType:
 			values[i] = new(sql.NullString)
@@ -151,6 +153,12 @@ func (e *Event) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				e.ApprovalID = int(value.Int64)
 			}
+		case event.FieldDeletedID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field deleted_id", values[i])
+			} else if value.Valid {
+				e.DeletedID = int(value.Int64)
+			}
 		}
 	}
 	return nil
@@ -204,6 +212,8 @@ func (e *Event) String() string {
 	builder.WriteString(fmt.Sprintf("%v", e.DeploymentID))
 	builder.WriteString(", approval_id=")
 	builder.WriteString(fmt.Sprintf("%v", e.ApprovalID))
+	builder.WriteString(", deleted_id=")
+	builder.WriteString(fmt.Sprintf("%v", e.DeletedID))
 	builder.WriteByte(')')
 	return builder.String()
 }

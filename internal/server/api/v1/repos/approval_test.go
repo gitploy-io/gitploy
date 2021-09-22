@@ -104,7 +104,52 @@ func TestRepo_CreateApproval(t *testing.T) {
 
 		if w.Code != http.StatusCreated {
 			t.Fatalf("Code != %d, wanted %d", w.Code, http.StatusOK)
-			t.FailNow()
+		}
+	})
+}
+
+func TestRepo_DeleteApproval(t *testing.T) {
+	t.Run("Delete the approval.", func(t *testing.T) {
+		input := struct {
+			aid int
+		}{
+			aid: 7,
+		}
+
+		ctrl := gomock.NewController(t)
+		m := mock.NewMockInteractor(ctrl)
+
+		t.Log("Find the approval by ID.")
+		m.
+			EXPECT().
+			FindApprovalByID(gomock.Any(), input.aid).
+			Return(&ent.Approval{ID: input.aid}, nil)
+
+		t.Log("Delete the approval.")
+		m.
+			EXPECT().
+			DeleteApproval(gomock.Any(), gomock.AssignableToTypeOf(&ent.Approval{})).
+			Return(nil)
+
+		t.Log("Create a deleted event.")
+		m.
+			EXPECT().
+			CreateEvent(gomock.Any(), gomock.AssignableToTypeOf(&ent.Event{})).
+			Return(&ent.Event{ID: 1}, nil)
+
+		gin.SetMode(gin.ReleaseMode)
+
+		r := NewRepo(RepoConfig{}, m)
+		router := gin.New()
+		router.DELETE("/deployments/:number/approvals/:aid", r.DeleteApproval)
+
+		req, _ := http.NewRequest("DELETE", fmt.Sprintf("/deployments/1/approvals/%d", input.aid), nil)
+
+		w := httptest.NewRecorder()
+		router.ServeHTTP(w, req)
+
+		if w.Code != http.StatusOK {
+			t.Fatalf("Code != %d, wanted %d", w.Code, http.StatusOK)
 		}
 	})
 }

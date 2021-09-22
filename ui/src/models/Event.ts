@@ -7,7 +7,7 @@ export default interface Event {
     type: EventTypeEnum
     deployment?: Deployment
     approval?: Approval
-    deletedEntityId: number 
+    deletedId: number 
 }
 
 export enum EventKindEnum {

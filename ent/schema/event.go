@@ -26,12 +26,16 @@ func (Event) Fields() []ent.Field {
 			Values(
 				"created",
 				"updated",
+				"deleted",
 			),
 		field.Time("created_at").
 			Default(time.Now),
 		field.Int("deployment_id").
 			Optional(),
 		field.Int("approval_id").
+			Optional(),
+		// This field is filled when the type is 'deleted'.
+		field.Int("deleted_id").
 			Optional(),
 	}
 }

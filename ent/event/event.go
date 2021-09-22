@@ -22,6 +22,8 @@ const (
 	FieldDeploymentID = "deployment_id"
 	// FieldApprovalID holds the string denoting the approval_id field in the database.
 	FieldApprovalID = "approval_id"
+	// FieldDeletedID holds the string denoting the deleted_id field in the database.
+	FieldDeletedID = "deleted_id"
 	// EdgeDeployment holds the string denoting the deployment edge name in mutations.
 	EdgeDeployment = "deployment"
 	// EdgeApproval holds the string denoting the approval edge name in mutations.
@@ -61,6 +63,7 @@ var Columns = []string{
 	FieldCreatedAt,
 	FieldDeploymentID,
 	FieldApprovalID,
+	FieldDeletedID,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -108,6 +111,7 @@ type Type string
 const (
 	TypeCreated Type = "created"
 	TypeUpdated Type = "updated"
+	TypeDeleted Type = "deleted"
 )
 
 func (_type Type) String() string {
@@ -117,7 +121,7 @@ func (_type Type) String() string {
 // TypeValidator is a validator for the "type" field enum values. It is called by the builders before save.
 func TypeValidator(_type Type) error {
 	switch _type {
-	case TypeCreated, TypeUpdated:
+	case TypeCreated, TypeUpdated, TypeDeleted:
 		return nil
 	default:
 		return fmt.Errorf("event: invalid enum value for type field: %q", _type)

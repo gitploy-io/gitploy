@@ -8,7 +8,7 @@ interface EventData {
     id: number
     kind: string
     type: string
-    deleted_entity_id: number
+    deleted_id: number
     edges: {
         deployment?: DeploymentData
         approval?: ApprovalData
@@ -58,7 +58,7 @@ const mapDataToEvent = (data: EventData): Event => {
         id: data.id,
         kind,
         type,
-        deletedEntityId: data.deleted_entity_id,
+        deletedId: data.deleted_id,
         deployment,
         approval
     } 
