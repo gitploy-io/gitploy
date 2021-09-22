@@ -73,7 +73,8 @@ type (
 	}
 
 	SCM interface {
-		GetUser(ctx context.Context, token string) (*vo.RemoteUser, error)
+		GetRemoteUserByToken(ctx context.Context, token string) (*vo.RemoteUser, error)
+		ListRemoteOrgsByToken(ctx context.Context, token string) ([]string, error)
 
 		ListRemoteRepos(ctx context.Context, u *ent.User) ([]*vo.RemoteRepo, error)
 

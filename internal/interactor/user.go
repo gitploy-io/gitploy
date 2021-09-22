@@ -2,13 +2,7 @@ package interactor
 
 import (
 	"context"
-
-	"github.com/gitploy-io/gitploy/vo"
 )
-
-func (i *Interactor) GetRemoteUserByToken(ctx context.Context, token string) (*vo.RemoteUser, error) {
-	return i.SCM.GetUser(ctx, token)
-}
 
 func (i *Interactor) IsAdminUser(ctx context.Context, login string) bool {
 	for _, admin := range i.admins {
@@ -32,5 +26,16 @@ func (i *Interactor) IsEntryMember(ctx context.Context, login string) bool {
 	}
 
 	return false
+}
 
+func (i *Interactor) IsOrgMember(ctx context.Context, orgs []string) bool {
+	for _, o := range orgs {
+		for _, entry := range i.memberEntries {
+			if o == entry {
+				return true
+			}
+		}
+	}
+
+	return false
 }

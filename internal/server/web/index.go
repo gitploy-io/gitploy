@@ -99,13 +99,22 @@ func (w *Web) Signin(c *gin.Context) {
 
 	ru, err := w.i.GetRemoteUserByToken(ctx, t.AccessToken)
 	if err != nil {
-		w.log.Error("failed to fetch a user from SCM.", zap.Error(err))
-		c.String(http.StatusInternalServerError, "It has failed to fetch a user from SCM.")
+		w.log.Error("It has failed to get the remote user.", zap.Error(err))
+		c.String(http.StatusInternalServerError, "It has failed to get the remote user.")
 		return
 	}
+	w.log.Debug("Get user's login.", zap.String("login", ru.Login))
+
+	orgs, err := w.i.ListRemoteOrgsByToken(ctx, t.AccessToken)
+	if err != nil {
+		w.log.Error("It has failed to list remote orgs.", zap.Error(err))
+		c.String(http.StatusInternalServerError, "It has failed to list remote orgs.")
+		return
+	}
+	w.log.Debug("List remote orgs.", zap.Strings("orgs", orgs))
 
 	// Check the login of user who is member and admin.
-	if !w.i.IsEntryMember(ctx, ru.Login) {
+	if !(w.i.IsEntryMember(ctx, ru.Login) || w.i.IsOrgMember(ctx, orgs)) {
 		w.log.Warn("This login is not member.", zap.String("login", ru.Login))
 		c.String(http.StatusUnauthorized, "This login is not member. You should ask to the administrator.")
 		return
