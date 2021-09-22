@@ -6,20 +6,6 @@ servers:
   - url: http://localhost/api/v1
   - url: https://gitploy.jp.ngrok.io/api/v1
 paths:
-  /sync:
-    post:
-      tags:
-        - Sync
-      summary: Synchronize with SCM.
-      responses:
-        '200':
-          description: OK
-        '401': 
-          $ref: '#/components/responses/401Unauthorized'
-        '402':
-          $ref: '#/components/responses/402PaymentRequired'
-        '500':
-          $ref: '#/components/responses/500InternalError'
   /license:
     get:
       tags:
@@ -1238,6 +1224,77 @@ paths:
                 $ref: '#/components/schemas/Deployments'
         '400':
           $ref: '#/components/responses/400BadRequest'
+        '401': 
+          $ref: '#/components/responses/401Unauthorized'
+        '402':
+          $ref: '#/components/responses/402PaymentRequired'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+  /stream/events:
+    get:
+      tags:
+        - Event
+      summary: Subscribes streaming event
+      responses:
+        '200':
+          description: Returns events for deployments and approvals
+          content:
+            text/event-stream:
+              schema:
+                type: array
+                format: chunked
+                items:
+                  type: object
+                  format: text 
+                  required:
+                    - id 
+                    - event 
+                    - data
+                  properties: 
+                    id:
+                      type: integer
+                    event:
+                      type: string
+                    data:
+                      type: object 
+                      format: json 
+                      required:
+                        - id
+                        - kind
+                        - type
+                        - created_at
+                        - edges
+                      properties: 
+                        id:
+                          type: integer
+                        kind:
+                          type: string
+                          enum:
+                            - deployment
+                            - approval
+                        type:
+                          type: string
+                          enum:
+                            - created
+                            - updated
+                            - removed
+                        created_at:
+                          type: string
+                        edges:
+                          type: object
+                          properties:
+                            deployment:
+                              $ref: '#/components/schemas/Deployment'
+                            approval:
+                              $ref: '#/components/schemas/Approval'
+  /sync:
+    post:
+      tags:
+        - Sync
+      summary: Synchronize with SCM.
+      responses:
+        '200':
+          description: OK
         '401': 
           $ref: '#/components/responses/401Unauthorized'
         '402':

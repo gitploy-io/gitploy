@@ -85,16 +85,9 @@ L:
 			})
 			w.Flush()
 		case e := <-events:
-			var data interface{}
-			if e.Kind == event.KindDeployment {
-				data = e.Edges.Deployment
-			} else if e.Kind == event.KindApproval {
-				data = e.Edges.Approval
-			}
-
 			c.Render(-1, sse.Event{
-				Event: e.Kind.String(),
-				Data:  data,
+				Event: "event",
+				Data:  e,
 			})
 			w.Flush()
 			s.log.Debug("server sent event.", zap.Int("event_id", e.ID), zap.String("debug_id", debugID))
