@@ -9,7 +9,7 @@ interface CreatableSelectProps extends SelectProps<string>{
 }
 
 export interface Option {
-    label: string
+    label: string | JSX.Element
     value: string
 }
 
@@ -58,7 +58,8 @@ export default function CreatableSelect(props: CreatableSelectProps): JSX.Elemen
                         bordered={false} />
                     <a
                         style={{ flex: 'none', padding: '4px', display: 'block', cursor: 'pointer' }} 
-                        onClick={_onClickAddItem}>
+                        onClick={_onClickAddItem}
+                    >
                       <PlusOutlined /> Add item
                     </a>
                 </div>

@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Form, Select, Radio, Button } from "antd"
+import { Form, Select, Radio, Button, Typography } from "antd"
 
 import { Branch, Commit, Tag, DeploymentType, Status, User, Env } from "../models"
 
@@ -8,6 +8,8 @@ import StatusStateIcon from "./StatusStateIcon"
 import ApproversSelect from "./ApproversSelect"
 
 export type Option = Op
+
+const { Text } = Typography
 
 interface DeployFormProps {
     envs: Env[]
@@ -113,7 +115,7 @@ export default function DeployForm(props: DeployFormProps): JSX.Element {
 
     const mapBranchToOption = (branch: Branch) => {
         return {
-            label: branch.name,
+            label: <Text className="gitploy-code" code>{branch.name}</Text>,
             value: branch.name
         } as Option
     }
@@ -134,7 +136,9 @@ export default function DeployForm(props: DeployFormProps): JSX.Element {
 
     const mapCommitToOption = (commit: Commit) => {
         return {
-            label: `${commit.sha.substr(0, 7)} - ${commit.message}`,
+            label: <span>
+                <Text className="gitploy-code" code>{commit.sha.substring(0, 7)}</Text> - {commit.message} 
+            </span>,
             value: commit.sha,
         } as Option
     }
@@ -148,7 +152,7 @@ export default function DeployForm(props: DeployFormProps): JSX.Element {
 
     const mapTagToOption = (tag: Tag) => {
         return {
-            label: tag.name,
+            label: <Text className="gitploy-code" code>{tag.name}</Text>,
             value: tag.name
         } as Option
     }
