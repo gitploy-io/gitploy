@@ -10,6 +10,7 @@ Field                    |Type                     |Required  |Description
 `description`            |*string*                 |`false`   |This field is the short description of the deployment. 
 `auto_merge`             |*boolean*                |`false`   |This field is used to ensure that the requested ref is not behind the repository's default branch. If you deploy with the commit or the tag you need to set `false`. For rollback, Gitploy set the field `false`.
 `required_contexts`      |*[]string*               |`false`   |This field allows you to specify a subset of contexts that must be success. 
+`payload`                |*object* or *string*     |`false`   |This field is JSON payload with extra information about the deployment. 
 `production_environment` |*boolean*                |`false`   |This field specifies whether this runtime environment is production or not.
 `approval`               |*[Approval](#approval)*  |`false`   |This field configures approval.
 
