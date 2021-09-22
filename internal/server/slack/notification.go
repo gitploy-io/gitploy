@@ -60,6 +60,11 @@ func (s *Slack) notify(ctx context.Context, cu *ent.ChatUser, e *ent.Event) erro
 		return err
 	}
 
+	// Skip for the deleted event.
+	if e.Type == event.TypeDeleted {
+		return nil
+	}
+
 	if e.Kind == event.KindDeployment {
 		d := e.Edges.Deployment
 		if err := d.CheckEagerLoading(); err != nil {
