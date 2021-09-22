@@ -1,7 +1,7 @@
 import { Form, Select, Button, Avatar } from 'antd'
 import moment from 'moment'
 
-import { User, Deployment, DeploymentType, Env } from "../models"
+import { User, Deployment, Env } from "../models"
 import ApproversSelect from "./ApproversSelect"
 import DeploymentRefCode from './DeploymentRefCode'
 
@@ -79,7 +79,6 @@ export default function RollbackForm(props: RollbackFormProps): JSX.Element {
                     placeholder="Select the deployment">
                         {props.deployments.map((d, idx) => {
                             let option: React.ReactElement
-                            const ref = (d.type === DeploymentType.Commit)? d.sha.substr(0, 7) : d.ref
 
                             if (d.deployer) {
                                 option = <Select.Option key={idx} value={d.id}>
