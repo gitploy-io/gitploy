@@ -124,8 +124,8 @@ func (w *Web) Signin(c *gin.Context) {
 			return
 		}
 
-		if lic.IsOverLimit() {
-			w.log.Error("There are no more seats.", zap.Error(err))
+		if lic.MemberCount >= lic.MemberLimit {
+			w.log.Warn("There are no more seats. It prevents to over the limit.", zap.Error(err))
 			c.String(http.StatusPaymentRequired, "There are no more seats.")
 			return
 		}
