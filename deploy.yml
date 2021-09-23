@@ -4,6 +4,7 @@ envs:
     auto_merge: false
 
   - name: dev
+    task: ${GITPLOY_DEPLOY_TASK:=rollback}:kubernetes
     # Disable "auto_merge" to avoid merge conflict
     # when it deploys the tag behind the head.
     auto_merge: false
