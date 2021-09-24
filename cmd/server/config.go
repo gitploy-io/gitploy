@@ -42,7 +42,7 @@ type (
 	Github struct {
 		GithubClientID     string   `split_words:"true"`
 		GithubClientSecret string   `split_words:"true"`
-		GithubScopes       []string `split_words:"true" default:"repo"`
+		GithubScopes       []string `split_words:"true" default:"repo,read:user,read:org"`
 	}
 
 	Slack struct {

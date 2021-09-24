@@ -148,13 +148,21 @@ func (w *Web) Signin(c *gin.Context) {
 			return
 		}
 
-		u, _ = w.i.CreateUser(ctx, u)
+		if u, err = w.i.CreateUser(ctx, u); err != nil {
+			w.log.Error("It has failed to save a new user.", zap.Error(err))
+			c.String(http.StatusInternalServerError, "It has failed to save a new user.")
+			return
+		}
 	} else if err != nil {
-		w.log.Error("It failed to save the user.", zap.Error(err))
-		c.String(http.StatusInternalServerError, "It has failed to save the user.")
+		w.log.Error("It failed to find the user.", zap.Error(err))
+		c.String(http.StatusInternalServerError, "It has failed to find the user.")
 		return
 	} else {
-		u, _ = w.i.UpdateUser(ctx, u)
+		if u, _ = w.i.UpdateUser(ctx, u); err != nil {
+			w.log.Error("It has failed to update the user.", zap.Error(err))
+			c.String(http.StatusInternalServerError, "It has failed to update the user.")
+			return
+		}
 	}
 
 	// Register cookie.
