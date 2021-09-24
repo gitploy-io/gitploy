@@ -909,6 +909,107 @@ paths:
           $ref: '#/components/responses/404NotFound'
         '500':
           $ref: '#/components/responses/500InternalError'
+  /repos/{id}/locks:
+    get:
+      tags:
+        - Repo
+      summary: List locked environments.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            description: The repository id.
+      responses:
+        '200':
+          description: Locks
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Locks'
+        '401': 
+          $ref: '#/components/responses/401Unauthorized'
+        '402':
+          $ref: '#/components/responses/402PaymentRequired'
+        '403': 
+          $ref: '#/components/responses/403Forbidden'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+    post:
+      tags:
+        - Repo
+      summary: Lock the environment.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            description: The repository id.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                env:
+                  type: string
+                  description: The name of env in deploy.yml
+      responses:
+        '200':
+          description: Locks
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Locks'
+        '401': 
+          $ref: '#/components/responses/401Unauthorized'
+        '402':
+          $ref: '#/components/responses/402PaymentRequired'
+        '403': 
+          $ref: '#/components/responses/403Forbidden'
+        '409':
+          $ref: '#/components/responses/409Conflict'
+        '422':
+          $ref: '#/components/responses/422UnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+  /repos/{id}/locks/{lockId}:
+    delete:
+      tags:
+        - Repo
+      summary: Unlock the environment.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            description: The repository id.
+        - in: path
+          name: lockId
+          required: true
+          schema:
+            type: integer
+            description: The lock id.
+      responses:
+        '200':
+          description: Locks
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Locks'
+        '401': 
+          $ref: '#/components/responses/401Unauthorized'
+        '402':
+          $ref: '#/components/responses/402PaymentRequired'
+        '403': 
+          $ref: '#/components/responses/403Forbidden'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '500':
+          $ref: '#/components/responses/500InternalError'
   /repos/{id}/perms:
     get:
       tags:
@@ -1589,6 +1690,30 @@ components:
         - status
         - created_at
         - updated_at
+    Locks:
+      type: array
+      items:
+        $ref: '#/components/schemas/Lock'
+    Lock:
+      type: object
+      properties:
+        id:
+          type: number
+        env:
+          type: string
+        created_at:
+          type: string
+        edges:
+          type: object
+          properties:
+            repo:
+              $ref: '#/components/schemas/Repository'
+            user:
+              $ref: '#/components/schemas/User'
+      required:
+        - id
+        - env
+        - created_at
     Config:
       type: object
       properties:

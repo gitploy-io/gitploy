@@ -47,9 +47,11 @@ type RepoEdges struct {
 	Deployments []*Deployment `json:"deployments,omitempty"`
 	// Callback holds the value of the callback edge.
 	Callback []*Callback `json:"callback,omitempty"`
+	// Locks holds the value of the locks edge.
+	Locks []*Lock `json:"locks,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [3]bool
+	loadedTypes [4]bool
 }
 
 // PermsOrErr returns the Perms value or an error if the edge
@@ -77,6 +79,15 @@ func (e RepoEdges) CallbackOrErr() ([]*Callback, error) {
 		return e.Callback, nil
 	}
 	return nil, &NotLoadedError{edge: "callback"}
+}
+
+// LocksOrErr returns the Locks value or an error if the edge
+// was not loaded in eager-loading.
+func (e RepoEdges) LocksOrErr() ([]*Lock, error) {
+	if e.loadedTypes[3] {
+		return e.Locks, nil
+	}
+	return nil, &NotLoadedError{edge: "locks"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -185,6 +196,11 @@ func (r *Repo) QueryDeployments() *DeploymentQuery {
 // QueryCallback queries the "callback" edge of the Repo entity.
 func (r *Repo) QueryCallback() *CallbackQuery {
 	return (&RepoClient{config: r.config}).QueryCallback(r)
+}
+
+// QueryLocks queries the "locks" edge of the Repo entity.
+func (r *Repo) QueryLocks() *LockQuery {
+	return (&RepoClient{config: r.config}).QueryLocks(r)
 }
 
 // Update returns a builder for updating this Repo.

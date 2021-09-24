@@ -13,6 +13,7 @@ import (
 	"github.com/gitploy-io/gitploy/ent/approval"
 	"github.com/gitploy-io/gitploy/ent/chatuser"
 	"github.com/gitploy-io/gitploy/ent/deployment"
+	"github.com/gitploy-io/gitploy/ent/lock"
 	"github.com/gitploy-io/gitploy/ent/perm"
 	"github.com/gitploy-io/gitploy/ent/user"
 )
@@ -178,6 +179,21 @@ func (uc *UserCreate) AddApprovals(a ...*Approval) *UserCreate {
 		ids[i] = a[i].ID
 	}
 	return uc.AddApprovalIDs(ids...)
+}
+
+// AddLockIDs adds the "locks" edge to the Lock entity by IDs.
+func (uc *UserCreate) AddLockIDs(ids ...int) *UserCreate {
+	uc.mutation.AddLockIDs(ids...)
+	return uc
+}
+
+// AddLocks adds the "locks" edges to the Lock entity.
+func (uc *UserCreate) AddLocks(l ...*Lock) *UserCreate {
+	ids := make([]int, len(l))
+	for i := range l {
+		ids[i] = l[i].ID
+	}
+	return uc.AddLockIDs(ids...)
 }
 
 // Mutation returns the UserMutation object of the builder.
@@ -467,6 +483,25 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
 					Column: approval.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := uc.mutation.LocksIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.LocksTable,
+			Columns: []string{user.LocksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: lock.FieldID,
 				},
 			},
 		}

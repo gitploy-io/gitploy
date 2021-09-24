@@ -11,6 +11,7 @@ import (
 	"github.com/gitploy-io/gitploy/ent/deployment"
 	"github.com/gitploy-io/gitploy/ent/deploymentstatus"
 	"github.com/gitploy-io/gitploy/ent/event"
+	"github.com/gitploy-io/gitploy/ent/lock"
 	"github.com/gitploy-io/gitploy/ent/perm"
 	"github.com/gitploy-io/gitploy/ent/repo"
 	"github.com/gitploy-io/gitploy/ent/schema"
@@ -107,6 +108,12 @@ func init() {
 	eventDescCreatedAt := eventFields[2].Descriptor()
 	// event.DefaultCreatedAt holds the default value on creation for the created_at field.
 	event.DefaultCreatedAt = eventDescCreatedAt.Default.(func() time.Time)
+	lockFields := schema.Lock{}.Fields()
+	_ = lockFields
+	// lockDescCreatedAt is the schema descriptor for created_at field.
+	lockDescCreatedAt := lockFields[1].Descriptor()
+	// lock.DefaultCreatedAt holds the default value on creation for the created_at field.
+	lock.DefaultCreatedAt = lockDescCreatedAt.Default.(func() time.Time)
 	permFields := schema.Perm{}.Fields()
 	_ = permFields
 	// permDescCreatedAt is the schema descriptor for created_at field.

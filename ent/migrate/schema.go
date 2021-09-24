@@ -217,6 +217,34 @@ var (
 			},
 		},
 	}
+	// LocksColumns holds the columns for the "locks" table.
+	LocksColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "env", Type: field.TypeString},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "repo_id", Type: field.TypeString, Nullable: true},
+		{Name: "user_id", Type: field.TypeString, Nullable: true},
+	}
+	// LocksTable holds the schema information for the "locks" table.
+	LocksTable = &schema.Table{
+		Name:       "locks",
+		Columns:    LocksColumns,
+		PrimaryKey: []*schema.Column{LocksColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "locks_repos_locks",
+				Columns:    []*schema.Column{LocksColumns[3]},
+				RefColumns: []*schema.Column{ReposColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "locks_users_locks",
+				Columns:    []*schema.Column{LocksColumns[4]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+	}
 	// NotificationRecordsColumns holds the columns for the "notification_records" table.
 	NotificationRecordsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
@@ -335,6 +363,7 @@ var (
 		DeploymentsTable,
 		DeploymentStatusTable,
 		EventsTable,
+		LocksTable,
 		NotificationRecordsTable,
 		PermsTable,
 		ReposTable,
@@ -352,6 +381,8 @@ func init() {
 	DeploymentStatusTable.ForeignKeys[0].RefTable = DeploymentsTable
 	EventsTable.ForeignKeys[0].RefTable = ApprovalsTable
 	EventsTable.ForeignKeys[1].RefTable = DeploymentsTable
+	LocksTable.ForeignKeys[0].RefTable = ReposTable
+	LocksTable.ForeignKeys[1].RefTable = UsersTable
 	NotificationRecordsTable.ForeignKeys[0].RefTable = EventsTable
 	PermsTable.ForeignKeys[0].RefTable = ReposTable
 	PermsTable.ForeignKeys[1].RefTable = UsersTable

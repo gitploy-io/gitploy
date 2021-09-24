@@ -13,6 +13,7 @@ import (
 	"github.com/gitploy-io/gitploy/ent/approval"
 	"github.com/gitploy-io/gitploy/ent/chatuser"
 	"github.com/gitploy-io/gitploy/ent/deployment"
+	"github.com/gitploy-io/gitploy/ent/lock"
 	"github.com/gitploy-io/gitploy/ent/perm"
 	"github.com/gitploy-io/gitploy/ent/predicate"
 	"github.com/gitploy-io/gitploy/ent/user"
@@ -159,6 +160,21 @@ func (uu *UserUpdate) AddApprovals(a ...*Approval) *UserUpdate {
 	return uu.AddApprovalIDs(ids...)
 }
 
+// AddLockIDs adds the "locks" edge to the Lock entity by IDs.
+func (uu *UserUpdate) AddLockIDs(ids ...int) *UserUpdate {
+	uu.mutation.AddLockIDs(ids...)
+	return uu
+}
+
+// AddLocks adds the "locks" edges to the Lock entity.
+func (uu *UserUpdate) AddLocks(l ...*Lock) *UserUpdate {
+	ids := make([]int, len(l))
+	for i := range l {
+		ids[i] = l[i].ID
+	}
+	return uu.AddLockIDs(ids...)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uu *UserUpdate) Mutation() *UserMutation {
 	return uu.mutation
@@ -231,6 +247,27 @@ func (uu *UserUpdate) RemoveApprovals(a ...*Approval) *UserUpdate {
 		ids[i] = a[i].ID
 	}
 	return uu.RemoveApprovalIDs(ids...)
+}
+
+// ClearLocks clears all "locks" edges to the Lock entity.
+func (uu *UserUpdate) ClearLocks() *UserUpdate {
+	uu.mutation.ClearLocks()
+	return uu
+}
+
+// RemoveLockIDs removes the "locks" edge to Lock entities by IDs.
+func (uu *UserUpdate) RemoveLockIDs(ids ...int) *UserUpdate {
+	uu.mutation.RemoveLockIDs(ids...)
+	return uu
+}
+
+// RemoveLocks removes "locks" edges to Lock entities.
+func (uu *UserUpdate) RemoveLocks(l ...*Lock) *UserUpdate {
+	ids := make([]int, len(l))
+	for i := range l {
+		ids[i] = l[i].ID
+	}
+	return uu.RemoveLockIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -567,6 +604,60 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if uu.mutation.LocksCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.LocksTable,
+			Columns: []string{user.LocksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: lock.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.RemovedLocksIDs(); len(nodes) > 0 && !uu.mutation.LocksCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.LocksTable,
+			Columns: []string{user.LocksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: lock.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.LocksIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.LocksTable,
+			Columns: []string{user.LocksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: lock.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, uu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{user.Label}
@@ -714,6 +805,21 @@ func (uuo *UserUpdateOne) AddApprovals(a ...*Approval) *UserUpdateOne {
 	return uuo.AddApprovalIDs(ids...)
 }
 
+// AddLockIDs adds the "locks" edge to the Lock entity by IDs.
+func (uuo *UserUpdateOne) AddLockIDs(ids ...int) *UserUpdateOne {
+	uuo.mutation.AddLockIDs(ids...)
+	return uuo
+}
+
+// AddLocks adds the "locks" edges to the Lock entity.
+func (uuo *UserUpdateOne) AddLocks(l ...*Lock) *UserUpdateOne {
+	ids := make([]int, len(l))
+	for i := range l {
+		ids[i] = l[i].ID
+	}
+	return uuo.AddLockIDs(ids...)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uuo *UserUpdateOne) Mutation() *UserMutation {
 	return uuo.mutation
@@ -786,6 +892,27 @@ func (uuo *UserUpdateOne) RemoveApprovals(a ...*Approval) *UserUpdateOne {
 		ids[i] = a[i].ID
 	}
 	return uuo.RemoveApprovalIDs(ids...)
+}
+
+// ClearLocks clears all "locks" edges to the Lock entity.
+func (uuo *UserUpdateOne) ClearLocks() *UserUpdateOne {
+	uuo.mutation.ClearLocks()
+	return uuo
+}
+
+// RemoveLockIDs removes the "locks" edge to Lock entities by IDs.
+func (uuo *UserUpdateOne) RemoveLockIDs(ids ...int) *UserUpdateOne {
+	uuo.mutation.RemoveLockIDs(ids...)
+	return uuo
+}
+
+// RemoveLocks removes "locks" edges to Lock entities.
+func (uuo *UserUpdateOne) RemoveLocks(l ...*Lock) *UserUpdateOne {
+	ids := make([]int, len(l))
+	for i := range l {
+		ids[i] = l[i].ID
+	}
+	return uuo.RemoveLockIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -1138,6 +1265,60 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
 					Column: approval.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uuo.mutation.LocksCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.LocksTable,
+			Columns: []string{user.LocksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: lock.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.RemovedLocksIDs(); len(nodes) > 0 && !uuo.mutation.LocksCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.LocksTable,
+			Columns: []string{user.LocksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: lock.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.LocksIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.LocksTable,
+			Columns: []string{user.LocksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: lock.FieldID,
 				},
 			},
 		}

@@ -14,6 +14,7 @@ import (
 	"github.com/gitploy-io/gitploy/ent/deployment"
 	"github.com/gitploy-io/gitploy/ent/deploymentstatus"
 	"github.com/gitploy-io/gitploy/ent/event"
+	"github.com/gitploy-io/gitploy/ent/lock"
 	"github.com/gitploy-io/gitploy/ent/notificationrecord"
 	"github.com/gitploy-io/gitploy/ent/perm"
 	"github.com/gitploy-io/gitploy/ent/predicate"
@@ -38,6 +39,7 @@ const (
 	TypeDeployment         = "Deployment"
 	TypeDeploymentStatus   = "DeploymentStatus"
 	TypeEvent              = "Event"
+	TypeLock               = "Lock"
 	TypeNotificationRecord = "NotificationRecord"
 	TypePerm               = "Perm"
 	TypeRepo               = "Repo"
@@ -5017,6 +5019,560 @@ func (m *EventMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown Event edge %s", name)
 }
 
+// LockMutation represents an operation that mutates the Lock nodes in the graph.
+type LockMutation struct {
+	config
+	op            Op
+	typ           string
+	id            *int
+	env           *string
+	created_at    *time.Time
+	clearedFields map[string]struct{}
+	user          *string
+	cleareduser   bool
+	repo          *string
+	clearedrepo   bool
+	done          bool
+	oldValue      func(context.Context) (*Lock, error)
+	predicates    []predicate.Lock
+}
+
+var _ ent.Mutation = (*LockMutation)(nil)
+
+// lockOption allows management of the mutation configuration using functional options.
+type lockOption func(*LockMutation)
+
+// newLockMutation creates new mutation for the Lock entity.
+func newLockMutation(c config, op Op, opts ...lockOption) *LockMutation {
+	m := &LockMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeLock,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withLockID sets the ID field of the mutation.
+func withLockID(id int) lockOption {
+	return func(m *LockMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *Lock
+		)
+		m.oldValue = func(ctx context.Context) (*Lock, error) {
+			once.Do(func() {
+				if m.done {
+					err = fmt.Errorf("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().Lock.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withLock sets the old Lock of the mutation.
+func withLock(node *Lock) lockOption {
+	return func(m *LockMutation) {
+		m.oldValue = func(context.Context) (*Lock, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m LockMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m LockMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, fmt.Errorf("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *LockMutation) ID() (id int, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// SetEnv sets the "env" field.
+func (m *LockMutation) SetEnv(s string) {
+	m.env = &s
+}
+
+// Env returns the value of the "env" field in the mutation.
+func (m *LockMutation) Env() (r string, exists bool) {
+	v := m.env
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEnv returns the old "env" field's value of the Lock entity.
+// If the Lock object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *LockMutation) OldEnv(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldEnv is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldEnv requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEnv: %w", err)
+	}
+	return oldValue.Env, nil
+}
+
+// ResetEnv resets all changes to the "env" field.
+func (m *LockMutation) ResetEnv() {
+	m.env = nil
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *LockMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *LockMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the Lock entity.
+// If the Lock object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *LockMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *LockMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUserID sets the "user_id" field.
+func (m *LockMutation) SetUserID(s string) {
+	m.user = &s
+}
+
+// UserID returns the value of the "user_id" field in the mutation.
+func (m *LockMutation) UserID() (r string, exists bool) {
+	v := m.user
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUserID returns the old "user_id" field's value of the Lock entity.
+// If the Lock object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *LockMutation) OldUserID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldUserID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldUserID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUserID: %w", err)
+	}
+	return oldValue.UserID, nil
+}
+
+// ResetUserID resets all changes to the "user_id" field.
+func (m *LockMutation) ResetUserID() {
+	m.user = nil
+}
+
+// SetRepoID sets the "repo_id" field.
+func (m *LockMutation) SetRepoID(s string) {
+	m.repo = &s
+}
+
+// RepoID returns the value of the "repo_id" field in the mutation.
+func (m *LockMutation) RepoID() (r string, exists bool) {
+	v := m.repo
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRepoID returns the old "repo_id" field's value of the Lock entity.
+// If the Lock object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *LockMutation) OldRepoID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldRepoID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldRepoID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRepoID: %w", err)
+	}
+	return oldValue.RepoID, nil
+}
+
+// ResetRepoID resets all changes to the "repo_id" field.
+func (m *LockMutation) ResetRepoID() {
+	m.repo = nil
+}
+
+// ClearUser clears the "user" edge to the User entity.
+func (m *LockMutation) ClearUser() {
+	m.cleareduser = true
+}
+
+// UserCleared reports if the "user" edge to the User entity was cleared.
+func (m *LockMutation) UserCleared() bool {
+	return m.cleareduser
+}
+
+// UserIDs returns the "user" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// UserID instead. It exists only for internal usage by the builders.
+func (m *LockMutation) UserIDs() (ids []string) {
+	if id := m.user; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetUser resets all changes to the "user" edge.
+func (m *LockMutation) ResetUser() {
+	m.user = nil
+	m.cleareduser = false
+}
+
+// ClearRepo clears the "repo" edge to the Repo entity.
+func (m *LockMutation) ClearRepo() {
+	m.clearedrepo = true
+}
+
+// RepoCleared reports if the "repo" edge to the Repo entity was cleared.
+func (m *LockMutation) RepoCleared() bool {
+	return m.clearedrepo
+}
+
+// RepoIDs returns the "repo" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// RepoID instead. It exists only for internal usage by the builders.
+func (m *LockMutation) RepoIDs() (ids []string) {
+	if id := m.repo; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetRepo resets all changes to the "repo" edge.
+func (m *LockMutation) ResetRepo() {
+	m.repo = nil
+	m.clearedrepo = false
+}
+
+// Where appends a list predicates to the LockMutation builder.
+func (m *LockMutation) Where(ps ...predicate.Lock) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// Op returns the operation name.
+func (m *LockMutation) Op() Op {
+	return m.op
+}
+
+// Type returns the node type of this mutation (Lock).
+func (m *LockMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *LockMutation) Fields() []string {
+	fields := make([]string, 0, 4)
+	if m.env != nil {
+		fields = append(fields, lock.FieldEnv)
+	}
+	if m.created_at != nil {
+		fields = append(fields, lock.FieldCreatedAt)
+	}
+	if m.user != nil {
+		fields = append(fields, lock.FieldUserID)
+	}
+	if m.repo != nil {
+		fields = append(fields, lock.FieldRepoID)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *LockMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case lock.FieldEnv:
+		return m.Env()
+	case lock.FieldCreatedAt:
+		return m.CreatedAt()
+	case lock.FieldUserID:
+		return m.UserID()
+	case lock.FieldRepoID:
+		return m.RepoID()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *LockMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case lock.FieldEnv:
+		return m.OldEnv(ctx)
+	case lock.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case lock.FieldUserID:
+		return m.OldUserID(ctx)
+	case lock.FieldRepoID:
+		return m.OldRepoID(ctx)
+	}
+	return nil, fmt.Errorf("unknown Lock field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *LockMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case lock.FieldEnv:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEnv(v)
+		return nil
+	case lock.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case lock.FieldUserID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUserID(v)
+		return nil
+	case lock.FieldRepoID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRepoID(v)
+		return nil
+	}
+	return fmt.Errorf("unknown Lock field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *LockMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *LockMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *LockMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown Lock numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *LockMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *LockMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *LockMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown Lock nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *LockMutation) ResetField(name string) error {
+	switch name {
+	case lock.FieldEnv:
+		m.ResetEnv()
+		return nil
+	case lock.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case lock.FieldUserID:
+		m.ResetUserID()
+		return nil
+	case lock.FieldRepoID:
+		m.ResetRepoID()
+		return nil
+	}
+	return fmt.Errorf("unknown Lock field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *LockMutation) AddedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.user != nil {
+		edges = append(edges, lock.EdgeUser)
+	}
+	if m.repo != nil {
+		edges = append(edges, lock.EdgeRepo)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *LockMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case lock.EdgeUser:
+		if id := m.user; id != nil {
+			return []ent.Value{*id}
+		}
+	case lock.EdgeRepo:
+		if id := m.repo; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *LockMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 2)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *LockMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	}
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *LockMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.cleareduser {
+		edges = append(edges, lock.EdgeUser)
+	}
+	if m.clearedrepo {
+		edges = append(edges, lock.EdgeRepo)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *LockMutation) EdgeCleared(name string) bool {
+	switch name {
+	case lock.EdgeUser:
+		return m.cleareduser
+	case lock.EdgeRepo:
+		return m.clearedrepo
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *LockMutation) ClearEdge(name string) error {
+	switch name {
+	case lock.EdgeUser:
+		m.ClearUser()
+		return nil
+	case lock.EdgeRepo:
+		m.ClearRepo()
+		return nil
+	}
+	return fmt.Errorf("unknown Lock unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *LockMutation) ResetEdge(name string) error {
+	switch name {
+	case lock.EdgeUser:
+		m.ResetUser()
+		return nil
+	case lock.EdgeRepo:
+		m.ResetRepo()
+		return nil
+	}
+	return fmt.Errorf("unknown Lock edge %s", name)
+}
+
 // NotificationRecordMutation represents an operation that mutates the NotificationRecord nodes in the graph.
 type NotificationRecordMutation struct {
 	config
@@ -6001,6 +6557,9 @@ type RepoMutation struct {
 	callback           map[int]struct{}
 	removedcallback    map[int]struct{}
 	clearedcallback    bool
+	locks              map[int]struct{}
+	removedlocks       map[int]struct{}
+	clearedlocks       bool
 	done               bool
 	oldValue           func(context.Context) (*Repo, error)
 	predicates         []predicate.Repo
@@ -6624,6 +7183,60 @@ func (m *RepoMutation) ResetCallback() {
 	m.removedcallback = nil
 }
 
+// AddLockIDs adds the "locks" edge to the Lock entity by ids.
+func (m *RepoMutation) AddLockIDs(ids ...int) {
+	if m.locks == nil {
+		m.locks = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.locks[ids[i]] = struct{}{}
+	}
+}
+
+// ClearLocks clears the "locks" edge to the Lock entity.
+func (m *RepoMutation) ClearLocks() {
+	m.clearedlocks = true
+}
+
+// LocksCleared reports if the "locks" edge to the Lock entity was cleared.
+func (m *RepoMutation) LocksCleared() bool {
+	return m.clearedlocks
+}
+
+// RemoveLockIDs removes the "locks" edge to the Lock entity by IDs.
+func (m *RepoMutation) RemoveLockIDs(ids ...int) {
+	if m.removedlocks == nil {
+		m.removedlocks = make(map[int]struct{})
+	}
+	for i := range ids {
+		delete(m.locks, ids[i])
+		m.removedlocks[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedLocks returns the removed IDs of the "locks" edge to the Lock entity.
+func (m *RepoMutation) RemovedLocksIDs() (ids []int) {
+	for id := range m.removedlocks {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// LocksIDs returns the "locks" edge IDs in the mutation.
+func (m *RepoMutation) LocksIDs() (ids []int) {
+	for id := range m.locks {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetLocks resets all changes to the "locks" edge.
+func (m *RepoMutation) ResetLocks() {
+	m.locks = nil
+	m.clearedlocks = false
+	m.removedlocks = nil
+}
+
 // Where appends a list predicates to the RepoMutation builder.
 func (m *RepoMutation) Where(ps ...predicate.Repo) {
 	m.predicates = append(m.predicates, ps...)
@@ -6908,7 +7521,7 @@ func (m *RepoMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *RepoMutation) AddedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.perms != nil {
 		edges = append(edges, repo.EdgePerms)
 	}
@@ -6917,6 +7530,9 @@ func (m *RepoMutation) AddedEdges() []string {
 	}
 	if m.callback != nil {
 		edges = append(edges, repo.EdgeCallback)
+	}
+	if m.locks != nil {
+		edges = append(edges, repo.EdgeLocks)
 	}
 	return edges
 }
@@ -6943,13 +7559,19 @@ func (m *RepoMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case repo.EdgeLocks:
+		ids := make([]ent.Value, 0, len(m.locks))
+		for id := range m.locks {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *RepoMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.removedperms != nil {
 		edges = append(edges, repo.EdgePerms)
 	}
@@ -6958,6 +7580,9 @@ func (m *RepoMutation) RemovedEdges() []string {
 	}
 	if m.removedcallback != nil {
 		edges = append(edges, repo.EdgeCallback)
+	}
+	if m.removedlocks != nil {
+		edges = append(edges, repo.EdgeLocks)
 	}
 	return edges
 }
@@ -6984,13 +7609,19 @@ func (m *RepoMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case repo.EdgeLocks:
+		ids := make([]ent.Value, 0, len(m.removedlocks))
+		for id := range m.removedlocks {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *RepoMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.clearedperms {
 		edges = append(edges, repo.EdgePerms)
 	}
@@ -6999,6 +7630,9 @@ func (m *RepoMutation) ClearedEdges() []string {
 	}
 	if m.clearedcallback {
 		edges = append(edges, repo.EdgeCallback)
+	}
+	if m.clearedlocks {
+		edges = append(edges, repo.EdgeLocks)
 	}
 	return edges
 }
@@ -7013,6 +7647,8 @@ func (m *RepoMutation) EdgeCleared(name string) bool {
 		return m.cleareddeployments
 	case repo.EdgeCallback:
 		return m.clearedcallback
+	case repo.EdgeLocks:
+		return m.clearedlocks
 	}
 	return false
 }
@@ -7037,6 +7673,9 @@ func (m *RepoMutation) ResetEdge(name string) error {
 		return nil
 	case repo.EdgeCallback:
 		m.ResetCallback()
+		return nil
+	case repo.EdgeLocks:
+		m.ResetLocks()
 		return nil
 	}
 	return fmt.Errorf("unknown Repo edge %s", name)
@@ -7069,6 +7708,9 @@ type UserMutation struct {
 	approvals          map[int]struct{}
 	removedapprovals   map[int]struct{}
 	clearedapprovals   bool
+	locks              map[int]struct{}
+	removedlocks       map[int]struct{}
+	clearedlocks       bool
 	done               bool
 	oldValue           func(context.Context) (*User, error)
 	predicates         []predicate.User
@@ -7684,6 +8326,60 @@ func (m *UserMutation) ResetApprovals() {
 	m.removedapprovals = nil
 }
 
+// AddLockIDs adds the "locks" edge to the Lock entity by ids.
+func (m *UserMutation) AddLockIDs(ids ...int) {
+	if m.locks == nil {
+		m.locks = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.locks[ids[i]] = struct{}{}
+	}
+}
+
+// ClearLocks clears the "locks" edge to the Lock entity.
+func (m *UserMutation) ClearLocks() {
+	m.clearedlocks = true
+}
+
+// LocksCleared reports if the "locks" edge to the Lock entity was cleared.
+func (m *UserMutation) LocksCleared() bool {
+	return m.clearedlocks
+}
+
+// RemoveLockIDs removes the "locks" edge to the Lock entity by IDs.
+func (m *UserMutation) RemoveLockIDs(ids ...int) {
+	if m.removedlocks == nil {
+		m.removedlocks = make(map[int]struct{})
+	}
+	for i := range ids {
+		delete(m.locks, ids[i])
+		m.removedlocks[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedLocks returns the removed IDs of the "locks" edge to the Lock entity.
+func (m *UserMutation) RemovedLocksIDs() (ids []int) {
+	for id := range m.removedlocks {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// LocksIDs returns the "locks" edge IDs in the mutation.
+func (m *UserMutation) LocksIDs() (ids []int) {
+	for id := range m.locks {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetLocks resets all changes to the "locks" edge.
+func (m *UserMutation) ResetLocks() {
+	m.locks = nil
+	m.clearedlocks = false
+	m.removedlocks = nil
+}
+
 // Where appends a list predicates to the UserMutation builder.
 func (m *UserMutation) Where(ps ...predicate.User) {
 	m.predicates = append(m.predicates, ps...)
@@ -7938,7 +8634,7 @@ func (m *UserMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *UserMutation) AddedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 5)
 	if m.chat_user != nil {
 		edges = append(edges, user.EdgeChatUser)
 	}
@@ -7950,6 +8646,9 @@ func (m *UserMutation) AddedEdges() []string {
 	}
 	if m.approvals != nil {
 		edges = append(edges, user.EdgeApprovals)
+	}
+	if m.locks != nil {
+		edges = append(edges, user.EdgeLocks)
 	}
 	return edges
 }
@@ -7980,13 +8679,19 @@ func (m *UserMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case user.EdgeLocks:
+		ids := make([]ent.Value, 0, len(m.locks))
+		for id := range m.locks {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *UserMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 5)
 	if m.removedperms != nil {
 		edges = append(edges, user.EdgePerms)
 	}
@@ -7995,6 +8700,9 @@ func (m *UserMutation) RemovedEdges() []string {
 	}
 	if m.removedapprovals != nil {
 		edges = append(edges, user.EdgeApprovals)
+	}
+	if m.removedlocks != nil {
+		edges = append(edges, user.EdgeLocks)
 	}
 	return edges
 }
@@ -8021,13 +8729,19 @@ func (m *UserMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case user.EdgeLocks:
+		ids := make([]ent.Value, 0, len(m.removedlocks))
+		for id := range m.removedlocks {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *UserMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 5)
 	if m.clearedchat_user {
 		edges = append(edges, user.EdgeChatUser)
 	}
@@ -8039,6 +8753,9 @@ func (m *UserMutation) ClearedEdges() []string {
 	}
 	if m.clearedapprovals {
 		edges = append(edges, user.EdgeApprovals)
+	}
+	if m.clearedlocks {
+		edges = append(edges, user.EdgeLocks)
 	}
 	return edges
 }
@@ -8055,6 +8772,8 @@ func (m *UserMutation) EdgeCleared(name string) bool {
 		return m.cleareddeployments
 	case user.EdgeApprovals:
 		return m.clearedapprovals
+	case user.EdgeLocks:
+		return m.clearedlocks
 	}
 	return false
 }
@@ -8085,6 +8804,9 @@ func (m *UserMutation) ResetEdge(name string) error {
 		return nil
 	case user.EdgeApprovals:
 		m.ResetApprovals()
+		return nil
+	case user.EdgeLocks:
+		m.ResetLocks()
 		return nil
 	}
 	return fmt.Errorf("unknown User edge %s", name)

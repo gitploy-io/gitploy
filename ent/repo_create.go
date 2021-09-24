@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/gitploy-io/gitploy/ent/callback"
 	"github.com/gitploy-io/gitploy/ent/deployment"
+	"github.com/gitploy-io/gitploy/ent/lock"
 	"github.com/gitploy-io/gitploy/ent/perm"
 	"github.com/gitploy-io/gitploy/ent/repo"
 )
@@ -174,6 +175,21 @@ func (rc *RepoCreate) AddCallback(c ...*Callback) *RepoCreate {
 		ids[i] = c[i].ID
 	}
 	return rc.AddCallbackIDs(ids...)
+}
+
+// AddLockIDs adds the "locks" edge to the Lock entity by IDs.
+func (rc *RepoCreate) AddLockIDs(ids ...int) *RepoCreate {
+	rc.mutation.AddLockIDs(ids...)
+	return rc
+}
+
+// AddLocks adds the "locks" edges to the Lock entity.
+func (rc *RepoCreate) AddLocks(l ...*Lock) *RepoCreate {
+	ids := make([]int, len(l))
+	for i := range l {
+		ids[i] = l[i].ID
+	}
+	return rc.AddLockIDs(ids...)
 }
 
 // Mutation returns the RepoMutation object of the builder.
@@ -438,6 +454,25 @@ func (rc *RepoCreate) createSpec() (*Repo, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
 					Column: callback.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := rc.mutation.LocksIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   repo.LocksTable,
+			Columns: []string{repo.LocksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: lock.FieldID,
 				},
 			},
 		}

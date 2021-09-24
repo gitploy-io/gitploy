@@ -15,6 +15,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/gitploy-io/gitploy/ent/callback"
 	"github.com/gitploy-io/gitploy/ent/deployment"
+	"github.com/gitploy-io/gitploy/ent/lock"
 	"github.com/gitploy-io/gitploy/ent/perm"
 	"github.com/gitploy-io/gitploy/ent/predicate"
 	"github.com/gitploy-io/gitploy/ent/repo"
@@ -33,6 +34,7 @@ type RepoQuery struct {
 	withPerms       *PermQuery
 	withDeployments *DeploymentQuery
 	withCallback    *CallbackQuery
+	withLocks       *LockQuery
 	modifiers       []func(s *sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -129,6 +131,28 @@ func (rq *RepoQuery) QueryCallback() *CallbackQuery {
 			sqlgraph.From(repo.Table, repo.FieldID, selector),
 			sqlgraph.To(callback.Table, callback.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, repo.CallbackTable, repo.CallbackColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(rq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryLocks chains the current query on the "locks" edge.
+func (rq *RepoQuery) QueryLocks() *LockQuery {
+	query := &LockQuery{config: rq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := rq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := rq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(repo.Table, repo.FieldID, selector),
+			sqlgraph.To(lock.Table, lock.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, repo.LocksTable, repo.LocksColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(rq.driver.Dialect(), step)
 		return fromU, nil
@@ -320,6 +344,7 @@ func (rq *RepoQuery) Clone() *RepoQuery {
 		withPerms:       rq.withPerms.Clone(),
 		withDeployments: rq.withDeployments.Clone(),
 		withCallback:    rq.withCallback.Clone(),
+		withLocks:       rq.withLocks.Clone(),
 		// clone intermediate query.
 		sql:  rq.sql.Clone(),
 		path: rq.path,
@@ -356,6 +381,17 @@ func (rq *RepoQuery) WithCallback(opts ...func(*CallbackQuery)) *RepoQuery {
 		opt(query)
 	}
 	rq.withCallback = query
+	return rq
+}
+
+// WithLocks tells the query-builder to eager-load the nodes that are connected to
+// the "locks" edge. The optional arguments are used to configure the query builder of the edge.
+func (rq *RepoQuery) WithLocks(opts ...func(*LockQuery)) *RepoQuery {
+	query := &LockQuery{config: rq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	rq.withLocks = query
 	return rq
 }
 
@@ -424,10 +460,11 @@ func (rq *RepoQuery) sqlAll(ctx context.Context) ([]*Repo, error) {
 	var (
 		nodes       = []*Repo{}
 		_spec       = rq.querySpec()
-		loadedTypes = [3]bool{
+		loadedTypes = [4]bool{
 			rq.withPerms != nil,
 			rq.withDeployments != nil,
 			rq.withCallback != nil,
+			rq.withLocks != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -525,6 +562,31 @@ func (rq *RepoQuery) sqlAll(ctx context.Context) ([]*Repo, error) {
 				return nil, fmt.Errorf(`unexpected foreign-key "repo_id" returned %v for node %v`, fk, n.ID)
 			}
 			node.Edges.Callback = append(node.Edges.Callback, n)
+		}
+	}
+
+	if query := rq.withLocks; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[string]*Repo)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.Locks = []*Lock{}
+		}
+		query.Where(predicate.Lock(func(s *sql.Selector) {
+			s.Where(sql.InValues(repo.LocksColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.RepoID
+			node, ok := nodeids[fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "repo_id" returned %v for node %v`, fk, n.ID)
+			}
+			node.Edges.Locks = append(node.Edges.Locks, n)
 		}
 	}
 

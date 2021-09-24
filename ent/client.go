@@ -15,6 +15,7 @@ import (
 	"github.com/gitploy-io/gitploy/ent/deployment"
 	"github.com/gitploy-io/gitploy/ent/deploymentstatus"
 	"github.com/gitploy-io/gitploy/ent/event"
+	"github.com/gitploy-io/gitploy/ent/lock"
 	"github.com/gitploy-io/gitploy/ent/notificationrecord"
 	"github.com/gitploy-io/gitploy/ent/perm"
 	"github.com/gitploy-io/gitploy/ent/repo"
@@ -42,6 +43,8 @@ type Client struct {
 	DeploymentStatus *DeploymentStatusClient
 	// Event is the client for interacting with the Event builders.
 	Event *EventClient
+	// Lock is the client for interacting with the Lock builders.
+	Lock *LockClient
 	// NotificationRecord is the client for interacting with the NotificationRecord builders.
 	NotificationRecord *NotificationRecordClient
 	// Perm is the client for interacting with the Perm builders.
@@ -69,6 +72,7 @@ func (c *Client) init() {
 	c.Deployment = NewDeploymentClient(c.config)
 	c.DeploymentStatus = NewDeploymentStatusClient(c.config)
 	c.Event = NewEventClient(c.config)
+	c.Lock = NewLockClient(c.config)
 	c.NotificationRecord = NewNotificationRecordClient(c.config)
 	c.Perm = NewPermClient(c.config)
 	c.Repo = NewRepoClient(c.config)
@@ -112,6 +116,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Deployment:         NewDeploymentClient(cfg),
 		DeploymentStatus:   NewDeploymentStatusClient(cfg),
 		Event:              NewEventClient(cfg),
+		Lock:               NewLockClient(cfg),
 		NotificationRecord: NewNotificationRecordClient(cfg),
 		Perm:               NewPermClient(cfg),
 		Repo:               NewRepoClient(cfg),
@@ -140,6 +145,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Deployment:         NewDeploymentClient(cfg),
 		DeploymentStatus:   NewDeploymentStatusClient(cfg),
 		Event:              NewEventClient(cfg),
+		Lock:               NewLockClient(cfg),
 		NotificationRecord: NewNotificationRecordClient(cfg),
 		Perm:               NewPermClient(cfg),
 		Repo:               NewRepoClient(cfg),
@@ -179,6 +185,7 @@ func (c *Client) Use(hooks ...Hook) {
 	c.Deployment.Use(hooks...)
 	c.DeploymentStatus.Use(hooks...)
 	c.Event.Use(hooks...)
+	c.Lock.Use(hooks...)
 	c.NotificationRecord.Use(hooks...)
 	c.Perm.Use(hooks...)
 	c.Repo.Use(hooks...)
@@ -949,6 +956,128 @@ func (c *EventClient) Hooks() []Hook {
 	return c.hooks.Event
 }
 
+// LockClient is a client for the Lock schema.
+type LockClient struct {
+	config
+}
+
+// NewLockClient returns a client for the Lock from the given config.
+func NewLockClient(c config) *LockClient {
+	return &LockClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `lock.Hooks(f(g(h())))`.
+func (c *LockClient) Use(hooks ...Hook) {
+	c.hooks.Lock = append(c.hooks.Lock, hooks...)
+}
+
+// Create returns a create builder for Lock.
+func (c *LockClient) Create() *LockCreate {
+	mutation := newLockMutation(c.config, OpCreate)
+	return &LockCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Lock entities.
+func (c *LockClient) CreateBulk(builders ...*LockCreate) *LockCreateBulk {
+	return &LockCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Lock.
+func (c *LockClient) Update() *LockUpdate {
+	mutation := newLockMutation(c.config, OpUpdate)
+	return &LockUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *LockClient) UpdateOne(l *Lock) *LockUpdateOne {
+	mutation := newLockMutation(c.config, OpUpdateOne, withLock(l))
+	return &LockUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *LockClient) UpdateOneID(id int) *LockUpdateOne {
+	mutation := newLockMutation(c.config, OpUpdateOne, withLockID(id))
+	return &LockUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Lock.
+func (c *LockClient) Delete() *LockDelete {
+	mutation := newLockMutation(c.config, OpDelete)
+	return &LockDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *LockClient) DeleteOne(l *Lock) *LockDeleteOne {
+	return c.DeleteOneID(l.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *LockClient) DeleteOneID(id int) *LockDeleteOne {
+	builder := c.Delete().Where(lock.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &LockDeleteOne{builder}
+}
+
+// Query returns a query builder for Lock.
+func (c *LockClient) Query() *LockQuery {
+	return &LockQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a Lock entity by its id.
+func (c *LockClient) Get(ctx context.Context, id int) (*Lock, error) {
+	return c.Query().Where(lock.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *LockClient) GetX(ctx context.Context, id int) *Lock {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryUser queries the user edge of a Lock.
+func (c *LockClient) QueryUser(l *Lock) *UserQuery {
+	query := &UserQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := l.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(lock.Table, lock.FieldID, id),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, lock.UserTable, lock.UserColumn),
+		)
+		fromV = sqlgraph.Neighbors(l.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryRepo queries the repo edge of a Lock.
+func (c *LockClient) QueryRepo(l *Lock) *RepoQuery {
+	query := &RepoQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := l.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(lock.Table, lock.FieldID, id),
+			sqlgraph.To(repo.Table, repo.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, lock.RepoTable, lock.RepoColumn),
+		)
+		fromV = sqlgraph.Neighbors(l.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *LockClient) Hooks() []Hook {
+	return c.hooks.Lock
+}
+
 // NotificationRecordClient is a client for the NotificationRecord schema.
 type NotificationRecordClient struct {
 	config
@@ -1310,6 +1439,22 @@ func (c *RepoClient) QueryCallback(r *Repo) *CallbackQuery {
 	return query
 }
 
+// QueryLocks queries the locks edge of a Repo.
+func (c *RepoClient) QueryLocks(r *Repo) *LockQuery {
+	query := &LockQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := r.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(repo.Table, repo.FieldID, id),
+			sqlgraph.To(lock.Table, lock.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, repo.LocksTable, repo.LocksColumn),
+		)
+		fromV = sqlgraph.Neighbors(r.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *RepoClient) Hooks() []Hook {
 	return c.hooks.Repo
@@ -1457,6 +1602,22 @@ func (c *UserClient) QueryApprovals(u *User) *ApprovalQuery {
 			sqlgraph.From(user.Table, user.FieldID, id),
 			sqlgraph.To(approval.Table, approval.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, user.ApprovalsTable, user.ApprovalsColumn),
+		)
+		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryLocks queries the locks edge of a User.
+func (c *UserClient) QueryLocks(u *User) *LockQuery {
+	query := &LockQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := u.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, id),
+			sqlgraph.To(lock.Table, lock.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.LocksTable, user.LocksColumn),
 		)
 		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
 		return fromV, nil
