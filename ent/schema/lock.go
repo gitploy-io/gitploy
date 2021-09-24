@@ -6,6 +6,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
+	"entgo.io/ent/schema/index"
 )
 
 // Lock holds the schema definition for the Lock entity.
@@ -42,5 +43,8 @@ func (Lock) Edges() []ent.Edge {
 }
 
 func (Lock) Indexes() []ent.Index {
-	return []ent.Index{}
+	return []ent.Index{
+		index.Fields("repo_id", "env").
+			Unique(),
+	}
 }

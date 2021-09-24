@@ -244,6 +244,13 @@ var (
 				OnDelete:   schema.SetNull,
 			},
 		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "lock_repo_id_env",
+				Unique:  true,
+				Columns: []*schema.Column{LocksColumns[3], LocksColumns[1]},
+			},
+		},
 	}
 	// NotificationRecordsColumns holds the columns for the "notification_records" table.
 	NotificationRecordsColumns = []*schema.Column{
