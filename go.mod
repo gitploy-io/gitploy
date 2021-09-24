@@ -3,7 +3,6 @@ module github.com/gitploy-io/gitploy
 go 1.15
 
 require (
-	contrib.go.opencensus.io/integrations/ocsql v0.1.7
 	entgo.io/ent v0.9.0
 	github.com/AlekSi/pointer v1.1.0
 	github.com/asaskevich/EventBus v0.0.0-20200907212545-49d423059eef

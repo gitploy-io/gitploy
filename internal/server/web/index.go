@@ -149,8 +149,8 @@ func (w *Web) Signin(c *gin.Context) {
 		}
 
 		if u, err = w.i.CreateUser(ctx, u); err != nil {
-			w.log.Error("It has failed to save a new user.", zap.Error(err))
-			c.String(http.StatusInternalServerError, "It has failed to save a new user.")
+			w.log.Error("It has failed to create a new user.", zap.Error(err))
+			c.String(http.StatusInternalServerError, "It has failed to sign in.")
 			return
 		}
 	} else if err != nil {
@@ -160,7 +160,7 @@ func (w *Web) Signin(c *gin.Context) {
 	} else {
 		if u, _ = w.i.UpdateUser(ctx, u); err != nil {
 			w.log.Error("It has failed to update the user.", zap.Error(err))
-			c.String(http.StatusInternalServerError, "It has failed to update the user.")
+			c.String(http.StatusInternalServerError, "It has failed to sign in.")
 			return
 		}
 	}
