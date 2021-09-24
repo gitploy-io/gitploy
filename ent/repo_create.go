@@ -83,20 +83,6 @@ func (rc *RepoCreate) SetNillableWebhookID(i *int64) *RepoCreate {
 	return rc
 }
 
-// SetLocked sets the "locked" field.
-func (rc *RepoCreate) SetLocked(b bool) *RepoCreate {
-	rc.mutation.SetLocked(b)
-	return rc
-}
-
-// SetNillableLocked sets the "locked" field if the given value is not nil.
-func (rc *RepoCreate) SetNillableLocked(b *bool) *RepoCreate {
-	if b != nil {
-		rc.SetLocked(*b)
-	}
-	return rc
-}
-
 // SetCreatedAt sets the "created_at" field.
 func (rc *RepoCreate) SetCreatedAt(t time.Time) *RepoCreate {
 	rc.mutation.SetCreatedAt(t)
@@ -269,10 +255,6 @@ func (rc *RepoCreate) defaults() {
 		v := repo.DefaultActive
 		rc.mutation.SetActive(v)
 	}
-	if _, ok := rc.mutation.Locked(); !ok {
-		v := repo.DefaultLocked
-		rc.mutation.SetLocked(v)
-	}
 	if _, ok := rc.mutation.CreatedAt(); !ok {
 		v := repo.DefaultCreatedAt()
 		rc.mutation.SetCreatedAt(v)
@@ -299,9 +281,6 @@ func (rc *RepoCreate) check() error {
 	}
 	if _, ok := rc.mutation.Active(); !ok {
 		return &ValidationError{Name: "active", err: errors.New(`ent: missing required field "active"`)}
-	}
-	if _, ok := rc.mutation.Locked(); !ok {
-		return &ValidationError{Name: "locked", err: errors.New(`ent: missing required field "locked"`)}
 	}
 	if _, ok := rc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "created_at"`)}
@@ -385,14 +364,6 @@ func (rc *RepoCreate) createSpec() (*Repo, *sqlgraph.CreateSpec) {
 			Column: repo.FieldWebhookID,
 		})
 		_node.WebhookID = value
-	}
-	if value, ok := rc.mutation.Locked(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: repo.FieldLocked,
-		})
-		_node.Locked = value
 	}
 	if value, ok := rc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

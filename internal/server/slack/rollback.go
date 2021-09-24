@@ -228,12 +228,6 @@ func (s *Slack) interactRollback(c *gin.Context) {
 		return
 	}
 
-	if cb.Edges.Repo.Locked {
-		postBotMessage(cu, fmt.Sprintf("The `%s` repository is locked. It blocks to deploy.", cb.Edges.Repo.GetFullName()))
-		c.Status(http.StatusOK)
-		return
-	}
-
 	cf, err := s.i.GetConfig(ctx, cu.Edges.User, cb.Edges.Repo)
 	if vo.IsConfigNotFoundError(err) {
 		postBotMessage(cu, "The config file is not found.")

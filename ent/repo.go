@@ -28,8 +28,6 @@ type Repo struct {
 	Active bool `json:"active"`
 	// WebhookID holds the value of the "webhook_id" field.
 	WebhookID int64 `json:"webhook_id,omitemtpy"`
-	// Locked holds the value of the "locked" field.
-	Locked bool `json:"locked"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -86,7 +84,7 @@ func (*Repo) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case repo.FieldActive, repo.FieldLocked:
+		case repo.FieldActive:
 			values[i] = new(sql.NullBool)
 		case repo.FieldWebhookID:
 			values[i] = new(sql.NullInt64)
@@ -150,12 +148,6 @@ func (r *Repo) assignValues(columns []string, values []interface{}) error {
 				return fmt.Errorf("unexpected type %T for field webhook_id", values[i])
 			} else if value.Valid {
 				r.WebhookID = value.Int64
-			}
-		case repo.FieldLocked:
-			if value, ok := values[i].(*sql.NullBool); !ok {
-				return fmt.Errorf("unexpected type %T for field locked", values[i])
-			} else if value.Valid {
-				r.Locked = value.Bool
 			}
 		case repo.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -230,8 +222,6 @@ func (r *Repo) String() string {
 	builder.WriteString(fmt.Sprintf("%v", r.Active))
 	builder.WriteString(", webhook_id=")
 	builder.WriteString(fmt.Sprintf("%v", r.WebhookID))
-	builder.WriteString(", locked=")
-	builder.WriteString(fmt.Sprintf("%v", r.Locked))
 	builder.WriteString(", created_at=")
 	builder.WriteString(r.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", updated_at=")

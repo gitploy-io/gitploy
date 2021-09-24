@@ -135,13 +135,6 @@ func WebhookID(v int64) predicate.Repo {
 	})
 }
 
-// Locked applies equality check predicate on the "locked" field. It's identical to LockedEQ.
-func Locked(v bool) predicate.Repo {
-	return predicate.Repo(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldLocked), v))
-	})
-}
-
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.Repo {
 	return predicate.Repo(func(s *sql.Selector) {
@@ -708,20 +701,6 @@ func WebhookIDIsNil() predicate.Repo {
 func WebhookIDNotNil() predicate.Repo {
 	return predicate.Repo(func(s *sql.Selector) {
 		s.Where(sql.NotNull(s.C(FieldWebhookID)))
-	})
-}
-
-// LockedEQ applies the EQ predicate on the "locked" field.
-func LockedEQ(v bool) predicate.Repo {
-	return predicate.Repo(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldLocked), v))
-	})
-}
-
-// LockedNEQ applies the NEQ predicate on the "locked" field.
-func LockedNEQ(v bool) predicate.Repo {
-	return predicate.Repo(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldLocked), v))
 	})
 }
 

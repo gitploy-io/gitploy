@@ -103,20 +103,6 @@ func (ru *RepoUpdate) ClearWebhookID() *RepoUpdate {
 	return ru
 }
 
-// SetLocked sets the "locked" field.
-func (ru *RepoUpdate) SetLocked(b bool) *RepoUpdate {
-	ru.mutation.SetLocked(b)
-	return ru
-}
-
-// SetNillableLocked sets the "locked" field if the given value is not nil.
-func (ru *RepoUpdate) SetNillableLocked(b *bool) *RepoUpdate {
-	if b != nil {
-		ru.SetLocked(*b)
-	}
-	return ru
-}
-
 // SetCreatedAt sets the "created_at" field.
 func (ru *RepoUpdate) SetCreatedAt(t time.Time) *RepoUpdate {
 	ru.mutation.SetCreatedAt(t)
@@ -406,13 +392,6 @@ func (ru *RepoUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: repo.FieldWebhookID,
 		})
 	}
-	if value, ok := ru.mutation.Locked(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: repo.FieldLocked,
-		})
-	}
 	if value, ok := ru.mutation.CreatedAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
@@ -691,20 +670,6 @@ func (ruo *RepoUpdateOne) AddWebhookID(i int64) *RepoUpdateOne {
 // ClearWebhookID clears the value of the "webhook_id" field.
 func (ruo *RepoUpdateOne) ClearWebhookID() *RepoUpdateOne {
 	ruo.mutation.ClearWebhookID()
-	return ruo
-}
-
-// SetLocked sets the "locked" field.
-func (ruo *RepoUpdateOne) SetLocked(b bool) *RepoUpdateOne {
-	ruo.mutation.SetLocked(b)
-	return ruo
-}
-
-// SetNillableLocked sets the "locked" field if the given value is not nil.
-func (ruo *RepoUpdateOne) SetNillableLocked(b *bool) *RepoUpdateOne {
-	if b != nil {
-		ruo.SetLocked(*b)
-	}
 	return ruo
 }
 
@@ -1019,13 +984,6 @@ func (ruo *RepoUpdateOne) sqlSave(ctx context.Context) (_node *Repo, err error) 
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeInt64,
 			Column: repo.FieldWebhookID,
-		})
-	}
-	if value, ok := ruo.mutation.Locked(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: repo.FieldLocked,
 		})
 	}
 	if value, ok := ruo.mutation.CreatedAt(); ok {

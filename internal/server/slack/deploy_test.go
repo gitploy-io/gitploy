@@ -11,9 +11,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang/mock/gomock"
-	"github.com/slack-go/slack"
 	"go.uber.org/zap"
-	"gopkg.in/h2non/gock.v1"
 
 	"github.com/gitploy-io/gitploy/ent"
 	"github.com/gitploy-io/gitploy/ent/deployment"
@@ -26,77 +24,6 @@ const (
 )
 
 func TestSlack_interactDeploy(t *testing.T) {
-	t.Run("Post a message when the repository is locked.", func(t *testing.T) {
-		m := mock.NewMockInteractor(gomock.NewController(t))
-
-		// These values are in "./testdata/deploy-interact.json"
-		const (
-			callbackID = "nafyVuEqzcchuVmV"
-			chatUserID = "U025KUBB2"
-			branch     = "main"
-			env        = "prod"
-		)
-
-		t.Log("Find the callback which was stored by the Slash command.")
-		m.
-			EXPECT().
-			FindCallbackByHash(gomock.Any(), callbackID).
-			Return(&ent.Callback{
-				Edges: ent.CallbackEdges{
-					Repo: &ent.Repo{
-						ID:     "1",
-						Locked: true,
-					},
-				},
-			}, nil)
-
-		t.Log("Find the chat-user who sent the payload.")
-		m.
-			EXPECT().
-			FindChatUserByID(gomock.Any(), chatUserID).
-			Return(&ent.ChatUser{}, nil)
-
-		t.Log("Get branch to validate the payload.")
-		m.
-			EXPECT().
-			GetBranch(gomock.Any(), gomock.AssignableToTypeOf(&ent.User{}), gomock.AssignableToTypeOf(&ent.Repo{}), branch).
-			Return(&vo.Branch{
-				Name: branch,
-			}, nil)
-
-		t.Log("Post a message when the repository is locked.")
-		gock.
-			New(slack.APIURL).
-			Post(pathPostMessage).
-			Reply(200)
-
-		s := &Slack{i: m, log: zap.L()}
-
-		gin.SetMode(gin.ReleaseMode)
-		router := gin.New()
-		router.POST("/interact", s.interactDeploy)
-
-		// Build the Slack payload.
-		bytes, err := ioutil.ReadFile("./testdata/deploy-interact.json")
-		if err != nil {
-			t.Errorf("It has failed to open the JSON file: %s", err)
-			t.FailNow()
-		}
-
-		form := url.Values{}
-		form.Add("payload", string(bytes))
-
-		req, _ := http.NewRequest("POST", "/interact", strings.NewReader(form.Encode()))
-		req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-
-		w := httptest.NewRecorder()
-		router.ServeHTTP(w, req)
-
-		if w.Code != http.StatusOK {
-			t.Fatalf("w.Code = %d, wanted %d. Body = %v", w.Code, http.StatusOK, w.Body)
-		}
-	})
-
 	t.Run("Create a new deployment with payload.", func(t *testing.T) {
 		m := mock.NewMockInteractor(gomock.NewController(t))
 

@@ -116,8 +116,6 @@ paths:
                   default: deploy.yml
                 active:
                   type: boolean
-                locked:
-                  type: boolean
       parameters:
         - in: path
           name: id

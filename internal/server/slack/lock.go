@@ -68,14 +68,13 @@ func (s *Slack) handleLockCmd(c *gin.Context) {
 		return
 	}
 
-	r.Locked = true
+	// r.Locked = true
 	if r, err = s.i.UpdateRepo(ctx, r); err != nil {
 		s.log.Error("It has failed to update the repo.", zap.Error(err))
 		c.Status(http.StatusInternalServerError)
 		return
 	}
 
-	s.log.Debug("Lock the repository successfully.", zap.Bool("locked", r.Locked))
 	postResponseMessage(cmd.ChannelID, cmd.ResponseURL, fmt.Sprintf("Lock the `%s` repository successfully.", args[1]))
 	c.Status(http.StatusOK)
 }
@@ -135,14 +134,13 @@ func (s *Slack) handleUnlockCmd(c *gin.Context) {
 		return
 	}
 
-	r.Locked = false
+	// r.Locked = false
 	if r, err = s.i.UpdateRepo(ctx, r); err != nil {
 		s.log.Error("It has failed to update the repo.", zap.Error(err))
 		c.Status(http.StatusInternalServerError)
 		return
 	}
 
-	s.log.Debug("Unlock the repository successfully.", zap.Bool("locked", r.Locked))
 	postResponseMessage(cmd.ChannelID, cmd.ResponseURL, fmt.Sprintf("Unlock the `%s` repository successfully.", args[1]))
 	c.Status(http.StatusOK)
 }

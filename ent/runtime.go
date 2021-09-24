@@ -129,16 +129,12 @@ func init() {
 	repoDescActive := repoFields[5].Descriptor()
 	// repo.DefaultActive holds the default value on creation for the active field.
 	repo.DefaultActive = repoDescActive.Default.(bool)
-	// repoDescLocked is the schema descriptor for locked field.
-	repoDescLocked := repoFields[7].Descriptor()
-	// repo.DefaultLocked holds the default value on creation for the locked field.
-	repo.DefaultLocked = repoDescLocked.Default.(bool)
 	// repoDescCreatedAt is the schema descriptor for created_at field.
-	repoDescCreatedAt := repoFields[8].Descriptor()
+	repoDescCreatedAt := repoFields[7].Descriptor()
 	// repo.DefaultCreatedAt holds the default value on creation for the created_at field.
 	repo.DefaultCreatedAt = repoDescCreatedAt.Default.(func() time.Time)
 	// repoDescUpdatedAt is the schema descriptor for updated_at field.
-	repoDescUpdatedAt := repoFields[9].Descriptor()
+	repoDescUpdatedAt := repoFields[8].Descriptor()
 	// repo.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	repo.DefaultUpdatedAt = repoDescUpdatedAt.Default.(func() time.Time)
 	// repo.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.

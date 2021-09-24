@@ -23,8 +23,6 @@ const (
 	FieldActive = "active"
 	// FieldWebhookID holds the string denoting the webhook_id field in the database.
 	FieldWebhookID = "webhook_id"
-	// FieldLocked holds the string denoting the locked field in the database.
-	FieldLocked = "locked"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
@@ -71,7 +69,6 @@ var Columns = []string{
 	FieldConfigPath,
 	FieldActive,
 	FieldWebhookID,
-	FieldLocked,
 	FieldCreatedAt,
 	FieldUpdatedAt,
 	FieldLatestDeployedAt,
@@ -92,8 +89,6 @@ var (
 	DefaultConfigPath string
 	// DefaultActive holds the default value on creation for the "active" field.
 	DefaultActive bool
-	// DefaultLocked holds the default value on creation for the "locked" field.
-	DefaultLocked bool
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
 	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.

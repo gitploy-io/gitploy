@@ -286,7 +286,6 @@ var (
 		{Name: "config_path", Type: field.TypeString, Default: "deploy.yml"},
 		{Name: "active", Type: field.TypeBool, Default: false},
 		{Name: "webhook_id", Type: field.TypeInt64, Nullable: true},
-		{Name: "locked", Type: field.TypeBool, Default: false},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "latest_deployed_at", Type: field.TypeTime, Nullable: true},

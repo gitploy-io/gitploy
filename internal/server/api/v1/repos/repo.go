@@ -28,7 +28,6 @@ type (
 	repoPatchPayload struct {
 		ConfigPath *string `json:"config_path"`
 		Active     *bool   `json:"active"`
-		Locked     *bool   `json:"locked"`
 	}
 )
 
@@ -117,18 +116,6 @@ func (r *Repo) UpdateRepo(c *gin.Context) {
 
 			if re, err = r.i.UpdateRepo(ctx, re); err != nil {
 				r.log.Error("failed to update the repo", zap.Error(err))
-				gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to update the repository.")
-				return
-			}
-		}
-	}
-
-	if p.Locked != nil {
-		if *p.Locked != re.Locked {
-			re.Locked = *p.Locked
-
-			if re, err = r.i.UpdateRepo(ctx, re); err != nil {
-				r.log.Error("It has failed to update the repo", zap.Error(err))
 				gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to update the repository.")
 				return
 			}
