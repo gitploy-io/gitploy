@@ -69,6 +69,12 @@ func TestSlack_interactDeploy(t *testing.T) {
 				},
 			}, nil)
 
+		t.Log("Check the lock.")
+		m.
+			EXPECT().
+			HasLockOfRepoForEnv(gomock.Any(), gomock.AssignableToTypeOf(&ent.Repo{}), env).
+			Return(false, nil)
+
 		t.Log("Get the next number of deployment.")
 		m.
 			EXPECT().

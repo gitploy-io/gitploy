@@ -228,9 +228,9 @@ func (s *Slack) interactRollback(c *gin.Context) {
 		return
 	}
 
-	cf, err := s.i.GetConfig(ctx, cu.Edges.User, cb.Edges.Repo)
-	if vo.IsConfigNotFoundError(err) {
-		postBotMessage(cu, "The config file is not found.")
+	cfg, err := s.i.GetConfig(ctx, cu.Edges.User, cb.Edges.Repo)
+	if vo.IsConfigNotFoundError(err) || vo.IsConfigParseError(err) {
+		postBotMessage(cu, "The config is invlid.")
 		c.Status(http.StatusOK)
 		return
 	} else if vo.IsConfigParseError(err) {
@@ -243,19 +243,29 @@ func (s *Slack) interactRollback(c *gin.Context) {
 		return
 	}
 
-	if !cf.HasEnv(d.Env) {
-		postBotMessage(cu, "The environment is not defined.")
+	if !cfg.HasEnv(d.Env) {
+		postBotMessage(cu, "The env is not defined in the config.")
 		c.Status(http.StatusOK)
 		return
 	}
 
-	if err := cf.GetEnv(d.Env).Eval(&vo.EvalValues{IsRollback: true}); err != nil {
-		postBotMessage(cu, "The environment is invalid. It has failed to eval the environment.")
+	env := cfg.GetEnv(d.Env)
+
+	if err := env.Eval(&vo.EvalValues{IsRollback: true}); err != nil {
+		postBotMessage(cu, "It has failed to eval variables in the config.")
 		c.Status(http.StatusOK)
 		return
 	}
 
-	env := cf.GetEnv(d.Env)
+	if locked, err := s.i.HasLockOfRepoForEnv(ctx, cb.Edges.Repo, d.Env); locked {
+		postBotMessage(cu, "The env is locked. You should unlock the env before deploying.")
+		c.Status(http.StatusOK)
+		return
+	} else if err != nil {
+		s.log.Error("It has failed to check the lock.", zap.Error(err))
+		c.Status(http.StatusInternalServerError)
+		return
+	}
 
 	next, err := s.i.GetNextDeploymentNumberOfRepo(ctx, cb.Edges.Repo)
 	if err != nil {

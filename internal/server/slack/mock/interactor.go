@@ -304,6 +304,21 @@ func (mr *MockInteractorMockRecorder) GetTag(ctx, u, r, tag interface{}) *gomock
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTag", reflect.TypeOf((*MockInteractor)(nil).GetTag), ctx, u, r, tag)
 }
 
+// HasLockOfRepoForEnv mocks base method.
+func (m *MockInteractor) HasLockOfRepoForEnv(ctx context.Context, r *ent.Repo, env string) (bool, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "HasLockOfRepoForEnv", ctx, r, env)
+	ret0, _ := ret[0].(bool)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// HasLockOfRepoForEnv indicates an expected call of HasLockOfRepoForEnv.
+func (mr *MockInteractorMockRecorder) HasLockOfRepoForEnv(ctx, r, env interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "HasLockOfRepoForEnv", reflect.TypeOf((*MockInteractor)(nil).HasLockOfRepoForEnv), ctx, r, env)
+}
+
 // ListDeploymentsOfRepo mocks base method.
 func (m *MockInteractor) ListDeploymentsOfRepo(ctx context.Context, r *ent.Repo, env, status string, page, perPage int) ([]*ent.Deployment, error) {
 	m.ctrl.T.Helper()

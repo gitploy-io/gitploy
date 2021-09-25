@@ -130,6 +130,12 @@ func TestRepo_CreateDeployment(t *testing.T) {
 				},
 			}, nil)
 
+		t.Log("Check the lock for env.")
+		m.
+			EXPECT().
+			HasLockOfRepoForEnv(gomock.Any(), gomock.AssignableToTypeOf(&ent.Repo{}), input.payload.Env).
+			Return(false, nil)
+
 		t.Log("Return the next deployment number.")
 		m.
 			EXPECT().
