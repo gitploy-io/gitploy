@@ -14,6 +14,7 @@ import (
 	"github.com/gitploy-io/gitploy/ent/deployment"
 	"github.com/gitploy-io/gitploy/ent/deploymentstatus"
 	"github.com/gitploy-io/gitploy/ent/event"
+	"github.com/gitploy-io/gitploy/ent/lock"
 	"github.com/gitploy-io/gitploy/ent/notificationrecord"
 	"github.com/gitploy-io/gitploy/ent/perm"
 	"github.com/gitploy-io/gitploy/ent/repo"
@@ -44,6 +45,7 @@ func columnChecker(table string) func(string) error {
 		deployment.Table:         deployment.ValidColumn,
 		deploymentstatus.Table:   deploymentstatus.ValidColumn,
 		event.Table:              event.ValidColumn,
+		lock.Table:               lock.ValidColumn,
 		notificationrecord.Table: notificationrecord.ValidColumn,
 		perm.Table:               perm.ValidColumn,
 		repo.Table:               repo.ValidColumn,

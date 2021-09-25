@@ -56,6 +56,7 @@ func (User) Edges() []ent.Edge {
 			}),
 		edge.To("deployments", Deployment.Type),
 		edge.To("approvals", Approval.Type),
+		edge.To("locks", Lock.Type),
 	}
 }
 

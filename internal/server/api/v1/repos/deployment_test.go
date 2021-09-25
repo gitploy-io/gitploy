@@ -106,41 +106,6 @@ func TestRepo_ListDeploymentChanges(t *testing.T) {
 }
 
 func TestRepo_CreateDeployment(t *testing.T) {
-	t.Run("422 error when request to the locked repo.", func(t *testing.T) {
-		input := struct {
-			payload *deploymentPostPayload
-		}{
-			payload: &deploymentPostPayload{
-				Type: "branch",
-				Ref:  "main",
-				Env:  "prod",
-			},
-		}
-
-		ctrl := gomock.NewController(t)
-		m := mock.NewMockInteractor(ctrl)
-
-		r := NewRepo(RepoConfig{}, m)
-
-		gin.SetMode(gin.ReleaseMode)
-		router := gin.New()
-		router.POST("/repos/:id/deployments", func(c *gin.Context) {
-			c.Set(global.KeyUser, &ent.User{})
-			// The repos is locked.
-			c.Set(KeyRepo, &ent.Repo{Locked: true})
-		}, r.CreateDeployment)
-
-		body, _ := json.Marshal(input.payload)
-		req, _ := http.NewRequest("POST", "/repos/1/deployments", bytes.NewBuffer(body))
-		w := httptest.NewRecorder()
-
-		router.ServeHTTP(w, req)
-		if w.Code != http.StatusUnprocessableEntity {
-			t.Fatalf("Code = %v, wanted %v. Body=%v", w.Code, http.StatusCreated, w.Body)
-		}
-
-	})
-
 	t.Run("a new deployment entity.", func(t *testing.T) {
 		input := struct {
 			payload *deploymentPostPayload
@@ -164,6 +129,12 @@ func TestRepo_CreateDeployment(t *testing.T) {
 					{Name: "prod"},
 				},
 			}, nil)
+
+		t.Log("Check the lock for env.")
+		m.
+			EXPECT().
+			HasLockOfRepoForEnv(gomock.Any(), gomock.AssignableToTypeOf(&ent.Repo{}), input.payload.Env).
+			Return(false, nil)
 
 		t.Log("Return the next deployment number.")
 		m.

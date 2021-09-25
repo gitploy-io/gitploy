@@ -1,6 +1,7 @@
+import { useEffect } from "react";
+import { shallowEqual } from "react-redux";
 import { useParams } from "react-router-dom";
 import { PageHeader, Result, Button } from "antd";
-import { shallowEqual } from "react-redux";
 
 import { useAppSelector, useAppDispatch } from "../redux/hooks"
 import { User,DeploymentType, Branch, Commit, Tag, RequestStatus, Env } from "../models";
@@ -21,7 +22,6 @@ import {
     deploy} from "../redux/repoDeploy"
 
 import DeployForm, {Option} from "../components/DeployForm"
-import { useEffect } from "react";
 
 const { actions } = repoDeploySlice
 
@@ -120,16 +120,6 @@ export default function RepoDeploy(): JSX.Element {
         return <div />
     } 
 
-    if (repo.locked) {
-        return (
-            <Result
-                status="warning"
-                title="The repository is locked."
-                subTitle="Sorry, you can't deploy until the repository is unlocked."
-            />
-        )
-    }
-    
     if (repo && !config) {
         return (
             <Result

@@ -29,8 +29,6 @@ func (Repo) Fields() []ent.Field {
 			Default(false),
 		field.Int64("webhook_id").
 			Optional(),
-		field.Bool("locked").
-			Default(false),
 		field.Time("created_at").
 			Default(time.Now),
 		field.Time("updated_at").
@@ -54,6 +52,10 @@ func (Repo) Edges() []ent.Edge {
 				OnDelete: entsql.Cascade,
 			}),
 		edge.To("callback", Callback.Type).
+			Annotations(entsql.Annotation{
+				OnDelete: entsql.Cascade,
+			}),
+		edge.To("locks", Lock.Type).
 			Annotations(entsql.Annotation{
 				OnDelete: entsql.Cascade,
 			}),

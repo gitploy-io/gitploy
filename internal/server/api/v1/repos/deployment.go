@@ -87,20 +87,10 @@ func (r *Repo) CreateDeployment(c *gin.Context) {
 	vr, _ := c.Get(KeyRepo)
 	re := vr.(*ent.Repo)
 
-	if re.Locked {
-		r.log.Warn("The repository is locked. It blocks to deploy.")
-		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "The repository is locked. It blocks to deploy.")
-		return
-	}
-
 	cf, err := r.i.GetConfig(ctx, u, re)
-	if vo.IsConfigNotFoundError(err) {
-		r.log.Warn("failed to get the config.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "It has failed to find the configuraton file.")
-		return
-	} else if vo.IsConfigParseError(err) {
-		r.log.Warn("failed to parse the config.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "It has failed to parse the configuraton file.")
+	if vo.IsConfigNotFoundError(err) || vo.IsConfigParseError(err) {
+		r.log.Warn("The config is invalid.", zap.Error(err))
+		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "The config is invalid.")
 		return
 	} else if err != nil {
 		r.log.Error("failed to get the configuration file.", zap.Error(err))
@@ -109,14 +99,24 @@ func (r *Repo) CreateDeployment(c *gin.Context) {
 	}
 
 	if !cf.HasEnv(p.Env) {
-		r.log.Warn("failed to get the env.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "It has failed to get the env in the configuration file.")
+		r.log.Warn("The env is not defined in the config.", zap.Error(err))
+		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "The env is not defined in the config.")
 		return
 	}
 
 	if err := cf.GetEnv(p.Env).Eval(&vo.EvalValues{}); err != nil {
-		r.log.Warn("It has failed to eval the env.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "It has failed to eval the env in the configuration file.")
+		r.log.Warn("It has failed to eval variables in the config.", zap.Error(err))
+		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "It has failed to eval variables in the config.")
+		return
+	}
+
+	if locked, err := r.i.HasLockOfRepoForEnv(ctx, re, p.Env); locked {
+		r.log.Info("The env is locked.", zap.String("env", p.Env))
+		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "The env is locked. You should unlock the env before deploying.")
+		return
+	} else if err != nil {
+		r.log.Error("It has failed to check the lock.", zap.Error(err))
+		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to check the lock.")
 		return
 	}
 
@@ -192,20 +192,10 @@ func (r *Repo) UpdateDeployment(c *gin.Context) {
 		gb.ErrorResponse(c, http.StatusNotFound, "The deployment is not found.")
 	}
 
-	if re.Locked {
-		r.log.Warn("The repository is locked. It blocks to deploy.")
-		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "The repository is locked. It blocks to deploy.")
-		return
-	}
-
 	cf, err := r.i.GetConfig(ctx, u, re)
-	if vo.IsConfigNotFoundError(err) {
-		r.log.Warn("failed to get the config.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "It has failed to find the configuraton file.")
-		return
-	} else if vo.IsConfigParseError(err) {
-		r.log.Warn("failed to parse the config.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "It has failed to parse the configuraton file.")
+	if vo.IsConfigNotFoundError(err) || vo.IsConfigParseError(err) {
+		r.log.Warn("The config is invalid.", zap.Error(err))
+		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "The config is invalid.")
 		return
 	} else if err != nil {
 		r.log.Error("failed to get the configuration file.", zap.Error(err))
@@ -214,14 +204,24 @@ func (r *Repo) UpdateDeployment(c *gin.Context) {
 	}
 
 	if !cf.HasEnv(d.Env) {
-		r.log.Warn("failed to get the env.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "It has failed to get the env in the configuration file.")
+		r.log.Warn("The env is not defined in the config.", zap.Error(err))
+		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "The env is not defined in the config.")
 		return
 	}
 
 	if err := cf.GetEnv(d.Env).Eval(&vo.EvalValues{IsRollback: d.IsRollback}); err != nil {
-		r.log.Warn("It has failed to eval the env.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "It has failed to eval the env in the configuration file.")
+		r.log.Warn("It has failed to eval variables in the config.", zap.Error(err))
+		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "It has failed to eval variables in the config.")
+		return
+	}
+
+	if locked, err := r.i.HasLockOfRepoForEnv(ctx, re, d.Env); locked {
+		r.log.Info("The env is locked.", zap.String("env", d.Env))
+		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "The env is locked. You should unlock the env before deploying.")
+		return
+	} else if err != nil {
+		r.log.Error("It has failed to check the lock.", zap.Error(err))
+		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to check the lock.")
 		return
 	}
 
@@ -281,20 +281,10 @@ func (r *Repo) RollbackDeployment(c *gin.Context) {
 		return
 	}
 
-	if re.Locked {
-		r.log.Warn("The repository is locked. It blocks to deploy.")
-		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "The repository is locked. It blocks to deploy.")
-		return
-	}
-
 	cf, err := r.i.GetConfig(ctx, u, re)
-	if vo.IsConfigNotFoundError(err) {
-		r.log.Warn("failed to get the config.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "It has failed to find the configuraton file.")
-		return
-	} else if vo.IsConfigParseError(err) {
-		r.log.Warn("failed to parse the config.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "It has failed to parse the configuraton file.")
+	if vo.IsConfigNotFoundError(err) || vo.IsConfigParseError(err) {
+		r.log.Warn("The config is invalid.", zap.Error(err))
+		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "The config is invalid.")
 		return
 	} else if err != nil {
 		r.log.Error("failed to get the configuration file.", zap.Error(err))
@@ -303,14 +293,24 @@ func (r *Repo) RollbackDeployment(c *gin.Context) {
 	}
 
 	if !cf.HasEnv(d.Env) {
-		r.log.Warn("failed to get the env.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "It has failed to get the env in the configuration file.")
+		r.log.Warn("The env is not defined in the config.", zap.Error(err))
+		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "The env is not defined in the config.")
 		return
 	}
 
 	if err := cf.GetEnv(d.Env).Eval(&vo.EvalValues{IsRollback: true}); err != nil {
-		r.log.Warn("It has failed to eval the env.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "It has failed to eval the env in the configuration file.")
+		r.log.Warn("It has failed to eval variables in the config.", zap.Error(err))
+		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "It has failed to eval variables in the config.")
+		return
+	}
+
+	if locked, err := r.i.HasLockOfRepoForEnv(ctx, re, d.Env); locked {
+		r.log.Info("The env is locked.", zap.String("env", d.Env))
+		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "The env is locked. You should unlock the env before deploying.")
+		return
+	} else if err != nil {
+		r.log.Error("It has failed to check the lock.", zap.Error(err))
+		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to check the lock.")
 		return
 	}
 

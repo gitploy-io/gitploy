@@ -28,8 +28,6 @@ type Repo struct {
 	Active bool `json:"active"`
 	// WebhookID holds the value of the "webhook_id" field.
 	WebhookID int64 `json:"webhook_id,omitemtpy"`
-	// Locked holds the value of the "locked" field.
-	Locked bool `json:"locked"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -49,9 +47,11 @@ type RepoEdges struct {
 	Deployments []*Deployment `json:"deployments,omitempty"`
 	// Callback holds the value of the callback edge.
 	Callback []*Callback `json:"callback,omitempty"`
+	// Locks holds the value of the locks edge.
+	Locks []*Lock `json:"locks,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [3]bool
+	loadedTypes [4]bool
 }
 
 // PermsOrErr returns the Perms value or an error if the edge
@@ -81,12 +81,21 @@ func (e RepoEdges) CallbackOrErr() ([]*Callback, error) {
 	return nil, &NotLoadedError{edge: "callback"}
 }
 
+// LocksOrErr returns the Locks value or an error if the edge
+// was not loaded in eager-loading.
+func (e RepoEdges) LocksOrErr() ([]*Lock, error) {
+	if e.loadedTypes[3] {
+		return e.Locks, nil
+	}
+	return nil, &NotLoadedError{edge: "locks"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*Repo) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case repo.FieldActive, repo.FieldLocked:
+		case repo.FieldActive:
 			values[i] = new(sql.NullBool)
 		case repo.FieldWebhookID:
 			values[i] = new(sql.NullInt64)
@@ -151,12 +160,6 @@ func (r *Repo) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				r.WebhookID = value.Int64
 			}
-		case repo.FieldLocked:
-			if value, ok := values[i].(*sql.NullBool); !ok {
-				return fmt.Errorf("unexpected type %T for field locked", values[i])
-			} else if value.Valid {
-				r.Locked = value.Bool
-			}
 		case repo.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
@@ -195,6 +198,11 @@ func (r *Repo) QueryCallback() *CallbackQuery {
 	return (&RepoClient{config: r.config}).QueryCallback(r)
 }
 
+// QueryLocks queries the "locks" edge of the Repo entity.
+func (r *Repo) QueryLocks() *LockQuery {
+	return (&RepoClient{config: r.config}).QueryLocks(r)
+}
+
 // Update returns a builder for updating this Repo.
 // Note that you need to call Repo.Unwrap() before calling this method if this Repo
 // was returned from a transaction, and the transaction was committed or rolled back.
@@ -230,8 +238,6 @@ func (r *Repo) String() string {
 	builder.WriteString(fmt.Sprintf("%v", r.Active))
 	builder.WriteString(", webhook_id=")
 	builder.WriteString(fmt.Sprintf("%v", r.WebhookID))
-	builder.WriteString(", locked=")
-	builder.WriteString(fmt.Sprintf("%v", r.Locked))
 	builder.WriteString(", created_at=")
 	builder.WriteString(r.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", updated_at=")

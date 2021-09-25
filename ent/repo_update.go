@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/gitploy-io/gitploy/ent/callback"
 	"github.com/gitploy-io/gitploy/ent/deployment"
+	"github.com/gitploy-io/gitploy/ent/lock"
 	"github.com/gitploy-io/gitploy/ent/perm"
 	"github.com/gitploy-io/gitploy/ent/predicate"
 	"github.com/gitploy-io/gitploy/ent/repo"
@@ -103,20 +104,6 @@ func (ru *RepoUpdate) ClearWebhookID() *RepoUpdate {
 	return ru
 }
 
-// SetLocked sets the "locked" field.
-func (ru *RepoUpdate) SetLocked(b bool) *RepoUpdate {
-	ru.mutation.SetLocked(b)
-	return ru
-}
-
-// SetNillableLocked sets the "locked" field if the given value is not nil.
-func (ru *RepoUpdate) SetNillableLocked(b *bool) *RepoUpdate {
-	if b != nil {
-		ru.SetLocked(*b)
-	}
-	return ru
-}
-
 // SetCreatedAt sets the "created_at" field.
 func (ru *RepoUpdate) SetCreatedAt(t time.Time) *RepoUpdate {
 	ru.mutation.SetCreatedAt(t)
@@ -202,6 +189,21 @@ func (ru *RepoUpdate) AddCallback(c ...*Callback) *RepoUpdate {
 	return ru.AddCallbackIDs(ids...)
 }
 
+// AddLockIDs adds the "locks" edge to the Lock entity by IDs.
+func (ru *RepoUpdate) AddLockIDs(ids ...int) *RepoUpdate {
+	ru.mutation.AddLockIDs(ids...)
+	return ru
+}
+
+// AddLocks adds the "locks" edges to the Lock entity.
+func (ru *RepoUpdate) AddLocks(l ...*Lock) *RepoUpdate {
+	ids := make([]int, len(l))
+	for i := range l {
+		ids[i] = l[i].ID
+	}
+	return ru.AddLockIDs(ids...)
+}
+
 // Mutation returns the RepoMutation object of the builder.
 func (ru *RepoUpdate) Mutation() *RepoMutation {
 	return ru.mutation
@@ -268,6 +270,27 @@ func (ru *RepoUpdate) RemoveCallback(c ...*Callback) *RepoUpdate {
 		ids[i] = c[i].ID
 	}
 	return ru.RemoveCallbackIDs(ids...)
+}
+
+// ClearLocks clears all "locks" edges to the Lock entity.
+func (ru *RepoUpdate) ClearLocks() *RepoUpdate {
+	ru.mutation.ClearLocks()
+	return ru
+}
+
+// RemoveLockIDs removes the "locks" edge to Lock entities by IDs.
+func (ru *RepoUpdate) RemoveLockIDs(ids ...int) *RepoUpdate {
+	ru.mutation.RemoveLockIDs(ids...)
+	return ru
+}
+
+// RemoveLocks removes "locks" edges to Lock entities.
+func (ru *RepoUpdate) RemoveLocks(l ...*Lock) *RepoUpdate {
+	ids := make([]int, len(l))
+	for i := range l {
+		ids[i] = l[i].ID
+	}
+	return ru.RemoveLockIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -404,13 +427,6 @@ func (ru *RepoUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeInt64,
 			Column: repo.FieldWebhookID,
-		})
-	}
-	if value, ok := ru.mutation.Locked(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: repo.FieldLocked,
 		})
 	}
 	if value, ok := ru.mutation.CreatedAt(); ok {
@@ -602,6 +618,60 @@ func (ru *RepoUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if ru.mutation.LocksCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   repo.LocksTable,
+			Columns: []string{repo.LocksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: lock.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ru.mutation.RemovedLocksIDs(); len(nodes) > 0 && !ru.mutation.LocksCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   repo.LocksTable,
+			Columns: []string{repo.LocksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: lock.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ru.mutation.LocksIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   repo.LocksTable,
+			Columns: []string{repo.LocksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: lock.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, ru.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{repo.Label}
@@ -694,20 +764,6 @@ func (ruo *RepoUpdateOne) ClearWebhookID() *RepoUpdateOne {
 	return ruo
 }
 
-// SetLocked sets the "locked" field.
-func (ruo *RepoUpdateOne) SetLocked(b bool) *RepoUpdateOne {
-	ruo.mutation.SetLocked(b)
-	return ruo
-}
-
-// SetNillableLocked sets the "locked" field if the given value is not nil.
-func (ruo *RepoUpdateOne) SetNillableLocked(b *bool) *RepoUpdateOne {
-	if b != nil {
-		ruo.SetLocked(*b)
-	}
-	return ruo
-}
-
 // SetCreatedAt sets the "created_at" field.
 func (ruo *RepoUpdateOne) SetCreatedAt(t time.Time) *RepoUpdateOne {
 	ruo.mutation.SetCreatedAt(t)
@@ -793,6 +849,21 @@ func (ruo *RepoUpdateOne) AddCallback(c ...*Callback) *RepoUpdateOne {
 	return ruo.AddCallbackIDs(ids...)
 }
 
+// AddLockIDs adds the "locks" edge to the Lock entity by IDs.
+func (ruo *RepoUpdateOne) AddLockIDs(ids ...int) *RepoUpdateOne {
+	ruo.mutation.AddLockIDs(ids...)
+	return ruo
+}
+
+// AddLocks adds the "locks" edges to the Lock entity.
+func (ruo *RepoUpdateOne) AddLocks(l ...*Lock) *RepoUpdateOne {
+	ids := make([]int, len(l))
+	for i := range l {
+		ids[i] = l[i].ID
+	}
+	return ruo.AddLockIDs(ids...)
+}
+
 // Mutation returns the RepoMutation object of the builder.
 func (ruo *RepoUpdateOne) Mutation() *RepoMutation {
 	return ruo.mutation
@@ -859,6 +930,27 @@ func (ruo *RepoUpdateOne) RemoveCallback(c ...*Callback) *RepoUpdateOne {
 		ids[i] = c[i].ID
 	}
 	return ruo.RemoveCallbackIDs(ids...)
+}
+
+// ClearLocks clears all "locks" edges to the Lock entity.
+func (ruo *RepoUpdateOne) ClearLocks() *RepoUpdateOne {
+	ruo.mutation.ClearLocks()
+	return ruo
+}
+
+// RemoveLockIDs removes the "locks" edge to Lock entities by IDs.
+func (ruo *RepoUpdateOne) RemoveLockIDs(ids ...int) *RepoUpdateOne {
+	ruo.mutation.RemoveLockIDs(ids...)
+	return ruo
+}
+
+// RemoveLocks removes "locks" edges to Lock entities.
+func (ruo *RepoUpdateOne) RemoveLocks(l ...*Lock) *RepoUpdateOne {
+	ids := make([]int, len(l))
+	for i := range l {
+		ids[i] = l[i].ID
+	}
+	return ruo.RemoveLockIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -1019,13 +1111,6 @@ func (ruo *RepoUpdateOne) sqlSave(ctx context.Context) (_node *Repo, err error) 
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeInt64,
 			Column: repo.FieldWebhookID,
-		})
-	}
-	if value, ok := ruo.mutation.Locked(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: repo.FieldLocked,
 		})
 	}
 	if value, ok := ruo.mutation.CreatedAt(); ok {
@@ -1209,6 +1294,60 @@ func (ruo *RepoUpdateOne) sqlSave(ctx context.Context) (_node *Repo, err error) 
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
 					Column: callback.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if ruo.mutation.LocksCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   repo.LocksTable,
+			Columns: []string{repo.LocksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: lock.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ruo.mutation.RemovedLocksIDs(); len(nodes) > 0 && !ruo.mutation.LocksCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   repo.LocksTable,
+			Columns: []string{repo.LocksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: lock.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ruo.mutation.LocksIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   repo.LocksTable,
+			Columns: []string{repo.LocksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: lock.FieldID,
 				},
 			},
 		}

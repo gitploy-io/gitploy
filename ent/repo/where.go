@@ -135,13 +135,6 @@ func WebhookID(v int64) predicate.Repo {
 	})
 }
 
-// Locked applies equality check predicate on the "locked" field. It's identical to LockedEQ.
-func Locked(v bool) predicate.Repo {
-	return predicate.Repo(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldLocked), v))
-	})
-}
-
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.Repo {
 	return predicate.Repo(func(s *sql.Selector) {
@@ -711,20 +704,6 @@ func WebhookIDNotNil() predicate.Repo {
 	})
 }
 
-// LockedEQ applies the EQ predicate on the "locked" field.
-func LockedEQ(v bool) predicate.Repo {
-	return predicate.Repo(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldLocked), v))
-	})
-}
-
-// LockedNEQ applies the NEQ predicate on the "locked" field.
-func LockedNEQ(v bool) predicate.Repo {
-	return predicate.Repo(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldLocked), v))
-	})
-}
-
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Repo {
 	return predicate.Repo(func(s *sql.Selector) {
@@ -1042,6 +1021,34 @@ func HasCallbackWith(preds ...predicate.Callback) predicate.Repo {
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(CallbackInverseTable, FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, CallbackTable, CallbackColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasLocks applies the HasEdge predicate on the "locks" edge.
+func HasLocks() predicate.Repo {
+	return predicate.Repo(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(LocksTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, LocksTable, LocksColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasLocksWith applies the HasEdge predicate on the "locks" edge with a given conditions (other predicates).
+func HasLocksWith(preds ...predicate.Lock) predicate.Repo {
+	return predicate.Repo(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(LocksInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, LocksTable, LocksColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

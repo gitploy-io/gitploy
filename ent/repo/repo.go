@@ -23,8 +23,6 @@ const (
 	FieldActive = "active"
 	// FieldWebhookID holds the string denoting the webhook_id field in the database.
 	FieldWebhookID = "webhook_id"
-	// FieldLocked holds the string denoting the locked field in the database.
-	FieldLocked = "locked"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
@@ -37,6 +35,8 @@ const (
 	EdgeDeployments = "deployments"
 	// EdgeCallback holds the string denoting the callback edge name in mutations.
 	EdgeCallback = "callback"
+	// EdgeLocks holds the string denoting the locks edge name in mutations.
+	EdgeLocks = "locks"
 	// Table holds the table name of the repo in the database.
 	Table = "repos"
 	// PermsTable is the table that holds the perms relation/edge.
@@ -60,6 +60,13 @@ const (
 	CallbackInverseTable = "callbacks"
 	// CallbackColumn is the table column denoting the callback relation/edge.
 	CallbackColumn = "repo_id"
+	// LocksTable is the table that holds the locks relation/edge.
+	LocksTable = "locks"
+	// LocksInverseTable is the table name for the Lock entity.
+	// It exists in this package in order to avoid circular dependency with the "lock" package.
+	LocksInverseTable = "locks"
+	// LocksColumn is the table column denoting the locks relation/edge.
+	LocksColumn = "repo_id"
 )
 
 // Columns holds all SQL columns for repo fields.
@@ -71,7 +78,6 @@ var Columns = []string{
 	FieldConfigPath,
 	FieldActive,
 	FieldWebhookID,
-	FieldLocked,
 	FieldCreatedAt,
 	FieldUpdatedAt,
 	FieldLatestDeployedAt,
@@ -92,8 +98,6 @@ var (
 	DefaultConfigPath string
 	// DefaultActive holds the default value on creation for the "active" field.
 	DefaultActive bool
-	// DefaultLocked holds the default value on creation for the "locked" field.
-	DefaultLocked bool
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
 	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.

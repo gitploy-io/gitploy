@@ -38,7 +38,6 @@ export const mapDataToRepo = (data: RepoData): Repo => {
         configPath: data.config_path,
         active: data.active,
         webhookId: data.webhook_id,
-        locked: data.locked,
         createdAt: new Date(data.created_at),
         updatedAt: new Date(data.updated_at),
         deployments,

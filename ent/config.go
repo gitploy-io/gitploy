@@ -30,6 +30,7 @@ type hooks struct {
 	Deployment         []ent.Hook
 	DeploymentStatus   []ent.Hook
 	Event              []ent.Hook
+	Lock               []ent.Hook
 	NotificationRecord []ent.Hook
 	Perm               []ent.Hook
 	Repo               []ent.Hook

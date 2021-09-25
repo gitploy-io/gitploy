@@ -11,6 +11,7 @@ import Branch from "./Branch"
 import Tag from "./Tag"
 import User, { ChatUser, RateLimit } from "./User"
 import Approval, { ApprovalStatus } from "./Approval"
+import Lock from "./Lock"
 import License from "./License"
 import Event, {EventKindEnum, EventTypeEnum} from "./Event"
 import { 
@@ -40,6 +41,7 @@ export type {
     ChatUser,
     RateLimit,
     Approval,
+    Lock,
     License,
     Event
 }

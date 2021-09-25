@@ -35,6 +35,8 @@ type (
 
 		CreateApproval(ctx context.Context, a *ent.Approval) (*ent.Approval, error)
 
+		HasLockOfRepoForEnv(ctx context.Context, r *ent.Repo, env string) (bool, error)
+
 		SubscribeEvent(fn func(e *ent.Event)) error
 		UnsubscribeEvent(fn func(e *ent.Event)) error
 

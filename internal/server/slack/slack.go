@@ -63,10 +63,6 @@ func (s *Slack) Cmd(c *gin.Context) {
 		s.handleDeployCmd(c)
 	} else if args[0] == "rollback" && len(args) == 2 {
 		s.handleRollbackCmd(c)
-	} else if args[0] == "lock" && len(args) == 2 {
-		s.handleLockCmd(c)
-	} else if args[0] == "unlock" && len(args) == 2 {
-		s.handleUnlockCmd(c)
 	} else {
 		s.handleHelpCmd(cmd.ChannelID, cmd.ResponseURL)
 	}

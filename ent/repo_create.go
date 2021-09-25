@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/gitploy-io/gitploy/ent/callback"
 	"github.com/gitploy-io/gitploy/ent/deployment"
+	"github.com/gitploy-io/gitploy/ent/lock"
 	"github.com/gitploy-io/gitploy/ent/perm"
 	"github.com/gitploy-io/gitploy/ent/repo"
 )
@@ -79,20 +80,6 @@ func (rc *RepoCreate) SetWebhookID(i int64) *RepoCreate {
 func (rc *RepoCreate) SetNillableWebhookID(i *int64) *RepoCreate {
 	if i != nil {
 		rc.SetWebhookID(*i)
-	}
-	return rc
-}
-
-// SetLocked sets the "locked" field.
-func (rc *RepoCreate) SetLocked(b bool) *RepoCreate {
-	rc.mutation.SetLocked(b)
-	return rc
-}
-
-// SetNillableLocked sets the "locked" field if the given value is not nil.
-func (rc *RepoCreate) SetNillableLocked(b *bool) *RepoCreate {
-	if b != nil {
-		rc.SetLocked(*b)
 	}
 	return rc
 }
@@ -190,6 +177,21 @@ func (rc *RepoCreate) AddCallback(c ...*Callback) *RepoCreate {
 	return rc.AddCallbackIDs(ids...)
 }
 
+// AddLockIDs adds the "locks" edge to the Lock entity by IDs.
+func (rc *RepoCreate) AddLockIDs(ids ...int) *RepoCreate {
+	rc.mutation.AddLockIDs(ids...)
+	return rc
+}
+
+// AddLocks adds the "locks" edges to the Lock entity.
+func (rc *RepoCreate) AddLocks(l ...*Lock) *RepoCreate {
+	ids := make([]int, len(l))
+	for i := range l {
+		ids[i] = l[i].ID
+	}
+	return rc.AddLockIDs(ids...)
+}
+
 // Mutation returns the RepoMutation object of the builder.
 func (rc *RepoCreate) Mutation() *RepoMutation {
 	return rc.mutation
@@ -269,10 +271,6 @@ func (rc *RepoCreate) defaults() {
 		v := repo.DefaultActive
 		rc.mutation.SetActive(v)
 	}
-	if _, ok := rc.mutation.Locked(); !ok {
-		v := repo.DefaultLocked
-		rc.mutation.SetLocked(v)
-	}
 	if _, ok := rc.mutation.CreatedAt(); !ok {
 		v := repo.DefaultCreatedAt()
 		rc.mutation.SetCreatedAt(v)
@@ -299,9 +297,6 @@ func (rc *RepoCreate) check() error {
 	}
 	if _, ok := rc.mutation.Active(); !ok {
 		return &ValidationError{Name: "active", err: errors.New(`ent: missing required field "active"`)}
-	}
-	if _, ok := rc.mutation.Locked(); !ok {
-		return &ValidationError{Name: "locked", err: errors.New(`ent: missing required field "locked"`)}
 	}
 	if _, ok := rc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "created_at"`)}
@@ -386,14 +381,6 @@ func (rc *RepoCreate) createSpec() (*Repo, *sqlgraph.CreateSpec) {
 		})
 		_node.WebhookID = value
 	}
-	if value, ok := rc.mutation.Locked(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: repo.FieldLocked,
-		})
-		_node.Locked = value
-	}
 	if value, ok := rc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
@@ -467,6 +454,25 @@ func (rc *RepoCreate) createSpec() (*Repo, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
 					Column: callback.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := rc.mutation.LocksIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   repo.LocksTable,
+			Columns: []string{repo.LocksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: lock.FieldID,
 				},
 			},
 		}

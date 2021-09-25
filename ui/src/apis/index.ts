@@ -33,6 +33,11 @@ import {
     setApprovalApproved, 
     setApprovalDeclined 
 } from "./approval"
+import {
+    listLocks,
+    lock,
+    unlock
+} from "./lock"
 import { getLicense  } from "./license"
 import { subscribeEvents } from "./events"
 
@@ -74,6 +79,9 @@ export {
     getMyApproval,
     setApprovalApproved,
     setApprovalDeclined,
+    listLocks,
+    lock,
+    unlock,
     getLicense,
     subscribeEvents
 }
