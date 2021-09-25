@@ -43,7 +43,6 @@ interface Params {
 export default function DeploymentView(): JSX.Element {
     const { namespace, name, number } = useParams<Params>()
     const { 
-        repo,
         deployment, 
         changes,
         deploying,
@@ -171,7 +170,7 @@ export default function DeploymentView(): JSX.Element {
                     </Col>
                     <Col xs={{span: 24}} md={{span: 18}}>
                         <DeployConfirm 
-                            isDeployable={(repo?.locked)? false : isDeployable(deployment, approvals)}
+                            isDeployable={isDeployable(deployment, approvals)}
                             deploying={RequestStatus.Pending === deploying}
                             deployment={deployment}
                             changes={changes}

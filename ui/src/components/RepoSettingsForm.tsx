@@ -5,8 +5,6 @@ export interface RepoSettingsFormProps {
     repo: Repo
     saving: boolean
     onClickSave(payload: {configPath: string}): void
-    onClickLock(): void
-    onClickUnlock(): void
     onClickDeactivate(): void
 }
 
@@ -57,21 +55,6 @@ export default function RepoSettingForm(props: RepoSettingsFormProps): JSX.Eleme
             <Form.Item {...submitLayout}>
                 <Form.Item noStyle>
                     <Space>
-                        {(props.repo.locked)? 
-                            <Button
-                                danger
-                                onClick={props.onClickUnlock}
-                            >
-                                UNLOCK REPOSITORY
-                            </Button>:
-                            <Button
-                                danger
-                                type="primary"
-                                onClick={props.onClickLock}
-                            >
-                                LOCK REPOSITORY
-                            </Button>
-                        }
                         <Button
                             danger
                             type="primary"

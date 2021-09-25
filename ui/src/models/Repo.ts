@@ -8,7 +8,6 @@ export default interface Repo {
     configPath: string
     active: boolean
     webhookId: number
-    locked: boolean
     createdAt: Date
     updatedAt: Date 
     deployments?: Deployment[]

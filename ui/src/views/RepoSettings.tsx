@@ -4,7 +4,7 @@ import { useParams } from "react-router-dom";
 import { PageHeader } from "antd"
 
 import { useAppSelector, useAppDispatch } from "../redux/hooks"
-import { init, save, deactivate, lock, unlock, repoSettingsSlice as slice } from "../redux/repoSettings"
+import { init, save, deactivate, repoSettingsSlice as slice } from "../redux/repoSettings"
 import { RequestStatus } from "../models";
 
 import RepoSettingsForm from "../components/RepoSettingsForm"
@@ -33,14 +33,6 @@ export default function RepoSettings(): JSX.Element {
         dispatch(save())
     }
 
-    const onClickLock = () => {
-        dispatch(lock())
-    }
-
-    const onClickUnlock = () => {
-        dispatch(unlock())
-    }
-
     const onClickDeactivate = () => {
         dispatch(deactivate())
     }
@@ -60,8 +52,6 @@ export default function RepoSettings(): JSX.Element {
                     repo={repo}
                     saving={saving === RequestStatus.Pending}
                     onClickSave={onClickSave}
-                    onClickLock={onClickLock}
-                    onClickUnlock={onClickUnlock}
                     onClickDeactivate={onClickDeactivate}
                 />
             </div>

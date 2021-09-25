@@ -72,16 +72,6 @@ export default function RepoHome(): JSX.Element {
         return <div />
     } 
     
-    if (repo.locked) {
-        return (
-            <Result
-                status="warning"
-                title="The repository is locked."
-                subTitle="Sorry, you can't deploy until the repository is unlocked."
-            />
-        )
-    }
-    
     if (repo && !config) {
         return (
             <Result
