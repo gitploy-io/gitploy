@@ -37,7 +37,13 @@ func (s *Store) HasLockOfRepoForEnv(ctx context.Context, r *ent.Repo, env string
 
 func (s *Store) FindLockByID(ctx context.Context, id int) (*ent.Lock, error) {
 	return s.c.Lock.
-		Get(ctx, id)
+		Query().
+		Where(
+			lock.IDEQ(id),
+		).
+		WithUser().
+		WithRepo().
+		Only(ctx)
 }
 
 func (s *Store) CreateLock(ctx context.Context, l *ent.Lock) (*ent.Lock, error) {

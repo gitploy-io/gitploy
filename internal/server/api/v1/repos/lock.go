@@ -93,6 +93,10 @@ func (r *Repo) CreateLock(c *gin.Context) {
 		return
 	}
 
+	if nl, err := r.i.FindLockByID(ctx, l.ID); err == nil {
+		l = nl
+	}
+
 	r.log.Debug("Lock the env.", zap.String("env", p.Env))
 	gb.Response(c, http.StatusCreated, l)
 }
@@ -128,5 +132,6 @@ func (r *Repo) DeleteLock(c *gin.Context) {
 		return
 	}
 
+	r.log.Debug("Unlock the env.", zap.String("env", l.Env))
 	gb.Response(c, http.StatusOK, nil)
 }

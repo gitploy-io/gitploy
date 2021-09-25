@@ -98,6 +98,12 @@ func TestRepo_CreateLock(t *testing.T) {
 			CreateLock(gomock.Any(), gomock.AssignableToTypeOf(&ent.Lock{})).
 			Return(&ent.Lock{ID: 1}, nil)
 
+		t.Log("Get the lock with edges")
+		m.
+			EXPECT().
+			FindLockByID(gomock.Any(), gomock.AssignableToTypeOf(&ent.Lock{})).
+			Return(&ent.Lock{ID: 1}, nil)
+
 		r := NewRepo(RepoConfig{}, m)
 
 		gin.SetMode(gin.ReleaseMode)
