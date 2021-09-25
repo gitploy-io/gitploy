@@ -9,6 +9,7 @@ import { init, activate, repoSlice as slice } from '../redux/repo'
 import ActivateButton from "../components/ActivateButton"
 import Main from './Main'
 import RepoHome from './RepoHome'
+import RepoLock from "./RepoLock";
 import RepoDeploy from './RepoDeploy'
 import RepoRollabck from './RepoRollback'
 import RepoSettings from "./RepoSettings"
@@ -83,6 +84,9 @@ export default function Repo(): JSX.Element {
                     <Menu.Item key="home">
                         <a href={`/${namespace}/${name}`}>Home</a>
                     </Menu.Item>
+                    <Menu.Item key="lock">
+                        <a href={`/${namespace}/${name}/lock`}>Lock</a>
+                    </Menu.Item>
                     <Menu.Item key="deploy">
                         <a href={`/${namespace}/${name}/deploy`}>Deploy</a>
                     </Menu.Item>
@@ -101,6 +105,9 @@ export default function Repo(): JSX.Element {
                 <div>
                     {(!tab || tab === "home") ? <RepoHome /> : null}
                 </div>
+                <div>
+                    {(tab === "lock")? <RepoLock /> : null}
+                </div> 
                 <div>
                     {(tab === "deploy") ? <RepoDeploy /> : null}
                 </div> 
