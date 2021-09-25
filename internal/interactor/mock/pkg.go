@@ -173,6 +173,21 @@ func (mr *MockStoreMockRecorder) CreateEvent(ctx, e interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateEvent", reflect.TypeOf((*MockStore)(nil).CreateEvent), ctx, e)
 }
 
+// CreateLock mocks base method.
+func (m *MockStore) CreateLock(ctx context.Context, l *ent.Lock) (*ent.Lock, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateLock", ctx, l)
+	ret0, _ := ret[0].(*ent.Lock)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreateLock indicates an expected call of CreateLock.
+func (mr *MockStoreMockRecorder) CreateLock(ctx, l interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateLock", reflect.TypeOf((*MockStore)(nil).CreateLock), ctx, l)
+}
+
 // CreatePerm mocks base method.
 func (m *MockStore) CreatePerm(ctx context.Context, p *ent.Perm) (*ent.Perm, error) {
 	m.ctrl.T.Helper()
@@ -244,6 +259,20 @@ func (m *MockStore) DeleteChatUser(ctx context.Context, cu *ent.ChatUser) error 
 func (mr *MockStoreMockRecorder) DeleteChatUser(ctx, cu interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteChatUser", reflect.TypeOf((*MockStore)(nil).DeleteChatUser), ctx, cu)
+}
+
+// DeleteLock mocks base method.
+func (m *MockStore) DeleteLock(ctx context.Context, l *ent.Lock) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteLock", ctx, l)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteLock indicates an expected call of DeleteLock.
+func (mr *MockStoreMockRecorder) DeleteLock(ctx, l interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteLock", reflect.TypeOf((*MockStore)(nil).DeleteLock), ctx, l)
 }
 
 // DeletePermsOfUserLessThanUpdatedAt mocks base method.
@@ -378,6 +407,21 @@ func (m *MockStore) FindDeploymentOfRepoByNumber(ctx context.Context, r *ent.Rep
 func (mr *MockStoreMockRecorder) FindDeploymentOfRepoByNumber(ctx, r, number interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindDeploymentOfRepoByNumber", reflect.TypeOf((*MockStore)(nil).FindDeploymentOfRepoByNumber), ctx, r, number)
+}
+
+// FindLockByID mocks base method.
+func (m *MockStore) FindLockByID(ctx context.Context, id int) (*ent.Lock, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindLockByID", ctx, id)
+	ret0, _ := ret[0].(*ent.Lock)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindLockByID indicates an expected call of FindLockByID.
+func (mr *MockStoreMockRecorder) FindLockByID(ctx, id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindLockByID", reflect.TypeOf((*MockStore)(nil).FindLockByID), ctx, id)
 }
 
 // FindPermOfRepo mocks base method.
@@ -515,6 +559,21 @@ func (mr *MockStoreMockRecorder) GetNextDeploymentNumberOfRepo(ctx, r interface{
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetNextDeploymentNumberOfRepo", reflect.TypeOf((*MockStore)(nil).GetNextDeploymentNumberOfRepo), ctx, r)
 }
 
+// HasLockOfRepoForEnv mocks base method.
+func (m *MockStore) HasLockOfRepoForEnv(ctx context.Context, r *ent.Repo, env string) (bool, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "HasLockOfRepoForEnv", ctx, r, env)
+	ret0, _ := ret[0].(bool)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// HasLockOfRepoForEnv indicates an expected call of HasLockOfRepoForEnv.
+func (mr *MockStoreMockRecorder) HasLockOfRepoForEnv(ctx, r, env interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "HasLockOfRepoForEnv", reflect.TypeOf((*MockStore)(nil).HasLockOfRepoForEnv), ctx, r, env)
+}
+
 // ListApprovals mocks base method.
 func (m *MockStore) ListApprovals(ctx context.Context, d *ent.Deployment) ([]*ent.Approval, error) {
 	m.ctrl.T.Helper()
@@ -573,6 +632,21 @@ func (m *MockStore) ListInactiveDeploymentsLessThanTime(ctx context.Context, t t
 func (mr *MockStoreMockRecorder) ListInactiveDeploymentsLessThanTime(ctx, t, page, perPage interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListInactiveDeploymentsLessThanTime", reflect.TypeOf((*MockStore)(nil).ListInactiveDeploymentsLessThanTime), ctx, t, page, perPage)
+}
+
+// ListLocksOfRepo mocks base method.
+func (m *MockStore) ListLocksOfRepo(ctx context.Context, r *ent.Repo) ([]*ent.Lock, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListLocksOfRepo", ctx, r)
+	ret0, _ := ret[0].([]*ent.Lock)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListLocksOfRepo indicates an expected call of ListLocksOfRepo.
+func (mr *MockStoreMockRecorder) ListLocksOfRepo(ctx, r interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListLocksOfRepo", reflect.TypeOf((*MockStore)(nil).ListLocksOfRepo), ctx, r)
 }
 
 // ListPermsOfRepo mocks base method.

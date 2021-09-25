@@ -957,20 +957,18 @@ paths:
                   type: string
                   description: The name of env in deploy.yml
       responses:
-        '200':
-          description: Locks
+        '201':
+          description: Lock
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Locks'
+                $ref: '#/components/schemas/Lock'
         '401': 
           $ref: '#/components/responses/401Unauthorized'
         '402':
           $ref: '#/components/responses/402PaymentRequired'
         '403': 
           $ref: '#/components/responses/403Forbidden'
-        '409':
-          $ref: '#/components/responses/409Conflict'
         '422':
           $ref: '#/components/responses/422UnprocessableEntity'
         '500':
@@ -995,11 +993,11 @@ paths:
             description: The lock id.
       responses:
         '200':
-          description: Locks
+          description: Ok
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Locks'
+                type: object
         '401': 
           $ref: '#/components/responses/401Unauthorized'
         '402':

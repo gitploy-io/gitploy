@@ -39,6 +39,12 @@ type (
 		UpdateApproval(ctx context.Context, a *ent.Approval) (*ent.Approval, error)
 		DeleteApproval(ctx context.Context, a *ent.Approval) error
 
+		ListLocksOfRepo(ctx context.Context, r *ent.Repo) ([]*ent.Lock, error)
+		HasLockOfRepoForEnv(ctx context.Context, r *ent.Repo, env string) (bool, error)
+		FindLockByID(ctx context.Context, id int) (*ent.Lock, error)
+		CreateLock(ctx context.Context, l *ent.Lock) (*ent.Lock, error)
+		DeleteLock(ctx context.Context, l *ent.Lock) error
+
 		CreateEvent(ctx context.Context, e *ent.Event) (*ent.Event, error)
 
 		ListCommits(ctx context.Context, u *ent.User, r *ent.Repo, branch string, page, perPage int) ([]*vo.Commit, error)

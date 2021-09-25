@@ -334,21 +334,6 @@ func (mr *MockInteractorMockRecorder) ListPermsOfRepo(ctx, r, q, page, perPage i
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListPermsOfRepo", reflect.TypeOf((*MockInteractor)(nil).ListPermsOfRepo), ctx, r, q, page, perPage)
 }
 
-// ListUsersOfEvent mocks base method.
-func (m *MockInteractor) ListUsersOfEvent(ctx context.Context, e *ent.Event) ([]*ent.User, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListUsersOfEvent", ctx, e)
-	ret0, _ := ret[0].([]*ent.User)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// ListUsersOfEvent indicates an expected call of ListUsersOfEvent.
-func (mr *MockInteractorMockRecorder) ListUsersOfEvent(ctx, e interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListUsersOfEvent", reflect.TypeOf((*MockInteractor)(nil).ListUsersOfEvent), ctx, e)
-}
-
 // SubscribeEvent mocks base method.
 func (m *MockInteractor) SubscribeEvent(fn func(*ent.Event)) error {
 	m.ctrl.T.Helper()
