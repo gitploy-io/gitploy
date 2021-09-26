@@ -59,19 +59,12 @@ func (s *Slack) handleDeployCmd(c *gin.Context) {
 	bv, _ := c.Get(KeyChatUser)
 	cu := bv.(*ent.ChatUser)
 
-	args := strings.Split(cmd.Text, " ")
-
-	// The length of args is always equal to two.
-	ns, n, err := parseFullName(args[1])
-	if err != nil {
-		postResponseMessage(cmd.ChannelID, cmd.ResponseURL, fmt.Sprintf("`%s` is invalid repository format.", args[1]))
-		c.Status(http.StatusOK)
-		return
-	}
+	s.log.Debug("Process deploy command.", zap.String("command", cmd.Text))
+	ns, n := parseCmd(cmd.Text)
 
 	r, err := s.i.FindRepoOfUserByNamespaceName(ctx, cu.Edges.User, ns, n)
 	if ent.IsNotFound(err) {
-		postResponseMessage(cmd.ChannelID, cmd.ResponseURL, fmt.Sprintf("The `%s` repository is not found.", args[1]))
+		postResponseMessage(cmd.ChannelID, cmd.ResponseURL, fmt.Sprintf("The `%s/%s` repository is not found.", ns, n))
 		c.Status(http.StatusOK)
 		return
 	} else if err != nil {
@@ -81,16 +74,12 @@ func (s *Slack) handleDeployCmd(c *gin.Context) {
 	}
 
 	config, err := s.i.GetConfig(ctx, cu.Edges.User, r)
-	if vo.IsConfigNotFoundError(err) {
-		postResponseMessage(cmd.ChannelID, cmd.ResponseURL, "The config file is not found.")
-		c.Status(http.StatusOK)
-		return
-	} else if vo.IsConfigParseError(err) {
-		postResponseMessage(cmd.ChannelID, cmd.ResponseURL, "The config file is invliad format.")
+	if vo.IsConfigNotFoundError(err) || vo.IsConfigParseError(err) {
+		postResponseMessage(cmd.ChannelID, cmd.ResponseURL, "The config is invalid.")
 		c.Status(http.StatusOK)
 		return
 	} else if err != nil {
-		s.log.Error("It has failed to get the config.", zap.Error(err))
+		s.log.Error("It has failed to get the config file.", zap.Error(err))
 		c.Status(http.StatusInternalServerError)
 		return
 	}
@@ -122,6 +111,14 @@ func (s *Slack) handleDeployCmd(c *gin.Context) {
 	}
 
 	c.Status(http.StatusOK)
+}
+
+func parseCmd(cmd string) (string, string) {
+	words := strings.Fields(cmd)
+
+	nn := strings.Split(words[1], "/")
+
+	return nn[0], nn[1]
 }
 
 func parseFullName(fullname string) (string, string, error) {
