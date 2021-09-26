@@ -53,20 +53,11 @@ type (
 func (s *Slack) handleDeployCmd(c *gin.Context) {
 	ctx := c.Request.Context()
 
-	// SlashCommandParse hvae to be success because
-	// it has parsed in the Cmd method.
-	cmd, _ := slack.SlashCommandParse(c.Request)
+	av, _ := c.Get(KeyCmd)
+	cmd := av.(slack.SlashCommand)
 
-	cu, err := s.i.FindChatUserByID(ctx, cmd.UserID)
-	if ent.IsNotFound(err) {
-		postResponseMessage(cmd.ChannelID, cmd.ResponseURL, "Slack is not connected with Gitploy.")
-		c.Status(http.StatusOK)
-		return
-	} else if err != nil {
-		s.log.Error("It has failed to get chat user.", zap.Error(err))
-		c.Status(http.StatusInternalServerError)
-		return
-	}
+	bv, _ := c.Get(KeyChatUser)
+	cu := bv.(*ent.ChatUser)
 
 	args := strings.Split(cmd.Text, " ")
 
@@ -241,12 +232,13 @@ func buildDeployView(callbackID string, c *vo.Config, perms []*ent.Perm) slack.M
 func (s *Slack) interactDeploy(c *gin.Context) {
 	ctx := c.Request.Context()
 
-	// InteractionCallbackParse always to be parsed successfully because
-	// it was called in the Interact method.
-	itr, _ := s.InteractionCallbackParse(c.Request)
-	cb, _ := s.i.FindCallbackByHash(ctx, itr.View.CallbackID)
+	iv, _ := c.Get(KeyIntr)
+	itr := iv.(slack.InteractionCallback)
 
-	cu, _ := s.i.FindChatUserByID(ctx, itr.User.ID)
+	cv, _ := c.Get(KeyChatUser)
+	cu := cv.(*ent.ChatUser)
+
+	cb, _ := s.i.FindCallbackByHash(ctx, itr.View.CallbackID)
 
 	// Parse view submission, and
 	// validate values.

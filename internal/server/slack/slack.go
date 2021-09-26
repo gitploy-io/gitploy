@@ -51,12 +51,8 @@ func NewSlack(c *SlackConfig) *Slack {
 // Cmd handles Slash command of Slack.
 // https://api.slack.com/interactivity/slash-commands
 func (s *Slack) Cmd(c *gin.Context) {
-	cmd, err := slack.SlashCommandParse(c.Request)
-	if err != nil {
-		s.log.Error("It has failed to parse the command.", zap.Error(err))
-		c.Status(http.StatusInternalServerError)
-		return
-	}
+	av, _ := c.Get(KeyCmd)
+	cmd := av.(slack.SlashCommand)
 
 	args := strings.Split(cmd.Text, " ")
 	if args[0] == "deploy" && len(args) == 2 {

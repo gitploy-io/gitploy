@@ -40,19 +40,11 @@ type (
 func (s *Slack) handleRollbackCmd(c *gin.Context) {
 	ctx := c.Request.Context()
 
-	cmd, _ := slack.SlashCommandParse(c.Request)
+	av, _ := c.Get(KeyCmd)
+	cmd := av.(slack.SlashCommand)
 
-	// user have to be exist if chat user is found.
-	cu, err := s.i.FindChatUserByID(ctx, cmd.UserID)
-	if ent.IsNotFound(err) {
-		postResponseMessage(cmd.ChannelID, cmd.ResponseURL, "Slack is not connected with Gitploy.")
-		c.Status(http.StatusOK)
-		return
-	} else if err != nil {
-		s.log.Error("It has failed to get chat user.", zap.Error(err))
-		c.Status(http.StatusInternalServerError)
-		return
-	}
+	bv, _ := c.Get(KeyChatUser)
+	cu := bv.(*ent.ChatUser)
 
 	args := strings.Split(cmd.Text, " ")
 
@@ -212,12 +204,13 @@ func (s *Slack) getSuccessfulDeploymentAggregation(ctx context.Context, r *ent.R
 func (s *Slack) interactRollback(c *gin.Context) {
 	ctx := c.Request.Context()
 
-	// InteractionCallbackParse always to be parsed successfully because
-	// it was called in the Interact method.
-	itr, _ := s.InteractionCallbackParse(c.Request)
-	cb, _ := s.i.FindCallbackByHash(ctx, itr.View.CallbackID)
+	iv, _ := c.Get(KeyIntr)
+	itr := iv.(slack.InteractionCallback)
 
-	cu, _ := s.i.FindChatUserByID(ctx, itr.User.ID)
+	cv, _ := c.Get(KeyChatUser)
+	cu := cv.(*ent.ChatUser)
+
+	cb, _ := s.i.FindCallbackByHash(ctx, itr.View.CallbackID)
 
 	sm := parseRollbackSubmissions(itr)
 
