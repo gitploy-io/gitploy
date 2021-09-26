@@ -4,7 +4,6 @@ import (
 	"context"
 	"net/http"
 	"regexp"
-	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gitploy-io/gitploy/ent"
@@ -33,6 +32,17 @@ type (
 	}
 )
 
+const (
+	help = "Below are the commands you can use:\n\n" +
+		"*Deploy*\n" +
+		"`/gitploy deploy OWNER/REPO` - Create a new deployment for OWNER/REPO.\n\n" +
+		"*Rollback*\n" +
+		"`/gitploy rollback OWNER/REPO` - Rollback by the deployment for OWNER/REPO.\n\n" +
+		"*Lock/Unlock*\n" +
+		"`/gitploy lock OWNER/REPO` - Lock the environment to disable deploying.\n" +
+		"`/gitploy unlock OWNER/REPO` - Unlock the environment.\n\n"
+)
+
 func NewSlack(c *SlackConfig) *Slack {
 	s := &Slack{
 		host:  c.ServerHost,
@@ -59,24 +69,38 @@ func (s *Slack) Cmd(c *gin.Context) {
 		s.handleDeployCmd(c)
 	} else if matched, _ := regexp.MatchString("^rollback[[:blank:]]+[0-9A-Za-z._-]*/[0-9A-Za-z._-]*$", cmd.Text); matched {
 		s.handleRollbackCmd(c)
+	} else if matched, _ := regexp.MatchString("^lock[[:blank:]]+[0-9A-Za-z._-]*/[0-9A-Za-z._-]*$", cmd.Text); matched {
+		s.handleLockCmd(c)
+	} else if matched, _ := regexp.MatchString("^unlock[[:blank:]]+[0-9A-Za-z._-]*/[0-9A-Za-z._-]*$", cmd.Text); matched {
+		s.handleUnlockCmd(c)
 	} else {
-		s.handleHelpCmd(cmd.ChannelID, cmd.ResponseURL)
+		postResponseMessage(cmd.ChannelID, cmd.ResponseURL, help)
 	}
 }
 
-func (s *Slack) handleHelpCmd(channelID, responseURL string) {
-	msg := strings.Join([]string{
-		"Below are the commands you can use:\n",
-		"*Deploy*",
-		"`/gitploy deploy OWNER/REPO` - Create a new deployment for OWNER/REPO.\n",
-		"*Rollback*",
-		"`/gitploy rollback OWNER/REPO` - Rollback by the deployment for OWNER/REPO.\n",
-		"*Lock/Unlock*",
-		"`/gitploy lock OWNER/REPO` - Lock the repository to disable deploying.",
-		"`/gitploy unlock OWNER/REPO` - Unlock the repository to enable deploying.\n",
-	}, "\n")
+// Interact interacts interactive components (dialog, button).
+func (s *Slack) Interact(c *gin.Context) {
+	ctx := c.Request.Context()
 
-	postResponseMessage(channelID, responseURL, msg)
+	v, _ := c.Get(KeyIntr)
+	itr := v.(slack.InteractionCallback)
+
+	cb, err := s.i.FindCallbackByHash(ctx, itr.View.CallbackID)
+	if err != nil {
+		s.log.Error("It has failed to find the callback.", zap.Error(err))
+		c.Status(http.StatusInternalServerError)
+		return
+	}
+
+	if cb.Type == callback.TypeDeploy {
+		s.interactDeploy(c)
+	} else if cb.Type == callback.TypeRollback {
+		s.interactRollback(c)
+	} else if cb.Type == callback.TypeLock {
+		s.interactLock(c)
+	} else if cb.Type == callback.TypeUnlock {
+		s.interactUnlock(c)
+	}
 }
 
 func postResponseMessage(channelID, responseURL, message string) error {
@@ -98,40 +122,4 @@ func postBotMessage(cu *ent.ChatUser, message string) error {
 			slack.MsgOptionText(message, false),
 		)
 	return err
-}
-
-// Interact interacts interactive components (dialog, button).
-func (s *Slack) Interact(c *gin.Context) {
-	ctx := c.Request.Context()
-
-	v, _ := c.Get(KeyIntr)
-	itr := v.(slack.InteractionCallback)
-
-	cb, err := s.i.FindCallbackByHash(ctx, itr.View.CallbackID)
-	if err != nil {
-		s.log.Error("It has failed to find the callback.", zap.Error(err))
-		c.Status(http.StatusInternalServerError)
-		return
-	}
-
-	if cb.Type == callback.TypeDeploy {
-		s.interactDeploy(c)
-	} else if cb.Type == callback.TypeRollback {
-		s.interactRollback(c)
-	}
-}
-
-func (s *Slack) InteractionCallbackParse(r *http.Request) (slack.InteractionCallback, error) {
-	r.ParseForm()
-	payload := r.PostForm.Get("payload")
-
-	scb := slack.InteractionCallback{}
-	err := scb.UnmarshalJSON([]byte(payload))
-
-	// Trim backticked double quote for string type.
-	// https://github.com/slack-go/slack/issues/816
-	state := strings.Trim(scb.State, "\"")
-	scb.State = state
-
-	return scb, err
 }

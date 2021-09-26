@@ -16,6 +16,20 @@ func (s *Store) ListLocksOfRepo(ctx context.Context, r *ent.Repo) ([]*ent.Lock, 
 		All(ctx)
 }
 
+func (s *Store) FindLockOfRepoByEnv(ctx context.Context, r *ent.Repo, env string) (*ent.Lock, error) {
+	return s.c.Lock.
+		Query().
+		Where(
+			lock.And(
+				lock.RepoID(r.ID),
+				lock.EnvEQ(env),
+			),
+		).
+		WithUser().
+		WithRepo().
+		Only(ctx)
+}
+
 func (s *Store) HasLockOfRepoForEnv(ctx context.Context, r *ent.Repo, env string) (bool, error) {
 	cnt, err := s.c.Lock.
 		Query().

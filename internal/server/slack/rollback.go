@@ -45,7 +45,7 @@ func (s *Slack) handleRollbackCmd(c *gin.Context) {
 	bv, _ := c.Get(KeyChatUser)
 	cu := bv.(*ent.ChatUser)
 
-	s.log.Debug("Process deploy command.", zap.String("command", cmd.Text))
+	s.log.Debug("Processing rollback command.", zap.String("command", cmd.Text))
 	ns, n := parseCmd(cmd.Text)
 
 	r, err := s.i.FindRepoOfUserByNamespaceName(ctx, cu.Edges.User, ns, n)
@@ -240,7 +240,7 @@ func (s *Slack) interactRollback(c *gin.Context) {
 	}
 
 	if locked, err := s.i.HasLockOfRepoForEnv(ctx, cb.Edges.Repo, d.Env); locked {
-		postBotMessage(cu, "The env is locked. You should unlock the env before deploying.")
+		postBotMessage(cu, fmt.Sprintf("The `%s` environment is locked. You should unlock the environment before deploying.", d.Env))
 		c.Status(http.StatusOK)
 		return
 	} else if err != nil {

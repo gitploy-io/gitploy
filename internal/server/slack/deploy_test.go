@@ -18,10 +18,6 @@ import (
 	"github.com/gitploy-io/gitploy/vo"
 )
 
-const (
-	pathPostMessage string = "chat.postMessage"
-)
-
 func TestSlack_interactDeploy(t *testing.T) {
 	t.Run("Create a new deployment with payload.", func(t *testing.T) {
 		m := mock.NewMockInteractor(gomock.NewController(t))

@@ -41,7 +41,7 @@ var (
 	CallbacksColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "hash", Type: field.TypeString, Unique: true},
-		{Name: "type", Type: field.TypeEnum, Enums: []string{"deploy", "rollback"}},
+		{Name: "type", Type: field.TypeEnum, Enums: []string{"deploy", "rollback", "lock", "unlock"}},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "repo_id", Type: field.TypeString, Nullable: true},

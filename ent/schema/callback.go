@@ -25,6 +25,8 @@ func (Callback) Fields() []ent.Field {
 			Values(
 				"deploy",
 				"rollback",
+				"lock",
+				"unlock",
 			),
 		field.Time("created_at").
 			Default(time.Now),
