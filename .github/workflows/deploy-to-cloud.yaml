@@ -78,3 +78,59 @@ jobs:
           state: "failure"
           token: "${{ github.token }}"
     
+  deploy-production:
+    runs-on: ubuntu-latest
+    # https://docs.github.com/en/developers/webhooks-and-events/webhooks/webhook-events-and-payloads#deployment
+    if: ${{ github.event.deployment.environment == 'production' }}
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v2
+      - 
+        name: Create values.yaml
+        uses: finnp/create-file-action@master
+        env:
+          FILE_NAME: "./.github/values.yaml"
+          FILE_BASE64: "cmVwbGljYUNvdW50OiAyCgppbmdyZXNzOgogIGVuYWJsZWQ6IHRydWUKICBhbm5vdGF0aW9uczoKICAgIGt1YmVybmV0ZXMuaW8vaW5ncmVzcy5jbGFzczogbmdpbngKICAgIGNlcnQtbWFuYWdlci5pby9jbHVzdGVyLWlzc3VlcjogImxldHNlbmNyeXB0LXByb2QiCiAgaG9zdHM6CiAgICAtIGhvc3Q6IGNsb3VkLmdpdHBsb3kuaW8KICAgICAgcGF0aHM6CiAgICAgICAgLSAvCiAgdGxzOgogICAtIHNlY3JldE5hbWU6IGdpdHBsb3ktcHJvZC10bHMKICAgICBob3N0czoKICAgICAgIC0gY2xvdWQuZ2l0cGxveS5pbwoKcmVzb3VyY2VzOgogIHJlcXVlc3RzOgogICAgY3B1OiAxMDBtCiAgICBtZW1vcnk6IDI1Nk1pCgplbnY6CiAgR0lUUExPWV9ERUJVR19NT0RFOiAidHJ1ZSIKICBHSVRQTE9ZX1NFUlZFUl9IT1NUOiAiY2xvdWQuZ2l0cGxveS5pbyIKICBHSVRQTE9ZX1NFUlZFUl9QUk9UTzogaHR0cHMKICBHSVRQTE9ZX0FETUlOX1VTRVJTOiAiaGFuanVubGVlIgogIEdJVFBMT1lfR0lUSFVCX1NDT1BFUzogInB1YmxpY19yZXBvLHJlYWQ6dXNlcixyZWFkOm9yZyIKICBHSVRQTE9ZX1NUT1JFX0RSSVZFUjogIm15c3FsIgoKZXh0cmFTZWNyZXROYW1lc0ZvckVudkZyb206CiAgLSBnaXRwbG95LXByb2Qtc2VjcmV0Cg=="
+      - 
+        name: Start to deploy
+        uses: chrnorm/deployment-status@releases/v1
+        with:
+          deployment_id: ${{ github.event.deployment.id }}
+          description: Start to deploy to the Kubernetes
+          state: "in_progress"
+          token: "${{ github.token }}"
+      - 
+        name: Deploy 
+        uses: WyriHaximus/github-action-helm3@v2
+        with:
+          # Upgrade to the version.
+          exec: >
+            helm repo add gitployio https://gitploy-io.github.io/helm-chart/;
+            helm upgrade gitploy-prod gitployio/gitploy 
+            --install
+            --atomic 
+            --namespace=gitploy
+            -f .github/values.yaml
+            --set=image.tag=${GITHUB_REF#refs/tags/v}
+            --description="Upgrade to ${GITHUB_REF#refs/tags/}"
+          kubeconfig: '${{ secrets.KUBECONFIG }}'
+      - 
+        name: Deploy successfully
+        if: success()
+        uses: chrnorm/deployment-status@releases/v1
+        with:
+          deployment_id: ${{ github.event.deployment.id }}
+          description: Finish to deploy successfully.
+          state: "success"
+          token: "${{ github.token }}"
+      - 
+        name: Deploy failed
+        if: failure()
+        uses: chrnorm/deployment-status@releases/v1
+        with:
+          deployment_id: ${{ github.event.deployment.id }}
+          description: Failed to deploy.
+          state: "failure"
+          token: "${{ github.token }}"
+    
