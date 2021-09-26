@@ -4,7 +4,6 @@ import (
 	"context"
 	"net/http"
 	"regexp"
-	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gitploy-io/gitploy/ent"
@@ -31,6 +30,17 @@ type (
 		*oauth2.Config
 		Interactor
 	}
+)
+
+const (
+	help = "Below are the commands you can use:\n\n" +
+		"*Deploy*\n" +
+		"`/gitploy deploy OWNER/REPO` - Create a new deployment for OWNER/REPO.\n\n" +
+		"*Rollback*\n" +
+		"`/gitploy rollback OWNER/REPO` - Rollback by the deployment for OWNER/REPO.\n\n" +
+		"*Lock/Unlock*\n" +
+		"`/gitploy lock OWNER/REPO` - Lock the repository to disable deploying.\n" +
+		"`/gitploy unlock OWNER/REPO` - Unlock the repository to enable deploying.\n\n"
 )
 
 func NewSlack(c *SlackConfig) *Slack {
@@ -60,44 +70,8 @@ func (s *Slack) Cmd(c *gin.Context) {
 	} else if matched, _ := regexp.MatchString("^rollback[[:blank:]]+[0-9A-Za-z._-]*/[0-9A-Za-z._-]*$", cmd.Text); matched {
 		s.handleRollbackCmd(c)
 	} else {
-		s.handleHelpCmd(cmd.ChannelID, cmd.ResponseURL)
+		postResponseMessage(cmd.ChannelID, cmd.ResponseURL, help)
 	}
-}
-
-func (s *Slack) handleHelpCmd(channelID, responseURL string) {
-	msg := strings.Join([]string{
-		"Below are the commands you can use:\n",
-		"*Deploy*",
-		"`/gitploy deploy OWNER/REPO` - Create a new deployment for OWNER/REPO.\n",
-		"*Rollback*",
-		"`/gitploy rollback OWNER/REPO` - Rollback by the deployment for OWNER/REPO.\n",
-		"*Lock/Unlock*",
-		"`/gitploy lock OWNER/REPO` - Lock the repository to disable deploying.",
-		"`/gitploy unlock OWNER/REPO` - Unlock the repository to enable deploying.\n",
-	}, "\n")
-
-	postResponseMessage(channelID, responseURL, msg)
-}
-
-func postResponseMessage(channelID, responseURL, message string) error {
-	_, _, _, err := slack.
-		New("").
-		SendMessage(
-			channelID,
-			slack.MsgOptionResponseURL(responseURL, "ephemeral"),
-			slack.MsgOptionText(message, false),
-		)
-	return err
-}
-
-func postBotMessage(cu *ent.ChatUser, message string) error {
-	_, _, _, err := slack.
-		New(cu.BotToken).
-		SendMessage(
-			cu.ID,
-			slack.MsgOptionText(message, false),
-		)
-	return err
 }
 
 // Interact interacts interactive components (dialog, button).
@@ -121,17 +95,23 @@ func (s *Slack) Interact(c *gin.Context) {
 	}
 }
 
-func (s *Slack) InteractionCallbackParse(r *http.Request) (slack.InteractionCallback, error) {
-	r.ParseForm()
-	payload := r.PostForm.Get("payload")
+func postResponseMessage(channelID, responseURL, message string) error {
+	_, _, _, err := slack.
+		New("").
+		SendMessage(
+			channelID,
+			slack.MsgOptionResponseURL(responseURL, "ephemeral"),
+			slack.MsgOptionText(message, false),
+		)
+	return err
+}
 
-	scb := slack.InteractionCallback{}
-	err := scb.UnmarshalJSON([]byte(payload))
-
-	// Trim backticked double quote for string type.
-	// https://github.com/slack-go/slack/issues/816
-	state := strings.Trim(scb.State, "\"")
-	scb.State = state
-
-	return scb, err
+func postBotMessage(cu *ent.ChatUser, message string) error {
+	_, _, _, err := slack.
+		New(cu.BotToken).
+		SendMessage(
+			cu.ID,
+			slack.MsgOptionText(message, false),
+		)
+	return err
 }
