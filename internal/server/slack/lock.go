@@ -257,7 +257,7 @@ func (s *Slack) interactLock(c *gin.Context) {
 
 	cb, _ := s.i.FindCallbackByHash(ctx, itr.View.CallbackID)
 
-	sm := parseViewSubmissions(itr)
+	sm := parseLockViewSubmissions(itr)
 
 	if _, err := s.i.CreateLock(ctx, &ent.Lock{
 		Env:    sm.Env,
@@ -284,7 +284,7 @@ func (s *Slack) interactUnlock(c *gin.Context) {
 
 	cb, _ := s.i.FindCallbackByHash(ctx, itr.View.CallbackID)
 
-	sm := parseViewSubmissions(itr)
+	sm := parseLockViewSubmissions(itr)
 
 	lock, err := s.i.FindLockOfRepoByEnv(ctx, cb.Edges.Repo, sm.Env)
 	if ent.IsNotFound(err) {

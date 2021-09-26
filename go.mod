@@ -32,6 +32,5 @@ require (
 	go.uber.org/zap v1.13.0
 	golang.org/x/net v0.0.0-20210525063256-abc453219eb5 // indirect
 	golang.org/x/oauth2 v0.0.0-20210514164344-f6687ab2804c
-	gopkg.in/h2non/gock.v1 v1.1.2
 	gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c
 )
