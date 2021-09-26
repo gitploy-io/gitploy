@@ -110,6 +110,21 @@ func (mr *MockInteractorMockRecorder) CreateEvent(ctx, e interface{}) *gomock.Ca
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateEvent", reflect.TypeOf((*MockInteractor)(nil).CreateEvent), ctx, e)
 }
 
+// CreateLock mocks base method.
+func (m *MockInteractor) CreateLock(ctx context.Context, l *ent.Lock) (*ent.Lock, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateLock", ctx, l)
+	ret0, _ := ret[0].(*ent.Lock)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreateLock indicates an expected call of CreateLock.
+func (mr *MockInteractorMockRecorder) CreateLock(ctx, l interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateLock", reflect.TypeOf((*MockInteractor)(nil).CreateLock), ctx, l)
+}
+
 // DeleteChatUser mocks base method.
 func (m *MockInteractor) DeleteChatUser(ctx context.Context, cu *ent.ChatUser) error {
 	m.ctrl.T.Helper()
@@ -122,6 +137,20 @@ func (m *MockInteractor) DeleteChatUser(ctx context.Context, cu *ent.ChatUser) e
 func (mr *MockInteractorMockRecorder) DeleteChatUser(ctx, cu interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteChatUser", reflect.TypeOf((*MockInteractor)(nil).DeleteChatUser), ctx, cu)
+}
+
+// DeleteLock mocks base method.
+func (m *MockInteractor) DeleteLock(ctx context.Context, l *ent.Lock) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteLock", ctx, l)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteLock indicates an expected call of DeleteLock.
+func (mr *MockInteractorMockRecorder) DeleteLock(ctx, l interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteLock", reflect.TypeOf((*MockInteractor)(nil).DeleteLock), ctx, l)
 }
 
 // Deploy mocks base method.
@@ -182,6 +211,36 @@ func (m *MockInteractor) FindDeploymentByID(ctx context.Context, id int) (*ent.D
 func (mr *MockInteractorMockRecorder) FindDeploymentByID(ctx, id interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindDeploymentByID", reflect.TypeOf((*MockInteractor)(nil).FindDeploymentByID), ctx, id)
+}
+
+// FindLockByID mocks base method.
+func (m *MockInteractor) FindLockByID(ctx context.Context, id int) (*ent.Lock, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindLockByID", ctx, id)
+	ret0, _ := ret[0].(*ent.Lock)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindLockByID indicates an expected call of FindLockByID.
+func (mr *MockInteractorMockRecorder) FindLockByID(ctx, id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindLockByID", reflect.TypeOf((*MockInteractor)(nil).FindLockByID), ctx, id)
+}
+
+// FindLockOfRepoByEnv mocks base method.
+func (m *MockInteractor) FindLockOfRepoByEnv(ctx context.Context, r *ent.Repo, env string) (*ent.Lock, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindLockOfRepoByEnv", ctx, r, env)
+	ret0, _ := ret[0].(*ent.Lock)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindLockOfRepoByEnv indicates an expected call of FindLockOfRepoByEnv.
+func (mr *MockInteractorMockRecorder) FindLockOfRepoByEnv(ctx, r, env interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindLockOfRepoByEnv", reflect.TypeOf((*MockInteractor)(nil).FindLockOfRepoByEnv), ctx, r, env)
 }
 
 // FindPermOfRepo mocks base method.
@@ -332,6 +391,21 @@ func (m *MockInteractor) ListDeploymentsOfRepo(ctx context.Context, r *ent.Repo,
 func (mr *MockInteractorMockRecorder) ListDeploymentsOfRepo(ctx, r, env, status, page, perPage interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListDeploymentsOfRepo", reflect.TypeOf((*MockInteractor)(nil).ListDeploymentsOfRepo), ctx, r, env, status, page, perPage)
+}
+
+// ListLocksOfRepo mocks base method.
+func (m *MockInteractor) ListLocksOfRepo(ctx context.Context, r *ent.Repo) ([]*ent.Lock, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListLocksOfRepo", ctx, r)
+	ret0, _ := ret[0].([]*ent.Lock)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListLocksOfRepo indicates an expected call of ListLocksOfRepo.
+func (mr *MockInteractorMockRecorder) ListLocksOfRepo(ctx, r interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListLocksOfRepo", reflect.TypeOf((*MockInteractor)(nil).ListLocksOfRepo), ctx, r)
 }
 
 // ListPermsOfRepo mocks base method.

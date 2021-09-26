@@ -35,7 +35,12 @@ type (
 
 		CreateApproval(ctx context.Context, a *ent.Approval) (*ent.Approval, error)
 
+		ListLocksOfRepo(ctx context.Context, r *ent.Repo) ([]*ent.Lock, error)
+		FindLockOfRepoByEnv(ctx context.Context, r *ent.Repo, env string) (*ent.Lock, error)
 		HasLockOfRepoForEnv(ctx context.Context, r *ent.Repo, env string) (bool, error)
+		FindLockByID(ctx context.Context, id int) (*ent.Lock, error)
+		CreateLock(ctx context.Context, l *ent.Lock) (*ent.Lock, error)
+		DeleteLock(ctx context.Context, l *ent.Lock) error
 
 		SubscribeEvent(fn func(e *ent.Event)) error
 		UnsubscribeEvent(fn func(e *ent.Event)) error

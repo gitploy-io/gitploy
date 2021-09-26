@@ -424,6 +424,21 @@ func (mr *MockStoreMockRecorder) FindLockByID(ctx, id interface{}) *gomock.Call 
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindLockByID", reflect.TypeOf((*MockStore)(nil).FindLockByID), ctx, id)
 }
 
+// FindLockOfRepoByEnv mocks base method.
+func (m *MockStore) FindLockOfRepoByEnv(ctx context.Context, r *ent.Repo, env string) (*ent.Lock, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindLockOfRepoByEnv", ctx, r, env)
+	ret0, _ := ret[0].(*ent.Lock)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindLockOfRepoByEnv indicates an expected call of FindLockOfRepoByEnv.
+func (mr *MockStoreMockRecorder) FindLockOfRepoByEnv(ctx, r, env interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindLockOfRepoByEnv", reflect.TypeOf((*MockStore)(nil).FindLockOfRepoByEnv), ctx, r, env)
+}
+
 // FindPermOfRepo mocks base method.
 func (m *MockStore) FindPermOfRepo(ctx context.Context, r *ent.Repo, u *ent.User) (*ent.Perm, error) {
 	m.ctrl.T.Helper()

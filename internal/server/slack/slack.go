@@ -39,8 +39,8 @@ const (
 		"*Rollback*\n" +
 		"`/gitploy rollback OWNER/REPO` - Rollback by the deployment for OWNER/REPO.\n\n" +
 		"*Lock/Unlock*\n" +
-		"`/gitploy lock OWNER/REPO` - Lock the repository to disable deploying.\n" +
-		"`/gitploy unlock OWNER/REPO` - Unlock the repository to enable deploying.\n\n"
+		"`/gitploy lock OWNER/REPO` - Lock the environment to disable deploying.\n" +
+		"`/gitploy unlock OWNER/REPO` - Unlock the environment.\n\n"
 )
 
 func NewSlack(c *SlackConfig) *Slack {
@@ -69,6 +69,10 @@ func (s *Slack) Cmd(c *gin.Context) {
 		s.handleDeployCmd(c)
 	} else if matched, _ := regexp.MatchString("^rollback[[:blank:]]+[0-9A-Za-z._-]*/[0-9A-Za-z._-]*$", cmd.Text); matched {
 		s.handleRollbackCmd(c)
+	} else if matched, _ := regexp.MatchString("^lock[[:blank:]]+[0-9A-Za-z._-]*/[0-9A-Za-z._-]*$", cmd.Text); matched {
+		s.handleLockCmd(c)
+	} else if matched, _ := regexp.MatchString("^unlock[[:blank:]]+[0-9A-Za-z._-]*/[0-9A-Za-z._-]*$", cmd.Text); matched {
+		s.handleUnlockCmd(c)
 	} else {
 		postResponseMessage(cmd.ChannelID, cmd.ResponseURL, help)
 	}
@@ -92,6 +96,10 @@ func (s *Slack) Interact(c *gin.Context) {
 		s.interactDeploy(c)
 	} else if cb.Type == callback.TypeRollback {
 		s.interactRollback(c)
+	} else if cb.Type == callback.TypeLock {
+		s.interactLock(c)
+	} else if cb.Type == callback.TypeUnlock {
+		s.interactUnlock(c)
 	}
 }
 
