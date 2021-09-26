@@ -5,12 +5,11 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
-	"net/url"
-	"strings"
 	"testing"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang/mock/gomock"
+	"github.com/slack-go/slack"
 	"go.uber.org/zap"
 
 	"github.com/gitploy-io/gitploy/ent"
@@ -30,7 +29,6 @@ func TestSlack_interactDeploy(t *testing.T) {
 		// These values are in "./testdata/deploy-interact.json"
 		const (
 			callbackID = "nafyVuEqzcchuVmV"
-			chatUserID = "U025KUBB2"
 			branch     = "main"
 			env        = "prod"
 		)
@@ -44,12 +42,6 @@ func TestSlack_interactDeploy(t *testing.T) {
 					Repo: &ent.Repo{ID: "1"},
 				},
 			}, nil)
-
-		t.Log("Find the chat-user who sent the payload.")
-		m.
-			EXPECT().
-			FindChatUserByID(gomock.Any(), chatUserID).
-			Return(&ent.ChatUser{}, nil)
 
 		t.Log("Get branch to validate the payload.")
 		m.
@@ -107,18 +99,19 @@ func TestSlack_interactDeploy(t *testing.T) {
 
 		gin.SetMode(gin.ReleaseMode)
 		router := gin.New()
-		router.POST("/interact", s.interactDeploy)
+		router.POST("/interact", func(c *gin.Context) {
+			bytes, _ := ioutil.ReadFile("./testdata/deploy-interact.json")
+			intr := slack.InteractionCallback{}
+			intr.UnmarshalJSON(bytes)
+			c.Set(KeyIntr, intr)
+			c.Set(KeyChatUser, &ent.ChatUser{
+				Edges: ent.ChatUserEdges{
+					User: &ent.User{},
+				},
+			})
+		}, s.interactDeploy)
 
-		// Build the Slack payload.
-		bytes, err := ioutil.ReadFile("./testdata/deploy-interact.json")
-		if err != nil {
-			t.Errorf("It has failed to open the JSON file: %s", err)
-			t.FailNow()
-		}
-
-		form := url.Values{}
-		form.Add("payload", string(bytes))
-		req, _ := http.NewRequest("POST", "/interact", strings.NewReader(form.Encode()))
+		req, _ := http.NewRequest("POST", "/interact", nil)
 		req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
 		w := httptest.NewRecorder()

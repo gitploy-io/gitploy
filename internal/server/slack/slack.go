@@ -3,6 +3,7 @@ package slack
 import (
 	"context"
 	"net/http"
+	"regexp"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -51,17 +52,12 @@ func NewSlack(c *SlackConfig) *Slack {
 // Cmd handles Slash command of Slack.
 // https://api.slack.com/interactivity/slash-commands
 func (s *Slack) Cmd(c *gin.Context) {
-	cmd, err := slack.SlashCommandParse(c.Request)
-	if err != nil {
-		s.log.Error("It has failed to parse the command.", zap.Error(err))
-		c.Status(http.StatusInternalServerError)
-		return
-	}
+	av, _ := c.Get(KeyCmd)
+	cmd := av.(slack.SlashCommand)
 
-	args := strings.Split(cmd.Text, " ")
-	if args[0] == "deploy" && len(args) == 2 {
+	if matched, _ := regexp.MatchString("^deploy[[:blank:]]+[0-9A-Za-z._-]*/[0-9A-Za-z._-]*$", cmd.Text); matched {
 		s.handleDeployCmd(c)
-	} else if args[0] == "rollback" && len(args) == 2 {
+	} else if matched, _ := regexp.MatchString("^rollback[[:blank:]]+[0-9A-Za-z._-]*/[0-9A-Za-z._-]*$", cmd.Text); matched {
 		s.handleRollbackCmd(c)
 	} else {
 		s.handleHelpCmd(cmd.ChannelID, cmd.ResponseURL)
@@ -108,12 +104,8 @@ func postBotMessage(cu *ent.ChatUser, message string) error {
 func (s *Slack) Interact(c *gin.Context) {
 	ctx := c.Request.Context()
 
-	itr, err := s.InteractionCallbackParse(c.Request)
-	if err != nil {
-		s.log.Error("It has failed to parse the interaction callback.", zap.Error(err))
-		c.Status(http.StatusInternalServerError)
-		return
-	}
+	v, _ := c.Get(KeyIntr)
+	itr := v.(slack.InteractionCallback)
 
 	cb, err := s.i.FindCallbackByHash(ctx, itr.View.CallbackID)
 	if err != nil {

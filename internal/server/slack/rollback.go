@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
-	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/nleeper/goment"
@@ -40,32 +39,18 @@ type (
 func (s *Slack) handleRollbackCmd(c *gin.Context) {
 	ctx := c.Request.Context()
 
-	cmd, _ := slack.SlashCommandParse(c.Request)
+	av, _ := c.Get(KeyCmd)
+	cmd := av.(slack.SlashCommand)
 
-	// user have to be exist if chat user is found.
-	cu, err := s.i.FindChatUserByID(ctx, cmd.UserID)
-	if ent.IsNotFound(err) {
-		postResponseMessage(cmd.ChannelID, cmd.ResponseURL, "Slack is not connected with Gitploy.")
-		c.Status(http.StatusOK)
-		return
-	} else if err != nil {
-		s.log.Error("It has failed to get chat user.", zap.Error(err))
-		c.Status(http.StatusInternalServerError)
-		return
-	}
+	bv, _ := c.Get(KeyChatUser)
+	cu := bv.(*ent.ChatUser)
 
-	args := strings.Split(cmd.Text, " ")
-
-	ns, n, err := parseFullName(args[1])
-	if err != nil {
-		postResponseMessage(cmd.ChannelID, cmd.ResponseURL, fmt.Sprintf("`%s` is invalid repository format.", args[1]))
-		c.Status(http.StatusOK)
-		return
-	}
+	s.log.Debug("Process deploy command.", zap.String("command", cmd.Text))
+	ns, n := parseCmd(cmd.Text)
 
 	r, err := s.i.FindRepoOfUserByNamespaceName(ctx, cu.Edges.User, ns, n)
 	if ent.IsNotFound(err) {
-		postResponseMessage(cmd.ChannelID, cmd.ResponseURL, fmt.Sprintf("The `%s` repository is not found.", args[1]))
+		postResponseMessage(cmd.ChannelID, cmd.ResponseURL, fmt.Sprintf("The `%s/%s` repository is not found.", ns, n))
 		c.Status(http.StatusOK)
 		return
 	} else if err != nil {
@@ -75,12 +60,8 @@ func (s *Slack) handleRollbackCmd(c *gin.Context) {
 	}
 
 	config, err := s.i.GetConfig(ctx, cu.Edges.User, r)
-	if vo.IsConfigNotFoundError(err) {
-		postResponseMessage(cmd.ChannelID, cmd.ResponseURL, "The config file is not found")
-		c.Status(http.StatusOK)
-		return
-	} else if vo.IsConfigParseError(err) {
-		postResponseMessage(cmd.ChannelID, cmd.ResponseURL, "The config file is invliad format.")
+	if vo.IsConfigNotFoundError(err) || vo.IsConfigParseError(err) {
+		postResponseMessage(cmd.ChannelID, cmd.ResponseURL, "The config is invalid.")
 		c.Status(http.StatusOK)
 		return
 	} else if err != nil {
@@ -212,12 +193,13 @@ func (s *Slack) getSuccessfulDeploymentAggregation(ctx context.Context, r *ent.R
 func (s *Slack) interactRollback(c *gin.Context) {
 	ctx := c.Request.Context()
 
-	// InteractionCallbackParse always to be parsed successfully because
-	// it was called in the Interact method.
-	itr, _ := s.InteractionCallbackParse(c.Request)
-	cb, _ := s.i.FindCallbackByHash(ctx, itr.View.CallbackID)
+	iv, _ := c.Get(KeyIntr)
+	itr := iv.(slack.InteractionCallback)
 
-	cu, _ := s.i.FindChatUserByID(ctx, itr.User.ID)
+	cv, _ := c.Get(KeyChatUser)
+	cu := cv.(*ent.ChatUser)
+
+	cb, _ := s.i.FindCallbackByHash(ctx, itr.View.CallbackID)
 
 	sm := parseRollbackSubmissions(itr)
 
