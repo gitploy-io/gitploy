@@ -73,6 +73,8 @@ type Type string
 const (
 	TypeDeploy   Type = "deploy"
 	TypeRollback Type = "rollback"
+	TypeLock     Type = "lock"
+	TypeUnlock   Type = "unlock"
 )
 
 func (_type Type) String() string {
@@ -82,7 +84,7 @@ func (_type Type) String() string {
 // TypeValidator is a validator for the "type" field enum values. It is called by the builders before save.
 func TypeValidator(_type Type) error {
 	switch _type {
-	case TypeDeploy, TypeRollback:
+	case TypeDeploy, TypeRollback, TypeLock, TypeUnlock:
 		return nil
 	default:
 		return fmt.Errorf("callback: invalid enum value for type field: %q", _type)
