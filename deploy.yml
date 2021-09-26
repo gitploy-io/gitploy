@@ -13,6 +13,15 @@ envs:
       - "go-test"
       - "react-test"
       - "publish-image"
+
+  - name: production
+    task: ${GITPLOY_DEPLOY_TASK:=rollback}:kubernetes
+    auto_merge: false
+    required_contexts:
+      - "go-test"
+      - "react-test"
+      - "publish-image"
+    production_environment: true
     approval:
       enabled: true
       required_count: 0
