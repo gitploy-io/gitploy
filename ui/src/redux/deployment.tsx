@@ -11,8 +11,7 @@ import {
     RequestStatus, 
     HttpNotFoundError, 
     HttpForbiddenError,
-    HttpUnprocessableEntityError, 
-    DeploymentStatusEnum
+    HttpUnprocessableEntityError,
 } from "../models"
 import { 
     searchRepo, 
@@ -295,10 +294,6 @@ export const deploymentSlice = createSlice({
 
             .addCase(deployToSCM.rejected, (state) => {
                 state.deploying = RequestStatus.Idle
-
-                if (state.deployment) {
-                    state.deployment.status = DeploymentStatusEnum.Failure
-                }
             })
 
             .addCase(fetchApprovals.fulfilled, (state, action) => {
