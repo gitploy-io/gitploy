@@ -74,11 +74,6 @@ func (i *Interactor) CreateRemoteDeployment(ctx context.Context, u *ent.User, re
 
 	rd, err := i.SCM.CreateRemoteDeployment(ctx, u, re, d, e)
 	if err != nil {
-		d.Status = deployment.StatusFailure
-		if _, err := i.UpdateDeployment(ctx, d); err != nil {
-			return nil, err
-		}
-
 		return nil, err
 	}
 
