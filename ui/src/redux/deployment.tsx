@@ -11,8 +11,7 @@ import {
     RequestStatus, 
     HttpNotFoundError, 
     HttpForbiddenError,
-    HttpUnprocessableEntityError, 
-    DeploymentStatusEnum
+    HttpUnprocessableEntityError,
 } from "../models"
 import { 
     searchRepo, 
