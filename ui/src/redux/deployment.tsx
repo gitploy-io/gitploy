@@ -100,7 +100,7 @@ export const deployToSCM = createAsyncThunk<Deployment, void, { state: {deployme
     async (_, { getState, rejectWithValue, requestId } ) => {
         const { repo, number, deploying, deployId } = getState().deployment
         if (!repo) {
-            throw new Error("There is no repo.")
+            throw new Error("The repo is undefined.")
         }
 
         if (deploying !== RequestStatus.Pending || requestId !== deployId ) {
@@ -109,7 +109,7 @@ export const deployToSCM = createAsyncThunk<Deployment, void, { state: {deployme
 
         try {
             const deployment = await updateDeploymentStatusCreated(repo.id, number)
-            message.info(`Deploy successfully.`)
+            message.info(`Deploy successfully.`, 3)
 
             return deployment
         } catch(e) { 

@@ -113,9 +113,12 @@ export const rollback = createAsyncThunk<void, void, { state: {repoRollback: Rep
     "repoRollback/deploy",
     async (_ , { getState, rejectWithValue, requestId }) => {
         const { repo, deployment, env, approvers, deployId, deploying } = getState().repoRollback
-        if (!repo) throw new Error("The repo is not set.")
-        if (!deployment) throw new Error("The deployment is null.")
-
+        if (!repo) {
+            throw new Error("The repo is undefined.")
+        }
+        if (!deployment) {
+            throw new Error("The deployment is undefined.")
+        }
         if (!(deploying === RequestStatus.Pending && requestId === deployId )) {
             return
         }
@@ -123,10 +126,10 @@ export const rollback = createAsyncThunk<void, void, { state: {repoRollback: Rep
         try {
             const rollback = await rollbackDeployment(repo.id, deployment.number)
 
-            const msg = <span>
-                It starts to rollback. <a href={`/${repo.namespace}/${repo.name}/deployments/${rollback.number}`}>#{rollback.number}</a>
-            </span>
             if (!env?.approval?.enabled) {
+                const msg = <span>
+                    It starts to rollback. <a href={`/${repo.namespace}/${repo.name}/deployments/${rollback.number}`}>#{rollback.number}</a>
+                </span>
                 message.success(msg, 3)
                 return
             }
@@ -134,6 +137,10 @@ export const rollback = createAsyncThunk<void, void, { state: {repoRollback: Rep
             approvers.forEach(async (approver) => {
                 await createApproval(repo, rollback, approver)
             })
+
+            const msg = <span>
+                It is waiting approvals. <a href={`/${repo.namespace}/${repo.name}/deployments/${rollback.number}`}>#{rollback.number}</a>
+            </span>
             message.success(msg, 3)
         } catch(e) {
             if (e instanceof HttpForbiddenError) {
