@@ -146,7 +146,11 @@ export const rollback = createAsyncThunk<void, void, { state: {repoRollback: Rep
             if (e instanceof HttpForbiddenError) {
                 message.error("Only write permission can deploy.", 3)
             } else if (e instanceof HttpUnprocessableEntityError)  {
-                message.error(<span>It is unprocesable entity. Discussions <a href="https://github.com/gitploy-io/gitploy/discussions/64">#64</a></span>, 3)
+                const msg = <span> 
+                    <span>It is unprocesable entity. Discussions <a href="https://github.com/gitploy-io/gitploy/discussions/64">#64</a></span><br/>
+                    <span className="gitploy-quote">{e.message}</span>
+                </span>
+                message.error(msg, 3)
             } else if (e instanceof HttpConflictError) {
                 message.error("It has conflicted, please retry it.", 3)
             }
