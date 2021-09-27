@@ -100,7 +100,7 @@ export const deployToSCM = createAsyncThunk<Deployment, void, { state: {deployme
     async (_, { getState, rejectWithValue, requestId } ) => {
         const { repo, number, deploying, deployId } = getState().deployment
         if (!repo) {
-            throw new Error("There is no repo.")
+            throw new Error("The repo is undefined.")
         }
 
         if (deploying !== RequestStatus.Pending || requestId !== deployId ) {
@@ -109,14 +109,18 @@ export const deployToSCM = createAsyncThunk<Deployment, void, { state: {deployme
 
         try {
             const deployment = await updateDeploymentStatusCreated(repo.id, number)
-            message.info(`Deploy successfully.`)
+            message.info(`Deploy successfully.`, 3)
 
             return deployment
         } catch(e) { 
             if (e instanceof HttpForbiddenError) {
                 message.error("Only write permission can deploy.", 3)
             } else if (e instanceof HttpUnprocessableEntityError)  {
-                message.error(<span>It is unprocesable entity. Discussions <a href="https://github.com/gitploy-io/gitploy/discussions/64">#64</a></span>, 3)
+                const msg = <span> 
+                    <span>It is unprocesable entity. Discussions <a href="https://github.com/gitploy-io/gitploy/discussions/64">#64</a></span><br/>
+                    <span className="gitploy-quote">{e.message}</span>
+                </span>
+                message.error(msg, 3)
             } 
 
             return rejectWithValue(e)

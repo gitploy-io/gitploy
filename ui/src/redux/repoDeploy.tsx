@@ -254,10 +254,10 @@ export const deploy = createAsyncThunk<void, void, { state: {repoDeploy: RepoDep
     async (_ , { getState, rejectWithValue, requestId }) => {
         const { repo, env, type, branch, commit, tag, approvers, deploying, deployId } = getState().repoDeploy
         if (!repo) {
-            throw new Error("The repo is not set.")
+            throw new Error("The repo is undefined.")
         }
         if (!env) {
-            throw new Error("The env is not set.")
+            throw new Error("The env is undefined.")
         }
         if (deploying !== RequestStatus.Pending || requestId !== deployId ) {
             return
@@ -275,10 +275,10 @@ export const deploy = createAsyncThunk<void, void, { state: {repoDeploy: RepoDep
                 throw new Error("The type should be one of them: commit, branch, and tag.")
             }
 
-            const msg = <span>
-                It starts to deploy. <a href={`/${repo.namespace}/${repo.name}/deployments/${deployment.number}`}>#{deployment.number}</a>
-            </span>
             if (!env.approval?.enabled) {
+                const msg = <span>
+                    It starts to deploy. <a href={`/${repo.namespace}/${repo.name}/deployments/${deployment.number}`}>#{deployment.number}</a>
+                </span>
                 message.success(msg, 3)
                 return
             }
@@ -286,12 +286,20 @@ export const deploy = createAsyncThunk<void, void, { state: {repoDeploy: RepoDep
             approvers.forEach(async (approver) => {
                 await createApproval(repo, deployment, approver)
             })
+
+            const msg = <span>
+                It is waiting approvals. <a href={`/${repo.namespace}/${repo.name}/deployments/${deployment.number}`}>#{deployment.number}</a>
+            </span>
             message.success(msg, 3)
         } catch(e) {
             if (e instanceof HttpForbiddenError) {
                 message.error("Only write permission can deploy.", 3)
             } else if (e instanceof HttpUnprocessableEntityError)  {
-                message.error(<span>It is unprocesable entity. Discussions <a href="https://github.com/gitploy-io/gitploy/discussions/64">#64</a></span>, 3)
+                const msg = <span> 
+                    <span>It is unprocesable entity. Discussions <a href="https://github.com/gitploy-io/gitploy/discussions/64">#64</a></span><br/>
+                    <span className="gitploy-quote">{e.message}</span>
+                </span>
+                message.error(msg, 3)
             } else if (e instanceof HttpConflictError) {
                 message.error("It has conflicted, please retry it.", 3)
             }

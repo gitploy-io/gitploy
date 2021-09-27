@@ -26,11 +26,13 @@ func (g *Github) CreateRemoteDeployment(ctx context.Context, u *ent.User, r *ent
 		})
 	if res.StatusCode == http.StatusConflict {
 		return nil, &vo.UnprocessibleDeploymentError{
-			Err: err,
+			Message: "There is a merge conflict or the commit's status checks failed",
+			Err:     err,
 		}
 	} else if res.StatusCode == http.StatusUnprocessableEntity {
 		return nil, &vo.UnprocessibleDeploymentError{
-			Err: err,
+			Message: "Validation failed",
+			Err:     err,
 		}
 	}
 	if err != nil {

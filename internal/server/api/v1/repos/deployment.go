@@ -89,8 +89,8 @@ func (r *Repo) CreateDeployment(c *gin.Context) {
 
 	cf, err := r.i.GetConfig(ctx, u, re)
 	if vo.IsConfigNotFoundError(err) || vo.IsConfigParseError(err) {
-		r.log.Warn("The config is invalid.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "The config is invalid.")
+		r.log.Warn("The configuration is invalid.", zap.Error(err))
+		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "The configuration is invalid.")
 		return
 	} else if err != nil {
 		r.log.Error("failed to get the configuration file.", zap.Error(err))
@@ -99,8 +99,8 @@ func (r *Repo) CreateDeployment(c *gin.Context) {
 	}
 
 	if !cf.HasEnv(p.Env) {
-		r.log.Warn("The env is not defined in the config.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "The env is not defined in the config.")
+		r.log.Warn("The environment is not defined in the config.", zap.Error(err))
+		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "The environment is not defined in the config.")
 		return
 	}
 
@@ -111,8 +111,8 @@ func (r *Repo) CreateDeployment(c *gin.Context) {
 	}
 
 	if locked, err := r.i.HasLockOfRepoForEnv(ctx, re, p.Env); locked {
-		r.log.Info("The env is locked.", zap.String("env", p.Env))
-		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "The env is locked. You should unlock the env before deploying.")
+		r.log.Info("The environment is locked.", zap.String("env", p.Env))
+		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "The environment is locked.")
 		return
 	} else if err != nil {
 		r.log.Error("It has failed to check the lock.", zap.Error(err))
@@ -141,7 +141,7 @@ func (r *Repo) CreateDeployment(c *gin.Context) {
 		return
 	} else if vo.IsUnprocessibleDeploymentError(err) {
 		r.log.Warn("It is unprocessable entity.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "It is unprocessable entity.")
+		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "There is a merge conflict or the commit's status checks failed.")
 		return
 	} else if err != nil {
 		r.log.Error("failed to deploy.", zap.Error(err))
@@ -194,8 +194,8 @@ func (r *Repo) UpdateDeployment(c *gin.Context) {
 
 	cf, err := r.i.GetConfig(ctx, u, re)
 	if vo.IsConfigNotFoundError(err) || vo.IsConfigParseError(err) {
-		r.log.Warn("The config is invalid.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "The config is invalid.")
+		r.log.Warn("The configuration is invalid.", zap.Error(err))
+		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "The configuration is invalid.")
 		return
 	} else if err != nil {
 		r.log.Error("failed to get the configuration file.", zap.Error(err))
@@ -204,8 +204,8 @@ func (r *Repo) UpdateDeployment(c *gin.Context) {
 	}
 
 	if !cf.HasEnv(d.Env) {
-		r.log.Warn("The env is not defined in the config.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "The env is not defined in the config.")
+		r.log.Warn("The environment is not defined in the config.", zap.Error(err))
+		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "The environment is not defined in the config.")
 		return
 	}
 
@@ -216,8 +216,8 @@ func (r *Repo) UpdateDeployment(c *gin.Context) {
 	}
 
 	if locked, err := r.i.HasLockOfRepoForEnv(ctx, re, d.Env); locked {
-		r.log.Info("The env is locked.", zap.String("env", d.Env))
-		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "The env is locked. You should unlock the env before deploying.")
+		r.log.Info("The environment is locked.", zap.String("env", d.Env))
+		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "The environment is locked.")
 		return
 	} else if err != nil {
 		r.log.Error("It has failed to check the lock.", zap.Error(err))
@@ -236,7 +236,7 @@ func (r *Repo) UpdateDeployment(c *gin.Context) {
 
 		if d, err = r.i.CreateRemoteDeployment(ctx, u, re, d, cf.GetEnv(d.Env)); vo.IsUnprocessibleDeploymentError(err) {
 			r.log.Warn("It is unprocessible entity.", zap.Error(err))
-			gb.ErrorResponse(c, http.StatusUnprocessableEntity, "It is unprocessible entity.")
+			gb.ErrorResponse(c, http.StatusUnprocessableEntity, "There is a merge conflict or the commit's status checks failed.")
 			return
 		} else if err != nil {
 			r.log.Error("It has failed to create the remote deployment.", zap.Error(err))
@@ -283,8 +283,8 @@ func (r *Repo) RollbackDeployment(c *gin.Context) {
 
 	cf, err := r.i.GetConfig(ctx, u, re)
 	if vo.IsConfigNotFoundError(err) || vo.IsConfigParseError(err) {
-		r.log.Warn("The config is invalid.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "The config is invalid.")
+		r.log.Warn("The configuration is invalid.", zap.Error(err))
+		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "The configuration is invalid.")
 		return
 	} else if err != nil {
 		r.log.Error("failed to get the configuration file.", zap.Error(err))
@@ -293,8 +293,8 @@ func (r *Repo) RollbackDeployment(c *gin.Context) {
 	}
 
 	if !cf.HasEnv(d.Env) {
-		r.log.Warn("The env is not defined in the config.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "The env is not defined in the config.")
+		r.log.Warn("The environment is not defined in the configuration.", zap.Error(err))
+		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "The environment is not defined in the configuration.")
 		return
 	}
 
@@ -305,8 +305,8 @@ func (r *Repo) RollbackDeployment(c *gin.Context) {
 	}
 
 	if locked, err := r.i.HasLockOfRepoForEnv(ctx, re, d.Env); locked {
-		r.log.Info("The env is locked.", zap.String("env", d.Env))
-		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "The env is locked. You should unlock the env before deploying.")
+		r.log.Info("The environment is locked.", zap.String("env", d.Env))
+		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "The environment is locked.")
 		return
 	} else if err != nil {
 		r.log.Error("It has failed to check the lock.", zap.Error(err))
@@ -337,7 +337,7 @@ func (r *Repo) RollbackDeployment(c *gin.Context) {
 		return
 	} else if vo.IsUnprocessibleDeploymentError(err) {
 		r.log.Warn("It is unprocessable entity.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "It is unprocessable entity.")
+		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "There is a merge conflict or the commit's status checks failed.")
 		return
 	} else if err != nil {
 		r.log.Error("It has failed to rollback.", zap.Error(err))
