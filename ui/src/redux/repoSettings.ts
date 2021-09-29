@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit"
 import { message } from "antd"
 
-import { searchRepo, updateRepo, deactivateRepo, lockRepo, unlockRepo } from "../apis"
+import { searchRepo, updateRepo, deactivateRepo } from "../apis"
 import { Repo, RequestStatus, HttpForbiddenError  } from "../models"
 
 interface RepoSettingsState {
@@ -71,48 +71,6 @@ export const deactivate = createAsyncThunk<Repo, void, { state: {repoSettings: R
     },
 )
 
-export const lock = createAsyncThunk<Repo, void, { state: {repoSettings: RepoSettingsState} }>(
-    'repoSettings/lock', 
-    async (_, { getState, rejectWithValue } ) => {
-        const { repo } = getState().repoSettings
-        if (!repo) throw new Error("There is no repo.")
-
-        try {
-            const ret = await lockRepo(repo)
-            message.info("Lock the repository successfully.", 3)
-            return ret
-        } catch(e) {
-            if (e instanceof HttpForbiddenError) {
-                message.error("Only admin permission can lock the repository.", 3)
-            } else {
-                message.error("It has failed to lock.", 3)
-            }
-            return rejectWithValue(e)
-        }
-    },
-)
-
-export const unlock = createAsyncThunk<Repo, void, { state: {repoSettings: RepoSettingsState} }>(
-    'repoSettings/unlock', 
-    async (_, { getState, rejectWithValue } ) => {
-        const { repo } = getState().repoSettings
-        if (!repo) throw new Error("There is no repo.")
-
-        try {
-            const ret = await unlockRepo(repo)
-            message.info("Unlock the repository successfully.", 3)
-            return ret
-        } catch(e) {
-            if (e instanceof HttpForbiddenError) {
-                message.error("Only admin permission can unlock the repository.", 3)
-            } else {
-                message.error("It has failed to unlock.", 3)
-            }
-            return rejectWithValue(e)
-        }
-    },
-)
-
 export const repoSettingsSlice = createSlice({
     name: "repoSettings",
     initialState,
@@ -155,12 +113,6 @@ export const repoSettingsSlice = createSlice({
             })
             .addCase(deactivate.rejected, (state) => {
                 state.deactivating = RequestStatus.Idle
-            })
-            .addCase(lock.fulfilled, (state, action) => {
-                state.repo = action.payload
-            })
-            .addCase(unlock.fulfilled, (state, action) => {
-                state.repo = action.payload
             })
     }
 })
