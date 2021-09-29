@@ -36,13 +36,14 @@ func (s *Slack) Notify(ctx context.Context, e *ent.Event) {
 }
 
 func (s *Slack) notifyDeploymentEvent(ctx context.Context, e *ent.Event) {
-	if err := e.CheckEagerLoading(); err != nil {
+	var d *ent.Deployment
+
+	if d = e.Edges.Deployment; d == nil {
 		s.log.Error("The eager loading of event has failed.")
 		return
 	}
 
-	d := e.Edges.Deployment
-	if err := d.CheckEagerLoading(); err != nil {
+	if d.Edges.User == nil || d.Edges.Repo == nil {
 		s.log.Error("The eager loading of deployment has failed.")
 		return
 	}
@@ -82,19 +83,17 @@ func (s *Slack) notifyDeploymentEvent(ctx context.Context, e *ent.Event) {
 }
 
 func (s *Slack) notifyApprovalEvent(ctx context.Context, e *ent.Event) {
-	if err := e.CheckEagerLoading(); err != nil {
-		s.log.Error("The eager loading of event has failed.")
-		return
-	}
+	var (
+		a *ent.Approval
+		d *ent.Deployment
+	)
 
-	a := e.Edges.Approval
-	if err := a.CheckEagerLoading(); err != nil {
+	if a = e.Edges.Approval; a == nil {
 		s.log.Error("The eager loading of approval has failed.")
 		return
 	}
 
-	d := a.Edges.Deployment
-	if err := d.CheckEagerLoading(); err != nil {
+	if d = a.Edges.Deployment; d != nil {
 		s.log.Error("The eager loading of deployment has failed.")
 		return
 	}
