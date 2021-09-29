@@ -2,21 +2,37 @@ import { StatusCodes } from 'http-status-codes'
 
 import { instance, headers } from './setting'
 import { _fetch } from "./_base"
-import { Commit, Status, HttpNotFoundError, StatusState } from '../models'
+import { Commit, Author, Status, HttpNotFoundError, StatusState } from '../models'
 
 interface CommitData {
     sha: string
     message: string
     is_pull_request: boolean
     html_url: string
+    author?: {
+        login: string
+        avatar_url: string
+        date: string
+    }
 }
 
 export const mapDataToCommit = (data: CommitData): Commit => {
+    let author: Author | undefined
+
+    if (data.author) {
+        author = {
+            login: data.author.login,
+            avatarUrl: data.author.avatar_url,
+            date: new Date(data.author.date)
+        }
+    }
+
     return {
         sha: data.sha,
         message: data.message,
         isPullRequest: data.is_pull_request,
         htmlUrl: data.html_url,
+        author
     }
 }
 
