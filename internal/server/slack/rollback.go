@@ -113,7 +113,7 @@ func buildRollbackView(callbackID string, as []*deploymentAggregation, perms []*
 				strconv.Itoa(d.ID),
 				slack.NewTextBlockObject(
 					slack.PlainTextType,
-					fmt.Sprintf("#%d - %s deployed at %s", d.ID, d.GetShortRef(), created.FromNow()),
+					fmt.Sprintf("#%d - %s deployed %s", d.ID, d.GetShortRef(), created.FromNow()),
 					false, false),
 				nil))
 		}

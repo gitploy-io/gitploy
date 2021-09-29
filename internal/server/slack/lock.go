@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/nleeper/goment"
 	"github.com/slack-go/slack"
 	"go.uber.org/zap"
 
@@ -213,11 +214,19 @@ func (s *Slack) handleUnlockCmd(c *gin.Context) {
 func buildUnlockView(callbackID string, locks []*ent.Lock) slack.ModalViewRequest {
 	envs := []*slack.OptionBlockObject{}
 	for _, lock := range locks {
+		var txt string
+		if lock.Edges.User != nil {
+			ca, _ := goment.New(lock.CreatedAt)
+			txt = fmt.Sprintf("%s - Locked by %s %s", lock.Env, lock.Edges.User.Login, ca.FromNow())
+		} else {
+			ca, _ := goment.New(lock.CreatedAt)
+			txt = fmt.Sprintf("%s - Locked %s", lock.Env, ca.FromNow())
+		}
 
 		envs = append(envs, &slack.OptionBlockObject{
 			Text: &slack.TextBlockObject{
 				Type: slack.PlainTextType,
-				Text: lock.Env,
+				Text: txt,
 			},
 			Value: lock.Env,
 		})
