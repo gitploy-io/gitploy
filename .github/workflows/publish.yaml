@@ -41,3 +41,23 @@ jobs:
           platforms: linux/amd64  # ,linux/arm64
           push: true
           tags: ${{ steps.docker_meta.outputs.tags }}
+
+  publish-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - 
+        uses: actions/checkout@v2
+      - 
+        name: Create requirements.txt
+        uses: "finnp/create-file-action@master"
+        env:
+          FILE_NAME: requirements.txt
+          FILE_DATA: |
+            pymdown-extensions==8.2
+      - 
+        name: Publish docs
+        uses: mhausenblas/mkdocs-deploy-gh-pages@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
+          CUSTOM_DOMAIN: docs.gitploy.io
+          REQUIREMENTS: requirements.txt
