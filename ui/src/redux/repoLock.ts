@@ -82,7 +82,7 @@ export const lock = createAsyncThunk<Lock, string, { state: {repoLock: RepoLockS
             return locks
         } catch (e) {
             if (e instanceof HttpForbiddenError) {
-                message.error("Only write permission can lock.", 3)
+                message.warn("Only write permission can lock.", 3)
             }
             return rejectWithValue(e)
         }
@@ -107,7 +107,7 @@ export const unlock = createAsyncThunk<Lock, string, { state: {repoLock: RepoLoc
             return lock
         } catch (e) {
             if (e instanceof HttpForbiddenError) {
-                message.error("Only write permission can unlock.", 3)
+                message.warn("Only write permission can unlock.", 3)
             }
             return rejectWithValue(e)
         }

@@ -43,10 +43,9 @@ export const save = createAsyncThunk<Repo, void, { state: {repoSettings: RepoSet
             return nr
         } catch(e) {
             if (e instanceof HttpForbiddenError) {
-                message.error("Only admin permission can update.", 3)
-            } else {
-                message.error("It has failed to save.", 3)
-            }
+                message.warn("Only admin permission can update.", 3)
+            } 
+
             return rejectWithValue(e)
         }
     },
@@ -64,10 +63,9 @@ export const deactivate = createAsyncThunk<Repo, void, { state: {repoSettings: R
             return nr
         } catch(e) {
             if (e instanceof HttpForbiddenError) {
-                message.error("Only admin permission can deactivate.", 3)
-            } else {
-                message.error("It has failed to save.", 3)
-            }
+                message.warn("Only admin permission can deactivate.", 3)
+            } 
+
             return rejectWithValue(e)
         }
     },

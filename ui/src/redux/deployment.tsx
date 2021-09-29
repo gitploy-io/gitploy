@@ -113,7 +113,7 @@ export const deployToSCM = createAsyncThunk<Deployment, void, { state: {deployme
             return deployment
         } catch(e) { 
             if (e instanceof HttpForbiddenError) {
-                message.error("Only write permission can deploy.", 3)
+                message.warn("Only write permission can deploy.", 3)
             } else if (e instanceof HttpUnprocessableEntityError)  {
                 const msg = <span> 
                     <span>It is unprocesable entity. Discussions <a href="https://github.com/gitploy-io/gitploy/discussions/64">#64</a></span><br/>
