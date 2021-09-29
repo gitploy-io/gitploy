@@ -287,7 +287,7 @@ function CommitDecorator(props: CommitDecoratorProps): JSX.Element {
             <Text className="gitploy-code" code>{props.commit.sha.substring(0, 7)}</Text> - <Text strong>{props.commit.message}</Text> <br/>
             {(props.commit?.author)?
                 <span >
-                    <Text ><Avatar size="small" src={props.commit.author.avatarUrl} /> {props.commit.author.login}</Text> <Text >committed {moment(props.commit.author?.date).fromNow()}</Text>
+                    &nbsp;<Text ><Avatar size="small" src={props.commit.author.avatarUrl} /> {props.commit.author.login}</Text> <Text >committed {moment(props.commit.author?.date).fromNow()}</Text>
                 </span>: null} 
         </span>
     )
