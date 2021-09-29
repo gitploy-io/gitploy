@@ -135,10 +135,9 @@ export const addBranchManually = createAsyncThunk<Branch, string, { state: {repo
             return branch
         } catch(e) {
             if (e instanceof HttpNotFoundError) {
-                message.error("The ref is not found. Check the ref is corrent.")
-            } else {
-                message.error("It has failed to add the ref.")
-            }
+                message.warn("The branch is not found. Check the branch is correct.")
+            } 
+
             return rejectWithValue(e)
         }
     }
@@ -178,10 +177,9 @@ export const addCommitManually = createAsyncThunk<Commit, string, { state: {repo
             return commit
         } catch(e) {
             if (e instanceof HttpNotFoundError) {
-                message.error("The ref is not found. Check the ref is corrent.")
-            } else {
-                message.error("It has failed to add the ref.")
-            }
+                message.warn("The ref is not found. Check the ref is correct.")
+            } 
+
             return rejectWithValue(e)
         }
     }
@@ -220,10 +218,9 @@ export const addTagManually = createAsyncThunk<Tag, string, { state: {repoDeploy
             return tag
         } catch(e) {
             if (e instanceof HttpNotFoundError) {
-                message.error("The ref is not found. Check the ref is corrent.")
-            } else {
-                message.error("It has failed to add the ref.")
-            }
+                message.warn("The tag is not found. Check the tag is correct.")
+            } 
+
             return rejectWithValue(e)
         }
     }
@@ -293,7 +290,7 @@ export const deploy = createAsyncThunk<void, void, { state: {repoDeploy: RepoDep
             message.success(msg, 3)
         } catch(e) {
             if (e instanceof HttpForbiddenError) {
-                message.error("Only write permission can deploy.", 3)
+                message.warn("Only write permission can deploy.", 3)
             } else if (e instanceof HttpUnprocessableEntityError)  {
                 const msg = <span> 
                     <span>It is unprocesable entity. Discussions <a href="https://github.com/gitploy-io/gitploy/discussions/64">#64</a></span><br/>

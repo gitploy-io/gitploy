@@ -40,7 +40,7 @@ export const activate = createAsyncThunk<Repo, void, { state: {repo: RepoState} 
             return nr
         } catch(e) {
             if (e instanceof HttpForbiddenError) {
-                message.error("Only admin permission can activate.", 3)
+                message.warn("Only admin permission can activate.", 3)
             } else {
                 message.error("It has failed to save.", 3)
             }
