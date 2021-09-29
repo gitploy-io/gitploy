@@ -57,18 +57,20 @@ func mapGithubPermToRepoPerm(perms map[string]bool) vo.RemoteRepoPerm {
 }
 
 func mapGithubCommitToCommit(cm *github.RepositoryCommit) *vo.Commit {
-	isPullRequest := false
-	if cm.Commit.Author != nil && cm.Commit.Committer != nil {
-		if *cm.Commit.Author.Name != *cm.Commit.Committer.Name {
-			isPullRequest = true
+	var author *vo.Author
+	if cm.Author != nil && cm.Commit.Author != nil {
+		author = &vo.Author{
+			Login:     *cm.Author.Login,
+			AvatarURL: *cm.Author.AvatarURL,
+			Date:      *cm.Commit.Author.Date,
 		}
 	}
 
 	return &vo.Commit{
-		SHA:           *cm.SHA,
-		Message:       *cm.Commit.Message,
-		IsPullRequest: isPullRequest,
-		HTMLURL:       *cm.HTMLURL,
+		SHA:     *cm.SHA,
+		Message: *cm.Commit.Message,
+		HTMLURL: *cm.HTMLURL,
+		Author:  author,
 	}
 }
 

@@ -1541,6 +1541,15 @@ components:
           type: boolean
         html_url:
           type: string  
+        author:
+          type: object
+          properties:
+            login:
+              type: string
+            avatar_url:
+              type: string
+            date:
+              type: string
       required:
         - sha
         - message
