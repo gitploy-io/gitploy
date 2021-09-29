@@ -1,9 +1,11 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit'
+import { message } from "antd"
 
 import {
     Repo,
     Config,
-    Lock
+    Lock,
+    HttpForbiddenError
 } from "../models"
 import {
     searchRepo,
@@ -79,6 +81,9 @@ export const lock = createAsyncThunk<Lock, string, { state: {repoLock: RepoLockS
             const locks = await _lock(repo, env)
             return locks
         } catch (e) {
+            if (e instanceof HttpForbiddenError) {
+                message.error("Only write permission can lock.", 3)
+            }
             return rejectWithValue(e)
         }
     },
@@ -101,6 +106,9 @@ export const unlock = createAsyncThunk<Lock, string, { state: {repoLock: RepoLoc
             await _unlock(repo, lock)
             return lock
         } catch (e) {
+            if (e instanceof HttpForbiddenError) {
+                message.error("Only write permission can unlock.", 3)
+            }
             return rejectWithValue(e)
         }
     },

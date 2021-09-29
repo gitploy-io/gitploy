@@ -3,7 +3,7 @@ import { StatusCodes } from "http-status-codes"
 import { instance, headers } from "./setting"
 import { _fetch } from "./_base"
 import { UserData, mapDataToUser } from "./user"
-import { Repo, Lock, User, HttpUnprocessableEntityError } from "../models"
+import { Repo, Lock, User, HttpForbiddenError, HttpUnprocessableEntityError } from "../models"
 
 interface LockData {
     id: number
@@ -48,7 +48,10 @@ export const lock = async (repo: Repo, env: string): Promise<Lock> => {
         body: JSON.stringify({env})
     })
 
-    if (res.status === StatusCodes.UNPROCESSABLE_ENTITY) {
+    if (res.status === StatusCodes.FORBIDDEN) {
+        const {message} = await res.json()
+        throw new HttpForbiddenError(message)
+    } else if (res.status === StatusCodes.UNPROCESSABLE_ENTITY) {
         const {message} = await res.json()
         throw new HttpUnprocessableEntityError(message)
     }
@@ -60,9 +63,14 @@ export const lock = async (repo: Repo, env: string): Promise<Lock> => {
 }
 
 export const unlock = async (repo: Repo, lock: Lock): Promise<void> => {
-    await _fetch(`${instance}/api/v1/repos/${repo.id}/locks/${lock.id}`, {
+    const res = await _fetch(`${instance}/api/v1/repos/${repo.id}/locks/${lock.id}`, {
         headers,
         credentials: 'same-origin',
         method: "DELETE",
     })
+
+    if (res.status === StatusCodes.FORBIDDEN) {
+        const {message} = await res.json()
+        throw new HttpForbiddenError(message)
+    }
 }
