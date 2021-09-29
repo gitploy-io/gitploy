@@ -99,8 +99,8 @@ func (rm *RepoMiddleware) RepoWritePerm() gin.HandlerFunc {
 		}
 
 		if !(p.RepoPerm == perm.RepoPermWrite || p.RepoPerm == perm.RepoPermAdmin) {
-			rm.log.Warn("It is denied to access the repository.", zap.String("repo_id", id), zap.Error(err))
-			gb.AbortWithErrorResponse(c, http.StatusForbidden, "It is denied to access the repository, only write permission can access.")
+			rm.log.Warn("The access is forbidden. Only write permission can access.", zap.String("repo_id", id))
+			gb.AbortWithErrorResponse(c, http.StatusForbidden, "Only write permission can access.")
 			return
 		}
 
@@ -142,8 +142,8 @@ func (rm *RepoMiddleware) RepoAdminPerm() gin.HandlerFunc {
 		}
 
 		if p.RepoPerm != perm.RepoPermAdmin {
-			rm.log.Warn("It is denied to access the repository.", zap.String("repo_id", id), zap.Error(err))
-			gb.AbortWithErrorResponse(c, http.StatusForbidden, "It is denied to access the repository, only admin permission can access.")
+			rm.log.Warn("The access is forbidden. Only admin permission can access.", zap.String("repo_id", id))
+			gb.AbortWithErrorResponse(c, http.StatusForbidden, "Only admin permission can access.")
 			return
 		}
 
