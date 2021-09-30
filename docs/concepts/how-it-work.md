@@ -39,6 +39,6 @@ Below is a simple diagram for how these interactions would work:
      |                      |                       |                     |
 ```
 
-Gitploy lets you create a deployment in advanced ways, such as promotion or rollback, and beef up steps to create a new deployment.
+Gitploy lets you can build the advanced deployment system so your team and organization enable to deploy the application with lower risk and faster.
 
 *Keep in mind that Gitploy is never actually accessing your servers. It's up to your tools to interact with deployment events.*
