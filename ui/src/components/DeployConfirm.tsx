@@ -157,7 +157,7 @@ function CommitChange(props: CommitChangeProps): JSX.Element {
             {/* Display the description of the commit. */}
             {(!hide) ?
                 <Paragraph style={{margin: 0}}>
-                    <pre style={{marginBottom: 0}}>
+                    <pre style={{marginBottom: 0, fontSize: 12}}>
                         {description.split(/(\r\n)/g).map((line, idx) => {
                             return (line !== "\r\n")? <Text key={idx}>{line}</Text> : <br/>
                         })}
