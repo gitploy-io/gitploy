@@ -9,11 +9,19 @@ import (
 )
 
 type (
-	Github struct{}
+	Github struct {
+		baseURL string
+	}
+
+	GithubConfig struct {
+		BaseURL string
+	}
 )
 
-func NewGithub() *Github {
-	return &Github{}
+func NewGithub(c *GithubConfig) *Github {
+	return &Github{
+		baseURL: c.BaseURL,
+	}
 }
 
 func (g *Github) Client(c context.Context, token string) *github.Client {
@@ -21,7 +29,14 @@ func (g *Github) Client(c context.Context, token string) *github.Client {
 		&oauth2.Token{AccessToken: token},
 	))
 
-	return github.NewClient(tc)
+	var client *github.Client
+	if g.baseURL != "" {
+		client, _ = github.NewEnterpriseClient(g.baseURL, g.baseURL, tc)
+	} else {
+		client = github.NewClient(tc)
+	}
+
+	return client
 }
 
 func (g *Github) GraphQLClient(c context.Context, token string) *graphql.Client {
@@ -29,5 +44,12 @@ func (g *Github) GraphQLClient(c context.Context, token string) *graphql.Client 
 		&oauth2.Token{AccessToken: token},
 	))
 
-	return graphql.NewClient(tc)
+	var client *graphql.Client
+	if g.baseURL != "" {
+		client = graphql.NewEnterpriseClient(g.baseURL, tc)
+	} else {
+		client = graphql.NewClient(tc)
+	}
+
+	return client
 }
