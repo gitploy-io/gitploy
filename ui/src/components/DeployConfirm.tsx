@@ -150,7 +150,9 @@ function CommitChange(props: CommitChangeProps): JSX.Element {
         <span >
             <a href={commit.htmlUrl} className="gitploy-link"><strong>{message.substring(0, 50)}</strong></a>
             {(description) ? 
-                <Text className="gitploy-code" onClick={onClickHide} code>...</Text> :
+                <Button size="small" type="text" onClick={onClickHide}>
+                    <Text className="gitploy-code" code>...</Text>
+                </Button> :
                 null}
             {/* Display the description of the commit. */}
             {(!hide) ?
