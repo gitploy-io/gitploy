@@ -130,9 +130,11 @@ export default function DeployForm(props: DeployFormProps): JSX.Element {
             null
 
         return {
-            label: <span>
-                <Text className="gitploy-code" code>{branch.name}</Text>{tag}
-            </span>,
+            label: (
+                <span>
+                    <Text className="gitploy-code" code>{branch.name}</Text>{tag}
+                </span>
+            ),
             value: branch.name
         } as Option
     }
@@ -164,7 +166,11 @@ export default function DeployForm(props: DeployFormProps): JSX.Element {
             null
 
         return {
-            label: <Text className="gitploy-code" code>{tag.name} {deploymentTag}</Text>,
+            label: (
+                <span>
+                    <Text className="gitploy-code" code>{tag.name}</Text>{deploymentTag}
+                </span>
+            ),
             value: tag.name
         } as Option
     }

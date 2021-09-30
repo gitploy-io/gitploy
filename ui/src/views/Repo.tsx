@@ -84,14 +84,14 @@ export default function Repo(): JSX.Element {
                     <Menu.Item key="home">
                         <a href={`/${namespace}/${name}`}>Home</a>
                     </Menu.Item>
-                    <Menu.Item key="lock">
-                        <a href={`/${namespace}/${name}/lock`}>Lock</a>
-                    </Menu.Item>
                     <Menu.Item key="deploy">
                         <a href={`/${namespace}/${name}/deploy`}>Deploy</a>
                     </Menu.Item>
                     <Menu.Item key="rollback">
                         <a href={`/${namespace}/${name}/rollback`}>Rollback</a>
+                    </Menu.Item>
+                    <Menu.Item key="lock">
+                        <a href={`/${namespace}/${name}/lock`}>Lock</a>
                     </Menu.Item>
                     <Menu.Item key="settings">
                         <a href={`/${namespace}/${name}/settings`}>Settings</a>
@@ -106,13 +106,13 @@ export default function Repo(): JSX.Element {
                     {(!tab || tab === "home") ? <RepoHome /> : null}
                 </div>
                 <div>
-                    {(tab === "lock")? <RepoLock /> : null}
-                </div> 
-                <div>
                     {(tab === "deploy") ? <RepoDeploy /> : null}
                 </div> 
                 <div>
                     {(tab === "rollback")? <RepoRollabck /> : null}
+                </div> 
+                <div>
+                    {(tab === "lock")? <RepoLock /> : null}
                 </div> 
                 <div>
                     {(tab === "settings")? <RepoSettings /> : null}
