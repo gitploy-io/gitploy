@@ -9,6 +9,7 @@ import {
     init, 
     fetchConfig, 
     repoDeploySlice, 
+    fetchCurrentDeploymentOfEnv,
     fetchBranches, 
     checkBranch,
     addBranchManually, 
@@ -38,6 +39,7 @@ export default function RepoDeploy(): JSX.Element {
         config, 
         env,
         envs, 
+        currentDeployment,
         branches, 
         branchStatuses,
         commits, 
@@ -63,6 +65,7 @@ export default function RepoDeploy(): JSX.Element {
 
     const onSelectEnv = (env: Env) => {
         dispatch(actions.setEnv(env))
+        dispatch(fetchCurrentDeploymentOfEnv(env))
     }
 
     const onChangeType = (type: DeploymentType) => {
@@ -146,6 +149,7 @@ export default function RepoDeploy(): JSX.Element {
                     envs={envs}
                     onSelectEnv={onSelectEnv}
                     onChangeType={onChangeType}
+                    currentDeployment={currentDeployment}
                     branches={branches}
                     onSelectBranch={onSelectBranch}
                     onClickAddBranch={onClickAddBranch}
