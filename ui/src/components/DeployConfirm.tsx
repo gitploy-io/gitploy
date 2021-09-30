@@ -137,8 +137,7 @@ interface CommitChangeProps {
 }
 
 function CommitChange(props: CommitChangeProps): JSX.Element {
-    const commit = props.commit
-    const [message, description] = commit.message.split("\n\n", 2)
+    const [message, ...description] = props.commit.message.split(/(\r\n|\n|\r)/g)
 
     const [hide, setHide] = useState(true)
 
@@ -148,8 +147,8 @@ function CommitChange(props: CommitChangeProps): JSX.Element {
 
     return (
         <span >
-            <a href={commit.htmlUrl} className="gitploy-link"><strong>{message.substring(0, 50)}</strong></a>
-            {(description) ? 
+            <a href={props.commit.htmlUrl} className="gitploy-link"><strong>{message.substring(0, 50)}</strong></a>
+            {(description.length) ? 
                 <Button size="small" type="text" onClick={onClickHide}>
                     <Text className="gitploy-code" code>...</Text>
                 </Button> :
@@ -158,16 +157,14 @@ function CommitChange(props: CommitChangeProps): JSX.Element {
             {(!hide) ?
                 <Paragraph style={{margin: 0}}>
                     <pre style={{marginBottom: 0, fontSize: 12}}>
-                        {description.split(/(\r\n)/g).map((line, idx) => {
-                            return (line !== "\r\n")? <Text key={idx}>{line}</Text> : <br/>
-                        })}
+                        {description.toString().replaceAll(",", "").trim()}
                     </pre>
                 </Paragraph> :
                 null}
             <br />
-            {(commit?.author) ?
+            {(props.commit?.author) ?
                 <span >
-                    <Text >&nbsp;<Avatar size="small" src={commit.author.avatarUrl} /> {commit.author.login}</Text> <Text >committed {moment(commit.author?.date).fromNow()}</Text>
+                    <Text >&nbsp;<Avatar size="small" src={props.commit.author.avatarUrl} /> {props.commit.author.login}</Text> <Text >committed {moment(props.commit.author?.date).fromNow()}</Text>
                 </span> :
                 null} 
         </span>
