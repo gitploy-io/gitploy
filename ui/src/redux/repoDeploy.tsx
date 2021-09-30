@@ -22,6 +22,7 @@ import {
     searchRepo, 
     listPerms,
     getConfig, 
+    listDeployments,
     listBranches, 
     getBranch, 
     listCommits, 
@@ -43,6 +44,7 @@ interface RepoDeployState {
     config?: Config 
     env?: Env
     envs: Env[]
+    currentDeployment?: Deployment
     type?: DeploymentType 
     branch?: Branch 
     branchStatuses: Status[]
@@ -96,6 +98,23 @@ export const fetchConfig = createAsyncThunk<Config, void, { state: {repoDeploy: 
         try {
             const config = await getConfig(repo.id)
             return config
+        } catch (e) {
+            return rejectWithValue(e)
+        }
+    },
+)
+
+export const fetchCurrentDeploymentOfEnv = createAsyncThunk<Deployment | null, Env, { state: {repoDeploy: RepoDeployState} }>(
+    "repoDeploy/fetchCurrentDeployment", 
+    async (env, { getState, rejectWithValue } ) => {
+        const { repo } = getState().repoDeploy
+        if (!repo) {
+            throw new Error("The repo is undefined.")
+        }
+
+        try {
+            const deployments = await listDeployments(repo.id, env.name, "success", 1, 1)
+            return (deployments.length > 0)? deployments[0] : null
         } catch (e) {
             return rejectWithValue(e)
         }
@@ -354,6 +373,14 @@ export const repoDeploySlice = createSlice({
                 const config = action.payload
                 state.envs = config.envs.map(e => e)
                 state.config = config
+            })
+            .addCase(fetchCurrentDeploymentOfEnv.fulfilled, (state, action) => {
+                if (action.payload) {
+                    state.currentDeployment = action.payload
+                }
+            })
+            .addCase(fetchCurrentDeploymentOfEnv.rejected, (state) => {
+                state.currentDeployment = undefined
             })
             .addCase(fetchBranches.fulfilled, (state, action) => {
                 state.branches = action.payload

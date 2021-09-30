@@ -1,7 +1,7 @@
 import { useState } from "react"
-import { Form, Select, Radio, Button, Typography, Avatar } from "antd"
+import { Form, Select, Radio, Button, Typography, Avatar, Tag as AntdTag } from "antd"
 
-import { Branch, Commit, Tag, DeploymentType, Status, User, Env } from "../models"
+import { Branch, Commit, Tag, Deployment, DeploymentType, Status, User, Env } from "../models"
 
 import CreatableSelect, {Option as Op} from "./CreatableSelect"
 import StatusStateIcon from "./StatusStateIcon"
@@ -16,6 +16,7 @@ interface DeployFormProps {
     envs: Env[]
     onSelectEnv(env: Env): void
     onChangeType(type: DeploymentType): void
+    currentDeployment?: Deployment
     branches: Branch[]
     onSelectBranch(branch: Branch): void
     onClickAddBranch(option: Option): void
@@ -114,18 +115,26 @@ export default function DeployForm(props: DeployFormProps): JSX.Element {
         props.onChangeType(type)
     }
 
-    const mapBranchToOption = (branch: Branch) => {
-        return {
-            label: <Text className="gitploy-code" code>{branch.name}</Text>,
-            value: branch.name
-        } as Option
-    }
-
     const onSelectEnv = (value: string) => {
         const env = props.envs.find(env => env.name === value)
         if (env === undefined) throw new Error("The env doesn't exist.")
 
         props.onSelectEnv(env)
+    }
+
+    const mapBranchToOption = (branch: Branch) => {
+        // Display the tag only when the type is 'branch'.
+        const tag = (deploymentType === DeploymentType.Branch 
+                && branch.commitSha === props.currentDeployment?.sha) ?
+            <AntdTag color="success">{props.currentDeployment.env}</AntdTag> : 
+            null
+
+        return {
+            label: <span>
+                <Text className="gitploy-code" code>{branch.name}</Text>{tag}
+            </span>,
+            value: branch.name
+        } as Option
     }
 
     const onSelectBranch = (option: Option) => {
@@ -137,7 +146,7 @@ export default function DeployForm(props: DeployFormProps): JSX.Element {
 
     const mapCommitToOption = (commit: Commit) => {
         return {
-            label: <CommitDecorator commit={commit}/>,
+            label: <CommitDecorator commit={commit} currentDeployment={props.currentDeployment}/>,
             value: commit.sha,
         } as Option
     }
@@ -150,8 +159,12 @@ export default function DeployForm(props: DeployFormProps): JSX.Element {
     }
 
     const mapTagToOption = (tag: Tag) => {
+        const deploymentTag = (tag.commitSha === props.currentDeployment?.sha) ?
+            <AntdTag color="success">{props.currentDeployment.env}</AntdTag> : 
+            null
+
         return {
-            label: <Text className="gitploy-code" code>{tag.name}</Text>,
+            label: <Text className="gitploy-code" code>{tag.name} {deploymentTag}</Text>,
             value: tag.name
         } as Option
     }
@@ -279,12 +292,17 @@ export default function DeployForm(props: DeployFormProps): JSX.Element {
 
 interface CommitDecoratorProps {
     commit: Commit
+    currentDeployment?: Deployment
 }
 
 function CommitDecorator(props: CommitDecoratorProps): JSX.Element {
+    const tag = (props.commit.sha === props.currentDeployment?.sha) ?
+        <AntdTag color="success">{props.currentDeployment.env}</AntdTag> : 
+        null
+    
     return (
         <span>
-            <Text className="gitploy-code" code>{props.commit.sha.substring(0, 7)}</Text> - <Text strong>{props.commit.message}</Text> <br/>
+            <Text className="gitploy-code" code>{props.commit.sha.substring(0, 7)}</Text>{tag}- <Text strong>{props.commit.message}</Text> <br/>
             {(props.commit?.author)?
                 <span >
                     &nbsp;<Text ><Avatar size="small" src={props.commit.author.avatarUrl} /> {props.commit.author.login}</Text> <Text >committed {moment(props.commit.author?.date).fromNow()}</Text>
