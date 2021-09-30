@@ -1,11 +1,12 @@
 import { useState } from "react"
-import { Form, Select, Radio, Button, Typography } from "antd"
+import { Form, Select, Radio, Button, Typography, Avatar } from "antd"
 
 import { Branch, Commit, Tag, DeploymentType, Status, User, Env } from "../models"
 
 import CreatableSelect, {Option as Op} from "./CreatableSelect"
 import StatusStateIcon from "./StatusStateIcon"
 import ApproversSelect from "./ApproversSelect"
+import moment from "moment"
 
 export type Option = Op
 
@@ -136,9 +137,7 @@ export default function DeployForm(props: DeployFormProps): JSX.Element {
 
     const mapCommitToOption = (commit: Commit) => {
         return {
-            label: <span>
-                <Text className="gitploy-code" code>{commit.sha.substring(0, 7)}</Text> - {commit.message} 
-            </span>,
+            label: <CommitDecorator commit={commit}/>,
             value: commit.sha,
         } as Option
     }
@@ -275,5 +274,21 @@ export default function DeployForm(props: DeployFormProps): JSX.Element {
                 </Button>
             </Form.Item>
         </Form>
+    )
+}
+
+interface CommitDecoratorProps {
+    commit: Commit
+}
+
+function CommitDecorator(props: CommitDecoratorProps): JSX.Element {
+    return (
+        <span>
+            <Text className="gitploy-code" code>{props.commit.sha.substring(0, 7)}</Text> - <Text strong>{props.commit.message}</Text> <br/>
+            {(props.commit?.author)?
+                <span >
+                    &nbsp;<Text ><Avatar size="small" src={props.commit.author.avatarUrl} /> {props.commit.author.login}</Text> <Text >committed {moment(props.commit.author?.date).fromNow()}</Text>
+                </span>: null} 
+        </span>
     )
 }

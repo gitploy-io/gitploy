@@ -1,11 +1,12 @@
 import { Form, Typography, Avatar, Button, Collapse, Timeline } from "antd"
 import moment from "moment"
+import { useState } from "react"
 
 import { Deployment, Commit } from "../models"
 import DeploymentRefCode from "./DeploymentRefCode"
 import DeploymentStatusSteps from "./DeploymentStatusSteps"
 
-const { Text } = Typography
+const { Paragraph, Text } = Typography
 const { Panel } = Collapse
 
 interface DeployConfirmProps {
@@ -119,19 +120,56 @@ function CommitChanges(props: CommitChangesProps): JSX.Element {
     if (props.changes.length === 0) {
         return <div>There are no commits.</div>
     }
+
     return (
         <Timeline>
             {props.changes.slice(0, 10).map((change, idx) => {
-                const style: React.CSSProperties =  (idx === props.changes.length - 1) ?  {height: 0} : {}
-                // Omit lines after the first feedline.
-                const message = change.message.split("\n", 1)[0]
-
-                return <Timeline.Item key={idx} color="gray" style={style}>
-                    <a href={change.htmlUrl} className="gitploy-link">
-                        {message.substr(0, 50)}
-                    </a>
+                return <Timeline.Item key={idx} color="gray">
+                    <CommitChange commit={change} />
                 </Timeline.Item>
             })}
         </Timeline>
+    )
+}
+
+interface CommitChangeProps {
+    commit: Commit
+}
+
+function CommitChange(props: CommitChangeProps): JSX.Element {
+    const commit = props.commit
+    const [message, description] = commit.message.split("\n\n", 2)
+
+    const [hide, setHide] = useState(true)
+
+    const onClickHide = () => {
+        setHide(!hide)
+    }
+
+    return (
+        <span >
+            <a href={commit.htmlUrl} className="gitploy-link"><strong>{message.substring(0, 50)}</strong></a>
+            {(description) ? 
+                <Button size="small" type="text" onClick={onClickHide}>
+                    <Text className="gitploy-code" code>...</Text>
+                </Button> :
+                null}
+            {/* Display the description of the commit. */}
+            {(!hide) ?
+                <Paragraph style={{margin: 0}}>
+                    <pre style={{marginBottom: 0}}>
+                        {description.split(/(\r\n)/g).map((line, idx) => {
+                            return (line !== "\r\n")? <Text key={idx}>{line}</Text> : <br/>
+                        })}
+                    </pre>
+                </Paragraph> :
+                null}
+            <br />
+            {(commit?.author) ?
+                <span >
+                    <Text >&nbsp;<Avatar size="small" src={commit.author.avatarUrl} /> {commit.author.login}</Text> <Text >committed {moment(commit.author?.date).fromNow()}</Text>
+                </span> :
+                null} 
+        </span>
     )
 }

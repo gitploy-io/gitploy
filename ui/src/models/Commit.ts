@@ -3,6 +3,13 @@ export default interface Commit {
     message: string
     isPullRequest: boolean
     htmlUrl: string
+    author?: Author
+}
+
+export interface Author {
+    login: string
+    avatarUrl: string
+    date: Date
 }
 
 export interface Status {
