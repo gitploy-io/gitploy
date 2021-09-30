@@ -166,7 +166,9 @@ func newSCM(c *Config) interactor.SCM {
 	var scm interactor.SCM
 
 	if c.isGithubEnabled() {
-		scm = github.NewGithub()
+		scm = github.NewGithub(&github.GithubConfig{
+			BaseURL: c.GithubBaseURL,
+		})
 	}
 
 	return scm
