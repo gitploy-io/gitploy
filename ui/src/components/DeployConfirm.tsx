@@ -157,7 +157,7 @@ function CommitChange(props: CommitChangeProps): JSX.Element {
             {(!hide) ?
                 <Paragraph style={{margin: 0}}>
                     <pre style={{marginBottom: 0, fontSize: 12}}>
-                        {description.toString().replaceAll(",", "").trim()}
+                        {description.join("").trim()}
                     </pre>
                 </Paragraph> :
                 null}
