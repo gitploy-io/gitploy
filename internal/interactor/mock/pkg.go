@@ -470,7 +470,7 @@ func (mr *MockStoreMockRecorder) FindPrevSuccessDeployment(ctx, d interface{}) *
 }
 
 // FindRepoByID mocks base method.
-func (m *MockStore) FindRepoByID(ctx context.Context, id string) (*ent.Repo, error) {
+func (m *MockStore) FindRepoByID(ctx context.Context, id int64) (*ent.Repo, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FindRepoByID", ctx, id)
 	ret0, _ := ret[0].(*ent.Repo)

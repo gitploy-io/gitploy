@@ -29,7 +29,7 @@ func TestRepo_UpdateRepo(t *testing.T) {
 		}
 
 		const (
-			r1 = "1"
+			r1 = 1
 		)
 
 		ctrl := gomock.NewController(t)
@@ -57,7 +57,7 @@ func TestRepo_UpdateRepo(t *testing.T) {
 		}, r.UpdateRepo)
 
 		p, _ := json.Marshal(input.payload)
-		req, _ := http.NewRequest("PATCH", fmt.Sprintf("/repos/%s", r1), bytes.NewBuffer(p))
+		req, _ := http.NewRequest("PATCH", fmt.Sprintf("/repos/%d", r1), bytes.NewBuffer(p))
 		w := httptest.NewRecorder()
 
 		router.ServeHTTP(w, req)
@@ -77,7 +77,7 @@ func TestRepo_UpdateRepo(t *testing.T) {
 		}
 
 		const (
-			r1 = "1"
+			r1 = 1
 		)
 
 		ctrl := gomock.NewController(t)
@@ -104,7 +104,7 @@ func TestRepo_UpdateRepo(t *testing.T) {
 		}, r.UpdateRepo)
 
 		p, _ := json.Marshal(input.payload)
-		req, _ := http.NewRequest("PATCH", fmt.Sprintf("/repos/%s", r1), bytes.NewBuffer(p))
+		req, _ := http.NewRequest("PATCH", fmt.Sprintf("/repos/%d", r1), bytes.NewBuffer(p))
 		w := httptest.NewRecorder()
 
 		router.ServeHTTP(w, req)

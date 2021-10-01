@@ -32,10 +32,10 @@ func TestInteractor_Deploy(t *testing.T) {
 			e *vo.Env
 		}{
 			u: &ent.User{
-				ID: "1",
+				ID: 1,
 			},
 			r: &ent.Repo{
-				ID: "1",
+				ID: 1,
 			},
 			d: &ent.Deployment{
 				Number: 3,
@@ -117,10 +117,10 @@ func TestInteractor_Deploy(t *testing.T) {
 			e *vo.Env
 		}{
 			u: &ent.User{
-				ID: "1",
+				ID: 1,
 			},
 			r: &ent.Repo{
-				ID: "1",
+				ID: 1,
 			},
 			d: &ent.Deployment{
 				Number: 3,

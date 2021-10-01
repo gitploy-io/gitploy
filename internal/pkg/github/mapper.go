@@ -1,7 +1,6 @@
 package github
 
 import (
-	"strconv"
 	"strings"
 
 	"github.com/gitploy-io/gitploy/vo"
@@ -10,7 +9,7 @@ import (
 
 func mapGithubUserToUser(u *github.User) *vo.RemoteUser {
 	return &vo.RemoteUser{
-		ID:        strconv.FormatInt(*u.ID, 10),
+		ID:        *u.ID,
 		Login:     *u.Login,
 		AvatarURL: *u.AvatarURL,
 	}
@@ -29,7 +28,7 @@ func mapGithubRepoToRemotePerm(r *github.Repository) *vo.RemoteRepo {
 	}
 
 	return &vo.RemoteRepo{
-		ID:          strconv.FormatInt(*r.ID, 10),
+		ID:          *r.ID,
 		Namespace:   namespace,
 		Name:        name,
 		Description: *r.Description,

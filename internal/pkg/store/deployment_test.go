@@ -22,10 +22,10 @@ func TestStore_SearchDeployments(t *testing.T) {
 	ctx := context.Background()
 
 	const (
-		u1 = "1"
-		u2 = "2"
-		r1 = "1"
-		r2 = "2"
+		u1 = 1
+		u2 = 2
+		r1 = 1
+		r2 = 2
 	)
 
 	client.Perm.
@@ -148,9 +148,9 @@ func TestStore_SearchDeployments(t *testing.T) {
 
 func TestStore_ListDeploymentsOfRepo(t *testing.T) {
 	const (
-		r1 = "1"
-		u1 = "1"
-		u2 = "2"
+		r1 = 1
+		u1 = 1
+		u2 = 2
 	)
 
 	client := enttest.Open(t, "sqlite3", "file:ent?mode=memory&cache=shared&_fk=1",
@@ -257,7 +257,7 @@ func TestStore_GetNextDeploymentNumberOfRepo(t *testing.T) {
 
 		s := NewStore(client)
 
-		number, err := s.GetNextDeploymentNumberOfRepo(ctx, &ent.Repo{ID: "1"})
+		number, err := s.GetNextDeploymentNumberOfRepo(ctx, &ent.Repo{ID: 1})
 		if err != nil {
 			t.Fatalf("GetNextDeploymentNumberOfRepo returns an error: %s", err)
 			t.FailNow()
@@ -272,9 +272,9 @@ func TestStore_GetNextDeploymentNumberOfRepo(t *testing.T) {
 
 	t.Run("Return two when there is a single deployment.", func(t *testing.T) {
 		const (
-			u1 = "1"
-			r1 = "1"
-			r2 = "2"
+			u1 = 1
+			r1 = 1
+			r2 = 2
 		)
 
 		client := enttest.Open(t, "sqlite3", "file:ent?mode=memory&cache=shared&_fk=1",
@@ -290,7 +290,7 @@ func TestStore_GetNextDeploymentNumberOfRepo(t *testing.T) {
 			SetType("branch").
 			SetRef("main").
 			SetEnv("local").
-			SetUserID("1").
+			SetUserID(u1).
 			SetRepoID(r1).
 			SetStatus(deployment.StatusCreated).
 			SaveX(ctx)
@@ -301,7 +301,7 @@ func TestStore_GetNextDeploymentNumberOfRepo(t *testing.T) {
 			SetType("branch").
 			SetRef("main").
 			SetEnv("prod").
-			SetUserID("1").
+			SetUserID(u1).
 			SetRepoID(r2).
 			SetStatus(deployment.StatusCreated).
 			SaveX(ctx)
@@ -340,8 +340,8 @@ func TestStore_FindPrevSuccessDeployment(t *testing.T) {
 		SetEnv("prod").
 		SetStatus(deployment.StatusSuccess).
 		SetCreatedAt(ca.Add(-2 * time.Hour)).
-		SetUserID("1").
-		SetRepoID("1").
+		SetUserID(1).
+		SetRepoID(1).
 		SaveX(ctx)
 
 	client.Deployment.Create().
@@ -352,8 +352,8 @@ func TestStore_FindPrevSuccessDeployment(t *testing.T) {
 		SetEnv("prod").
 		SetStatus(deployment.StatusSuccess).
 		SetCreatedAt(ca.Add(-time.Hour)).
-		SetUserID("1").
-		SetRepoID("1").
+		SetUserID(1).
+		SetRepoID(1).
 		SaveX(ctx)
 
 	latest := client.Deployment.Create().
@@ -364,8 +364,8 @@ func TestStore_FindPrevSuccessDeployment(t *testing.T) {
 		SetEnv("prod").
 		SetStatus(deployment.StatusSuccess).
 		SetCreatedAt(ca).
-		SetUserID("1").
-		SetRepoID("1").
+		SetUserID(1).
+		SetRepoID(1).
 		SaveX(ctx)
 
 	t.Run("First deployment returns not found error.", func(t *testing.T) {

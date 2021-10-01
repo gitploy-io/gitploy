@@ -130,9 +130,8 @@ func buildRollbackView(callbackID string, as []*deploymentAggregation, perms []*
 			continue
 		}
 
-		slack.NewOptionBlockObject(u.ID, slack.NewTextBlockObject(slack.PlainTextType, u.Login, false, false), nil)
 		approvers = append(approvers, slack.NewOptionBlockObject(
-			u.ID,
+			strconv.FormatInt(u.ID, 10),
 			slack.NewTextBlockObject(slack.PlainTextType, u.Login, false, false),
 			nil))
 	}
@@ -288,8 +287,14 @@ func (s *Slack) interactRollback(c *gin.Context) {
 
 	if env.IsApprovalEabled() {
 		for _, id := range sm.ApproverIDs {
+			i, err := strconv.ParseInt(id, 10, 64)
+			if err != nil {
+				s.log.Error("It has failed to parse the ID of approver.", zap.Error(err))
+				continue
+			}
+
 			a, err := s.i.CreateApproval(ctx, &ent.Approval{
-				UserID:       id,
+				UserID:       i,
 				DeploymentID: d.ID,
 			})
 			if err != nil {

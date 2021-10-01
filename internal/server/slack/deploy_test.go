@@ -35,7 +35,7 @@ func TestSlack_interactDeploy(t *testing.T) {
 			FindCallbackByHash(gomock.Any(), callbackID).
 			Return(&ent.Callback{
 				Edges: ent.CallbackEdges{
-					Repo: &ent.Repo{ID: "1"},
+					Repo: &ent.Repo{ID: 1},
 				},
 			}, nil)
 

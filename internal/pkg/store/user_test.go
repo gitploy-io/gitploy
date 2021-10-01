@@ -20,7 +20,7 @@ func TestStore_ListUsers(t *testing.T) {
 
 	u1 := client.User.
 		Create().
-		SetID("1").
+		SetID(1).
 		SetLogin("banana").
 		SetAvatar("").
 		SetToken("").
@@ -30,7 +30,7 @@ func TestStore_ListUsers(t *testing.T) {
 
 	u2 := client.User.
 		Create().
-		SetID("2").
+		SetID(2).
 		SetLogin("apple").
 		SetAvatar("").
 		SetToken("").

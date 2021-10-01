@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -145,7 +146,7 @@ func buildDeployView(callbackID string, c *vo.Config, perms []*ent.Perm) slack.M
 				Type: slack.PlainTextType,
 				Text: u.Login,
 			},
-			Value: u.ID,
+			Value: strconv.FormatInt(u.ID, 10),
 		})
 	}
 
@@ -316,8 +317,14 @@ func (s *Slack) interactDeploy(c *gin.Context) {
 
 	if env.IsApprovalEabled() {
 		for _, id := range sm.ApproverIDs {
+			i, err := strconv.ParseInt(id, 10, 64)
+			if err != nil {
+				s.log.Error("It has failed to parse the ID of approval.", zap.Error(err))
+				continue
+			}
+
 			a, err := s.i.CreateApproval(ctx, &ent.Approval{
-				UserID:       id,
+				UserID:       i,
 				DeploymentID: d.ID,
 			})
 			if err != nil {

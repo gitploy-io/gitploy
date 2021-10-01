@@ -24,7 +24,7 @@ func (s *Store) ListUsers(ctx context.Context, login string, page, perPage int) 
 // but it returns nil if chat_user is not found.
 //
 // Note that add new indexes if you need to more edges.
-func (s *Store) FindUserByID(ctx context.Context, id string) (*ent.User, error) {
+func (s *Store) FindUserByID(ctx context.Context, id int64) (*ent.User, error) {
 	return s.c.User.
 		Query().
 		Where(

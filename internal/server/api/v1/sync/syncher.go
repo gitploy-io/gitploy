@@ -52,12 +52,12 @@ func (s *Syncher) Sync(c *gin.Context) {
 		}
 
 		if err := s.i.SyncRemoteRepo(ctx, u, re); err != nil {
-			s.log.Error("It has failed to sync with the remote repository.", zap.Error(err), zap.String("repo_id", re.ID))
+			s.log.Error("It has failed to sync with the remote repository.", zap.Error(err), zap.Int64("repo_id", re.ID))
 			continue
 		}
 		syncCnt = syncCnt + 1
 	}
-	s.log.Debug(fmt.Sprintf("Processed to schronize with %d repositories.", syncCnt), zap.String("user_id", u.ID))
+	s.log.Debug(fmt.Sprintf("Processed to schronize with %d repositories.", syncCnt), zap.Int64("user_id", u.ID))
 
 	// Delete staled perms.
 	var cnt int

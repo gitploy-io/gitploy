@@ -63,8 +63,15 @@ func (u *User) UpdateUser(c *gin.Context) {
 	ctx := c.Request.Context()
 
 	var (
-		id = c.Param("id")
+		id  int64
+		err error
 	)
+
+	if id, err = strconv.ParseInt(c.Param("id"), 10, 64); err != nil {
+		u.log.Error("Invalid ID of user.", zap.Error(err))
+		gb.ErrorResponse(c, http.StatusBadRequest, "Invalid ID of user.")
+		return
+	}
 
 	p := &userPatchPayload{}
 	if err := c.ShouldBindBodyWith(p, binding.JSON); err != nil {
@@ -100,8 +107,15 @@ func (u *User) DeleteUser(c *gin.Context) {
 	ctx := c.Request.Context()
 
 	var (
-		id = c.Param("id")
+		id  int64
+		err error
 	)
+
+	if id, err = strconv.ParseInt(c.Param("id"), 10, 64); err != nil {
+		u.log.Error("Invalid ID of user.", zap.Error(err))
+		gb.ErrorResponse(c, http.StatusBadRequest, "Invalid ID of user.")
+		return
+	}
 
 	du, err := u.i.FindUserByID(ctx, id)
 	if ent.IsNotFound(err) {
