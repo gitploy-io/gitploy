@@ -101,14 +101,14 @@ export default function DeploymentView(): JSX.Element {
     }
 
     const onSelectCandidate = (id: string) => {
-        const approval = approvals.find(a => a.user?.id === id) 
+        const approval = approvals.find(a => a.user?.id.toString() === id) 
 
         if (approval !== undefined) {
             dispatch(deleteApproval(approval))
             return
         }
 
-        const candidate = candidates.find(c => c.id === id)
+        const candidate = candidates.find(c => c.id.toString() === id)
         if (candidate === undefined) {
             throw new Error("The candidate is not found")
         }

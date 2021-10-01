@@ -1,5 +1,5 @@
 export default interface User {
-    id: string
+    id: number
     login: string
     avatar: string
     admin: boolean
