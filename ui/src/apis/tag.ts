@@ -4,8 +4,8 @@ import { instance, headers } from './setting'
 import { _fetch } from "./_base"
 import { Tag, HttpNotFoundError } from '../models'
 
-export const listTags = async (repoId: string, page = 1, perPage = 30): Promise<Tag[]> => {
-    const tags: Tag[] = await _fetch(`${instance}/api/v1/repos/${repoId}/tags?page=${page}&per_page=${perPage}`, {
+export const listTags = async (namespace: string, name: string, page = 1, perPage = 30): Promise<Tag[]> => {
+    const tags: Tag[] = await _fetch(`${instance}/api/v1/repos/${namespace}/${name}/tags?page=${page}&per_page=${perPage}`, {
         headers,
         credentials: "same-origin",
     })
@@ -20,8 +20,8 @@ export const listTags = async (repoId: string, page = 1, perPage = 30): Promise<
     return tags
 }
 
-export const getTag = async (repoId: string, name: string): Promise<Tag> => {
-    const response = await _fetch(`${instance}/api/v1/repos/${repoId}/tags/${name}`, {
+export const getTag = async (namespace: string, name: string, tag: string): Promise<Tag> => {
+    const response = await _fetch(`${instance}/api/v1/repos/${namespace}/${name}/tags/${tag}`, {
         headers,
         credentials: "same-origin",
     })
@@ -30,11 +30,11 @@ export const getTag = async (repoId: string, name: string): Promise<Tag> => {
         throw new HttpNotFoundError(message)
     }
 
-    const tag:Tag = await response
+    const ret: Tag = await response
             .json()
             .then(t => ({
                 name: t.name,
                 commitSha: t.commit_sha,
         }))
-    return tag
+    return ret
 }

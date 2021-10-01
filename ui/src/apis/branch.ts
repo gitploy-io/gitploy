@@ -16,8 +16,8 @@ const mapDataToBranch = (data: BranchData): Branch => {
     }
 }
 
-export const listBranches = async (repoId: string, page = 1, perPage = 30): Promise<Branch[]> => {
-    const branches: Branch[] = await _fetch(`${instance}/api/v1/repos/${repoId}/branches?page=${page}&per_page=${perPage}`, {
+export const listBranches = async (namespace: string, name: string, page = 1, perPage = 30): Promise<Branch[]> => {
+    const branches: Branch[] = await _fetch(`${instance}/api/v1/repos/${namespace}/${name}/branches?page=${page}&per_page=${perPage}`, {
         headers,
         credentials: "same-origin",
     })
@@ -27,8 +27,8 @@ export const listBranches = async (repoId: string, page = 1, perPage = 30): Prom
     return branches
 }
 
-export const getBranch = async (repoId: string, name: string): Promise<Branch> => {
-    const response = await _fetch(`${instance}/api/v1/repos/${repoId}/branches/${name}`, {
+export const getBranch = async (namespace: string, name: string, branch: string): Promise<Branch> => {
+    const response = await _fetch(`${instance}/api/v1/repos/${namespace}/${name}/branches/${branch}`, {
         headers,
         credentials: "same-origin",
     })
@@ -37,9 +37,9 @@ export const getBranch = async (repoId: string, name: string): Promise<Branch> =
         throw new HttpNotFoundError(message)
     }
 
-    const branch:Branch = await response
+    const ret:Branch = await response
         .json()
         .then((b: BranchData) => mapDataToBranch(b))
     
-    return branch
+    return ret
 }

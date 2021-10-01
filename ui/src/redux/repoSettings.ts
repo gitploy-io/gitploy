@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit"
 import { message } from "antd"
 
-import { searchRepo, updateRepo, deactivateRepo } from "../apis"
+import { getRepo, updateRepo, deactivateRepo } from "../apis"
 import { Repo, RequestStatus, HttpForbiddenError  } from "../models"
 
 interface RepoSettingsState {
@@ -20,7 +20,7 @@ const initialState: RepoSettingsState = {
 export const init = createAsyncThunk<Repo, {namespace: string, name: string}, { state: {repoSettings: RepoSettingsState} }>(
     'repoSettings/init', 
     async (params) => {
-        const repo = await searchRepo(params.namespace, params.name)
+        const repo = await getRepo(params.namespace, params.name)
         return repo
     },
 )
@@ -38,7 +38,7 @@ export const save = createAsyncThunk<Repo, void, { state: {repoSettings: RepoSet
         }
 
         try {
-            const nr = await updateRepo(repo)
+            const nr = await updateRepo(repo.namespace, repo.name, {config_path: repo.configPath})
             message.success("Success to save.", 3)
             return nr
         } catch(e) {
@@ -58,7 +58,7 @@ export const deactivate = createAsyncThunk<Repo, void, { state: {repoSettings: R
         if (!repo) throw new Error("There is no repo.")
 
         try {
-            const nr = await deactivateRepo(repo)
+            const nr = await deactivateRepo(repo.namespace, repo.name)
             window.location.reload()
             return nr
         } catch(e) {

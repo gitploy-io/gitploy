@@ -5,7 +5,7 @@ import { PageHeader, Button } from 'antd'
 import { Result } from "antd"
 
 import { useAppSelector, useAppDispatch } from "../redux/hooks"
-import { init, fetchConfig, listLocks, lock, unlock, repoLockSlice as slice} from "../redux/repoLock"
+import { fetchConfig, listLocks, lock, unlock, repoLockSlice as slice} from "../redux/repoLock"
 import LockList from '../components/LockList'
 
 interface Params {
@@ -15,12 +15,12 @@ interface Params {
 
 export default function RepoLock(): JSX.Element {
     const { namespace, name } = useParams<Params>()
-    const { display, repo, config, locks } = useAppSelector(state => state.repoLock, shallowEqual)
+    const { display, config, locks } = useAppSelector(state => state.repoLock, shallowEqual)
     const dispatch = useAppDispatch()
 
     useEffect(() => {
         const f = async () => {
-            await dispatch(init({namespace, name}))
+            await dispatch(slice.actions.init({namespace, name}))
             await dispatch(fetchConfig())
             await dispatch(listLocks())
             await dispatch(slice.actions.setDisplay(true))
@@ -29,11 +29,11 @@ export default function RepoLock(): JSX.Element {
         // eslint-disable-next-line 
     }, [dispatch])
 
-    if (!display || !repo) {
+    if (!display) {
         return <></>
     } 
 
-    if (repo && !config) {
+    if (!config) {
         return (
             <Result
                 status="warning"
