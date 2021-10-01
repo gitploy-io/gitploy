@@ -183,7 +183,7 @@ export default function DeploymentView(): JSX.Element {
                             null}
                         <Divider />
                     </Col>
-                    <Col xs={{span: 24}} md={{span: 18}}>
+                    <Col xs={{span: 24}} md={(deployment.isApprovalEanbled)? {span: 18} : {span: 24}}>
                         <DeployConfirm 
                             isDeployable={isDeployable(deployment, approvals)}
                             deploying={RequestStatus.Pending === deploying}
