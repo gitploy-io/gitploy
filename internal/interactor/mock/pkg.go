@@ -470,7 +470,7 @@ func (mr *MockStoreMockRecorder) FindPrevSuccessDeployment(ctx, d interface{}) *
 }
 
 // FindRepoByID mocks base method.
-func (m *MockStore) FindRepoByID(ctx context.Context, id string) (*ent.Repo, error) {
+func (m *MockStore) FindRepoByID(ctx context.Context, id int64) (*ent.Repo, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FindRepoByID", ctx, id)
 	ret0, _ := ret[0].(*ent.Repo)
@@ -485,7 +485,7 @@ func (mr *MockStoreMockRecorder) FindRepoByID(ctx, id interface{}) *gomock.Call 
 }
 
 // FindRepoOfUserByID mocks base method.
-func (m *MockStore) FindRepoOfUserByID(ctx context.Context, u *ent.User, id string) (*ent.Repo, error) {
+func (m *MockStore) FindRepoOfUserByID(ctx context.Context, u *ent.User, id int64) (*ent.Repo, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FindRepoOfUserByID", ctx, u, id)
 	ret0, _ := ret[0].(*ent.Repo)
@@ -530,7 +530,7 @@ func (mr *MockStoreMockRecorder) FindUserByHash(ctx, hash interface{}) *gomock.C
 }
 
 // FindUserByID mocks base method.
-func (m *MockStore) FindUserByID(ctx context.Context, id string) (*ent.User, error) {
+func (m *MockStore) FindUserByID(ctx context.Context, id int64) (*ent.User, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FindUserByID", ctx, id)
 	ret0, _ := ret[0].(*ent.User)

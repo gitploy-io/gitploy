@@ -21,8 +21,8 @@ func (Lock) Fields() []ent.Field {
 		field.Time("created_at").
 			Default(time.Now),
 		// Edges
-		field.String("user_id"),
-		field.String("repo_id"),
+		field.Int64("user_id"),
+		field.Int64("repo_id"),
 	}
 }
 

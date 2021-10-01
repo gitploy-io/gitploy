@@ -18,9 +18,9 @@ func TestStore_DeletePermsOfUserLessThanUpdatedAt(t *testing.T) {
 	defer client.Close()
 
 	const (
-		u1 = "1"
-		u2 = "2"
-		r  = "1"
+		u1 = 1
+		u2 = 2
+		r  = 1
 	)
 
 	nor := time.Now()

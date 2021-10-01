@@ -25,9 +25,9 @@ type Perm struct {
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updated_at"`
 	// UserID holds the value of the "user_id" field.
-	UserID string `json:"user_id"`
+	UserID int64 `json:"user_id"`
 	// RepoID holds the value of the "repo_id" field.
-	RepoID string `json:"repo_id"`
+	RepoID int64 `json:"repo_id"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the PermQuery when eager-loading is set.
 	Edges PermEdges `json:"edges"`
@@ -77,9 +77,9 @@ func (*Perm) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case perm.FieldID:
+		case perm.FieldID, perm.FieldUserID, perm.FieldRepoID:
 			values[i] = new(sql.NullInt64)
-		case perm.FieldRepoPerm, perm.FieldUserID, perm.FieldRepoID:
+		case perm.FieldRepoPerm:
 			values[i] = new(sql.NullString)
 		case perm.FieldCreatedAt, perm.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -123,16 +123,16 @@ func (pe *Perm) assignValues(columns []string, values []interface{}) error {
 				pe.UpdatedAt = value.Time
 			}
 		case perm.FieldUserID:
-			if value, ok := values[i].(*sql.NullString); !ok {
+			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field user_id", values[i])
 			} else if value.Valid {
-				pe.UserID = value.String
+				pe.UserID = value.Int64
 			}
 		case perm.FieldRepoID:
-			if value, ok := values[i].(*sql.NullString); !ok {
+			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field repo_id", values[i])
 			} else if value.Valid {
-				pe.RepoID = value.String
+				pe.RepoID = value.Int64
 			}
 		}
 	}
@@ -179,9 +179,9 @@ func (pe *Perm) String() string {
 	builder.WriteString(", updated_at=")
 	builder.WriteString(pe.UpdatedAt.Format(time.ANSIC))
 	builder.WriteString(", user_id=")
-	builder.WriteString(pe.UserID)
+	builder.WriteString(fmt.Sprintf("%v", pe.UserID))
 	builder.WriteString(", repo_id=")
-	builder.WriteString(pe.RepoID)
+	builder.WriteString(fmt.Sprintf("%v", pe.RepoID))
 	builder.WriteByte(')')
 	return builder.String()
 }

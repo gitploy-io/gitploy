@@ -108,7 +108,7 @@ func UpdatedAt(v time.Time) predicate.Approval {
 }
 
 // UserID applies equality check predicate on the "user_id" field. It's identical to UserIDEQ.
-func UserID(v string) predicate.Approval {
+func UserID(v int64) predicate.Approval {
 	return predicate.Approval(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldUserID), v))
 	})
@@ -322,21 +322,21 @@ func UpdatedAtLTE(v time.Time) predicate.Approval {
 }
 
 // UserIDEQ applies the EQ predicate on the "user_id" field.
-func UserIDEQ(v string) predicate.Approval {
+func UserIDEQ(v int64) predicate.Approval {
 	return predicate.Approval(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldUserID), v))
 	})
 }
 
 // UserIDNEQ applies the NEQ predicate on the "user_id" field.
-func UserIDNEQ(v string) predicate.Approval {
+func UserIDNEQ(v int64) predicate.Approval {
 	return predicate.Approval(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldUserID), v))
 	})
 }
 
 // UserIDIn applies the In predicate on the "user_id" field.
-func UserIDIn(vs ...string) predicate.Approval {
+func UserIDIn(vs ...int64) predicate.Approval {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -353,7 +353,7 @@ func UserIDIn(vs ...string) predicate.Approval {
 }
 
 // UserIDNotIn applies the NotIn predicate on the "user_id" field.
-func UserIDNotIn(vs ...string) predicate.Approval {
+func UserIDNotIn(vs ...int64) predicate.Approval {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -366,69 +366,6 @@ func UserIDNotIn(vs ...string) predicate.Approval {
 			return
 		}
 		s.Where(sql.NotIn(s.C(FieldUserID), v...))
-	})
-}
-
-// UserIDGT applies the GT predicate on the "user_id" field.
-func UserIDGT(v string) predicate.Approval {
-	return predicate.Approval(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldUserID), v))
-	})
-}
-
-// UserIDGTE applies the GTE predicate on the "user_id" field.
-func UserIDGTE(v string) predicate.Approval {
-	return predicate.Approval(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldUserID), v))
-	})
-}
-
-// UserIDLT applies the LT predicate on the "user_id" field.
-func UserIDLT(v string) predicate.Approval {
-	return predicate.Approval(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldUserID), v))
-	})
-}
-
-// UserIDLTE applies the LTE predicate on the "user_id" field.
-func UserIDLTE(v string) predicate.Approval {
-	return predicate.Approval(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldUserID), v))
-	})
-}
-
-// UserIDContains applies the Contains predicate on the "user_id" field.
-func UserIDContains(v string) predicate.Approval {
-	return predicate.Approval(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldUserID), v))
-	})
-}
-
-// UserIDHasPrefix applies the HasPrefix predicate on the "user_id" field.
-func UserIDHasPrefix(v string) predicate.Approval {
-	return predicate.Approval(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldUserID), v))
-	})
-}
-
-// UserIDHasSuffix applies the HasSuffix predicate on the "user_id" field.
-func UserIDHasSuffix(v string) predicate.Approval {
-	return predicate.Approval(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldUserID), v))
-	})
-}
-
-// UserIDEqualFold applies the EqualFold predicate on the "user_id" field.
-func UserIDEqualFold(v string) predicate.Approval {
-	return predicate.Approval(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldUserID), v))
-	})
-}
-
-// UserIDContainsFold applies the ContainsFold predicate on the "user_id" field.
-func UserIDContainsFold(v string) predicate.Approval {
-	return predicate.Approval(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldUserID), v))
 	})
 }
 

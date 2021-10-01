@@ -18,7 +18,7 @@ type Repo struct {
 // Fields of the Repo.
 func (Repo) Fields() []ent.Field {
 	return []ent.Field{
-		field.String("id"),
+		field.Int64("id"),
 		field.String("namespace"),
 		field.String("name"),
 		field.String("description"),

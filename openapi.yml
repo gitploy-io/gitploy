@@ -1492,7 +1492,7 @@ components:
       type: object
       properties:
         id:
-          type: string
+          type: number
         login:
           type: string
         avatar:
@@ -1537,7 +1537,7 @@ components:
       type: object
       properties:
         id:
-          type: string
+          type: number
         namespace:
           type: string
           description: Repository owner

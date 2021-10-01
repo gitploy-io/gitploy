@@ -9,7 +9,7 @@ import (
 
 type (
 	Interactor interface {
-		FindUserByID(ctx context.Context, id string) (*ent.User, error)
+		FindUserByID(ctx context.Context, id int64) (*ent.User, error)
 		IsAdminUser(ctx context.Context, login string) bool
 		IsEntryMember(ctx context.Context, login string) bool
 		IsOrgMember(ctx context.Context, orgs []string) bool

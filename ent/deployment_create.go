@@ -184,14 +184,14 @@ func (dc *DeploymentCreate) SetNillableUpdatedAt(t *time.Time) *DeploymentCreate
 }
 
 // SetUserID sets the "user_id" field.
-func (dc *DeploymentCreate) SetUserID(s string) *DeploymentCreate {
-	dc.mutation.SetUserID(s)
+func (dc *DeploymentCreate) SetUserID(i int64) *DeploymentCreate {
+	dc.mutation.SetUserID(i)
 	return dc
 }
 
 // SetRepoID sets the "repo_id" field.
-func (dc *DeploymentCreate) SetRepoID(s string) *DeploymentCreate {
-	dc.mutation.SetRepoID(s)
+func (dc *DeploymentCreate) SetRepoID(i int64) *DeploymentCreate {
+	dc.mutation.SetRepoID(i)
 	return dc
 }
 
@@ -550,7 +550,7 @@ func (dc *DeploymentCreate) createSpec() (*Deployment, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
+					Type:   field.TypeInt64,
 					Column: user.FieldID,
 				},
 			},
@@ -570,7 +570,7 @@ func (dc *DeploymentCreate) createSpec() (*Deployment, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
+					Type:   field.TypeInt64,
 					Column: repo.FieldID,
 				},
 			},

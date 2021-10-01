@@ -20,10 +20,10 @@ func TestInteractor_SyncRemoteRepo(t *testing.T) {
 			remote *vo.RemoteRepo
 		}{
 			user: &ent.User{
-				ID: "2214",
+				ID: 2214,
 			},
 			remote: &vo.RemoteRepo{
-				ID:   "2214",
+				ID:   2214,
 				Perm: vo.RemoteRepoPermRead,
 			},
 		}

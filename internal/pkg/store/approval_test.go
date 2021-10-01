@@ -22,7 +22,7 @@ func TestStore_SearchApprovals(t *testing.T) {
 	ctx := context.Background()
 
 	const (
-		u1 = "1"
+		u1 = 1
 		d1 = 1
 		d2 = 2
 		d3 = 3

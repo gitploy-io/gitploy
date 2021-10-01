@@ -15,7 +15,7 @@ import (
 
 type (
 	approvalPostPayload struct {
-		UserID string `json:"user_id"`
+		UserID int64 `json:"user_id"`
 	}
 
 	approvalPatchPayload struct {

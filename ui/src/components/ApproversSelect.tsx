@@ -32,7 +32,7 @@ export default function ApproversSelect(props: ApproversSelectProps): JSX.Elemen
     }, 800)
 
     const _onSelectCandidate = (id: string) => {
-        const candidate = props.candidates.find(c => c.id ===id)
+        const candidate = props.candidates.find(c => c.id.toString() ===id)
         if (candidate === undefined) {
             return
         }
@@ -45,14 +45,14 @@ export default function ApproversSelect(props: ApproversSelectProps): JSX.Elemen
     }
 
     const _onDeselectCandidate = (id: string) => {
-        const candidate = value.find(c => c.id === id)
+        const candidate = value.find(c => c.id.toString() === id)
         if (candidate === undefined) {
             return
         }
 
         onDeselectCandidate(candidate)
 
-        const candidates = value.filter(c => c.id !== id)
+        const candidates = value.filter(c => c.id.toString() !== id)
         setValue(candidates)
     }
 

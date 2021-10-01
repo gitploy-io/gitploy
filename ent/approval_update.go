@@ -66,8 +66,8 @@ func (au *ApprovalUpdate) SetUpdatedAt(t time.Time) *ApprovalUpdate {
 }
 
 // SetUserID sets the "user_id" field.
-func (au *ApprovalUpdate) SetUserID(s string) *ApprovalUpdate {
-	au.mutation.SetUserID(s)
+func (au *ApprovalUpdate) SetUserID(i int64) *ApprovalUpdate {
+	au.mutation.SetUserID(i)
 	return au
 }
 
@@ -273,7 +273,7 @@ func (au *ApprovalUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
+					Type:   field.TypeInt64,
 					Column: user.FieldID,
 				},
 			},
@@ -289,7 +289,7 @@ func (au *ApprovalUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
+					Type:   field.TypeInt64,
 					Column: user.FieldID,
 				},
 			},
@@ -442,8 +442,8 @@ func (auo *ApprovalUpdateOne) SetUpdatedAt(t time.Time) *ApprovalUpdateOne {
 }
 
 // SetUserID sets the "user_id" field.
-func (auo *ApprovalUpdateOne) SetUserID(s string) *ApprovalUpdateOne {
-	auo.mutation.SetUserID(s)
+func (auo *ApprovalUpdateOne) SetUserID(i int64) *ApprovalUpdateOne {
+	auo.mutation.SetUserID(i)
 	return auo
 }
 
@@ -673,7 +673,7 @@ func (auo *ApprovalUpdateOne) sqlSave(ctx context.Context) (_node *Approval, err
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
+					Type:   field.TypeInt64,
 					Column: user.FieldID,
 				},
 			},
@@ -689,7 +689,7 @@ func (auo *ApprovalUpdateOne) sqlSave(ctx context.Context) (_node *Approval, err
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
+					Type:   field.TypeInt64,
 					Column: user.FieldID,
 				},
 			},

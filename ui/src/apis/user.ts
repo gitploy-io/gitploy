@@ -5,7 +5,7 @@ import { instance, headers } from "./setting"
 import { User, ChatUser, RateLimit, HttpForbiddenError } from "../models"
 
 export interface UserData {
-    id: string
+    id: number
     login: string
     avatar: string
     admin: boolean
@@ -81,7 +81,7 @@ export const listUsers = async (q: string, page = 1, perPage = 30): Promise<User
     return users
 }
 
-export const updateUser = async (id: string, payload: {admin: boolean}): Promise<User> => {
+export const updateUser = async (id: number, payload: {admin: boolean}): Promise<User> => {
     const res = await _fetch(`${instance}/api/v1/users/${id}`, {
         headers,
         credentials: "same-origin",
@@ -100,7 +100,7 @@ export const updateUser = async (id: string, payload: {admin: boolean}): Promise
     return user
 }
 
-export const deleteUser = async (id: string): Promise<void> => {
+export const deleteUser = async (id: number): Promise<void> => {
     const res = await _fetch(`${instance}/api/v1/users/${id}`, {
         headers,
         credentials: "same-origin",

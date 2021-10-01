@@ -7,7 +7,7 @@ import { DeploymentData, mapDataToDeployment } from "./deployment"
 import { Repo, HttpForbiddenError, Deployment } from '../models'
 
 export interface RepoData {
-    id: string
+    id: number
     namespace: string
     name: string
     description: string

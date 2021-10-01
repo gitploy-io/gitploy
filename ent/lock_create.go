@@ -43,14 +43,14 @@ func (lc *LockCreate) SetNillableCreatedAt(t *time.Time) *LockCreate {
 }
 
 // SetUserID sets the "user_id" field.
-func (lc *LockCreate) SetUserID(s string) *LockCreate {
-	lc.mutation.SetUserID(s)
+func (lc *LockCreate) SetUserID(i int64) *LockCreate {
+	lc.mutation.SetUserID(i)
 	return lc
 }
 
 // SetRepoID sets the "repo_id" field.
-func (lc *LockCreate) SetRepoID(s string) *LockCreate {
-	lc.mutation.SetRepoID(s)
+func (lc *LockCreate) SetRepoID(i int64) *LockCreate {
+	lc.mutation.SetRepoID(i)
 	return lc
 }
 
@@ -213,7 +213,7 @@ func (lc *LockCreate) createSpec() (*Lock, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
+					Type:   field.TypeInt64,
 					Column: user.FieldID,
 				},
 			},
@@ -233,7 +233,7 @@ func (lc *LockCreate) createSpec() (*Lock, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
+					Type:   field.TypeInt64,
 					Column: repo.FieldID,
 				},
 			},

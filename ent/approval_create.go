@@ -66,8 +66,8 @@ func (ac *ApprovalCreate) SetNillableUpdatedAt(t *time.Time) *ApprovalCreate {
 }
 
 // SetUserID sets the "user_id" field.
-func (ac *ApprovalCreate) SetUserID(s string) *ApprovalCreate {
-	ac.mutation.SetUserID(s)
+func (ac *ApprovalCreate) SetUserID(i int64) *ApprovalCreate {
+	ac.mutation.SetUserID(i)
 	return ac
 }
 
@@ -275,7 +275,7 @@ func (ac *ApprovalCreate) createSpec() (*Approval, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
+					Type:   field.TypeInt64,
 					Column: user.FieldID,
 				},
 			},

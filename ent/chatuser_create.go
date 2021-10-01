@@ -74,8 +74,8 @@ func (cuc *ChatUserCreate) SetNillableUpdatedAt(t *time.Time) *ChatUserCreate {
 }
 
 // SetUserID sets the "user_id" field.
-func (cuc *ChatUserCreate) SetUserID(s string) *ChatUserCreate {
-	cuc.mutation.SetUserID(s)
+func (cuc *ChatUserCreate) SetUserID(i int64) *ChatUserCreate {
+	cuc.mutation.SetUserID(i)
 	return cuc
 }
 
@@ -283,7 +283,7 @@ func (cuc *ChatUserCreate) createSpec() (*ChatUser, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
+					Type:   field.TypeInt64,
 					Column: user.FieldID,
 				},
 			},

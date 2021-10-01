@@ -15,7 +15,7 @@ var (
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "deployment_id", Type: field.TypeInt, Nullable: true},
-		{Name: "user_id", Type: field.TypeString, Nullable: true},
+		{Name: "user_id", Type: field.TypeInt64, Nullable: true},
 	}
 	// ApprovalsTable holds the schema information for the "approvals" table.
 	ApprovalsTable = &schema.Table{
@@ -44,7 +44,7 @@ var (
 		{Name: "type", Type: field.TypeEnum, Enums: []string{"deploy", "rollback", "lock", "unlock"}},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "repo_id", Type: field.TypeString, Nullable: true},
+		{Name: "repo_id", Type: field.TypeInt64, Nullable: true},
 	}
 	// CallbacksTable holds the schema information for the "callbacks" table.
 	CallbacksTable = &schema.Table{
@@ -69,7 +69,7 @@ var (
 		{Name: "bot_token", Type: field.TypeString},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "user_id", Type: field.TypeString, Unique: true, Nullable: true},
+		{Name: "user_id", Type: field.TypeInt64, Unique: true, Nullable: true},
 	}
 	// ChatUsersTable holds the schema information for the "chat_users" table.
 	ChatUsersTable = &schema.Table{
@@ -101,8 +101,8 @@ var (
 		{Name: "required_approval_count", Type: field.TypeInt, Default: 0},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "repo_id", Type: field.TypeString, Nullable: true},
-		{Name: "user_id", Type: field.TypeString, Nullable: true},
+		{Name: "repo_id", Type: field.TypeInt64, Nullable: true},
+		{Name: "user_id", Type: field.TypeInt64, Nullable: true},
 	}
 	// DeploymentsTable holds the schema information for the "deployments" table.
 	DeploymentsTable = &schema.Table{
@@ -222,8 +222,8 @@ var (
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "env", Type: field.TypeString},
 		{Name: "created_at", Type: field.TypeTime},
-		{Name: "repo_id", Type: field.TypeString, Nullable: true},
-		{Name: "user_id", Type: field.TypeString, Nullable: true},
+		{Name: "repo_id", Type: field.TypeInt64, Nullable: true},
+		{Name: "user_id", Type: field.TypeInt64, Nullable: true},
 	}
 	// LocksTable holds the schema information for the "locks" table.
 	LocksTable = &schema.Table{
@@ -277,8 +277,8 @@ var (
 		{Name: "repo_perm", Type: field.TypeEnum, Enums: []string{"read", "write", "admin"}, Default: "read"},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "repo_id", Type: field.TypeString, Nullable: true},
-		{Name: "user_id", Type: field.TypeString, Nullable: true},
+		{Name: "repo_id", Type: field.TypeInt64, Nullable: true},
+		{Name: "user_id", Type: field.TypeInt64, Nullable: true},
 	}
 	// PermsTable holds the schema information for the "perms" table.
 	PermsTable = &schema.Table{
@@ -314,7 +314,7 @@ var (
 	}
 	// ReposColumns holds the columns for the "repos" table.
 	ReposColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeString},
+		{Name: "id", Type: field.TypeInt64, Increment: true},
 		{Name: "namespace", Type: field.TypeString},
 		{Name: "name", Type: field.TypeString},
 		{Name: "description", Type: field.TypeString},
@@ -345,7 +345,7 @@ var (
 	}
 	// UsersColumns holds the columns for the "users" table.
 	UsersColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeString},
+		{Name: "id", Type: field.TypeInt64, Increment: true},
 		{Name: "login", Type: field.TypeString, Unique: true},
 		{Name: "avatar", Type: field.TypeString},
 		{Name: "admin", Type: field.TypeBool, Default: false},

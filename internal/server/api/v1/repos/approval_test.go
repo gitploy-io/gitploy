@@ -29,7 +29,7 @@ func TestRepo_CreateApproval(t *testing.T) {
 		}{
 			number: 7,
 			payload: &approvalPostPayload{
-				UserID: "4",
+				UserID: 4,
 			},
 		}
 

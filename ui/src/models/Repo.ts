@@ -1,7 +1,7 @@
 import Deployment from "./Deployment"
 
 export default interface Repo { 
-    id: string
+    id: number
     namespace: string
     name: string
     description: string

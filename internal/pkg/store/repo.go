@@ -69,11 +69,11 @@ func (s *Store) ListReposOfUser(ctx context.Context, u *ent.User, q, namespace, 
 	return repos, nil
 }
 
-func (s *Store) FindRepoByID(ctx context.Context, id string) (*ent.Repo, error) {
+func (s *Store) FindRepoByID(ctx context.Context, id int64) (*ent.Repo, error) {
 	return s.c.Repo.Get(ctx, id)
 }
 
-func (s *Store) FindRepoOfUserByID(ctx context.Context, u *ent.User, id string) (*ent.Repo, error) {
+func (s *Store) FindRepoOfUserByID(ctx context.Context, u *ent.User, id int64) (*ent.Repo, error) {
 	return s.c.Repo.
 		Query().
 		Where(func(s *sql.Selector) {

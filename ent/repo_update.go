@@ -362,7 +362,7 @@ func (ru *RepoUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Table:   repo.Table,
 			Columns: repo.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeString,
+				Type:   field.TypeInt64,
 				Column: repo.FieldID,
 			},
 		},
@@ -1029,7 +1029,7 @@ func (ruo *RepoUpdateOne) sqlSave(ctx context.Context) (_node *Repo, err error) 
 			Table:   repo.Table,
 			Columns: repo.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeString,
+				Type:   field.TypeInt64,
 				Column: repo.FieldID,
 			},
 		},

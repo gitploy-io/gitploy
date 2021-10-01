@@ -379,8 +379,8 @@ func (cq *CallbackQuery) sqlAll(ctx context.Context) ([]*Callback, error) {
 	}
 
 	if query := cq.withRepo; query != nil {
-		ids := make([]string, 0, len(nodes))
-		nodeids := make(map[string][]*Callback)
+		ids := make([]int64, 0, len(nodes))
+		nodeids := make(map[int64][]*Callback)
 		for i := range nodes {
 			fk := nodes[i].RepoID
 			if _, ok := nodeids[fk]; !ok {

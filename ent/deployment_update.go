@@ -223,14 +223,14 @@ func (du *DeploymentUpdate) SetUpdatedAt(t time.Time) *DeploymentUpdate {
 }
 
 // SetUserID sets the "user_id" field.
-func (du *DeploymentUpdate) SetUserID(s string) *DeploymentUpdate {
-	du.mutation.SetUserID(s)
+func (du *DeploymentUpdate) SetUserID(i int64) *DeploymentUpdate {
+	du.mutation.SetUserID(i)
 	return du
 }
 
 // SetRepoID sets the "repo_id" field.
-func (du *DeploymentUpdate) SetRepoID(s string) *DeploymentUpdate {
-	du.mutation.SetRepoID(s)
+func (du *DeploymentUpdate) SetRepoID(i int64) *DeploymentUpdate {
+	du.mutation.SetRepoID(i)
 	return du
 }
 
@@ -621,7 +621,7 @@ func (du *DeploymentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
+					Type:   field.TypeInt64,
 					Column: user.FieldID,
 				},
 			},
@@ -637,7 +637,7 @@ func (du *DeploymentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
+					Type:   field.TypeInt64,
 					Column: user.FieldID,
 				},
 			},
@@ -656,7 +656,7 @@ func (du *DeploymentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
+					Type:   field.TypeInt64,
 					Column: repo.FieldID,
 				},
 			},
@@ -672,7 +672,7 @@ func (du *DeploymentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
+					Type:   field.TypeInt64,
 					Column: repo.FieldID,
 				},
 			},
@@ -1053,14 +1053,14 @@ func (duo *DeploymentUpdateOne) SetUpdatedAt(t time.Time) *DeploymentUpdateOne {
 }
 
 // SetUserID sets the "user_id" field.
-func (duo *DeploymentUpdateOne) SetUserID(s string) *DeploymentUpdateOne {
-	duo.mutation.SetUserID(s)
+func (duo *DeploymentUpdateOne) SetUserID(i int64) *DeploymentUpdateOne {
+	duo.mutation.SetUserID(i)
 	return duo
 }
 
 // SetRepoID sets the "repo_id" field.
-func (duo *DeploymentUpdateOne) SetRepoID(s string) *DeploymentUpdateOne {
-	duo.mutation.SetRepoID(s)
+func (duo *DeploymentUpdateOne) SetRepoID(i int64) *DeploymentUpdateOne {
+	duo.mutation.SetRepoID(i)
 	return duo
 }
 
@@ -1475,7 +1475,7 @@ func (duo *DeploymentUpdateOne) sqlSave(ctx context.Context) (_node *Deployment,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
+					Type:   field.TypeInt64,
 					Column: user.FieldID,
 				},
 			},
@@ -1491,7 +1491,7 @@ func (duo *DeploymentUpdateOne) sqlSave(ctx context.Context) (_node *Deployment,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
+					Type:   field.TypeInt64,
 					Column: user.FieldID,
 				},
 			},
@@ -1510,7 +1510,7 @@ func (duo *DeploymentUpdateOne) sqlSave(ctx context.Context) (_node *Deployment,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
+					Type:   field.TypeInt64,
 					Column: repo.FieldID,
 				},
 			},
@@ -1526,7 +1526,7 @@ func (duo *DeploymentUpdateOne) sqlSave(ctx context.Context) (_node *Deployment,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
+					Type:   field.TypeInt64,
 					Column: repo.FieldID,
 				},
 			},

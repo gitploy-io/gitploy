@@ -56,8 +56,8 @@ func (cu *CallbackUpdate) SetUpdatedAt(t time.Time) *CallbackUpdate {
 }
 
 // SetRepoID sets the "repo_id" field.
-func (cu *CallbackUpdate) SetRepoID(s string) *CallbackUpdate {
-	cu.mutation.SetRepoID(s)
+func (cu *CallbackUpdate) SetRepoID(i int64) *CallbackUpdate {
+	cu.mutation.SetRepoID(i)
 	return cu
 }
 
@@ -207,7 +207,7 @@ func (cu *CallbackUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
+					Type:   field.TypeInt64,
 					Column: repo.FieldID,
 				},
 			},
@@ -223,7 +223,7 @@ func (cu *CallbackUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
+					Type:   field.TypeInt64,
 					Column: repo.FieldID,
 				},
 			},
@@ -279,8 +279,8 @@ func (cuo *CallbackUpdateOne) SetUpdatedAt(t time.Time) *CallbackUpdateOne {
 }
 
 // SetRepoID sets the "repo_id" field.
-func (cuo *CallbackUpdateOne) SetRepoID(s string) *CallbackUpdateOne {
-	cuo.mutation.SetRepoID(s)
+func (cuo *CallbackUpdateOne) SetRepoID(i int64) *CallbackUpdateOne {
+	cuo.mutation.SetRepoID(i)
 	return cuo
 }
 
@@ -454,7 +454,7 @@ func (cuo *CallbackUpdateOne) sqlSave(ctx context.Context) (_node *Callback, err
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
+					Type:   field.TypeInt64,
 					Column: repo.FieldID,
 				},
 			},
@@ -470,7 +470,7 @@ func (cuo *CallbackUpdateOne) sqlSave(ctx context.Context) (_node *Callback, err
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
+					Type:   field.TypeInt64,
 					Column: repo.FieldID,
 				},
 			},

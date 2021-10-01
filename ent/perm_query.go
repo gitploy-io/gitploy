@@ -416,8 +416,8 @@ func (pq *PermQuery) sqlAll(ctx context.Context) ([]*Perm, error) {
 	}
 
 	if query := pq.withUser; query != nil {
-		ids := make([]string, 0, len(nodes))
-		nodeids := make(map[string][]*Perm)
+		ids := make([]int64, 0, len(nodes))
+		nodeids := make(map[int64][]*Perm)
 		for i := range nodes {
 			fk := nodes[i].UserID
 			if _, ok := nodeids[fk]; !ok {
@@ -442,8 +442,8 @@ func (pq *PermQuery) sqlAll(ctx context.Context) ([]*Perm, error) {
 	}
 
 	if query := pq.withRepo; query != nil {
-		ids := make([]string, 0, len(nodes))
-		nodeids := make(map[string][]*Perm)
+		ids := make([]int64, 0, len(nodes))
+		nodeids := make(map[int64][]*Perm)
 		for i := range nodes {
 			fk := nodes[i].RepoID
 			if _, ok := nodeids[fk]; !ok {

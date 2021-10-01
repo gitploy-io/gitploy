@@ -29,7 +29,7 @@ func (ChatUser) Fields() []ent.Field {
 		field.Time("updated_at").
 			Default(time.Now).
 			UpdateDefault(time.Now),
-		field.String("user_id"),
+		field.Int64("user_id"),
 	}
 }
 

@@ -528,8 +528,8 @@ func (dq *DeploymentQuery) sqlAll(ctx context.Context) ([]*Deployment, error) {
 	}
 
 	if query := dq.withUser; query != nil {
-		ids := make([]string, 0, len(nodes))
-		nodeids := make(map[string][]*Deployment)
+		ids := make([]int64, 0, len(nodes))
+		nodeids := make(map[int64][]*Deployment)
 		for i := range nodes {
 			fk := nodes[i].UserID
 			if _, ok := nodeids[fk]; !ok {
@@ -554,8 +554,8 @@ func (dq *DeploymentQuery) sqlAll(ctx context.Context) ([]*Deployment, error) {
 	}
 
 	if query := dq.withRepo; query != nil {
-		ids := make([]string, 0, len(nodes))
-		nodeids := make(map[string][]*Deployment)
+		ids := make([]int64, 0, len(nodes))
+		nodeids := make(map[int64][]*Deployment)
 		for i := range nodes {
 			fk := nodes[i].RepoID
 			if _, ok := nodeids[fk]; !ok {

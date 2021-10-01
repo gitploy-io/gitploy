@@ -416,8 +416,8 @@ func (lq *LockQuery) sqlAll(ctx context.Context) ([]*Lock, error) {
 	}
 
 	if query := lq.withUser; query != nil {
-		ids := make([]string, 0, len(nodes))
-		nodeids := make(map[string][]*Lock)
+		ids := make([]int64, 0, len(nodes))
+		nodeids := make(map[int64][]*Lock)
 		for i := range nodes {
 			fk := nodes[i].UserID
 			if _, ok := nodeids[fk]; !ok {
@@ -442,8 +442,8 @@ func (lq *LockQuery) sqlAll(ctx context.Context) ([]*Lock, error) {
 	}
 
 	if query := lq.withRepo; query != nil {
-		ids := make([]string, 0, len(nodes))
-		nodeids := make(map[string][]*Lock)
+		ids := make([]int64, 0, len(nodes))
+		nodeids := make(map[int64][]*Lock)
 		for i := range nodes {
 			fk := nodes[i].RepoID
 			if _, ok := nodeids[fk]; !ok {

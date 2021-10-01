@@ -27,12 +27,12 @@ func TestSyncher_Sync(t *testing.T) {
 			ListRemoteRepos(ctx, gomock.AssignableToTypeOf(&ent.User{})).
 			Return([]*vo.RemoteRepo{
 				{
-					ID:        "1",
+					ID:        1,
 					Namespace: "octocat",
 					Name:      "HelloWorld",
 				},
 				{
-					ID:        "1",
+					ID:        1,
 					Namespace: "cat",
 					Name:      "GoodBye",
 				},
@@ -51,7 +51,7 @@ func TestSyncher_Sync(t *testing.T) {
 		m.
 			EXPECT().
 			SyncRemoteRepo(ctx, gomock.Any(), gomock.Eq(&vo.RemoteRepo{
-				ID:        "1",
+				ID:        1,
 				Namespace: "octocat",
 				Name:      "HelloWorld",
 			})).

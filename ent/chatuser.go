@@ -30,7 +30,7 @@ type ChatUser struct {
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updated_at"`
 	// UserID holds the value of the "user_id" field.
-	UserID string `json:"user_id"`
+	UserID int64 `json:"user_id"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the ChatUserQuery when eager-loading is set.
 	Edges ChatUserEdges `json:"edges"`
@@ -64,7 +64,9 @@ func (*ChatUser) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case chatuser.FieldID, chatuser.FieldToken, chatuser.FieldRefresh, chatuser.FieldBotToken, chatuser.FieldUserID:
+		case chatuser.FieldUserID:
+			values[i] = new(sql.NullInt64)
+		case chatuser.FieldID, chatuser.FieldToken, chatuser.FieldRefresh, chatuser.FieldBotToken:
 			values[i] = new(sql.NullString)
 		case chatuser.FieldExpiry, chatuser.FieldCreatedAt, chatuser.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -126,10 +128,10 @@ func (cu *ChatUser) assignValues(columns []string, values []interface{}) error {
 				cu.UpdatedAt = value.Time
 			}
 		case chatuser.FieldUserID:
-			if value, ok := values[i].(*sql.NullString); !ok {
+			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field user_id", values[i])
 			} else if value.Valid {
-				cu.UserID = value.String
+				cu.UserID = value.Int64
 			}
 		}
 	}
@@ -174,7 +176,7 @@ func (cu *ChatUser) String() string {
 	builder.WriteString(", updated_at=")
 	builder.WriteString(cu.UpdatedAt.Format(time.ANSIC))
 	builder.WriteString(", user_id=")
-	builder.WriteString(cu.UserID)
+	builder.WriteString(fmt.Sprintf("%v", cu.UserID))
 	builder.WriteByte(')')
 	return builder.String()
 }

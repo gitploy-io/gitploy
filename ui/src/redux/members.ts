@@ -52,7 +52,7 @@ export const updateUser = createAsyncThunk<User, {user: User, admin: boolean}, {
     },
 )
 
-export const deleteUser = createAsyncThunk<string, User, { state: {members: MembersState} }>(
+export const deleteUser = createAsyncThunk<number, User, { state: {members: MembersState} }>(
     "members/deleteUser", 
     async (user, { rejectWithValue } ) => {
         try {

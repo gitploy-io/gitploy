@@ -56,7 +56,7 @@ type ApprovalMutation struct {
 	created_at        *time.Time
 	updated_at        *time.Time
 	clearedFields     map[string]struct{}
-	user              *string
+	user              *int64
 	cleareduser       bool
 	deployment        *int
 	cleareddeployment bool
@@ -256,12 +256,12 @@ func (m *ApprovalMutation) ResetUpdatedAt() {
 }
 
 // SetUserID sets the "user_id" field.
-func (m *ApprovalMutation) SetUserID(s string) {
-	m.user = &s
+func (m *ApprovalMutation) SetUserID(i int64) {
+	m.user = &i
 }
 
 // UserID returns the value of the "user_id" field in the mutation.
-func (m *ApprovalMutation) UserID() (r string, exists bool) {
+func (m *ApprovalMutation) UserID() (r int64, exists bool) {
 	v := m.user
 	if v == nil {
 		return
@@ -272,7 +272,7 @@ func (m *ApprovalMutation) UserID() (r string, exists bool) {
 // OldUserID returns the old "user_id" field's value of the Approval entity.
 // If the Approval object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ApprovalMutation) OldUserID(ctx context.Context) (v string, err error) {
+func (m *ApprovalMutation) OldUserID(ctx context.Context) (v int64, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, fmt.Errorf("OldUserID is only allowed on UpdateOne operations")
 	}
@@ -340,7 +340,7 @@ func (m *ApprovalMutation) UserCleared() bool {
 // UserIDs returns the "user" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // UserID instead. It exists only for internal usage by the builders.
-func (m *ApprovalMutation) UserIDs() (ids []string) {
+func (m *ApprovalMutation) UserIDs() (ids []int64) {
 	if id := m.user; id != nil {
 		ids = append(ids, *id)
 	}
@@ -536,7 +536,7 @@ func (m *ApprovalMutation) SetField(name string, value ent.Value) error {
 		m.SetUpdatedAt(v)
 		return nil
 	case approval.FieldUserID:
-		v, ok := value.(string)
+		v, ok := value.(int64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -751,7 +751,7 @@ type CallbackMutation struct {
 	created_at    *time.Time
 	updated_at    *time.Time
 	clearedFields map[string]struct{}
-	repo          *string
+	repo          *int64
 	clearedrepo   bool
 	done          bool
 	oldValue      func(context.Context) (*Callback, error)
@@ -982,12 +982,12 @@ func (m *CallbackMutation) ResetUpdatedAt() {
 }
 
 // SetRepoID sets the "repo_id" field.
-func (m *CallbackMutation) SetRepoID(s string) {
-	m.repo = &s
+func (m *CallbackMutation) SetRepoID(i int64) {
+	m.repo = &i
 }
 
 // RepoID returns the value of the "repo_id" field in the mutation.
-func (m *CallbackMutation) RepoID() (r string, exists bool) {
+func (m *CallbackMutation) RepoID() (r int64, exists bool) {
 	v := m.repo
 	if v == nil {
 		return
@@ -998,7 +998,7 @@ func (m *CallbackMutation) RepoID() (r string, exists bool) {
 // OldRepoID returns the old "repo_id" field's value of the Callback entity.
 // If the Callback object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CallbackMutation) OldRepoID(ctx context.Context) (v string, err error) {
+func (m *CallbackMutation) OldRepoID(ctx context.Context) (v int64, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, fmt.Errorf("OldRepoID is only allowed on UpdateOne operations")
 	}
@@ -1030,7 +1030,7 @@ func (m *CallbackMutation) RepoCleared() bool {
 // RepoIDs returns the "repo" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // RepoID instead. It exists only for internal usage by the builders.
-func (m *CallbackMutation) RepoIDs() (ids []string) {
+func (m *CallbackMutation) RepoIDs() (ids []int64) {
 	if id := m.repo; id != nil {
 		ids = append(ids, *id)
 	}
@@ -1153,7 +1153,7 @@ func (m *CallbackMutation) SetField(name string, value ent.Value) error {
 		m.SetUpdatedAt(v)
 		return nil
 	case callback.FieldRepoID:
-		v, ok := value.(string)
+		v, ok := value.(int64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -1166,13 +1166,16 @@ func (m *CallbackMutation) SetField(name string, value ent.Value) error {
 // AddedFields returns all numeric fields that were incremented/decremented during
 // this mutation.
 func (m *CallbackMutation) AddedFields() []string {
-	return nil
+	var fields []string
+	return fields
 }
 
 // AddedField returns the numeric value that was incremented/decremented on a field
 // with the given name. The second boolean return value indicates that this field
 // was not set, or was not defined in the schema.
 func (m *CallbackMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	}
 	return nil, false
 }
 
@@ -1316,7 +1319,7 @@ type ChatUserMutation struct {
 	created_at    *time.Time
 	updated_at    *time.Time
 	clearedFields map[string]struct{}
-	user          *string
+	user          *int64
 	cleareduser   bool
 	done          bool
 	oldValue      func(context.Context) (*ChatUser, error)
@@ -1625,12 +1628,12 @@ func (m *ChatUserMutation) ResetUpdatedAt() {
 }
 
 // SetUserID sets the "user_id" field.
-func (m *ChatUserMutation) SetUserID(s string) {
-	m.user = &s
+func (m *ChatUserMutation) SetUserID(i int64) {
+	m.user = &i
 }
 
 // UserID returns the value of the "user_id" field in the mutation.
-func (m *ChatUserMutation) UserID() (r string, exists bool) {
+func (m *ChatUserMutation) UserID() (r int64, exists bool) {
 	v := m.user
 	if v == nil {
 		return
@@ -1641,7 +1644,7 @@ func (m *ChatUserMutation) UserID() (r string, exists bool) {
 // OldUserID returns the old "user_id" field's value of the ChatUser entity.
 // If the ChatUser object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ChatUserMutation) OldUserID(ctx context.Context) (v string, err error) {
+func (m *ChatUserMutation) OldUserID(ctx context.Context) (v int64, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, fmt.Errorf("OldUserID is only allowed on UpdateOne operations")
 	}
@@ -1673,7 +1676,7 @@ func (m *ChatUserMutation) UserCleared() bool {
 // UserIDs returns the "user" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // UserID instead. It exists only for internal usage by the builders.
-func (m *ChatUserMutation) UserIDs() (ids []string) {
+func (m *ChatUserMutation) UserIDs() (ids []int64) {
 	if id := m.user; id != nil {
 		ids = append(ids, *id)
 	}
@@ -1824,7 +1827,7 @@ func (m *ChatUserMutation) SetField(name string, value ent.Value) error {
 		m.SetUpdatedAt(v)
 		return nil
 	case chatuser.FieldUserID:
-		v, ok := value.(string)
+		v, ok := value.(int64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -1837,13 +1840,16 @@ func (m *ChatUserMutation) SetField(name string, value ent.Value) error {
 // AddedFields returns all numeric fields that were incremented/decremented during
 // this mutation.
 func (m *ChatUserMutation) AddedFields() []string {
-	return nil
+	var fields []string
+	return fields
 }
 
 // AddedField returns the numeric value that was incremented/decremented on a field
 // with the given name. The second boolean return value indicates that this field
 // was not set, or was not defined in the schema.
 func (m *ChatUserMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	}
 	return nil, false
 }
 
@@ -2003,9 +2009,9 @@ type DeploymentMutation struct {
 	created_at                 *time.Time
 	updated_at                 *time.Time
 	clearedFields              map[string]struct{}
-	user                       *string
+	user                       *int64
 	cleareduser                bool
-	repo                       *string
+	repo                       *int64
 	clearedrepo                bool
 	approvals                  map[int]struct{}
 	removedapprovals           map[int]struct{}
@@ -2669,12 +2675,12 @@ func (m *DeploymentMutation) ResetUpdatedAt() {
 }
 
 // SetUserID sets the "user_id" field.
-func (m *DeploymentMutation) SetUserID(s string) {
-	m.user = &s
+func (m *DeploymentMutation) SetUserID(i int64) {
+	m.user = &i
 }
 
 // UserID returns the value of the "user_id" field in the mutation.
-func (m *DeploymentMutation) UserID() (r string, exists bool) {
+func (m *DeploymentMutation) UserID() (r int64, exists bool) {
 	v := m.user
 	if v == nil {
 		return
@@ -2685,7 +2691,7 @@ func (m *DeploymentMutation) UserID() (r string, exists bool) {
 // OldUserID returns the old "user_id" field's value of the Deployment entity.
 // If the Deployment object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *DeploymentMutation) OldUserID(ctx context.Context) (v string, err error) {
+func (m *DeploymentMutation) OldUserID(ctx context.Context) (v int64, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, fmt.Errorf("OldUserID is only allowed on UpdateOne operations")
 	}
@@ -2705,12 +2711,12 @@ func (m *DeploymentMutation) ResetUserID() {
 }
 
 // SetRepoID sets the "repo_id" field.
-func (m *DeploymentMutation) SetRepoID(s string) {
-	m.repo = &s
+func (m *DeploymentMutation) SetRepoID(i int64) {
+	m.repo = &i
 }
 
 // RepoID returns the value of the "repo_id" field in the mutation.
-func (m *DeploymentMutation) RepoID() (r string, exists bool) {
+func (m *DeploymentMutation) RepoID() (r int64, exists bool) {
 	v := m.repo
 	if v == nil {
 		return
@@ -2721,7 +2727,7 @@ func (m *DeploymentMutation) RepoID() (r string, exists bool) {
 // OldRepoID returns the old "repo_id" field's value of the Deployment entity.
 // If the Deployment object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *DeploymentMutation) OldRepoID(ctx context.Context) (v string, err error) {
+func (m *DeploymentMutation) OldRepoID(ctx context.Context) (v int64, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, fmt.Errorf("OldRepoID is only allowed on UpdateOne operations")
 	}
@@ -2753,7 +2759,7 @@ func (m *DeploymentMutation) UserCleared() bool {
 // UserIDs returns the "user" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // UserID instead. It exists only for internal usage by the builders.
-func (m *DeploymentMutation) UserIDs() (ids []string) {
+func (m *DeploymentMutation) UserIDs() (ids []int64) {
 	if id := m.user; id != nil {
 		ids = append(ids, *id)
 	}
@@ -2779,7 +2785,7 @@ func (m *DeploymentMutation) RepoCleared() bool {
 // RepoIDs returns the "repo" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // RepoID instead. It exists only for internal usage by the builders.
-func (m *DeploymentMutation) RepoIDs() (ids []string) {
+func (m *DeploymentMutation) RepoIDs() (ids []int64) {
 	if id := m.repo; id != nil {
 		ids = append(ids, *id)
 	}
@@ -3197,14 +3203,14 @@ func (m *DeploymentMutation) SetField(name string, value ent.Value) error {
 		m.SetUpdatedAt(v)
 		return nil
 	case deployment.FieldUserID:
-		v, ok := value.(string)
+		v, ok := value.(int64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetUserID(v)
 		return nil
 	case deployment.FieldRepoID:
-		v, ok := value.(string)
+		v, ok := value.(int64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -5028,9 +5034,9 @@ type LockMutation struct {
 	env           *string
 	created_at    *time.Time
 	clearedFields map[string]struct{}
-	user          *string
+	user          *int64
 	cleareduser   bool
-	repo          *string
+	repo          *int64
 	clearedrepo   bool
 	done          bool
 	oldValue      func(context.Context) (*Lock, error)
@@ -5189,12 +5195,12 @@ func (m *LockMutation) ResetCreatedAt() {
 }
 
 // SetUserID sets the "user_id" field.
-func (m *LockMutation) SetUserID(s string) {
-	m.user = &s
+func (m *LockMutation) SetUserID(i int64) {
+	m.user = &i
 }
 
 // UserID returns the value of the "user_id" field in the mutation.
-func (m *LockMutation) UserID() (r string, exists bool) {
+func (m *LockMutation) UserID() (r int64, exists bool) {
 	v := m.user
 	if v == nil {
 		return
@@ -5205,7 +5211,7 @@ func (m *LockMutation) UserID() (r string, exists bool) {
 // OldUserID returns the old "user_id" field's value of the Lock entity.
 // If the Lock object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *LockMutation) OldUserID(ctx context.Context) (v string, err error) {
+func (m *LockMutation) OldUserID(ctx context.Context) (v int64, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, fmt.Errorf("OldUserID is only allowed on UpdateOne operations")
 	}
@@ -5225,12 +5231,12 @@ func (m *LockMutation) ResetUserID() {
 }
 
 // SetRepoID sets the "repo_id" field.
-func (m *LockMutation) SetRepoID(s string) {
-	m.repo = &s
+func (m *LockMutation) SetRepoID(i int64) {
+	m.repo = &i
 }
 
 // RepoID returns the value of the "repo_id" field in the mutation.
-func (m *LockMutation) RepoID() (r string, exists bool) {
+func (m *LockMutation) RepoID() (r int64, exists bool) {
 	v := m.repo
 	if v == nil {
 		return
@@ -5241,7 +5247,7 @@ func (m *LockMutation) RepoID() (r string, exists bool) {
 // OldRepoID returns the old "repo_id" field's value of the Lock entity.
 // If the Lock object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *LockMutation) OldRepoID(ctx context.Context) (v string, err error) {
+func (m *LockMutation) OldRepoID(ctx context.Context) (v int64, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, fmt.Errorf("OldRepoID is only allowed on UpdateOne operations")
 	}
@@ -5273,7 +5279,7 @@ func (m *LockMutation) UserCleared() bool {
 // UserIDs returns the "user" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // UserID instead. It exists only for internal usage by the builders.
-func (m *LockMutation) UserIDs() (ids []string) {
+func (m *LockMutation) UserIDs() (ids []int64) {
 	if id := m.user; id != nil {
 		ids = append(ids, *id)
 	}
@@ -5299,7 +5305,7 @@ func (m *LockMutation) RepoCleared() bool {
 // RepoIDs returns the "repo" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // RepoID instead. It exists only for internal usage by the builders.
-func (m *LockMutation) RepoIDs() (ids []string) {
+func (m *LockMutation) RepoIDs() (ids []int64) {
 	if id := m.repo; id != nil {
 		ids = append(ids, *id)
 	}
@@ -5401,14 +5407,14 @@ func (m *LockMutation) SetField(name string, value ent.Value) error {
 		m.SetCreatedAt(v)
 		return nil
 	case lock.FieldUserID:
-		v, ok := value.(string)
+		v, ok := value.(int64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetUserID(v)
 		return nil
 	case lock.FieldRepoID:
-		v, ok := value.(string)
+		v, ok := value.(int64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -5421,13 +5427,16 @@ func (m *LockMutation) SetField(name string, value ent.Value) error {
 // AddedFields returns all numeric fields that were incremented/decremented during
 // this mutation.
 func (m *LockMutation) AddedFields() []string {
-	return nil
+	var fields []string
+	return fields
 }
 
 // AddedField returns the numeric value that was incremented/decremented on a field
 // with the given name. The second boolean return value indicates that this field
 // was not set, or was not defined in the schema.
 func (m *LockMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	}
 	return nil, false
 }
 
@@ -5933,9 +5942,9 @@ type PermMutation struct {
 	created_at    *time.Time
 	updated_at    *time.Time
 	clearedFields map[string]struct{}
-	user          *string
+	user          *int64
 	cleareduser   bool
-	repo          *string
+	repo          *int64
 	clearedrepo   bool
 	done          bool
 	oldValue      func(context.Context) (*Perm, error)
@@ -6130,12 +6139,12 @@ func (m *PermMutation) ResetUpdatedAt() {
 }
 
 // SetUserID sets the "user_id" field.
-func (m *PermMutation) SetUserID(s string) {
-	m.user = &s
+func (m *PermMutation) SetUserID(i int64) {
+	m.user = &i
 }
 
 // UserID returns the value of the "user_id" field in the mutation.
-func (m *PermMutation) UserID() (r string, exists bool) {
+func (m *PermMutation) UserID() (r int64, exists bool) {
 	v := m.user
 	if v == nil {
 		return
@@ -6146,7 +6155,7 @@ func (m *PermMutation) UserID() (r string, exists bool) {
 // OldUserID returns the old "user_id" field's value of the Perm entity.
 // If the Perm object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PermMutation) OldUserID(ctx context.Context) (v string, err error) {
+func (m *PermMutation) OldUserID(ctx context.Context) (v int64, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, fmt.Errorf("OldUserID is only allowed on UpdateOne operations")
 	}
@@ -6166,12 +6175,12 @@ func (m *PermMutation) ResetUserID() {
 }
 
 // SetRepoID sets the "repo_id" field.
-func (m *PermMutation) SetRepoID(s string) {
-	m.repo = &s
+func (m *PermMutation) SetRepoID(i int64) {
+	m.repo = &i
 }
 
 // RepoID returns the value of the "repo_id" field in the mutation.
-func (m *PermMutation) RepoID() (r string, exists bool) {
+func (m *PermMutation) RepoID() (r int64, exists bool) {
 	v := m.repo
 	if v == nil {
 		return
@@ -6182,7 +6191,7 @@ func (m *PermMutation) RepoID() (r string, exists bool) {
 // OldRepoID returns the old "repo_id" field's value of the Perm entity.
 // If the Perm object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PermMutation) OldRepoID(ctx context.Context) (v string, err error) {
+func (m *PermMutation) OldRepoID(ctx context.Context) (v int64, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, fmt.Errorf("OldRepoID is only allowed on UpdateOne operations")
 	}
@@ -6214,7 +6223,7 @@ func (m *PermMutation) UserCleared() bool {
 // UserIDs returns the "user" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // UserID instead. It exists only for internal usage by the builders.
-func (m *PermMutation) UserIDs() (ids []string) {
+func (m *PermMutation) UserIDs() (ids []int64) {
 	if id := m.user; id != nil {
 		ids = append(ids, *id)
 	}
@@ -6240,7 +6249,7 @@ func (m *PermMutation) RepoCleared() bool {
 // RepoIDs returns the "repo" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // RepoID instead. It exists only for internal usage by the builders.
-func (m *PermMutation) RepoIDs() (ids []string) {
+func (m *PermMutation) RepoIDs() (ids []int64) {
 	if id := m.repo; id != nil {
 		ids = append(ids, *id)
 	}
@@ -6356,14 +6365,14 @@ func (m *PermMutation) SetField(name string, value ent.Value) error {
 		m.SetUpdatedAt(v)
 		return nil
 	case perm.FieldUserID:
-		v, ok := value.(string)
+		v, ok := value.(int64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetUserID(v)
 		return nil
 	case perm.FieldRepoID:
-		v, ok := value.(string)
+		v, ok := value.(int64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -6376,13 +6385,16 @@ func (m *PermMutation) SetField(name string, value ent.Value) error {
 // AddedFields returns all numeric fields that were incremented/decremented during
 // this mutation.
 func (m *PermMutation) AddedFields() []string {
-	return nil
+	var fields []string
+	return fields
 }
 
 // AddedField returns the numeric value that was incremented/decremented on a field
 // with the given name. The second boolean return value indicates that this field
 // was not set, or was not defined in the schema.
 func (m *PermMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	}
 	return nil, false
 }
 
@@ -6536,7 +6548,7 @@ type RepoMutation struct {
 	config
 	op                 Op
 	typ                string
-	id                 *string
+	id                 *int64
 	namespace          *string
 	name               *string
 	description        *string
@@ -6585,7 +6597,7 @@ func newRepoMutation(c config, op Op, opts ...repoOption) *RepoMutation {
 }
 
 // withRepoID sets the ID field of the mutation.
-func withRepoID(id string) repoOption {
+func withRepoID(id int64) repoOption {
 	return func(m *RepoMutation) {
 		var (
 			err   error
@@ -6637,13 +6649,13 @@ func (m RepoMutation) Tx() (*Tx, error) {
 
 // SetID sets the value of the id field. Note that this
 // operation is only accepted on creation of Repo entities.
-func (m *RepoMutation) SetID(id string) {
+func (m *RepoMutation) SetID(id int64) {
 	m.id = &id
 }
 
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *RepoMutation) ID() (id string, exists bool) {
+func (m *RepoMutation) ID() (id int64, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -7686,7 +7698,7 @@ type UserMutation struct {
 	config
 	op                 Op
 	typ                string
-	id                 *string
+	id                 *int64
 	login              *string
 	avatar             *string
 	admin              *bool
@@ -7736,7 +7748,7 @@ func newUserMutation(c config, op Op, opts ...userOption) *UserMutation {
 }
 
 // withUserID sets the ID field of the mutation.
-func withUserID(id string) userOption {
+func withUserID(id int64) userOption {
 	return func(m *UserMutation) {
 		var (
 			err   error
@@ -7788,13 +7800,13 @@ func (m UserMutation) Tx() (*Tx, error) {
 
 // SetID sets the value of the id field. Note that this
 // operation is only accepted on creation of User entities.
-func (m *UserMutation) SetID(id string) {
+func (m *UserMutation) SetID(id int64) {
 	m.id = &id
 }
 
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *UserMutation) ID() (id string, exists bool) {
+func (m *UserMutation) ID() (id int64, exists bool) {
 	if m.id == nil {
 		return
 	}

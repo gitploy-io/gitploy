@@ -18,10 +18,10 @@ import (
 
 func TestUser_UpdateUser(t *testing.T) {
 	input := struct {
-		ID      string
+		ID      int64
 		Payload *userPatchPayload
 	}{
-		ID: "1",
+		ID: 1,
 		Payload: &userPatchPayload{
 			Admin: pointer.ToBool(true),
 		},
@@ -57,7 +57,7 @@ func TestUser_UpdateUser(t *testing.T) {
 	r.PATCH("/users/:id", NewUser(m).UpdateUser)
 
 	p, _ := json.Marshal(input.Payload)
-	req, _ := http.NewRequest("PATCH", fmt.Sprintf("/users/%s", input.ID), bytes.NewBuffer(p))
+	req, _ := http.NewRequest("PATCH", fmt.Sprintf("/users/%d", input.ID), bytes.NewBuffer(p))
 
 	w := httptest.NewRecorder()
 	r.ServeHTTP(w, req)

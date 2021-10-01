@@ -72,7 +72,7 @@ func (rd *RepoDelete) sqlExec(ctx context.Context) (int, error) {
 		Node: &sqlgraph.NodeSpec{
 			Table: repo.Table,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeString,
+				Type:   field.TypeInt64,
 				Column: repo.FieldID,
 			},
 		},

@@ -65,14 +65,14 @@ func (pu *PermUpdate) SetUpdatedAt(t time.Time) *PermUpdate {
 }
 
 // SetUserID sets the "user_id" field.
-func (pu *PermUpdate) SetUserID(s string) *PermUpdate {
-	pu.mutation.SetUserID(s)
+func (pu *PermUpdate) SetUserID(i int64) *PermUpdate {
+	pu.mutation.SetUserID(i)
 	return pu
 }
 
 // SetRepoID sets the "repo_id" field.
-func (pu *PermUpdate) SetRepoID(s string) *PermUpdate {
-	pu.mutation.SetRepoID(s)
+func (pu *PermUpdate) SetRepoID(i int64) *PermUpdate {
+	pu.mutation.SetRepoID(i)
 	return pu
 }
 
@@ -236,7 +236,7 @@ func (pu *PermUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
+					Type:   field.TypeInt64,
 					Column: user.FieldID,
 				},
 			},
@@ -252,7 +252,7 @@ func (pu *PermUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
+					Type:   field.TypeInt64,
 					Column: user.FieldID,
 				},
 			},
@@ -271,7 +271,7 @@ func (pu *PermUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
+					Type:   field.TypeInt64,
 					Column: repo.FieldID,
 				},
 			},
@@ -287,7 +287,7 @@ func (pu *PermUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
+					Type:   field.TypeInt64,
 					Column: repo.FieldID,
 				},
 			},
@@ -351,14 +351,14 @@ func (puo *PermUpdateOne) SetUpdatedAt(t time.Time) *PermUpdateOne {
 }
 
 // SetUserID sets the "user_id" field.
-func (puo *PermUpdateOne) SetUserID(s string) *PermUpdateOne {
-	puo.mutation.SetUserID(s)
+func (puo *PermUpdateOne) SetUserID(i int64) *PermUpdateOne {
+	puo.mutation.SetUserID(i)
 	return puo
 }
 
 // SetRepoID sets the "repo_id" field.
-func (puo *PermUpdateOne) SetRepoID(s string) *PermUpdateOne {
-	puo.mutation.SetRepoID(s)
+func (puo *PermUpdateOne) SetRepoID(i int64) *PermUpdateOne {
+	puo.mutation.SetRepoID(i)
 	return puo
 }
 
@@ -546,7 +546,7 @@ func (puo *PermUpdateOne) sqlSave(ctx context.Context) (_node *Perm, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
+					Type:   field.TypeInt64,
 					Column: user.FieldID,
 				},
 			},
@@ -562,7 +562,7 @@ func (puo *PermUpdateOne) sqlSave(ctx context.Context) (_node *Perm, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
+					Type:   field.TypeInt64,
 					Column: user.FieldID,
 				},
 			},
@@ -581,7 +581,7 @@ func (puo *PermUpdateOne) sqlSave(ctx context.Context) (_node *Perm, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
+					Type:   field.TypeInt64,
 					Column: repo.FieldID,
 				},
 			},
@@ -597,7 +597,7 @@ func (puo *PermUpdateOne) sqlSave(ctx context.Context) (_node *Perm, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
+					Type:   field.TypeInt64,
 					Column: repo.FieldID,
 				},
 			},

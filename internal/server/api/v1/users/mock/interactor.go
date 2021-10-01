@@ -51,7 +51,7 @@ func (mr *MockInteractorMockRecorder) DeleteUser(ctx, u interface{}) *gomock.Cal
 }
 
 // FindUserByID mocks base method.
-func (m *MockInteractor) FindUserByID(ctx context.Context, id string) (*ent.User, error) {
+func (m *MockInteractor) FindUserByID(ctx context.Context, id int64) (*ent.User, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FindUserByID", ctx, id)
 	ret0, _ := ret[0].(*ent.User)

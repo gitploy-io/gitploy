@@ -74,8 +74,8 @@ func (cuu *ChatUserUpdate) SetUpdatedAt(t time.Time) *ChatUserUpdate {
 }
 
 // SetUserID sets the "user_id" field.
-func (cuu *ChatUserUpdate) SetUserID(s string) *ChatUserUpdate {
-	cuu.mutation.SetUserID(s)
+func (cuu *ChatUserUpdate) SetUserID(i int64) *ChatUserUpdate {
+	cuu.mutation.SetUserID(i)
 	return cuu
 }
 
@@ -241,7 +241,7 @@ func (cuu *ChatUserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
+					Type:   field.TypeInt64,
 					Column: user.FieldID,
 				},
 			},
@@ -257,7 +257,7 @@ func (cuu *ChatUserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
+					Type:   field.TypeInt64,
 					Column: user.FieldID,
 				},
 			},
@@ -331,8 +331,8 @@ func (cuuo *ChatUserUpdateOne) SetUpdatedAt(t time.Time) *ChatUserUpdateOne {
 }
 
 // SetUserID sets the "user_id" field.
-func (cuuo *ChatUserUpdateOne) SetUserID(s string) *ChatUserUpdateOne {
-	cuuo.mutation.SetUserID(s)
+func (cuuo *ChatUserUpdateOne) SetUserID(i int64) *ChatUserUpdateOne {
+	cuuo.mutation.SetUserID(i)
 	return cuuo
 }
 
@@ -522,7 +522,7 @@ func (cuuo *ChatUserUpdateOne) sqlSave(ctx context.Context) (_node *ChatUser, er
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
+					Type:   field.TypeInt64,
 					Column: user.FieldID,
 				},
 			},
@@ -538,7 +538,7 @@ func (cuuo *ChatUserUpdateOne) sqlSave(ctx context.Context) (_node *ChatUser, er
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
+					Type:   field.TypeInt64,
 					Column: user.FieldID,
 				},
 			},

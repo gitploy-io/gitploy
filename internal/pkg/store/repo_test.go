@@ -19,12 +19,12 @@ func TestStore_ListReposOfUser(t *testing.T) {
 	ctx := context.Background()
 
 	const (
-		u1 = "1"
+		u1 = 1
 	)
 
 	r1 := client.Repo.
 		Create().
-		SetID("1").
+		SetID(1).
 		SetNamespace("octocat").
 		SetName("Hello").
 		SetDescription("").
@@ -32,7 +32,7 @@ func TestStore_ListReposOfUser(t *testing.T) {
 
 	r2 := client.Repo.
 		Create().
-		SetID("2").
+		SetID(2).
 		SetNamespace("octocat").
 		SetName("World").
 		SetDescription("").
@@ -40,7 +40,7 @@ func TestStore_ListReposOfUser(t *testing.T) {
 
 	client.Repo.
 		Create().
-		SetID("3").
+		SetID(3).
 		SetNamespace("coco").
 		SetName("Bye").
 		SetDescription("").
@@ -125,12 +125,12 @@ func TestStore_FindRepoOfUserByID(t *testing.T) {
 	ctx := context.Background()
 
 	const (
-		u1 = "1"
+		u1 = 1
 	)
 
 	r1 := client.Repo.
 		Create().
-		SetID("1").
+		SetID(1).
 		SetNamespace("octocat").
 		SetName("Hello").
 		SetDescription("").
@@ -138,7 +138,7 @@ func TestStore_FindRepoOfUserByID(t *testing.T) {
 
 	r2 := client.Repo.
 		Create().
-		SetID("2").
+		SetID(2).
 		SetNamespace("octocat").
 		SetName("World").
 		SetDescription("").
@@ -146,7 +146,7 @@ func TestStore_FindRepoOfUserByID(t *testing.T) {
 
 	client.Repo.
 		Create().
-		SetID("3").
+		SetID(3).
 		SetNamespace("coco").
 		SetName("Bye").
 		SetDescription("").
@@ -173,13 +173,12 @@ func TestStore_FindRepoOfUserByID(t *testing.T) {
 			err  error
 		)
 
-		if repo, err = s.FindRepoOfUserByID(ctx, &ent.User{ID: u1}, "1"); err != nil {
+		if repo, err = s.FindRepoOfUserByID(ctx, &ent.User{ID: u1}, 1); err != nil {
 			t.Fatalf("FindRepoOfUserByID returns an error: %s", err)
 		}
 
-		expected := "1"
-		if repo.ID != expected {
-			t.Fatalf("FindRepoOfUserByID = %v, wanted %v", repo.ID, expected)
+		if repo.ID != 1 {
+			t.Fatalf("FindRepoOfUserByID = %v, wanted %v", repo.ID, 1)
 		}
 	})
 
@@ -190,7 +189,7 @@ func TestStore_FindRepoOfUserByID(t *testing.T) {
 			err error
 		)
 
-		if _, err = s.FindRepoOfUserByID(ctx, &ent.User{ID: u1}, "3"); !ent.IsNotFound(err) {
+		if _, err = s.FindRepoOfUserByID(ctx, &ent.User{ID: u1}, 3); !ent.IsNotFound(err) {
 			t.Fatalf("FindRepoOfUserByID didn't returns an NotFoundError: %s", err)
 		}
 
@@ -206,7 +205,7 @@ func TestStore_SyncRepo(t *testing.T) {
 
 		s := NewStore(client)
 		if _, err := s.SyncRepo(context.Background(), &vo.RemoteRepo{
-			ID:          "1",
+			ID:          1,
 			Namespace:   "octocat",
 			Name:        "HelloWorld",
 			Description: "nothing",

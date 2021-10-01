@@ -25,7 +25,7 @@ type Approval struct {
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updated_at"`
 	// UserID holds the value of the "user_id" field.
-	UserID string `json:"user_id"`
+	UserID int64 `json:"user_id"`
 	// DeploymentID holds the value of the "deployment_id" field.
 	DeploymentID int `json:"deployment_id"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -88,9 +88,9 @@ func (*Approval) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case approval.FieldID, approval.FieldDeploymentID:
+		case approval.FieldID, approval.FieldUserID, approval.FieldDeploymentID:
 			values[i] = new(sql.NullInt64)
-		case approval.FieldStatus, approval.FieldUserID:
+		case approval.FieldStatus:
 			values[i] = new(sql.NullString)
 		case approval.FieldCreatedAt, approval.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -134,10 +134,10 @@ func (a *Approval) assignValues(columns []string, values []interface{}) error {
 				a.UpdatedAt = value.Time
 			}
 		case approval.FieldUserID:
-			if value, ok := values[i].(*sql.NullString); !ok {
+			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field user_id", values[i])
 			} else if value.Valid {
-				a.UserID = value.String
+				a.UserID = value.Int64
 			}
 		case approval.FieldDeploymentID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -195,7 +195,7 @@ func (a *Approval) String() string {
 	builder.WriteString(", updated_at=")
 	builder.WriteString(a.UpdatedAt.Format(time.ANSIC))
 	builder.WriteString(", user_id=")
-	builder.WriteString(a.UserID)
+	builder.WriteString(fmt.Sprintf("%v", a.UserID))
 	builder.WriteString(", deployment_id=")
 	builder.WriteString(fmt.Sprintf("%v", a.DeploymentID))
 	builder.WriteByte(')')

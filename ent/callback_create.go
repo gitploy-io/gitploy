@@ -70,8 +70,8 @@ func (cc *CallbackCreate) SetNillableUpdatedAt(t *time.Time) *CallbackCreate {
 }
 
 // SetRepoID sets the "repo_id" field.
-func (cc *CallbackCreate) SetRepoID(s string) *CallbackCreate {
-	cc.mutation.SetRepoID(s)
+func (cc *CallbackCreate) SetRepoID(i int64) *CallbackCreate {
+	cc.mutation.SetRepoID(i)
 	return cc
 }
 
@@ -258,7 +258,7 @@ func (cc *CallbackCreate) createSpec() (*Callback, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
+					Type:   field.TypeInt64,
 					Column: repo.FieldID,
 				},
 			},

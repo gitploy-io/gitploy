@@ -290,7 +290,7 @@ func (mr *MockInteractorMockRecorder) FindPrevSuccessDeployment(ctx, d interface
 }
 
 // FindRepoOfUserByID mocks base method.
-func (m *MockInteractor) FindRepoOfUserByID(ctx context.Context, u *ent.User, id string) (*ent.Repo, error) {
+func (m *MockInteractor) FindRepoOfUserByID(ctx context.Context, u *ent.User, id int64) (*ent.Repo, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FindRepoOfUserByID", ctx, u, id)
 	ret0, _ := ret[0].(*ent.Repo)
@@ -320,7 +320,7 @@ func (mr *MockInteractorMockRecorder) FindRepoOfUserByNamespaceName(ctx, u, name
 }
 
 // FindUserByID mocks base method.
-func (m *MockInteractor) FindUserByID(ctx context.Context, id string) (*ent.User, error) {
+func (m *MockInteractor) FindUserByID(ctx context.Context, id int64) (*ent.User, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FindUserByID", ctx, id)
 	ret0, _ := ret[0].(*ent.User)
