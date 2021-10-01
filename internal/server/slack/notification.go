@@ -93,7 +93,7 @@ func (s *Slack) notifyApprovalEvent(ctx context.Context, e *ent.Event) {
 		return
 	}
 
-	if d = a.Edges.Deployment; d != nil {
+	if d = a.Edges.Deployment; d == nil {
 		s.log.Error("The eager loading of deployment has failed.")
 		return
 	}
