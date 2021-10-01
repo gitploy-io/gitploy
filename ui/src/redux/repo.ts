@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit'
 import { message } from "antd"
 
-import { searchRepo, activateRepo } from "../apis/repo"
+import { getRepo, activateRepo } from "../apis/repo"
 import { Repo, RequestStatus } from "../models"
 import { HttpForbiddenError } from '../models/errors'
 
@@ -20,7 +20,7 @@ export const init = createAsyncThunk<Repo, {namespace: string, name: string}, { 
     'repo/init', 
     async (params, {rejectWithValue}) => {
         try {
-            const repo = await searchRepo(params.namespace, params.name)
+            const repo = await getRepo(params.namespace, params.name)
             return repo
         } catch (e) {
             console.log(e)
@@ -33,11 +33,14 @@ export const activate = createAsyncThunk<Repo, void, { state: {repo: RepoState} 
     'repo/activate', 
     async (_, { getState, rejectWithValue } ) => {
         const { repo } = getState().repo
-        if (!repo) throw new Error("There is no repo.")
+
+        if (!repo) {
+            throw new Error("The repo is undefined.")
+        }
 
         try {
-            const nr =  await activateRepo(repo)
-            return nr
+            const ret =  await activateRepo(repo.namespace, repo.name)
+            return ret
         } catch(e) {
             if (e instanceof HttpForbiddenError) {
                 message.warn("Only admin permission can activate.", 3)

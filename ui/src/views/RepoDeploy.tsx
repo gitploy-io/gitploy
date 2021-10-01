@@ -6,7 +6,6 @@ import { PageHeader, Result, Button } from "antd";
 import { useAppSelector, useAppDispatch } from "../redux/hooks"
 import { User,DeploymentType, Branch, Commit, Tag, RequestStatus, Env } from "../models";
 import { 
-    init, 
     fetchConfig, 
     repoDeploySlice, 
     fetchCurrentDeploymentOfEnv,
@@ -35,7 +34,6 @@ export default function RepoDeploy(): JSX.Element {
     const { namespace, name } = useParams<Params>()
     const { 
         display,
-        repo,
         config, 
         env,
         envs, 
@@ -52,7 +50,7 @@ export default function RepoDeploy(): JSX.Element {
 
     useEffect(() => {
         const f = async () => {
-            await dispatch(init({namespace, name}))
+            await dispatch(actions.init({namespace, name}))
             await dispatch(fetchConfig())
             await dispatch(actions.setDisplay(true))
             await dispatch(fetchBranches())
@@ -119,11 +117,11 @@ export default function RepoDeploy(): JSX.Element {
         f()
     }
 
-    if (!display || !repo) {
+    if (!display) {
         return <div />
     } 
 
-    if (repo && !config) {
+    if (!config) {
         return (
             <Result
                 status="warning"

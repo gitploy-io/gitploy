@@ -55,19 +55,15 @@ export const listRepos = async (q: string, page = 1, perPage = 30): Promise<Repo
     return repos
 }
 
-export const searchRepo = async (namespace: string, name: string): Promise<Repo> => {
-    const repos: Repo[] = await _fetch(`${instance}/api/v1/repos?namespace=${namespace}&name=${name}`, {
+export const getRepo = async (namespace: string, name: string): Promise<Repo> => {
+    const repo: Repo = await _fetch(`${instance}/api/v1/repos/${namespace}/${name}`, {
         headers,
         credentials: 'same-origin',
     })
         .then(response => response.json())
-        .then(repos => repos.map((r: any): Repo => (mapDataToRepo(r))))
+        .then(repo => mapDataToRepo(repo))
 
-    if (repos.length !== 1) {
-        throw new Error(`It has failed to search the repository. The length is ${repos.length}.`)
-    }
-
-    return repos[0]
+    return repo
 }
 
 export const updateRepo = async (namespace: string, name: string, payload: {config_path: string}): Promise<Repo> => {

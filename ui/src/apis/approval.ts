@@ -5,7 +5,6 @@ import { _fetch } from "./_base"
 import { UserData, mapDataToUser } from "./user"
 import { DeploymentData, mapDataToDeployment } from "./deployment"
 import { 
-    Repo,
     User, 
     Deployment, 
     Approval, 
@@ -109,7 +108,7 @@ export const listApprovals = async (namespace: string, name: string, number: num
     return approvals
 }
 
-export const createApproval = async (namespace: string, name: string, number: number, userId: number): Promise<Approval> => {
+export const createApproval = async (namespace: string, name: string, number: number, userId: string): Promise<Approval> => {
     const body = {
         user_id: userId 
     }

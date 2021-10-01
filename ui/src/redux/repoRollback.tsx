@@ -2,7 +2,6 @@ import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit'
 import { message } from "antd"
 
 import { 
-    searchRepo, 
     getConfig, 
     listDeployments, 
     rollbackDeployment,
@@ -11,7 +10,6 @@ import {
 } from "../apis"
 import { 
     User,
-    Repo, 
     Deployment, 
     DeploymentStatusEnum, 
     Config,
@@ -26,8 +24,9 @@ const page = 1
 const perPage = 100
 
 interface RepoRollbackState {
-    display: boolean,
-    repo?: Repo 
+    display: boolean
+    namespace: string
+    name: string
     config?: Config 
     env?: Env
     envs: Env[]
@@ -46,6 +45,8 @@ interface RepoRollbackState {
 
 const initialState: RepoRollbackState = {
     display: false,
+    namespace: "",
+    name: "",
     envs: [],
     deployments: [],
     approvers: [],
@@ -54,22 +55,13 @@ const initialState: RepoRollbackState = {
     deploying: RequestStatus.Idle
 }
 
-export const init = createAsyncThunk<Repo, {namespace: string, name: string}, { state: {repoRollback: RepoRollbackState} }>(
-    'repoRollback/init', 
-    async (params) => {
-        const repo = await searchRepo(params.namespace, params.name)
-        return repo
-    },
-)
-
 export const fetchConfig = createAsyncThunk<Config, void, { state: {repoRollback: RepoRollbackState} }>(
     "repoRollback/fetchEnvs", 
     async (_, { getState, rejectWithValue } ) => {
-        const { repo } = getState().repoRollback
-        if (!repo) throw new Error("The repo is not set.")
+        const { namespace, name } = getState().repoRollback
 
         try {
-            const config = await getConfig(repo.id)
+            const config = await getConfig(namespace, name)
             return config
         } catch (e) {
             return rejectWithValue(e)
@@ -80,11 +72,13 @@ export const fetchConfig = createAsyncThunk<Config, void, { state: {repoRollback
 export const fetchDeployments = createAsyncThunk<Deployment[], void, { state: {repoRollback: RepoRollbackState }}>(
     "repoRollback/fetchDeployments",
     async (_, { getState }) => {
-        const { repo, env } = getState().repoRollback
-        if (!repo) throw new Error("The repo is not set.")
-        if (!env) throw new Error("The env is not selected.")
+        const { namespace, name, env } = getState().repoRollback
 
-        const deployments = await listDeployments(repo.id, env.name, DeploymentStatusEnum.Success, page, perPage)
+        if (!env) {
+            throw new Error("The env is not selected.")
+        } 
+
+        const deployments = await listDeployments(namespace, name, env.name, DeploymentStatusEnum.Success, page, perPage)
         return deployments
     }
 )
@@ -92,13 +86,10 @@ export const fetchDeployments = createAsyncThunk<Deployment[], void, { state: {r
 export const searchCandidates = createAsyncThunk<User[], string, { state: {repoRollback: RepoRollbackState }}>(
     "repoRollback/searchCandidates",
     async (q, { getState, rejectWithValue }) => {
-        const { repo } = getState().repoRollback
-        if (!repo) {
-            throw new Error("The repo is not set.")
-        }
+        const { namespace, name } = getState().repoRollback
 
         try {
-            const perms = await listPerms(repo, q)
+            const perms = await listPerms(namespace, name, q)
             const candidates = perms.map((p) => {
                 return p.user
             })
@@ -112,10 +103,7 @@ export const searchCandidates = createAsyncThunk<User[], string, { state: {repoR
 export const rollback = createAsyncThunk<void, void, { state: {repoRollback: RepoRollbackState}}> (
     "repoRollback/deploy",
     async (_ , { getState, rejectWithValue, requestId }) => {
-        const { repo, deployment, env, approvers, deployId, deploying } = getState().repoRollback
-        if (!repo) {
-            throw new Error("The repo is undefined.")
-        }
+        const { namespace, name, deployment, env, approvers, deployId, deploying } = getState().repoRollback
         if (!deployment) {
             throw new Error("The deployment is undefined.")
         }
@@ -124,22 +112,22 @@ export const rollback = createAsyncThunk<void, void, { state: {repoRollback: Rep
         }
 
         try {
-            const rollback = await rollbackDeployment(repo.id, deployment.number)
+            const rollback = await rollbackDeployment(namespace, name, deployment.number)
 
             if (!env?.approval?.enabled) {
                 const msg = <span>
-                    It starts to rollback. <a href={`/${repo.namespace}/${repo.name}/deployments/${rollback.number}`}>#{rollback.number}</a>
+                    It starts to rollback. <a href={`/${namespace}/${name}/deployments/${rollback.number}`}>#{rollback.number}</a>
                 </span>
                 message.success(msg, 3)
                 return
             }
 
             approvers.forEach(async (approver) => {
-                await createApproval(repo, rollback, approver)
+                await createApproval(namespace, name, rollback.number, approver.id)
             })
 
             const msg = <span>
-                It is waiting approvals. <a href={`/${repo.namespace}/${repo.name}/deployments/${rollback.number}`}>#{rollback.number}</a>
+                It is waiting approvals. <a href={`/${namespace}/${name}/deployments/${rollback.number}`}>#{rollback.number}</a>
             </span>
             message.success(msg, 3)
         } catch(e) {
@@ -163,6 +151,10 @@ export const repoRollbackSlice = createSlice({
     name: "repoRollback",
     initialState,
     reducers: {
+        init: (state, action: PayloadAction<{namespace: string, name: string}>) => {
+            state.namespace = action.payload.namespace
+            state.name = action.payload.name
+        },
         setDisplay: (state, action: PayloadAction<boolean>) => {
             state.display = action.payload
         },
@@ -192,9 +184,6 @@ export const repoRollbackSlice = createSlice({
     },
     extraReducers: builder => {
         builder
-            .addCase(init.fulfilled, (state, action) => {
-                state.repo = action.payload
-            })
             .addCase(fetchConfig.fulfilled, (state, action) => {
                 const config = action.payload
                 state.envs = config.envs.map(e => e)

@@ -1,13 +1,14 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit'
 
-import { Repo, Deployment, Event, EventTypeEnum } from '../models'
-import { searchRepo, listDeployments, getConfig } from '../apis'
+import { Deployment, Event, EventTypeEnum } from '../models'
+import { listDeployments, getConfig } from '../apis'
 
 export const perPage = 20;
 
 interface RepoHomeState {
     loading: boolean
-    repo?: Repo
+    namespace: string
+    name: string
     envs: string[]
     env: string
     deployments: Deployment[]
@@ -16,46 +17,30 @@ interface RepoHomeState {
 
 const initialState: RepoHomeState = {
     loading: true,
+    namespace: "",
+    name: "",
     envs: [],
     env: "",
     deployments: [],
     page: 1,
 }
 
-export const init = createAsyncThunk<Repo, {namespace: string, name: string}, { state: {repoHome: RepoHomeState} }>(
-    'repoHome/init', 
-    async (params) => {
-        const repo = await searchRepo(params.namespace, params.name)
-        return repo
-    },
-)
-
 export const fetchEnvs = createAsyncThunk<string[], void, { state: {repoHome: RepoHomeState} }>(
     "repoHome/fetchEnvs", 
-    async (_, { getState, rejectWithValue } ) => {
-        const { repo, } = getState().repoHome
+    async (_, { getState } ) => {
+        const { namespace, name } = getState().repoHome
 
-        if (!repo) {
-            rejectWithValue(new Error("repo doesn't exist."))
-            return []
-        }
-
-        const config = await getConfig(repo.id)
+        const config = await getConfig(namespace, name)
         return config.envs.map(e =>  e.name)
     },
 )
 
 export const fetchDeployments = createAsyncThunk<Deployment[], void, { state: {repoHome: RepoHomeState} }>(
     'repoHome/fetchDeployments', 
-    async (_, { getState, rejectWithValue } ) => {
-        const { repo, env, page} = getState().repoHome
+    async (_, { getState } ) => {
+        const { namespace, name, env, page} = getState().repoHome
 
-        if (!repo) {
-            rejectWithValue(new Error("repo doesn't exist."))
-            return []
-        }
-
-        const deployments = await listDeployments(repo.id, env, "",page, perPage)
+        const deployments = await listDeployments(namespace, name, env, "",page, perPage)
         return deployments
     },
 )
@@ -64,6 +49,10 @@ export const repoHomeSlice = createSlice({
     name: "repoHome",
     initialState,
     reducers: {
+        init: (state, action: PayloadAction<{namespace: string, name: string}>) => {
+            state.namespace = action.payload.namespace
+            state.name = action.payload.name
+        },
         setEnv: (state, action: PayloadAction<string>) => {
             state.env = action.payload
         },
@@ -76,7 +65,8 @@ export const repoHomeSlice = createSlice({
         handleDeploymentEvent: (state, action: PayloadAction<Event>) => {
             const event = action.payload
 
-            if (event.deployment?.repo?.id !== state.repo?.id) {
+            if (!(event.deployment?.repo?.namespace === state.namespace 
+                && event.deployment?.repo?.name === state.name)) {
                 return
             }
 
@@ -96,10 +86,6 @@ export const repoHomeSlice = createSlice({
     },
     extraReducers: builder => {
         builder
-            .addCase(init.fulfilled, (state, action) => {
-                state.repo = action.payload
-            })
-
             .addCase(fetchEnvs.fulfilled, (state, action) => {
                 state.envs = action.payload
             })

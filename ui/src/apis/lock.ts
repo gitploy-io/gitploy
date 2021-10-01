@@ -3,7 +3,7 @@ import { StatusCodes } from "http-status-codes"
 import { instance, headers } from "./setting"
 import { _fetch } from "./_base"
 import { UserData, mapDataToUser } from "./user"
-import { Repo, Lock, User, HttpForbiddenError, HttpUnprocessableEntityError } from "../models"
+import { Lock, User, HttpForbiddenError, HttpUnprocessableEntityError } from "../models"
 
 interface LockData {
     id: number

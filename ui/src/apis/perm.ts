@@ -2,7 +2,7 @@ import { instance, headers } from './setting'
 import { _fetch } from "./_base"
 import { mapDataToUser, UserData } from "./user"
 import { mapDataToRepo, RepoData } from "./repo"
-import { Repo, Perm } from '../models'
+import { Perm } from '../models'
 
 interface PermData{
     repo_perm: string

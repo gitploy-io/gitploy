@@ -1,7 +1,7 @@
 import { sync } from "./sync"
 import { 
     listRepos, 
-    searchRepo, 
+    getRepo, 
     updateRepo, 
     activateRepo, 
     deactivateRepo,
@@ -44,7 +44,7 @@ import { subscribeEvents } from "./events"
 export {
     sync,
     listRepos,
-    searchRepo,
+    getRepo,
     updateRepo,
     activateRepo,
     deactivateRepo,

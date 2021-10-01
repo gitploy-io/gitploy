@@ -4,7 +4,7 @@ import { shallowEqual } from "react-redux";
 import { PageHeader, Select } from 'antd'
 
 import { useAppSelector, useAppDispatch } from '../redux/hooks'
-import { repoHomeSlice as slice, init, fetchEnvs, fetchDeployments, perPage } from '../redux/repoHome'
+import { repoHomeSlice as slice, fetchEnvs, fetchDeployments, perPage } from '../redux/repoHome'
 import { subscribeEvents } from "../apis"
 
 import ActivityLogs from '../components/ActivityLogs'
@@ -30,7 +30,7 @@ export default function RepoHome(): JSX.Element {
 
     useEffect(() => {
         const f = async () => {
-            await dispatch(init({namespace, name}))
+            await dispatch(slice.actions.init({namespace, name}))
             await dispatch(fetchEnvs())
             await dispatch(fetchDeployments())
         }

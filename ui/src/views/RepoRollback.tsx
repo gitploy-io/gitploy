@@ -4,7 +4,7 @@ import { PageHeader, Result, Button } from 'antd'
 import { shallowEqual } from "react-redux";
 
 import { useAppDispatch, useAppSelector } from "../redux/hooks"
-import { repoRollbackSlice, init, fetchConfig, fetchDeployments, searchCandidates, rollback } from "../redux/repoRollback"
+import { repoRollbackSlice, fetchConfig, fetchDeployments, searchCandidates, rollback } from "../redux/repoRollback"
 
 import { User, Deployment, RequestStatus, Env } from '../models'
 import RollbackForm from "../components/RollbackForm";
@@ -20,7 +20,6 @@ export default function RepoHome(): JSX.Element {
     const { namespace, name } = useParams<Params>()
     const {
         display,
-        repo,
         config,
         env,
         envs,
@@ -31,7 +30,7 @@ export default function RepoHome(): JSX.Element {
 
     useEffect(() => {
         const f = async () => {
-            await dispatch(init({namespace, name}))
+            await dispatch(actions.init({namespace, name}))
             await dispatch(fetchConfig())
             await dispatch(actions.setDisplay(true))
             await dispatch(searchCandidates(""))
@@ -68,11 +67,11 @@ export default function RepoHome(): JSX.Element {
         f()
     }
 
-    if (!display || !repo) {
-        return <div />
+    if (!display) {
+        return <></>
     } 
     
-    if (repo && !config) {
+    if (!config) {
         return (
             <Result
                 status="warning"

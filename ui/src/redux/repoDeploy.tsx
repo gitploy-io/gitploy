@@ -3,7 +3,6 @@ import { message } from "antd"
 
 import { 
     User, 
-    Repo, 
     Deployment,
     Branch, 
     Commit, 
@@ -19,7 +18,6 @@ import {
     HttpUnprocessableEntityError
 } from '../models'
 import { 
-    searchRepo, 
     listPerms,
     getConfig, 
     listDeployments,
@@ -40,7 +38,8 @@ const perPage = 100
 
 interface RepoDeployState {
     display: boolean
-    repo?: Repo
+    namespace: string
+    name: string
     config?: Config 
     env?: Env
     envs: Env[]
@@ -68,6 +67,8 @@ interface RepoDeployState {
 
 const initialState: RepoDeployState = {
     display: false,
+    namespace: "",
+    name: "",
     envs: [],
     branchStatuses: [],
     branches: [],
@@ -81,22 +82,13 @@ const initialState: RepoDeployState = {
     deployId: "",
 }
 
-export const init = createAsyncThunk<Repo, {namespace: string, name: string}, { state: {repoDeploy: RepoDeployState} }>(
-    'repoDeploy/init', 
-    async (params) => {
-        const repo = await searchRepo(params.namespace, params.name)
-        return repo
-    },
-)
-
 export const fetchConfig = createAsyncThunk<Config, void, { state: {repoDeploy: RepoDeployState} }>(
     "repoDeploy/fetchConfig", 
     async (_, { getState, rejectWithValue } ) => {
-        const { repo } = getState().repoDeploy
-        if (!repo) throw new Error("The repo is not set.")
+        const { namespace, name } = getState().repoDeploy
 
         try {
-            const config = await getConfig(repo.id)
+            const config = await getConfig(namespace, name)
             return config
         } catch (e) {
             return rejectWithValue(e)
@@ -107,13 +99,10 @@ export const fetchConfig = createAsyncThunk<Config, void, { state: {repoDeploy: 
 export const fetchCurrentDeploymentOfEnv = createAsyncThunk<Deployment | null, Env, { state: {repoDeploy: RepoDeployState} }>(
     "repoDeploy/fetchCurrentDeployment", 
     async (env, { getState, rejectWithValue } ) => {
-        const { repo } = getState().repoDeploy
-        if (!repo) {
-            throw new Error("The repo is undefined.")
-        }
+        const { namespace, name } = getState().repoDeploy
 
         try {
-            const deployments = await listDeployments(repo.id, env.name, "success", 1, 1)
+            const deployments = await listDeployments(namespace, name, env.name, "success", 1, 1)
             return (deployments.length > 0)? deployments[0] : null
         } catch (e) {
             return rejectWithValue(e)
@@ -124,10 +113,9 @@ export const fetchCurrentDeploymentOfEnv = createAsyncThunk<Deployment | null, E
 export const fetchBranches = createAsyncThunk<Branch[], void, { state: {repoDeploy: RepoDeployState }}>(
     "repoDeploy/fetchBranches",
     async (_, { getState }) => {
-        const { repo } = getState().repoDeploy
-        if (!repo) throw new Error("The repo is not set.")
+        const { namespace, name } = getState().repoDeploy
 
-        const branches = await listBranches(repo.id, firstPage, perPage)
+        const branches = await listBranches(namespace, name, firstPage, perPage)
         return branches
     }
 )
@@ -135,22 +123,23 @@ export const fetchBranches = createAsyncThunk<Branch[], void, { state: {repoDepl
 export const checkBranch = createAsyncThunk<Status[], void, { state: {repoDeploy: RepoDeployState}}>(
     "repoDeploy/checkBranch",
     async (_, { getState }) => {
-        const { repo, branch } = getState().repoDeploy
-        if (!repo || !branch) throw new Error("The repo and branch are not set.") 
+        const { namespace, name, branch } = getState().repoDeploy
+        if (!branch) {
+            throw new Error("The branch is undefined.") 
+        }
 
-        const { statuses } = await listStatuses(repo.id, branch.commitSha)
+        const { statuses } = await listStatuses(namespace, name, branch.commitSha)
         return statuses
     }
 )
 
 export const addBranchManually = createAsyncThunk<Branch, string, { state: {repoDeploy: RepoDeployState}}>(
     "repoDeploy/addBranchManually",
-    async (name: string, { getState, rejectWithValue }) => {
-        const { repo } = getState().repoDeploy
-        if (!repo) throw new Error("The repo is not set.")
+    async (brnach: string, { getState, rejectWithValue }) => {
+        const { namespace, name } = getState().repoDeploy
 
         try {
-            const branch = await getBranch(repo.id, name)
+            const branch = await getBranch(namespace, name, brnach)
             return branch
         } catch(e) {
             if (e instanceof HttpNotFoundError) {
@@ -165,11 +154,10 @@ export const addBranchManually = createAsyncThunk<Branch, string, { state: {repo
 export const fetchCommits = createAsyncThunk<Commit[], void, { state: {repoDeploy: RepoDeployState }}>(
     "repoDeploy/fetchCommits",
     async (_, { getState }) => {
-        const { repo, branch } = getState().repoDeploy
-        if (!repo) throw new Error("The repo is not set.")
+        const { namespace, name, branch } = getState().repoDeploy
 
-        const name = (branch)? branch.name : ""
-        const commits = await listCommits(repo.id, name, firstPage, perPage)
+        const branchName = (branch)? branch.name : ""
+        const commits = await listCommits(namespace, name, branchName, firstPage, perPage)
         return commits
     }
 )
@@ -177,10 +165,13 @@ export const fetchCommits = createAsyncThunk<Commit[], void, { state: {repoDeplo
 export const checkCommit = createAsyncThunk<Status[], void, { state: {repoDeploy: RepoDeployState}}>(
     "repoDeploy/checkCommit",
     async (_, { getState }) => {
-        const { repo, commit } = getState().repoDeploy
-        if (!repo || !commit) throw new Error("The repo and commit are not set.") 
+        const { namespace, name, commit } = getState().repoDeploy
 
-        const { statuses } = await listStatuses(repo.id, commit.sha)
+        if (!commit) {
+            throw new Error("The commit is undefined.") 
+        }
+
+        const { statuses } = await listStatuses(namespace, name, commit.sha)
         return statuses
     }
 )
@@ -188,11 +179,10 @@ export const checkCommit = createAsyncThunk<Status[], void, { state: {repoDeploy
 export const addCommitManually = createAsyncThunk<Commit, string, { state: {repoDeploy: RepoDeployState}}>(
     "repoDeploy/addCommitManually",
     async (sha: string, { getState, rejectWithValue }) => {
-        const { repo } = getState().repoDeploy
-        if (!repo) throw new Error("The repo is not set.")
+        const { namespace, name } = getState().repoDeploy
 
         try {
-            const commit = await getCommit(repo.id, sha)
+            const commit = await getCommit(namespace, name, sha)
             return commit
         } catch(e) {
             if (e instanceof HttpNotFoundError) {
@@ -207,10 +197,9 @@ export const addCommitManually = createAsyncThunk<Commit, string, { state: {repo
 export const fetchTags = createAsyncThunk<Tag[], void, { state: {repoDeploy: RepoDeployState }}>(
     "repoDeploy/fetchTags",
     async (_, { getState }) => {
-        const { repo } = getState().repoDeploy
-        if (!repo) throw new Error("The repo is not set.")
+        const { namespace, name } = getState().repoDeploy
 
-        const tags = await listTags(repo.id, firstPage, perPage)
+        const tags = await listTags(namespace, name, firstPage, perPage)
         return tags
     }
 )
@@ -218,22 +207,24 @@ export const fetchTags = createAsyncThunk<Tag[], void, { state: {repoDeploy: Rep
 export const checkTag = createAsyncThunk<Status[], void, { state: {repoDeploy: RepoDeployState}}>(
     "repoDeploy/checkTag",
     async (_, { getState }) => {
-        const { repo, tag } = getState().repoDeploy
-        if (!repo || !tag) throw new Error("The repo and tag are not set.") 
+        const { namespace, name, tag } = getState().repoDeploy
 
-        const { statuses } = await listStatuses(repo.id, tag.commitSha)
+        if (!tag) {
+            throw new Error("The tag is undefined.") 
+        }
+
+        const { statuses } = await listStatuses(namespace, name, tag.commitSha)
         return statuses
     }
 )
 
 export const addTagManually = createAsyncThunk<Tag, string, { state: {repoDeploy: RepoDeployState}}>(
     "repoDeploy/addTagManually",
-    async (name: string, { getState, rejectWithValue }) => {
-        const { repo } = getState().repoDeploy
-        if (!repo) throw new Error("The repo is not set.")
+    async (tagName: string, { getState, rejectWithValue }) => {
+        const { namespace, name } = getState().repoDeploy
 
         try {
-            const tag = await getTag(repo.id, name)
+            const tag = await getTag(namespace, name, name)
             return tag
         } catch(e) {
             if (e instanceof HttpNotFoundError) {
@@ -248,13 +239,10 @@ export const addTagManually = createAsyncThunk<Tag, string, { state: {repoDeploy
 export const searchCandidates = createAsyncThunk<User[], string, { state: {repoDeploy: RepoDeployState }}>(
     "repoDeploy/searchCandidates",
     async (q, { getState, rejectWithValue }) => {
-        const { repo } = getState().repoDeploy
-        if (!repo) {
-            throw new Error("The repo is not set.")
-        }
+        const { namespace, name } = getState().repoDeploy
 
         try {
-            const perms = await listPerms(repo, q)
+            const perms = await listPerms(namespace, name, q)
             const candidates = perms.map((p) => {
                 return p.user
             })
@@ -268,13 +256,11 @@ export const searchCandidates = createAsyncThunk<User[], string, { state: {repoD
 export const deploy = createAsyncThunk<void, void, { state: {repoDeploy: RepoDeployState}}> (
     "repoDeploy/deploy",
     async (_ , { getState, rejectWithValue, requestId }) => {
-        const { repo, env, type, branch, commit, tag, approvers, deploying, deployId } = getState().repoDeploy
-        if (!repo) {
-            throw new Error("The repo is undefined.")
-        }
+        const { namespace, name, env, type, branch, commit, tag, approvers, deploying, deployId } = getState().repoDeploy
         if (!env) {
             throw new Error("The env is undefined.")
         }
+
         if (deploying !== RequestStatus.Pending || requestId !== deployId ) {
             return
         }
@@ -282,29 +268,29 @@ export const deploy = createAsyncThunk<void, void, { state: {repoDeploy: RepoDep
         try {
             let deployment: Deployment
             if (type === DeploymentType.Commit && commit) {
-                deployment = await createDeployment(repo.id, type, commit.sha, env.name)
+                deployment = await createDeployment(namespace, name, type, commit.sha, env.name)
             } else if (type === DeploymentType.Branch && branch) {
-                deployment = await createDeployment(repo.id, type, branch.name, env.name)
+                deployment = await createDeployment(namespace, name, type, branch.name, env.name)
             } else if (type === DeploymentType.Tag && tag) {
-                deployment = await createDeployment(repo.id, type, tag.name, env.name)
+                deployment = await createDeployment(namespace, name, type, tag.name, env.name)
             } else {
                 throw new Error("The type should be one of them: commit, branch, and tag.")
             }
 
             if (!env.approval?.enabled) {
                 const msg = <span>
-                    It starts to deploy. <a href={`/${repo.namespace}/${repo.name}/deployments/${deployment.number}`}>#{deployment.number}</a>
+                    It starts to deploy. <a href={`/${namespace}/${name}/deployments/${deployment.number}`}>#{deployment.number}</a>
                 </span>
                 message.success(msg, 3)
                 return
             }
 
             approvers.forEach(async (approver) => {
-                await createApproval(repo, deployment, approver)
+                await createApproval(namespace, name, deployment.number, approver.id)
             })
 
             const msg = <span>
-                It is waiting approvals. <a href={`/${repo.namespace}/${repo.name}/deployments/${deployment.number}`}>#{deployment.number}</a>
+                It is waiting approvals. <a href={`/${namespace}/${name}/deployments/${deployment.number}`}>#{deployment.number}</a>
             </span>
             message.success(msg, 3)
         } catch(e) {
@@ -328,6 +314,10 @@ export const repoDeploySlice = createSlice({
     name: "repoDeploy",
     initialState,
     reducers: {
+        init: (state, action: PayloadAction<{namespace: string, name: string}>) => {
+            state.namespace = action.payload.namespace
+            state.name = action.payload.name
+        },
         setDisplay: (state, action: PayloadAction<boolean>) => {
             state.display = action.payload
         },
@@ -366,9 +356,6 @@ export const repoDeploySlice = createSlice({
     },
     extraReducers: builder => {
         builder
-            .addCase(init.fulfilled, (state, action) => {
-                state.repo = action.payload
-            })
             .addCase(fetchConfig.fulfilled, (state, action) => {
                 const config = action.payload
                 state.envs = config.envs.map(e => e)

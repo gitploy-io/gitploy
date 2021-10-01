@@ -1,11 +1,10 @@
 import { useEffect } from "react"
-import { Breadcrumb, PageHeader, Row, Col, Divider } from "antd"
+import { Breadcrumb, PageHeader, Row, Col, Divider, Result } from "antd"
 import { shallowEqual } from 'react-redux'
 import { useParams } from "react-router-dom"
 
 import { useAppSelector, useAppDispatch } from "../redux/hooks"
 import { 
-    init, 
     deploymentSlice as slice, 
     fetchDeployment, 
     fetchDeploymentChanges,
@@ -43,6 +42,7 @@ interface Params {
 export default function DeploymentView(): JSX.Element {
     const { namespace, name, number } = useParams<Params>()
     const { 
+        display,
         deployment, 
         changes,
         deploying,
@@ -54,9 +54,9 @@ export default function DeploymentView(): JSX.Element {
 
     useEffect(() => {
         const f = async () => {
-            await dispatch(init({namespace, name}))
-            await dispatch(slice.actions.setNumber(parseInt(number, 10)))
+            await dispatch(slice.actions.init({namespace, name, number: parseInt(number, 10)}))
             await dispatch(fetchDeployment())
+            await dispatch(slice.actions.setDisplay(true))
             await dispatch(fetchDeploymentChanges())
             await dispatch(fetchApprovals())
             await dispatch(fetchMyApproval())
@@ -116,10 +116,25 @@ export default function DeploymentView(): JSX.Element {
         dispatch(createApproval(candidate))
     }
 
+    if (!display) {
+        return (
+            <Main>
+                <div style={{textAlign: "center", marginTop: "100px"}}>
+                    <Spin />
+                </div>
+            </Main>
+        )
+    }
+
     if (!deployment) {
-        return <Main>
-            <div style={{textAlign: "center", marginTop: "100px"}}><Spin /></div>
-        </Main>
+        return (
+            <Main>
+                <Result
+                    status="warning"
+                    title="The deployment is not found."
+                />
+            </Main>
+        )
     }
 
     // buttons
