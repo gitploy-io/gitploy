@@ -2,7 +2,7 @@ package vo
 
 type (
 	RemoteUser struct {
-		ID        string
+		ID        int64
 		Login     string
 		AvatarURL string
 	}

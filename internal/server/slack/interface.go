@@ -11,7 +11,7 @@ import (
 
 type (
 	Interactor interface {
-		FindUserByID(ctx context.Context, id string) (*ent.User, error)
+		FindUserByID(ctx context.Context, id int64) (*ent.User, error)
 
 		FindChatUserByID(ctx context.Context, id string) (*ent.ChatUser, error)
 		CreateChatUser(ctx context.Context, cu *ent.ChatUser) (*ent.ChatUser, error)
