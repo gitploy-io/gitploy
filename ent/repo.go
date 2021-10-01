@@ -15,7 +15,7 @@ import (
 type Repo struct {
 	config `json:"-"`
 	// ID of the ent.
-	ID string `json:"id,omitempty"`
+	ID int64 `json:"id,omitempty"`
 	// Namespace holds the value of the "namespace" field.
 	Namespace string `json:"namespace"`
 	// Name holds the value of the "name" field.
@@ -97,9 +97,9 @@ func (*Repo) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case repo.FieldActive:
 			values[i] = new(sql.NullBool)
-		case repo.FieldWebhookID:
+		case repo.FieldID, repo.FieldWebhookID:
 			values[i] = new(sql.NullInt64)
-		case repo.FieldID, repo.FieldNamespace, repo.FieldName, repo.FieldDescription, repo.FieldConfigPath:
+		case repo.FieldNamespace, repo.FieldName, repo.FieldDescription, repo.FieldConfigPath:
 			values[i] = new(sql.NullString)
 		case repo.FieldCreatedAt, repo.FieldUpdatedAt, repo.FieldLatestDeployedAt:
 			values[i] = new(sql.NullTime)
@@ -119,11 +119,11 @@ func (r *Repo) assignValues(columns []string, values []interface{}) error {
 	for i := range columns {
 		switch columns[i] {
 		case repo.FieldID:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field id", values[i])
-			} else if value.Valid {
-				r.ID = value.String
+			value, ok := values[i].(*sql.NullInt64)
+			if !ok {
+				return fmt.Errorf("unexpected type %T for field id", value)
 			}
+			r.ID = int64(value.Int64)
 		case repo.FieldNamespace:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field namespace", values[i])

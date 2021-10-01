@@ -65,14 +65,14 @@ func (pc *PermCreate) SetNillableUpdatedAt(t *time.Time) *PermCreate {
 }
 
 // SetUserID sets the "user_id" field.
-func (pc *PermCreate) SetUserID(s string) *PermCreate {
-	pc.mutation.SetUserID(s)
+func (pc *PermCreate) SetUserID(i int64) *PermCreate {
+	pc.mutation.SetUserID(i)
 	return pc
 }
 
 // SetRepoID sets the "repo_id" field.
-func (pc *PermCreate) SetRepoID(s string) *PermCreate {
-	pc.mutation.SetRepoID(s)
+func (pc *PermCreate) SetRepoID(i int64) *PermCreate {
+	pc.mutation.SetRepoID(i)
 	return pc
 }
 
@@ -259,7 +259,7 @@ func (pc *PermCreate) createSpec() (*Perm, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
+					Type:   field.TypeInt64,
 					Column: user.FieldID,
 				},
 			},
@@ -279,7 +279,7 @@ func (pc *PermCreate) createSpec() (*Perm, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
+					Type:   field.TypeInt64,
 					Column: repo.FieldID,
 				},
 			},

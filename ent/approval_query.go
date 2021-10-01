@@ -454,8 +454,8 @@ func (aq *ApprovalQuery) sqlAll(ctx context.Context) ([]*Approval, error) {
 	}
 
 	if query := aq.withUser; query != nil {
-		ids := make([]string, 0, len(nodes))
-		nodeids := make(map[string][]*Approval)
+		ids := make([]int64, 0, len(nodes))
+		nodeids := make(map[int64][]*Approval)
 		for i := range nodes {
 			fk := nodes[i].UserID
 			if _, ok := nodeids[fk]; !ok {

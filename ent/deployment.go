@@ -45,9 +45,9 @@ type Deployment struct {
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updated_at"`
 	// UserID holds the value of the "user_id" field.
-	UserID string `json:"user_id"`
+	UserID int64 `json:"user_id"`
 	// RepoID holds the value of the "repo_id" field.
-	RepoID string `json:"repo_id"`
+	RepoID int64 `json:"repo_id"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the DeploymentQuery when eager-loading is set.
 	Edges DeploymentEdges `json:"edges"`
@@ -132,9 +132,9 @@ func (*Deployment) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case deployment.FieldIsRollback, deployment.FieldIsApprovalEnabled:
 			values[i] = new(sql.NullBool)
-		case deployment.FieldID, deployment.FieldNumber, deployment.FieldUID, deployment.FieldRequiredApprovalCount:
+		case deployment.FieldID, deployment.FieldNumber, deployment.FieldUID, deployment.FieldRequiredApprovalCount, deployment.FieldUserID, deployment.FieldRepoID:
 			values[i] = new(sql.NullInt64)
-		case deployment.FieldType, deployment.FieldEnv, deployment.FieldRef, deployment.FieldStatus, deployment.FieldSha, deployment.FieldHTMLURL, deployment.FieldUserID, deployment.FieldRepoID:
+		case deployment.FieldType, deployment.FieldEnv, deployment.FieldRef, deployment.FieldStatus, deployment.FieldSha, deployment.FieldHTMLURL:
 			values[i] = new(sql.NullString)
 		case deployment.FieldCreatedAt, deployment.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -238,16 +238,16 @@ func (d *Deployment) assignValues(columns []string, values []interface{}) error 
 				d.UpdatedAt = value.Time
 			}
 		case deployment.FieldUserID:
-			if value, ok := values[i].(*sql.NullString); !ok {
+			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field user_id", values[i])
 			} else if value.Valid {
-				d.UserID = value.String
+				d.UserID = value.Int64
 			}
 		case deployment.FieldRepoID:
-			if value, ok := values[i].(*sql.NullString); !ok {
+			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field repo_id", values[i])
 			} else if value.Valid {
-				d.RepoID = value.String
+				d.RepoID = value.Int64
 			}
 		}
 	}
@@ -329,9 +329,9 @@ func (d *Deployment) String() string {
 	builder.WriteString(", updated_at=")
 	builder.WriteString(d.UpdatedAt.Format(time.ANSIC))
 	builder.WriteString(", user_id=")
-	builder.WriteString(d.UserID)
+	builder.WriteString(fmt.Sprintf("%v", d.UserID))
 	builder.WriteString(", repo_id=")
-	builder.WriteString(d.RepoID)
+	builder.WriteString(fmt.Sprintf("%v", d.RepoID))
 	builder.WriteByte(')')
 	return builder.String()
 }

@@ -184,8 +184,8 @@ func (rq *RepoQuery) FirstX(ctx context.Context) *Repo {
 
 // FirstID returns the first Repo ID from the query.
 // Returns a *NotFoundError when no Repo ID was found.
-func (rq *RepoQuery) FirstID(ctx context.Context) (id string, err error) {
-	var ids []string
+func (rq *RepoQuery) FirstID(ctx context.Context) (id int64, err error) {
+	var ids []int64
 	if ids, err = rq.Limit(1).IDs(ctx); err != nil {
 		return
 	}
@@ -197,7 +197,7 @@ func (rq *RepoQuery) FirstID(ctx context.Context) (id string, err error) {
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (rq *RepoQuery) FirstIDX(ctx context.Context) string {
+func (rq *RepoQuery) FirstIDX(ctx context.Context) int64 {
 	id, err := rq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -235,8 +235,8 @@ func (rq *RepoQuery) OnlyX(ctx context.Context) *Repo {
 // OnlyID is like Only, but returns the only Repo ID in the query.
 // Returns a *NotSingularError when exactly one Repo ID is not found.
 // Returns a *NotFoundError when no entities are found.
-func (rq *RepoQuery) OnlyID(ctx context.Context) (id string, err error) {
-	var ids []string
+func (rq *RepoQuery) OnlyID(ctx context.Context) (id int64, err error) {
+	var ids []int64
 	if ids, err = rq.Limit(2).IDs(ctx); err != nil {
 		return
 	}
@@ -252,7 +252,7 @@ func (rq *RepoQuery) OnlyID(ctx context.Context) (id string, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (rq *RepoQuery) OnlyIDX(ctx context.Context) string {
+func (rq *RepoQuery) OnlyIDX(ctx context.Context) int64 {
 	id, err := rq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -278,8 +278,8 @@ func (rq *RepoQuery) AllX(ctx context.Context) []*Repo {
 }
 
 // IDs executes the query and returns a list of Repo IDs.
-func (rq *RepoQuery) IDs(ctx context.Context) ([]string, error) {
-	var ids []string
+func (rq *RepoQuery) IDs(ctx context.Context) ([]int64, error) {
+	var ids []int64
 	if err := rq.Select(repo.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -287,7 +287,7 @@ func (rq *RepoQuery) IDs(ctx context.Context) ([]string, error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (rq *RepoQuery) IDsX(ctx context.Context) []string {
+func (rq *RepoQuery) IDsX(ctx context.Context) []int64 {
 	ids, err := rq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -492,7 +492,7 @@ func (rq *RepoQuery) sqlAll(ctx context.Context) ([]*Repo, error) {
 
 	if query := rq.withPerms; query != nil {
 		fks := make([]driver.Value, 0, len(nodes))
-		nodeids := make(map[string]*Repo)
+		nodeids := make(map[int64]*Repo)
 		for i := range nodes {
 			fks = append(fks, nodes[i].ID)
 			nodeids[nodes[i].ID] = nodes[i]
@@ -517,7 +517,7 @@ func (rq *RepoQuery) sqlAll(ctx context.Context) ([]*Repo, error) {
 
 	if query := rq.withDeployments; query != nil {
 		fks := make([]driver.Value, 0, len(nodes))
-		nodeids := make(map[string]*Repo)
+		nodeids := make(map[int64]*Repo)
 		for i := range nodes {
 			fks = append(fks, nodes[i].ID)
 			nodeids[nodes[i].ID] = nodes[i]
@@ -542,7 +542,7 @@ func (rq *RepoQuery) sqlAll(ctx context.Context) ([]*Repo, error) {
 
 	if query := rq.withCallback; query != nil {
 		fks := make([]driver.Value, 0, len(nodes))
-		nodeids := make(map[string]*Repo)
+		nodeids := make(map[int64]*Repo)
 		for i := range nodes {
 			fks = append(fks, nodes[i].ID)
 			nodeids[nodes[i].ID] = nodes[i]
@@ -567,7 +567,7 @@ func (rq *RepoQuery) sqlAll(ctx context.Context) ([]*Repo, error) {
 
 	if query := rq.withLocks; query != nil {
 		fks := make([]driver.Value, 0, len(nodes))
-		nodeids := make(map[string]*Repo)
+		nodeids := make(map[int64]*Repo)
 		for i := range nodes {
 			fks = append(fks, nodes[i].ID)
 			nodeids[nodes[i].ID] = nodes[i]
@@ -615,7 +615,7 @@ func (rq *RepoQuery) querySpec() *sqlgraph.QuerySpec {
 			Table:   repo.Table,
 			Columns: repo.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeString,
+				Type:   field.TypeInt64,
 				Column: repo.FieldID,
 			},
 		},

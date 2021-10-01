@@ -59,8 +59,8 @@ func (Deployment) Fields() []ent.Field {
 			Default(time.Now).
 			UpdateDefault(time.Now),
 		// Edges
-		field.String("user_id"),
-		field.String("repo_id"),
+		field.Int64("user_id"),
+		field.Int64("repo_id"),
 	}
 }
 

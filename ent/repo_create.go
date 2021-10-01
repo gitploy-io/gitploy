@@ -127,8 +127,8 @@ func (rc *RepoCreate) SetNillableLatestDeployedAt(t *time.Time) *RepoCreate {
 }
 
 // SetID sets the "id" field.
-func (rc *RepoCreate) SetID(s string) *RepoCreate {
-	rc.mutation.SetID(s)
+func (rc *RepoCreate) SetID(i int64) *RepoCreate {
+	rc.mutation.SetID(i)
 	return rc
 }
 
@@ -315,6 +315,10 @@ func (rc *RepoCreate) sqlSave(ctx context.Context) (*Repo, error) {
 		}
 		return nil, err
 	}
+	if _node.ID == 0 {
+		id := _spec.ID.Value.(int64)
+		_node.ID = int64(id)
+	}
 	return _node, nil
 }
 
@@ -324,7 +328,7 @@ func (rc *RepoCreate) createSpec() (*Repo, *sqlgraph.CreateSpec) {
 		_spec = &sqlgraph.CreateSpec{
 			Table: repo.Table,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeString,
+				Type:   field.TypeInt64,
 				Column: repo.FieldID,
 			},
 		}
@@ -526,6 +530,10 @@ func (rcb *RepoCreateBulk) Save(ctx context.Context) ([]*Repo, error) {
 				}
 				mutation.id = &nodes[i].ID
 				mutation.done = true
+				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
+					id := specs[i].ID.Value.(int64)
+					nodes[i].ID = int64(id)
+				}
 				return nodes[i], nil
 			})
 			for i := len(builder.hooks) - 1; i >= 0; i-- {

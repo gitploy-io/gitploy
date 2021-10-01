@@ -26,7 +26,7 @@ type Callback struct {
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updated_at"`
 	// RepoID holds the value of the "repo_id" field.
-	RepoID string `json:"repo_id"`
+	RepoID int64 `json:"repo_id"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the CallbackQuery when eager-loading is set.
 	Edges CallbackEdges `json:"edges"`
@@ -60,9 +60,9 @@ func (*Callback) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case callback.FieldID:
+		case callback.FieldID, callback.FieldRepoID:
 			values[i] = new(sql.NullInt64)
-		case callback.FieldHash, callback.FieldType, callback.FieldRepoID:
+		case callback.FieldHash, callback.FieldType:
 			values[i] = new(sql.NullString)
 		case callback.FieldCreatedAt, callback.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -112,10 +112,10 @@ func (c *Callback) assignValues(columns []string, values []interface{}) error {
 				c.UpdatedAt = value.Time
 			}
 		case callback.FieldRepoID:
-			if value, ok := values[i].(*sql.NullString); !ok {
+			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field repo_id", values[i])
 			} else if value.Valid {
-				c.RepoID = value.String
+				c.RepoID = value.Int64
 			}
 		}
 	}
@@ -158,7 +158,7 @@ func (c *Callback) String() string {
 	builder.WriteString(", updated_at=")
 	builder.WriteString(c.UpdatedAt.Format(time.ANSIC))
 	builder.WriteString(", repo_id=")
-	builder.WriteString(c.RepoID)
+	builder.WriteString(fmt.Sprintf("%v", c.RepoID))
 	builder.WriteByte(')')
 	return builder.String()
 }

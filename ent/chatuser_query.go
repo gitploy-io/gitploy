@@ -379,8 +379,8 @@ func (cuq *ChatUserQuery) sqlAll(ctx context.Context) ([]*ChatUser, error) {
 	}
 
 	if query := cuq.withUser; query != nil {
-		ids := make([]string, 0, len(nodes))
-		nodeids := make(map[string][]*ChatUser)
+		ids := make([]int64, 0, len(nodes))
+		nodeids := make(map[int64][]*ChatUser)
 		for i := range nodes {
 			fk := nodes[i].UserID
 			if _, ok := nodeids[fk]; !ok {

@@ -16,7 +16,7 @@ import (
 type User struct {
 	config `json:"-"`
 	// ID of the ent.
-	ID string `json:"id,omitempty"`
+	ID int64 `json:"id,omitempty"`
 	// Login holds the value of the "login" field.
 	Login string `json:"login"`
 	// Avatar holds the value of the "avatar" field.
@@ -114,7 +114,9 @@ func (*User) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case user.FieldAdmin:
 			values[i] = new(sql.NullBool)
-		case user.FieldID, user.FieldLogin, user.FieldAvatar, user.FieldToken, user.FieldRefresh, user.FieldHash:
+		case user.FieldID:
+			values[i] = new(sql.NullInt64)
+		case user.FieldLogin, user.FieldAvatar, user.FieldToken, user.FieldRefresh, user.FieldHash:
 			values[i] = new(sql.NullString)
 		case user.FieldExpiry, user.FieldCreatedAt, user.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -134,11 +136,11 @@ func (u *User) assignValues(columns []string, values []interface{}) error {
 	for i := range columns {
 		switch columns[i] {
 		case user.FieldID:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field id", values[i])
-			} else if value.Valid {
-				u.ID = value.String
+			value, ok := values[i].(*sql.NullInt64)
+			if !ok {
+				return fmt.Errorf("unexpected type %T for field id", value)
 			}
+			u.ID = int64(value.Int64)
 		case user.FieldLogin:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field login", values[i])

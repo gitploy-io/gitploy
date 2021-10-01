@@ -51,14 +51,14 @@ func (lu *LockUpdate) SetNillableCreatedAt(t *time.Time) *LockUpdate {
 }
 
 // SetUserID sets the "user_id" field.
-func (lu *LockUpdate) SetUserID(s string) *LockUpdate {
-	lu.mutation.SetUserID(s)
+func (lu *LockUpdate) SetUserID(i int64) *LockUpdate {
+	lu.mutation.SetUserID(i)
 	return lu
 }
 
 // SetRepoID sets the "repo_id" field.
-func (lu *LockUpdate) SetRepoID(s string) *LockUpdate {
-	lu.mutation.SetRepoID(s)
+func (lu *LockUpdate) SetRepoID(i int64) *LockUpdate {
+	lu.mutation.SetRepoID(i)
 	return lu
 }
 
@@ -201,7 +201,7 @@ func (lu *LockUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
+					Type:   field.TypeInt64,
 					Column: user.FieldID,
 				},
 			},
@@ -217,7 +217,7 @@ func (lu *LockUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
+					Type:   field.TypeInt64,
 					Column: user.FieldID,
 				},
 			},
@@ -236,7 +236,7 @@ func (lu *LockUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
+					Type:   field.TypeInt64,
 					Column: repo.FieldID,
 				},
 			},
@@ -252,7 +252,7 @@ func (lu *LockUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
+					Type:   field.TypeInt64,
 					Column: repo.FieldID,
 				},
 			},
@@ -302,14 +302,14 @@ func (luo *LockUpdateOne) SetNillableCreatedAt(t *time.Time) *LockUpdateOne {
 }
 
 // SetUserID sets the "user_id" field.
-func (luo *LockUpdateOne) SetUserID(s string) *LockUpdateOne {
-	luo.mutation.SetUserID(s)
+func (luo *LockUpdateOne) SetUserID(i int64) *LockUpdateOne {
+	luo.mutation.SetUserID(i)
 	return luo
 }
 
 // SetRepoID sets the "repo_id" field.
-func (luo *LockUpdateOne) SetRepoID(s string) *LockUpdateOne {
-	luo.mutation.SetRepoID(s)
+func (luo *LockUpdateOne) SetRepoID(i int64) *LockUpdateOne {
+	luo.mutation.SetRepoID(i)
 	return luo
 }
 
@@ -476,7 +476,7 @@ func (luo *LockUpdateOne) sqlSave(ctx context.Context) (_node *Lock, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
+					Type:   field.TypeInt64,
 					Column: user.FieldID,
 				},
 			},
@@ -492,7 +492,7 @@ func (luo *LockUpdateOne) sqlSave(ctx context.Context) (_node *Lock, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
+					Type:   field.TypeInt64,
 					Column: user.FieldID,
 				},
 			},
@@ -511,7 +511,7 @@ func (luo *LockUpdateOne) sqlSave(ctx context.Context) (_node *Lock, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
+					Type:   field.TypeInt64,
 					Column: repo.FieldID,
 				},
 			},
@@ -527,7 +527,7 @@ func (luo *LockUpdateOne) sqlSave(ctx context.Context) (_node *Lock, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
+					Type:   field.TypeInt64,
 					Column: repo.FieldID,
 				},
 			},
