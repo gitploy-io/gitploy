@@ -19,9 +19,11 @@ func TestRepoMiddleware_RepoWritePerm(t *testing.T) {
 
 	t.Run("Return 403 error when the permission is read.", func(t *testing.T) {
 		input := struct {
-			RepoID string
+			namespace string
+			name      string
 		}{
-			RepoID: "1",
+			namespace: "octocat",
+			name:      "hello-world",
 		}
 
 		ctrl := gomock.NewController(t)
@@ -30,17 +32,16 @@ func TestRepoMiddleware_RepoWritePerm(t *testing.T) {
 		t.Logf("It finds the repository.")
 		m.
 			EXPECT().
-			FindRepoOfUserByID(ctx, gomock.AssignableToTypeOf(&ent.User{}), gomock.Eq(input.RepoID)).
+			FindRepoOfUserByNamespaceName(ctx, gomock.AssignableToTypeOf(&ent.User{}), input.namespace, input.name).
 			Return(&ent.Repo{
-				ID: input.RepoID,
+				Namespace: input.namespace,
+				Name:      input.name,
 			}, nil)
 
 		t.Logf("It returns the read permission.")
 		m.
 			EXPECT().
-			FindPermOfRepo(ctx, gomock.Eq(&ent.Repo{
-				ID: input.RepoID,
-			}), gomock.AssignableToTypeOf(&ent.User{})).
+			FindPermOfRepo(ctx, gomock.AssignableToTypeOf(&ent.Repo{}), gomock.AssignableToTypeOf(&ent.User{})).
 			Return(&ent.Perm{
 				RepoPerm: perm.RepoPermRead,
 			}, nil)
@@ -49,14 +50,14 @@ func TestRepoMiddleware_RepoWritePerm(t *testing.T) {
 		router := gin.New()
 
 		rm := NewRepoMiddleware(m)
-		router.PATCH("/repos/:id", func(c *gin.Context) {
+		router.PATCH("/repos/:namespace/:name", func(c *gin.Context) {
 			// Mocking middlewares to return a user and a repository.
 			c.Set(global.KeyUser, &ent.User{})
 		}, rm.RepoWritePerm(), func(c *gin.Context) {
 			c.Status(http.StatusOK)
 		})
 
-		req, _ := http.NewRequest("PATCH", fmt.Sprintf("/repos/%s", input.RepoID), nil)
+		req, _ := http.NewRequest("PATCH", fmt.Sprintf("/repos/%s/%s", input.namespace, input.name), nil)
 
 		w := httptest.NewRecorder()
 		router.ServeHTTP(w, req)
@@ -68,9 +69,11 @@ func TestRepoMiddleware_RepoWritePerm(t *testing.T) {
 
 	t.Run("Return 200 when the permission is write.", func(t *testing.T) {
 		input := struct {
-			RepoID string
+			namespace string
+			name      string
 		}{
-			RepoID: "1",
+			namespace: "octocat",
+			name:      "hello-world",
 		}
 
 		ctrl := gomock.NewController(t)
@@ -79,17 +82,16 @@ func TestRepoMiddleware_RepoWritePerm(t *testing.T) {
 		t.Logf("It finds the repository.")
 		m.
 			EXPECT().
-			FindRepoOfUserByID(ctx, gomock.AssignableToTypeOf(&ent.User{}), gomock.Eq(input.RepoID)).
+			FindRepoOfUserByNamespaceName(ctx, gomock.AssignableToTypeOf(&ent.User{}), input.namespace, input.name).
 			Return(&ent.Repo{
-				ID: input.RepoID,
+				Namespace: input.namespace,
+				Name:      input.name,
 			}, nil)
 
 		t.Logf("It returns the read permission.")
 		m.
 			EXPECT().
-			FindPermOfRepo(ctx, gomock.Eq(&ent.Repo{
-				ID: input.RepoID,
-			}), gomock.AssignableToTypeOf(&ent.User{})).
+			FindPermOfRepo(ctx, gomock.AssignableToTypeOf(&ent.Repo{}), gomock.AssignableToTypeOf(&ent.User{})).
 			Return(&ent.Perm{
 				RepoPerm: perm.RepoPermWrite,
 			}, nil)
@@ -98,14 +100,14 @@ func TestRepoMiddleware_RepoWritePerm(t *testing.T) {
 		router := gin.New()
 
 		rm := NewRepoMiddleware(m)
-		router.PATCH("/repos/:id", func(c *gin.Context) {
+		router.PATCH("/repos/:namespace/:name", func(c *gin.Context) {
 			// Mocking middlewares to return a user and a repository.
 			c.Set(global.KeyUser, &ent.User{})
 		}, rm.RepoWritePerm(), func(c *gin.Context) {
 			c.Status(http.StatusOK)
 		})
 
-		req, _ := http.NewRequest("PATCH", fmt.Sprintf("/repos/%s", input.RepoID), nil)
+		req, _ := http.NewRequest("PATCH", fmt.Sprintf("/repos/%s/%s", input.namespace, input.name), nil)
 
 		w := httptest.NewRecorder()
 		router.ServeHTTP(w, req)
@@ -121,9 +123,11 @@ func TestRepoMiddleware_RepoAdminPerm(t *testing.T) {
 
 	t.Run("Return 200 when the permission is admin.", func(t *testing.T) {
 		input := struct {
-			RepoID string
+			namespace string
+			name      string
 		}{
-			RepoID: "1",
+			namespace: "octocat",
+			name:      "hello-world",
 		}
 
 		ctrl := gomock.NewController(t)
@@ -132,17 +136,16 @@ func TestRepoMiddleware_RepoAdminPerm(t *testing.T) {
 		t.Logf("It finds the repository.")
 		m.
 			EXPECT().
-			FindRepoOfUserByID(ctx, gomock.AssignableToTypeOf(&ent.User{}), gomock.Eq(input.RepoID)).
+			FindRepoOfUserByNamespaceName(ctx, gomock.AssignableToTypeOf(&ent.User{}), input.namespace, input.name).
 			Return(&ent.Repo{
-				ID: input.RepoID,
+				Namespace: input.namespace,
+				Name:      input.name,
 			}, nil)
 
 		t.Logf("It returns the read permission.")
 		m.
 			EXPECT().
-			FindPermOfRepo(ctx, gomock.Eq(&ent.Repo{
-				ID: input.RepoID,
-			}), gomock.AssignableToTypeOf(&ent.User{})).
+			FindPermOfRepo(ctx, gomock.AssignableToTypeOf(&ent.Repo{}), gomock.AssignableToTypeOf(&ent.User{})).
 			Return(&ent.Perm{
 				RepoPerm: perm.RepoPermAdmin,
 			}, nil)
@@ -151,14 +154,14 @@ func TestRepoMiddleware_RepoAdminPerm(t *testing.T) {
 		router := gin.New()
 
 		rm := NewRepoMiddleware(m)
-		router.PATCH("/repos/:id", func(c *gin.Context) {
+		router.PATCH("/repos/:namespace/:name", func(c *gin.Context) {
 			// Mocking middlewares to return a user and a repository.
 			c.Set(global.KeyUser, &ent.User{})
 		}, rm.RepoWritePerm(), func(c *gin.Context) {
 			c.Status(http.StatusOK)
 		})
 
-		req, _ := http.NewRequest("PATCH", fmt.Sprintf("/repos/%s", input.RepoID), nil)
+		req, _ := http.NewRequest("PATCH", fmt.Sprintf("/repos/%s/%s", input.namespace, input.name), nil)
 
 		w := httptest.NewRecorder()
 		router.ServeHTTP(w, req)

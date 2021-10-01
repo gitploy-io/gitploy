@@ -259,21 +259,6 @@ func (mr *MockInteractorMockRecorder) FindLockByID(ctx, id interface{}) *gomock.
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindLockByID", reflect.TypeOf((*MockInteractor)(nil).FindLockByID), ctx, id)
 }
 
-// FindLockOfRepoByEnv mocks base method.
-func (m *MockInteractor) FindLockOfRepoByEnv(ctx context.Context, r *ent.Repo, env string) (*ent.Lock, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FindLockOfRepoByEnv", ctx, r, env)
-	ret0, _ := ret[0].(*ent.Lock)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// FindLockOfRepoByEnv indicates an expected call of FindLockOfRepoByEnv.
-func (mr *MockInteractorMockRecorder) FindLockOfRepoByEnv(ctx, r, env interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindLockOfRepoByEnv", reflect.TypeOf((*MockInteractor)(nil).FindLockOfRepoByEnv), ctx, r, env)
-}
-
 // FindPermOfRepo mocks base method.
 func (m *MockInteractor) FindPermOfRepo(ctx context.Context, r *ent.Repo, u *ent.User) (*ent.Perm, error) {
 	m.ctrl.T.Helper()
@@ -317,6 +302,21 @@ func (m *MockInteractor) FindRepoOfUserByID(ctx context.Context, u *ent.User, id
 func (mr *MockInteractorMockRecorder) FindRepoOfUserByID(ctx, u, id interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindRepoOfUserByID", reflect.TypeOf((*MockInteractor)(nil).FindRepoOfUserByID), ctx, u, id)
+}
+
+// FindRepoOfUserByNamespaceName mocks base method.
+func (m *MockInteractor) FindRepoOfUserByNamespaceName(ctx context.Context, u *ent.User, namespace, name string) (*ent.Repo, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindRepoOfUserByNamespaceName", ctx, u, namespace, name)
+	ret0, _ := ret[0].(*ent.Repo)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindRepoOfUserByNamespaceName indicates an expected call of FindRepoOfUserByNamespaceName.
+func (mr *MockInteractorMockRecorder) FindRepoOfUserByNamespaceName(ctx, u, namespace, name interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindRepoOfUserByNamespaceName", reflect.TypeOf((*MockInteractor)(nil).FindRepoOfUserByNamespaceName), ctx, u, namespace, name)
 }
 
 // FindUserByID mocks base method.

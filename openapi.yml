@@ -73,18 +73,22 @@ paths:
           $ref: '#/components/responses/402PaymentRequired'
         '500':
           $ref: '#/components/responses/500InternalError'
-  /repos/{id}:
+  /repos/{namespace}/{name}:
     get:
       tags:
         - Repo
       summary: Get the repository.
       parameters:
         - in: path
-          name: id
+          name: namespace
           required: true
           schema:
-            type: integer
-            description: The repository id
+            type: string
+        - in: path
+          name: name
+          required: true
+          schema:
+            type: string
       responses:
         '200':
           description: Repository
@@ -134,18 +138,22 @@ paths:
           $ref: '#/components/responses/403Forbidden'
         '500':
           $ref: '#/components/responses/500InternalError'
-  /repos/{id}/commits:
+  /repos/{namespace}/{name}/commits:
     get:
       tags:
         - Repo
       summary: List commits of repository.
       parameters:
         - in: path
-          name: id
+          name: namespace
           required: true
           schema:
-            type: integer
-            description: The repository id
+            type: string
+        - in: path
+          name: name
+          required: true
+          schema:
+            type: string
         - in: query
           name: branch
           schema:
@@ -181,18 +189,22 @@ paths:
           $ref: '#/components/responses/403Forbidden'
         '500':
           $ref: '#/components/responses/500InternalError'
-  /repos/{id}/commits/{sha}:
+  /repos/{namespace}/{name}/commits/{sha}:
     get:
       tags:
         - Repo
       summary: Get the commit of repository.
       parameters:
         - in: path
-          name: id
+          name: namespace
           required: true
           schema:
-            type: integer
-            description: The repository id
+            type: string
+        - in: path
+          name: name
+          required: true
+          schema:
+            type: string
         - in: path
           name: sha
           required: true
@@ -216,18 +228,22 @@ paths:
           $ref: '#/components/responses/404NotFound'
         '500':
           $ref: '#/components/responses/500InternalError'
-  /repos/{id}/commits/{sha}/statuses:
+  /repos/{namespace}/{name}/commits/{sha}/statuses:
     get:
       tags:
         - Repo
       summary: List statuses of the commit.
       parameters:
         - in: path
-          name: id
+          name: namespace
           required: true
           schema:
-            type: integer
-            description: The repository id
+            type: string
+        - in: path
+          name: name
+          required: true
+          schema:
+            type: string
         - in: path
           name: sha
           required: true
@@ -256,18 +272,22 @@ paths:
           $ref: '#/components/responses/404NotFound'
         '500':
           $ref: '#/components/responses/500InternalError'
-  /repos/{id}/branches:
+  /repos/{namespace}/{name}/branches:
     get:
       tags:
         - Repo
       summary: List branches of the repository.
       parameters:
         - in: path
-          name: id
+          name: namespace
           required: true
           schema:
-            type: integer
-            description: The repository id
+            type: string
+        - in: path
+          name: name
+          required: true
+          schema:
+            type: string
         - in: query
           name: page
           schema:
@@ -295,18 +315,22 @@ paths:
           $ref: '#/components/responses/403Forbidden'
         '500':
           $ref: '#/components/responses/500InternalError'
-  /repos/{id}/branches/{branch}:
+  /repos/{namespace}/{name}/branches/{branch}:
     get:
       tags:
         - Repo
       summary: Get the branch of repository.
       parameters:
         - in: path
-          name: id
+          name: namespace
           required: true
           schema:
-            type: integer
-            description: The repository id
+            type: string
+        - in: path
+          name: name
+          required: true
+          schema:
+            type: string
         - in: path
           name: branch
           required: true
@@ -330,18 +354,22 @@ paths:
           $ref: '#/components/responses/404NotFound'
         '500':
           $ref: '#/components/responses/500InternalError'
-  /repos/{id}/tags:
+  /repos/{namespace}/{name}/tags:
     get:
       tags:
         - Repo
       summary: List tags of the repository.
       parameters:
         - in: path
-          name: id
+          name: namespace
           required: true
           schema:
-            type: integer
-            description: The repository id
+            type: string
+        - in: path
+          name: name
+          required: true
+          schema:
+            type: string
         - in: query
           name: page
           schema:
@@ -369,18 +397,22 @@ paths:
           $ref: '#/components/responses/403Forbidden'
         '500':
           $ref: '#/components/responses/500InternalError'
-  /repos/{id}/tags/{tag}:
+  /repos/{namespace}/{name}/tags/{tag}:
     get:
       tags:
         - Repo
       summary: Get the tag of the repository.
       parameters:
         - in: path
-          name: id
+          name: namespace
           required: true
           schema:
-            type: integer
-            description: The repository id
+            type: string
+        - in: path
+          name: name
+          required: true
+          schema:
+            type: string
         - in: path
           name: tag
           required: true
@@ -404,18 +436,22 @@ paths:
           $ref: '#/components/responses/404NotFound'
         '500':
           $ref: '#/components/responses/500InternalError'
-  /repos/{id}/deployments:
+  /repos/{namespace}/{name}/deployments:
     get:
       tags:
         - Repo
       summary: List deployments of repository.
       parameters:
         - in: path
-          name: id
+          name: namespace
           required: true
           schema:
-            type: integer
-            description: The repository id
+            type: string
+        - in: path
+          name: name
+          required: true
+          schema:
+            type: string
         - in: query
           name: env
           description: Name for the target deployment environment.
@@ -502,18 +538,22 @@ paths:
           description: The deployment payload or the configuration is invalid.
         '500':
           $ref: '#/components/responses/500InternalError'
-  /repos/{id}/deployments/{number}:
+  /repos/{namespace}/{name}/deployments/{number}:
     get:
       tags:
         - Repo
       summary: Get the deployments by the number.
       parameters:
         - in: path
-          name: id
+          name: namespace
           required: true
           schema:
-            type: integer
-            description: The repository id
+            type: string
+        - in: path
+          name: name
+          required: true
+          schema:
+            type: string
         - in: path
           name: number
           required: true
@@ -588,7 +628,7 @@ paths:
           description: The configuration is invalid or it is not approved.
         '500':
           $ref: '#/components/responses/500InternalError'
-  /repos/{id}/deployments/{number}/changes:
+  /repos/{namespace}/{name}/deployments/{number}/changes:
     get:
       tags:
         - Repo
@@ -598,11 +638,15 @@ paths:
         it compares with the previous succeed deployment.
       parameters:
         - in: path
-          name: id
+          name: namespace
           required: true
           schema:
-            type: integer
-            description: The repository id
+            type: string
+        - in: path
+          name: name
+          required: true
+          schema:
+            type: string
         - in: path
           name: number
           required: true
@@ -636,18 +680,22 @@ paths:
           $ref: '#/components/responses/404NotFound'
         '500':
           $ref: '#/components/responses/500InternalError'
-  /repos/{id}/deployments/{number}/rollback:
+  /repos/{namespace}/{name}/deployments/{number}/rollback:
     post:
       tags:
         - Repo
       summary: Rollback by the deployment.
       parameters:
         - in: path
-          name: id
+          name: namespace
           required: true
           schema:
-            type: integer
-            description: The repository id
+            type: string
+        - in: path
+          name: name
+          required: true
+          schema:
+            type: string
         - in: path
           name: number
           required: true
@@ -676,18 +724,22 @@ paths:
           $ref: '#/components/responses/422UnprocessableEntity'
         '500':
           $ref: '#/components/responses/500InternalError'
-  /repos/{id}/deployments/{number}/approvals:
+  /repos/{namespace}/{name}/deployments/{number}/approvals:
     get:
       tags:
         - Repo
       summary: List approvals for the deployment.
       parameters:
         - in: path
-          name: id
+          name: namespace
           required: true
           schema:
-            type: integer
-            description: The repository id
+            type: string
+        - in: path
+          name: name
+          required: true
+          schema:
+            type: string
         - in: path
           name: number
           required: true
@@ -755,18 +807,22 @@ paths:
           $ref: '#/components/responses/422UnprocessableEntity'
         '500':
           $ref: '#/components/responses/500InternalError'
-  /repos/{id}/deployments/{number}/approval:
+  /repos/{namespace}/{name}/deployments/{number}/approval:
     get:
       tags:
         - Repo
       summary: Get the approval of user for the deployment.
       parameters:
         - in: path
-          name: id
+          name: namespace
           required: true
           schema:
-            type: integer
-            description: The repository id
+            type: string
+        - in: path
+          name: name
+          required: true
+          schema:
+            type: string
         - in: path
           name: number
           required: true
@@ -838,18 +894,22 @@ paths:
           $ref: '#/components/responses/500InternalError'
   # Only permitted users can access to Approval API.
   # To be under repository protects to access without permissions.
-  /repos/{id}/approvals/{aid}:
+  /repos/{namespace}/{name}/approvals/{aid}:
     get:
       tags:
         - Repo
       summary: Get the approval.
       parameters:
         - in: path
-          name: id
+          name: namespace
           required: true
           schema:
-            type: integer
-            description: The repository id.
+            type: string
+        - in: path
+          name: name
+          required: true
+          schema:
+            type: string
         - in: path
           name: aid
           required: true
@@ -909,18 +969,22 @@ paths:
           $ref: '#/components/responses/404NotFound'
         '500':
           $ref: '#/components/responses/500InternalError'
-  /repos/{id}/locks:
+  /repos/{namespace}/{name}/locks:
     get:
       tags:
         - Repo
       summary: List locked environments.
       parameters:
         - in: path
-          name: id
+          name: namespace
           required: true
           schema:
-            type: integer
-            description: The repository id.
+            type: string
+        - in: path
+          name: name
+          required: true
+          schema:
+            type: string
       responses:
         '200':
           description: Locks
@@ -973,18 +1037,22 @@ paths:
           $ref: '#/components/responses/422UnprocessableEntity'
         '500':
           $ref: '#/components/responses/500InternalError'
-  /repos/{id}/locks/{lockId}:
+  /repos/{namespace}/{name}/locks/{lockId}:
     delete:
       tags:
         - Repo
       summary: Unlock the environment.
       parameters:
         - in: path
-          name: id
+          name: namespace
           required: true
           schema:
-            type: integer
-            description: The repository id.
+            type: string
+        - in: path
+          name: name
+          required: true
+          schema:
+            type: string
         - in: path
           name: lockId
           required: true
@@ -1008,18 +1076,22 @@ paths:
           $ref: '#/components/responses/404NotFound'
         '500':
           $ref: '#/components/responses/500InternalError'
-  /repos/{id}/perms:
+  /repos/{namespace}/{name}/perms:
     get:
       tags:
         - Repo
       summary: Get permissions for the repository
       parameters:
         - in: path
-          name: id
+          name: namespace
           required: true
           schema:
-            type: integer
-            description: The repository id.
+            type: string
+        - in: path
+          name: name
+          required: true
+          schema:
+            type: string
         - in: query
           name: q
           schema:
@@ -1048,18 +1120,22 @@ paths:
           $ref: '#/components/responses/403Forbidden'
         '500':
           $ref: '#/components/responses/500InternalError'
-  /repos/{id}/config:
+  /repos/{namespace}/{name}/config:
     get:
       tags:
         - Repo
       summary: Get the config file
       parameters:
         - in: path
-          name: id
+          name: namespace
           required: true
           schema:
-            type: integer
-            description: The repository id
+            type: string
+        - in: path
+          name: name
+          required: true
+          schema:
+            type: string
       responses:
         '200':
           description: Config 
