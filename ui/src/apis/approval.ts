@@ -93,8 +93,8 @@ export const searchApprovals = async (statuses: ApprovalStatus[], from?: Date, t
     return approvals
 }
 
-export const listApprovals = async (id: string, number: number): Promise<Approval[]> => {
-    const res = await _fetch(`${instance}/api/v1/repos/${id}/deployments/${number}/approvals`, {
+export const listApprovals = async (namespace: string, name: string, number: number): Promise<Approval[]> => {
+    const res = await _fetch(`${instance}/api/v1/repos/${namespace}/${name}/deployments/${number}/approvals`, {
         credentials: "same-origin",
         headers,
     })
@@ -109,11 +109,11 @@ export const listApprovals = async (id: string, number: number): Promise<Approva
     return approvals
 }
 
-export const createApproval = async (repo: Repo, deployment: Deployment, approver: User): Promise<Approval> => {
+export const createApproval = async (namespace: string, name: string, number: number, userId: number): Promise<Approval> => {
     const body = {
-        user_id: approver.id
+        user_id: userId 
     }
-    const res = await _fetch(`${instance}/api/v1/repos/${repo.id}/deployments/${deployment.number}/approvals`, {
+    const res = await _fetch(`${instance}/api/v1/repos/${namespace}/${name}/deployments/${number}/approvals`, {
         credentials: "same-origin",
         headers,
         method: "POST",
@@ -131,8 +131,8 @@ export const createApproval = async (repo: Repo, deployment: Deployment, approve
     return approval
 }
 
-export const deleteApproval = async (repo: Repo, approval: Approval): Promise<void> => {
-    const res = await _fetch(`${instance}/api/v1/repos/${repo.id}/approvals/${approval.id}`, {
+export const deleteApproval = async (namespace: string, name: string, id: number): Promise<void> => {
+    const res = await _fetch(`${instance}/api/v1/repos/${namespace}/${name}/approvals/${id}`, {
         credentials: "same-origin",
         headers,
         method: "DELETE",
@@ -144,8 +144,8 @@ export const deleteApproval = async (repo: Repo, approval: Approval): Promise<vo
     }
 }
 
-export const getMyApproval = async (id: string, number: number): Promise<Approval> => {
-    const res = await _fetch(`${instance}/api/v1/repos/${id}/deployments/${number}/approval`, {
+export const getMyApproval = async (namespace: string, name: string, number: number): Promise<Approval> => {
+    const res = await _fetch(`${instance}/api/v1/repos/${namespace}/${name}/deployments/${number}/approval`, {
         credentials: "same-origin",
         headers,
     })
@@ -159,11 +159,11 @@ export const getMyApproval = async (id: string, number: number): Promise<Approva
     return approval
 }
 
-export const setApprovalApproved = async (id: string, number: number): Promise<Approval> => {
+export const setApprovalApproved = async (namespace: string, name: string, number: number): Promise<Approval> => {
     const body = {
         status: ApprovalStatus.Approved.toString(),
     }
-    const res = await _fetch(`${instance}/api/v1/repos/${id}/deployments/${number}/approval`, {
+    const res = await _fetch(`${instance}/api/v1/repos/${namespace}/${name}/deployments/${number}/approval`, {
         credentials: "same-origin",
         headers,
         method: "PATCH",
@@ -179,11 +179,11 @@ export const setApprovalApproved = async (id: string, number: number): Promise<A
     return approval
 }
 
-export const setApprovalDeclined = async (id: string, number: number): Promise<Approval> => {
+export const setApprovalDeclined = async (namespace: string, name: string, number: number): Promise<Approval> => {
     const body = {
         status: ApprovalStatus.Declined.toString(),
     }
-    const res = await _fetch(`${instance}/api/v1/repos/${id}/deployments/${number}/approval`, {
+    const res = await _fetch(`${instance}/api/v1/repos/${namespace}/${name}/deployments/${number}/approval`, {
         credentials: "same-origin",
         headers,
         method: "PATCH",

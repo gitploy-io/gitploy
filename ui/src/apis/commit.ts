@@ -63,8 +63,8 @@ const mapStatusState = (state: string) => {
     return StatusState.Pending
 }
 
-export const listCommits = async (repoId: string, branch: string, page = 1, perPage = 30): Promise<Commit[]> => {
-    const commits: Commit[] = await _fetch(`${instance}/api/v1/repos/${repoId}/commits?branch=${branch}&page=${page}&per_page=${perPage}`, {
+export const listCommits = async (namespace: string, name: string, branch: string, page = 1, perPage = 30): Promise<Commit[]> => {
+    const commits: Commit[] = await _fetch(`${instance}/api/v1/repos/${namespace}/${name}/commits?branch=${branch}&page=${page}&per_page=${perPage}`, {
         headers,
         credentials: "same-origin",
     })
@@ -74,8 +74,8 @@ export const listCommits = async (repoId: string, branch: string, page = 1, perP
     return commits
 }
 
-export const getCommit = async (repoId: string, sha: string): Promise<Commit> => {
-    const response = await _fetch(`${instance}/api/v1/repos/${repoId}/commits/${sha}`, {
+export const getCommit = async (namespace: string, name: string, sha: string): Promise<Commit> => {
+    const response = await _fetch(`${instance}/api/v1/repos/${namespace}/${name}/commits/${sha}`, {
         headers,
         credentials: "same-origin",
     })
@@ -91,8 +91,8 @@ export const getCommit = async (repoId: string, sha: string): Promise<Commit> =>
     return commit
 }
 
-export const listStatuses = async (repoId: string, sha: string): Promise<{state: StatusState, statuses: Status[]}> => {
-    const response = await _fetch(`${instance}/api/v1/repos/${repoId}/commits/${sha}/statuses`, {
+export const listStatuses = async (namespace: string, name: string, sha: string): Promise<{state: StatusState, statuses: Status[]}> => {
+    const response = await _fetch(`${instance}/api/v1/repos/${namespace}/${name}/commits/${sha}/statuses`, {
         headers,
         credentials: "same-origin",
     })

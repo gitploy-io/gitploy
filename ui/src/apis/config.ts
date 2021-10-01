@@ -40,8 +40,8 @@ const mapDataToConfig = (data: ConfigData): Config => {
     }
 }
 
-export const getConfig = async (repoId: string): Promise<Config> => {
-    const response = await _fetch(`${instance}/api/v1/repos/${repoId}/config`, {
+export const getConfig = async (namespace: string, name: string): Promise<Config> => {
+    const response = await _fetch(`${instance}/api/v1/repos/${namespace}/${name}/config`, {
         headers,
         credentials: "same-origin",
     })

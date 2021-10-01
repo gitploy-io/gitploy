@@ -169,8 +169,8 @@ export const searchDeployments = async (statuses: DeploymentStatusEnum[], owned:
     return deployments
 }
 
-export const listDeployments = async (repoId: string, env: string, status: string, page: number, perPage: number): Promise<Deployment[]> => {
-    const deployments: Deployment[] = await _fetch(`${instance}/api/v1/repos/${repoId}/deployments?env=${env}&status=${status}&page=${page}&per_page=${perPage}`, {
+export const listDeployments = async (namespace: string, name: string, env: string, status: string, page: number, perPage: number): Promise<Deployment[]> => {
+    const deployments: Deployment[] = await _fetch(`${instance}/api/v1/repos/${namespace}/${name}/deployments?env=${env}&status=${status}&page=${page}&per_page=${perPage}`, {
         headers,
         credentials: 'same-origin',
     })
@@ -180,8 +180,8 @@ export const listDeployments = async (repoId: string, env: string, status: strin
     return deployments
 }
 
-export const getDeployment = async (id: string, number: number): Promise<Deployment> => {
-    const deployment = await _fetch(`${instance}/api/v1/repos/${id}/deployments/${number}`, {
+export const getDeployment = async (namespace: string, name: string, number: number): Promise<Deployment> => {
+    const deployment = await _fetch(`${instance}/api/v1/repos/${namespace}/${name}/deployments/${number}`, {
         headers,
         credentials: 'same-origin',
     })
@@ -191,13 +191,13 @@ export const getDeployment = async (id: string, number: number): Promise<Deploym
     return deployment
 }
 
-export const createDeployment = async (repoId: string, type: DeploymentType = DeploymentType.Commit, ref: string, env: string): Promise<Deployment> => {
+export const createDeployment = async (namespace: string, name: string, type: DeploymentType = DeploymentType.Commit, ref: string, env: string): Promise<Deployment> => {
     const body = JSON.stringify({
         type,
         ref,
         env
     })
-    const response = await _fetch(`${instance}/api/v1/repos/${repoId}/deployments`, {
+    const response = await _fetch(`${instance}/api/v1/repos/${namespace}/${name}/deployments`, {
         headers,
         credentials: 'same-origin',
         method: "POST",
@@ -220,11 +220,11 @@ export const createDeployment = async (repoId: string, type: DeploymentType = De
     return deployment
 }
 
-export const updateDeploymentStatusCreated = async (id: string, number: number): Promise<Deployment> => {
+export const updateDeploymentStatusCreated = async (namespace: string, name: string, number: number): Promise<Deployment> => {
     const body = JSON.stringify({
         status: "created"
     })
-    const response = await _fetch(`${instance}/api/v1/repos/${id}/deployments/${number}`, {
+    const response = await _fetch(`${instance}/api/v1/repos/${namespace}/${name}/deployments/${number}`, {
         headers,
         credentials: 'same-origin',
         method: "PATCH",
@@ -244,8 +244,8 @@ export const updateDeploymentStatusCreated = async (id: string, number: number):
     return deployment
 }
 
-export const rollbackDeployment = async (repoId: string, number: number): Promise<Deployment> => {
-    const response = await _fetch(`${instance}/api/v1/repos/${repoId}/deployments/${number}/rollback`, {
+export const rollbackDeployment = async (namespace: string, name: string, number: number): Promise<Deployment> => {
+    const response = await _fetch(`${instance}/api/v1/repos/${namespace}/${name}/deployments/${number}/rollback`, {
         headers,
         credentials: 'same-origin',
         method: "POST",
@@ -267,8 +267,8 @@ export const rollbackDeployment = async (repoId: string, number: number): Promis
     return deployment
 }
 
-export const listDeploymentChanges = async (repoId: string, number: number, page = 1, perPage = 30): Promise<Commit[]> => {
-    const res = await _fetch(`${instance}/api/v1/repos/${repoId}/deployments/${number}/changes?page=${page}&per_page=${perPage}`, {
+export const listDeploymentChanges = async (namespace: string, name: string, number: number, page = 1, perPage = 30): Promise<Commit[]> => {
+    const res = await _fetch(`${instance}/api/v1/repos/${namespace}/${name}/deployments/${number}/changes?page=${page}&per_page=${perPage}`, {
         headers,
         credentials: 'same-origin',
     })

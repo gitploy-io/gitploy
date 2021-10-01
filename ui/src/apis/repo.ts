@@ -70,12 +70,8 @@ export const searchRepo = async (namespace: string, name: string): Promise<Repo>
     return repos[0]
 }
 
-export const updateRepo = async (repo: Repo): Promise<Repo> => {
-    const payload = {
-        "config_path": repo.configPath,
-    }
-
-    const res = await _fetch(`${instance}/api/v1/repos/${repo.id}`, {
+export const updateRepo = async (namespace: string, name: string, payload: {config_path: string}): Promise<Repo> => {
+    const res = await _fetch(`${instance}/api/v1/repos/${namespace}/${name}`, {
         headers,
         credentials: 'same-origin',
         method: "PATCH",
@@ -93,11 +89,11 @@ export const updateRepo = async (repo: Repo): Promise<Repo> => {
     return ret
 }
 
-export const activateRepo = async (repo: Repo): Promise<Repo> => {
+export const activateRepo = async (namespace: string, name: string): Promise<Repo> => {
     const body = {
         "active": true,
     }
-    const response = await _fetch(`${instance}/api/v1/repos/${repo.id}`, {
+    const response = await _fetch(`${instance}/api/v1/repos/${namespace}/${name}`, {
         headers,
         credentials: 'same-origin',
         method: "PATCH",
@@ -108,17 +104,17 @@ export const activateRepo = async (repo: Repo): Promise<Repo> => {
         throw new HttpForbiddenError(message)
     }
 
-    repo = await response
+    const repo = await response
         .json()
         .then((r:any) => mapDataToRepo(r))
     return repo
 }
 
-export const deactivateRepo = async (repo: Repo): Promise<Repo> => {
+export const deactivateRepo = async (namespace: string, name: string): Promise<Repo> => {
     const body = {
         "active": false,
     }
-    const response = await _fetch(`${instance}/api/v1/repos/${repo.id}`, {
+    const response = await _fetch(`${instance}/api/v1/repos/${namespace}/${name}`, {
         headers,
         credentials: 'same-origin',
         method: "PATCH",
@@ -129,17 +125,17 @@ export const deactivateRepo = async (repo: Repo): Promise<Repo> => {
         throw new HttpForbiddenError(message)
     }
 
-    repo = await response
+    const repo = await response
         .json()
         .then((r:any) => mapDataToRepo(r))
     return repo
 }
 
-export const lockRepo = async (repo: Repo): Promise<Repo> => {
+export const lockRepo = async (namespace: string, name: string): Promise<Repo> => {
     const body = {
         "locked": true,
     }
-    const response = await _fetch(`${instance}/api/v1/repos/${repo.id}`, {
+    const response = await _fetch(`${instance}/api/v1/repos/${namespace}/${name}`, {
         headers,
         credentials: 'same-origin',
         method: "PATCH",
@@ -150,17 +146,17 @@ export const lockRepo = async (repo: Repo): Promise<Repo> => {
         throw new HttpForbiddenError(message)
     }
 
-    repo = await response
+    const repo = await response
         .json()
         .then((r:any) => mapDataToRepo(r))
     return repo
 }
 
-export const unlockRepo = async (repo: Repo): Promise<Repo> => {
+export const unlockRepo = async (namespace: string, name: string): Promise<Repo> => {
     const body = {
         "locked": false,
     }
-    const response = await _fetch(`${instance}/api/v1/repos/${repo.id}`, {
+    const response = await _fetch(`${instance}/api/v1/repos/${namespace}/${name}`, {
         headers,
         credentials: 'same-origin',
         method: "PATCH",
@@ -171,7 +167,7 @@ export const unlockRepo = async (repo: Repo): Promise<Repo> => {
         throw new HttpForbiddenError(message)
     }
 
-    repo = await response
+    const repo = await response
         .json()
         .then((r:any) => mapDataToRepo(r))
     return repo
