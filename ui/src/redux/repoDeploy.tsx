@@ -224,7 +224,7 @@ export const addTagManually = createAsyncThunk<Tag, string, { state: {repoDeploy
         const { namespace, name } = getState().repoDeploy
 
         try {
-            const tag = await getTag(namespace, name, name)
+            const tag = await getTag(namespace, name, tagName)
             return tag
         } catch(e) {
             if (e instanceof HttpNotFoundError) {

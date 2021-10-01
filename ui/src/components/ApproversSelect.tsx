@@ -32,9 +32,9 @@ export default function ApproversSelect(props: ApproversSelectProps): JSX.Elemen
     }, 800)
 
     const _onSelectCandidate = (id: string) => {
-        const candidate = props.candidates.find(c => c.id.toString() ===id)
+        const candidate = props.candidates.find(c => c.id === parseInt(id))
         if (candidate === undefined) {
-            return
+            throw new Error("The candidate is undefined.")
         }
 
         onSelectCandidate(candidate)
