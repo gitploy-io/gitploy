@@ -305,10 +305,12 @@ function CommitDecorator(props: CommitDecoratorProps): JSX.Element {
     const tag = (props.commit.sha === props.currentDeployment?.sha) ?
         <AntdTag color="success">{props.currentDeployment.env}</AntdTag> : 
         null
+
+    const [line] = props.commit.message.split(/(\r\n|\n|\r)/g, 1)
     
     return (
         <span>
-            <Text className="gitploy-code" code>{props.commit.sha.substring(0, 7)}</Text>{tag}- <Text strong>{props.commit.message}</Text> <br/>
+            <Text className="gitploy-code" code>{props.commit.sha.substring(0, 7)}</Text>{tag}- <Text strong>{line}</Text> <br/>
             {(props.commit?.author)?
                 <span >
                     &nbsp;<Text ><Avatar size="small" src={props.commit.author.avatarUrl} /> {props.commit.author.login}</Text> <Text >committed {moment(props.commit.author?.date).fromNow()}</Text>

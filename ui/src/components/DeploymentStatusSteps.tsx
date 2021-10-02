@@ -22,7 +22,8 @@ export default function DeploymentStatusSteps(props: DeploymentStatusStepsProps)
         <Steps 
             current={props.deployment.statuses.length - 1}
             size="small" 
-            responsive>
+            responsive
+        >
             {props.deployment.statuses.map((status, idx) => {
                 const title = (status.logUrl)?
                     <a href={status.logUrl}>{status.status}</a> :
