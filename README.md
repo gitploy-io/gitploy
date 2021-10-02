@@ -1,6 +1,9 @@
-# Gitploy
+# Gitploy 
+
+![test](https://github.com/gitploy-io/gitploy/actions/workflows/test.yaml/badge.svg)
 
 ![Gitploy](docs/images/gitploy.png)
+
 
 ## What is Gitploy?
 
