@@ -240,8 +240,6 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 		// Static files
 		// Files in ui/public
 		r.StaticFile("/favicon.ico", "./favicon.ico")
-		r.StaticFile("/logo192.png", "./logo192.png")
-		r.StaticFile("/logo512.png", "./logo512.png")
 		r.StaticFile("/manifest.json", "./manifest.json")
 		r.StaticFile("/robots.txt", "./robots.txt")
 		r.Static("/static", "./static")
