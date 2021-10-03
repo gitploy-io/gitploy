@@ -5,6 +5,8 @@ theme:
   palette:
     primary: deep purple
     accent: deep purple 
+  logo: images/logo.svg
+  favicon: images/favicon.ico
   icon:
     repo: fontawesome/brands/github
 nav:

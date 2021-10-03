@@ -10,6 +10,8 @@ import { subscribeEvents } from "../apis"
 import RecentActivities from "../components/RecentActivities"
 import LicenseFooter from "../components/LicenseFooter"
 
+import Logo from "../logo.svg"
+
 const { Header, Content, Footer } = Layout
 
 // eslint-disable-next-line
@@ -86,8 +88,8 @@ export default function Main(props: any) {
             <Header>
                 <Row>
                     <Col span="16">
-                        <Menu theme="dark" mode="horizontal" defaultActiveFirst>
-                            <Menu.Item key={0}>Gitploy</Menu.Item>
+                        <Menu theme="dark" mode="horizontal" >
+                            <Menu.Item key={0}><a href="/"><img src={Logo} style={{width: 62}}/></a></Menu.Item>
                             <Menu.Item key={1}><a href="/">Home</a></Menu.Item>
                             {(user?.admin)? <Menu.Item key={2}><a href="/members">Members</a></Menu.Item>: null}
                         </Menu>
