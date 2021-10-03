@@ -33,7 +33,7 @@ In the 'Deploy' tab, you can find the deployment form. In this example, we'll de
 
 Figure) Gitploy Deployment Form
 
-![Deploy commit](../images/deploy-commit.png)
+![deploy](../images/deploy.png)
 
 ## Step 4: Deployment Event
 On the deployment page of Github, you can find the new Github deployment at the top. In production, the deployment tool should listen to the event and start to deploy. You can reference the [community](https://github.com/gitploy-io/gitploy/discussions/categories/share-pipeline) and it is sharing how to implement the whole pipeline.
