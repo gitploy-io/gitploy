@@ -6098,9 +6098,22 @@ func (m *PermMutation) OldSyncedAt(ctx context.Context) (v time.Time, err error)
 	return oldValue.SyncedAt, nil
 }
 
+// ClearSyncedAt clears the value of the "synced_at" field.
+func (m *PermMutation) ClearSyncedAt() {
+	m.synced_at = nil
+	m.clearedFields[perm.FieldSyncedAt] = struct{}{}
+}
+
+// SyncedAtCleared returns if the "synced_at" field was cleared in this mutation.
+func (m *PermMutation) SyncedAtCleared() bool {
+	_, ok := m.clearedFields[perm.FieldSyncedAt]
+	return ok
+}
+
 // ResetSyncedAt resets all changes to the "synced_at" field.
 func (m *PermMutation) ResetSyncedAt() {
 	m.synced_at = nil
+	delete(m.clearedFields, perm.FieldSyncedAt)
 }
 
 // SetCreatedAt sets the "created_at" field.
@@ -6461,7 +6474,11 @@ func (m *PermMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *PermMutation) ClearedFields() []string {
-	return nil
+	var fields []string
+	if m.FieldCleared(perm.FieldSyncedAt) {
+		fields = append(fields, perm.FieldSyncedAt)
+	}
+	return fields
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -6474,6 +6491,11 @@ func (m *PermMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *PermMutation) ClearField(name string) error {
+	switch name {
+	case perm.FieldSyncedAt:
+		m.ClearSyncedAt()
+		return nil
+	}
 	return fmt.Errorf("unknown Perm nullable field %s", name)
 }
 

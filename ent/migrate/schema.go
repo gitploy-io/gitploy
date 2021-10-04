@@ -275,7 +275,7 @@ var (
 	PermsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "repo_perm", Type: field.TypeEnum, Enums: []string{"read", "write", "admin"}, Default: "read"},
-		{Name: "synced_at", Type: field.TypeTime},
+		{Name: "synced_at", Type: field.TypeTime, Nullable: true},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "repo_id", Type: field.TypeInt64, Nullable: true},

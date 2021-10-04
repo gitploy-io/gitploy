@@ -252,6 +252,20 @@ func SyncedAtLTE(v time.Time) predicate.Perm {
 	})
 }
 
+// SyncedAtIsNil applies the IsNil predicate on the "synced_at" field.
+func SyncedAtIsNil() predicate.Perm {
+	return predicate.Perm(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldSyncedAt)))
+	})
+}
+
+// SyncedAtNotNil applies the NotNil predicate on the "synced_at" field.
+func SyncedAtNotNil() predicate.Perm {
+	return predicate.Perm(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldSyncedAt)))
+	})
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Perm {
 	return predicate.Perm(func(s *sql.Selector) {

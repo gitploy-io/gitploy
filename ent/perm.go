@@ -21,7 +21,7 @@ type Perm struct {
 	// RepoPerm holds the value of the "repo_perm" field.
 	RepoPerm perm.RepoPerm `json:"repo_perm"`
 	// SyncedAt holds the value of the "synced_at" field.
-	SyncedAt time.Time `json:"synced_at"`
+	SyncedAt time.Time `json:"synced_at,omitemtpy"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at"`
 	// UpdatedAt holds the value of the "updated_at" field.

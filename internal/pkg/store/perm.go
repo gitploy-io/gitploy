@@ -68,9 +68,15 @@ func (s *Store) DeletePermsOfUserLessThanSyncedAt(ctx context.Context, u *ent.Us
 		cnt, err = tx.Perm.
 			Delete().
 			Where(
-				perm.And(
-					perm.UserIDEQ(u.ID),
-					perm.SyncedAtLT(t),
+				perm.Or(
+					perm.And(
+						perm.UserIDEQ(u.ID),
+						perm.SyncedAtLT(t),
+					),
+					perm.And(
+						perm.UserIDEQ(u.ID),
+						perm.SyncedAtIsNil(),
+					),
 				),
 			).
 			Exec(ctx)

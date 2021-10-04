@@ -42,6 +42,14 @@ func (pc *PermCreate) SetSyncedAt(t time.Time) *PermCreate {
 	return pc
 }
 
+// SetNillableSyncedAt sets the "synced_at" field if the given value is not nil.
+func (pc *PermCreate) SetNillableSyncedAt(t *time.Time) *PermCreate {
+	if t != nil {
+		pc.SetSyncedAt(*t)
+	}
+	return pc
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (pc *PermCreate) SetCreatedAt(t time.Time) *PermCreate {
 	pc.mutation.SetCreatedAt(t)
@@ -186,9 +194,6 @@ func (pc *PermCreate) check() error {
 		if err := perm.RepoPermValidator(v); err != nil {
 			return &ValidationError{Name: "repo_perm", err: fmt.Errorf(`ent: validator failed for field "repo_perm": %w`, err)}
 		}
-	}
-	if _, ok := pc.mutation.SyncedAt(); !ok {
-		return &ValidationError{Name: "synced_at", err: errors.New(`ent: missing required field "synced_at"`)}
 	}
 	if _, ok := pc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "created_at"`)}

@@ -95,6 +95,13 @@ func TestStore_DeletePermsOfUserLessThanSyncedAt(t *testing.T) {
 	client.Perm.
 		Create().
 		SetRepoPerm(perm.RepoPermWrite).
+		SetUserID(u1).
+		SetRepoID(r1).
+		SaveX(context.Background())
+
+	client.Perm.
+		Create().
+		SetRepoPerm(perm.RepoPermWrite).
 		SetSyncedAt(nor.Add(-1 * time.Hour)).
 		SetUserID(u1).
 		SetRepoID(r2).
@@ -133,7 +140,7 @@ func TestStore_DeletePermsOfUserLessThanSyncedAt(t *testing.T) {
 			t.Fatalf("DeletePermsOfUserLessThanSyncedAt returns an error: %s", err)
 		}
 
-		expected := 2
+		expected := 3
 		if cnt != expected {
 			t.Fatalf("DeletePermsOfUserLessThanSyncedAt = %v: %v", cnt, expected)
 		}
