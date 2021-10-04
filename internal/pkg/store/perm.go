@@ -44,6 +44,7 @@ func (s *Store) CreatePerm(ctx context.Context, p *ent.Perm) (*ent.Perm, error) 
 	return s.c.Perm.
 		Create().
 		SetRepoPerm(p.RepoPerm).
+		SetSyncedAt(p.SyncedAt).
 		SetUserID(p.UserID).
 		SetRepoID(p.RepoID).
 		Save(ctx)
@@ -53,10 +54,11 @@ func (s *Store) UpdatePerm(ctx context.Context, p *ent.Perm) (*ent.Perm, error) 
 	return s.c.Perm.
 		UpdateOne(p).
 		SetRepoPerm(p.RepoPerm).
+		SetSyncedAt(p.SyncedAt).
 		Save(ctx)
 }
 
-func (s *Store) DeletePermsOfUserLessThanUpdatedAt(ctx context.Context, u *ent.User, t time.Time) (int, error) {
+func (s *Store) DeletePermsOfUserLessThanSyncedAt(ctx context.Context, u *ent.User, t time.Time) (int, error) {
 	var (
 		cnt int
 		err error
@@ -66,9 +68,15 @@ func (s *Store) DeletePermsOfUserLessThanUpdatedAt(ctx context.Context, u *ent.U
 		cnt, err = tx.Perm.
 			Delete().
 			Where(
-				perm.And(
-					perm.UserIDEQ(u.ID),
-					perm.UpdatedAtLT(t),
+				perm.Or(
+					perm.And(
+						perm.UserIDEQ(u.ID),
+						perm.SyncedAtLT(t),
+					),
+					perm.And(
+						perm.UserIDEQ(u.ID),
+						perm.SyncedAtIsNil(),
+					),
 				),
 			).
 			Exec(ctx)

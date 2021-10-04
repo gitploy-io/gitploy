@@ -275,19 +275,19 @@ func (mr *MockStoreMockRecorder) DeleteLock(ctx, l interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteLock", reflect.TypeOf((*MockStore)(nil).DeleteLock), ctx, l)
 }
 
-// DeletePermsOfUserLessThanUpdatedAt mocks base method.
-func (m *MockStore) DeletePermsOfUserLessThanUpdatedAt(ctx context.Context, u *ent.User, t time.Time) (int, error) {
+// DeletePermsOfUserLessThanSyncedAt mocks base method.
+func (m *MockStore) DeletePermsOfUserLessThanSyncedAt(ctx context.Context, u *ent.User, t time.Time) (int, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "DeletePermsOfUserLessThanUpdatedAt", ctx, u, t)
+	ret := m.ctrl.Call(m, "DeletePermsOfUserLessThanSyncedAt", ctx, u, t)
 	ret0, _ := ret[0].(int)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// DeletePermsOfUserLessThanUpdatedAt indicates an expected call of DeletePermsOfUserLessThanUpdatedAt.
-func (mr *MockStoreMockRecorder) DeletePermsOfUserLessThanUpdatedAt(ctx, u, t interface{}) *gomock.Call {
+// DeletePermsOfUserLessThanSyncedAt indicates an expected call of DeletePermsOfUserLessThanSyncedAt.
+func (mr *MockStoreMockRecorder) DeletePermsOfUserLessThanSyncedAt(ctx, u, t interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeletePermsOfUserLessThanUpdatedAt", reflect.TypeOf((*MockStore)(nil).DeletePermsOfUserLessThanUpdatedAt), ctx, u, t)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeletePermsOfUserLessThanSyncedAt", reflect.TypeOf((*MockStore)(nil).DeletePermsOfUserLessThanSyncedAt), ctx, u, t)
 }
 
 // DeleteUser mocks base method.

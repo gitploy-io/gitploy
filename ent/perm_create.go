@@ -36,6 +36,20 @@ func (pc *PermCreate) SetNillableRepoPerm(pp *perm.RepoPerm) *PermCreate {
 	return pc
 }
 
+// SetSyncedAt sets the "synced_at" field.
+func (pc *PermCreate) SetSyncedAt(t time.Time) *PermCreate {
+	pc.mutation.SetSyncedAt(t)
+	return pc
+}
+
+// SetNillableSyncedAt sets the "synced_at" field if the given value is not nil.
+func (pc *PermCreate) SetNillableSyncedAt(t *time.Time) *PermCreate {
+	if t != nil {
+		pc.SetSyncedAt(*t)
+	}
+	return pc
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (pc *PermCreate) SetCreatedAt(t time.Time) *PermCreate {
 	pc.mutation.SetCreatedAt(t)
@@ -233,6 +247,14 @@ func (pc *PermCreate) createSpec() (*Perm, *sqlgraph.CreateSpec) {
 			Column: perm.FieldRepoPerm,
 		})
 		_node.RepoPerm = value
+	}
+	if value, ok := pc.mutation.SyncedAt(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: perm.FieldSyncedAt,
+		})
+		_node.SyncedAt = value
 	}
 	if value, ok := pc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

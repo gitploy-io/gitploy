@@ -44,6 +44,26 @@ func (pu *PermUpdate) SetNillableRepoPerm(pp *perm.RepoPerm) *PermUpdate {
 	return pu
 }
 
+// SetSyncedAt sets the "synced_at" field.
+func (pu *PermUpdate) SetSyncedAt(t time.Time) *PermUpdate {
+	pu.mutation.SetSyncedAt(t)
+	return pu
+}
+
+// SetNillableSyncedAt sets the "synced_at" field if the given value is not nil.
+func (pu *PermUpdate) SetNillableSyncedAt(t *time.Time) *PermUpdate {
+	if t != nil {
+		pu.SetSyncedAt(*t)
+	}
+	return pu
+}
+
+// ClearSyncedAt clears the value of the "synced_at" field.
+func (pu *PermUpdate) ClearSyncedAt() *PermUpdate {
+	pu.mutation.ClearSyncedAt()
+	return pu
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (pu *PermUpdate) SetCreatedAt(t time.Time) *PermUpdate {
 	pu.mutation.SetCreatedAt(t)
@@ -213,6 +233,19 @@ func (pu *PermUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: perm.FieldRepoPerm,
 		})
 	}
+	if value, ok := pu.mutation.SyncedAt(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: perm.FieldSyncedAt,
+		})
+	}
+	if pu.mutation.SyncedAtCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Column: perm.FieldSyncedAt,
+		})
+	}
 	if value, ok := pu.mutation.CreatedAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
@@ -327,6 +360,26 @@ func (puo *PermUpdateOne) SetNillableRepoPerm(pp *perm.RepoPerm) *PermUpdateOne 
 	if pp != nil {
 		puo.SetRepoPerm(*pp)
 	}
+	return puo
+}
+
+// SetSyncedAt sets the "synced_at" field.
+func (puo *PermUpdateOne) SetSyncedAt(t time.Time) *PermUpdateOne {
+	puo.mutation.SetSyncedAt(t)
+	return puo
+}
+
+// SetNillableSyncedAt sets the "synced_at" field if the given value is not nil.
+func (puo *PermUpdateOne) SetNillableSyncedAt(t *time.Time) *PermUpdateOne {
+	if t != nil {
+		puo.SetSyncedAt(*t)
+	}
+	return puo
+}
+
+// ClearSyncedAt clears the value of the "synced_at" field.
+func (puo *PermUpdateOne) ClearSyncedAt() *PermUpdateOne {
+	puo.mutation.ClearSyncedAt()
 	return puo
 }
 
@@ -521,6 +574,19 @@ func (puo *PermUpdateOne) sqlSave(ctx context.Context) (_node *Perm, err error) 
 			Type:   field.TypeEnum,
 			Value:  value,
 			Column: perm.FieldRepoPerm,
+		})
+	}
+	if value, ok := puo.mutation.SyncedAt(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: perm.FieldSyncedAt,
+		})
+	}
+	if puo.mutation.SyncedAtCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Column: perm.FieldSyncedAt,
 		})
 	}
 	if value, ok := puo.mutation.CreatedAt(); ok {

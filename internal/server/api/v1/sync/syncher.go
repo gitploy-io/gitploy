@@ -51,7 +51,7 @@ func (s *Syncher) Sync(c *gin.Context) {
 			continue
 		}
 
-		if err := s.i.SyncRemoteRepo(ctx, u, re); err != nil {
+		if err := s.i.SyncRemoteRepo(ctx, u, re, syncTime); err != nil {
 			s.log.Error("It has failed to sync with the remote repository.", zap.Error(err), zap.Int64("repo_id", re.ID))
 			continue
 		}
@@ -61,7 +61,7 @@ func (s *Syncher) Sync(c *gin.Context) {
 
 	// Delete staled perms.
 	var cnt int
-	if cnt, err = s.i.DeletePermsOfUserLessThanUpdatedAt(ctx, u, syncTime); err != nil {
+	if cnt, err = s.i.DeletePermsOfUserLessThanSyncedAt(ctx, u, syncTime); err != nil {
 		s.log.Error("It has failed to delete staled repositories.", zap.Error(err))
 		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to delete staled repositories.")
 		return
