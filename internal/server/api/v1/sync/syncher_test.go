@@ -55,7 +55,7 @@ func TestSyncher_Sync(t *testing.T) {
 				ID:        1,
 				Namespace: "octocat",
 				Name:      "HelloWorld",
-			}), gomock.AssignableToTypeOf(&time.Time{})).
+			}), gomock.AssignableToTypeOf(time.Time{})).
 			Return(nil)
 
 		t.Log("Delete staled perms.")
