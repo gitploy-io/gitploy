@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"entgo.io/ent"
+	"entgo.io/ent/dialect"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
@@ -25,7 +26,10 @@ func (Perm) Fields() []ent.Field {
 			).
 			Default("read"),
 		field.Time("synced_at").
-			Optional(),
+			Optional().
+			SchemaType(map[string]string{
+				dialect.MySQL: "timestamp(6)",
+			}),
 		field.Time("created_at").
 			Default(time.Now),
 		field.Time("updated_at").
