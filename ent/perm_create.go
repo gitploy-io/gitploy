@@ -36,6 +36,12 @@ func (pc *PermCreate) SetNillableRepoPerm(pp *perm.RepoPerm) *PermCreate {
 	return pc
 }
 
+// SetSyncedAt sets the "synced_at" field.
+func (pc *PermCreate) SetSyncedAt(t time.Time) *PermCreate {
+	pc.mutation.SetSyncedAt(t)
+	return pc
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (pc *PermCreate) SetCreatedAt(t time.Time) *PermCreate {
 	pc.mutation.SetCreatedAt(t)
@@ -181,6 +187,9 @@ func (pc *PermCreate) check() error {
 			return &ValidationError{Name: "repo_perm", err: fmt.Errorf(`ent: validator failed for field "repo_perm": %w`, err)}
 		}
 	}
+	if _, ok := pc.mutation.SyncedAt(); !ok {
+		return &ValidationError{Name: "synced_at", err: errors.New(`ent: missing required field "synced_at"`)}
+	}
 	if _, ok := pc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "created_at"`)}
 	}
@@ -233,6 +242,14 @@ func (pc *PermCreate) createSpec() (*Perm, *sqlgraph.CreateSpec) {
 			Column: perm.FieldRepoPerm,
 		})
 		_node.RepoPerm = value
+	}
+	if value, ok := pc.mutation.SyncedAt(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: perm.FieldSyncedAt,
+		})
+		_node.SyncedAt = value
 	}
 	if value, ok := pc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

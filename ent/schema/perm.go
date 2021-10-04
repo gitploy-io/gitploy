@@ -24,6 +24,7 @@ func (Perm) Fields() []ent.Field {
 				"admin",
 			).
 			Default("read"),
+		field.Time("synced_at"),
 		field.Time("created_at").
 			Default(time.Now),
 		field.Time("updated_at").
@@ -56,6 +57,6 @@ func (Perm) Indexes() []ent.Index {
 		// Find the perm for the repository.
 		index.Fields("repo_id", "user_id"),
 		// Delete staled perms after synchronization
-		index.Fields("user_id", "updated_at"),
+		index.Fields("user_id", "synced_at"),
 	}
 }

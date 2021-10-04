@@ -93,6 +93,13 @@ func IDLTE(id int) predicate.Perm {
 	})
 }
 
+// SyncedAt applies equality check predicate on the "synced_at" field. It's identical to SyncedAtEQ.
+func SyncedAt(v time.Time) predicate.Perm {
+	return predicate.Perm(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldSyncedAt), v))
+	})
+}
+
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.Perm {
 	return predicate.Perm(func(s *sql.Selector) {
@@ -166,6 +173,82 @@ func RepoPermNotIn(vs ...RepoPerm) predicate.Perm {
 			return
 		}
 		s.Where(sql.NotIn(s.C(FieldRepoPerm), v...))
+	})
+}
+
+// SyncedAtEQ applies the EQ predicate on the "synced_at" field.
+func SyncedAtEQ(v time.Time) predicate.Perm {
+	return predicate.Perm(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldSyncedAt), v))
+	})
+}
+
+// SyncedAtNEQ applies the NEQ predicate on the "synced_at" field.
+func SyncedAtNEQ(v time.Time) predicate.Perm {
+	return predicate.Perm(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldSyncedAt), v))
+	})
+}
+
+// SyncedAtIn applies the In predicate on the "synced_at" field.
+func SyncedAtIn(vs ...time.Time) predicate.Perm {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Perm(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldSyncedAt), v...))
+	})
+}
+
+// SyncedAtNotIn applies the NotIn predicate on the "synced_at" field.
+func SyncedAtNotIn(vs ...time.Time) predicate.Perm {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Perm(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldSyncedAt), v...))
+	})
+}
+
+// SyncedAtGT applies the GT predicate on the "synced_at" field.
+func SyncedAtGT(v time.Time) predicate.Perm {
+	return predicate.Perm(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldSyncedAt), v))
+	})
+}
+
+// SyncedAtGTE applies the GTE predicate on the "synced_at" field.
+func SyncedAtGTE(v time.Time) predicate.Perm {
+	return predicate.Perm(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldSyncedAt), v))
+	})
+}
+
+// SyncedAtLT applies the LT predicate on the "synced_at" field.
+func SyncedAtLT(v time.Time) predicate.Perm {
+	return predicate.Perm(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldSyncedAt), v))
+	})
+}
+
+// SyncedAtLTE applies the LTE predicate on the "synced_at" field.
+func SyncedAtLTE(v time.Time) predicate.Perm {
+	return predicate.Perm(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldSyncedAt), v))
 	})
 }
 

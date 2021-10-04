@@ -117,11 +117,11 @@ func init() {
 	permFields := schema.Perm{}.Fields()
 	_ = permFields
 	// permDescCreatedAt is the schema descriptor for created_at field.
-	permDescCreatedAt := permFields[1].Descriptor()
+	permDescCreatedAt := permFields[2].Descriptor()
 	// perm.DefaultCreatedAt holds the default value on creation for the created_at field.
 	perm.DefaultCreatedAt = permDescCreatedAt.Default.(func() time.Time)
 	// permDescUpdatedAt is the schema descriptor for updated_at field.
-	permDescUpdatedAt := permFields[2].Descriptor()
+	permDescUpdatedAt := permFields[3].Descriptor()
 	// perm.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	perm.DefaultUpdatedAt = permDescUpdatedAt.Default.(func() time.Time)
 	// perm.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.

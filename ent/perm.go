@@ -20,6 +20,8 @@ type Perm struct {
 	ID int `json:"id,omitempty"`
 	// RepoPerm holds the value of the "repo_perm" field.
 	RepoPerm perm.RepoPerm `json:"repo_perm"`
+	// SyncedAt holds the value of the "synced_at" field.
+	SyncedAt time.Time `json:"synced_at"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -81,7 +83,7 @@ func (*Perm) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(sql.NullInt64)
 		case perm.FieldRepoPerm:
 			values[i] = new(sql.NullString)
-		case perm.FieldCreatedAt, perm.FieldUpdatedAt:
+		case perm.FieldSyncedAt, perm.FieldCreatedAt, perm.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Perm", columns[i])
@@ -109,6 +111,12 @@ func (pe *Perm) assignValues(columns []string, values []interface{}) error {
 				return fmt.Errorf("unexpected type %T for field repo_perm", values[i])
 			} else if value.Valid {
 				pe.RepoPerm = perm.RepoPerm(value.String)
+			}
+		case perm.FieldSyncedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field synced_at", values[i])
+			} else if value.Valid {
+				pe.SyncedAt = value.Time
 			}
 		case perm.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -174,6 +182,8 @@ func (pe *Perm) String() string {
 	builder.WriteString(fmt.Sprintf("id=%v", pe.ID))
 	builder.WriteString(", repo_perm=")
 	builder.WriteString(fmt.Sprintf("%v", pe.RepoPerm))
+	builder.WriteString(", synced_at=")
+	builder.WriteString(pe.SyncedAt.Format(time.ANSIC))
 	builder.WriteString(", created_at=")
 	builder.WriteString(pe.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", updated_at=")
