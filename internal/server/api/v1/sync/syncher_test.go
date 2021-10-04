@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gitploy-io/gitploy/ent"
@@ -54,7 +55,7 @@ func TestSyncher_Sync(t *testing.T) {
 				ID:        1,
 				Namespace: "octocat",
 				Name:      "HelloWorld",
-			})).
+			}), gomock.AssignableToTypeOf(&time.Time{})).
 			Return(nil)
 
 		t.Log("Delete staled perms.")

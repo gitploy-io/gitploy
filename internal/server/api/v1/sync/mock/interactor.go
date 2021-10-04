@@ -82,15 +82,15 @@ func (mr *MockInteractorMockRecorder) ListRemoteRepos(ctx, u interface{}) *gomoc
 }
 
 // SyncRemoteRepo mocks base method.
-func (m *MockInteractor) SyncRemoteRepo(ctx context.Context, u *ent.User, re *vo.RemoteRepo) error {
+func (m *MockInteractor) SyncRemoteRepo(ctx context.Context, u *ent.User, re *vo.RemoteRepo, t time.Time) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SyncRemoteRepo", ctx, u, re)
+	ret := m.ctrl.Call(m, "SyncRemoteRepo", ctx, u, re, t)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // SyncRemoteRepo indicates an expected call of SyncRemoteRepo.
-func (mr *MockInteractorMockRecorder) SyncRemoteRepo(ctx, u, re interface{}) *gomock.Call {
+func (mr *MockInteractorMockRecorder) SyncRemoteRepo(ctx, u, re, t interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SyncRemoteRepo", reflect.TypeOf((*MockInteractor)(nil).SyncRemoteRepo), ctx, u, re)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SyncRemoteRepo", reflect.TypeOf((*MockInteractor)(nil).SyncRemoteRepo), ctx, u, re, t)
 }

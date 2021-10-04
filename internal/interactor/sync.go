@@ -2,6 +2,7 @@ package interactor
 
 import (
 	"context"
+	"time"
 
 	"github.com/gitploy-io/gitploy/ent"
 	"github.com/gitploy-io/gitploy/ent/perm"
@@ -22,7 +23,7 @@ func (i *Interactor) IsEntryOrg(ctx context.Context, namespace string) bool {
 	return false
 }
 
-func (i *Interactor) SyncRemoteRepo(ctx context.Context, u *ent.User, re *vo.RemoteRepo) error {
+func (i *Interactor) SyncRemoteRepo(ctx context.Context, u *ent.User, re *vo.RemoteRepo, t time.Time) error {
 	var (
 		r   *ent.Repo
 		p   *ent.Perm
@@ -42,6 +43,7 @@ func (i *Interactor) SyncRemoteRepo(ctx context.Context, u *ent.User, re *vo.Rem
 			RepoPerm: perm.RepoPerm(re.Perm),
 			UserID:   u.ID,
 			RepoID:   r.ID,
+			SyncedAt: t,
 		}); err != nil {
 			return err
 		}
@@ -49,6 +51,7 @@ func (i *Interactor) SyncRemoteRepo(ctx context.Context, u *ent.User, re *vo.Rem
 		return err
 	} else {
 		p.RepoPerm = perm.RepoPerm(re.Perm)
+		p.SyncedAt = t
 
 		if _, err = i.Store.UpdatePerm(ctx, p); err != nil {
 			return err

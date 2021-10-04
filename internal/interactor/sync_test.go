@@ -3,6 +3,7 @@ package interactor
 import (
 	"context"
 	"testing"
+	"time"
 
 	"github.com/gitploy-io/gitploy/ent"
 	"github.com/gitploy-io/gitploy/ent/perm"
@@ -18,6 +19,7 @@ func TestInteractor_SyncRemoteRepo(t *testing.T) {
 		input := struct {
 			user   *ent.User
 			remote *vo.RemoteRepo
+			time   time.Time
 		}{
 			user: &ent.User{
 				ID: 2214,
@@ -26,6 +28,7 @@ func TestInteractor_SyncRemoteRepo(t *testing.T) {
 				ID:   2214,
 				Perm: vo.RemoteRepoPermRead,
 			},
+			time: time.Now(),
 		}
 
 		ctrl := gomock.NewController(t)
@@ -58,13 +61,62 @@ func TestInteractor_SyncRemoteRepo(t *testing.T) {
 				RepoPerm: perm.RepoPerm(input.remote.Perm),
 				UserID:   input.user.ID,
 				RepoID:   input.remote.ID,
+				SyncedAt: input.time,
 			})).
 			DoAndReturn(func(ctx context.Context, p *ent.Perm) (*ent.Perm, error) {
 				return p, nil
 			})
 
 		i := &Interactor{Store: store}
-		if err := i.SyncRemoteRepo(context.Background(), input.user, input.remote); err != nil {
+		if err := i.SyncRemoteRepo(context.Background(), input.user, input.remote, input.time); err != nil {
+			t.Fatal("SyncRemoteRepo returns error.")
+		}
+	})
+
+	t.Run("Synchronization updates the perm if it exist.", func(t *testing.T) {
+		input := struct {
+			user   *ent.User
+			remote *vo.RemoteRepo
+			time   time.Time
+		}{
+			user: &ent.User{
+				ID: 1,
+			},
+			remote: &vo.RemoteRepo{
+				ID:   1,
+				Perm: vo.RemoteRepoPermWrite,
+			},
+			time: time.Now(),
+		}
+
+		ctrl := gomock.NewController(t)
+		store := mock.NewMockStore(ctrl)
+
+		t.Log("The repo is found.")
+		store.
+			EXPECT().
+			FindRepoByID(ctx, input.remote.ID).
+			Return(&ent.Repo{ID: input.remote.ID}, nil)
+
+		t.Log("The perm is found.")
+		store.
+			EXPECT().
+			FindPermOfRepo(ctx, gomock.Eq(&ent.Repo{ID: input.remote.ID}), gomock.Eq(input.user)).
+			Return(&ent.Perm{}, nil)
+
+		t.Log("Update the perm with perm, and synced_at.")
+		store.
+			EXPECT().
+			UpdatePerm(ctx, gomock.Eq(&ent.Perm{
+				RepoPerm: perm.RepoPerm(input.remote.Perm),
+				SyncedAt: input.time,
+			})).
+			DoAndReturn(func(ctx context.Context, p *ent.Perm) (*ent.Perm, error) {
+				return p, nil
+			})
+
+		i := &Interactor{Store: store}
+		if err := i.SyncRemoteRepo(context.Background(), input.user, input.remote, input.time); err != nil {
 			t.Fatal("SyncRemoteRepo returns error.")
 		}
 	})
