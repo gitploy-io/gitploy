@@ -56,7 +56,7 @@ func (s *Store) UpdatePerm(ctx context.Context, p *ent.Perm) (*ent.Perm, error) 
 		Save(ctx)
 }
 
-func (s *Store) DeletePermsOfUserLessThanUpdatedAt(ctx context.Context, u *ent.User, t time.Time) (int, error) {
+func (s *Store) DeletePermsOfUserLessThanSyncedAt(ctx context.Context, u *ent.User, t time.Time) (int, error) {
 	var (
 		cnt int
 		err error
@@ -68,7 +68,7 @@ func (s *Store) DeletePermsOfUserLessThanUpdatedAt(ctx context.Context, u *ent.U
 			Where(
 				perm.And(
 					perm.UserIDEQ(u.ID),
-					perm.UpdatedAtLT(t),
+					perm.SyncedAtLT(t),
 				),
 			).
 			Exec(ctx)

@@ -60,7 +60,7 @@ func TestSyncher_Sync(t *testing.T) {
 		t.Log("Delete staled perms.")
 		m.
 			EXPECT().
-			DeletePermsOfUserLessThanUpdatedAt(ctx, gomock.Any(), gomock.Any()).
+			DeletePermsOfUserLessThanSyncedAt(ctx, gomock.Any(), gomock.Any()).
 			Return(0, nil)
 
 		gin.SetMode(gin.ReleaseMode)

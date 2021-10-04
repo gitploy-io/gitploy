@@ -41,7 +41,7 @@ type (
 		FindPermOfRepo(ctx context.Context, r *ent.Repo, u *ent.User) (*ent.Perm, error)
 		CreatePerm(ctx context.Context, p *ent.Perm) (*ent.Perm, error)
 		UpdatePerm(ctx context.Context, p *ent.Perm) (*ent.Perm, error)
-		DeletePermsOfUserLessThanUpdatedAt(ctx context.Context, u *ent.User, t time.Time) (int, error)
+		DeletePermsOfUserLessThanSyncedAt(ctx context.Context, u *ent.User, t time.Time) (int, error)
 
 		SearchDeployments(ctx context.Context, u *ent.User, s []deployment.Status, owned bool, from time.Time, to time.Time, page, perPage int) ([]*ent.Deployment, error)
 		ListInactiveDeploymentsLessThanTime(ctx context.Context, t time.Time, page, perPage int) ([]*ent.Deployment, error)

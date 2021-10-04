@@ -61,7 +61,7 @@ func (s *Syncher) Sync(c *gin.Context) {
 
 	// Delete staled perms.
 	var cnt int
-	if cnt, err = s.i.DeletePermsOfUserLessThanUpdatedAt(ctx, u, syncTime); err != nil {
+	if cnt, err = s.i.DeletePermsOfUserLessThanSyncedAt(ctx, u, syncTime); err != nil {
 		s.log.Error("It has failed to delete staled repositories.", zap.Error(err))
 		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to delete staled repositories.")
 		return

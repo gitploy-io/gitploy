@@ -11,7 +11,7 @@ import (
 	"github.com/gitploy-io/gitploy/ent/perm"
 )
 
-func TestStore_DeletePermsOfUserLessThanUpdatedAt(t *testing.T) {
+func TestStore_DeletePermsOfUserLessThanSyncedAt(t *testing.T) {
 	client := enttest.Open(t, "sqlite3", "file:ent?mode=memory&cache=shared&_fk=1",
 		enttest.WithMigrateOptions(migrate.WithForeignKeys(false)),
 	)
@@ -20,7 +20,8 @@ func TestStore_DeletePermsOfUserLessThanUpdatedAt(t *testing.T) {
 	const (
 		u1 = 1
 		u2 = 2
-		r  = 1
+		r1 = 1
+		r2 = 2
 	)
 
 	nor := time.Now()
@@ -29,39 +30,55 @@ func TestStore_DeletePermsOfUserLessThanUpdatedAt(t *testing.T) {
 	client.Perm.
 		Create().
 		SetRepoPerm(perm.RepoPermWrite).
+		SetSyncedAt(nor.Add(-1 * time.Hour)).
 		SetUserID(u1).
-		SetRepoID(r).
-		SetUpdatedAt(nor.Add(-1 * time.Hour)).
+		SetRepoID(r1).
 		SaveX(context.Background())
 
 	client.Perm.
 		Create().
 		SetRepoPerm(perm.RepoPermWrite).
+		SetSyncedAt(nor.Add(-1 * time.Hour)).
+		SetUserID(u1).
+		SetRepoID(r2).
+		SaveX(context.Background())
+
+	client.Perm.
+		Create().
+		SetRepoPerm(perm.RepoPermWrite).
+		SetSyncedAt(nor.Add(-1 * time.Hour)).
 		SetUserID(u2).
-		SetRepoID(r).
-		SetUpdatedAt(nor.Add(-1 * time.Hour)).
+		SetRepoID(r1).
 		SaveX(context.Background())
 
 	t.Log("Insert new perms")
 	client.Perm.
 		Create().
 		SetRepoPerm(perm.RepoPermWrite).
+		SetSyncedAt(nor.Add(time.Hour)).
 		SetUserID(u1).
-		SetRepoID(r).
-		SetUpdatedAt(nor.Add(time.Hour)).
+		SetRepoID(r1).
+		SaveX(context.Background())
+
+	client.Perm.
+		Create().
+		SetRepoPerm(perm.RepoPermWrite).
+		SetSyncedAt(nor.Add(time.Hour)).
+		SetUserID(u2).
+		SetRepoID(r1).
 		SaveX(context.Background())
 
 	t.Run("Delete staled perms.", func(t *testing.T) {
 		s := NewStore(client)
 
-		cnt, err := s.DeletePermsOfUserLessThanUpdatedAt(context.Background(), &ent.User{ID: u1}, nor)
+		cnt, err := s.DeletePermsOfUserLessThanSyncedAt(context.Background(), &ent.User{ID: u1}, nor)
 		if err != nil {
-			t.Fatalf("DeletePermsOfUserLessThanUpdatedAt returns an error: %s", err)
+			t.Fatalf("DeletePermsOfUserLessThanSyncedAt returns an error: %s", err)
 		}
 
-		expected := 1
+		expected := 2
 		if cnt != expected {
-			t.Fatalf("DeletePermsOfUserLessThanUpdatedAt = %v: %v", cnt, expected)
+			t.Fatalf("DeletePermsOfUserLessThanSyncedAt = %v: %v", cnt, expected)
 		}
 	})
 }

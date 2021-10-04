@@ -37,19 +37,19 @@ func (m *MockInteractor) EXPECT() *MockInteractorMockRecorder {
 	return m.recorder
 }
 
-// DeletePermsOfUserLessThanUpdatedAt mocks base method.
-func (m *MockInteractor) DeletePermsOfUserLessThanUpdatedAt(ctx context.Context, u *ent.User, t time.Time) (int, error) {
+// DeletePermsOfUserLessThanSyncedAt mocks base method.
+func (m *MockInteractor) DeletePermsOfUserLessThanSyncedAt(ctx context.Context, u *ent.User, t time.Time) (int, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "DeletePermsOfUserLessThanUpdatedAt", ctx, u, t)
+	ret := m.ctrl.Call(m, "DeletePermsOfUserLessThanSyncedAt", ctx, u, t)
 	ret0, _ := ret[0].(int)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// DeletePermsOfUserLessThanUpdatedAt indicates an expected call of DeletePermsOfUserLessThanUpdatedAt.
-func (mr *MockInteractorMockRecorder) DeletePermsOfUserLessThanUpdatedAt(ctx, u, t interface{}) *gomock.Call {
+// DeletePermsOfUserLessThanSyncedAt indicates an expected call of DeletePermsOfUserLessThanSyncedAt.
+func (mr *MockInteractorMockRecorder) DeletePermsOfUserLessThanSyncedAt(ctx, u, t interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeletePermsOfUserLessThanUpdatedAt", reflect.TypeOf((*MockInteractor)(nil).DeletePermsOfUserLessThanUpdatedAt), ctx, u, t)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeletePermsOfUserLessThanSyncedAt", reflect.TypeOf((*MockInteractor)(nil).DeletePermsOfUserLessThanSyncedAt), ctx, u, t)
 }
 
 // IsEntryOrg mocks base method.
