@@ -1,7 +1,8 @@
 # Gitploy
 
-![Gitploy](./images/gitploy.png)
+Gitploy builds the system around GitHub [deployment API](https://docs.github.com/en/rest/reference/repos#deployments) in minutes. It enables teams or organization to deploy the application with lower risk and faster. You can check this [document](./concepts/how-it-work.md) for the detail.
 
 ---
 
-Gitploy helps **you can build the advanced deployment pipeline in minutes**. It enables teams to deploy the application with lower risk and faster when to trigger a deployment. And the pipeline is configured with a simple, easy‑to‑read file that you commit to your git repository.
+![Gitploy](./images/gitploy.png)
+

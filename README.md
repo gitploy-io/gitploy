@@ -7,7 +7,7 @@
 
 ## What is Gitploy?
 
-Gitploy builds the advanced deployment pipelines around [Github Deployments API](https://docs.github.com/en/rest/reference/repos#deployments) in minutes. And also Gitploy provides advanced features, such rollback, approval, and locks.
+Gitploy builds the system around GitHub [deployment API](https://docs.github.com/en/rest/reference/repos#deployments) in minutes. It enables teams or organization to deploy the application with lower risk and faster.
 
 ## Docs and Support
 
