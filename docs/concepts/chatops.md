@@ -2,7 +2,7 @@
 
 ChatOps is a term that’s been coined recently to refer to using chat services, such as Slack or Microsoft Teams, to deploy or run some operations. Gitploy also supports Chatops as a helper tool. 
 
-![Slack deploy](../images//slack-deploy.png)
+![Slack deploy](../images/slack-deploy.png)
 
 ## Integration
 
