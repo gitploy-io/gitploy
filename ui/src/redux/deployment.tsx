@@ -22,8 +22,7 @@ import {
     getMyApproval, 
     setApprovalApproved, 
     setApprovalDeclined, 
-    listDeploymentChanges,
-    getMe
+    listDeploymentChanges
 } from "../apis"
 
 interface DeploymentState {
@@ -39,7 +38,6 @@ interface DeploymentState {
     // approvals is requested approvals.
     approvals: Approval[]
     candidates: User[]
-    user?: User
     // myApproval exist if user have requested.
     myApproval?: Approval
 }
@@ -139,18 +137,6 @@ export const searchCandidates = createAsyncThunk<User[], string, { state: {deplo
                 return p.user
             })
             return candidates
-        } catch(e) {
-            return rejectWithValue(e)
-        }
-    }
-)
-
-export const fetchUser = createAsyncThunk<User, void, {state: { deployment: DeploymentState }}>(
-    "deployment/fetchUser",
-    async (_, { rejectWithValue }) => {
-        try {
-            const user = await getMe()
-            return user
         } catch(e) {
             return rejectWithValue(e)
         }
@@ -282,10 +268,7 @@ export const deploymentSlice = createSlice({
                 state.candidates = []
             })
             .addCase(searchCandidates.fulfilled, (state, action) => {
-                state.candidates = action.payload.filter(candidate => candidate.id !== state.user?.id)
-            })
-            .addCase(fetchUser.fulfilled, (state, action) => {
-                state.user = action.payload
+                state.candidates = action.payload.filter(candidate => candidate.id !== state.deployment?.deployer?.id)
             })
             .addCase(createApproval.fulfilled, (state, action) => {
                 state.approvals.push(action.payload)

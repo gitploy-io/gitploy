@@ -12,7 +12,6 @@ import {
     fetchMyApproval,
     deployToSCM,
     searchCandidates,
-    fetchUser,
     createApproval,
     deleteApproval,
     approve,
@@ -61,7 +60,6 @@ export default function DeploymentView(): JSX.Element {
             await dispatch(fetchMyApproval())
             await dispatch(slice.actions.setDisplay(true))
             await dispatch(fetchDeploymentChanges())
-            await dispatch(fetchUser())
             await dispatch(searchCandidates(""))
         }
         f()
