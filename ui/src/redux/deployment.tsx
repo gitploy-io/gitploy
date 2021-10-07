@@ -268,7 +268,7 @@ export const deploymentSlice = createSlice({
                 state.candidates = []
             })
             .addCase(searchCandidates.fulfilled, (state, action) => {
-                state.candidates = action.payload
+                state.candidates = action.payload.filter(candidate => candidate.id !== state.deployment?.deployer?.id)
             })
             .addCase(createApproval.fulfilled, (state, action) => {
                 state.approvals.push(action.payload)

@@ -21,6 +21,66 @@ var (
 )
 
 func TestRepo_CreateApproval(t *testing.T) {
+	t.Run("Validate to request the approval to the deployer.", func(t *testing.T) {
+		input := struct {
+			number  int
+			payload *approvalPostPayload
+		}{
+			number: 7,
+			payload: &approvalPostPayload{
+				UserID: 4,
+			},
+		}
+
+		ctrl := gomock.NewController(t)
+		m := mock.NewMockInteractor(ctrl)
+
+		t.Log("MOCK - Find the deployment by ID.")
+		m.
+			EXPECT().
+			FindDeploymentOfRepoByNumber(ctx, any, input.number).
+			Return(&ent.Deployment{
+				ID: input.number,
+				Edges: ent.DeploymentEdges{
+					User: &ent.User{
+						ID: input.payload.UserID,
+					},
+				},
+			}, nil)
+
+		t.Log("MOCK - Find the user, and check the permission.")
+		m.
+			EXPECT().
+			FindUserByID(ctx, input.payload.UserID).
+			Return(&ent.User{
+				ID: input.payload.UserID,
+			}, nil)
+
+		m.
+			EXPECT().
+			FindPermOfRepo(ctx, any, &ent.User{
+				ID: input.payload.UserID,
+			}).
+			Return(&ent.Perm{}, nil)
+
+		gin.SetMode(gin.ReleaseMode)
+
+		r := NewRepo(RepoConfig{}, m)
+		router := gin.New()
+		router.POST("/deployments/:number/approvals", func(c *gin.Context) {
+			c.Set(KeyRepo, &ent.Repo{})
+		}, r.CreateApproval)
+
+		body, _ := json.Marshal(input.payload)
+		req, _ := http.NewRequest("POST", fmt.Sprintf("/deployments/%d/approvals", input.number), bytes.NewBuffer(body))
+
+		w := httptest.NewRecorder()
+		router.ServeHTTP(w, req)
+
+		if w.Code != http.StatusUnprocessableEntity {
+			t.Fatalf("Code != %d, wanted %d", w.Code, http.StatusOK)
+		}
+	})
 
 	t.Run("Create a new approval.", func(t *testing.T) {
 		input := struct {

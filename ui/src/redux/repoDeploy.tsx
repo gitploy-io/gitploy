@@ -30,6 +30,7 @@ import {
     getTag, 
     createDeployment,
     createApproval,
+    getMe,
 } from '../apis'
 
 // fetch all at the first page.
@@ -61,6 +62,7 @@ interface RepoDeployState {
     */
     approvers: User[]
     candidates: User[]
+    user?: User
     deploying: RequestStatus
     deployId: string
 }
@@ -253,6 +255,18 @@ export const searchCandidates = createAsyncThunk<User[], string, { state: {repoD
     }
 )
 
+export const fetchUser = createAsyncThunk<User, void, { state: {repoDeploy: RepoDeployState }}>(
+    "repoDeploy/fetchUser",
+    async (_, { rejectWithValue }) => {
+        try {
+            const user = await getMe()
+            return user
+        } catch(e) {
+            return rejectWithValue(e)
+        }
+    }
+)
+
 export const deploy = createAsyncThunk<void, void, { state: {repoDeploy: RepoDeployState}}> (
     "repoDeploy/deploy",
     async (_ , { getState, rejectWithValue, requestId }) => {
@@ -400,7 +414,10 @@ export const repoDeploySlice = createSlice({
                 state.candidates = []
             })
             .addCase(searchCandidates.fulfilled, (state, action) => {
-                state.candidates = action.payload
+                state.candidates = action.payload.filter(candidate => (candidate.id !== state.user?.id))
+            })
+            .addCase(fetchUser.fulfilled, (state, action) => {
+                state.user = action.payload
             })
             .addCase(deploy.pending, (state, action) => {
                 if (state.deploying === RequestStatus.Idle) {

@@ -56,10 +56,11 @@ export default function DeploymentView(): JSX.Element {
         const f = async () => {
             await dispatch(slice.actions.init({namespace, name, number: parseInt(number, 10)}))
             await dispatch(fetchDeployment())
-            await dispatch(slice.actions.setDisplay(true))
-            await dispatch(fetchDeploymentChanges())
             await dispatch(fetchApprovals())
             await dispatch(fetchMyApproval())
+            await dispatch(slice.actions.setDisplay(true))
+            await dispatch(fetchDeploymentChanges())
+            await dispatch(searchCandidates(""))
         }
         f()
 
