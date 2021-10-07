@@ -77,6 +77,8 @@ func (s *Slack) handleRollbackCmd(c *gin.Context) {
 		return
 	}
 
+	perms = s.filterPerms(perms, cu)
+
 	cb, err := s.i.CreateCallback(ctx, &ent.Callback{
 		Type:   callback.TypeRollback,
 		RepoID: r.ID,
@@ -136,6 +138,34 @@ func buildRollbackView(callbackID string, as []*deploymentAggregation, perms []*
 			nil))
 	}
 
+	sets := []slack.Block{
+		slack.NewInputBlock(
+			blockDeployment,
+			slack.NewTextBlockObject(slack.PlainTextType, "Deployments", false, false),
+			slack.NewOptionsGroupSelectBlockElement(
+				slack.OptTypeStatic,
+				slack.NewTextBlockObject(slack.PlainTextType, "Select target deployment", false, false),
+				actionDeployment,
+				groups...,
+			),
+		),
+	}
+
+	if len(approvers) > 0 {
+		sets = append(sets, slack.InputBlock{
+			Type:     slack.MBTInput,
+			BlockID:  blockApprovers,
+			Optional: true,
+			Label:    slack.NewTextBlockObject(slack.PlainTextType, "Approvers", false, false),
+			Element: slack.NewOptionsSelectBlockElement(
+				slack.MultiOptTypeStatic,
+				slack.NewTextBlockObject(slack.PlainTextType, "Select approvers", false, false),
+				actionApprovers,
+				approvers...,
+			),
+		})
+	}
+
 	return slack.ModalViewRequest{
 		Type:       slack.VTModal,
 		CallbackID: callbackID,
@@ -143,30 +173,7 @@ func buildRollbackView(callbackID string, as []*deploymentAggregation, perms []*
 		Submit:     slack.NewTextBlockObject(slack.PlainTextType, "Submit", false, false),
 		Close:      slack.NewTextBlockObject(slack.PlainTextType, "Close", false, false),
 		Blocks: slack.Blocks{
-			BlockSet: []slack.Block{
-				slack.NewInputBlock(
-					blockDeployment,
-					slack.NewTextBlockObject(slack.PlainTextType, "Deployments", false, false),
-					slack.NewOptionsGroupSelectBlockElement(
-						slack.OptTypeStatic,
-						slack.NewTextBlockObject(slack.PlainTextType, "Select target deployment", false, false),
-						actionDeployment,
-						groups...,
-					),
-				),
-				slack.InputBlock{
-					Type:     slack.MBTInput,
-					BlockID:  blockApprovers,
-					Optional: true,
-					Label:    slack.NewTextBlockObject(slack.PlainTextType, "Approvers", false, false),
-					Element: slack.NewOptionsSelectBlockElement(
-						slack.MultiOptTypeStatic,
-						slack.NewTextBlockObject(slack.PlainTextType, "Select approvers", false, false),
-						actionApprovers,
-						approvers...,
-					),
-				},
-			},
+			BlockSet: sets,
 		},
 	}
 }

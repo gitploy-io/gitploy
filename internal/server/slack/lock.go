@@ -181,7 +181,7 @@ func (s *Slack) handleUnlockCmd(c *gin.Context) {
 	// Build the modal with unlocked envs.
 	locks, err := s.i.ListLocksOfRepo(ctx, r)
 	if len(locks) == 0 {
-		postResponseMessage(cmd.ChannelID, cmd.ResponseURL, fmt.Sprintf("There is no locked envs in the `%s/%s` repository.", ns, n))
+		postResponseMessage(cmd.ChannelID, cmd.ResponseURL, fmt.Sprintf("There is no locked environments in the `%s/%s` repository.", ns, n))
 		c.Status(http.StatusOK)
 		return
 	} else if err != nil {
@@ -273,7 +273,7 @@ func (s *Slack) interactLock(c *gin.Context) {
 		UserID: cu.Edges.User.ID,
 		RepoID: cb.Edges.Repo.ID,
 	}); err != nil {
-		s.log.Error("It has failed to lock the env.", zap.Error(err))
+		s.log.Error("It has failed to lock the environment.", zap.Error(err))
 		c.Status(http.StatusInternalServerError)
 		return
 	}
@@ -306,7 +306,7 @@ func (s *Slack) interactUnlock(c *gin.Context) {
 	}
 
 	if err := s.i.DeleteLock(ctx, lock); err != nil {
-		s.log.Error("It has failed to unlock the env.", zap.Error(err))
+		s.log.Error("It has failed to unlock the environment.", zap.Error(err))
 		c.Status(http.StatusInternalServerError)
 		return
 	}
