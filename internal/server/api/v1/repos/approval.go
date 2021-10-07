@@ -153,12 +153,18 @@ func (r *Repo) CreateApproval(c *gin.Context) {
 	}
 
 	if _, err := r.i.FindPermOfRepo(ctx, re, user); ent.IsNotFound(err) {
-		r.log.Warn("The permission is not found.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "There is no permssion for the repository.")
+		r.log.Warn("The approver has no permission for the repository.", zap.Error(err))
+		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "The approver has no permission for the repository.")
 		return
 	} else if err != nil {
 		r.log.Error("It has failed to get the perm.", zap.Error(err))
 		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to get the perm.")
+		return
+	}
+
+	if d.Edges.User != nil && user.ID == d.Edges.User.ID {
+		r.log.Warn("The deployer can not be the approver.", zap.Error(err))
+		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "The deployer can not be the approver.")
 		return
 	}
 
@@ -192,7 +198,7 @@ func (r *Repo) CreateApproval(c *gin.Context) {
 	gb.Response(c, http.StatusCreated, ap)
 }
 
-func (r *Repo) UpdateApproval(c *gin.Context) {
+func (r *Repo) UpdateMyApproval(c *gin.Context) {
 	ctx := c.Request.Context()
 
 	var (
