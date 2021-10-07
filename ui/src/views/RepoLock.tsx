@@ -39,7 +39,7 @@ export default function RepoLock(): JSX.Element {
                 status="warning"
                 title="There is no configuration file."
                 extra={
-                    <Button type="primary" key="console">
+                    <Button type="primary" key="console" href="https://docs.gitploy.io/concepts/deploy.yml">
                       Read Document
                     </Button>
                 }

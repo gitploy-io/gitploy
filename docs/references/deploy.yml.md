@@ -1,5 +1,10 @@
 # deploy.yml
 
+
+Field                    |Type                     |Required  |Description
+---                      |----                     |---       |---
+`envs`                   |*[][Env](#env)*          |`true`    |Thie field configures the pipeline for each environment, respectively.
+
 ## Env
 
 
