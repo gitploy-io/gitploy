@@ -1,6 +1,12 @@
 # Gitploy
 
-Gitploy builds the system around GitHub [deployment API](https://docs.github.com/en/rest/reference/repos#deployments) in minutes. It enables teams or organization to deploy the application with lower risk and faster. You can check this [document](./concepts/how-it-work.md) for the detail.
+If your team or organization develops with GitHub, you can build the deployment system around Gitploy in minutes. Gitploy provides these features:
+
+* Deploy a specific ref (branch, commit, tag)
+* Build an event-driven system around GitHub [deployment API](https://docs.github.com/en/rest/reference/repos#deployments)
+* Integrate with GitHub [Action](https://github.com/features/actions) in minutes
+
+Try to build the deployment system with Gitploy ([doc](./tasks/installation.md)).
 
 ---
 
