@@ -93,7 +93,7 @@ export const deployToSCM = createAsyncThunk<Deployment, void, { state: {deployme
 
         try {
             const deployment = await updateDeploymentStatusCreated(namespace, name, number)
-            message.info(`Deploy successfully.`, 3)
+            message.info("It starts to deploy.", 3)
 
             return deployment
         } catch(e) { 
