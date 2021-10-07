@@ -4,7 +4,14 @@ import { PageHeader, Result, Button } from 'antd'
 import { shallowEqual } from "react-redux";
 
 import { useAppDispatch, useAppSelector } from "../redux/hooks"
-import { repoRollbackSlice, fetchConfig, fetchDeployments, searchCandidates, rollback } from "../redux/repoRollback"
+import { 
+    repoRollbackSlice, 
+    fetchConfig, 
+    fetchDeployments, 
+    searchCandidates, 
+    fetchUser,
+    rollback,
+} from "../redux/repoRollback"
 
 import { User, Deployment, RequestStatus, Env } from '../models'
 import RollbackForm from "../components/RollbackForm";
@@ -33,6 +40,7 @@ export default function RepoHome(): JSX.Element {
             await dispatch(actions.init({namespace, name}))
             await dispatch(fetchConfig())
             await dispatch(actions.setDisplay(true))
+            await dispatch(fetchUser())
             await dispatch(searchCandidates(""))
         }
         f()

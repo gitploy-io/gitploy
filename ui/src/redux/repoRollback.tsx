@@ -6,7 +6,8 @@ import {
     listDeployments, 
     rollbackDeployment,
     createApproval,
-    listPerms
+    listPerms,
+    getMe
 } from "../apis"
 import { 
     User,
@@ -39,6 +40,7 @@ interface RepoRollbackState {
     */
     approvers: User[]
     candidates: User[]
+    user?: User
     deployId: string
     deploying: RequestStatus
 }
@@ -94,6 +96,18 @@ export const searchCandidates = createAsyncThunk<User[], string, { state: {repoR
                 return p.user
             })
             return candidates
+        } catch(e) {
+            return rejectWithValue(e)
+        }
+    }
+)
+
+export const fetchUser = createAsyncThunk<User, void, { state: {repoRollback: RepoRollbackState }}>(
+    "repoRollback/fetchUser",
+    async (_, { rejectWithValue }) => {
+        try {
+            const user = await getMe()
+            return user
         } catch(e) {
             return rejectWithValue(e)
         }
@@ -196,7 +210,10 @@ export const repoRollbackSlice = createSlice({
                 state.candidates = []
             })
             .addCase(searchCandidates.fulfilled, (state, action) => {
-                state.candidates = action.payload
+                state.candidates = action.payload.filter(candidate => (candidate.id !== state.user?.id))
+            })
+            .addCase(fetchUser.fulfilled, (state, action) => {
+                state.user = action.payload
             })
             .addCase(rollback.pending, (state, action) => {
                 if (state.deploying === RequestStatus.Idle) {

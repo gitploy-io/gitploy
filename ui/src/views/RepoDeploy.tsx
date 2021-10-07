@@ -19,6 +19,7 @@ import {
     checkTag,
     addTagManually, 
     searchCandidates,
+    fetchUser,
     deploy} from "../redux/repoDeploy"
 
 import DeployForm, {Option} from "../components/DeployForm"
@@ -55,6 +56,7 @@ export default function RepoDeploy(): JSX.Element {
             await dispatch(actions.setDisplay(true))
             await dispatch(fetchBranches())
             await dispatch(fetchTags())
+            await dispatch(fetchUser())
             await dispatch(searchCandidates(""))
         }
         f()
