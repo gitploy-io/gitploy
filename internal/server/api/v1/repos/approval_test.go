@@ -32,10 +32,6 @@ func TestRepo_CreateApproval(t *testing.T) {
 			},
 		}
 
-		const (
-			approvalID = 3
-		)
-
 		ctrl := gomock.NewController(t)
 		m := mock.NewMockInteractor(ctrl)
 
