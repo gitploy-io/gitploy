@@ -151,7 +151,7 @@ func buildRollbackView(callbackID string, as []*deploymentAggregation, perms []*
 		),
 	}
 
-	if len(approvers) != 0 {
+	if len(approvers) > 0 {
 		sets = append(sets, slack.InputBlock{
 			Type:     slack.MBTInput,
 			BlockID:  blockApprovers,

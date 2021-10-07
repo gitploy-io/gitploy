@@ -220,7 +220,7 @@ func buildDeployView(callbackID string, c *vo.Config, perms []*ent.Perm) slack.M
 		),
 	}
 
-	if len(approvers) != 0 {
+	if len(approvers) > 0 {
 		set = append(set, slack.InputBlock{
 			Type:     slack.MBTInput,
 			BlockID:  blockApprovers,
