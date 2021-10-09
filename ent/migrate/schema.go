@@ -163,6 +163,8 @@ var (
 		{Name: "name", Type: field.TypeString},
 		{Name: "env", Type: field.TypeString},
 		{Name: "count", Type: field.TypeInt, Default: 1},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
 	}
 	// DeploymentCountsTable holds the schema information for the "deployment_counts" table.
 	DeploymentCountsTable = &schema.Table{

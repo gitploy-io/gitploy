@@ -3559,6 +3559,8 @@ type DeploymentCountMutation struct {
 	env           *string
 	count         *int
 	addcount      *int
+	created_at    *time.Time
+	updated_at    *time.Time
 	clearedFields map[string]struct{}
 	done          bool
 	oldValue      func(context.Context) (*DeploymentCount, error)
@@ -3808,6 +3810,78 @@ func (m *DeploymentCountMutation) ResetCount() {
 	m.addcount = nil
 }
 
+// SetCreatedAt sets the "created_at" field.
+func (m *DeploymentCountMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *DeploymentCountMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the DeploymentCount entity.
+// If the DeploymentCount object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DeploymentCountMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *DeploymentCountMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *DeploymentCountMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *DeploymentCountMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the DeploymentCount entity.
+// If the DeploymentCount object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DeploymentCountMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *DeploymentCountMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
 // Where appends a list predicates to the DeploymentCountMutation builder.
 func (m *DeploymentCountMutation) Where(ps ...predicate.DeploymentCount) {
 	m.predicates = append(m.predicates, ps...)
@@ -3827,7 +3901,7 @@ func (m *DeploymentCountMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *DeploymentCountMutation) Fields() []string {
-	fields := make([]string, 0, 4)
+	fields := make([]string, 0, 6)
 	if m.namespace != nil {
 		fields = append(fields, deploymentcount.FieldNamespace)
 	}
@@ -3839,6 +3913,12 @@ func (m *DeploymentCountMutation) Fields() []string {
 	}
 	if m.count != nil {
 		fields = append(fields, deploymentcount.FieldCount)
+	}
+	if m.created_at != nil {
+		fields = append(fields, deploymentcount.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, deploymentcount.FieldUpdatedAt)
 	}
 	return fields
 }
@@ -3856,6 +3936,10 @@ func (m *DeploymentCountMutation) Field(name string) (ent.Value, bool) {
 		return m.Env()
 	case deploymentcount.FieldCount:
 		return m.Count()
+	case deploymentcount.FieldCreatedAt:
+		return m.CreatedAt()
+	case deploymentcount.FieldUpdatedAt:
+		return m.UpdatedAt()
 	}
 	return nil, false
 }
@@ -3873,6 +3957,10 @@ func (m *DeploymentCountMutation) OldField(ctx context.Context, name string) (en
 		return m.OldEnv(ctx)
 	case deploymentcount.FieldCount:
 		return m.OldCount(ctx)
+	case deploymentcount.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case deploymentcount.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
 	}
 	return nil, fmt.Errorf("unknown DeploymentCount field %s", name)
 }
@@ -3909,6 +3997,20 @@ func (m *DeploymentCountMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetCount(v)
+		return nil
+	case deploymentcount.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case deploymentcount.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
 		return nil
 	}
 	return fmt.Errorf("unknown DeploymentCount field %s", name)
@@ -3985,6 +4087,12 @@ func (m *DeploymentCountMutation) ResetField(name string) error {
 		return nil
 	case deploymentcount.FieldCount:
 		m.ResetCount()
+		return nil
+	case deploymentcount.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case deploymentcount.FieldUpdatedAt:
+		m.ResetUpdatedAt()
 		return nil
 	}
 	return fmt.Errorf("unknown DeploymentCount field %s", name)

@@ -1,6 +1,8 @@
 package schema
 
 import (
+	"time"
+
 	"entgo.io/ent"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
@@ -20,6 +22,11 @@ func (DeploymentCount) Fields() []ent.Field {
 		field.String("env"),
 		field.Int("count").
 			Default(1),
+		field.Time("created_at").
+			Default(time.Now),
+		field.Time("updated_at").
+			Default(time.Now).
+			UpdateDefault(time.Now),
 	}
 }
 

@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -47,6 +48,34 @@ func (dcc *DeploymentCountCreate) SetCount(i int) *DeploymentCountCreate {
 func (dcc *DeploymentCountCreate) SetNillableCount(i *int) *DeploymentCountCreate {
 	if i != nil {
 		dcc.SetCount(*i)
+	}
+	return dcc
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (dcc *DeploymentCountCreate) SetCreatedAt(t time.Time) *DeploymentCountCreate {
+	dcc.mutation.SetCreatedAt(t)
+	return dcc
+}
+
+// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
+func (dcc *DeploymentCountCreate) SetNillableCreatedAt(t *time.Time) *DeploymentCountCreate {
+	if t != nil {
+		dcc.SetCreatedAt(*t)
+	}
+	return dcc
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (dcc *DeploymentCountCreate) SetUpdatedAt(t time.Time) *DeploymentCountCreate {
+	dcc.mutation.SetUpdatedAt(t)
+	return dcc
+}
+
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (dcc *DeploymentCountCreate) SetNillableUpdatedAt(t *time.Time) *DeploymentCountCreate {
+	if t != nil {
+		dcc.SetUpdatedAt(*t)
 	}
 	return dcc
 }
@@ -126,6 +155,14 @@ func (dcc *DeploymentCountCreate) defaults() {
 		v := deploymentcount.DefaultCount
 		dcc.mutation.SetCount(v)
 	}
+	if _, ok := dcc.mutation.CreatedAt(); !ok {
+		v := deploymentcount.DefaultCreatedAt()
+		dcc.mutation.SetCreatedAt(v)
+	}
+	if _, ok := dcc.mutation.UpdatedAt(); !ok {
+		v := deploymentcount.DefaultUpdatedAt()
+		dcc.mutation.SetUpdatedAt(v)
+	}
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -141,6 +178,12 @@ func (dcc *DeploymentCountCreate) check() error {
 	}
 	if _, ok := dcc.mutation.Count(); !ok {
 		return &ValidationError{Name: "count", err: errors.New(`ent: missing required field "count"`)}
+	}
+	if _, ok := dcc.mutation.CreatedAt(); !ok {
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "created_at"`)}
+	}
+	if _, ok := dcc.mutation.UpdatedAt(); !ok {
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "updated_at"`)}
 	}
 	return nil
 }
@@ -200,6 +243,22 @@ func (dcc *DeploymentCountCreate) createSpec() (*DeploymentCount, *sqlgraph.Crea
 			Column: deploymentcount.FieldCount,
 		})
 		_node.Count = value
+	}
+	if value, ok := dcc.mutation.CreatedAt(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: deploymentcount.FieldCreatedAt,
+		})
+		_node.CreatedAt = value
+	}
+	if value, ok := dcc.mutation.UpdatedAt(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: deploymentcount.FieldUpdatedAt,
+		})
+		_node.UpdatedAt = value
 	}
 	return _node, _spec
 }

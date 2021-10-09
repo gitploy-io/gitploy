@@ -5,6 +5,7 @@ package ent
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -65,6 +66,26 @@ func (dcu *DeploymentCountUpdate) AddCount(i int) *DeploymentCountUpdate {
 	return dcu
 }
 
+// SetCreatedAt sets the "created_at" field.
+func (dcu *DeploymentCountUpdate) SetCreatedAt(t time.Time) *DeploymentCountUpdate {
+	dcu.mutation.SetCreatedAt(t)
+	return dcu
+}
+
+// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
+func (dcu *DeploymentCountUpdate) SetNillableCreatedAt(t *time.Time) *DeploymentCountUpdate {
+	if t != nil {
+		dcu.SetCreatedAt(*t)
+	}
+	return dcu
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (dcu *DeploymentCountUpdate) SetUpdatedAt(t time.Time) *DeploymentCountUpdate {
+	dcu.mutation.SetUpdatedAt(t)
+	return dcu
+}
+
 // Mutation returns the DeploymentCountMutation object of the builder.
 func (dcu *DeploymentCountUpdate) Mutation() *DeploymentCountMutation {
 	return dcu.mutation
@@ -76,6 +97,7 @@ func (dcu *DeploymentCountUpdate) Save(ctx context.Context) (int, error) {
 		err      error
 		affected int
 	)
+	dcu.defaults()
 	if len(dcu.hooks) == 0 {
 		affected, err = dcu.sqlSave(ctx)
 	} else {
@@ -121,6 +143,14 @@ func (dcu *DeploymentCountUpdate) Exec(ctx context.Context) error {
 func (dcu *DeploymentCountUpdate) ExecX(ctx context.Context) {
 	if err := dcu.Exec(ctx); err != nil {
 		panic(err)
+	}
+}
+
+// defaults sets the default values of the builder before save.
+func (dcu *DeploymentCountUpdate) defaults() {
+	if _, ok := dcu.mutation.UpdatedAt(); !ok {
+		v := deploymentcount.UpdateDefaultUpdatedAt()
+		dcu.mutation.SetUpdatedAt(v)
 	}
 }
 
@@ -175,6 +205,20 @@ func (dcu *DeploymentCountUpdate) sqlSave(ctx context.Context) (n int, err error
 			Type:   field.TypeInt,
 			Value:  value,
 			Column: deploymentcount.FieldCount,
+		})
+	}
+	if value, ok := dcu.mutation.CreatedAt(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: deploymentcount.FieldCreatedAt,
+		})
+	}
+	if value, ok := dcu.mutation.UpdatedAt(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: deploymentcount.FieldUpdatedAt,
 		})
 	}
 	if n, err = sqlgraph.UpdateNodes(ctx, dcu.driver, _spec); err != nil {
@@ -235,6 +279,26 @@ func (dcuo *DeploymentCountUpdateOne) AddCount(i int) *DeploymentCountUpdateOne 
 	return dcuo
 }
 
+// SetCreatedAt sets the "created_at" field.
+func (dcuo *DeploymentCountUpdateOne) SetCreatedAt(t time.Time) *DeploymentCountUpdateOne {
+	dcuo.mutation.SetCreatedAt(t)
+	return dcuo
+}
+
+// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
+func (dcuo *DeploymentCountUpdateOne) SetNillableCreatedAt(t *time.Time) *DeploymentCountUpdateOne {
+	if t != nil {
+		dcuo.SetCreatedAt(*t)
+	}
+	return dcuo
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (dcuo *DeploymentCountUpdateOne) SetUpdatedAt(t time.Time) *DeploymentCountUpdateOne {
+	dcuo.mutation.SetUpdatedAt(t)
+	return dcuo
+}
+
 // Mutation returns the DeploymentCountMutation object of the builder.
 func (dcuo *DeploymentCountUpdateOne) Mutation() *DeploymentCountMutation {
 	return dcuo.mutation
@@ -253,6 +317,7 @@ func (dcuo *DeploymentCountUpdateOne) Save(ctx context.Context) (*DeploymentCoun
 		err  error
 		node *DeploymentCount
 	)
+	dcuo.defaults()
 	if len(dcuo.hooks) == 0 {
 		node, err = dcuo.sqlSave(ctx)
 	} else {
@@ -298,6 +363,14 @@ func (dcuo *DeploymentCountUpdateOne) Exec(ctx context.Context) error {
 func (dcuo *DeploymentCountUpdateOne) ExecX(ctx context.Context) {
 	if err := dcuo.Exec(ctx); err != nil {
 		panic(err)
+	}
+}
+
+// defaults sets the default values of the builder before save.
+func (dcuo *DeploymentCountUpdateOne) defaults() {
+	if _, ok := dcuo.mutation.UpdatedAt(); !ok {
+		v := deploymentcount.UpdateDefaultUpdatedAt()
+		dcuo.mutation.SetUpdatedAt(v)
 	}
 }
 
@@ -369,6 +442,20 @@ func (dcuo *DeploymentCountUpdateOne) sqlSave(ctx context.Context) (_node *Deplo
 			Type:   field.TypeInt,
 			Value:  value,
 			Column: deploymentcount.FieldCount,
+		})
+	}
+	if value, ok := dcuo.mutation.CreatedAt(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: deploymentcount.FieldCreatedAt,
+		})
+	}
+	if value, ok := dcuo.mutation.UpdatedAt(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: deploymentcount.FieldUpdatedAt,
 		})
 	}
 	_node = &DeploymentCount{config: dcuo.config}

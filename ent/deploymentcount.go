@@ -5,6 +5,7 @@ package ent
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/gitploy-io/gitploy/ent/deploymentcount"
@@ -23,6 +24,10 @@ type DeploymentCount struct {
 	Env string `json:"env"`
 	// Count holds the value of the "count" field.
 	Count int `json:"count"`
+	// CreatedAt holds the value of the "created_at" field.
+	CreatedAt time.Time `json:"created_at"`
+	// UpdatedAt holds the value of the "updated_at" field.
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -34,6 +39,8 @@ func (*DeploymentCount) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(sql.NullInt64)
 		case deploymentcount.FieldNamespace, deploymentcount.FieldName, deploymentcount.FieldEnv:
 			values[i] = new(sql.NullString)
+		case deploymentcount.FieldCreatedAt, deploymentcount.FieldUpdatedAt:
+			values[i] = new(sql.NullTime)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type DeploymentCount", columns[i])
 		}
@@ -79,6 +86,18 @@ func (dc *DeploymentCount) assignValues(columns []string, values []interface{}) 
 			} else if value.Valid {
 				dc.Count = int(value.Int64)
 			}
+		case deploymentcount.FieldCreatedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field created_at", values[i])
+			} else if value.Valid {
+				dc.CreatedAt = value.Time
+			}
+		case deploymentcount.FieldUpdatedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
+			} else if value.Valid {
+				dc.UpdatedAt = value.Time
+			}
 		}
 	}
 	return nil
@@ -115,6 +134,10 @@ func (dc *DeploymentCount) String() string {
 	builder.WriteString(dc.Env)
 	builder.WriteString(", count=")
 	builder.WriteString(fmt.Sprintf("%v", dc.Count))
+	builder.WriteString(", created_at=")
+	builder.WriteString(dc.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(", updated_at=")
+	builder.WriteString(dc.UpdatedAt.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
 }
