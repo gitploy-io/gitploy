@@ -7,6 +7,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/gitploy-io/gitploy/ent"
 	"github.com/gitploy-io/gitploy/ent/deployment"
+	"github.com/gitploy-io/gitploy/ent/deploymentcount"
 	"github.com/gitploy-io/gitploy/ent/perm"
 	"github.com/gitploy-io/gitploy/ent/predicate"
 )
@@ -189,8 +190,8 @@ func (s *Store) FindPrevSuccessDeployment(ctx context.Context, d *ent.Deployment
 		First(ctx)
 }
 
-// CreateDeployment always set the next number of deployment
-// when it creates.
+// CreateDeployment create a new deployment, and
+// it updates the 'latest_deployed_at' field of the repository.
 func (s *Store) CreateDeployment(ctx context.Context, d *ent.Deployment) (*ent.Deployment, error) {
 	d, err := s.c.Deployment.Create().
 		SetNumber(d.Number).
@@ -215,11 +216,13 @@ func (s *Store) CreateDeployment(ctx context.Context, d *ent.Deployment) (*ent.D
 		UpdateOneID(d.RepoID).
 		SetLatestDeployedAt(d.CreatedAt).
 		Save(ctx)
+
 	return d, nil
 }
 
 func (s *Store) UpdateDeployment(ctx context.Context, d *ent.Deployment) (*ent.Deployment, error) {
-	return s.c.Deployment.UpdateOne(d).
+	d, err := s.c.Deployment.
+		UpdateOne(d).
 		SetType(d.Type).
 		SetRef(d.Ref).
 		SetEnv(d.Env).
@@ -231,4 +234,48 @@ func (s *Store) UpdateDeployment(ctx context.Context, d *ent.Deployment) (*ent.D
 		SetRequiredApprovalCount(d.RequiredApprovalCount).
 		SetStatus(d.Status).
 		Save(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	if d.Status != deployment.StatusSuccess {
+		return d, nil
+	}
+
+	// Update the statistics of deployment by
+	// increasing the count.
+	s.WithTx(ctx, func(tx *ent.Tx) error {
+		r, err := tx.Repo.Get(ctx, d.RepoID)
+		if err != nil {
+			return err
+		}
+
+		dc, err := s.c.DeploymentCount.
+			Query().
+			Where(
+				deploymentcount.NamespaceEQ(r.Namespace),
+				deploymentcount.NameEQ(r.Name),
+				deploymentcount.EnvEQ(d.Env),
+			).
+			Only(ctx)
+		if ent.IsNotFound(err) {
+			s.c.DeploymentCount.
+				Create().
+				SetNamespace(r.Namespace).
+				SetName(r.Name).
+				SetEnv(d.Env).
+				Save(ctx)
+			return nil
+		} else if err != nil {
+			return err
+		}
+
+		s.c.DeploymentCount.
+			UpdateOne(dc).
+			SetCount(dc.Count + 1).
+			Save(ctx)
+		return nil
+	})
+
+	return d, nil
 }

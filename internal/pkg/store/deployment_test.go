@@ -391,3 +391,134 @@ func TestStore_FindPrevSuccessDeployment(t *testing.T) {
 		}
 	})
 }
+
+func TestStore_UpdateDeployment(t *testing.T) {
+	t.Run("Update the status of deployment.", func(t *testing.T) {
+		ctx := context.Background()
+
+		client := enttest.Open(t, "sqlite3", "file:ent?mode=memory&cache=shared&_fk=1",
+			enttest.WithMigrateOptions(migrate.WithForeignKeys(false)),
+		)
+		defer client.Close()
+
+		d := client.Deployment.Create().
+			SetType(deployment.TypeBranch).
+			SetNumber(1).
+			SetType("branch").
+			SetRef("main").
+			SetEnv("prod").
+			SetStatus(deployment.StatusCreated).
+			SetUserID(1).
+			SetRepoID(1).
+			SaveX(ctx)
+
+		s := NewStore(client)
+
+		d.Status = deployment.StatusRunning
+
+		d, err := s.UpdateDeployment(ctx, d)
+		if err != nil {
+			t.Fatalf("UpdateDeployment returns an error: %s", err)
+		}
+
+		expected := deployment.StatusRunning
+		if d.Status != expected {
+			t.Fatalf("UpdateDeployment = %v, wanted %v", d.Status, expected)
+		}
+	})
+
+	t.Run("Add a new statistics when the status of deployment is updated.", func(t *testing.T) {
+		ctx := context.Background()
+
+		client := enttest.Open(t, "sqlite3", "file:ent?mode=memory&cache=shared&_fk=1",
+			enttest.WithMigrateOptions(migrate.WithForeignKeys(false)),
+		)
+		defer client.Close()
+
+		client.Repo.
+			Create().
+			SetID(1).
+			SetNamespace("octocat").
+			SetName("Hello").
+			SetDescription("").
+			SaveX(ctx)
+
+		d := client.Deployment.Create().
+			SetType(deployment.TypeBranch).
+			SetNumber(1).
+			SetType("branch").
+			SetRef("main").
+			SetEnv("prod").
+			SetStatus(deployment.StatusCreated).
+			SetUserID(1).
+			SetRepoID(1).
+			SaveX(ctx)
+
+		s := NewStore(client)
+
+		d.Status = deployment.StatusSuccess
+
+		d, err := s.UpdateDeployment(ctx, d)
+		if err != nil {
+			t.Fatalf("UpdateDeployment returns an error: %s", err)
+		}
+
+		expected := 1
+		dc := client.DeploymentCount.GetX(ctx, 1)
+
+		if dc.Count != expected {
+			t.Fatalf("The statistics was not created.")
+		}
+	})
+
+	t.Run("Update the statistics is updated when the status of deployment is updated.", func(t *testing.T) {
+		ctx := context.Background()
+
+		client := enttest.Open(t, "sqlite3", "file:ent?mode=memory&cache=shared&_fk=1",
+			enttest.WithMigrateOptions(migrate.WithForeignKeys(false)),
+		)
+		defer client.Close()
+
+		client.Repo.
+			Create().
+			SetID(1).
+			SetNamespace("octocat").
+			SetName("Hello").
+			SetDescription("").
+			SaveX(ctx)
+
+		d := client.Deployment.Create().
+			SetType(deployment.TypeBranch).
+			SetNumber(1).
+			SetType("branch").
+			SetRef("main").
+			SetEnv("prod").
+			SetStatus(deployment.StatusCreated).
+			SetUserID(1).
+			SetRepoID(1).
+			SaveX(ctx)
+
+		t.Log("Add the deployment count.")
+		client.DeploymentCount.Create().
+			SetNamespace("octocat").
+			SetName("Hello").
+			SetEnv("prod").
+			SaveX(ctx)
+
+		s := NewStore(client)
+
+		d.Status = deployment.StatusSuccess
+
+		d, err := s.UpdateDeployment(ctx, d)
+		if err != nil {
+			t.Fatalf("UpdateDeployment returns an error: %s", err)
+		}
+
+		expected := 2
+		dc := client.DeploymentCount.GetX(ctx, 1)
+
+		if dc.Count != expected {
+			t.Fatalf("The statistics was not created.")
+		}
+	})
+}
