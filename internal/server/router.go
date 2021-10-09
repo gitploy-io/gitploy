@@ -169,17 +169,17 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 		streamv1.GET("/events", s.GetEvents)
 	}
 
-	searchapi := v1.Group("/search")
+	searchv1 := v1.Group("/search")
 	{
 		s := search.NewSearch(c.Interactor)
-		searchapi.GET("/deployments", s.SearchDeployments)
-		searchapi.GET("/approvals", s.SearchApprovals)
+		searchv1.GET("/deployments", s.SearchDeployments)
+		searchv1.GET("/approvals", s.SearchApprovals)
 	}
 
-	licenseapi := v1.Group("/license")
+	licensev1 := v1.Group("/license")
 	{
 		l := license.NewLicenser(c.Interactor)
-		licenseapi.GET("", l.GetLicense)
+		licensev1.GET("", l.GetLicense)
 	}
 
 	hooksapi := r.Group("/hooks")
@@ -237,8 +237,7 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 
 		root.GET("/signin", w.Signin)
 
-		// Static files
-		// Files in ui/public
+		// Static files located at the 'ui/public' directory.
 		r.StaticFile("/favicon.ico", "./favicon.ico")
 		r.StaticFile("/manifest.json", "./manifest.json")
 		r.StaticFile("/robots.txt", "./robots.txt")
