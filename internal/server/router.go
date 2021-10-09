@@ -16,6 +16,7 @@ import (
 	"github.com/gitploy-io/gitploy/internal/server/api/v1/sync"
 	"github.com/gitploy-io/gitploy/internal/server/api/v1/users"
 	"github.com/gitploy-io/gitploy/internal/server/hooks"
+	"github.com/gitploy-io/gitploy/internal/server/metrics"
 	mw "github.com/gitploy-io/gitploy/internal/server/middlewares"
 	s "github.com/gitploy-io/gitploy/internal/server/slack"
 	"github.com/gitploy-io/gitploy/internal/server/web"
@@ -95,7 +96,7 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 	sm := mw.NewSessMiddleware(c.Interactor)
 	lm := mw.NewLicenseMiddleware(c.Interactor)
 
-	r.Use(sm.User())
+	r.Use(sm.User(), metrics.ReponseMetrics())
 
 	v1 := r.Group("/api/v1")
 	{
@@ -189,6 +190,12 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 		}
 		h := hooks.NewHooks(hc, c.Interactor)
 		hooksapi.POST("", h.HandleHook)
+	}
+
+	metricsapi := r.Group("/metrics")
+	{
+		m := metrics.NewMetric()
+		metricsapi.GET("", m.CollectMetrics)
 	}
 
 	r.HEAD("/slack", func(gc *gin.Context) {
