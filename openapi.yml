@@ -122,11 +122,15 @@ paths:
                   type: boolean
       parameters:
         - in: path
-          name: id
+          name: namespace
           required: true
           schema:
-            type: integer
-            description: The repository id
+            type: string
+        - in: path
+          name: name
+          required: true
+          schema:
+            type: string
       responses:
         '200':
           description: Ok
@@ -497,11 +501,15 @@ paths:
       summary: Create a new deployment.
       parameters:
         - in: path
-          name: id
+          name: namespace
           required: true
           schema:
-            type: integer
-            description: The repository id
+            type: string
+        - in: path
+          name: name
+          required: true
+          schema:
+            type: string
       requestBody:
         content:
           application/json:
@@ -586,11 +594,15 @@ paths:
       summary: Deploy to SCM if a status of the deployment is waiting.
       parameters:
         - in: path
-          name: id
+          name: namespace
           required: true
           schema:
-            type: integer
-            description: The repository id
+            type: string
+        - in: path
+          name: name
+          required: true
+          schema:
+            type: string
         - in: path
           name: number
           required: true
@@ -767,11 +779,15 @@ paths:
       summary: Create a new approval.
       parameters:
         - in: path
-          name: id
+          name: namespace
           required: true
           schema:
-            type: integer
-            description: The repository id
+            type: string
+        - in: path
+          name: name
+          required: true
+          schema:
+            type: string
         - in: path
           name: number
           required: true
@@ -852,11 +868,15 @@ paths:
       summary: Approve (or Decline) for the approval.
       parameters:
         - in: path
-          name: id
+          name: namespace
           required: true
           schema:
-            type: integer
-            description: The repository id
+            type: string
+        - in: path
+          name: name
+          required: true
+          schema:
+            type: string
         - in: path
           name: number
           required: true
@@ -939,11 +959,15 @@ paths:
       summary: Delete the approval.
       parameters:
         - in: path
-          name: id
+          name: namespace
           required: true
           schema:
-            type: integer
-            description: The repository id.
+            type: string
+        - in: path
+          name: name
+          required: true
+          schema:
+            type: string
         - in: path
           name: number
           required: true
@@ -1006,11 +1030,15 @@ paths:
       summary: Lock the environment.
       parameters:
         - in: path
-          name: id
+          name: namespace
           required: true
           schema:
-            type: integer
-            description: The repository id.
+            type: string
+        - in: path
+          name: name
+          required: true
+          schema:
+            type: string
       requestBody:
         content:
           application/json:
