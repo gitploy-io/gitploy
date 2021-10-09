@@ -20,6 +20,8 @@ type Tx struct {
 	ChatUser *ChatUserClient
 	// Deployment is the client for interacting with the Deployment builders.
 	Deployment *DeploymentClient
+	// DeploymentCount is the client for interacting with the DeploymentCount builders.
+	DeploymentCount *DeploymentCountClient
 	// DeploymentStatus is the client for interacting with the DeploymentStatus builders.
 	DeploymentStatus *DeploymentStatusClient
 	// Event is the client for interacting with the Event builders.
@@ -173,6 +175,7 @@ func (tx *Tx) init() {
 	tx.Callback = NewCallbackClient(tx.config)
 	tx.ChatUser = NewChatUserClient(tx.config)
 	tx.Deployment = NewDeploymentClient(tx.config)
+	tx.DeploymentCount = NewDeploymentCountClient(tx.config)
 	tx.DeploymentStatus = NewDeploymentStatusClient(tx.config)
 	tx.Event = NewEventClient(tx.config)
 	tx.Lock = NewLockClient(tx.config)
