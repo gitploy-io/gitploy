@@ -242,6 +242,7 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 		r.StaticFile("/favicon.ico", "./favicon.ico")
 		r.StaticFile("/manifest.json", "./manifest.json")
 		r.StaticFile("/robots.txt", "./robots.txt")
+		r.StaticFile("/logo192.png", "./logo192.png")
 		r.Static("/static", "./static")
 		if _, err := os.Stat("./index.html"); err == nil {
 			r.NoRoute(w.IndexHTML)
