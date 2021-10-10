@@ -42,7 +42,9 @@ type (
 		ProxyHost  string
 		ProxyProto string
 
-		WebhookSecret        string
+		WebhookSecret string
+
+		PrometheusEnabled    bool
 		PrometheusAuthSecret string
 	}
 
@@ -101,7 +103,6 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 	gm := gb.NewMiddleware(c.Interactor)
 	r.Use(
 		gm.SetUser(),
-		metrics.CollectRequestMetrics(),
 	)
 
 	v1 := r.Group("/api/v1")
@@ -199,13 +200,17 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 		hooksapi.POST("", h.HandleHook)
 	}
 
-	metricsapi := r.Group("/metrics")
-	{
-		m := metrics.NewMetric(&metrics.MetricConfig{
-			Interactor:           c.Interactor,
-			PrometheusAuthSecret: c.PrometheusAuthSecret,
-		})
-		metricsapi.GET("", m.CollectMetrics)
+	if c.PrometheusEnabled {
+		metricsapi := r.Group("/metrics")
+		{
+			r.Use(metrics.CollectRequestMetrics())
+
+			m := metrics.NewMetric(&metrics.MetricConfig{
+				Interactor:           c.Interactor,
+				PrometheusAuthSecret: c.PrometheusAuthSecret,
+			})
+			metricsapi.GET("", m.CollectMetrics)
+		}
 	}
 
 	r.HEAD("/slack", func(gc *gin.Context) {
