@@ -198,7 +198,7 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 		m := metrics.NewMetric(&metrics.MetricConfig{
 			Interactor: c.Interactor,
 		})
-		metricsapi.GET("", m.CollectMetrics)
+		metricsapi.GET("", mw.OnlyAuthorized(), m.CollectMetrics)
 	}
 
 	r.HEAD("/slack", func(gc *gin.Context) {
