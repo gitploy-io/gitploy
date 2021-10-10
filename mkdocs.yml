@@ -17,9 +17,10 @@ nav:
     - Deployment: concepts/deployment.md
     - Lock: concepts/lock.md
     - Permission: concepts/permission.md
-    - "Self-hosted Server": concepts/self-hosted-server.md
     - Chatops: concepts/chatops.md
+    - Metrics: concepts/metrics.md
     - License: concepts/license.md
+    - "Self-hosted Server": concepts/self-hosted-server.md
   - Tasks:
     - Installation: tasks/installation.md
     - Database: tasks/database.md
