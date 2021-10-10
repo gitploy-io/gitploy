@@ -200,17 +200,15 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 		hooksapi.POST("", h.HandleHook)
 	}
 
-	if c.PrometheusEnabled {
-		metricsapi := r.Group("/metrics")
-		{
-			r.Use(metrics.CollectRequestMetrics())
+	metricsapi := r.Group("/metrics")
+	{
+		r.Use(metrics.CollectRequestMetrics())
 
-			m := metrics.NewMetric(&metrics.MetricConfig{
-				Interactor:           c.Interactor,
-				PrometheusAuthSecret: c.PrometheusAuthSecret,
-			})
-			metricsapi.GET("", m.CollectMetrics)
-		}
+		m := metrics.NewMetric(&metrics.MetricConfig{
+			Interactor:           c.Interactor,
+			PrometheusAuthSecret: c.PrometheusAuthSecret,
+		})
+		metricsapi.GET("", hasOptIn(c.PrometheusEnabled), m.CollectMetrics)
 	}
 
 	r.HEAD("/slack", func(gc *gin.Context) {
@@ -307,4 +305,13 @@ func newSlackOauthConfig(c *RouterConfig) *oauth2.Config {
 
 func isSlackEnabled(c *RouterConfig) bool {
 	return c.ChatConfig != nil && c.ChatConfig.Type == ChatTypeSlack
+}
+
+func hasOptIn(enabled bool) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		if !enabled {
+			c.AbortWithStatus(http.StatusNotFound)
+			return
+		}
+	}
 }
