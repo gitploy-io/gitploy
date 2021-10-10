@@ -9,15 +9,16 @@ import (
 	"github.com/gin-gonic/gin"
 	"golang.org/x/oauth2"
 
+	"github.com/gitploy-io/gitploy/internal/server/api/shared"
 	"github.com/gitploy-io/gitploy/internal/server/api/v1/license"
 	"github.com/gitploy-io/gitploy/internal/server/api/v1/repos"
 	"github.com/gitploy-io/gitploy/internal/server/api/v1/search"
 	"github.com/gitploy-io/gitploy/internal/server/api/v1/stream"
 	"github.com/gitploy-io/gitploy/internal/server/api/v1/sync"
 	"github.com/gitploy-io/gitploy/internal/server/api/v1/users"
+	gb "github.com/gitploy-io/gitploy/internal/server/global"
 	"github.com/gitploy-io/gitploy/internal/server/hooks"
 	"github.com/gitploy-io/gitploy/internal/server/metrics"
-	mw "github.com/gitploy-io/gitploy/internal/server/middlewares"
 	s "github.com/gitploy-io/gitploy/internal/server/slack"
 	"github.com/gitploy-io/gitploy/internal/server/web"
 )
@@ -66,9 +67,10 @@ type (
 	}
 
 	Interactor interface {
+		gb.Interactor
 		s.Interactor
 		sync.Interactor
-		mw.Interactor
+		shared.Interactor
 		web.Interactor
 		repos.Interactor
 		users.Interactor
@@ -95,17 +97,20 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Authorization", "Accept", "Content-Length", "Content-Type"},
 	}))
-	sm := mw.NewSessMiddleware(c.Interactor)
-	lm := mw.NewLicenseMiddleware(c.Interactor)
 
-	r.Use(sm.User(), metrics.ReponseMetrics())
+	gm := gb.NewMiddleware(c.Interactor)
+	r.Use(
+		gm.SetUser(),
+		metrics.CollectRequestMetrics(),
+	)
 
 	v1 := r.Group("/api/v1")
 	{
-		// Only authorized user can access to API.
-		v1.Use(mw.OnlyAuthorized())
-		// Check license expired.
-		v1.Use(lm.IsExpired())
+		m := shared.NewMiddleware(c.Interactor)
+		v1.Use(
+			m.OnlyAuthorized(),
+			m.IsLicenseExpired(),
+		)
 	}
 
 	syncv1 := v1.Group("/sync")

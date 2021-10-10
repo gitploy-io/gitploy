@@ -8,7 +8,6 @@ import (
 	context "context"
 	reflect "reflect"
 
-	ent "github.com/gitploy-io/gitploy/ent"
 	vo "github.com/gitploy-io/gitploy/vo"
 	gomock "github.com/golang/mock/gomock"
 )
@@ -34,21 +33,6 @@ func NewMockInteractor(ctrl *gomock.Controller) *MockInteractor {
 // EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockInteractor) EXPECT() *MockInteractorMockRecorder {
 	return m.recorder
-}
-
-// FindUserByHash mocks base method.
-func (m *MockInteractor) FindUserByHash(ctx context.Context, hash string) (*ent.User, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FindUserByHash", ctx, hash)
-	ret0, _ := ret[0].(*ent.User)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// FindUserByHash indicates an expected call of FindUserByHash.
-func (mr *MockInteractorMockRecorder) FindUserByHash(ctx, hash interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindUserByHash", reflect.TypeOf((*MockInteractor)(nil).FindUserByHash), ctx, hash)
 }
 
 // GetLicense mocks base method.

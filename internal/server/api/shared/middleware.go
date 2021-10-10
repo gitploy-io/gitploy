@@ -1,4 +1,4 @@
-package middlewares
+package shared
 
 import (
 	"net/http"
@@ -13,22 +13,22 @@ const (
 )
 
 type (
-	LicenseMiddleware struct {
+	Middleware struct {
 		i Interactor
 	}
 )
 
-func NewLicenseMiddleware(intr Interactor) *LicenseMiddleware {
-	return &LicenseMiddleware{
+func NewMiddleware(intr Interactor) *Middleware {
+	return &Middleware{
 		i: intr,
 	}
 }
 
-func (lm *LicenseMiddleware) IsExpired() gin.HandlerFunc {
+func (m *Middleware) IsLicenseExpired() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		ctx := c.Request.Context()
 
-		lic, err := lm.i.GetLicense(ctx)
+		lic, err := m.i.GetLicense(ctx)
 		if err != nil {
 			gb.AbortWithErrorResponse(c, http.StatusInternalServerError, "It has failed to get the license.")
 			return
@@ -45,6 +45,17 @@ func (lm *LicenseMiddleware) IsExpired() gin.HandlerFunc {
 				gb.AbortWithErrorResponse(c, http.StatusPaymentRequired, "The license is expired.")
 				return
 			}
+		}
+	}
+}
+
+func (m *Middleware) OnlyAuthorized() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		_, ok := c.Get(gb.KeyUser)
+		if !ok {
+			c.AbortWithStatusJSON(http.StatusUnauthorized, map[string]string{
+				"message": "Unauthorized user",
+			})
 		}
 	}
 }

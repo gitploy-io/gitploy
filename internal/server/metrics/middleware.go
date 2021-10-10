@@ -33,8 +33,8 @@ func init() {
 	prometheus.MustRegister(RequestDuration)
 }
 
-// ReponseMetrics is the middleware to collect metrics about the response.
-func ReponseMetrics() gin.HandlerFunc {
+// CollectRequestMetrics is the middleware to collect metrics for the request.
+func CollectRequestMetrics() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		start := time.Now()
 
