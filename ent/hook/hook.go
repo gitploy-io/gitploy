@@ -61,6 +61,19 @@ func (f DeploymentFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, 
 	return f(ctx, mv)
 }
 
+// The DeploymentCountFunc type is an adapter to allow the use of ordinary
+// function as DeploymentCount mutator.
+type DeploymentCountFunc func(context.Context, *ent.DeploymentCountMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f DeploymentCountFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.DeploymentCountMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.DeploymentCountMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The DeploymentStatusFunc type is an adapter to allow the use of ordinary
 // function as DeploymentStatus mutator.
 type DeploymentStatusFunc func(context.Context, *ent.DeploymentStatusMutation) (ent.Value, error)

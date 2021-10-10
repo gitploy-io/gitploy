@@ -16,6 +16,7 @@ import (
 	"github.com/gitploy-io/gitploy/internal/server/api/v1/sync"
 	"github.com/gitploy-io/gitploy/internal/server/api/v1/users"
 	"github.com/gitploy-io/gitploy/internal/server/hooks"
+	"github.com/gitploy-io/gitploy/internal/server/metrics"
 	mw "github.com/gitploy-io/gitploy/internal/server/middlewares"
 	s "github.com/gitploy-io/gitploy/internal/server/slack"
 	"github.com/gitploy-io/gitploy/internal/server/web"
@@ -74,6 +75,7 @@ type (
 		hooks.Interactor
 		search.Interactor
 		license.Interactor
+		metrics.Interactor
 	}
 )
 
@@ -95,7 +97,7 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 	sm := mw.NewSessMiddleware(c.Interactor)
 	lm := mw.NewLicenseMiddleware(c.Interactor)
 
-	r.Use(sm.User())
+	r.Use(sm.User(), metrics.ReponseMetrics())
 
 	v1 := r.Group("/api/v1")
 	{
@@ -169,17 +171,17 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 		streamv1.GET("/events", s.GetEvents)
 	}
 
-	searchapi := v1.Group("/search")
+	searchv1 := v1.Group("/search")
 	{
 		s := search.NewSearch(c.Interactor)
-		searchapi.GET("/deployments", s.SearchDeployments)
-		searchapi.GET("/approvals", s.SearchApprovals)
+		searchv1.GET("/deployments", s.SearchDeployments)
+		searchv1.GET("/approvals", s.SearchApprovals)
 	}
 
-	licenseapi := v1.Group("/license")
+	licensev1 := v1.Group("/license")
 	{
 		l := license.NewLicenser(c.Interactor)
-		licenseapi.GET("", l.GetLicense)
+		licensev1.GET("", l.GetLicense)
 	}
 
 	hooksapi := r.Group("/hooks")
@@ -189,6 +191,14 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 		}
 		h := hooks.NewHooks(hc, c.Interactor)
 		hooksapi.POST("", h.HandleHook)
+	}
+
+	metricsapi := r.Group("/metrics")
+	{
+		m := metrics.NewMetric(&metrics.MetricConfig{
+			Interactor: c.Interactor,
+		})
+		metricsapi.GET("", mw.OnlyAuthorized(), m.CollectMetrics)
 	}
 
 	r.HEAD("/slack", func(gc *gin.Context) {
@@ -237,8 +247,7 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 
 		root.GET("/signin", w.Signin)
 
-		// Static files
-		// Files in ui/public
+		// Static files located at the 'ui/public' directory.
 		r.StaticFile("/favicon.ico", "./favicon.ico")
 		r.StaticFile("/manifest.json", "./manifest.json")
 		r.StaticFile("/robots.txt", "./robots.txt")

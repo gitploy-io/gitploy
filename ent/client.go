@@ -13,6 +13,7 @@ import (
 	"github.com/gitploy-io/gitploy/ent/callback"
 	"github.com/gitploy-io/gitploy/ent/chatuser"
 	"github.com/gitploy-io/gitploy/ent/deployment"
+	"github.com/gitploy-io/gitploy/ent/deploymentcount"
 	"github.com/gitploy-io/gitploy/ent/deploymentstatus"
 	"github.com/gitploy-io/gitploy/ent/event"
 	"github.com/gitploy-io/gitploy/ent/lock"
@@ -39,6 +40,8 @@ type Client struct {
 	ChatUser *ChatUserClient
 	// Deployment is the client for interacting with the Deployment builders.
 	Deployment *DeploymentClient
+	// DeploymentCount is the client for interacting with the DeploymentCount builders.
+	DeploymentCount *DeploymentCountClient
 	// DeploymentStatus is the client for interacting with the DeploymentStatus builders.
 	DeploymentStatus *DeploymentStatusClient
 	// Event is the client for interacting with the Event builders.
@@ -70,6 +73,7 @@ func (c *Client) init() {
 	c.Callback = NewCallbackClient(c.config)
 	c.ChatUser = NewChatUserClient(c.config)
 	c.Deployment = NewDeploymentClient(c.config)
+	c.DeploymentCount = NewDeploymentCountClient(c.config)
 	c.DeploymentStatus = NewDeploymentStatusClient(c.config)
 	c.Event = NewEventClient(c.config)
 	c.Lock = NewLockClient(c.config)
@@ -114,6 +118,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Callback:           NewCallbackClient(cfg),
 		ChatUser:           NewChatUserClient(cfg),
 		Deployment:         NewDeploymentClient(cfg),
+		DeploymentCount:    NewDeploymentCountClient(cfg),
 		DeploymentStatus:   NewDeploymentStatusClient(cfg),
 		Event:              NewEventClient(cfg),
 		Lock:               NewLockClient(cfg),
@@ -143,6 +148,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Callback:           NewCallbackClient(cfg),
 		ChatUser:           NewChatUserClient(cfg),
 		Deployment:         NewDeploymentClient(cfg),
+		DeploymentCount:    NewDeploymentCountClient(cfg),
 		DeploymentStatus:   NewDeploymentStatusClient(cfg),
 		Event:              NewEventClient(cfg),
 		Lock:               NewLockClient(cfg),
@@ -183,6 +189,7 @@ func (c *Client) Use(hooks ...Hook) {
 	c.Callback.Use(hooks...)
 	c.ChatUser.Use(hooks...)
 	c.Deployment.Use(hooks...)
+	c.DeploymentCount.Use(hooks...)
 	c.DeploymentStatus.Use(hooks...)
 	c.Event.Use(hooks...)
 	c.Lock.Use(hooks...)
@@ -710,6 +717,96 @@ func (c *DeploymentClient) QueryEvent(d *Deployment) *EventQuery {
 // Hooks returns the client hooks.
 func (c *DeploymentClient) Hooks() []Hook {
 	return c.hooks.Deployment
+}
+
+// DeploymentCountClient is a client for the DeploymentCount schema.
+type DeploymentCountClient struct {
+	config
+}
+
+// NewDeploymentCountClient returns a client for the DeploymentCount from the given config.
+func NewDeploymentCountClient(c config) *DeploymentCountClient {
+	return &DeploymentCountClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `deploymentcount.Hooks(f(g(h())))`.
+func (c *DeploymentCountClient) Use(hooks ...Hook) {
+	c.hooks.DeploymentCount = append(c.hooks.DeploymentCount, hooks...)
+}
+
+// Create returns a create builder for DeploymentCount.
+func (c *DeploymentCountClient) Create() *DeploymentCountCreate {
+	mutation := newDeploymentCountMutation(c.config, OpCreate)
+	return &DeploymentCountCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of DeploymentCount entities.
+func (c *DeploymentCountClient) CreateBulk(builders ...*DeploymentCountCreate) *DeploymentCountCreateBulk {
+	return &DeploymentCountCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for DeploymentCount.
+func (c *DeploymentCountClient) Update() *DeploymentCountUpdate {
+	mutation := newDeploymentCountMutation(c.config, OpUpdate)
+	return &DeploymentCountUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *DeploymentCountClient) UpdateOne(dc *DeploymentCount) *DeploymentCountUpdateOne {
+	mutation := newDeploymentCountMutation(c.config, OpUpdateOne, withDeploymentCount(dc))
+	return &DeploymentCountUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *DeploymentCountClient) UpdateOneID(id int) *DeploymentCountUpdateOne {
+	mutation := newDeploymentCountMutation(c.config, OpUpdateOne, withDeploymentCountID(id))
+	return &DeploymentCountUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for DeploymentCount.
+func (c *DeploymentCountClient) Delete() *DeploymentCountDelete {
+	mutation := newDeploymentCountMutation(c.config, OpDelete)
+	return &DeploymentCountDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *DeploymentCountClient) DeleteOne(dc *DeploymentCount) *DeploymentCountDeleteOne {
+	return c.DeleteOneID(dc.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *DeploymentCountClient) DeleteOneID(id int) *DeploymentCountDeleteOne {
+	builder := c.Delete().Where(deploymentcount.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &DeploymentCountDeleteOne{builder}
+}
+
+// Query returns a query builder for DeploymentCount.
+func (c *DeploymentCountClient) Query() *DeploymentCountQuery {
+	return &DeploymentCountQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a DeploymentCount entity by its id.
+func (c *DeploymentCountClient) Get(ctx context.Context, id int) (*DeploymentCount, error) {
+	return c.Query().Where(deploymentcount.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *DeploymentCountClient) GetX(ctx context.Context, id int) *DeploymentCount {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *DeploymentCountClient) Hooks() []Hook {
+	return c.hooks.DeploymentCount
 }
 
 // DeploymentStatusClient is a client for the DeploymentStatus schema.

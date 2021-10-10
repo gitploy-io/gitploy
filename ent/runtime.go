@@ -9,6 +9,7 @@ import (
 	"github.com/gitploy-io/gitploy/ent/callback"
 	"github.com/gitploy-io/gitploy/ent/chatuser"
 	"github.com/gitploy-io/gitploy/ent/deployment"
+	"github.com/gitploy-io/gitploy/ent/deploymentcount"
 	"github.com/gitploy-io/gitploy/ent/deploymentstatus"
 	"github.com/gitploy-io/gitploy/ent/event"
 	"github.com/gitploy-io/gitploy/ent/lock"
@@ -90,6 +91,22 @@ func init() {
 	deployment.DefaultUpdatedAt = deploymentDescUpdatedAt.Default.(func() time.Time)
 	// deployment.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	deployment.UpdateDefaultUpdatedAt = deploymentDescUpdatedAt.UpdateDefault.(func() time.Time)
+	deploymentcountFields := schema.DeploymentCount{}.Fields()
+	_ = deploymentcountFields
+	// deploymentcountDescCount is the schema descriptor for count field.
+	deploymentcountDescCount := deploymentcountFields[3].Descriptor()
+	// deploymentcount.DefaultCount holds the default value on creation for the count field.
+	deploymentcount.DefaultCount = deploymentcountDescCount.Default.(int)
+	// deploymentcountDescCreatedAt is the schema descriptor for created_at field.
+	deploymentcountDescCreatedAt := deploymentcountFields[4].Descriptor()
+	// deploymentcount.DefaultCreatedAt holds the default value on creation for the created_at field.
+	deploymentcount.DefaultCreatedAt = deploymentcountDescCreatedAt.Default.(func() time.Time)
+	// deploymentcountDescUpdatedAt is the schema descriptor for updated_at field.
+	deploymentcountDescUpdatedAt := deploymentcountFields[5].Descriptor()
+	// deploymentcount.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	deploymentcount.DefaultUpdatedAt = deploymentcountDescUpdatedAt.Default.(func() time.Time)
+	// deploymentcount.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	deploymentcount.UpdateDefaultUpdatedAt = deploymentcountDescUpdatedAt.UpdateDefault.(func() time.Time)
 	deploymentstatusFields := schema.DeploymentStatus{}.Fields()
 	_ = deploymentstatusFields
 	// deploymentstatusDescCreatedAt is the schema descriptor for created_at field.
