@@ -75,6 +75,7 @@ type (
 		hooks.Interactor
 		search.Interactor
 		license.Interactor
+		metrics.Interactor
 	}
 )
 
@@ -194,7 +195,9 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 
 	metricsapi := r.Group("/metrics")
 	{
-		m := metrics.NewMetric()
+		m := metrics.NewMetric(&metrics.MetricConfig{
+			Interactor: c.Interactor,
+		})
 		metricsapi.GET("", m.CollectMetrics)
 	}
 
