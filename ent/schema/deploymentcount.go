@@ -39,5 +39,7 @@ func (DeploymentCount) Indexes() []ent.Index {
 	return []ent.Index{
 		index.Fields("namespace", "name", "env").
 			Unique(),
+		// The collector searches updated records only.
+		index.Fields("updated_at"),
 	}
 }
