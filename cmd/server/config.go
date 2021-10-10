@@ -14,6 +14,7 @@ type (
 		Github
 		Slack
 		Webhook
+		Prometheus
 	}
 
 	Server struct {
@@ -56,6 +57,10 @@ type (
 
 	Webhook struct {
 		WebhookSecret string `split_words:"true"`
+	}
+
+	Prometheus struct {
+		PrometheusAuthSecret string `split_words:"true"`
 	}
 )
 

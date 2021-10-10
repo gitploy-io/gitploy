@@ -2,6 +2,8 @@ package metrics
 
 import (
 	"context"
+	"net/http"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -12,11 +14,18 @@ import (
 	"github.com/gitploy-io/gitploy/ent"
 )
 
+const (
+	headerAuth = "Authorization"
+)
+
 type (
-	Metric struct{}
+	Metric struct {
+		prometheusAuthSecret string
+	}
 
 	MetricConfig struct {
 		Interactor
+		PrometheusAuthSecret string
 	}
 
 	collector struct {
@@ -34,10 +43,22 @@ func NewMetric(c *MetricConfig) *Metric {
 		newCollector(c.Interactor),
 	)
 
-	return &Metric{}
+	return &Metric{
+		prometheusAuthSecret: c.PrometheusAuthSecret,
+	}
 }
 
 func (m *Metric) CollectMetrics(c *gin.Context) {
+	if m.prometheusAuthSecret != "" {
+		if value := strings.TrimPrefix(
+			c.GetHeader(headerAuth),
+			"Bearer ",
+		); m.prometheusAuthSecret != value {
+			c.Status(http.StatusUnauthorized)
+			return
+		}
+	}
+
 	h := promhttp.Handler()
 	h.ServeHTTP(c.Writer, c.Request)
 }
