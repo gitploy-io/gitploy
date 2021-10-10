@@ -1,12 +1,13 @@
 # Metrics
 
-Gtiploy publishes and exposes metrics that Prometheus can consume at the standard `/metrics` endpoint.
+Gtiploy publishes and exposes metrics that Prometheus can consume at the standard `/metrics` endpoint. 
 
 ## Configuration
 
 1\. Configure the server:
 
 ```
+GITPLOY_PROMETHEUS_ENABLED=true
 GITPLOY_PROMETHEUS_AUTH_SECRET=YOUR_SECRET
 ```
 
