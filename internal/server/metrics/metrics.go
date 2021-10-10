@@ -109,6 +109,41 @@ func (c *collector) Collect(ch chan<- prometheus.Metric) {
 	}
 
 	{
+		lic, err := c.i.GetLicense(ctx)
+		if err != nil {
+			c.log.Error("It has failed to get the license.", zap.Error(err))
+			return
+		}
 
+		ch <- prometheus.MustNewConstMetric(
+			prometheus.NewDesc(
+				prometheus.BuildFQName(
+					namespace,
+					"",
+					"member_count",
+				),
+				"The total count of member.",
+				nil,
+				nil,
+			),
+			prometheus.CounterValue,
+			float64(lic.MemberCount),
+		)
+
+		ch <- prometheus.MustNewConstMetric(
+			prometheus.NewDesc(
+				prometheus.BuildFQName(
+					namespace,
+					"",
+					"member_limit",
+				),
+				"The limit of count of member.",
+				[]string{"kind"},
+				nil,
+			),
+			prometheus.CounterValue,
+			float64(lic.MemberLimit),
+			string(lic.Kind),
+		)
 	}
 }
