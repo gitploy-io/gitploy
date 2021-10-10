@@ -458,7 +458,7 @@ func TestStore_UpdateDeployment(t *testing.T) {
 
 		d.Status = deployment.StatusSuccess
 
-		d, err := s.UpdateDeployment(ctx, d)
+		_, err := s.UpdateDeployment(ctx, d)
 		if err != nil {
 			t.Fatalf("UpdateDeployment returns an error: %s", err)
 		}
@@ -509,7 +509,7 @@ func TestStore_UpdateDeployment(t *testing.T) {
 
 		d.Status = deployment.StatusSuccess
 
-		d, err := s.UpdateDeployment(ctx, d)
+		_, err := s.UpdateDeployment(ctx, d)
 		if err != nil {
 			t.Fatalf("UpdateDeployment returns an error: %s", err)
 		}
