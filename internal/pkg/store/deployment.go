@@ -10,6 +10,7 @@ import (
 	"github.com/gitploy-io/gitploy/ent/deploymentcount"
 	"github.com/gitploy-io/gitploy/ent/perm"
 	"github.com/gitploy-io/gitploy/ent/predicate"
+	"go.uber.org/zap"
 )
 
 func (s *Store) SearchDeployments(ctx context.Context, u *ent.User, ss []deployment.Status, owned bool, from time.Time, to time.Time, page, perPage int) ([]*ent.Deployment, error) {
@@ -244,7 +245,7 @@ func (s *Store) UpdateDeployment(ctx context.Context, d *ent.Deployment) (*ent.D
 
 	// Update the statistics of deployment by
 	// increasing the count.
-	s.WithTx(ctx, func(tx *ent.Tx) error {
+	err = s.WithTx(ctx, func(tx *ent.Tx) error {
 		r, err := tx.Repo.Get(ctx, d.RepoID)
 		if err != nil {
 			return err
@@ -276,6 +277,9 @@ func (s *Store) UpdateDeployment(ctx context.Context, d *ent.Deployment) (*ent.D
 			Save(ctx)
 		return nil
 	})
+	if err != nil {
+		zap.L().Error("It has failed to increase the deployment count.", zap.Error(err))
+	}
 
 	return d, nil
 }
