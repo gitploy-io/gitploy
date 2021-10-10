@@ -1,4 +1,4 @@
-package middlewares
+package shared
 
 import (
 	"net/http"
@@ -7,12 +7,12 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/gitploy-io/gitploy/internal/server/api/middlewares/mock"
+	"github.com/gitploy-io/gitploy/internal/server/api/shared/mock"
 	"github.com/gitploy-io/gitploy/vo"
 	"github.com/golang/mock/gomock"
 )
 
-func TestLicenseMiddleware_IsExpired(t *testing.T) {
+func TestMiddleware_IsLicenseExpired(t *testing.T) {
 	month := 30 * 24 * time.Hour
 
 	t.Run("Return 402 error when the count of member is over the limit.", func(t *testing.T) {
@@ -27,8 +27,8 @@ func TestLicenseMiddleware_IsExpired(t *testing.T) {
 		gin.SetMode(gin.ReleaseMode)
 		router := gin.New()
 
-		lm := NewLicenseMiddleware(m)
-		router.GET("/repos", lm.IsExpired(), func(c *gin.Context) {
+		lm := NewMiddleware(m)
+		router.GET("/repos", lm.IsLicenseExpired(), func(c *gin.Context) {
 			c.Status(http.StatusOK)
 		})
 
@@ -38,7 +38,7 @@ func TestLicenseMiddleware_IsExpired(t *testing.T) {
 		router.ServeHTTP(w, req)
 
 		if w.Code != http.StatusPaymentRequired {
-			t.Fatalf("IsExpired = %v, wanted %v", w.Code, http.StatusPaymentRequired)
+			t.Fatalf("IsLicenseExpired = %v, wanted %v", w.Code, http.StatusPaymentRequired)
 		}
 	})
 
@@ -54,8 +54,8 @@ func TestLicenseMiddleware_IsExpired(t *testing.T) {
 		gin.SetMode(gin.ReleaseMode)
 		router := gin.New()
 
-		lm := NewLicenseMiddleware(m)
-		router.GET("/repos", lm.IsExpired(), func(c *gin.Context) {
+		lm := NewMiddleware(m)
+		router.GET("/repos", lm.IsLicenseExpired(), func(c *gin.Context) {
 			c.Status(http.StatusOK)
 		})
 
@@ -65,7 +65,7 @@ func TestLicenseMiddleware_IsExpired(t *testing.T) {
 		router.ServeHTTP(w, req)
 
 		if w.Code != http.StatusOK {
-			t.Fatalf("IsExpired = %v, wanted %v", w.Code, http.StatusOK)
+			t.Fatalf("IsLicenseExpired = %v, wanted %v", w.Code, http.StatusOK)
 		}
 	})
 
@@ -84,8 +84,8 @@ func TestLicenseMiddleware_IsExpired(t *testing.T) {
 		gin.SetMode(gin.ReleaseMode)
 		router := gin.New()
 
-		lm := NewLicenseMiddleware(m)
-		router.GET("/repos", lm.IsExpired(), func(c *gin.Context) {
+		lm := NewMiddleware(m)
+		router.GET("/repos", lm.IsLicenseExpired(), func(c *gin.Context) {
 			c.Status(http.StatusOK)
 		})
 
@@ -95,7 +95,7 @@ func TestLicenseMiddleware_IsExpired(t *testing.T) {
 		router.ServeHTTP(w, req)
 
 		if w.Code != http.StatusPaymentRequired {
-			t.Fatalf("IsExpired = %v, wanted %v", w.Code, http.StatusPaymentRequired)
+			t.Fatalf("IsLicenseExpired = %v, wanted %v", w.Code, http.StatusPaymentRequired)
 		}
 	})
 
@@ -115,8 +115,8 @@ func TestLicenseMiddleware_IsExpired(t *testing.T) {
 		gin.SetMode(gin.ReleaseMode)
 		router := gin.New()
 
-		lm := NewLicenseMiddleware(m)
-		router.GET("/repos", lm.IsExpired(), func(c *gin.Context) {
+		lm := NewMiddleware(m)
+		router.GET("/repos", lm.IsLicenseExpired(), func(c *gin.Context) {
 			c.Status(http.StatusOK)
 		})
 
@@ -126,7 +126,7 @@ func TestLicenseMiddleware_IsExpired(t *testing.T) {
 		router.ServeHTTP(w, req)
 
 		if w.Code != http.StatusOK {
-			t.Fatalf("IsExpired = %v, wanted %v", w.Code, http.StatusOK)
+			t.Fatalf("IsLicenseExpired = %v, wanted %v", w.Code, http.StatusOK)
 		}
 	})
 }
