@@ -41,7 +41,8 @@ type (
 		ProxyHost  string
 		ProxyProto string
 
-		WebhookSecret string
+		WebhookSecret        string
+		PrometheusAuthSecret string
 	}
 
 	SCMType string
@@ -196,9 +197,10 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 	metricsapi := r.Group("/metrics")
 	{
 		m := metrics.NewMetric(&metrics.MetricConfig{
-			Interactor: c.Interactor,
+			Interactor:           c.Interactor,
+			PrometheusAuthSecret: c.PrometheusAuthSecret,
 		})
-		metricsapi.GET("", mw.OnlyAuthorized(), m.CollectMetrics)
+		metricsapi.GET("", m.CollectMetrics)
 	}
 
 	r.HEAD("/slack", func(gc *gin.Context) {

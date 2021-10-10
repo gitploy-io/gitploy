@@ -91,11 +91,12 @@ func newServerConfig(c *Config) *server.ServerConfig {
 	}
 
 	return &server.ServerConfig{
-		Host:          c.ServerHost,
-		Proto:         c.ServerProto,
-		ProxyHost:     proxyHost,
-		ProxyProto:    proxyProto,
-		WebhookSecret: c.WebhookSecret,
+		Host:                 c.ServerHost,
+		Proto:                c.ServerProto,
+		ProxyHost:            proxyHost,
+		ProxyProto:           proxyProto,
+		WebhookSecret:        c.WebhookSecret,
+		PrometheusAuthSecret: c.PrometheusAuthSecret,
 	}
 }
 
