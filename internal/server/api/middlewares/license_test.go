@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/gitploy-io/gitploy/internal/server/middlewares/mock"
+	"github.com/gitploy-io/gitploy/internal/server/api/middlewares/mock"
 	"github.com/gitploy-io/gitploy/vo"
 	"github.com/golang/mock/gomock"
 )
