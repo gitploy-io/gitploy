@@ -96,6 +96,7 @@ func newServerConfig(c *Config) *server.ServerConfig {
 		ProxyHost:            proxyHost,
 		ProxyProto:           proxyProto,
 		WebhookSecret:        c.WebhookSecret,
+		PrometheusEnabled:    c.PrometheusEnabled,
 		PrometheusAuthSecret: c.PrometheusAuthSecret,
 	}
 }

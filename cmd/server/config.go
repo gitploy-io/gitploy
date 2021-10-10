@@ -60,6 +60,7 @@ type (
 	}
 
 	Prometheus struct {
+		PrometheusEnabled    bool   `split_words:"true"`
 		PrometheusAuthSecret string `split_words:"true"`
 	}
 )
