@@ -120,7 +120,7 @@ func (c *collector) Collect(ch chan<- prometheus.Metric) {
 					[]string{"namespace", "name", "env"},
 					nil,
 				),
-				prometheus.CounterValue,
+				prometheus.GaugeValue,
 				float64(dc.Count),
 				dc.Namespace, dc.Name, dc.Env,
 			)
@@ -147,7 +147,7 @@ func (c *collector) Collect(ch chan<- prometheus.Metric) {
 				nil,
 				nil,
 			),
-			prometheus.CounterValue,
+			prometheus.GaugeValue,
 			float64(lic.MemberCount),
 		)
 
@@ -162,7 +162,7 @@ func (c *collector) Collect(ch chan<- prometheus.Metric) {
 				[]string{"kind"},
 				nil,
 			),
-			prometheus.CounterValue,
+			prometheus.GaugeValue,
 			float64(lic.MemberLimit),
 			string(lic.Kind),
 		)
