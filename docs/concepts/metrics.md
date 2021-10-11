@@ -17,12 +17,12 @@ GITPLOY_PROMETHEUS_AUTH_SECRET=YOUR_SECRET
 global:
   scrape_interval: 60s
 
-  scrape_configs:
+scrape_configs:
   - job_name: gitploy
-      authorization:
-        credentials: YOUR_SECRET
+    authorization:
+      credentials: YOUR_SECRET
 
-      static_configs:
+    static_configs:
       - targets: ['domain.com']
 ```
 
