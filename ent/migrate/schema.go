@@ -159,28 +159,35 @@ var (
 	// DeploymentStatisticsColumns holds the columns for the "deployment_statistics" table.
 	DeploymentStatisticsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "namespace", Type: field.TypeString},
-		{Name: "name", Type: field.TypeString},
 		{Name: "env", Type: field.TypeString},
 		{Name: "count", Type: field.TypeInt, Default: 1},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "repo_id", Type: field.TypeInt64, Nullable: true},
 	}
 	// DeploymentStatisticsTable holds the schema information for the "deployment_statistics" table.
 	DeploymentStatisticsTable = &schema.Table{
 		Name:       "deployment_statistics",
 		Columns:    DeploymentStatisticsColumns,
 		PrimaryKey: []*schema.Column{DeploymentStatisticsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "deployment_statistics_repos_deployment_statistics",
+				Columns:    []*schema.Column{DeploymentStatisticsColumns[5]},
+				RefColumns: []*schema.Column{ReposColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
 		Indexes: []*schema.Index{
 			{
-				Name:    "deploymentstatistics_namespace_name_env",
+				Name:    "deploymentstatistics_repo_id_env",
 				Unique:  true,
-				Columns: []*schema.Column{DeploymentStatisticsColumns[1], DeploymentStatisticsColumns[2], DeploymentStatisticsColumns[3]},
+				Columns: []*schema.Column{DeploymentStatisticsColumns[5], DeploymentStatisticsColumns[1]},
 			},
 			{
 				Name:    "deploymentstatistics_updated_at",
 				Unique:  false,
-				Columns: []*schema.Column{DeploymentStatisticsColumns[6]},
+				Columns: []*schema.Column{DeploymentStatisticsColumns[4]},
 			},
 		},
 	}
@@ -415,6 +422,7 @@ func init() {
 	ChatUsersTable.ForeignKeys[0].RefTable = UsersTable
 	DeploymentsTable.ForeignKeys[0].RefTable = ReposTable
 	DeploymentsTable.ForeignKeys[1].RefTable = UsersTable
+	DeploymentStatisticsTable.ForeignKeys[0].RefTable = ReposTable
 	DeploymentStatusTable.ForeignKeys[0].RefTable = DeploymentsTable
 	EventsTable.ForeignKeys[0].RefTable = ApprovalsTable
 	EventsTable.ForeignKeys[1].RefTable = DeploymentsTable

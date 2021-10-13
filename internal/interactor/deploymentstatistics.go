@@ -11,10 +11,9 @@ func (i *Interactor) ProduceDeploymentStatisticsOfRepo(ctx context.Context, r *e
 
 	if ent.IsNotFound(err) {
 		return i.Store.CreateDeploymentStatistics(ctx, &ent.DeploymentStatistics{
-			Namespace: r.Namespace,
-			Name:      r.Name,
-			Env:       d.Env,
-			Count:     1,
+			Env:    d.Env,
+			Count:  1,
+			RepoID: r.ID,
 		})
 	}
 

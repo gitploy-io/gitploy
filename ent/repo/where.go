@@ -1058,6 +1058,34 @@ func HasLocksWith(preds ...predicate.Lock) predicate.Repo {
 	})
 }
 
+// HasDeploymentStatistics applies the HasEdge predicate on the "deployment_statistics" edge.
+func HasDeploymentStatistics() predicate.Repo {
+	return predicate.Repo(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(DeploymentStatisticsTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, DeploymentStatisticsTable, DeploymentStatisticsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasDeploymentStatisticsWith applies the HasEdge predicate on the "deployment_statistics" edge with a given conditions (other predicates).
+func HasDeploymentStatisticsWith(preds ...predicate.DeploymentStatistics) predicate.Repo {
+	return predicate.Repo(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(DeploymentStatisticsInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, DeploymentStatisticsTable, DeploymentStatisticsColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Repo) predicate.Repo {
 	return predicate.Repo(func(s *sql.Selector) {

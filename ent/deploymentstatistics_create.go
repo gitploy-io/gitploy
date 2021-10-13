@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/gitploy-io/gitploy/ent/deploymentstatistics"
+	"github.com/gitploy-io/gitploy/ent/repo"
 )
 
 // DeploymentStatisticsCreate is the builder for creating a DeploymentStatistics entity.
@@ -18,18 +19,6 @@ type DeploymentStatisticsCreate struct {
 	config
 	mutation *DeploymentStatisticsMutation
 	hooks    []Hook
-}
-
-// SetNamespace sets the "namespace" field.
-func (dsc *DeploymentStatisticsCreate) SetNamespace(s string) *DeploymentStatisticsCreate {
-	dsc.mutation.SetNamespace(s)
-	return dsc
-}
-
-// SetName sets the "name" field.
-func (dsc *DeploymentStatisticsCreate) SetName(s string) *DeploymentStatisticsCreate {
-	dsc.mutation.SetName(s)
-	return dsc
 }
 
 // SetEnv sets the "env" field.
@@ -78,6 +67,17 @@ func (dsc *DeploymentStatisticsCreate) SetNillableUpdatedAt(t *time.Time) *Deplo
 		dsc.SetUpdatedAt(*t)
 	}
 	return dsc
+}
+
+// SetRepoID sets the "repo_id" field.
+func (dsc *DeploymentStatisticsCreate) SetRepoID(i int64) *DeploymentStatisticsCreate {
+	dsc.mutation.SetRepoID(i)
+	return dsc
+}
+
+// SetRepo sets the "repo" edge to the Repo entity.
+func (dsc *DeploymentStatisticsCreate) SetRepo(r *Repo) *DeploymentStatisticsCreate {
+	return dsc.SetRepoID(r.ID)
 }
 
 // Mutation returns the DeploymentStatisticsMutation object of the builder.
@@ -167,12 +167,6 @@ func (dsc *DeploymentStatisticsCreate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (dsc *DeploymentStatisticsCreate) check() error {
-	if _, ok := dsc.mutation.Namespace(); !ok {
-		return &ValidationError{Name: "namespace", err: errors.New(`ent: missing required field "namespace"`)}
-	}
-	if _, ok := dsc.mutation.Name(); !ok {
-		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "name"`)}
-	}
 	if _, ok := dsc.mutation.Env(); !ok {
 		return &ValidationError{Name: "env", err: errors.New(`ent: missing required field "env"`)}
 	}
@@ -184,6 +178,12 @@ func (dsc *DeploymentStatisticsCreate) check() error {
 	}
 	if _, ok := dsc.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "updated_at"`)}
+	}
+	if _, ok := dsc.mutation.RepoID(); !ok {
+		return &ValidationError{Name: "repo_id", err: errors.New(`ent: missing required field "repo_id"`)}
+	}
+	if _, ok := dsc.mutation.RepoID(); !ok {
+		return &ValidationError{Name: "repo", err: errors.New("ent: missing required edge \"repo\"")}
 	}
 	return nil
 }
@@ -212,22 +212,6 @@ func (dsc *DeploymentStatisticsCreate) createSpec() (*DeploymentStatistics, *sql
 			},
 		}
 	)
-	if value, ok := dsc.mutation.Namespace(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: deploymentstatistics.FieldNamespace,
-		})
-		_node.Namespace = value
-	}
-	if value, ok := dsc.mutation.Name(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: deploymentstatistics.FieldName,
-		})
-		_node.Name = value
-	}
 	if value, ok := dsc.mutation.Env(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -259,6 +243,26 @@ func (dsc *DeploymentStatisticsCreate) createSpec() (*DeploymentStatistics, *sql
 			Column: deploymentstatistics.FieldUpdatedAt,
 		})
 		_node.UpdatedAt = value
+	}
+	if nodes := dsc.mutation.RepoIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   deploymentstatistics.RepoTable,
+			Columns: []string{deploymentstatistics.RepoColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt64,
+					Column: repo.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.RepoID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
 }

@@ -109,6 +109,10 @@ func (c *collector) Collect(ch chan<- prometheus.Metric) {
 		}
 
 		for _, dc := range c.cache {
+			if dc.Edges.Repo == nil {
+				continue
+			}
+
 			ch <- prometheus.MustNewConstMetric(
 				prometheus.NewDesc(
 					prometheus.BuildFQName(
@@ -122,7 +126,7 @@ func (c *collector) Collect(ch chan<- prometheus.Metric) {
 				),
 				prometheus.GaugeValue,
 				float64(dc.Count),
-				dc.Namespace, dc.Name, dc.Env,
+				dc.Edges.Repo.Namespace, dc.Edges.Repo.Name, dc.Env,
 			)
 		}
 

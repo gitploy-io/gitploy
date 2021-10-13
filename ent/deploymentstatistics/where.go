@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/gitploy-io/gitploy/ent/predicate"
 )
 
@@ -92,20 +93,6 @@ func IDLTE(id int) predicate.DeploymentStatistics {
 	})
 }
 
-// Namespace applies equality check predicate on the "namespace" field. It's identical to NamespaceEQ.
-func Namespace(v string) predicate.DeploymentStatistics {
-	return predicate.DeploymentStatistics(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldNamespace), v))
-	})
-}
-
-// Name applies equality check predicate on the "name" field. It's identical to NameEQ.
-func Name(v string) predicate.DeploymentStatistics {
-	return predicate.DeploymentStatistics(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldName), v))
-	})
-}
-
 // Env applies equality check predicate on the "env" field. It's identical to EnvEQ.
 func Env(v string) predicate.DeploymentStatistics {
 	return predicate.DeploymentStatistics(func(s *sql.Selector) {
@@ -134,225 +121,10 @@ func UpdatedAt(v time.Time) predicate.DeploymentStatistics {
 	})
 }
 
-// NamespaceEQ applies the EQ predicate on the "namespace" field.
-func NamespaceEQ(v string) predicate.DeploymentStatistics {
+// RepoID applies equality check predicate on the "repo_id" field. It's identical to RepoIDEQ.
+func RepoID(v int64) predicate.DeploymentStatistics {
 	return predicate.DeploymentStatistics(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldNamespace), v))
-	})
-}
-
-// NamespaceNEQ applies the NEQ predicate on the "namespace" field.
-func NamespaceNEQ(v string) predicate.DeploymentStatistics {
-	return predicate.DeploymentStatistics(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldNamespace), v))
-	})
-}
-
-// NamespaceIn applies the In predicate on the "namespace" field.
-func NamespaceIn(vs ...string) predicate.DeploymentStatistics {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.DeploymentStatistics(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.In(s.C(FieldNamespace), v...))
-	})
-}
-
-// NamespaceNotIn applies the NotIn predicate on the "namespace" field.
-func NamespaceNotIn(vs ...string) predicate.DeploymentStatistics {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.DeploymentStatistics(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.NotIn(s.C(FieldNamespace), v...))
-	})
-}
-
-// NamespaceGT applies the GT predicate on the "namespace" field.
-func NamespaceGT(v string) predicate.DeploymentStatistics {
-	return predicate.DeploymentStatistics(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldNamespace), v))
-	})
-}
-
-// NamespaceGTE applies the GTE predicate on the "namespace" field.
-func NamespaceGTE(v string) predicate.DeploymentStatistics {
-	return predicate.DeploymentStatistics(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldNamespace), v))
-	})
-}
-
-// NamespaceLT applies the LT predicate on the "namespace" field.
-func NamespaceLT(v string) predicate.DeploymentStatistics {
-	return predicate.DeploymentStatistics(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldNamespace), v))
-	})
-}
-
-// NamespaceLTE applies the LTE predicate on the "namespace" field.
-func NamespaceLTE(v string) predicate.DeploymentStatistics {
-	return predicate.DeploymentStatistics(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldNamespace), v))
-	})
-}
-
-// NamespaceContains applies the Contains predicate on the "namespace" field.
-func NamespaceContains(v string) predicate.DeploymentStatistics {
-	return predicate.DeploymentStatistics(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldNamespace), v))
-	})
-}
-
-// NamespaceHasPrefix applies the HasPrefix predicate on the "namespace" field.
-func NamespaceHasPrefix(v string) predicate.DeploymentStatistics {
-	return predicate.DeploymentStatistics(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldNamespace), v))
-	})
-}
-
-// NamespaceHasSuffix applies the HasSuffix predicate on the "namespace" field.
-func NamespaceHasSuffix(v string) predicate.DeploymentStatistics {
-	return predicate.DeploymentStatistics(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldNamespace), v))
-	})
-}
-
-// NamespaceEqualFold applies the EqualFold predicate on the "namespace" field.
-func NamespaceEqualFold(v string) predicate.DeploymentStatistics {
-	return predicate.DeploymentStatistics(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldNamespace), v))
-	})
-}
-
-// NamespaceContainsFold applies the ContainsFold predicate on the "namespace" field.
-func NamespaceContainsFold(v string) predicate.DeploymentStatistics {
-	return predicate.DeploymentStatistics(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldNamespace), v))
-	})
-}
-
-// NameEQ applies the EQ predicate on the "name" field.
-func NameEQ(v string) predicate.DeploymentStatistics {
-	return predicate.DeploymentStatistics(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldName), v))
-	})
-}
-
-// NameNEQ applies the NEQ predicate on the "name" field.
-func NameNEQ(v string) predicate.DeploymentStatistics {
-	return predicate.DeploymentStatistics(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldName), v))
-	})
-}
-
-// NameIn applies the In predicate on the "name" field.
-func NameIn(vs ...string) predicate.DeploymentStatistics {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.DeploymentStatistics(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.In(s.C(FieldName), v...))
-	})
-}
-
-// NameNotIn applies the NotIn predicate on the "name" field.
-func NameNotIn(vs ...string) predicate.DeploymentStatistics {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.DeploymentStatistics(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.NotIn(s.C(FieldName), v...))
-	})
-}
-
-// NameGT applies the GT predicate on the "name" field.
-func NameGT(v string) predicate.DeploymentStatistics {
-	return predicate.DeploymentStatistics(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldName), v))
-	})
-}
-
-// NameGTE applies the GTE predicate on the "name" field.
-func NameGTE(v string) predicate.DeploymentStatistics {
-	return predicate.DeploymentStatistics(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldName), v))
-	})
-}
-
-// NameLT applies the LT predicate on the "name" field.
-func NameLT(v string) predicate.DeploymentStatistics {
-	return predicate.DeploymentStatistics(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldName), v))
-	})
-}
-
-// NameLTE applies the LTE predicate on the "name" field.
-func NameLTE(v string) predicate.DeploymentStatistics {
-	return predicate.DeploymentStatistics(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldName), v))
-	})
-}
-
-// NameContains applies the Contains predicate on the "name" field.
-func NameContains(v string) predicate.DeploymentStatistics {
-	return predicate.DeploymentStatistics(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldName), v))
-	})
-}
-
-// NameHasPrefix applies the HasPrefix predicate on the "name" field.
-func NameHasPrefix(v string) predicate.DeploymentStatistics {
-	return predicate.DeploymentStatistics(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldName), v))
-	})
-}
-
-// NameHasSuffix applies the HasSuffix predicate on the "name" field.
-func NameHasSuffix(v string) predicate.DeploymentStatistics {
-	return predicate.DeploymentStatistics(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldName), v))
-	})
-}
-
-// NameEqualFold applies the EqualFold predicate on the "name" field.
-func NameEqualFold(v string) predicate.DeploymentStatistics {
-	return predicate.DeploymentStatistics(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldName), v))
-	})
-}
-
-// NameContainsFold applies the ContainsFold predicate on the "name" field.
-func NameContainsFold(v string) predicate.DeploymentStatistics {
-	return predicate.DeploymentStatistics(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldName), v))
+		s.Where(sql.EQ(s.C(FieldRepoID), v))
 	})
 }
 
@@ -692,6 +464,82 @@ func UpdatedAtLT(v time.Time) predicate.DeploymentStatistics {
 func UpdatedAtLTE(v time.Time) predicate.DeploymentStatistics {
 	return predicate.DeploymentStatistics(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldUpdatedAt), v))
+	})
+}
+
+// RepoIDEQ applies the EQ predicate on the "repo_id" field.
+func RepoIDEQ(v int64) predicate.DeploymentStatistics {
+	return predicate.DeploymentStatistics(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldRepoID), v))
+	})
+}
+
+// RepoIDNEQ applies the NEQ predicate on the "repo_id" field.
+func RepoIDNEQ(v int64) predicate.DeploymentStatistics {
+	return predicate.DeploymentStatistics(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldRepoID), v))
+	})
+}
+
+// RepoIDIn applies the In predicate on the "repo_id" field.
+func RepoIDIn(vs ...int64) predicate.DeploymentStatistics {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.DeploymentStatistics(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldRepoID), v...))
+	})
+}
+
+// RepoIDNotIn applies the NotIn predicate on the "repo_id" field.
+func RepoIDNotIn(vs ...int64) predicate.DeploymentStatistics {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.DeploymentStatistics(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldRepoID), v...))
+	})
+}
+
+// HasRepo applies the HasEdge predicate on the "repo" edge.
+func HasRepo() predicate.DeploymentStatistics {
+	return predicate.DeploymentStatistics(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(RepoTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, RepoTable, RepoColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasRepoWith applies the HasEdge predicate on the "repo" edge with a given conditions (other predicates).
+func HasRepoWith(preds ...predicate.Repo) predicate.DeploymentStatistics {
+	return predicate.DeploymentStatistics(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(RepoInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, RepoTable, RepoColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
 	})
 }
 

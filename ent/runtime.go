@@ -94,15 +94,15 @@ func init() {
 	deploymentstatisticsFields := schema.DeploymentStatistics{}.Fields()
 	_ = deploymentstatisticsFields
 	// deploymentstatisticsDescCount is the schema descriptor for count field.
-	deploymentstatisticsDescCount := deploymentstatisticsFields[3].Descriptor()
+	deploymentstatisticsDescCount := deploymentstatisticsFields[1].Descriptor()
 	// deploymentstatistics.DefaultCount holds the default value on creation for the count field.
 	deploymentstatistics.DefaultCount = deploymentstatisticsDescCount.Default.(int)
 	// deploymentstatisticsDescCreatedAt is the schema descriptor for created_at field.
-	deploymentstatisticsDescCreatedAt := deploymentstatisticsFields[4].Descriptor()
+	deploymentstatisticsDescCreatedAt := deploymentstatisticsFields[2].Descriptor()
 	// deploymentstatistics.DefaultCreatedAt holds the default value on creation for the created_at field.
 	deploymentstatistics.DefaultCreatedAt = deploymentstatisticsDescCreatedAt.Default.(func() time.Time)
 	// deploymentstatisticsDescUpdatedAt is the schema descriptor for updated_at field.
-	deploymentstatisticsDescUpdatedAt := deploymentstatisticsFields[5].Descriptor()
+	deploymentstatisticsDescUpdatedAt := deploymentstatisticsFields[3].Descriptor()
 	// deploymentstatistics.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	deploymentstatistics.DefaultUpdatedAt = deploymentstatisticsDescUpdatedAt.Default.(func() time.Time)
 	// deploymentstatistics.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.

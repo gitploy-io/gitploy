@@ -9,6 +9,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/gitploy-io/gitploy/ent/deploymentstatistics"
+	"github.com/gitploy-io/gitploy/ent/repo"
 )
 
 // DeploymentStatistics is the model entity for the DeploymentStatistics schema.
@@ -16,10 +17,6 @@ type DeploymentStatistics struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID int `json:"id,omitempty"`
-	// Namespace holds the value of the "namespace" field.
-	Namespace string `json:"namespace"`
-	// Name holds the value of the "name" field.
-	Name string `json:"name"`
 	// Env holds the value of the "env" field.
 	Env string `json:"env"`
 	// Count holds the value of the "count" field.
@@ -28,6 +25,34 @@ type DeploymentStatistics struct {
 	CreatedAt time.Time `json:"created_at"`
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updated_at"`
+	// RepoID holds the value of the "repo_id" field.
+	RepoID int64 `json:"repo_id"`
+	// Edges holds the relations/edges for other nodes in the graph.
+	// The values are being populated by the DeploymentStatisticsQuery when eager-loading is set.
+	Edges DeploymentStatisticsEdges `json:"edges"`
+}
+
+// DeploymentStatisticsEdges holds the relations/edges for other nodes in the graph.
+type DeploymentStatisticsEdges struct {
+	// Repo holds the value of the repo edge.
+	Repo *Repo `json:"repo,omitempty"`
+	// loadedTypes holds the information for reporting if a
+	// type was loaded (or requested) in eager-loading or not.
+	loadedTypes [1]bool
+}
+
+// RepoOrErr returns the Repo value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e DeploymentStatisticsEdges) RepoOrErr() (*Repo, error) {
+	if e.loadedTypes[0] {
+		if e.Repo == nil {
+			// The edge repo was loaded in eager-loading,
+			// but was not found.
+			return nil, &NotFoundError{label: repo.Label}
+		}
+		return e.Repo, nil
+	}
+	return nil, &NotLoadedError{edge: "repo"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -35,9 +60,9 @@ func (*DeploymentStatistics) scanValues(columns []string) ([]interface{}, error)
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case deploymentstatistics.FieldID, deploymentstatistics.FieldCount:
+		case deploymentstatistics.FieldID, deploymentstatistics.FieldCount, deploymentstatistics.FieldRepoID:
 			values[i] = new(sql.NullInt64)
-		case deploymentstatistics.FieldNamespace, deploymentstatistics.FieldName, deploymentstatistics.FieldEnv:
+		case deploymentstatistics.FieldEnv:
 			values[i] = new(sql.NullString)
 		case deploymentstatistics.FieldCreatedAt, deploymentstatistics.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -62,18 +87,6 @@ func (ds *DeploymentStatistics) assignValues(columns []string, values []interfac
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
 			ds.ID = int(value.Int64)
-		case deploymentstatistics.FieldNamespace:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field namespace", values[i])
-			} else if value.Valid {
-				ds.Namespace = value.String
-			}
-		case deploymentstatistics.FieldName:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field name", values[i])
-			} else if value.Valid {
-				ds.Name = value.String
-			}
 		case deploymentstatistics.FieldEnv:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field env", values[i])
@@ -98,9 +111,20 @@ func (ds *DeploymentStatistics) assignValues(columns []string, values []interfac
 			} else if value.Valid {
 				ds.UpdatedAt = value.Time
 			}
+		case deploymentstatistics.FieldRepoID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field repo_id", values[i])
+			} else if value.Valid {
+				ds.RepoID = value.Int64
+			}
 		}
 	}
 	return nil
+}
+
+// QueryRepo queries the "repo" edge of the DeploymentStatistics entity.
+func (ds *DeploymentStatistics) QueryRepo() *RepoQuery {
+	return (&DeploymentStatisticsClient{config: ds.config}).QueryRepo(ds)
 }
 
 // Update returns a builder for updating this DeploymentStatistics.
@@ -126,10 +150,6 @@ func (ds *DeploymentStatistics) String() string {
 	var builder strings.Builder
 	builder.WriteString("DeploymentStatistics(")
 	builder.WriteString(fmt.Sprintf("id=%v", ds.ID))
-	builder.WriteString(", namespace=")
-	builder.WriteString(ds.Namespace)
-	builder.WriteString(", name=")
-	builder.WriteString(ds.Name)
 	builder.WriteString(", env=")
 	builder.WriteString(ds.Env)
 	builder.WriteString(", count=")
@@ -138,6 +158,8 @@ func (ds *DeploymentStatistics) String() string {
 	builder.WriteString(ds.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", updated_at=")
 	builder.WriteString(ds.UpdatedAt.Format(time.ANSIC))
+	builder.WriteString(", repo_id=")
+	builder.WriteString(fmt.Sprintf("%v", ds.RepoID))
 	builder.WriteByte(')')
 	return builder.String()
 }

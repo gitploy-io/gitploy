@@ -11,10 +11,6 @@ const (
 	Label = "deployment_statistics"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
-	// FieldNamespace holds the string denoting the namespace field in the database.
-	FieldNamespace = "namespace"
-	// FieldName holds the string denoting the name field in the database.
-	FieldName = "name"
 	// FieldEnv holds the string denoting the env field in the database.
 	FieldEnv = "env"
 	// FieldCount holds the string denoting the count field in the database.
@@ -23,19 +19,29 @@ const (
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
 	FieldUpdatedAt = "updated_at"
+	// FieldRepoID holds the string denoting the repo_id field in the database.
+	FieldRepoID = "repo_id"
+	// EdgeRepo holds the string denoting the repo edge name in mutations.
+	EdgeRepo = "repo"
 	// Table holds the table name of the deploymentstatistics in the database.
 	Table = "deployment_statistics"
+	// RepoTable is the table that holds the repo relation/edge.
+	RepoTable = "deployment_statistics"
+	// RepoInverseTable is the table name for the Repo entity.
+	// It exists in this package in order to avoid circular dependency with the "repo" package.
+	RepoInverseTable = "repos"
+	// RepoColumn is the table column denoting the repo relation/edge.
+	RepoColumn = "repo_id"
 )
 
 // Columns holds all SQL columns for deploymentstatistics fields.
 var Columns = []string{
 	FieldID,
-	FieldNamespace,
-	FieldName,
 	FieldEnv,
 	FieldCount,
 	FieldCreatedAt,
 	FieldUpdatedAt,
+	FieldRepoID,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).

@@ -804,6 +804,22 @@ func (c *DeploymentStatisticsClient) GetX(ctx context.Context, id int) *Deployme
 	return obj
 }
 
+// QueryRepo queries the repo edge of a DeploymentStatistics.
+func (c *DeploymentStatisticsClient) QueryRepo(ds *DeploymentStatistics) *RepoQuery {
+	query := &RepoQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := ds.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(deploymentstatistics.Table, deploymentstatistics.FieldID, id),
+			sqlgraph.To(repo.Table, repo.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, deploymentstatistics.RepoTable, deploymentstatistics.RepoColumn),
+		)
+		fromV = sqlgraph.Neighbors(ds.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *DeploymentStatisticsClient) Hooks() []Hook {
 	return c.hooks.DeploymentStatistics
@@ -1545,6 +1561,22 @@ func (c *RepoClient) QueryLocks(r *Repo) *LockQuery {
 			sqlgraph.From(repo.Table, repo.FieldID, id),
 			sqlgraph.To(lock.Table, lock.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, repo.LocksTable, repo.LocksColumn),
+		)
+		fromV = sqlgraph.Neighbors(r.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryDeploymentStatistics queries the deployment_statistics edge of a Repo.
+func (c *RepoClient) QueryDeploymentStatistics(r *Repo) *DeploymentStatisticsQuery {
+	query := &DeploymentStatisticsQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := r.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(repo.Table, repo.FieldID, id),
+			sqlgraph.To(deploymentstatistics.Table, deploymentstatistics.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, repo.DeploymentStatisticsTable, repo.DeploymentStatisticsColumn),
 		)
 		fromV = sqlgraph.Neighbors(r.driver.Dialect(), step)
 		return fromV, nil
