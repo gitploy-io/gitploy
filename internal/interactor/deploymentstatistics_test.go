@@ -47,4 +47,43 @@ func TestInteractor_ProduceDeploymentStatisticsOfRepo(t *testing.T) {
 			t.Fatalf("ProduceDeploymentStatisticsOfRepo returns an error: %s", err)
 		}
 	})
+
+	t.Run("Increate the rollback_count when the deployment is rollback.", func(t *testing.T) {
+		input := struct {
+			repo *ent.Repo
+			d    *ent.Deployment
+		}{
+			repo: &ent.Repo{
+				Namespace: "octocat",
+				Name:      "HelloWorld",
+			},
+			d: &ent.Deployment{
+				Env:        "production",
+				IsRollback: true,
+			},
+		}
+
+		ctrl := gomock.NewController(t)
+		store := mock.NewMockStore(ctrl)
+		scm := mock.NewMockSCM(ctrl)
+
+		t.Log("MOCK - Find the deployment_statistics by the environment.")
+		store.
+			EXPECT().
+			FindDeploymentStatisticsOfRepoByEnv(gomock.Any(), gomock.Eq(input.repo), gomock.Eq(input.d.Env)).
+			Return(&ent.DeploymentStatistics{ID: 1, RollbackCount: 1}, nil)
+
+		t.Log("MOCK - Increase the rollback_count.")
+		store.
+			EXPECT().
+			UpdateDeploymentStatistics(gomock.Any(), gomock.Eq(&ent.DeploymentStatistics{ID: 1, RollbackCount: 2})).
+			Return(&ent.DeploymentStatistics{ID: 1, RollbackCount: 2}, nil)
+
+		i := newMockInteractor(store, scm)
+
+		_, err := i.ProduceDeploymentStatisticsOfRepo(context.Background(), input.repo, input.d)
+		if err != nil {
+			t.Fatalf("ProduceDeploymentStatisticsOfRepo returns an error: %s", err)
+		}
+	})
 }

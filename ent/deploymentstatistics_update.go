@@ -56,6 +56,27 @@ func (dsu *DeploymentStatisticsUpdate) AddCount(i int) *DeploymentStatisticsUpda
 	return dsu
 }
 
+// SetRollbackCount sets the "rollback_count" field.
+func (dsu *DeploymentStatisticsUpdate) SetRollbackCount(i int) *DeploymentStatisticsUpdate {
+	dsu.mutation.ResetRollbackCount()
+	dsu.mutation.SetRollbackCount(i)
+	return dsu
+}
+
+// SetNillableRollbackCount sets the "rollback_count" field if the given value is not nil.
+func (dsu *DeploymentStatisticsUpdate) SetNillableRollbackCount(i *int) *DeploymentStatisticsUpdate {
+	if i != nil {
+		dsu.SetRollbackCount(*i)
+	}
+	return dsu
+}
+
+// AddRollbackCount adds i to the "rollback_count" field.
+func (dsu *DeploymentStatisticsUpdate) AddRollbackCount(i int) *DeploymentStatisticsUpdate {
+	dsu.mutation.AddRollbackCount(i)
+	return dsu
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (dsu *DeploymentStatisticsUpdate) SetCreatedAt(t time.Time) *DeploymentStatisticsUpdate {
 	dsu.mutation.SetCreatedAt(t)
@@ -214,6 +235,20 @@ func (dsu *DeploymentStatisticsUpdate) sqlSave(ctx context.Context) (n int, err 
 			Column: deploymentstatistics.FieldCount,
 		})
 	}
+	if value, ok := dsu.mutation.RollbackCount(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: deploymentstatistics.FieldRollbackCount,
+		})
+	}
+	if value, ok := dsu.mutation.AddedRollbackCount(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: deploymentstatistics.FieldRollbackCount,
+		})
+	}
 	if value, ok := dsu.mutation.CreatedAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
@@ -306,6 +341,27 @@ func (dsuo *DeploymentStatisticsUpdateOne) SetNillableCount(i *int) *DeploymentS
 // AddCount adds i to the "count" field.
 func (dsuo *DeploymentStatisticsUpdateOne) AddCount(i int) *DeploymentStatisticsUpdateOne {
 	dsuo.mutation.AddCount(i)
+	return dsuo
+}
+
+// SetRollbackCount sets the "rollback_count" field.
+func (dsuo *DeploymentStatisticsUpdateOne) SetRollbackCount(i int) *DeploymentStatisticsUpdateOne {
+	dsuo.mutation.ResetRollbackCount()
+	dsuo.mutation.SetRollbackCount(i)
+	return dsuo
+}
+
+// SetNillableRollbackCount sets the "rollback_count" field if the given value is not nil.
+func (dsuo *DeploymentStatisticsUpdateOne) SetNillableRollbackCount(i *int) *DeploymentStatisticsUpdateOne {
+	if i != nil {
+		dsuo.SetRollbackCount(*i)
+	}
+	return dsuo
+}
+
+// AddRollbackCount adds i to the "rollback_count" field.
+func (dsuo *DeploymentStatisticsUpdateOne) AddRollbackCount(i int) *DeploymentStatisticsUpdateOne {
+	dsuo.mutation.AddRollbackCount(i)
 	return dsuo
 }
 
@@ -489,6 +545,20 @@ func (dsuo *DeploymentStatisticsUpdateOne) sqlSave(ctx context.Context) (_node *
 			Type:   field.TypeInt,
 			Value:  value,
 			Column: deploymentstatistics.FieldCount,
+		})
+	}
+	if value, ok := dsuo.mutation.RollbackCount(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: deploymentstatistics.FieldRollbackCount,
+		})
+	}
+	if value, ok := dsuo.mutation.AddedRollbackCount(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: deploymentstatistics.FieldRollbackCount,
 		})
 	}
 	if value, ok := dsuo.mutation.CreatedAt(); ok {

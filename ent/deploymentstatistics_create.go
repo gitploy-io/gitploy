@@ -41,6 +41,20 @@ func (dsc *DeploymentStatisticsCreate) SetNillableCount(i *int) *DeploymentStati
 	return dsc
 }
 
+// SetRollbackCount sets the "rollback_count" field.
+func (dsc *DeploymentStatisticsCreate) SetRollbackCount(i int) *DeploymentStatisticsCreate {
+	dsc.mutation.SetRollbackCount(i)
+	return dsc
+}
+
+// SetNillableRollbackCount sets the "rollback_count" field if the given value is not nil.
+func (dsc *DeploymentStatisticsCreate) SetNillableRollbackCount(i *int) *DeploymentStatisticsCreate {
+	if i != nil {
+		dsc.SetRollbackCount(*i)
+	}
+	return dsc
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (dsc *DeploymentStatisticsCreate) SetCreatedAt(t time.Time) *DeploymentStatisticsCreate {
 	dsc.mutation.SetCreatedAt(t)
@@ -155,6 +169,10 @@ func (dsc *DeploymentStatisticsCreate) defaults() {
 		v := deploymentstatistics.DefaultCount
 		dsc.mutation.SetCount(v)
 	}
+	if _, ok := dsc.mutation.RollbackCount(); !ok {
+		v := deploymentstatistics.DefaultRollbackCount
+		dsc.mutation.SetRollbackCount(v)
+	}
 	if _, ok := dsc.mutation.CreatedAt(); !ok {
 		v := deploymentstatistics.DefaultCreatedAt()
 		dsc.mutation.SetCreatedAt(v)
@@ -172,6 +190,9 @@ func (dsc *DeploymentStatisticsCreate) check() error {
 	}
 	if _, ok := dsc.mutation.Count(); !ok {
 		return &ValidationError{Name: "count", err: errors.New(`ent: missing required field "count"`)}
+	}
+	if _, ok := dsc.mutation.RollbackCount(); !ok {
+		return &ValidationError{Name: "rollback_count", err: errors.New(`ent: missing required field "rollback_count"`)}
 	}
 	if _, ok := dsc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "created_at"`)}
@@ -227,6 +248,14 @@ func (dsc *DeploymentStatisticsCreate) createSpec() (*DeploymentStatistics, *sql
 			Column: deploymentstatistics.FieldCount,
 		})
 		_node.Count = value
+	}
+	if value, ok := dsc.mutation.RollbackCount(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: deploymentstatistics.FieldRollbackCount,
+		})
+		_node.RollbackCount = value
 	}
 	if value, ok := dsc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

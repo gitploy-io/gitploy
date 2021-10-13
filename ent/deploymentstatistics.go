@@ -21,6 +21,8 @@ type DeploymentStatistics struct {
 	Env string `json:"env"`
 	// Count holds the value of the "count" field.
 	Count int `json:"count"`
+	// RollbackCount holds the value of the "rollback_count" field.
+	RollbackCount int `json:"rollback_count"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -60,7 +62,7 @@ func (*DeploymentStatistics) scanValues(columns []string) ([]interface{}, error)
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case deploymentstatistics.FieldID, deploymentstatistics.FieldCount, deploymentstatistics.FieldRepoID:
+		case deploymentstatistics.FieldID, deploymentstatistics.FieldCount, deploymentstatistics.FieldRollbackCount, deploymentstatistics.FieldRepoID:
 			values[i] = new(sql.NullInt64)
 		case deploymentstatistics.FieldEnv:
 			values[i] = new(sql.NullString)
@@ -98,6 +100,12 @@ func (ds *DeploymentStatistics) assignValues(columns []string, values []interfac
 				return fmt.Errorf("unexpected type %T for field count", values[i])
 			} else if value.Valid {
 				ds.Count = int(value.Int64)
+			}
+		case deploymentstatistics.FieldRollbackCount:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field rollback_count", values[i])
+			} else if value.Valid {
+				ds.RollbackCount = int(value.Int64)
 			}
 		case deploymentstatistics.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -154,6 +162,8 @@ func (ds *DeploymentStatistics) String() string {
 	builder.WriteString(ds.Env)
 	builder.WriteString(", count=")
 	builder.WriteString(fmt.Sprintf("%v", ds.Count))
+	builder.WriteString(", rollback_count=")
+	builder.WriteString(fmt.Sprintf("%v", ds.RollbackCount))
 	builder.WriteString(", created_at=")
 	builder.WriteString(ds.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", updated_at=")

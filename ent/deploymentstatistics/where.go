@@ -107,6 +107,13 @@ func Count(v int) predicate.DeploymentStatistics {
 	})
 }
 
+// RollbackCount applies equality check predicate on the "rollback_count" field. It's identical to RollbackCountEQ.
+func RollbackCount(v int) predicate.DeploymentStatistics {
+	return predicate.DeploymentStatistics(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldRollbackCount), v))
+	})
+}
+
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.DeploymentStatistics {
 	return predicate.DeploymentStatistics(func(s *sql.Selector) {
@@ -312,6 +319,82 @@ func CountLT(v int) predicate.DeploymentStatistics {
 func CountLTE(v int) predicate.DeploymentStatistics {
 	return predicate.DeploymentStatistics(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldCount), v))
+	})
+}
+
+// RollbackCountEQ applies the EQ predicate on the "rollback_count" field.
+func RollbackCountEQ(v int) predicate.DeploymentStatistics {
+	return predicate.DeploymentStatistics(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldRollbackCount), v))
+	})
+}
+
+// RollbackCountNEQ applies the NEQ predicate on the "rollback_count" field.
+func RollbackCountNEQ(v int) predicate.DeploymentStatistics {
+	return predicate.DeploymentStatistics(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldRollbackCount), v))
+	})
+}
+
+// RollbackCountIn applies the In predicate on the "rollback_count" field.
+func RollbackCountIn(vs ...int) predicate.DeploymentStatistics {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.DeploymentStatistics(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldRollbackCount), v...))
+	})
+}
+
+// RollbackCountNotIn applies the NotIn predicate on the "rollback_count" field.
+func RollbackCountNotIn(vs ...int) predicate.DeploymentStatistics {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.DeploymentStatistics(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldRollbackCount), v...))
+	})
+}
+
+// RollbackCountGT applies the GT predicate on the "rollback_count" field.
+func RollbackCountGT(v int) predicate.DeploymentStatistics {
+	return predicate.DeploymentStatistics(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldRollbackCount), v))
+	})
+}
+
+// RollbackCountGTE applies the GTE predicate on the "rollback_count" field.
+func RollbackCountGTE(v int) predicate.DeploymentStatistics {
+	return predicate.DeploymentStatistics(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldRollbackCount), v))
+	})
+}
+
+// RollbackCountLT applies the LT predicate on the "rollback_count" field.
+func RollbackCountLT(v int) predicate.DeploymentStatistics {
+	return predicate.DeploymentStatistics(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldRollbackCount), v))
+	})
+}
+
+// RollbackCountLTE applies the LTE predicate on the "rollback_count" field.
+func RollbackCountLTE(v int) predicate.DeploymentStatistics {
+	return predicate.DeploymentStatistics(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldRollbackCount), v))
 	})
 }
 

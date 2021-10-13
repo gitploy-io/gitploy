@@ -9,6 +9,7 @@ import (
 )
 
 func (s *Store) ListAllDeploymentStatistics(ctx context.Context) ([]*ent.DeploymentStatistics, error) {
+	// TODO: List only active repositories.
 	return s.c.DeploymentStatistics.
 		Query().
 		WithRepo().
@@ -41,6 +42,7 @@ func (s *Store) CreateDeploymentStatistics(ctx context.Context, ds *ent.Deployme
 		Create().
 		SetEnv(ds.Env).
 		SetCount(ds.Count).
+		SetRollbackCount(ds.RollbackCount).
 		SetRepoID(ds.RepoID).
 		Save(ctx)
 }
@@ -49,5 +51,6 @@ func (s *Store) UpdateDeploymentStatistics(ctx context.Context, ds *ent.Deployme
 	return s.c.DeploymentStatistics.
 		UpdateOne(ds).
 		SetCount(ds.Count).
+		SetRollbackCount(ds.RollbackCount).
 		Save(ctx)
 }

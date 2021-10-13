@@ -3605,20 +3605,22 @@ func (m *DeploymentMutation) ResetEdge(name string) error {
 // DeploymentStatisticsMutation represents an operation that mutates the DeploymentStatistics nodes in the graph.
 type DeploymentStatisticsMutation struct {
 	config
-	op            Op
-	typ           string
-	id            *int
-	env           *string
-	count         *int
-	addcount      *int
-	created_at    *time.Time
-	updated_at    *time.Time
-	clearedFields map[string]struct{}
-	repo          *int64
-	clearedrepo   bool
-	done          bool
-	oldValue      func(context.Context) (*DeploymentStatistics, error)
-	predicates    []predicate.DeploymentStatistics
+	op                Op
+	typ               string
+	id                *int
+	env               *string
+	count             *int
+	addcount          *int
+	rollback_count    *int
+	addrollback_count *int
+	created_at        *time.Time
+	updated_at        *time.Time
+	clearedFields     map[string]struct{}
+	repo              *int64
+	clearedrepo       bool
+	done              bool
+	oldValue          func(context.Context) (*DeploymentStatistics, error)
+	predicates        []predicate.DeploymentStatistics
 }
 
 var _ ent.Mutation = (*DeploymentStatisticsMutation)(nil)
@@ -3792,6 +3794,62 @@ func (m *DeploymentStatisticsMutation) ResetCount() {
 	m.addcount = nil
 }
 
+// SetRollbackCount sets the "rollback_count" field.
+func (m *DeploymentStatisticsMutation) SetRollbackCount(i int) {
+	m.rollback_count = &i
+	m.addrollback_count = nil
+}
+
+// RollbackCount returns the value of the "rollback_count" field in the mutation.
+func (m *DeploymentStatisticsMutation) RollbackCount() (r int, exists bool) {
+	v := m.rollback_count
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRollbackCount returns the old "rollback_count" field's value of the DeploymentStatistics entity.
+// If the DeploymentStatistics object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DeploymentStatisticsMutation) OldRollbackCount(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldRollbackCount is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldRollbackCount requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRollbackCount: %w", err)
+	}
+	return oldValue.RollbackCount, nil
+}
+
+// AddRollbackCount adds i to the "rollback_count" field.
+func (m *DeploymentStatisticsMutation) AddRollbackCount(i int) {
+	if m.addrollback_count != nil {
+		*m.addrollback_count += i
+	} else {
+		m.addrollback_count = &i
+	}
+}
+
+// AddedRollbackCount returns the value that was added to the "rollback_count" field in this mutation.
+func (m *DeploymentStatisticsMutation) AddedRollbackCount() (r int, exists bool) {
+	v := m.addrollback_count
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetRollbackCount resets all changes to the "rollback_count" field.
+func (m *DeploymentStatisticsMutation) ResetRollbackCount() {
+	m.rollback_count = nil
+	m.addrollback_count = nil
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (m *DeploymentStatisticsMutation) SetCreatedAt(t time.Time) {
 	m.created_at = &t
@@ -3945,12 +4003,15 @@ func (m *DeploymentStatisticsMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *DeploymentStatisticsMutation) Fields() []string {
-	fields := make([]string, 0, 5)
+	fields := make([]string, 0, 6)
 	if m.env != nil {
 		fields = append(fields, deploymentstatistics.FieldEnv)
 	}
 	if m.count != nil {
 		fields = append(fields, deploymentstatistics.FieldCount)
+	}
+	if m.rollback_count != nil {
+		fields = append(fields, deploymentstatistics.FieldRollbackCount)
 	}
 	if m.created_at != nil {
 		fields = append(fields, deploymentstatistics.FieldCreatedAt)
@@ -3973,6 +4034,8 @@ func (m *DeploymentStatisticsMutation) Field(name string) (ent.Value, bool) {
 		return m.Env()
 	case deploymentstatistics.FieldCount:
 		return m.Count()
+	case deploymentstatistics.FieldRollbackCount:
+		return m.RollbackCount()
 	case deploymentstatistics.FieldCreatedAt:
 		return m.CreatedAt()
 	case deploymentstatistics.FieldUpdatedAt:
@@ -3992,6 +4055,8 @@ func (m *DeploymentStatisticsMutation) OldField(ctx context.Context, name string
 		return m.OldEnv(ctx)
 	case deploymentstatistics.FieldCount:
 		return m.OldCount(ctx)
+	case deploymentstatistics.FieldRollbackCount:
+		return m.OldRollbackCount(ctx)
 	case deploymentstatistics.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case deploymentstatistics.FieldUpdatedAt:
@@ -4020,6 +4085,13 @@ func (m *DeploymentStatisticsMutation) SetField(name string, value ent.Value) er
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetCount(v)
+		return nil
+	case deploymentstatistics.FieldRollbackCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRollbackCount(v)
 		return nil
 	case deploymentstatistics.FieldCreatedAt:
 		v, ok := value.(time.Time)
@@ -4053,6 +4125,9 @@ func (m *DeploymentStatisticsMutation) AddedFields() []string {
 	if m.addcount != nil {
 		fields = append(fields, deploymentstatistics.FieldCount)
 	}
+	if m.addrollback_count != nil {
+		fields = append(fields, deploymentstatistics.FieldRollbackCount)
+	}
 	return fields
 }
 
@@ -4063,6 +4138,8 @@ func (m *DeploymentStatisticsMutation) AddedField(name string) (ent.Value, bool)
 	switch name {
 	case deploymentstatistics.FieldCount:
 		return m.AddedCount()
+	case deploymentstatistics.FieldRollbackCount:
+		return m.AddedRollbackCount()
 	}
 	return nil, false
 }
@@ -4078,6 +4155,13 @@ func (m *DeploymentStatisticsMutation) AddField(name string, value ent.Value) er
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddCount(v)
+		return nil
+	case deploymentstatistics.FieldRollbackCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddRollbackCount(v)
 		return nil
 	}
 	return fmt.Errorf("unknown DeploymentStatistics numeric field %s", name)
@@ -4111,6 +4195,9 @@ func (m *DeploymentStatisticsMutation) ResetField(name string) error {
 		return nil
 	case deploymentstatistics.FieldCount:
 		m.ResetCount()
+		return nil
+	case deploymentstatistics.FieldRollbackCount:
+		m.ResetRollbackCount()
 		return nil
 	case deploymentstatistics.FieldCreatedAt:
 		m.ResetCreatedAt()
