@@ -28,6 +28,8 @@ const (
 	FieldSha = "sha"
 	// FieldHTMLURL holds the string denoting the html_url field in the database.
 	FieldHTMLURL = "html_url"
+	// FieldProductionEnvironment holds the string denoting the production_environment field in the database.
+	FieldProductionEnvironment = "production_environment"
 	// FieldIsRollback holds the string denoting the is_rollback field in the database.
 	FieldIsRollback = "is_rollback"
 	// FieldIsApprovalEnabled holds the string denoting the is_approval_enabled field in the database.
@@ -102,6 +104,7 @@ var Columns = []string{
 	FieldUID,
 	FieldSha,
 	FieldHTMLURL,
+	FieldProductionEnvironment,
 	FieldIsRollback,
 	FieldIsApprovalEnabled,
 	FieldRequiredApprovalCount,
@@ -124,6 +127,8 @@ func ValidColumn(column string) bool {
 var (
 	// HTMLURLValidator is a validator for the "html_url" field. It is called by the builders before save.
 	HTMLURLValidator func(string) error
+	// DefaultProductionEnvironment holds the default value on creation for the "production_environment" field.
+	DefaultProductionEnvironment bool
 	// DefaultIsRollback holds the default value on creation for the "is_rollback" field.
 	DefaultIsRollback bool
 	// DefaultIsApprovalEnabled holds the default value on creation for the "is_approval_enabled" field.

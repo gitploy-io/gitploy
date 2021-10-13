@@ -2004,6 +2004,7 @@ type DeploymentMutation struct {
 	adduid                     *int64
 	sha                        *string
 	html_url                   *string
+	production_environment     *bool
 	is_rollback                *bool
 	is_approval_enabled        *bool
 	required_approval_count    *int
@@ -2474,6 +2475,42 @@ func (m *DeploymentMutation) HTMLURLCleared() bool {
 func (m *DeploymentMutation) ResetHTMLURL() {
 	m.html_url = nil
 	delete(m.clearedFields, deployment.FieldHTMLURL)
+}
+
+// SetProductionEnvironment sets the "production_environment" field.
+func (m *DeploymentMutation) SetProductionEnvironment(b bool) {
+	m.production_environment = &b
+}
+
+// ProductionEnvironment returns the value of the "production_environment" field in the mutation.
+func (m *DeploymentMutation) ProductionEnvironment() (r bool, exists bool) {
+	v := m.production_environment
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldProductionEnvironment returns the old "production_environment" field's value of the Deployment entity.
+// If the Deployment object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DeploymentMutation) OldProductionEnvironment(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldProductionEnvironment is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldProductionEnvironment requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldProductionEnvironment: %w", err)
+	}
+	return oldValue.ProductionEnvironment, nil
+}
+
+// ResetProductionEnvironment resets all changes to the "production_environment" field.
+func (m *DeploymentMutation) ResetProductionEnvironment() {
+	m.production_environment = nil
 }
 
 // SetIsRollback sets the "is_rollback" field.
@@ -2981,7 +3018,7 @@ func (m *DeploymentMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *DeploymentMutation) Fields() []string {
-	fields := make([]string, 0, 15)
+	fields := make([]string, 0, 16)
 	if m.number != nil {
 		fields = append(fields, deployment.FieldNumber)
 	}
@@ -3005,6 +3042,9 @@ func (m *DeploymentMutation) Fields() []string {
 	}
 	if m.html_url != nil {
 		fields = append(fields, deployment.FieldHTMLURL)
+	}
+	if m.production_environment != nil {
+		fields = append(fields, deployment.FieldProductionEnvironment)
 	}
 	if m.is_rollback != nil {
 		fields = append(fields, deployment.FieldIsRollback)
@@ -3051,6 +3091,8 @@ func (m *DeploymentMutation) Field(name string) (ent.Value, bool) {
 		return m.Sha()
 	case deployment.FieldHTMLURL:
 		return m.HTMLURL()
+	case deployment.FieldProductionEnvironment:
+		return m.ProductionEnvironment()
 	case deployment.FieldIsRollback:
 		return m.IsRollback()
 	case deployment.FieldIsApprovalEnabled:
@@ -3090,6 +3132,8 @@ func (m *DeploymentMutation) OldField(ctx context.Context, name string) (ent.Val
 		return m.OldSha(ctx)
 	case deployment.FieldHTMLURL:
 		return m.OldHTMLURL(ctx)
+	case deployment.FieldProductionEnvironment:
+		return m.OldProductionEnvironment(ctx)
 	case deployment.FieldIsRollback:
 		return m.OldIsRollback(ctx)
 	case deployment.FieldIsApprovalEnabled:
@@ -3168,6 +3212,13 @@ func (m *DeploymentMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetHTMLURL(v)
+		return nil
+	case deployment.FieldProductionEnvironment:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetProductionEnvironment(v)
 		return nil
 	case deployment.FieldIsRollback:
 		v, ok := value.(bool)
@@ -3350,6 +3401,9 @@ func (m *DeploymentMutation) ResetField(name string) error {
 		return nil
 	case deployment.FieldHTMLURL:
 		m.ResetHTMLURL()
+		return nil
+	case deployment.FieldProductionEnvironment:
+		m.ResetProductionEnvironment()
 		return nil
 	case deployment.FieldIsRollback:
 		m.ResetIsRollback()

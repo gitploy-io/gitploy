@@ -135,6 +135,13 @@ func HTMLURL(v string) predicate.Deployment {
 	})
 }
 
+// ProductionEnvironment applies equality check predicate on the "production_environment" field. It's identical to ProductionEnvironmentEQ.
+func ProductionEnvironment(v bool) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldProductionEnvironment), v))
+	})
+}
+
 // IsRollback applies equality check predicate on the "is_rollback" field. It's identical to IsRollbackEQ.
 func IsRollback(v bool) predicate.Deployment {
 	return predicate.Deployment(func(s *sql.Selector) {
@@ -915,6 +922,20 @@ func HTMLURLEqualFold(v string) predicate.Deployment {
 func HTMLURLContainsFold(v string) predicate.Deployment {
 	return predicate.Deployment(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldHTMLURL), v))
+	})
+}
+
+// ProductionEnvironmentEQ applies the EQ predicate on the "production_environment" field.
+func ProductionEnvironmentEQ(v bool) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldProductionEnvironment), v))
+	})
+}
+
+// ProductionEnvironmentNEQ applies the NEQ predicate on the "production_environment" field.
+func ProductionEnvironmentNEQ(v bool) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldProductionEnvironment), v))
 	})
 }
 

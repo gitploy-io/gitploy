@@ -14,6 +14,7 @@ import (
 )
 
 func (i *Interactor) Deploy(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, e *vo.Env) (*ent.Deployment, error) {
+	d.ProductionEnvironment = *e.ProductionEnvironment
 	d.UserID = u.ID
 	d.RepoID = r.ID
 

@@ -153,6 +153,20 @@ func (du *DeploymentUpdate) ClearHTMLURL() *DeploymentUpdate {
 	return du
 }
 
+// SetProductionEnvironment sets the "production_environment" field.
+func (du *DeploymentUpdate) SetProductionEnvironment(b bool) *DeploymentUpdate {
+	du.mutation.SetProductionEnvironment(b)
+	return du
+}
+
+// SetNillableProductionEnvironment sets the "production_environment" field if the given value is not nil.
+func (du *DeploymentUpdate) SetNillableProductionEnvironment(b *bool) *DeploymentUpdate {
+	if b != nil {
+		du.SetProductionEnvironment(*b)
+	}
+	return du
+}
+
 // SetIsRollback sets the "is_rollback" field.
 func (du *DeploymentUpdate) SetIsRollback(b bool) *DeploymentUpdate {
 	du.mutation.SetIsRollback(b)
@@ -570,6 +584,13 @@ func (du *DeploymentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: deployment.FieldHTMLURL,
 		})
 	}
+	if value, ok := du.mutation.ProductionEnvironment(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: deployment.FieldProductionEnvironment,
+		})
+	}
 	if value, ok := du.mutation.IsRollback(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeBool,
@@ -980,6 +1001,20 @@ func (duo *DeploymentUpdateOne) SetNillableHTMLURL(s *string) *DeploymentUpdateO
 // ClearHTMLURL clears the value of the "html_url" field.
 func (duo *DeploymentUpdateOne) ClearHTMLURL() *DeploymentUpdateOne {
 	duo.mutation.ClearHTMLURL()
+	return duo
+}
+
+// SetProductionEnvironment sets the "production_environment" field.
+func (duo *DeploymentUpdateOne) SetProductionEnvironment(b bool) *DeploymentUpdateOne {
+	duo.mutation.SetProductionEnvironment(b)
+	return duo
+}
+
+// SetNillableProductionEnvironment sets the "production_environment" field if the given value is not nil.
+func (duo *DeploymentUpdateOne) SetNillableProductionEnvironment(b *bool) *DeploymentUpdateOne {
+	if b != nil {
+		duo.SetProductionEnvironment(*b)
+	}
 	return duo
 }
 
@@ -1422,6 +1457,13 @@ func (duo *DeploymentUpdateOne) sqlSave(ctx context.Context) (_node *Deployment,
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Column: deployment.FieldHTMLURL,
+		})
+	}
+	if value, ok := duo.mutation.ProductionEnvironment(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: deployment.FieldProductionEnvironment,
 		})
 	}
 	if value, ok := duo.mutation.IsRollback(); ok {

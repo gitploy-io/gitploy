@@ -96,6 +96,7 @@ var (
 		{Name: "uid", Type: field.TypeInt64, Nullable: true},
 		{Name: "sha", Type: field.TypeString, Nullable: true},
 		{Name: "html_url", Type: field.TypeString, Nullable: true, Size: 2000},
+		{Name: "production_environment", Type: field.TypeBool, Default: false},
 		{Name: "is_rollback", Type: field.TypeBool, Default: false},
 		{Name: "is_approval_enabled", Type: field.TypeBool, Default: false},
 		{Name: "required_approval_count", Type: field.TypeInt, Default: 0},
@@ -112,13 +113,13 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "deployments_repos_deployments",
-				Columns:    []*schema.Column{DeploymentsColumns[14]},
+				Columns:    []*schema.Column{DeploymentsColumns[15]},
 				RefColumns: []*schema.Column{ReposColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
 			{
 				Symbol:     "deployments_users_deployments",
-				Columns:    []*schema.Column{DeploymentsColumns[15]},
+				Columns:    []*schema.Column{DeploymentsColumns[16]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -127,22 +128,22 @@ var (
 			{
 				Name:    "deployment_repo_id_env_status_updated_at",
 				Unique:  false,
-				Columns: []*schema.Column{DeploymentsColumns[14], DeploymentsColumns[3], DeploymentsColumns[5], DeploymentsColumns[13]},
+				Columns: []*schema.Column{DeploymentsColumns[15], DeploymentsColumns[3], DeploymentsColumns[5], DeploymentsColumns[14]},
 			},
 			{
 				Name:    "deployment_repo_id_env_created_at",
 				Unique:  false,
-				Columns: []*schema.Column{DeploymentsColumns[14], DeploymentsColumns[3], DeploymentsColumns[12]},
+				Columns: []*schema.Column{DeploymentsColumns[15], DeploymentsColumns[3], DeploymentsColumns[13]},
 			},
 			{
 				Name:    "deployment_repo_id_created_at",
 				Unique:  false,
-				Columns: []*schema.Column{DeploymentsColumns[14], DeploymentsColumns[12]},
+				Columns: []*schema.Column{DeploymentsColumns[15], DeploymentsColumns[13]},
 			},
 			{
 				Name:    "deployment_number_repo_id",
 				Unique:  true,
-				Columns: []*schema.Column{DeploymentsColumns[1], DeploymentsColumns[14]},
+				Columns: []*schema.Column{DeploymentsColumns[1], DeploymentsColumns[15]},
 			},
 			{
 				Name:    "deployment_uid",
@@ -152,7 +153,7 @@ var (
 			{
 				Name:    "deployment_status_created_at",
 				Unique:  false,
-				Columns: []*schema.Column{DeploymentsColumns[5], DeploymentsColumns[12]},
+				Columns: []*schema.Column{DeploymentsColumns[5], DeploymentsColumns[13]},
 			},
 		},
 	}
