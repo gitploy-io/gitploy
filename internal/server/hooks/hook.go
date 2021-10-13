@@ -119,6 +119,13 @@ func (h *Hooks) handleGithubHook(c *gin.Context) {
 		h.log.Error("It has failed to create the event.", zap.Error(err))
 	}
 
+	// Produce statistics when the deployment is success.
+	if d.Status == deployment.StatusSuccess && d.Edges.Repo != nil {
+		if _, err := h.i.ProduceDeploymentStatisticsOfRepo(ctx, d.Edges.Repo, d); err != nil {
+			h.log.Error("It has failed to produce the statistics of deployment.", zap.Error(err))
+		}
+	}
+
 	gb.Response(c, http.StatusCreated, ds)
 }
 
