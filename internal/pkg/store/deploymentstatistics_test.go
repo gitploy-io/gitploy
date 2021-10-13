@@ -9,7 +9,7 @@ import (
 	"github.com/gitploy-io/gitploy/ent/migrate"
 )
 
-func TestStore_ListDeploymentStatisticssGreaterThanTime(t *testing.T) {
+func TestStore_ListDeploymentStatisticsGreaterThanTime(t *testing.T) {
 	ctx := context.Background()
 
 	client := enttest.Open(t, "sqlite3", "file:ent?mode=memory&cache=shared&_fk=1",
@@ -37,7 +37,7 @@ func TestStore_ListDeploymentStatisticssGreaterThanTime(t *testing.T) {
 
 	s := NewStore(client)
 
-	dcs, err := s.ListDeploymentStatisticssGreaterThanTime(ctx, tm)
+	dcs, err := s.ListDeploymentStatisticsGreaterThanTime(ctx, tm)
 	if err != nil {
 		t.Fatalf("ListDeploymentStatisticssGreaterThanTime returns an error: %s", err)
 	}

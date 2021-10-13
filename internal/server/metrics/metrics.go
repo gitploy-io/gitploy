@@ -92,13 +92,13 @@ func (c *collector) Collect(ch chan<- prometheus.Metric) {
 
 		if len(c.cache) == 0 {
 			c.log.Debug("List all deployment_count.")
-			if dcs, err = c.i.ListAllDeploymentStatisticss(ctx); err != nil {
+			if dcs, err = c.i.ListAllDeploymentStatistics(ctx); err != nil {
 				c.log.Error("It has failed to list all deployment_counts.", zap.Error(err))
 				return
 			}
 		} else {
 			c.log.Debug("List deployment_count from the last time.", zap.Time("last", c.lastTime))
-			if dcs, err = c.i.ListDeploymentStatisticssGreaterThanTime(ctx, c.lastTime); err != nil {
+			if dcs, err = c.i.ListDeploymentStatisticsGreaterThanTime(ctx, c.lastTime); err != nil {
 				c.log.Error("It has failed to list deployment_counts.", zap.Error(err))
 				return
 			}

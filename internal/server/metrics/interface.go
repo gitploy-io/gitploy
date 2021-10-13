@@ -10,8 +10,8 @@ import (
 
 type (
 	Interactor interface {
-		ListAllDeploymentStatisticss(ctx context.Context) ([]*ent.DeploymentStatistics, error)
-		ListDeploymentStatisticssGreaterThanTime(ctx context.Context, updated time.Time) ([]*ent.DeploymentStatistics, error)
+		ListAllDeploymentStatistics(ctx context.Context) ([]*ent.DeploymentStatistics, error)
+		ListDeploymentStatisticsGreaterThanTime(ctx context.Context, updated time.Time) ([]*ent.DeploymentStatistics, error)
 		GetLicense(ctx context.Context) (*vo.License, error)
 	}
 )
