@@ -80,6 +80,21 @@ func (mr *MockInteractorMockRecorder) FindDeploymentByUID(ctx, uid interface{}) 
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindDeploymentByUID", reflect.TypeOf((*MockInteractor)(nil).FindDeploymentByUID), ctx, uid)
 }
 
+// ProduceDeploymentStatisticsOfRepo mocks base method.
+func (m *MockInteractor) ProduceDeploymentStatisticsOfRepo(ctx context.Context, r *ent.Repo, d *ent.Deployment) (*ent.DeploymentStatistics, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ProduceDeploymentStatisticsOfRepo", ctx, r, d)
+	ret0, _ := ret[0].(*ent.DeploymentStatistics)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ProduceDeploymentStatisticsOfRepo indicates an expected call of ProduceDeploymentStatisticsOfRepo.
+func (mr *MockInteractorMockRecorder) ProduceDeploymentStatisticsOfRepo(ctx, r, d interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ProduceDeploymentStatisticsOfRepo", reflect.TypeOf((*MockInteractor)(nil).ProduceDeploymentStatisticsOfRepo), ctx, r, d)
+}
+
 // UpdateDeployment mocks base method.
 func (m *MockInteractor) UpdateDeployment(ctx context.Context, d *ent.Deployment) (*ent.Deployment, error) {
 	m.ctrl.T.Helper()

@@ -7,10 +7,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/gitploy-io/gitploy/ent"
 	"github.com/gitploy-io/gitploy/ent/deployment"
-	"github.com/gitploy-io/gitploy/ent/deploymentstatistics"
 	"github.com/gitploy-io/gitploy/ent/perm"
 	"github.com/gitploy-io/gitploy/ent/predicate"
-	"go.uber.org/zap"
 )
 
 func (s *Store) SearchDeployments(ctx context.Context, u *ent.User, ss []deployment.Status, owned bool, from time.Time, to time.Time, page, perPage int) ([]*ent.Deployment, error) {
@@ -237,48 +235,6 @@ func (s *Store) UpdateDeployment(ctx context.Context, d *ent.Deployment) (*ent.D
 		Save(ctx)
 	if err != nil {
 		return nil, err
-	}
-
-	if d.Status != deployment.StatusSuccess {
-		return d, nil
-	}
-
-	// Update the statistics of deployment by
-	// increasing the count.
-	err = s.WithTx(ctx, func(tx *ent.Tx) error {
-		r, err := tx.Repo.Get(ctx, d.RepoID)
-		if err != nil {
-			return err
-		}
-
-		dc, err := s.c.DeploymentStatistics.
-			Query().
-			Where(
-				deploymentstatistics.NamespaceEQ(r.Namespace),
-				deploymentstatistics.NameEQ(r.Name),
-				deploymentstatistics.EnvEQ(d.Env),
-			).
-			Only(ctx)
-		if ent.IsNotFound(err) {
-			s.c.DeploymentStatistics.
-				Create().
-				SetNamespace(r.Namespace).
-				SetName(r.Name).
-				SetEnv(d.Env).
-				Save(ctx)
-			return nil
-		} else if err != nil {
-			return err
-		}
-
-		s.c.DeploymentStatistics.
-			UpdateOne(dc).
-			SetCount(dc.Count + 1).
-			Save(ctx)
-		return nil
-	})
-	if err != nil {
-		zap.L().Error("It has failed to increase the deployment count.", zap.Error(err))
 	}
 
 	return d, nil

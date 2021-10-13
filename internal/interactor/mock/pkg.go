@@ -143,6 +143,21 @@ func (mr *MockStoreMockRecorder) CreateDeployment(ctx, d interface{}) *gomock.Ca
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateDeployment", reflect.TypeOf((*MockStore)(nil).CreateDeployment), ctx, d)
 }
 
+// CreateDeploymentStatistics mocks base method.
+func (m *MockStore) CreateDeploymentStatistics(ctx context.Context, s *ent.DeploymentStatistics) (*ent.DeploymentStatistics, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateDeploymentStatistics", ctx, s)
+	ret0, _ := ret[0].(*ent.DeploymentStatistics)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreateDeploymentStatistics indicates an expected call of CreateDeploymentStatistics.
+func (mr *MockStoreMockRecorder) CreateDeploymentStatistics(ctx, s interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateDeploymentStatistics", reflect.TypeOf((*MockStore)(nil).CreateDeploymentStatistics), ctx, s)
+}
+
 // CreateDeploymentStatus mocks base method.
 func (m *MockStore) CreateDeploymentStatus(ctx context.Context, s *ent.DeploymentStatus) (*ent.DeploymentStatus, error) {
 	m.ctrl.T.Helper()
@@ -407,6 +422,21 @@ func (m *MockStore) FindDeploymentOfRepoByNumber(ctx context.Context, r *ent.Rep
 func (mr *MockStoreMockRecorder) FindDeploymentOfRepoByNumber(ctx, r, number interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindDeploymentOfRepoByNumber", reflect.TypeOf((*MockStore)(nil).FindDeploymentOfRepoByNumber), ctx, r, number)
+}
+
+// FindDeploymentStatisticsOfRepoByEnv mocks base method.
+func (m *MockStore) FindDeploymentStatisticsOfRepoByEnv(ctx context.Context, r *ent.Repo, env string) (*ent.DeploymentStatistics, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindDeploymentStatisticsOfRepoByEnv", ctx, r, env)
+	ret0, _ := ret[0].(*ent.DeploymentStatistics)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindDeploymentStatisticsOfRepoByEnv indicates an expected call of FindDeploymentStatisticsOfRepoByEnv.
+func (mr *MockStoreMockRecorder) FindDeploymentStatisticsOfRepoByEnv(ctx, r, env interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindDeploymentStatisticsOfRepoByEnv", reflect.TypeOf((*MockStore)(nil).FindDeploymentStatisticsOfRepoByEnv), ctx, r, env)
 }
 
 // FindLockByID mocks base method.
@@ -827,6 +857,21 @@ func (m *MockStore) UpdateDeployment(ctx context.Context, d *ent.Deployment) (*e
 func (mr *MockStoreMockRecorder) UpdateDeployment(ctx, d interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateDeployment", reflect.TypeOf((*MockStore)(nil).UpdateDeployment), ctx, d)
+}
+
+// UpdateDeploymentStatistics mocks base method.
+func (m *MockStore) UpdateDeploymentStatistics(ctx context.Context, s *ent.DeploymentStatistics) (*ent.DeploymentStatistics, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateDeploymentStatistics", ctx, s)
+	ret0, _ := ret[0].(*ent.DeploymentStatistics)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdateDeploymentStatistics indicates an expected call of UpdateDeploymentStatistics.
+func (mr *MockStoreMockRecorder) UpdateDeploymentStatistics(ctx, s interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateDeploymentStatistics", reflect.TypeOf((*MockStore)(nil).UpdateDeploymentStatistics), ctx, s)
 }
 
 // UpdatePerm mocks base method.
