@@ -12,7 +12,7 @@ import (
 	"github.com/gitploy-io/gitploy/ent/callback"
 	"github.com/gitploy-io/gitploy/ent/chatuser"
 	"github.com/gitploy-io/gitploy/ent/deployment"
-	"github.com/gitploy-io/gitploy/ent/deploymentcount"
+	"github.com/gitploy-io/gitploy/ent/deploymentstatistics"
 	"github.com/gitploy-io/gitploy/ent/deploymentstatus"
 	"github.com/gitploy-io/gitploy/ent/event"
 	"github.com/gitploy-io/gitploy/ent/lock"
@@ -34,18 +34,18 @@ const (
 	OpUpdateOne = ent.OpUpdateOne
 
 	// Node types.
-	TypeApproval           = "Approval"
-	TypeCallback           = "Callback"
-	TypeChatUser           = "ChatUser"
-	TypeDeployment         = "Deployment"
-	TypeDeploymentCount    = "DeploymentCount"
-	TypeDeploymentStatus   = "DeploymentStatus"
-	TypeEvent              = "Event"
-	TypeLock               = "Lock"
-	TypeNotificationRecord = "NotificationRecord"
-	TypePerm               = "Perm"
-	TypeRepo               = "Repo"
-	TypeUser               = "User"
+	TypeApproval             = "Approval"
+	TypeCallback             = "Callback"
+	TypeChatUser             = "ChatUser"
+	TypeDeployment           = "Deployment"
+	TypeDeploymentStatistics = "DeploymentStatistics"
+	TypeDeploymentStatus     = "DeploymentStatus"
+	TypeEvent                = "Event"
+	TypeLock                 = "Lock"
+	TypeNotificationRecord   = "NotificationRecord"
+	TypePerm                 = "Perm"
+	TypeRepo                 = "Repo"
+	TypeUser                 = "User"
 )
 
 // ApprovalMutation represents an operation that mutates the Approval nodes in the graph.
@@ -3548,8 +3548,8 @@ func (m *DeploymentMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown Deployment edge %s", name)
 }
 
-// DeploymentCountMutation represents an operation that mutates the DeploymentCount nodes in the graph.
-type DeploymentCountMutation struct {
+// DeploymentStatisticsMutation represents an operation that mutates the DeploymentStatistics nodes in the graph.
+type DeploymentStatisticsMutation struct {
 	config
 	op            Op
 	typ           string
@@ -3563,21 +3563,21 @@ type DeploymentCountMutation struct {
 	updated_at    *time.Time
 	clearedFields map[string]struct{}
 	done          bool
-	oldValue      func(context.Context) (*DeploymentCount, error)
-	predicates    []predicate.DeploymentCount
+	oldValue      func(context.Context) (*DeploymentStatistics, error)
+	predicates    []predicate.DeploymentStatistics
 }
 
-var _ ent.Mutation = (*DeploymentCountMutation)(nil)
+var _ ent.Mutation = (*DeploymentStatisticsMutation)(nil)
 
-// deploymentcountOption allows management of the mutation configuration using functional options.
-type deploymentcountOption func(*DeploymentCountMutation)
+// deploymentstatisticsOption allows management of the mutation configuration using functional options.
+type deploymentstatisticsOption func(*DeploymentStatisticsMutation)
 
-// newDeploymentCountMutation creates new mutation for the DeploymentCount entity.
-func newDeploymentCountMutation(c config, op Op, opts ...deploymentcountOption) *DeploymentCountMutation {
-	m := &DeploymentCountMutation{
+// newDeploymentStatisticsMutation creates new mutation for the DeploymentStatistics entity.
+func newDeploymentStatisticsMutation(c config, op Op, opts ...deploymentstatisticsOption) *DeploymentStatisticsMutation {
+	m := &DeploymentStatisticsMutation{
 		config:        c,
 		op:            op,
-		typ:           TypeDeploymentCount,
+		typ:           TypeDeploymentStatistics,
 		clearedFields: make(map[string]struct{}),
 	}
 	for _, opt := range opts {
@@ -3586,20 +3586,20 @@ func newDeploymentCountMutation(c config, op Op, opts ...deploymentcountOption) 
 	return m
 }
 
-// withDeploymentCountID sets the ID field of the mutation.
-func withDeploymentCountID(id int) deploymentcountOption {
-	return func(m *DeploymentCountMutation) {
+// withDeploymentStatisticsID sets the ID field of the mutation.
+func withDeploymentStatisticsID(id int) deploymentstatisticsOption {
+	return func(m *DeploymentStatisticsMutation) {
 		var (
 			err   error
 			once  sync.Once
-			value *DeploymentCount
+			value *DeploymentStatistics
 		)
-		m.oldValue = func(ctx context.Context) (*DeploymentCount, error) {
+		m.oldValue = func(ctx context.Context) (*DeploymentStatistics, error) {
 			once.Do(func() {
 				if m.done {
 					err = fmt.Errorf("querying old values post mutation is not allowed")
 				} else {
-					value, err = m.Client().DeploymentCount.Get(ctx, id)
+					value, err = m.Client().DeploymentStatistics.Get(ctx, id)
 				}
 			})
 			return value, err
@@ -3608,10 +3608,10 @@ func withDeploymentCountID(id int) deploymentcountOption {
 	}
 }
 
-// withDeploymentCount sets the old DeploymentCount of the mutation.
-func withDeploymentCount(node *DeploymentCount) deploymentcountOption {
-	return func(m *DeploymentCountMutation) {
-		m.oldValue = func(context.Context) (*DeploymentCount, error) {
+// withDeploymentStatistics sets the old DeploymentStatistics of the mutation.
+func withDeploymentStatistics(node *DeploymentStatistics) deploymentstatisticsOption {
+	return func(m *DeploymentStatisticsMutation) {
+		m.oldValue = func(context.Context) (*DeploymentStatistics, error) {
 			return node, nil
 		}
 		m.id = &node.ID
@@ -3620,7 +3620,7 @@ func withDeploymentCount(node *DeploymentCount) deploymentcountOption {
 
 // Client returns a new `ent.Client` from the mutation. If the mutation was
 // executed in a transaction (ent.Tx), a transactional client is returned.
-func (m DeploymentCountMutation) Client() *Client {
+func (m DeploymentStatisticsMutation) Client() *Client {
 	client := &Client{config: m.config}
 	client.init()
 	return client
@@ -3628,7 +3628,7 @@ func (m DeploymentCountMutation) Client() *Client {
 
 // Tx returns an `ent.Tx` for mutations that were executed in transactions;
 // it returns an error otherwise.
-func (m DeploymentCountMutation) Tx() (*Tx, error) {
+func (m DeploymentStatisticsMutation) Tx() (*Tx, error) {
 	if _, ok := m.driver.(*txDriver); !ok {
 		return nil, fmt.Errorf("ent: mutation is not running in a transaction")
 	}
@@ -3639,7 +3639,7 @@ func (m DeploymentCountMutation) Tx() (*Tx, error) {
 
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *DeploymentCountMutation) ID() (id int, exists bool) {
+func (m *DeploymentStatisticsMutation) ID() (id int, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -3647,12 +3647,12 @@ func (m *DeploymentCountMutation) ID() (id int, exists bool) {
 }
 
 // SetNamespace sets the "namespace" field.
-func (m *DeploymentCountMutation) SetNamespace(s string) {
+func (m *DeploymentStatisticsMutation) SetNamespace(s string) {
 	m.namespace = &s
 }
 
 // Namespace returns the value of the "namespace" field in the mutation.
-func (m *DeploymentCountMutation) Namespace() (r string, exists bool) {
+func (m *DeploymentStatisticsMutation) Namespace() (r string, exists bool) {
 	v := m.namespace
 	if v == nil {
 		return
@@ -3660,10 +3660,10 @@ func (m *DeploymentCountMutation) Namespace() (r string, exists bool) {
 	return *v, true
 }
 
-// OldNamespace returns the old "namespace" field's value of the DeploymentCount entity.
-// If the DeploymentCount object wasn't provided to the builder, the object is fetched from the database.
+// OldNamespace returns the old "namespace" field's value of the DeploymentStatistics entity.
+// If the DeploymentStatistics object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *DeploymentCountMutation) OldNamespace(ctx context.Context) (v string, err error) {
+func (m *DeploymentStatisticsMutation) OldNamespace(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, fmt.Errorf("OldNamespace is only allowed on UpdateOne operations")
 	}
@@ -3678,17 +3678,17 @@ func (m *DeploymentCountMutation) OldNamespace(ctx context.Context) (v string, e
 }
 
 // ResetNamespace resets all changes to the "namespace" field.
-func (m *DeploymentCountMutation) ResetNamespace() {
+func (m *DeploymentStatisticsMutation) ResetNamespace() {
 	m.namespace = nil
 }
 
 // SetName sets the "name" field.
-func (m *DeploymentCountMutation) SetName(s string) {
+func (m *DeploymentStatisticsMutation) SetName(s string) {
 	m.name = &s
 }
 
 // Name returns the value of the "name" field in the mutation.
-func (m *DeploymentCountMutation) Name() (r string, exists bool) {
+func (m *DeploymentStatisticsMutation) Name() (r string, exists bool) {
 	v := m.name
 	if v == nil {
 		return
@@ -3696,10 +3696,10 @@ func (m *DeploymentCountMutation) Name() (r string, exists bool) {
 	return *v, true
 }
 
-// OldName returns the old "name" field's value of the DeploymentCount entity.
-// If the DeploymentCount object wasn't provided to the builder, the object is fetched from the database.
+// OldName returns the old "name" field's value of the DeploymentStatistics entity.
+// If the DeploymentStatistics object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *DeploymentCountMutation) OldName(ctx context.Context) (v string, err error) {
+func (m *DeploymentStatisticsMutation) OldName(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, fmt.Errorf("OldName is only allowed on UpdateOne operations")
 	}
@@ -3714,17 +3714,17 @@ func (m *DeploymentCountMutation) OldName(ctx context.Context) (v string, err er
 }
 
 // ResetName resets all changes to the "name" field.
-func (m *DeploymentCountMutation) ResetName() {
+func (m *DeploymentStatisticsMutation) ResetName() {
 	m.name = nil
 }
 
 // SetEnv sets the "env" field.
-func (m *DeploymentCountMutation) SetEnv(s string) {
+func (m *DeploymentStatisticsMutation) SetEnv(s string) {
 	m.env = &s
 }
 
 // Env returns the value of the "env" field in the mutation.
-func (m *DeploymentCountMutation) Env() (r string, exists bool) {
+func (m *DeploymentStatisticsMutation) Env() (r string, exists bool) {
 	v := m.env
 	if v == nil {
 		return
@@ -3732,10 +3732,10 @@ func (m *DeploymentCountMutation) Env() (r string, exists bool) {
 	return *v, true
 }
 
-// OldEnv returns the old "env" field's value of the DeploymentCount entity.
-// If the DeploymentCount object wasn't provided to the builder, the object is fetched from the database.
+// OldEnv returns the old "env" field's value of the DeploymentStatistics entity.
+// If the DeploymentStatistics object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *DeploymentCountMutation) OldEnv(ctx context.Context) (v string, err error) {
+func (m *DeploymentStatisticsMutation) OldEnv(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, fmt.Errorf("OldEnv is only allowed on UpdateOne operations")
 	}
@@ -3750,18 +3750,18 @@ func (m *DeploymentCountMutation) OldEnv(ctx context.Context) (v string, err err
 }
 
 // ResetEnv resets all changes to the "env" field.
-func (m *DeploymentCountMutation) ResetEnv() {
+func (m *DeploymentStatisticsMutation) ResetEnv() {
 	m.env = nil
 }
 
 // SetCount sets the "count" field.
-func (m *DeploymentCountMutation) SetCount(i int) {
+func (m *DeploymentStatisticsMutation) SetCount(i int) {
 	m.count = &i
 	m.addcount = nil
 }
 
 // Count returns the value of the "count" field in the mutation.
-func (m *DeploymentCountMutation) Count() (r int, exists bool) {
+func (m *DeploymentStatisticsMutation) Count() (r int, exists bool) {
 	v := m.count
 	if v == nil {
 		return
@@ -3769,10 +3769,10 @@ func (m *DeploymentCountMutation) Count() (r int, exists bool) {
 	return *v, true
 }
 
-// OldCount returns the old "count" field's value of the DeploymentCount entity.
-// If the DeploymentCount object wasn't provided to the builder, the object is fetched from the database.
+// OldCount returns the old "count" field's value of the DeploymentStatistics entity.
+// If the DeploymentStatistics object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *DeploymentCountMutation) OldCount(ctx context.Context) (v int, err error) {
+func (m *DeploymentStatisticsMutation) OldCount(ctx context.Context) (v int, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, fmt.Errorf("OldCount is only allowed on UpdateOne operations")
 	}
@@ -3787,7 +3787,7 @@ func (m *DeploymentCountMutation) OldCount(ctx context.Context) (v int, err erro
 }
 
 // AddCount adds i to the "count" field.
-func (m *DeploymentCountMutation) AddCount(i int) {
+func (m *DeploymentStatisticsMutation) AddCount(i int) {
 	if m.addcount != nil {
 		*m.addcount += i
 	} else {
@@ -3796,7 +3796,7 @@ func (m *DeploymentCountMutation) AddCount(i int) {
 }
 
 // AddedCount returns the value that was added to the "count" field in this mutation.
-func (m *DeploymentCountMutation) AddedCount() (r int, exists bool) {
+func (m *DeploymentStatisticsMutation) AddedCount() (r int, exists bool) {
 	v := m.addcount
 	if v == nil {
 		return
@@ -3805,18 +3805,18 @@ func (m *DeploymentCountMutation) AddedCount() (r int, exists bool) {
 }
 
 // ResetCount resets all changes to the "count" field.
-func (m *DeploymentCountMutation) ResetCount() {
+func (m *DeploymentStatisticsMutation) ResetCount() {
 	m.count = nil
 	m.addcount = nil
 }
 
 // SetCreatedAt sets the "created_at" field.
-func (m *DeploymentCountMutation) SetCreatedAt(t time.Time) {
+func (m *DeploymentStatisticsMutation) SetCreatedAt(t time.Time) {
 	m.created_at = &t
 }
 
 // CreatedAt returns the value of the "created_at" field in the mutation.
-func (m *DeploymentCountMutation) CreatedAt() (r time.Time, exists bool) {
+func (m *DeploymentStatisticsMutation) CreatedAt() (r time.Time, exists bool) {
 	v := m.created_at
 	if v == nil {
 		return
@@ -3824,10 +3824,10 @@ func (m *DeploymentCountMutation) CreatedAt() (r time.Time, exists bool) {
 	return *v, true
 }
 
-// OldCreatedAt returns the old "created_at" field's value of the DeploymentCount entity.
-// If the DeploymentCount object wasn't provided to the builder, the object is fetched from the database.
+// OldCreatedAt returns the old "created_at" field's value of the DeploymentStatistics entity.
+// If the DeploymentStatistics object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *DeploymentCountMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+func (m *DeploymentStatisticsMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, fmt.Errorf("OldCreatedAt is only allowed on UpdateOne operations")
 	}
@@ -3842,17 +3842,17 @@ func (m *DeploymentCountMutation) OldCreatedAt(ctx context.Context) (v time.Time
 }
 
 // ResetCreatedAt resets all changes to the "created_at" field.
-func (m *DeploymentCountMutation) ResetCreatedAt() {
+func (m *DeploymentStatisticsMutation) ResetCreatedAt() {
 	m.created_at = nil
 }
 
 // SetUpdatedAt sets the "updated_at" field.
-func (m *DeploymentCountMutation) SetUpdatedAt(t time.Time) {
+func (m *DeploymentStatisticsMutation) SetUpdatedAt(t time.Time) {
 	m.updated_at = &t
 }
 
 // UpdatedAt returns the value of the "updated_at" field in the mutation.
-func (m *DeploymentCountMutation) UpdatedAt() (r time.Time, exists bool) {
+func (m *DeploymentStatisticsMutation) UpdatedAt() (r time.Time, exists bool) {
 	v := m.updated_at
 	if v == nil {
 		return
@@ -3860,10 +3860,10 @@ func (m *DeploymentCountMutation) UpdatedAt() (r time.Time, exists bool) {
 	return *v, true
 }
 
-// OldUpdatedAt returns the old "updated_at" field's value of the DeploymentCount entity.
-// If the DeploymentCount object wasn't provided to the builder, the object is fetched from the database.
+// OldUpdatedAt returns the old "updated_at" field's value of the DeploymentStatistics entity.
+// If the DeploymentStatistics object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *DeploymentCountMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+func (m *DeploymentStatisticsMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, fmt.Errorf("OldUpdatedAt is only allowed on UpdateOne operations")
 	}
@@ -3878,47 +3878,47 @@ func (m *DeploymentCountMutation) OldUpdatedAt(ctx context.Context) (v time.Time
 }
 
 // ResetUpdatedAt resets all changes to the "updated_at" field.
-func (m *DeploymentCountMutation) ResetUpdatedAt() {
+func (m *DeploymentStatisticsMutation) ResetUpdatedAt() {
 	m.updated_at = nil
 }
 
-// Where appends a list predicates to the DeploymentCountMutation builder.
-func (m *DeploymentCountMutation) Where(ps ...predicate.DeploymentCount) {
+// Where appends a list predicates to the DeploymentStatisticsMutation builder.
+func (m *DeploymentStatisticsMutation) Where(ps ...predicate.DeploymentStatistics) {
 	m.predicates = append(m.predicates, ps...)
 }
 
 // Op returns the operation name.
-func (m *DeploymentCountMutation) Op() Op {
+func (m *DeploymentStatisticsMutation) Op() Op {
 	return m.op
 }
 
-// Type returns the node type of this mutation (DeploymentCount).
-func (m *DeploymentCountMutation) Type() string {
+// Type returns the node type of this mutation (DeploymentStatistics).
+func (m *DeploymentStatisticsMutation) Type() string {
 	return m.typ
 }
 
 // Fields returns all fields that were changed during this mutation. Note that in
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
-func (m *DeploymentCountMutation) Fields() []string {
+func (m *DeploymentStatisticsMutation) Fields() []string {
 	fields := make([]string, 0, 6)
 	if m.namespace != nil {
-		fields = append(fields, deploymentcount.FieldNamespace)
+		fields = append(fields, deploymentstatistics.FieldNamespace)
 	}
 	if m.name != nil {
-		fields = append(fields, deploymentcount.FieldName)
+		fields = append(fields, deploymentstatistics.FieldName)
 	}
 	if m.env != nil {
-		fields = append(fields, deploymentcount.FieldEnv)
+		fields = append(fields, deploymentstatistics.FieldEnv)
 	}
 	if m.count != nil {
-		fields = append(fields, deploymentcount.FieldCount)
+		fields = append(fields, deploymentstatistics.FieldCount)
 	}
 	if m.created_at != nil {
-		fields = append(fields, deploymentcount.FieldCreatedAt)
+		fields = append(fields, deploymentstatistics.FieldCreatedAt)
 	}
 	if m.updated_at != nil {
-		fields = append(fields, deploymentcount.FieldUpdatedAt)
+		fields = append(fields, deploymentstatistics.FieldUpdatedAt)
 	}
 	return fields
 }
@@ -3926,19 +3926,19 @@ func (m *DeploymentCountMutation) Fields() []string {
 // Field returns the value of a field with the given name. The second boolean
 // return value indicates that this field was not set, or was not defined in the
 // schema.
-func (m *DeploymentCountMutation) Field(name string) (ent.Value, bool) {
+func (m *DeploymentStatisticsMutation) Field(name string) (ent.Value, bool) {
 	switch name {
-	case deploymentcount.FieldNamespace:
+	case deploymentstatistics.FieldNamespace:
 		return m.Namespace()
-	case deploymentcount.FieldName:
+	case deploymentstatistics.FieldName:
 		return m.Name()
-	case deploymentcount.FieldEnv:
+	case deploymentstatistics.FieldEnv:
 		return m.Env()
-	case deploymentcount.FieldCount:
+	case deploymentstatistics.FieldCount:
 		return m.Count()
-	case deploymentcount.FieldCreatedAt:
+	case deploymentstatistics.FieldCreatedAt:
 		return m.CreatedAt()
-	case deploymentcount.FieldUpdatedAt:
+	case deploymentstatistics.FieldUpdatedAt:
 		return m.UpdatedAt()
 	}
 	return nil, false
@@ -3947,65 +3947,65 @@ func (m *DeploymentCountMutation) Field(name string) (ent.Value, bool) {
 // OldField returns the old value of the field from the database. An error is
 // returned if the mutation operation is not UpdateOne, or the query to the
 // database failed.
-func (m *DeploymentCountMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+func (m *DeploymentStatisticsMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
-	case deploymentcount.FieldNamespace:
+	case deploymentstatistics.FieldNamespace:
 		return m.OldNamespace(ctx)
-	case deploymentcount.FieldName:
+	case deploymentstatistics.FieldName:
 		return m.OldName(ctx)
-	case deploymentcount.FieldEnv:
+	case deploymentstatistics.FieldEnv:
 		return m.OldEnv(ctx)
-	case deploymentcount.FieldCount:
+	case deploymentstatistics.FieldCount:
 		return m.OldCount(ctx)
-	case deploymentcount.FieldCreatedAt:
+	case deploymentstatistics.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
-	case deploymentcount.FieldUpdatedAt:
+	case deploymentstatistics.FieldUpdatedAt:
 		return m.OldUpdatedAt(ctx)
 	}
-	return nil, fmt.Errorf("unknown DeploymentCount field %s", name)
+	return nil, fmt.Errorf("unknown DeploymentStatistics field %s", name)
 }
 
 // SetField sets the value of a field with the given name. It returns an error if
 // the field is not defined in the schema, or if the type mismatched the field
 // type.
-func (m *DeploymentCountMutation) SetField(name string, value ent.Value) error {
+func (m *DeploymentStatisticsMutation) SetField(name string, value ent.Value) error {
 	switch name {
-	case deploymentcount.FieldNamespace:
+	case deploymentstatistics.FieldNamespace:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetNamespace(v)
 		return nil
-	case deploymentcount.FieldName:
+	case deploymentstatistics.FieldName:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetName(v)
 		return nil
-	case deploymentcount.FieldEnv:
+	case deploymentstatistics.FieldEnv:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetEnv(v)
 		return nil
-	case deploymentcount.FieldCount:
+	case deploymentstatistics.FieldCount:
 		v, ok := value.(int)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetCount(v)
 		return nil
-	case deploymentcount.FieldCreatedAt:
+	case deploymentstatistics.FieldCreatedAt:
 		v, ok := value.(time.Time)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetCreatedAt(v)
 		return nil
-	case deploymentcount.FieldUpdatedAt:
+	case deploymentstatistics.FieldUpdatedAt:
 		v, ok := value.(time.Time)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
@@ -4013,15 +4013,15 @@ func (m *DeploymentCountMutation) SetField(name string, value ent.Value) error {
 		m.SetUpdatedAt(v)
 		return nil
 	}
-	return fmt.Errorf("unknown DeploymentCount field %s", name)
+	return fmt.Errorf("unknown DeploymentStatistics field %s", name)
 }
 
 // AddedFields returns all numeric fields that were incremented/decremented during
 // this mutation.
-func (m *DeploymentCountMutation) AddedFields() []string {
+func (m *DeploymentStatisticsMutation) AddedFields() []string {
 	var fields []string
 	if m.addcount != nil {
-		fields = append(fields, deploymentcount.FieldCount)
+		fields = append(fields, deploymentstatistics.FieldCount)
 	}
 	return fields
 }
@@ -4029,9 +4029,9 @@ func (m *DeploymentCountMutation) AddedFields() []string {
 // AddedField returns the numeric value that was incremented/decremented on a field
 // with the given name. The second boolean return value indicates that this field
 // was not set, or was not defined in the schema.
-func (m *DeploymentCountMutation) AddedField(name string) (ent.Value, bool) {
+func (m *DeploymentStatisticsMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
-	case deploymentcount.FieldCount:
+	case deploymentstatistics.FieldCount:
 		return m.AddedCount()
 	}
 	return nil, false
@@ -4040,9 +4040,9 @@ func (m *DeploymentCountMutation) AddedField(name string) (ent.Value, bool) {
 // AddField adds the value to the field with the given name. It returns an error if
 // the field is not defined in the schema, or if the type mismatched the field
 // type.
-func (m *DeploymentCountMutation) AddField(name string, value ent.Value) error {
+func (m *DeploymentStatisticsMutation) AddField(name string, value ent.Value) error {
 	switch name {
-	case deploymentcount.FieldCount:
+	case deploymentstatistics.FieldCount:
 		v, ok := value.(int)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
@@ -4050,100 +4050,100 @@ func (m *DeploymentCountMutation) AddField(name string, value ent.Value) error {
 		m.AddCount(v)
 		return nil
 	}
-	return fmt.Errorf("unknown DeploymentCount numeric field %s", name)
+	return fmt.Errorf("unknown DeploymentStatistics numeric field %s", name)
 }
 
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
-func (m *DeploymentCountMutation) ClearedFields() []string {
+func (m *DeploymentStatisticsMutation) ClearedFields() []string {
 	return nil
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
 // cleared in this mutation.
-func (m *DeploymentCountMutation) FieldCleared(name string) bool {
+func (m *DeploymentStatisticsMutation) FieldCleared(name string) bool {
 	_, ok := m.clearedFields[name]
 	return ok
 }
 
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
-func (m *DeploymentCountMutation) ClearField(name string) error {
-	return fmt.Errorf("unknown DeploymentCount nullable field %s", name)
+func (m *DeploymentStatisticsMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown DeploymentStatistics nullable field %s", name)
 }
 
 // ResetField resets all changes in the mutation for the field with the given name.
 // It returns an error if the field is not defined in the schema.
-func (m *DeploymentCountMutation) ResetField(name string) error {
+func (m *DeploymentStatisticsMutation) ResetField(name string) error {
 	switch name {
-	case deploymentcount.FieldNamespace:
+	case deploymentstatistics.FieldNamespace:
 		m.ResetNamespace()
 		return nil
-	case deploymentcount.FieldName:
+	case deploymentstatistics.FieldName:
 		m.ResetName()
 		return nil
-	case deploymentcount.FieldEnv:
+	case deploymentstatistics.FieldEnv:
 		m.ResetEnv()
 		return nil
-	case deploymentcount.FieldCount:
+	case deploymentstatistics.FieldCount:
 		m.ResetCount()
 		return nil
-	case deploymentcount.FieldCreatedAt:
+	case deploymentstatistics.FieldCreatedAt:
 		m.ResetCreatedAt()
 		return nil
-	case deploymentcount.FieldUpdatedAt:
+	case deploymentstatistics.FieldUpdatedAt:
 		m.ResetUpdatedAt()
 		return nil
 	}
-	return fmt.Errorf("unknown DeploymentCount field %s", name)
+	return fmt.Errorf("unknown DeploymentStatistics field %s", name)
 }
 
 // AddedEdges returns all edge names that were set/added in this mutation.
-func (m *DeploymentCountMutation) AddedEdges() []string {
+func (m *DeploymentStatisticsMutation) AddedEdges() []string {
 	edges := make([]string, 0, 0)
 	return edges
 }
 
 // AddedIDs returns all IDs (to other nodes) that were added for the given edge
 // name in this mutation.
-func (m *DeploymentCountMutation) AddedIDs(name string) []ent.Value {
+func (m *DeploymentStatisticsMutation) AddedIDs(name string) []ent.Value {
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
-func (m *DeploymentCountMutation) RemovedEdges() []string {
+func (m *DeploymentStatisticsMutation) RemovedEdges() []string {
 	edges := make([]string, 0, 0)
 	return edges
 }
 
 // RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
 // the given name in this mutation.
-func (m *DeploymentCountMutation) RemovedIDs(name string) []ent.Value {
+func (m *DeploymentStatisticsMutation) RemovedIDs(name string) []ent.Value {
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
-func (m *DeploymentCountMutation) ClearedEdges() []string {
+func (m *DeploymentStatisticsMutation) ClearedEdges() []string {
 	edges := make([]string, 0, 0)
 	return edges
 }
 
 // EdgeCleared returns a boolean which indicates if the edge with the given name
 // was cleared in this mutation.
-func (m *DeploymentCountMutation) EdgeCleared(name string) bool {
+func (m *DeploymentStatisticsMutation) EdgeCleared(name string) bool {
 	return false
 }
 
 // ClearEdge clears the value of the edge with the given name. It returns an error
 // if that edge is not defined in the schema.
-func (m *DeploymentCountMutation) ClearEdge(name string) error {
-	return fmt.Errorf("unknown DeploymentCount unique edge %s", name)
+func (m *DeploymentStatisticsMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown DeploymentStatistics unique edge %s", name)
 }
 
 // ResetEdge resets all changes to the edge with the given name in this mutation.
 // It returns an error if the edge is not defined in the schema.
-func (m *DeploymentCountMutation) ResetEdge(name string) error {
-	return fmt.Errorf("unknown DeploymentCount edge %s", name)
+func (m *DeploymentStatisticsMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown DeploymentStatistics edge %s", name)
 }
 
 // DeploymentStatusMutation represents an operation that mutates the DeploymentStatus nodes in the graph.

@@ -31,7 +31,7 @@ type (
 	collector struct {
 		i Interactor
 
-		cache    map[int]*ent.DeploymentCount
+		cache    map[int]*ent.DeploymentStatistics
 		lastTime time.Time
 
 		log *zap.Logger
@@ -66,7 +66,7 @@ func (m *Metric) CollectMetrics(c *gin.Context) {
 func newCollector(i Interactor) *collector {
 	return &collector{
 		i:     i,
-		cache: map[int]*ent.DeploymentCount{},
+		cache: map[int]*ent.DeploymentStatistics{},
 		log:   zap.L().Named("collector"),
 	}
 }
@@ -81,7 +81,7 @@ func (c *collector) Collect(ch chan<- prometheus.Metric) {
 
 	{
 		var (
-			dcs []*ent.DeploymentCount
+			dcs []*ent.DeploymentStatistics
 			err error
 		)
 
@@ -92,13 +92,13 @@ func (c *collector) Collect(ch chan<- prometheus.Metric) {
 
 		if len(c.cache) == 0 {
 			c.log.Debug("List all deployment_count.")
-			if dcs, err = c.i.ListAllDeploymentCounts(ctx); err != nil {
+			if dcs, err = c.i.ListAllDeploymentStatisticss(ctx); err != nil {
 				c.log.Error("It has failed to list all deployment_counts.", zap.Error(err))
 				return
 			}
 		} else {
 			c.log.Debug("List deployment_count from the last time.", zap.Time("last", c.lastTime))
-			if dcs, err = c.i.ListDeploymentCountsGreaterThanTime(ctx, c.lastTime); err != nil {
+			if dcs, err = c.i.ListDeploymentStatisticssGreaterThanTime(ctx, c.lastTime); err != nil {
 				c.log.Error("It has failed to list deployment_counts.", zap.Error(err))
 				return
 			}

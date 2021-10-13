@@ -24,18 +24,18 @@ type config struct {
 
 // hooks per client, for fast access.
 type hooks struct {
-	Approval           []ent.Hook
-	Callback           []ent.Hook
-	ChatUser           []ent.Hook
-	Deployment         []ent.Hook
-	DeploymentCount    []ent.Hook
-	DeploymentStatus   []ent.Hook
-	Event              []ent.Hook
-	Lock               []ent.Hook
-	NotificationRecord []ent.Hook
-	Perm               []ent.Hook
-	Repo               []ent.Hook
-	User               []ent.Hook
+	Approval             []ent.Hook
+	Callback             []ent.Hook
+	ChatUser             []ent.Hook
+	Deployment           []ent.Hook
+	DeploymentStatistics []ent.Hook
+	DeploymentStatus     []ent.Hook
+	Event                []ent.Hook
+	Lock                 []ent.Hook
+	NotificationRecord   []ent.Hook
+	Perm                 []ent.Hook
+	Repo                 []ent.Hook
+	User                 []ent.Hook
 }
 
 // Options applies the options on the config object.

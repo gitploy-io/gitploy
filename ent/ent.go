@@ -12,7 +12,7 @@ import (
 	"github.com/gitploy-io/gitploy/ent/callback"
 	"github.com/gitploy-io/gitploy/ent/chatuser"
 	"github.com/gitploy-io/gitploy/ent/deployment"
-	"github.com/gitploy-io/gitploy/ent/deploymentcount"
+	"github.com/gitploy-io/gitploy/ent/deploymentstatistics"
 	"github.com/gitploy-io/gitploy/ent/deploymentstatus"
 	"github.com/gitploy-io/gitploy/ent/event"
 	"github.com/gitploy-io/gitploy/ent/lock"
@@ -40,18 +40,18 @@ type OrderFunc func(*sql.Selector)
 // columnChecker returns a function indicates if the column exists in the given column.
 func columnChecker(table string) func(string) error {
 	checks := map[string]func(string) bool{
-		approval.Table:           approval.ValidColumn,
-		callback.Table:           callback.ValidColumn,
-		chatuser.Table:           chatuser.ValidColumn,
-		deployment.Table:         deployment.ValidColumn,
-		deploymentcount.Table:    deploymentcount.ValidColumn,
-		deploymentstatus.Table:   deploymentstatus.ValidColumn,
-		event.Table:              event.ValidColumn,
-		lock.Table:               lock.ValidColumn,
-		notificationrecord.Table: notificationrecord.ValidColumn,
-		perm.Table:               perm.ValidColumn,
-		repo.Table:               repo.ValidColumn,
-		user.Table:               user.ValidColumn,
+		approval.Table:             approval.ValidColumn,
+		callback.Table:             callback.ValidColumn,
+		chatuser.Table:             chatuser.ValidColumn,
+		deployment.Table:           deployment.ValidColumn,
+		deploymentstatistics.Table: deploymentstatistics.ValidColumn,
+		deploymentstatus.Table:     deploymentstatus.ValidColumn,
+		event.Table:                event.ValidColumn,
+		lock.Table:                 lock.ValidColumn,
+		notificationrecord.Table:   notificationrecord.ValidColumn,
+		perm.Table:                 perm.ValidColumn,
+		repo.Table:                 repo.ValidColumn,
+		user.Table:                 user.ValidColumn,
 	}
 	check, ok := checks[table]
 	if !ok {

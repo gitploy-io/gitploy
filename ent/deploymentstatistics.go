@@ -8,11 +8,11 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/gitploy-io/gitploy/ent/deploymentcount"
+	"github.com/gitploy-io/gitploy/ent/deploymentstatistics"
 )
 
-// DeploymentCount is the model entity for the DeploymentCount schema.
-type DeploymentCount struct {
+// DeploymentStatistics is the model entity for the DeploymentStatistics schema.
+type DeploymentStatistics struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID int `json:"id,omitempty"`
@@ -31,122 +31,122 @@ type DeploymentCount struct {
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
-func (*DeploymentCount) scanValues(columns []string) ([]interface{}, error) {
+func (*DeploymentStatistics) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case deploymentcount.FieldID, deploymentcount.FieldCount:
+		case deploymentstatistics.FieldID, deploymentstatistics.FieldCount:
 			values[i] = new(sql.NullInt64)
-		case deploymentcount.FieldNamespace, deploymentcount.FieldName, deploymentcount.FieldEnv:
+		case deploymentstatistics.FieldNamespace, deploymentstatistics.FieldName, deploymentstatistics.FieldEnv:
 			values[i] = new(sql.NullString)
-		case deploymentcount.FieldCreatedAt, deploymentcount.FieldUpdatedAt:
+		case deploymentstatistics.FieldCreatedAt, deploymentstatistics.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type DeploymentCount", columns[i])
+			return nil, fmt.Errorf("unexpected column %q for type DeploymentStatistics", columns[i])
 		}
 	}
 	return values, nil
 }
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
-// to the DeploymentCount fields.
-func (dc *DeploymentCount) assignValues(columns []string, values []interface{}) error {
+// to the DeploymentStatistics fields.
+func (ds *DeploymentStatistics) assignValues(columns []string, values []interface{}) error {
 	if m, n := len(values), len(columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}
 	for i := range columns {
 		switch columns[i] {
-		case deploymentcount.FieldID:
+		case deploymentstatistics.FieldID:
 			value, ok := values[i].(*sql.NullInt64)
 			if !ok {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
-			dc.ID = int(value.Int64)
-		case deploymentcount.FieldNamespace:
+			ds.ID = int(value.Int64)
+		case deploymentstatistics.FieldNamespace:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field namespace", values[i])
 			} else if value.Valid {
-				dc.Namespace = value.String
+				ds.Namespace = value.String
 			}
-		case deploymentcount.FieldName:
+		case deploymentstatistics.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field name", values[i])
 			} else if value.Valid {
-				dc.Name = value.String
+				ds.Name = value.String
 			}
-		case deploymentcount.FieldEnv:
+		case deploymentstatistics.FieldEnv:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field env", values[i])
 			} else if value.Valid {
-				dc.Env = value.String
+				ds.Env = value.String
 			}
-		case deploymentcount.FieldCount:
+		case deploymentstatistics.FieldCount:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field count", values[i])
 			} else if value.Valid {
-				dc.Count = int(value.Int64)
+				ds.Count = int(value.Int64)
 			}
-		case deploymentcount.FieldCreatedAt:
+		case deploymentstatistics.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
 			} else if value.Valid {
-				dc.CreatedAt = value.Time
+				ds.CreatedAt = value.Time
 			}
-		case deploymentcount.FieldUpdatedAt:
+		case deploymentstatistics.FieldUpdatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
 			} else if value.Valid {
-				dc.UpdatedAt = value.Time
+				ds.UpdatedAt = value.Time
 			}
 		}
 	}
 	return nil
 }
 
-// Update returns a builder for updating this DeploymentCount.
-// Note that you need to call DeploymentCount.Unwrap() before calling this method if this DeploymentCount
+// Update returns a builder for updating this DeploymentStatistics.
+// Note that you need to call DeploymentStatistics.Unwrap() before calling this method if this DeploymentStatistics
 // was returned from a transaction, and the transaction was committed or rolled back.
-func (dc *DeploymentCount) Update() *DeploymentCountUpdateOne {
-	return (&DeploymentCountClient{config: dc.config}).UpdateOne(dc)
+func (ds *DeploymentStatistics) Update() *DeploymentStatisticsUpdateOne {
+	return (&DeploymentStatisticsClient{config: ds.config}).UpdateOne(ds)
 }
 
-// Unwrap unwraps the DeploymentCount entity that was returned from a transaction after it was closed,
+// Unwrap unwraps the DeploymentStatistics entity that was returned from a transaction after it was closed,
 // so that all future queries will be executed through the driver which created the transaction.
-func (dc *DeploymentCount) Unwrap() *DeploymentCount {
-	tx, ok := dc.config.driver.(*txDriver)
+func (ds *DeploymentStatistics) Unwrap() *DeploymentStatistics {
+	tx, ok := ds.config.driver.(*txDriver)
 	if !ok {
-		panic("ent: DeploymentCount is not a transactional entity")
+		panic("ent: DeploymentStatistics is not a transactional entity")
 	}
-	dc.config.driver = tx.drv
-	return dc
+	ds.config.driver = tx.drv
+	return ds
 }
 
 // String implements the fmt.Stringer.
-func (dc *DeploymentCount) String() string {
+func (ds *DeploymentStatistics) String() string {
 	var builder strings.Builder
-	builder.WriteString("DeploymentCount(")
-	builder.WriteString(fmt.Sprintf("id=%v", dc.ID))
+	builder.WriteString("DeploymentStatistics(")
+	builder.WriteString(fmt.Sprintf("id=%v", ds.ID))
 	builder.WriteString(", namespace=")
-	builder.WriteString(dc.Namespace)
+	builder.WriteString(ds.Namespace)
 	builder.WriteString(", name=")
-	builder.WriteString(dc.Name)
+	builder.WriteString(ds.Name)
 	builder.WriteString(", env=")
-	builder.WriteString(dc.Env)
+	builder.WriteString(ds.Env)
 	builder.WriteString(", count=")
-	builder.WriteString(fmt.Sprintf("%v", dc.Count))
+	builder.WriteString(fmt.Sprintf("%v", ds.Count))
 	builder.WriteString(", created_at=")
-	builder.WriteString(dc.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(ds.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", updated_at=")
-	builder.WriteString(dc.UpdatedAt.Format(time.ANSIC))
+	builder.WriteString(ds.UpdatedAt.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
 }
 
-// DeploymentCounts is a parsable slice of DeploymentCount.
-type DeploymentCounts []*DeploymentCount
+// DeploymentStatisticsSlice is a parsable slice of DeploymentStatistics.
+type DeploymentStatisticsSlice []*DeploymentStatistics
 
-func (dc DeploymentCounts) config(cfg config) {
-	for _i := range dc {
-		dc[_i].config = cfg
+func (ds DeploymentStatisticsSlice) config(cfg config) {
+	for _i := range ds {
+		ds[_i].config = cfg
 	}
 }

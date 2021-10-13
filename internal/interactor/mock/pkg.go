@@ -589,19 +589,19 @@ func (mr *MockStoreMockRecorder) HasLockOfRepoForEnv(ctx, r, env interface{}) *g
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "HasLockOfRepoForEnv", reflect.TypeOf((*MockStore)(nil).HasLockOfRepoForEnv), ctx, r, env)
 }
 
-// ListAllDeploymentCounts mocks base method.
-func (m *MockStore) ListAllDeploymentCounts(ctx context.Context) ([]*ent.DeploymentCount, error) {
+// ListAllDeploymentStatisticss mocks base method.
+func (m *MockStore) ListAllDeploymentStatisticss(ctx context.Context) ([]*ent.DeploymentStatistics, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListAllDeploymentCounts", ctx)
-	ret0, _ := ret[0].([]*ent.DeploymentCount)
+	ret := m.ctrl.Call(m, "ListAllDeploymentStatisticss", ctx)
+	ret0, _ := ret[0].([]*ent.DeploymentStatistics)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// ListAllDeploymentCounts indicates an expected call of ListAllDeploymentCounts.
-func (mr *MockStoreMockRecorder) ListAllDeploymentCounts(ctx interface{}) *gomock.Call {
+// ListAllDeploymentStatisticss indicates an expected call of ListAllDeploymentStatisticss.
+func (mr *MockStoreMockRecorder) ListAllDeploymentStatisticss(ctx interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListAllDeploymentCounts", reflect.TypeOf((*MockStore)(nil).ListAllDeploymentCounts), ctx)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListAllDeploymentStatisticss", reflect.TypeOf((*MockStore)(nil).ListAllDeploymentStatisticss), ctx)
 }
 
 // ListApprovals mocks base method.
@@ -619,19 +619,19 @@ func (mr *MockStoreMockRecorder) ListApprovals(ctx, d interface{}) *gomock.Call 
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListApprovals", reflect.TypeOf((*MockStore)(nil).ListApprovals), ctx, d)
 }
 
-// ListDeploymentCountsGreaterThanTime mocks base method.
-func (m *MockStore) ListDeploymentCountsGreaterThanTime(ctx context.Context, updated time.Time) ([]*ent.DeploymentCount, error) {
+// ListDeploymentStatisticssGreaterThanTime mocks base method.
+func (m *MockStore) ListDeploymentStatisticssGreaterThanTime(ctx context.Context, updated time.Time) ([]*ent.DeploymentStatistics, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListDeploymentCountsGreaterThanTime", ctx, updated)
-	ret0, _ := ret[0].([]*ent.DeploymentCount)
+	ret := m.ctrl.Call(m, "ListDeploymentStatisticssGreaterThanTime", ctx, updated)
+	ret0, _ := ret[0].([]*ent.DeploymentStatistics)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// ListDeploymentCountsGreaterThanTime indicates an expected call of ListDeploymentCountsGreaterThanTime.
-func (mr *MockStoreMockRecorder) ListDeploymentCountsGreaterThanTime(ctx, updated interface{}) *gomock.Call {
+// ListDeploymentStatisticssGreaterThanTime indicates an expected call of ListDeploymentStatisticssGreaterThanTime.
+func (mr *MockStoreMockRecorder) ListDeploymentStatisticssGreaterThanTime(ctx, updated interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListDeploymentCountsGreaterThanTime", reflect.TypeOf((*MockStore)(nil).ListDeploymentCountsGreaterThanTime), ctx, updated)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListDeploymentStatisticssGreaterThanTime", reflect.TypeOf((*MockStore)(nil).ListDeploymentStatisticssGreaterThanTime), ctx, updated)
 }
 
 // ListDeploymentsOfRepo mocks base method.

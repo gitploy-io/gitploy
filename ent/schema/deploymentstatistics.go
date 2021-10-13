@@ -8,14 +8,13 @@ import (
 	"entgo.io/ent/schema/index"
 )
 
-// DeploymentCount holds the schema definition for the DeploymentCount entity.
-// It is the kind of statistics table to count deployments.
-type DeploymentCount struct {
+// DeploymentStatistics holds the schema definition for the DeploymentStatistics entity.
+type DeploymentStatistics struct {
 	ent.Schema
 }
 
-// Fields of the DeploymentCount.
-func (DeploymentCount) Fields() []ent.Field {
+// Fields of the DeploymentStatistics.
+func (DeploymentStatistics) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("namespace"),
 		field.String("name"),
@@ -30,12 +29,12 @@ func (DeploymentCount) Fields() []ent.Field {
 	}
 }
 
-// Edges of the DeploymentCount.
-func (DeploymentCount) Edges() []ent.Edge {
+// Edges of the DeploymentStatistics.
+func (DeploymentStatistics) Edges() []ent.Edge {
 	return nil
 }
 
-func (DeploymentCount) Indexes() []ent.Index {
+func (DeploymentStatistics) Indexes() []ent.Index {
 	return []ent.Index{
 		index.Fields("namespace", "name", "env").
 			Unique(),

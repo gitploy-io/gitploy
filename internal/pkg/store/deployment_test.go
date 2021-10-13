@@ -464,7 +464,7 @@ func TestStore_UpdateDeployment(t *testing.T) {
 		}
 
 		expected := 1
-		dc := client.DeploymentCount.GetX(ctx, 1)
+		dc := client.DeploymentStatistics.GetX(ctx, 1)
 
 		if dc.Count != expected {
 			t.Fatalf("The statistics was not created.")
@@ -499,7 +499,7 @@ func TestStore_UpdateDeployment(t *testing.T) {
 			SaveX(ctx)
 
 		t.Log("Add the deployment count.")
-		client.DeploymentCount.Create().
+		client.DeploymentStatistics.Create().
 			SetNamespace("octocat").
 			SetName("Hello").
 			SetEnv("prod").
@@ -515,7 +515,7 @@ func TestStore_UpdateDeployment(t *testing.T) {
 		}
 
 		expected := 2
-		dc := client.DeploymentCount.GetX(ctx, 1)
+		dc := client.DeploymentStatistics.GetX(ctx, 1)
 
 		if dc.Count != expected {
 			t.Fatalf("The statistics was not created.")
