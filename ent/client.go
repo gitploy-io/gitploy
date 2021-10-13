@@ -13,7 +13,7 @@ import (
 	"github.com/gitploy-io/gitploy/ent/callback"
 	"github.com/gitploy-io/gitploy/ent/chatuser"
 	"github.com/gitploy-io/gitploy/ent/deployment"
-	"github.com/gitploy-io/gitploy/ent/deploymentcount"
+	"github.com/gitploy-io/gitploy/ent/deploymentstatistics"
 	"github.com/gitploy-io/gitploy/ent/deploymentstatus"
 	"github.com/gitploy-io/gitploy/ent/event"
 	"github.com/gitploy-io/gitploy/ent/lock"
@@ -40,8 +40,8 @@ type Client struct {
 	ChatUser *ChatUserClient
 	// Deployment is the client for interacting with the Deployment builders.
 	Deployment *DeploymentClient
-	// DeploymentCount is the client for interacting with the DeploymentCount builders.
-	DeploymentCount *DeploymentCountClient
+	// DeploymentStatistics is the client for interacting with the DeploymentStatistics builders.
+	DeploymentStatistics *DeploymentStatisticsClient
 	// DeploymentStatus is the client for interacting with the DeploymentStatus builders.
 	DeploymentStatus *DeploymentStatusClient
 	// Event is the client for interacting with the Event builders.
@@ -73,7 +73,7 @@ func (c *Client) init() {
 	c.Callback = NewCallbackClient(c.config)
 	c.ChatUser = NewChatUserClient(c.config)
 	c.Deployment = NewDeploymentClient(c.config)
-	c.DeploymentCount = NewDeploymentCountClient(c.config)
+	c.DeploymentStatistics = NewDeploymentStatisticsClient(c.config)
 	c.DeploymentStatus = NewDeploymentStatusClient(c.config)
 	c.Event = NewEventClient(c.config)
 	c.Lock = NewLockClient(c.config)
@@ -112,20 +112,20 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:                ctx,
-		config:             cfg,
-		Approval:           NewApprovalClient(cfg),
-		Callback:           NewCallbackClient(cfg),
-		ChatUser:           NewChatUserClient(cfg),
-		Deployment:         NewDeploymentClient(cfg),
-		DeploymentCount:    NewDeploymentCountClient(cfg),
-		DeploymentStatus:   NewDeploymentStatusClient(cfg),
-		Event:              NewEventClient(cfg),
-		Lock:               NewLockClient(cfg),
-		NotificationRecord: NewNotificationRecordClient(cfg),
-		Perm:               NewPermClient(cfg),
-		Repo:               NewRepoClient(cfg),
-		User:               NewUserClient(cfg),
+		ctx:                  ctx,
+		config:               cfg,
+		Approval:             NewApprovalClient(cfg),
+		Callback:             NewCallbackClient(cfg),
+		ChatUser:             NewChatUserClient(cfg),
+		Deployment:           NewDeploymentClient(cfg),
+		DeploymentStatistics: NewDeploymentStatisticsClient(cfg),
+		DeploymentStatus:     NewDeploymentStatusClient(cfg),
+		Event:                NewEventClient(cfg),
+		Lock:                 NewLockClient(cfg),
+		NotificationRecord:   NewNotificationRecordClient(cfg),
+		Perm:                 NewPermClient(cfg),
+		Repo:                 NewRepoClient(cfg),
+		User:                 NewUserClient(cfg),
 	}, nil
 }
 
@@ -143,19 +143,19 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		config:             cfg,
-		Approval:           NewApprovalClient(cfg),
-		Callback:           NewCallbackClient(cfg),
-		ChatUser:           NewChatUserClient(cfg),
-		Deployment:         NewDeploymentClient(cfg),
-		DeploymentCount:    NewDeploymentCountClient(cfg),
-		DeploymentStatus:   NewDeploymentStatusClient(cfg),
-		Event:              NewEventClient(cfg),
-		Lock:               NewLockClient(cfg),
-		NotificationRecord: NewNotificationRecordClient(cfg),
-		Perm:               NewPermClient(cfg),
-		Repo:               NewRepoClient(cfg),
-		User:               NewUserClient(cfg),
+		config:               cfg,
+		Approval:             NewApprovalClient(cfg),
+		Callback:             NewCallbackClient(cfg),
+		ChatUser:             NewChatUserClient(cfg),
+		Deployment:           NewDeploymentClient(cfg),
+		DeploymentStatistics: NewDeploymentStatisticsClient(cfg),
+		DeploymentStatus:     NewDeploymentStatusClient(cfg),
+		Event:                NewEventClient(cfg),
+		Lock:                 NewLockClient(cfg),
+		NotificationRecord:   NewNotificationRecordClient(cfg),
+		Perm:                 NewPermClient(cfg),
+		Repo:                 NewRepoClient(cfg),
+		User:                 NewUserClient(cfg),
 	}, nil
 }
 
@@ -189,7 +189,7 @@ func (c *Client) Use(hooks ...Hook) {
 	c.Callback.Use(hooks...)
 	c.ChatUser.Use(hooks...)
 	c.Deployment.Use(hooks...)
-	c.DeploymentCount.Use(hooks...)
+	c.DeploymentStatistics.Use(hooks...)
 	c.DeploymentStatus.Use(hooks...)
 	c.Event.Use(hooks...)
 	c.Lock.Use(hooks...)
@@ -719,84 +719,84 @@ func (c *DeploymentClient) Hooks() []Hook {
 	return c.hooks.Deployment
 }
 
-// DeploymentCountClient is a client for the DeploymentCount schema.
-type DeploymentCountClient struct {
+// DeploymentStatisticsClient is a client for the DeploymentStatistics schema.
+type DeploymentStatisticsClient struct {
 	config
 }
 
-// NewDeploymentCountClient returns a client for the DeploymentCount from the given config.
-func NewDeploymentCountClient(c config) *DeploymentCountClient {
-	return &DeploymentCountClient{config: c}
+// NewDeploymentStatisticsClient returns a client for the DeploymentStatistics from the given config.
+func NewDeploymentStatisticsClient(c config) *DeploymentStatisticsClient {
+	return &DeploymentStatisticsClient{config: c}
 }
 
 // Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `deploymentcount.Hooks(f(g(h())))`.
-func (c *DeploymentCountClient) Use(hooks ...Hook) {
-	c.hooks.DeploymentCount = append(c.hooks.DeploymentCount, hooks...)
+// A call to `Use(f, g, h)` equals to `deploymentstatistics.Hooks(f(g(h())))`.
+func (c *DeploymentStatisticsClient) Use(hooks ...Hook) {
+	c.hooks.DeploymentStatistics = append(c.hooks.DeploymentStatistics, hooks...)
 }
 
-// Create returns a create builder for DeploymentCount.
-func (c *DeploymentCountClient) Create() *DeploymentCountCreate {
-	mutation := newDeploymentCountMutation(c.config, OpCreate)
-	return &DeploymentCountCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Create returns a create builder for DeploymentStatistics.
+func (c *DeploymentStatisticsClient) Create() *DeploymentStatisticsCreate {
+	mutation := newDeploymentStatisticsMutation(c.config, OpCreate)
+	return &DeploymentStatisticsCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// CreateBulk returns a builder for creating a bulk of DeploymentCount entities.
-func (c *DeploymentCountClient) CreateBulk(builders ...*DeploymentCountCreate) *DeploymentCountCreateBulk {
-	return &DeploymentCountCreateBulk{config: c.config, builders: builders}
+// CreateBulk returns a builder for creating a bulk of DeploymentStatistics entities.
+func (c *DeploymentStatisticsClient) CreateBulk(builders ...*DeploymentStatisticsCreate) *DeploymentStatisticsCreateBulk {
+	return &DeploymentStatisticsCreateBulk{config: c.config, builders: builders}
 }
 
-// Update returns an update builder for DeploymentCount.
-func (c *DeploymentCountClient) Update() *DeploymentCountUpdate {
-	mutation := newDeploymentCountMutation(c.config, OpUpdate)
-	return &DeploymentCountUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Update returns an update builder for DeploymentStatistics.
+func (c *DeploymentStatisticsClient) Update() *DeploymentStatisticsUpdate {
+	mutation := newDeploymentStatisticsMutation(c.config, OpUpdate)
+	return &DeploymentStatisticsUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // UpdateOne returns an update builder for the given entity.
-func (c *DeploymentCountClient) UpdateOne(dc *DeploymentCount) *DeploymentCountUpdateOne {
-	mutation := newDeploymentCountMutation(c.config, OpUpdateOne, withDeploymentCount(dc))
-	return &DeploymentCountUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+func (c *DeploymentStatisticsClient) UpdateOne(ds *DeploymentStatistics) *DeploymentStatisticsUpdateOne {
+	mutation := newDeploymentStatisticsMutation(c.config, OpUpdateOne, withDeploymentStatistics(ds))
+	return &DeploymentStatisticsUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *DeploymentCountClient) UpdateOneID(id int) *DeploymentCountUpdateOne {
-	mutation := newDeploymentCountMutation(c.config, OpUpdateOne, withDeploymentCountID(id))
-	return &DeploymentCountUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+func (c *DeploymentStatisticsClient) UpdateOneID(id int) *DeploymentStatisticsUpdateOne {
+	mutation := newDeploymentStatisticsMutation(c.config, OpUpdateOne, withDeploymentStatisticsID(id))
+	return &DeploymentStatisticsUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// Delete returns a delete builder for DeploymentCount.
-func (c *DeploymentCountClient) Delete() *DeploymentCountDelete {
-	mutation := newDeploymentCountMutation(c.config, OpDelete)
-	return &DeploymentCountDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Delete returns a delete builder for DeploymentStatistics.
+func (c *DeploymentStatisticsClient) Delete() *DeploymentStatisticsDelete {
+	mutation := newDeploymentStatisticsMutation(c.config, OpDelete)
+	return &DeploymentStatisticsDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // DeleteOne returns a delete builder for the given entity.
-func (c *DeploymentCountClient) DeleteOne(dc *DeploymentCount) *DeploymentCountDeleteOne {
-	return c.DeleteOneID(dc.ID)
+func (c *DeploymentStatisticsClient) DeleteOne(ds *DeploymentStatistics) *DeploymentStatisticsDeleteOne {
+	return c.DeleteOneID(ds.ID)
 }
 
 // DeleteOneID returns a delete builder for the given id.
-func (c *DeploymentCountClient) DeleteOneID(id int) *DeploymentCountDeleteOne {
-	builder := c.Delete().Where(deploymentcount.ID(id))
+func (c *DeploymentStatisticsClient) DeleteOneID(id int) *DeploymentStatisticsDeleteOne {
+	builder := c.Delete().Where(deploymentstatistics.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
-	return &DeploymentCountDeleteOne{builder}
+	return &DeploymentStatisticsDeleteOne{builder}
 }
 
-// Query returns a query builder for DeploymentCount.
-func (c *DeploymentCountClient) Query() *DeploymentCountQuery {
-	return &DeploymentCountQuery{
+// Query returns a query builder for DeploymentStatistics.
+func (c *DeploymentStatisticsClient) Query() *DeploymentStatisticsQuery {
+	return &DeploymentStatisticsQuery{
 		config: c.config,
 	}
 }
 
-// Get returns a DeploymentCount entity by its id.
-func (c *DeploymentCountClient) Get(ctx context.Context, id int) (*DeploymentCount, error) {
-	return c.Query().Where(deploymentcount.ID(id)).Only(ctx)
+// Get returns a DeploymentStatistics entity by its id.
+func (c *DeploymentStatisticsClient) Get(ctx context.Context, id int) (*DeploymentStatistics, error) {
+	return c.Query().Where(deploymentstatistics.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *DeploymentCountClient) GetX(ctx context.Context, id int) *DeploymentCount {
+func (c *DeploymentStatisticsClient) GetX(ctx context.Context, id int) *DeploymentStatistics {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -805,8 +805,8 @@ func (c *DeploymentCountClient) GetX(ctx context.Context, id int) *DeploymentCou
 }
 
 // Hooks returns the client hooks.
-func (c *DeploymentCountClient) Hooks() []Hook {
-	return c.hooks.DeploymentCount
+func (c *DeploymentStatisticsClient) Hooks() []Hook {
+	return c.hooks.DeploymentStatistics
 }
 
 // DeploymentStatusClient is a client for the DeploymentStatus schema.

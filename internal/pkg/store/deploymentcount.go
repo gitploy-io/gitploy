@@ -5,20 +5,20 @@ import (
 	"time"
 
 	"github.com/gitploy-io/gitploy/ent"
-	"github.com/gitploy-io/gitploy/ent/deploymentcount"
+	"github.com/gitploy-io/gitploy/ent/deploymentstatistics"
 )
 
-func (s *Store) ListAllDeploymentCounts(ctx context.Context) ([]*ent.DeploymentCount, error) {
-	return s.c.DeploymentCount.
+func (s *Store) ListAllDeploymentStatisticss(ctx context.Context) ([]*ent.DeploymentStatistics, error) {
+	return s.c.DeploymentStatistics.
 		Query().
 		All(ctx)
 }
 
-func (s *Store) ListDeploymentCountsGreaterThanTime(ctx context.Context, updated time.Time) ([]*ent.DeploymentCount, error) {
-	return s.c.DeploymentCount.
+func (s *Store) ListDeploymentStatisticssGreaterThanTime(ctx context.Context, updated time.Time) ([]*ent.DeploymentStatistics, error) {
+	return s.c.DeploymentStatistics.
 		Query().
 		Where(
-			deploymentcount.UpdatedAtGT(updated),
+			deploymentstatistics.UpdatedAtGT(updated),
 		).
 		All(ctx)
 }

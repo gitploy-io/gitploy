@@ -156,8 +156,8 @@ var (
 			},
 		},
 	}
-	// DeploymentCountsColumns holds the columns for the "deployment_counts" table.
-	DeploymentCountsColumns = []*schema.Column{
+	// DeploymentStatisticsColumns holds the columns for the "deployment_statistics" table.
+	DeploymentStatisticsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "namespace", Type: field.TypeString},
 		{Name: "name", Type: field.TypeString},
@@ -166,16 +166,21 @@ var (
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 	}
-	// DeploymentCountsTable holds the schema information for the "deployment_counts" table.
-	DeploymentCountsTable = &schema.Table{
-		Name:       "deployment_counts",
-		Columns:    DeploymentCountsColumns,
-		PrimaryKey: []*schema.Column{DeploymentCountsColumns[0]},
+	// DeploymentStatisticsTable holds the schema information for the "deployment_statistics" table.
+	DeploymentStatisticsTable = &schema.Table{
+		Name:       "deployment_statistics",
+		Columns:    DeploymentStatisticsColumns,
+		PrimaryKey: []*schema.Column{DeploymentStatisticsColumns[0]},
 		Indexes: []*schema.Index{
 			{
-				Name:    "deploymentcount_namespace_name_env",
+				Name:    "deploymentstatistics_namespace_name_env",
 				Unique:  true,
-				Columns: []*schema.Column{DeploymentCountsColumns[1], DeploymentCountsColumns[2], DeploymentCountsColumns[3]},
+				Columns: []*schema.Column{DeploymentStatisticsColumns[1], DeploymentStatisticsColumns[2], DeploymentStatisticsColumns[3]},
+			},
+			{
+				Name:    "deploymentstatistics_updated_at",
+				Unique:  false,
+				Columns: []*schema.Column{DeploymentStatisticsColumns[6]},
 			},
 		},
 	}
@@ -392,7 +397,7 @@ var (
 		CallbacksTable,
 		ChatUsersTable,
 		DeploymentsTable,
-		DeploymentCountsTable,
+		DeploymentStatisticsTable,
 		DeploymentStatusTable,
 		EventsTable,
 		LocksTable,

@@ -7,7 +7,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/gitploy-io/gitploy/ent"
 	"github.com/gitploy-io/gitploy/ent/deployment"
-	"github.com/gitploy-io/gitploy/ent/deploymentcount"
+	"github.com/gitploy-io/gitploy/ent/deploymentstatistics"
 	"github.com/gitploy-io/gitploy/ent/perm"
 	"github.com/gitploy-io/gitploy/ent/predicate"
 	"go.uber.org/zap"
@@ -251,16 +251,16 @@ func (s *Store) UpdateDeployment(ctx context.Context, d *ent.Deployment) (*ent.D
 			return err
 		}
 
-		dc, err := s.c.DeploymentCount.
+		dc, err := s.c.DeploymentStatistics.
 			Query().
 			Where(
-				deploymentcount.NamespaceEQ(r.Namespace),
-				deploymentcount.NameEQ(r.Name),
-				deploymentcount.EnvEQ(d.Env),
+				deploymentstatistics.NamespaceEQ(r.Namespace),
+				deploymentstatistics.NameEQ(r.Name),
+				deploymentstatistics.EnvEQ(d.Env),
 			).
 			Only(ctx)
 		if ent.IsNotFound(err) {
-			s.c.DeploymentCount.
+			s.c.DeploymentStatistics.
 				Create().
 				SetNamespace(r.Namespace).
 				SetName(r.Name).
@@ -271,7 +271,7 @@ func (s *Store) UpdateDeployment(ctx context.Context, d *ent.Deployment) (*ent.D
 			return err
 		}
 
-		s.c.DeploymentCount.
+		s.c.DeploymentStatistics.
 			UpdateOne(dc).
 			SetCount(dc.Count + 1).
 			Save(ctx)

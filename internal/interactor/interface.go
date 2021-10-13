@@ -56,8 +56,8 @@ type (
 
 		CreateDeploymentStatus(ctx context.Context, s *ent.DeploymentStatus) (*ent.DeploymentStatus, error)
 
-		ListAllDeploymentCounts(ctx context.Context) ([]*ent.DeploymentCount, error)
-		ListDeploymentCountsGreaterThanTime(ctx context.Context, updated time.Time) ([]*ent.DeploymentCount, error)
+		ListAllDeploymentStatisticss(ctx context.Context) ([]*ent.DeploymentStatistics, error)
+		ListDeploymentStatisticssGreaterThanTime(ctx context.Context, updated time.Time) ([]*ent.DeploymentStatistics, error)
 
 		CreateCallback(ctx context.Context, cb *ent.Callback) (*ent.Callback, error)
 		FindCallbackByHash(ctx context.Context, hash string) (*ent.Callback, error)

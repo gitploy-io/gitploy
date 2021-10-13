@@ -9,7 +9,7 @@ import (
 	"github.com/gitploy-io/gitploy/ent/migrate"
 )
 
-func TestStore_ListDeploymentCountsGreaterThanTime(t *testing.T) {
+func TestStore_ListDeploymentStatisticssGreaterThanTime(t *testing.T) {
 	ctx := context.Background()
 
 	client := enttest.Open(t, "sqlite3", "file:ent?mode=memory&cache=shared&_fk=1",
@@ -19,7 +19,7 @@ func TestStore_ListDeploymentCountsGreaterThanTime(t *testing.T) {
 
 	tm := time.Now()
 
-	client.DeploymentCount.
+	client.DeploymentStatistics.
 		Create().
 		SetNamespace("octocat").
 		SetName("Hello").
@@ -27,7 +27,7 @@ func TestStore_ListDeploymentCountsGreaterThanTime(t *testing.T) {
 		SetUpdatedAt(tm.Add(-time.Hour)).
 		SaveX(ctx)
 
-	client.DeploymentCount.
+	client.DeploymentStatistics.
 		Create().
 		SetNamespace("octocat").
 		SetName("Hello").
@@ -37,13 +37,13 @@ func TestStore_ListDeploymentCountsGreaterThanTime(t *testing.T) {
 
 	s := NewStore(client)
 
-	dcs, err := s.ListDeploymentCountsGreaterThanTime(ctx, tm)
+	dcs, err := s.ListDeploymentStatisticssGreaterThanTime(ctx, tm)
 	if err != nil {
-		t.Fatalf("ListDeploymentCountsGreaterThanTime returns an error: %s", err)
+		t.Fatalf("ListDeploymentStatisticssGreaterThanTime returns an error: %s", err)
 	}
 
 	expected := 1
 	if len(dcs) != expected {
-		t.Fatalf("ListDeploymentCountsGreaterThanTime = %v, wanted %v", len(dcs), expected)
+		t.Fatalf("ListDeploymentStatisticssGreaterThanTime = %v, wanted %v", len(dcs), expected)
 	}
 }
