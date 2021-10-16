@@ -19,8 +19,14 @@ func (DeploymentStatistics) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("env"),
 		field.Int("count").
-			Default(1),
+			Default(0),
 		field.Int("rollback_count").
+			Default(0),
+		field.Int("additions").
+			Default(0),
+		field.Int("deletions").
+			Default(0),
+		field.Int("changes").
 			Default(0),
 		field.Time("created_at").
 			Default(time.Now),

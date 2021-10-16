@@ -105,12 +105,24 @@ func init() {
 	deploymentstatisticsDescRollbackCount := deploymentstatisticsFields[2].Descriptor()
 	// deploymentstatistics.DefaultRollbackCount holds the default value on creation for the rollback_count field.
 	deploymentstatistics.DefaultRollbackCount = deploymentstatisticsDescRollbackCount.Default.(int)
+	// deploymentstatisticsDescAdditions is the schema descriptor for additions field.
+	deploymentstatisticsDescAdditions := deploymentstatisticsFields[3].Descriptor()
+	// deploymentstatistics.DefaultAdditions holds the default value on creation for the additions field.
+	deploymentstatistics.DefaultAdditions = deploymentstatisticsDescAdditions.Default.(int)
+	// deploymentstatisticsDescDeletions is the schema descriptor for deletions field.
+	deploymentstatisticsDescDeletions := deploymentstatisticsFields[4].Descriptor()
+	// deploymentstatistics.DefaultDeletions holds the default value on creation for the deletions field.
+	deploymentstatistics.DefaultDeletions = deploymentstatisticsDescDeletions.Default.(int)
+	// deploymentstatisticsDescChanges is the schema descriptor for changes field.
+	deploymentstatisticsDescChanges := deploymentstatisticsFields[5].Descriptor()
+	// deploymentstatistics.DefaultChanges holds the default value on creation for the changes field.
+	deploymentstatistics.DefaultChanges = deploymentstatisticsDescChanges.Default.(int)
 	// deploymentstatisticsDescCreatedAt is the schema descriptor for created_at field.
-	deploymentstatisticsDescCreatedAt := deploymentstatisticsFields[3].Descriptor()
+	deploymentstatisticsDescCreatedAt := deploymentstatisticsFields[6].Descriptor()
 	// deploymentstatistics.DefaultCreatedAt holds the default value on creation for the created_at field.
 	deploymentstatistics.DefaultCreatedAt = deploymentstatisticsDescCreatedAt.Default.(func() time.Time)
 	// deploymentstatisticsDescUpdatedAt is the schema descriptor for updated_at field.
-	deploymentstatisticsDescUpdatedAt := deploymentstatisticsFields[4].Descriptor()
+	deploymentstatisticsDescUpdatedAt := deploymentstatisticsFields[7].Descriptor()
 	// deploymentstatistics.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	deploymentstatistics.DefaultUpdatedAt = deploymentstatisticsDescUpdatedAt.Default.(func() time.Time)
 	// deploymentstatistics.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.

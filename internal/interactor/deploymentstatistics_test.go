@@ -6,6 +6,7 @@ import (
 
 	"github.com/gitploy-io/gitploy/ent"
 	"github.com/gitploy-io/gitploy/internal/interactor/mock"
+	"github.com/gitploy-io/gitploy/vo"
 	"github.com/golang/mock/gomock"
 )
 
@@ -40,6 +41,20 @@ func TestInteractor_ProduceDeploymentStatisticsOfRepo(t *testing.T) {
 			CreateDeploymentStatistics(gomock.Any(), gomock.AssignableToTypeOf(&ent.DeploymentStatistics{})).
 			Return(&ent.DeploymentStatistics{ID: 1}, nil)
 
+		t.Log("MOCK - The prev deployment is not found.")
+		store.
+			EXPECT().
+			FindPrevSuccessDeployment(gomock.Any(), gomock.AssignableToTypeOf(&ent.Deployment{})).
+			Return(nil, &ent.NotFoundError{})
+
+		t.Log("MOCK - Update the statistics.")
+		store.
+			EXPECT().
+			UpdateDeploymentStatistics(gomock.Any(), gomock.Eq(&ent.DeploymentStatistics{ID: 1, Count: 1})).
+			DoAndReturn(func(ctx context.Context, s *ent.DeploymentStatistics) (*ent.DeploymentStatistics, error) {
+				return s, nil
+			})
+
 		i := newMockInteractor(store, scm)
 
 		_, err := i.ProduceDeploymentStatisticsOfRepo(context.Background(), input.repo, input.d)
@@ -48,7 +63,7 @@ func TestInteractor_ProduceDeploymentStatisticsOfRepo(t *testing.T) {
 		}
 	})
 
-	t.Run("Increate the rollback_count when the deployment is rollback.", func(t *testing.T) {
+	t.Run("Calculate changes from the lastest deployment.", func(t *testing.T) {
 		input := struct {
 			repo *ent.Repo
 			d    *ent.Deployment
@@ -58,8 +73,11 @@ func TestInteractor_ProduceDeploymentStatisticsOfRepo(t *testing.T) {
 				Name:      "HelloWorld",
 			},
 			d: &ent.Deployment{
-				Env:        "production",
-				IsRollback: true,
+				ID:  2,
+				Env: "production",
+				Edges: ent.DeploymentEdges{
+					User: &ent.User{},
+				},
 			},
 		}
 
@@ -71,13 +89,29 @@ func TestInteractor_ProduceDeploymentStatisticsOfRepo(t *testing.T) {
 		store.
 			EXPECT().
 			FindDeploymentStatisticsOfRepoByEnv(gomock.Any(), gomock.Eq(input.repo), gomock.Eq(input.d.Env)).
-			Return(&ent.DeploymentStatistics{ID: 1, RollbackCount: 1}, nil)
+			Return(&ent.DeploymentStatistics{ID: 1, Count: 1}, nil)
 
-		t.Log("MOCK - Increase the rollback_count.")
+		t.Log("MOCK - Find the latest deployment.")
 		store.
 			EXPECT().
-			UpdateDeploymentStatistics(gomock.Any(), gomock.Eq(&ent.DeploymentStatistics{ID: 1, RollbackCount: 2})).
-			Return(&ent.DeploymentStatistics{ID: 1, RollbackCount: 2}, nil)
+			FindPrevSuccessDeployment(gomock.Any(), gomock.Eq(input.d)).
+			Return(&ent.Deployment{ID: 2}, nil)
+
+		t.Log("MOCK - Get changed commits from the SCM.")
+		scm.
+			EXPECT().
+			CompareCommits(gomock.Any(), gomock.AssignableToTypeOf(&ent.User{}), gomock.AssignableToTypeOf(&ent.Repo{}), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
+			Return([]*vo.Commit{}, []*vo.CommitFile{
+				{Additions: 1, Deletions: 1, Changes: 2},
+			}, nil)
+
+		t.Log("MOCK - Update the statistics.")
+		store.
+			EXPECT().
+			UpdateDeploymentStatistics(gomock.Any(), gomock.Eq(&ent.DeploymentStatistics{ID: 1, Count: 2, Additions: 1, Deletions: 1, Changes: 2})).
+			DoAndReturn(func(ctx context.Context, s *ent.DeploymentStatistics) (*ent.DeploymentStatistics, error) {
+				return s, nil
+			})
 
 		i := newMockInteractor(store, scm)
 
@@ -86,4 +120,5 @@ func TestInteractor_ProduceDeploymentStatisticsOfRepo(t *testing.T) {
 			t.Fatalf("ProduceDeploymentStatisticsOfRepo returns an error: %s", err)
 		}
 	})
+
 }

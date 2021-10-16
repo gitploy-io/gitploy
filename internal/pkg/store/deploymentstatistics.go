@@ -43,6 +43,9 @@ func (s *Store) CreateDeploymentStatistics(ctx context.Context, ds *ent.Deployme
 		SetEnv(ds.Env).
 		SetCount(ds.Count).
 		SetRollbackCount(ds.RollbackCount).
+		SetAdditions(ds.Additions).
+		SetDeletions(ds.Deletions).
+		SetChanges(ds.Changes).
 		SetRepoID(ds.RepoID).
 		Save(ctx)
 }
@@ -52,5 +55,8 @@ func (s *Store) UpdateDeploymentStatistics(ctx context.Context, ds *ent.Deployme
 		UpdateOne(ds).
 		SetCount(ds.Count).
 		SetRollbackCount(ds.RollbackCount).
+		SetAdditions(ds.Additions).
+		SetDeletions(ds.Deletions).
+		SetChanges(ds.Changes).
 		Save(ctx)
 }

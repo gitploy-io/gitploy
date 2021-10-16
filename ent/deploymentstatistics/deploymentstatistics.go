@@ -17,6 +17,12 @@ const (
 	FieldCount = "count"
 	// FieldRollbackCount holds the string denoting the rollback_count field in the database.
 	FieldRollbackCount = "rollback_count"
+	// FieldAdditions holds the string denoting the additions field in the database.
+	FieldAdditions = "additions"
+	// FieldDeletions holds the string denoting the deletions field in the database.
+	FieldDeletions = "deletions"
+	// FieldChanges holds the string denoting the changes field in the database.
+	FieldChanges = "changes"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
@@ -42,6 +48,9 @@ var Columns = []string{
 	FieldEnv,
 	FieldCount,
 	FieldRollbackCount,
+	FieldAdditions,
+	FieldDeletions,
+	FieldChanges,
 	FieldCreatedAt,
 	FieldUpdatedAt,
 	FieldRepoID,
@@ -62,6 +71,12 @@ var (
 	DefaultCount int
 	// DefaultRollbackCount holds the default value on creation for the "rollback_count" field.
 	DefaultRollbackCount int
+	// DefaultAdditions holds the default value on creation for the "additions" field.
+	DefaultAdditions int
+	// DefaultDeletions holds the default value on creation for the "deletions" field.
+	DefaultDeletions int
+	// DefaultChanges holds the default value on creation for the "changes" field.
+	DefaultChanges int
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
 	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.

@@ -55,6 +55,48 @@ func (dsc *DeploymentStatisticsCreate) SetNillableRollbackCount(i *int) *Deploym
 	return dsc
 }
 
+// SetAdditions sets the "additions" field.
+func (dsc *DeploymentStatisticsCreate) SetAdditions(i int) *DeploymentStatisticsCreate {
+	dsc.mutation.SetAdditions(i)
+	return dsc
+}
+
+// SetNillableAdditions sets the "additions" field if the given value is not nil.
+func (dsc *DeploymentStatisticsCreate) SetNillableAdditions(i *int) *DeploymentStatisticsCreate {
+	if i != nil {
+		dsc.SetAdditions(*i)
+	}
+	return dsc
+}
+
+// SetDeletions sets the "deletions" field.
+func (dsc *DeploymentStatisticsCreate) SetDeletions(i int) *DeploymentStatisticsCreate {
+	dsc.mutation.SetDeletions(i)
+	return dsc
+}
+
+// SetNillableDeletions sets the "deletions" field if the given value is not nil.
+func (dsc *DeploymentStatisticsCreate) SetNillableDeletions(i *int) *DeploymentStatisticsCreate {
+	if i != nil {
+		dsc.SetDeletions(*i)
+	}
+	return dsc
+}
+
+// SetChanges sets the "changes" field.
+func (dsc *DeploymentStatisticsCreate) SetChanges(i int) *DeploymentStatisticsCreate {
+	dsc.mutation.SetChanges(i)
+	return dsc
+}
+
+// SetNillableChanges sets the "changes" field if the given value is not nil.
+func (dsc *DeploymentStatisticsCreate) SetNillableChanges(i *int) *DeploymentStatisticsCreate {
+	if i != nil {
+		dsc.SetChanges(*i)
+	}
+	return dsc
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (dsc *DeploymentStatisticsCreate) SetCreatedAt(t time.Time) *DeploymentStatisticsCreate {
 	dsc.mutation.SetCreatedAt(t)
@@ -173,6 +215,18 @@ func (dsc *DeploymentStatisticsCreate) defaults() {
 		v := deploymentstatistics.DefaultRollbackCount
 		dsc.mutation.SetRollbackCount(v)
 	}
+	if _, ok := dsc.mutation.Additions(); !ok {
+		v := deploymentstatistics.DefaultAdditions
+		dsc.mutation.SetAdditions(v)
+	}
+	if _, ok := dsc.mutation.Deletions(); !ok {
+		v := deploymentstatistics.DefaultDeletions
+		dsc.mutation.SetDeletions(v)
+	}
+	if _, ok := dsc.mutation.Changes(); !ok {
+		v := deploymentstatistics.DefaultChanges
+		dsc.mutation.SetChanges(v)
+	}
 	if _, ok := dsc.mutation.CreatedAt(); !ok {
 		v := deploymentstatistics.DefaultCreatedAt()
 		dsc.mutation.SetCreatedAt(v)
@@ -193,6 +247,15 @@ func (dsc *DeploymentStatisticsCreate) check() error {
 	}
 	if _, ok := dsc.mutation.RollbackCount(); !ok {
 		return &ValidationError{Name: "rollback_count", err: errors.New(`ent: missing required field "rollback_count"`)}
+	}
+	if _, ok := dsc.mutation.Additions(); !ok {
+		return &ValidationError{Name: "additions", err: errors.New(`ent: missing required field "additions"`)}
+	}
+	if _, ok := dsc.mutation.Deletions(); !ok {
+		return &ValidationError{Name: "deletions", err: errors.New(`ent: missing required field "deletions"`)}
+	}
+	if _, ok := dsc.mutation.Changes(); !ok {
+		return &ValidationError{Name: "changes", err: errors.New(`ent: missing required field "changes"`)}
 	}
 	if _, ok := dsc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "created_at"`)}
@@ -256,6 +319,30 @@ func (dsc *DeploymentStatisticsCreate) createSpec() (*DeploymentStatistics, *sql
 			Column: deploymentstatistics.FieldRollbackCount,
 		})
 		_node.RollbackCount = value
+	}
+	if value, ok := dsc.mutation.Additions(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: deploymentstatistics.FieldAdditions,
+		})
+		_node.Additions = value
+	}
+	if value, ok := dsc.mutation.Deletions(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: deploymentstatistics.FieldDeletions,
+		})
+		_node.Deletions = value
+	}
+	if value, ok := dsc.mutation.Changes(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: deploymentstatistics.FieldChanges,
+		})
+		_node.Changes = value
 	}
 	if value, ok := dsc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

@@ -114,6 +114,27 @@ func RollbackCount(v int) predicate.DeploymentStatistics {
 	})
 }
 
+// Additions applies equality check predicate on the "additions" field. It's identical to AdditionsEQ.
+func Additions(v int) predicate.DeploymentStatistics {
+	return predicate.DeploymentStatistics(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldAdditions), v))
+	})
+}
+
+// Deletions applies equality check predicate on the "deletions" field. It's identical to DeletionsEQ.
+func Deletions(v int) predicate.DeploymentStatistics {
+	return predicate.DeploymentStatistics(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldDeletions), v))
+	})
+}
+
+// Changes applies equality check predicate on the "changes" field. It's identical to ChangesEQ.
+func Changes(v int) predicate.DeploymentStatistics {
+	return predicate.DeploymentStatistics(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldChanges), v))
+	})
+}
+
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.DeploymentStatistics {
 	return predicate.DeploymentStatistics(func(s *sql.Selector) {
@@ -395,6 +416,234 @@ func RollbackCountLT(v int) predicate.DeploymentStatistics {
 func RollbackCountLTE(v int) predicate.DeploymentStatistics {
 	return predicate.DeploymentStatistics(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldRollbackCount), v))
+	})
+}
+
+// AdditionsEQ applies the EQ predicate on the "additions" field.
+func AdditionsEQ(v int) predicate.DeploymentStatistics {
+	return predicate.DeploymentStatistics(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldAdditions), v))
+	})
+}
+
+// AdditionsNEQ applies the NEQ predicate on the "additions" field.
+func AdditionsNEQ(v int) predicate.DeploymentStatistics {
+	return predicate.DeploymentStatistics(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldAdditions), v))
+	})
+}
+
+// AdditionsIn applies the In predicate on the "additions" field.
+func AdditionsIn(vs ...int) predicate.DeploymentStatistics {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.DeploymentStatistics(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldAdditions), v...))
+	})
+}
+
+// AdditionsNotIn applies the NotIn predicate on the "additions" field.
+func AdditionsNotIn(vs ...int) predicate.DeploymentStatistics {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.DeploymentStatistics(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldAdditions), v...))
+	})
+}
+
+// AdditionsGT applies the GT predicate on the "additions" field.
+func AdditionsGT(v int) predicate.DeploymentStatistics {
+	return predicate.DeploymentStatistics(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldAdditions), v))
+	})
+}
+
+// AdditionsGTE applies the GTE predicate on the "additions" field.
+func AdditionsGTE(v int) predicate.DeploymentStatistics {
+	return predicate.DeploymentStatistics(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldAdditions), v))
+	})
+}
+
+// AdditionsLT applies the LT predicate on the "additions" field.
+func AdditionsLT(v int) predicate.DeploymentStatistics {
+	return predicate.DeploymentStatistics(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldAdditions), v))
+	})
+}
+
+// AdditionsLTE applies the LTE predicate on the "additions" field.
+func AdditionsLTE(v int) predicate.DeploymentStatistics {
+	return predicate.DeploymentStatistics(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldAdditions), v))
+	})
+}
+
+// DeletionsEQ applies the EQ predicate on the "deletions" field.
+func DeletionsEQ(v int) predicate.DeploymentStatistics {
+	return predicate.DeploymentStatistics(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldDeletions), v))
+	})
+}
+
+// DeletionsNEQ applies the NEQ predicate on the "deletions" field.
+func DeletionsNEQ(v int) predicate.DeploymentStatistics {
+	return predicate.DeploymentStatistics(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldDeletions), v))
+	})
+}
+
+// DeletionsIn applies the In predicate on the "deletions" field.
+func DeletionsIn(vs ...int) predicate.DeploymentStatistics {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.DeploymentStatistics(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldDeletions), v...))
+	})
+}
+
+// DeletionsNotIn applies the NotIn predicate on the "deletions" field.
+func DeletionsNotIn(vs ...int) predicate.DeploymentStatistics {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.DeploymentStatistics(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldDeletions), v...))
+	})
+}
+
+// DeletionsGT applies the GT predicate on the "deletions" field.
+func DeletionsGT(v int) predicate.DeploymentStatistics {
+	return predicate.DeploymentStatistics(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldDeletions), v))
+	})
+}
+
+// DeletionsGTE applies the GTE predicate on the "deletions" field.
+func DeletionsGTE(v int) predicate.DeploymentStatistics {
+	return predicate.DeploymentStatistics(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldDeletions), v))
+	})
+}
+
+// DeletionsLT applies the LT predicate on the "deletions" field.
+func DeletionsLT(v int) predicate.DeploymentStatistics {
+	return predicate.DeploymentStatistics(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldDeletions), v))
+	})
+}
+
+// DeletionsLTE applies the LTE predicate on the "deletions" field.
+func DeletionsLTE(v int) predicate.DeploymentStatistics {
+	return predicate.DeploymentStatistics(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldDeletions), v))
+	})
+}
+
+// ChangesEQ applies the EQ predicate on the "changes" field.
+func ChangesEQ(v int) predicate.DeploymentStatistics {
+	return predicate.DeploymentStatistics(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldChanges), v))
+	})
+}
+
+// ChangesNEQ applies the NEQ predicate on the "changes" field.
+func ChangesNEQ(v int) predicate.DeploymentStatistics {
+	return predicate.DeploymentStatistics(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldChanges), v))
+	})
+}
+
+// ChangesIn applies the In predicate on the "changes" field.
+func ChangesIn(vs ...int) predicate.DeploymentStatistics {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.DeploymentStatistics(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldChanges), v...))
+	})
+}
+
+// ChangesNotIn applies the NotIn predicate on the "changes" field.
+func ChangesNotIn(vs ...int) predicate.DeploymentStatistics {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.DeploymentStatistics(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldChanges), v...))
+	})
+}
+
+// ChangesGT applies the GT predicate on the "changes" field.
+func ChangesGT(v int) predicate.DeploymentStatistics {
+	return predicate.DeploymentStatistics(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldChanges), v))
+	})
+}
+
+// ChangesGTE applies the GTE predicate on the "changes" field.
+func ChangesGTE(v int) predicate.DeploymentStatistics {
+	return predicate.DeploymentStatistics(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldChanges), v))
+	})
+}
+
+// ChangesLT applies the LT predicate on the "changes" field.
+func ChangesLT(v int) predicate.DeploymentStatistics {
+	return predicate.DeploymentStatistics(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldChanges), v))
+	})
+}
+
+// ChangesLTE applies the LTE predicate on the "changes" field.
+func ChangesLTE(v int) predicate.DeploymentStatistics {
+	return predicate.DeploymentStatistics(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldChanges), v))
 	})
 }
 

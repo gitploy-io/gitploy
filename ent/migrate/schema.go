@@ -161,8 +161,11 @@ var (
 	DeploymentStatisticsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "env", Type: field.TypeString},
-		{Name: "count", Type: field.TypeInt, Default: 1},
+		{Name: "count", Type: field.TypeInt, Default: 0},
 		{Name: "rollback_count", Type: field.TypeInt, Default: 0},
+		{Name: "additions", Type: field.TypeInt, Default: 0},
+		{Name: "deletions", Type: field.TypeInt, Default: 0},
+		{Name: "changes", Type: field.TypeInt, Default: 0},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "repo_id", Type: field.TypeInt64, Nullable: true},
@@ -175,7 +178,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "deployment_statistics_repos_deployment_statistics",
-				Columns:    []*schema.Column{DeploymentStatisticsColumns[6]},
+				Columns:    []*schema.Column{DeploymentStatisticsColumns[9]},
 				RefColumns: []*schema.Column{ReposColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
@@ -184,12 +187,12 @@ var (
 			{
 				Name:    "deploymentstatistics_repo_id_env",
 				Unique:  true,
-				Columns: []*schema.Column{DeploymentStatisticsColumns[6], DeploymentStatisticsColumns[1]},
+				Columns: []*schema.Column{DeploymentStatisticsColumns[9], DeploymentStatisticsColumns[1]},
 			},
 			{
 				Name:    "deploymentstatistics_updated_at",
 				Unique:  false,
-				Columns: []*schema.Column{DeploymentStatisticsColumns[5]},
+				Columns: []*schema.Column{DeploymentStatisticsColumns[8]},
 			},
 		},
 	}

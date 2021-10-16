@@ -23,6 +23,12 @@ type DeploymentStatistics struct {
 	Count int `json:"count"`
 	// RollbackCount holds the value of the "rollback_count" field.
 	RollbackCount int `json:"rollback_count"`
+	// Additions holds the value of the "additions" field.
+	Additions int `json:"additions"`
+	// Deletions holds the value of the "deletions" field.
+	Deletions int `json:"deletions"`
+	// Changes holds the value of the "changes" field.
+	Changes int `json:"changes"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -62,7 +68,7 @@ func (*DeploymentStatistics) scanValues(columns []string) ([]interface{}, error)
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case deploymentstatistics.FieldID, deploymentstatistics.FieldCount, deploymentstatistics.FieldRollbackCount, deploymentstatistics.FieldRepoID:
+		case deploymentstatistics.FieldID, deploymentstatistics.FieldCount, deploymentstatistics.FieldRollbackCount, deploymentstatistics.FieldAdditions, deploymentstatistics.FieldDeletions, deploymentstatistics.FieldChanges, deploymentstatistics.FieldRepoID:
 			values[i] = new(sql.NullInt64)
 		case deploymentstatistics.FieldEnv:
 			values[i] = new(sql.NullString)
@@ -106,6 +112,24 @@ func (ds *DeploymentStatistics) assignValues(columns []string, values []interfac
 				return fmt.Errorf("unexpected type %T for field rollback_count", values[i])
 			} else if value.Valid {
 				ds.RollbackCount = int(value.Int64)
+			}
+		case deploymentstatistics.FieldAdditions:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field additions", values[i])
+			} else if value.Valid {
+				ds.Additions = int(value.Int64)
+			}
+		case deploymentstatistics.FieldDeletions:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field deletions", values[i])
+			} else if value.Valid {
+				ds.Deletions = int(value.Int64)
+			}
+		case deploymentstatistics.FieldChanges:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field changes", values[i])
+			} else if value.Valid {
+				ds.Changes = int(value.Int64)
 			}
 		case deploymentstatistics.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -164,6 +188,12 @@ func (ds *DeploymentStatistics) String() string {
 	builder.WriteString(fmt.Sprintf("%v", ds.Count))
 	builder.WriteString(", rollback_count=")
 	builder.WriteString(fmt.Sprintf("%v", ds.RollbackCount))
+	builder.WriteString(", additions=")
+	builder.WriteString(fmt.Sprintf("%v", ds.Additions))
+	builder.WriteString(", deletions=")
+	builder.WriteString(fmt.Sprintf("%v", ds.Deletions))
+	builder.WriteString(", changes=")
+	builder.WriteString(fmt.Sprintf("%v", ds.Changes))
 	builder.WriteString(", created_at=")
 	builder.WriteString(ds.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", updated_at=")

@@ -121,7 +121,7 @@ func (h *Hooks) handleGithubHook(c *gin.Context) {
 
 	// Produce statistics when the deployment is success, and production environment.
 	if d.Status == deployment.StatusSuccess &&
-		d.ProductionEnvironment == true &&
+		d.ProductionEnvironment &&
 		d.Edges.Repo != nil {
 		if _, err := h.i.ProduceDeploymentStatisticsOfRepo(ctx, d.Edges.Repo, d); err != nil {
 			h.log.Error("It has failed to produce the statistics of deployment.", zap.Error(err))

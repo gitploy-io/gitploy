@@ -77,6 +77,69 @@ func (dsu *DeploymentStatisticsUpdate) AddRollbackCount(i int) *DeploymentStatis
 	return dsu
 }
 
+// SetAdditions sets the "additions" field.
+func (dsu *DeploymentStatisticsUpdate) SetAdditions(i int) *DeploymentStatisticsUpdate {
+	dsu.mutation.ResetAdditions()
+	dsu.mutation.SetAdditions(i)
+	return dsu
+}
+
+// SetNillableAdditions sets the "additions" field if the given value is not nil.
+func (dsu *DeploymentStatisticsUpdate) SetNillableAdditions(i *int) *DeploymentStatisticsUpdate {
+	if i != nil {
+		dsu.SetAdditions(*i)
+	}
+	return dsu
+}
+
+// AddAdditions adds i to the "additions" field.
+func (dsu *DeploymentStatisticsUpdate) AddAdditions(i int) *DeploymentStatisticsUpdate {
+	dsu.mutation.AddAdditions(i)
+	return dsu
+}
+
+// SetDeletions sets the "deletions" field.
+func (dsu *DeploymentStatisticsUpdate) SetDeletions(i int) *DeploymentStatisticsUpdate {
+	dsu.mutation.ResetDeletions()
+	dsu.mutation.SetDeletions(i)
+	return dsu
+}
+
+// SetNillableDeletions sets the "deletions" field if the given value is not nil.
+func (dsu *DeploymentStatisticsUpdate) SetNillableDeletions(i *int) *DeploymentStatisticsUpdate {
+	if i != nil {
+		dsu.SetDeletions(*i)
+	}
+	return dsu
+}
+
+// AddDeletions adds i to the "deletions" field.
+func (dsu *DeploymentStatisticsUpdate) AddDeletions(i int) *DeploymentStatisticsUpdate {
+	dsu.mutation.AddDeletions(i)
+	return dsu
+}
+
+// SetChanges sets the "changes" field.
+func (dsu *DeploymentStatisticsUpdate) SetChanges(i int) *DeploymentStatisticsUpdate {
+	dsu.mutation.ResetChanges()
+	dsu.mutation.SetChanges(i)
+	return dsu
+}
+
+// SetNillableChanges sets the "changes" field if the given value is not nil.
+func (dsu *DeploymentStatisticsUpdate) SetNillableChanges(i *int) *DeploymentStatisticsUpdate {
+	if i != nil {
+		dsu.SetChanges(*i)
+	}
+	return dsu
+}
+
+// AddChanges adds i to the "changes" field.
+func (dsu *DeploymentStatisticsUpdate) AddChanges(i int) *DeploymentStatisticsUpdate {
+	dsu.mutation.AddChanges(i)
+	return dsu
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (dsu *DeploymentStatisticsUpdate) SetCreatedAt(t time.Time) *DeploymentStatisticsUpdate {
 	dsu.mutation.SetCreatedAt(t)
@@ -249,6 +312,48 @@ func (dsu *DeploymentStatisticsUpdate) sqlSave(ctx context.Context) (n int, err 
 			Column: deploymentstatistics.FieldRollbackCount,
 		})
 	}
+	if value, ok := dsu.mutation.Additions(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: deploymentstatistics.FieldAdditions,
+		})
+	}
+	if value, ok := dsu.mutation.AddedAdditions(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: deploymentstatistics.FieldAdditions,
+		})
+	}
+	if value, ok := dsu.mutation.Deletions(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: deploymentstatistics.FieldDeletions,
+		})
+	}
+	if value, ok := dsu.mutation.AddedDeletions(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: deploymentstatistics.FieldDeletions,
+		})
+	}
+	if value, ok := dsu.mutation.Changes(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: deploymentstatistics.FieldChanges,
+		})
+	}
+	if value, ok := dsu.mutation.AddedChanges(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: deploymentstatistics.FieldChanges,
+		})
+	}
 	if value, ok := dsu.mutation.CreatedAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
@@ -362,6 +467,69 @@ func (dsuo *DeploymentStatisticsUpdateOne) SetNillableRollbackCount(i *int) *Dep
 // AddRollbackCount adds i to the "rollback_count" field.
 func (dsuo *DeploymentStatisticsUpdateOne) AddRollbackCount(i int) *DeploymentStatisticsUpdateOne {
 	dsuo.mutation.AddRollbackCount(i)
+	return dsuo
+}
+
+// SetAdditions sets the "additions" field.
+func (dsuo *DeploymentStatisticsUpdateOne) SetAdditions(i int) *DeploymentStatisticsUpdateOne {
+	dsuo.mutation.ResetAdditions()
+	dsuo.mutation.SetAdditions(i)
+	return dsuo
+}
+
+// SetNillableAdditions sets the "additions" field if the given value is not nil.
+func (dsuo *DeploymentStatisticsUpdateOne) SetNillableAdditions(i *int) *DeploymentStatisticsUpdateOne {
+	if i != nil {
+		dsuo.SetAdditions(*i)
+	}
+	return dsuo
+}
+
+// AddAdditions adds i to the "additions" field.
+func (dsuo *DeploymentStatisticsUpdateOne) AddAdditions(i int) *DeploymentStatisticsUpdateOne {
+	dsuo.mutation.AddAdditions(i)
+	return dsuo
+}
+
+// SetDeletions sets the "deletions" field.
+func (dsuo *DeploymentStatisticsUpdateOne) SetDeletions(i int) *DeploymentStatisticsUpdateOne {
+	dsuo.mutation.ResetDeletions()
+	dsuo.mutation.SetDeletions(i)
+	return dsuo
+}
+
+// SetNillableDeletions sets the "deletions" field if the given value is not nil.
+func (dsuo *DeploymentStatisticsUpdateOne) SetNillableDeletions(i *int) *DeploymentStatisticsUpdateOne {
+	if i != nil {
+		dsuo.SetDeletions(*i)
+	}
+	return dsuo
+}
+
+// AddDeletions adds i to the "deletions" field.
+func (dsuo *DeploymentStatisticsUpdateOne) AddDeletions(i int) *DeploymentStatisticsUpdateOne {
+	dsuo.mutation.AddDeletions(i)
+	return dsuo
+}
+
+// SetChanges sets the "changes" field.
+func (dsuo *DeploymentStatisticsUpdateOne) SetChanges(i int) *DeploymentStatisticsUpdateOne {
+	dsuo.mutation.ResetChanges()
+	dsuo.mutation.SetChanges(i)
+	return dsuo
+}
+
+// SetNillableChanges sets the "changes" field if the given value is not nil.
+func (dsuo *DeploymentStatisticsUpdateOne) SetNillableChanges(i *int) *DeploymentStatisticsUpdateOne {
+	if i != nil {
+		dsuo.SetChanges(*i)
+	}
+	return dsuo
+}
+
+// AddChanges adds i to the "changes" field.
+func (dsuo *DeploymentStatisticsUpdateOne) AddChanges(i int) *DeploymentStatisticsUpdateOne {
+	dsuo.mutation.AddChanges(i)
 	return dsuo
 }
 
@@ -559,6 +727,48 @@ func (dsuo *DeploymentStatisticsUpdateOne) sqlSave(ctx context.Context) (_node *
 			Type:   field.TypeInt,
 			Value:  value,
 			Column: deploymentstatistics.FieldRollbackCount,
+		})
+	}
+	if value, ok := dsuo.mutation.Additions(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: deploymentstatistics.FieldAdditions,
+		})
+	}
+	if value, ok := dsuo.mutation.AddedAdditions(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: deploymentstatistics.FieldAdditions,
+		})
+	}
+	if value, ok := dsuo.mutation.Deletions(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: deploymentstatistics.FieldDeletions,
+		})
+	}
+	if value, ok := dsuo.mutation.AddedDeletions(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: deploymentstatistics.FieldDeletions,
+		})
+	}
+	if value, ok := dsuo.mutation.Changes(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: deploymentstatistics.FieldChanges,
+		})
+	}
+	if value, ok := dsuo.mutation.AddedChanges(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: deploymentstatistics.FieldChanges,
 		})
 	}
 	if value, ok := dsuo.mutation.CreatedAt(); ok {
