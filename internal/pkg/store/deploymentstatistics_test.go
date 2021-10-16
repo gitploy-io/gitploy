@@ -21,16 +21,14 @@ func TestStore_ListDeploymentStatisticsGreaterThanTime(t *testing.T) {
 
 	client.DeploymentStatistics.
 		Create().
-		SetNamespace("octocat").
-		SetName("Hello").
+		SetRepoID(1).
 		SetEnv("dev").
 		SetUpdatedAt(tm.Add(-time.Hour)).
 		SaveX(ctx)
 
 	client.DeploymentStatistics.
 		Create().
-		SetNamespace("octocat").
-		SetName("Hello").
+		SetRepoID(1).
 		SetEnv("prod").
 		SetUpdatedAt(tm.Add(time.Hour)).
 		SaveX(ctx)

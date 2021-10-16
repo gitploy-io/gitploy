@@ -44,21 +44,26 @@ func (g *Github) ListCommits(ctx context.Context, u *ent.User, r *ent.Repo, bran
 	return ret, nil
 }
 
-func (g *Github) CompareCommits(ctx context.Context, u *ent.User, r *ent.Repo, base, head string, page, perPage int) ([]*vo.Commit, error) {
-	// TODO: support pagination.
+func (g *Github) CompareCommits(ctx context.Context, u *ent.User, r *ent.Repo, base, head string, page, perPage int) ([]*vo.Commit, []*vo.CommitFile, error) {
+	// TODO: Support pagination.
 	res, _, err := g.Client(ctx, u.Token).
 		Repositories.
 		CompareCommits(ctx, r.Namespace, r.Name, base, head)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
-	ret := make([]*vo.Commit, 0)
+	cms := make([]*vo.Commit, 0)
 	for _, cm := range res.Commits {
-		ret = append(ret, mapGithubCommitToCommit(cm))
+		cms = append(cms, mapGithubCommitToCommit(cm))
 	}
 
-	return ret, nil
+	cfs := make([]*vo.CommitFile, 0)
+	for _, cf := range res.Files {
+		cfs = append(cfs, mapGithubCommitFileToCommitFile(cf))
+	}
+
+	return cms, cfs, nil
 }
 
 func (g *Github) GetCommit(ctx context.Context, u *ent.User, r *ent.Repo, sha string) (*vo.Commit, error) {

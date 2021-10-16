@@ -96,6 +96,7 @@ var (
 		{Name: "uid", Type: field.TypeInt64, Nullable: true},
 		{Name: "sha", Type: field.TypeString, Nullable: true},
 		{Name: "html_url", Type: field.TypeString, Nullable: true, Size: 2000},
+		{Name: "production_environment", Type: field.TypeBool, Default: false},
 		{Name: "is_rollback", Type: field.TypeBool, Default: false},
 		{Name: "is_approval_enabled", Type: field.TypeBool, Default: false},
 		{Name: "required_approval_count", Type: field.TypeInt, Default: 0},
@@ -112,13 +113,13 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "deployments_repos_deployments",
-				Columns:    []*schema.Column{DeploymentsColumns[14]},
+				Columns:    []*schema.Column{DeploymentsColumns[15]},
 				RefColumns: []*schema.Column{ReposColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
 			{
 				Symbol:     "deployments_users_deployments",
-				Columns:    []*schema.Column{DeploymentsColumns[15]},
+				Columns:    []*schema.Column{DeploymentsColumns[16]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -127,22 +128,22 @@ var (
 			{
 				Name:    "deployment_repo_id_env_status_updated_at",
 				Unique:  false,
-				Columns: []*schema.Column{DeploymentsColumns[14], DeploymentsColumns[3], DeploymentsColumns[5], DeploymentsColumns[13]},
+				Columns: []*schema.Column{DeploymentsColumns[15], DeploymentsColumns[3], DeploymentsColumns[5], DeploymentsColumns[14]},
 			},
 			{
 				Name:    "deployment_repo_id_env_created_at",
 				Unique:  false,
-				Columns: []*schema.Column{DeploymentsColumns[14], DeploymentsColumns[3], DeploymentsColumns[12]},
+				Columns: []*schema.Column{DeploymentsColumns[15], DeploymentsColumns[3], DeploymentsColumns[13]},
 			},
 			{
 				Name:    "deployment_repo_id_created_at",
 				Unique:  false,
-				Columns: []*schema.Column{DeploymentsColumns[14], DeploymentsColumns[12]},
+				Columns: []*schema.Column{DeploymentsColumns[15], DeploymentsColumns[13]},
 			},
 			{
 				Name:    "deployment_number_repo_id",
 				Unique:  true,
-				Columns: []*schema.Column{DeploymentsColumns[1], DeploymentsColumns[14]},
+				Columns: []*schema.Column{DeploymentsColumns[1], DeploymentsColumns[15]},
 			},
 			{
 				Name:    "deployment_uid",
@@ -152,35 +153,46 @@ var (
 			{
 				Name:    "deployment_status_created_at",
 				Unique:  false,
-				Columns: []*schema.Column{DeploymentsColumns[5], DeploymentsColumns[12]},
+				Columns: []*schema.Column{DeploymentsColumns[5], DeploymentsColumns[13]},
 			},
 		},
 	}
 	// DeploymentStatisticsColumns holds the columns for the "deployment_statistics" table.
 	DeploymentStatisticsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "namespace", Type: field.TypeString},
-		{Name: "name", Type: field.TypeString},
 		{Name: "env", Type: field.TypeString},
-		{Name: "count", Type: field.TypeInt, Default: 1},
+		{Name: "count", Type: field.TypeInt, Default: 0},
+		{Name: "rollback_count", Type: field.TypeInt, Default: 0},
+		{Name: "additions", Type: field.TypeInt, Default: 0},
+		{Name: "deletions", Type: field.TypeInt, Default: 0},
+		{Name: "changes", Type: field.TypeInt, Default: 0},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "repo_id", Type: field.TypeInt64, Nullable: true},
 	}
 	// DeploymentStatisticsTable holds the schema information for the "deployment_statistics" table.
 	DeploymentStatisticsTable = &schema.Table{
 		Name:       "deployment_statistics",
 		Columns:    DeploymentStatisticsColumns,
 		PrimaryKey: []*schema.Column{DeploymentStatisticsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "deployment_statistics_repos_deployment_statistics",
+				Columns:    []*schema.Column{DeploymentStatisticsColumns[9]},
+				RefColumns: []*schema.Column{ReposColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
 		Indexes: []*schema.Index{
 			{
-				Name:    "deploymentstatistics_namespace_name_env",
+				Name:    "deploymentstatistics_repo_id_env",
 				Unique:  true,
-				Columns: []*schema.Column{DeploymentStatisticsColumns[1], DeploymentStatisticsColumns[2], DeploymentStatisticsColumns[3]},
+				Columns: []*schema.Column{DeploymentStatisticsColumns[9], DeploymentStatisticsColumns[1]},
 			},
 			{
 				Name:    "deploymentstatistics_updated_at",
 				Unique:  false,
-				Columns: []*schema.Column{DeploymentStatisticsColumns[6]},
+				Columns: []*schema.Column{DeploymentStatisticsColumns[8]},
 			},
 		},
 	}
@@ -415,6 +427,7 @@ func init() {
 	ChatUsersTable.ForeignKeys[0].RefTable = UsersTable
 	DeploymentsTable.ForeignKeys[0].RefTable = ReposTable
 	DeploymentsTable.ForeignKeys[1].RefTable = UsersTable
+	DeploymentStatisticsTable.ForeignKeys[0].RefTable = ReposTable
 	DeploymentStatusTable.ForeignKeys[0].RefTable = DeploymentsTable
 	EventsTable.ForeignKeys[0].RefTable = ApprovalsTable
 	EventsTable.ForeignKeys[1].RefTable = DeploymentsTable

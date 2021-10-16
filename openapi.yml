@@ -1746,6 +1746,8 @@ components:
           type: string
         html_url:
           type: string
+        production_environment:
+          type: boolean
         is_rollback:
           type: boolean
         is_approval_enabled:
@@ -1773,6 +1775,7 @@ components:
         - ref
         - env
         - status
+        - production_environment
         - is_rollback
         - is_approval_enabled
         - required_approval_count

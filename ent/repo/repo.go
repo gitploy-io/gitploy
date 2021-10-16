@@ -37,6 +37,8 @@ const (
 	EdgeCallback = "callback"
 	// EdgeLocks holds the string denoting the locks edge name in mutations.
 	EdgeLocks = "locks"
+	// EdgeDeploymentStatistics holds the string denoting the deployment_statistics edge name in mutations.
+	EdgeDeploymentStatistics = "deployment_statistics"
 	// Table holds the table name of the repo in the database.
 	Table = "repos"
 	// PermsTable is the table that holds the perms relation/edge.
@@ -67,6 +69,13 @@ const (
 	LocksInverseTable = "locks"
 	// LocksColumn is the table column denoting the locks relation/edge.
 	LocksColumn = "repo_id"
+	// DeploymentStatisticsTable is the table that holds the deployment_statistics relation/edge.
+	DeploymentStatisticsTable = "deployment_statistics"
+	// DeploymentStatisticsInverseTable is the table name for the DeploymentStatistics entity.
+	// It exists in this package in order to avoid circular dependency with the "deploymentstatistics" package.
+	DeploymentStatisticsInverseTable = "deployment_statistics"
+	// DeploymentStatisticsColumn is the table column denoting the deployment_statistics relation/edge.
+	DeploymentStatisticsColumn = "repo_id"
 )
 
 // Columns holds all SQL columns for repo fields.

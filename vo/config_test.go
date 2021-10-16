@@ -90,6 +90,28 @@ envs:
 	})
 }
 
+func TestEnv_IsProductionEnvironment(t *testing.T) {
+	t.Run("Reutrn false when the production environment is nil", func(t *testing.T) {
+		e := &Env{}
+
+		expected := false
+		if e.IsProductionEnvironment() != expected {
+			t.Errorf("IsProductionEnvironment = %v, wanted %v", e.IsProductionEnvironment(), expected)
+		}
+	})
+
+	t.Run("Reutrn true when the production environment is true", func(t *testing.T) {
+		e := &Env{
+			ProductionEnvironment: pointer.ToBool(true),
+		}
+
+		expected := true
+		if e.IsProductionEnvironment() != expected {
+			t.Errorf("IsProductionEnvironment = %v, wanted %v", e.IsProductionEnvironment(), expected)
+		}
+	})
+}
+
 func TestEnv_Eval(t *testing.T) {
 	t.Run("eval the task.", func(t *testing.T) {
 		cs := []struct {

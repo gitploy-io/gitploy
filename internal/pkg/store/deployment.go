@@ -200,6 +200,7 @@ func (s *Store) CreateDeployment(ctx context.Context, d *ent.Deployment) (*ent.D
 		SetUID(d.UID).
 		SetSha(d.Sha).
 		SetHTMLURL(d.HTMLURL).
+		SetProductionEnvironment(d.ProductionEnvironment).
 		SetIsRollback(d.IsRollback).
 		SetIsApprovalEnabled(d.IsApprovalEnabled).
 		SetRequiredApprovalCount(d.RequiredApprovalCount).

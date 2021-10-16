@@ -113,6 +113,20 @@ func (dc *DeploymentCreate) SetNillableHTMLURL(s *string) *DeploymentCreate {
 	return dc
 }
 
+// SetProductionEnvironment sets the "production_environment" field.
+func (dc *DeploymentCreate) SetProductionEnvironment(b bool) *DeploymentCreate {
+	dc.mutation.SetProductionEnvironment(b)
+	return dc
+}
+
+// SetNillableProductionEnvironment sets the "production_environment" field if the given value is not nil.
+func (dc *DeploymentCreate) SetNillableProductionEnvironment(b *bool) *DeploymentCreate {
+	if b != nil {
+		dc.SetProductionEnvironment(*b)
+	}
+	return dc
+}
+
 // SetIsRollback sets the "is_rollback" field.
 func (dc *DeploymentCreate) SetIsRollback(b bool) *DeploymentCreate {
 	dc.mutation.SetIsRollback(b)
@@ -329,6 +343,10 @@ func (dc *DeploymentCreate) defaults() {
 		v := deployment.DefaultStatus
 		dc.mutation.SetStatus(v)
 	}
+	if _, ok := dc.mutation.ProductionEnvironment(); !ok {
+		v := deployment.DefaultProductionEnvironment
+		dc.mutation.SetProductionEnvironment(v)
+	}
 	if _, ok := dc.mutation.IsRollback(); !ok {
 		v := deployment.DefaultIsRollback
 		dc.mutation.SetIsRollback(v)
@@ -382,6 +400,9 @@ func (dc *DeploymentCreate) check() error {
 		if err := deployment.HTMLURLValidator(v); err != nil {
 			return &ValidationError{Name: "html_url", err: fmt.Errorf(`ent: validator failed for field "html_url": %w`, err)}
 		}
+	}
+	if _, ok := dc.mutation.ProductionEnvironment(); !ok {
+		return &ValidationError{Name: "production_environment", err: errors.New(`ent: missing required field "production_environment"`)}
 	}
 	if _, ok := dc.mutation.IsRollback(); !ok {
 		return &ValidationError{Name: "is_rollback", err: errors.New(`ent: missing required field "is_rollback"`)}
@@ -500,6 +521,14 @@ func (dc *DeploymentCreate) createSpec() (*Deployment, *sqlgraph.CreateSpec) {
 			Column: deployment.FieldHTMLURL,
 		})
 		_node.HTMLURL = value
+	}
+	if value, ok := dc.mutation.ProductionEnvironment(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: deployment.FieldProductionEnvironment,
+		})
+		_node.ProductionEnvironment = value
 	}
 	if value, ok := dc.mutation.IsRollback(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

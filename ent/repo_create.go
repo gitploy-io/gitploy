@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/gitploy-io/gitploy/ent/callback"
 	"github.com/gitploy-io/gitploy/ent/deployment"
+	"github.com/gitploy-io/gitploy/ent/deploymentstatistics"
 	"github.com/gitploy-io/gitploy/ent/lock"
 	"github.com/gitploy-io/gitploy/ent/perm"
 	"github.com/gitploy-io/gitploy/ent/repo"
@@ -190,6 +191,21 @@ func (rc *RepoCreate) AddLocks(l ...*Lock) *RepoCreate {
 		ids[i] = l[i].ID
 	}
 	return rc.AddLockIDs(ids...)
+}
+
+// AddDeploymentStatisticIDs adds the "deployment_statistics" edge to the DeploymentStatistics entity by IDs.
+func (rc *RepoCreate) AddDeploymentStatisticIDs(ids ...int) *RepoCreate {
+	rc.mutation.AddDeploymentStatisticIDs(ids...)
+	return rc
+}
+
+// AddDeploymentStatistics adds the "deployment_statistics" edges to the DeploymentStatistics entity.
+func (rc *RepoCreate) AddDeploymentStatistics(d ...*DeploymentStatistics) *RepoCreate {
+	ids := make([]int, len(d))
+	for i := range d {
+		ids[i] = d[i].ID
+	}
+	return rc.AddDeploymentStatisticIDs(ids...)
 }
 
 // Mutation returns the RepoMutation object of the builder.
@@ -477,6 +493,25 @@ func (rc *RepoCreate) createSpec() (*Repo, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
 					Column: lock.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := rc.mutation.DeploymentStatisticsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   repo.DeploymentStatisticsTable,
+			Columns: []string{repo.DeploymentStatisticsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: deploymentstatistics.FieldID,
 				},
 			},
 		}

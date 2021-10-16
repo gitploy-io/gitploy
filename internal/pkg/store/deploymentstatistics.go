@@ -9,8 +9,10 @@ import (
 )
 
 func (s *Store) ListAllDeploymentStatistics(ctx context.Context) ([]*ent.DeploymentStatistics, error) {
+	// TODO: List only active repositories.
 	return s.c.DeploymentStatistics.
 		Query().
+		WithRepo().
 		All(ctx)
 }
 
@@ -20,6 +22,7 @@ func (s *Store) ListDeploymentStatisticsGreaterThanTime(ctx context.Context, upd
 		Where(
 			deploymentstatistics.UpdatedAtGT(updated),
 		).
+		WithRepo().
 		All(ctx)
 }
 
@@ -27,20 +30,23 @@ func (s *Store) FindDeploymentStatisticsOfRepoByEnv(ctx context.Context, r *ent.
 	return s.c.DeploymentStatistics.
 		Query().
 		Where(
-			deploymentstatistics.NamespaceEQ(r.Namespace),
-			deploymentstatistics.NameEQ(r.Name),
+			deploymentstatistics.RepoIDEQ(r.ID),
 			deploymentstatistics.EnvEQ(env),
 		).
+		WithRepo().
 		Only(ctx)
 }
 
 func (s *Store) CreateDeploymentStatistics(ctx context.Context, ds *ent.DeploymentStatistics) (*ent.DeploymentStatistics, error) {
 	return s.c.DeploymentStatistics.
 		Create().
-		SetNamespace(ds.Namespace).
-		SetName(ds.Name).
 		SetEnv(ds.Env).
 		SetCount(ds.Count).
+		SetRollbackCount(ds.RollbackCount).
+		SetAdditions(ds.Additions).
+		SetDeletions(ds.Deletions).
+		SetChanges(ds.Changes).
+		SetRepoID(ds.RepoID).
 		Save(ctx)
 }
 
@@ -48,5 +54,9 @@ func (s *Store) UpdateDeploymentStatistics(ctx context.Context, ds *ent.Deployme
 	return s.c.DeploymentStatistics.
 		UpdateOne(ds).
 		SetCount(ds.Count).
+		SetRollbackCount(ds.RollbackCount).
+		SetAdditions(ds.Additions).
+		SetDeletions(ds.Deletions).
+		SetChanges(ds.Changes).
 		Save(ctx)
 }

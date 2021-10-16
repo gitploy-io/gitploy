@@ -14,6 +14,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/gitploy-io/gitploy/ent/deploymentstatistics"
 	"github.com/gitploy-io/gitploy/ent/predicate"
+	"github.com/gitploy-io/gitploy/ent/repo"
 )
 
 // DeploymentStatisticsQuery is the builder for querying DeploymentStatistics entities.
@@ -25,7 +26,9 @@ type DeploymentStatisticsQuery struct {
 	order      []OrderFunc
 	fields     []string
 	predicates []predicate.DeploymentStatistics
-	modifiers  []func(s *sql.Selector)
+	// eager-loading edges.
+	withRepo  *RepoQuery
+	modifiers []func(s *sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -60,6 +63,28 @@ func (dsq *DeploymentStatisticsQuery) Unique(unique bool) *DeploymentStatisticsQ
 func (dsq *DeploymentStatisticsQuery) Order(o ...OrderFunc) *DeploymentStatisticsQuery {
 	dsq.order = append(dsq.order, o...)
 	return dsq
+}
+
+// QueryRepo chains the current query on the "repo" edge.
+func (dsq *DeploymentStatisticsQuery) QueryRepo() *RepoQuery {
+	query := &RepoQuery{config: dsq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := dsq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := dsq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(deploymentstatistics.Table, deploymentstatistics.FieldID, selector),
+			sqlgraph.To(repo.Table, repo.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, deploymentstatistics.RepoTable, deploymentstatistics.RepoColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(dsq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
 }
 
 // First returns the first DeploymentStatistics entity from the query.
@@ -243,10 +268,22 @@ func (dsq *DeploymentStatisticsQuery) Clone() *DeploymentStatisticsQuery {
 		offset:     dsq.offset,
 		order:      append([]OrderFunc{}, dsq.order...),
 		predicates: append([]predicate.DeploymentStatistics{}, dsq.predicates...),
+		withRepo:   dsq.withRepo.Clone(),
 		// clone intermediate query.
 		sql:  dsq.sql.Clone(),
 		path: dsq.path,
 	}
+}
+
+// WithRepo tells the query-builder to eager-load the nodes that are connected to
+// the "repo" edge. The optional arguments are used to configure the query builder of the edge.
+func (dsq *DeploymentStatisticsQuery) WithRepo(opts ...func(*RepoQuery)) *DeploymentStatisticsQuery {
+	query := &RepoQuery{config: dsq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	dsq.withRepo = query
+	return dsq
 }
 
 // GroupBy is used to group vertices by one or more fields/columns.
@@ -255,12 +292,12 @@ func (dsq *DeploymentStatisticsQuery) Clone() *DeploymentStatisticsQuery {
 // Example:
 //
 //	var v []struct {
-//		Namespace string `json:"namespace"`
+//		Env string `json:"env"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.DeploymentStatistics.Query().
-//		GroupBy(deploymentstatistics.FieldNamespace).
+//		GroupBy(deploymentstatistics.FieldEnv).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 //
@@ -282,11 +319,11 @@ func (dsq *DeploymentStatisticsQuery) GroupBy(field string, fields ...string) *D
 // Example:
 //
 //	var v []struct {
-//		Namespace string `json:"namespace"`
+//		Env string `json:"env"`
 //	}
 //
 //	client.DeploymentStatistics.Query().
-//		Select(deploymentstatistics.FieldNamespace).
+//		Select(deploymentstatistics.FieldEnv).
 //		Scan(ctx, &v)
 //
 func (dsq *DeploymentStatisticsQuery) Select(fields ...string) *DeploymentStatisticsSelect {
@@ -312,8 +349,11 @@ func (dsq *DeploymentStatisticsQuery) prepareQuery(ctx context.Context) error {
 
 func (dsq *DeploymentStatisticsQuery) sqlAll(ctx context.Context) ([]*DeploymentStatistics, error) {
 	var (
-		nodes = []*DeploymentStatistics{}
-		_spec = dsq.querySpec()
+		nodes       = []*DeploymentStatistics{}
+		_spec       = dsq.querySpec()
+		loadedTypes = [1]bool{
+			dsq.withRepo != nil,
+		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
 		node := &DeploymentStatistics{config: dsq.config}
@@ -325,6 +365,7 @@ func (dsq *DeploymentStatisticsQuery) sqlAll(ctx context.Context) ([]*Deployment
 			return fmt.Errorf("ent: Assign called without calling ScanValues")
 		}
 		node := nodes[len(nodes)-1]
+		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
 	if len(dsq.modifiers) > 0 {
@@ -336,6 +377,33 @@ func (dsq *DeploymentStatisticsQuery) sqlAll(ctx context.Context) ([]*Deployment
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
+
+	if query := dsq.withRepo; query != nil {
+		ids := make([]int64, 0, len(nodes))
+		nodeids := make(map[int64][]*DeploymentStatistics)
+		for i := range nodes {
+			fk := nodes[i].RepoID
+			if _, ok := nodeids[fk]; !ok {
+				ids = append(ids, fk)
+			}
+			nodeids[fk] = append(nodeids[fk], nodes[i])
+		}
+		query.Where(repo.IDIn(ids...))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			nodes, ok := nodeids[n.ID]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "repo_id" returned %v`, n.ID)
+			}
+			for i := range nodes {
+				nodes[i].Edges.Repo = n
+			}
+		}
+	}
+
 	return nodes, nil
 }
 

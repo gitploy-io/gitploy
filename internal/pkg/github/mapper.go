@@ -73,6 +73,15 @@ func mapGithubCommitToCommit(cm *github.RepositoryCommit) *vo.Commit {
 	}
 }
 
+func mapGithubCommitFileToCommitFile(cf *github.CommitFile) *vo.CommitFile {
+	return &vo.CommitFile{
+		FileName:  *cf.Filename,
+		Additions: *cf.Additions,
+		Deletions: *cf.Deletions,
+		Changes:   *cf.Changes,
+	}
+}
+
 func mapGithubStatusToStatus(s *github.RepoStatus) *vo.Status {
 	var (
 		state vo.StatusState

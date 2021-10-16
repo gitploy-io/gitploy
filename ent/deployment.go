@@ -34,6 +34,8 @@ type Deployment struct {
 	Sha string `json:"sha,omitemtpy"`
 	// HTMLURL holds the value of the "html_url" field.
 	HTMLURL string `json:"html_url,omitemtpy"`
+	// ProductionEnvironment holds the value of the "production_environment" field.
+	ProductionEnvironment bool `json:"production_environment"`
 	// IsRollback holds the value of the "is_rollback" field.
 	IsRollback bool `json:"is_rollback"`
 	// IsApprovalEnabled holds the value of the "is_approval_enabled" field.
@@ -130,7 +132,7 @@ func (*Deployment) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case deployment.FieldIsRollback, deployment.FieldIsApprovalEnabled:
+		case deployment.FieldProductionEnvironment, deployment.FieldIsRollback, deployment.FieldIsApprovalEnabled:
 			values[i] = new(sql.NullBool)
 		case deployment.FieldID, deployment.FieldNumber, deployment.FieldUID, deployment.FieldRequiredApprovalCount, deployment.FieldUserID, deployment.FieldRepoID:
 			values[i] = new(sql.NullInt64)
@@ -206,6 +208,12 @@ func (d *Deployment) assignValues(columns []string, values []interface{}) error 
 				return fmt.Errorf("unexpected type %T for field html_url", values[i])
 			} else if value.Valid {
 				d.HTMLURL = value.String
+			}
+		case deployment.FieldProductionEnvironment:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field production_environment", values[i])
+			} else if value.Valid {
+				d.ProductionEnvironment = value.Bool
 			}
 		case deployment.FieldIsRollback:
 			if value, ok := values[i].(*sql.NullBool); !ok {
@@ -318,6 +326,8 @@ func (d *Deployment) String() string {
 	builder.WriteString(d.Sha)
 	builder.WriteString(", html_url=")
 	builder.WriteString(d.HTMLURL)
+	builder.WriteString(", production_environment=")
+	builder.WriteString(fmt.Sprintf("%v", d.ProductionEnvironment))
 	builder.WriteString(", is_rollback=")
 	builder.WriteString(fmt.Sprintf("%v", d.IsRollback))
 	builder.WriteString(", is_approval_enabled=")

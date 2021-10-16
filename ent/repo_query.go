@@ -15,6 +15,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/gitploy-io/gitploy/ent/callback"
 	"github.com/gitploy-io/gitploy/ent/deployment"
+	"github.com/gitploy-io/gitploy/ent/deploymentstatistics"
 	"github.com/gitploy-io/gitploy/ent/lock"
 	"github.com/gitploy-io/gitploy/ent/perm"
 	"github.com/gitploy-io/gitploy/ent/predicate"
@@ -31,11 +32,12 @@ type RepoQuery struct {
 	fields     []string
 	predicates []predicate.Repo
 	// eager-loading edges.
-	withPerms       *PermQuery
-	withDeployments *DeploymentQuery
-	withCallback    *CallbackQuery
-	withLocks       *LockQuery
-	modifiers       []func(s *sql.Selector)
+	withPerms                *PermQuery
+	withDeployments          *DeploymentQuery
+	withCallback             *CallbackQuery
+	withLocks                *LockQuery
+	withDeploymentStatistics *DeploymentStatisticsQuery
+	modifiers                []func(s *sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -153,6 +155,28 @@ func (rq *RepoQuery) QueryLocks() *LockQuery {
 			sqlgraph.From(repo.Table, repo.FieldID, selector),
 			sqlgraph.To(lock.Table, lock.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, repo.LocksTable, repo.LocksColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(rq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryDeploymentStatistics chains the current query on the "deployment_statistics" edge.
+func (rq *RepoQuery) QueryDeploymentStatistics() *DeploymentStatisticsQuery {
+	query := &DeploymentStatisticsQuery{config: rq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := rq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := rq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(repo.Table, repo.FieldID, selector),
+			sqlgraph.To(deploymentstatistics.Table, deploymentstatistics.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, repo.DeploymentStatisticsTable, repo.DeploymentStatisticsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(rq.driver.Dialect(), step)
 		return fromU, nil
@@ -336,15 +360,16 @@ func (rq *RepoQuery) Clone() *RepoQuery {
 		return nil
 	}
 	return &RepoQuery{
-		config:          rq.config,
-		limit:           rq.limit,
-		offset:          rq.offset,
-		order:           append([]OrderFunc{}, rq.order...),
-		predicates:      append([]predicate.Repo{}, rq.predicates...),
-		withPerms:       rq.withPerms.Clone(),
-		withDeployments: rq.withDeployments.Clone(),
-		withCallback:    rq.withCallback.Clone(),
-		withLocks:       rq.withLocks.Clone(),
+		config:                   rq.config,
+		limit:                    rq.limit,
+		offset:                   rq.offset,
+		order:                    append([]OrderFunc{}, rq.order...),
+		predicates:               append([]predicate.Repo{}, rq.predicates...),
+		withPerms:                rq.withPerms.Clone(),
+		withDeployments:          rq.withDeployments.Clone(),
+		withCallback:             rq.withCallback.Clone(),
+		withLocks:                rq.withLocks.Clone(),
+		withDeploymentStatistics: rq.withDeploymentStatistics.Clone(),
 		// clone intermediate query.
 		sql:  rq.sql.Clone(),
 		path: rq.path,
@@ -392,6 +417,17 @@ func (rq *RepoQuery) WithLocks(opts ...func(*LockQuery)) *RepoQuery {
 		opt(query)
 	}
 	rq.withLocks = query
+	return rq
+}
+
+// WithDeploymentStatistics tells the query-builder to eager-load the nodes that are connected to
+// the "deployment_statistics" edge. The optional arguments are used to configure the query builder of the edge.
+func (rq *RepoQuery) WithDeploymentStatistics(opts ...func(*DeploymentStatisticsQuery)) *RepoQuery {
+	query := &DeploymentStatisticsQuery{config: rq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	rq.withDeploymentStatistics = query
 	return rq
 }
 
@@ -460,11 +496,12 @@ func (rq *RepoQuery) sqlAll(ctx context.Context) ([]*Repo, error) {
 	var (
 		nodes       = []*Repo{}
 		_spec       = rq.querySpec()
-		loadedTypes = [4]bool{
+		loadedTypes = [5]bool{
 			rq.withPerms != nil,
 			rq.withDeployments != nil,
 			rq.withCallback != nil,
 			rq.withLocks != nil,
+			rq.withDeploymentStatistics != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -587,6 +624,31 @@ func (rq *RepoQuery) sqlAll(ctx context.Context) ([]*Repo, error) {
 				return nil, fmt.Errorf(`unexpected foreign-key "repo_id" returned %v for node %v`, fk, n.ID)
 			}
 			node.Edges.Locks = append(node.Edges.Locks, n)
+		}
+	}
+
+	if query := rq.withDeploymentStatistics; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[int64]*Repo)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.DeploymentStatistics = []*DeploymentStatistics{}
+		}
+		query.Where(predicate.DeploymentStatistics(func(s *sql.Selector) {
+			s.Where(sql.InValues(repo.DeploymentStatisticsColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.RepoID
+			node, ok := nodeids[fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "repo_id" returned %v for node %v`, fk, n.ID)
+			}
+			node.Edges.DeploymentStatistics = append(node.Edges.DeploymentStatistics, n)
 		}
 	}
 

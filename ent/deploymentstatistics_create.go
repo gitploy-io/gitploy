@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/gitploy-io/gitploy/ent/deploymentstatistics"
+	"github.com/gitploy-io/gitploy/ent/repo"
 )
 
 // DeploymentStatisticsCreate is the builder for creating a DeploymentStatistics entity.
@@ -18,18 +19,6 @@ type DeploymentStatisticsCreate struct {
 	config
 	mutation *DeploymentStatisticsMutation
 	hooks    []Hook
-}
-
-// SetNamespace sets the "namespace" field.
-func (dsc *DeploymentStatisticsCreate) SetNamespace(s string) *DeploymentStatisticsCreate {
-	dsc.mutation.SetNamespace(s)
-	return dsc
-}
-
-// SetName sets the "name" field.
-func (dsc *DeploymentStatisticsCreate) SetName(s string) *DeploymentStatisticsCreate {
-	dsc.mutation.SetName(s)
-	return dsc
 }
 
 // SetEnv sets the "env" field.
@@ -48,6 +37,62 @@ func (dsc *DeploymentStatisticsCreate) SetCount(i int) *DeploymentStatisticsCrea
 func (dsc *DeploymentStatisticsCreate) SetNillableCount(i *int) *DeploymentStatisticsCreate {
 	if i != nil {
 		dsc.SetCount(*i)
+	}
+	return dsc
+}
+
+// SetRollbackCount sets the "rollback_count" field.
+func (dsc *DeploymentStatisticsCreate) SetRollbackCount(i int) *DeploymentStatisticsCreate {
+	dsc.mutation.SetRollbackCount(i)
+	return dsc
+}
+
+// SetNillableRollbackCount sets the "rollback_count" field if the given value is not nil.
+func (dsc *DeploymentStatisticsCreate) SetNillableRollbackCount(i *int) *DeploymentStatisticsCreate {
+	if i != nil {
+		dsc.SetRollbackCount(*i)
+	}
+	return dsc
+}
+
+// SetAdditions sets the "additions" field.
+func (dsc *DeploymentStatisticsCreate) SetAdditions(i int) *DeploymentStatisticsCreate {
+	dsc.mutation.SetAdditions(i)
+	return dsc
+}
+
+// SetNillableAdditions sets the "additions" field if the given value is not nil.
+func (dsc *DeploymentStatisticsCreate) SetNillableAdditions(i *int) *DeploymentStatisticsCreate {
+	if i != nil {
+		dsc.SetAdditions(*i)
+	}
+	return dsc
+}
+
+// SetDeletions sets the "deletions" field.
+func (dsc *DeploymentStatisticsCreate) SetDeletions(i int) *DeploymentStatisticsCreate {
+	dsc.mutation.SetDeletions(i)
+	return dsc
+}
+
+// SetNillableDeletions sets the "deletions" field if the given value is not nil.
+func (dsc *DeploymentStatisticsCreate) SetNillableDeletions(i *int) *DeploymentStatisticsCreate {
+	if i != nil {
+		dsc.SetDeletions(*i)
+	}
+	return dsc
+}
+
+// SetChanges sets the "changes" field.
+func (dsc *DeploymentStatisticsCreate) SetChanges(i int) *DeploymentStatisticsCreate {
+	dsc.mutation.SetChanges(i)
+	return dsc
+}
+
+// SetNillableChanges sets the "changes" field if the given value is not nil.
+func (dsc *DeploymentStatisticsCreate) SetNillableChanges(i *int) *DeploymentStatisticsCreate {
+	if i != nil {
+		dsc.SetChanges(*i)
 	}
 	return dsc
 }
@@ -78,6 +123,17 @@ func (dsc *DeploymentStatisticsCreate) SetNillableUpdatedAt(t *time.Time) *Deplo
 		dsc.SetUpdatedAt(*t)
 	}
 	return dsc
+}
+
+// SetRepoID sets the "repo_id" field.
+func (dsc *DeploymentStatisticsCreate) SetRepoID(i int64) *DeploymentStatisticsCreate {
+	dsc.mutation.SetRepoID(i)
+	return dsc
+}
+
+// SetRepo sets the "repo" edge to the Repo entity.
+func (dsc *DeploymentStatisticsCreate) SetRepo(r *Repo) *DeploymentStatisticsCreate {
+	return dsc.SetRepoID(r.ID)
 }
 
 // Mutation returns the DeploymentStatisticsMutation object of the builder.
@@ -155,6 +211,22 @@ func (dsc *DeploymentStatisticsCreate) defaults() {
 		v := deploymentstatistics.DefaultCount
 		dsc.mutation.SetCount(v)
 	}
+	if _, ok := dsc.mutation.RollbackCount(); !ok {
+		v := deploymentstatistics.DefaultRollbackCount
+		dsc.mutation.SetRollbackCount(v)
+	}
+	if _, ok := dsc.mutation.Additions(); !ok {
+		v := deploymentstatistics.DefaultAdditions
+		dsc.mutation.SetAdditions(v)
+	}
+	if _, ok := dsc.mutation.Deletions(); !ok {
+		v := deploymentstatistics.DefaultDeletions
+		dsc.mutation.SetDeletions(v)
+	}
+	if _, ok := dsc.mutation.Changes(); !ok {
+		v := deploymentstatistics.DefaultChanges
+		dsc.mutation.SetChanges(v)
+	}
 	if _, ok := dsc.mutation.CreatedAt(); !ok {
 		v := deploymentstatistics.DefaultCreatedAt()
 		dsc.mutation.SetCreatedAt(v)
@@ -167,23 +239,35 @@ func (dsc *DeploymentStatisticsCreate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (dsc *DeploymentStatisticsCreate) check() error {
-	if _, ok := dsc.mutation.Namespace(); !ok {
-		return &ValidationError{Name: "namespace", err: errors.New(`ent: missing required field "namespace"`)}
-	}
-	if _, ok := dsc.mutation.Name(); !ok {
-		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "name"`)}
-	}
 	if _, ok := dsc.mutation.Env(); !ok {
 		return &ValidationError{Name: "env", err: errors.New(`ent: missing required field "env"`)}
 	}
 	if _, ok := dsc.mutation.Count(); !ok {
 		return &ValidationError{Name: "count", err: errors.New(`ent: missing required field "count"`)}
 	}
+	if _, ok := dsc.mutation.RollbackCount(); !ok {
+		return &ValidationError{Name: "rollback_count", err: errors.New(`ent: missing required field "rollback_count"`)}
+	}
+	if _, ok := dsc.mutation.Additions(); !ok {
+		return &ValidationError{Name: "additions", err: errors.New(`ent: missing required field "additions"`)}
+	}
+	if _, ok := dsc.mutation.Deletions(); !ok {
+		return &ValidationError{Name: "deletions", err: errors.New(`ent: missing required field "deletions"`)}
+	}
+	if _, ok := dsc.mutation.Changes(); !ok {
+		return &ValidationError{Name: "changes", err: errors.New(`ent: missing required field "changes"`)}
+	}
 	if _, ok := dsc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "created_at"`)}
 	}
 	if _, ok := dsc.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "updated_at"`)}
+	}
+	if _, ok := dsc.mutation.RepoID(); !ok {
+		return &ValidationError{Name: "repo_id", err: errors.New(`ent: missing required field "repo_id"`)}
+	}
+	if _, ok := dsc.mutation.RepoID(); !ok {
+		return &ValidationError{Name: "repo", err: errors.New("ent: missing required edge \"repo\"")}
 	}
 	return nil
 }
@@ -212,22 +296,6 @@ func (dsc *DeploymentStatisticsCreate) createSpec() (*DeploymentStatistics, *sql
 			},
 		}
 	)
-	if value, ok := dsc.mutation.Namespace(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: deploymentstatistics.FieldNamespace,
-		})
-		_node.Namespace = value
-	}
-	if value, ok := dsc.mutation.Name(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: deploymentstatistics.FieldName,
-		})
-		_node.Name = value
-	}
 	if value, ok := dsc.mutation.Env(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -244,6 +312,38 @@ func (dsc *DeploymentStatisticsCreate) createSpec() (*DeploymentStatistics, *sql
 		})
 		_node.Count = value
 	}
+	if value, ok := dsc.mutation.RollbackCount(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: deploymentstatistics.FieldRollbackCount,
+		})
+		_node.RollbackCount = value
+	}
+	if value, ok := dsc.mutation.Additions(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: deploymentstatistics.FieldAdditions,
+		})
+		_node.Additions = value
+	}
+	if value, ok := dsc.mutation.Deletions(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: deploymentstatistics.FieldDeletions,
+		})
+		_node.Deletions = value
+	}
+	if value, ok := dsc.mutation.Changes(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: deploymentstatistics.FieldChanges,
+		})
+		_node.Changes = value
+	}
 	if value, ok := dsc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
@@ -259,6 +359,26 @@ func (dsc *DeploymentStatisticsCreate) createSpec() (*DeploymentStatistics, *sql
 			Column: deploymentstatistics.FieldUpdatedAt,
 		})
 		_node.UpdatedAt = value
+	}
+	if nodes := dsc.mutation.RepoIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   deploymentstatistics.RepoTable,
+			Columns: []string{deploymentstatistics.RepoColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt64,
+					Column: repo.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.RepoID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
 }

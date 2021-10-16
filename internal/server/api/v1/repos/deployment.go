@@ -412,7 +412,7 @@ func (r *Repo) ListDeploymentChanges(c *gin.Context) {
 		}
 	}
 
-	commits, err := r.i.CompareCommits(ctx, u, re, ld.Sha, sha, atoi(page), atoi(perPage))
+	commits, _, err := r.i.CompareCommits(ctx, u, re, ld.Sha, sha, atoi(page), atoi(perPage))
 	if err != nil {
 		r.log.Error("It has failed to compare two commits.", zap.Error(err))
 		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to compare two commits.")

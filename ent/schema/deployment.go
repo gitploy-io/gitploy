@@ -47,6 +47,8 @@ func (Deployment) Fields() []ent.Field {
 		field.String("html_url").
 			MaxLen(2000).
 			Optional(),
+		field.Bool("production_environment").
+			Default(false),
 		field.Bool("is_rollback").
 			Default(false),
 		field.Bool("is_approval_enabled").
