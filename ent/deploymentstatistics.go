@@ -29,6 +29,8 @@ type DeploymentStatistics struct {
 	Deletions int `json:"deletions"`
 	// Changes holds the value of the "changes" field.
 	Changes int `json:"changes"`
+	// LeadTimeSeconds holds the value of the "lead_time_seconds" field.
+	LeadTimeSeconds int `json:"lead_time_seconds"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -68,7 +70,7 @@ func (*DeploymentStatistics) scanValues(columns []string) ([]interface{}, error)
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case deploymentstatistics.FieldID, deploymentstatistics.FieldCount, deploymentstatistics.FieldRollbackCount, deploymentstatistics.FieldAdditions, deploymentstatistics.FieldDeletions, deploymentstatistics.FieldChanges, deploymentstatistics.FieldRepoID:
+		case deploymentstatistics.FieldID, deploymentstatistics.FieldCount, deploymentstatistics.FieldRollbackCount, deploymentstatistics.FieldAdditions, deploymentstatistics.FieldDeletions, deploymentstatistics.FieldChanges, deploymentstatistics.FieldLeadTimeSeconds, deploymentstatistics.FieldRepoID:
 			values[i] = new(sql.NullInt64)
 		case deploymentstatistics.FieldEnv:
 			values[i] = new(sql.NullString)
@@ -130,6 +132,12 @@ func (ds *DeploymentStatistics) assignValues(columns []string, values []interfac
 				return fmt.Errorf("unexpected type %T for field changes", values[i])
 			} else if value.Valid {
 				ds.Changes = int(value.Int64)
+			}
+		case deploymentstatistics.FieldLeadTimeSeconds:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field lead_time_seconds", values[i])
+			} else if value.Valid {
+				ds.LeadTimeSeconds = int(value.Int64)
 			}
 		case deploymentstatistics.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -194,6 +202,8 @@ func (ds *DeploymentStatistics) String() string {
 	builder.WriteString(fmt.Sprintf("%v", ds.Deletions))
 	builder.WriteString(", changes=")
 	builder.WriteString(fmt.Sprintf("%v", ds.Changes))
+	builder.WriteString(", lead_time_seconds=")
+	builder.WriteString(fmt.Sprintf("%v", ds.LeadTimeSeconds))
 	builder.WriteString(", created_at=")
 	builder.WriteString(ds.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", updated_at=")

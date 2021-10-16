@@ -140,6 +140,27 @@ func (dsu *DeploymentStatisticsUpdate) AddChanges(i int) *DeploymentStatisticsUp
 	return dsu
 }
 
+// SetLeadTimeSeconds sets the "lead_time_seconds" field.
+func (dsu *DeploymentStatisticsUpdate) SetLeadTimeSeconds(i int) *DeploymentStatisticsUpdate {
+	dsu.mutation.ResetLeadTimeSeconds()
+	dsu.mutation.SetLeadTimeSeconds(i)
+	return dsu
+}
+
+// SetNillableLeadTimeSeconds sets the "lead_time_seconds" field if the given value is not nil.
+func (dsu *DeploymentStatisticsUpdate) SetNillableLeadTimeSeconds(i *int) *DeploymentStatisticsUpdate {
+	if i != nil {
+		dsu.SetLeadTimeSeconds(*i)
+	}
+	return dsu
+}
+
+// AddLeadTimeSeconds adds i to the "lead_time_seconds" field.
+func (dsu *DeploymentStatisticsUpdate) AddLeadTimeSeconds(i int) *DeploymentStatisticsUpdate {
+	dsu.mutation.AddLeadTimeSeconds(i)
+	return dsu
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (dsu *DeploymentStatisticsUpdate) SetCreatedAt(t time.Time) *DeploymentStatisticsUpdate {
 	dsu.mutation.SetCreatedAt(t)
@@ -354,6 +375,20 @@ func (dsu *DeploymentStatisticsUpdate) sqlSave(ctx context.Context) (n int, err 
 			Column: deploymentstatistics.FieldChanges,
 		})
 	}
+	if value, ok := dsu.mutation.LeadTimeSeconds(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: deploymentstatistics.FieldLeadTimeSeconds,
+		})
+	}
+	if value, ok := dsu.mutation.AddedLeadTimeSeconds(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: deploymentstatistics.FieldLeadTimeSeconds,
+		})
+	}
 	if value, ok := dsu.mutation.CreatedAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
@@ -530,6 +565,27 @@ func (dsuo *DeploymentStatisticsUpdateOne) SetNillableChanges(i *int) *Deploymen
 // AddChanges adds i to the "changes" field.
 func (dsuo *DeploymentStatisticsUpdateOne) AddChanges(i int) *DeploymentStatisticsUpdateOne {
 	dsuo.mutation.AddChanges(i)
+	return dsuo
+}
+
+// SetLeadTimeSeconds sets the "lead_time_seconds" field.
+func (dsuo *DeploymentStatisticsUpdateOne) SetLeadTimeSeconds(i int) *DeploymentStatisticsUpdateOne {
+	dsuo.mutation.ResetLeadTimeSeconds()
+	dsuo.mutation.SetLeadTimeSeconds(i)
+	return dsuo
+}
+
+// SetNillableLeadTimeSeconds sets the "lead_time_seconds" field if the given value is not nil.
+func (dsuo *DeploymentStatisticsUpdateOne) SetNillableLeadTimeSeconds(i *int) *DeploymentStatisticsUpdateOne {
+	if i != nil {
+		dsuo.SetLeadTimeSeconds(*i)
+	}
+	return dsuo
+}
+
+// AddLeadTimeSeconds adds i to the "lead_time_seconds" field.
+func (dsuo *DeploymentStatisticsUpdateOne) AddLeadTimeSeconds(i int) *DeploymentStatisticsUpdateOne {
+	dsuo.mutation.AddLeadTimeSeconds(i)
 	return dsuo
 }
 
@@ -769,6 +825,20 @@ func (dsuo *DeploymentStatisticsUpdateOne) sqlSave(ctx context.Context) (_node *
 			Type:   field.TypeInt,
 			Value:  value,
 			Column: deploymentstatistics.FieldChanges,
+		})
+	}
+	if value, ok := dsuo.mutation.LeadTimeSeconds(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: deploymentstatistics.FieldLeadTimeSeconds,
+		})
+	}
+	if value, ok := dsuo.mutation.AddedLeadTimeSeconds(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: deploymentstatistics.FieldLeadTimeSeconds,
 		})
 	}
 	if value, ok := dsuo.mutation.CreatedAt(); ok {

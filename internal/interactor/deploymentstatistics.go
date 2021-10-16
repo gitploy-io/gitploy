@@ -27,7 +27,6 @@ func (i *Interactor) ProduceDeploymentStatisticsOfRepo(ctx context.Context, r *e
 }
 
 func (i *Interactor) produceDeploymentStatisticsOfRepo(ctx context.Context, r *ent.Repo, d *ent.Deployment, s *ent.DeploymentStatistics) (*ent.DeploymentStatistics, error) {
-	// Increase the count of deployment.
 	{
 		if d.IsRollback {
 			s.RollbackCount = s.RollbackCount + 1
@@ -36,7 +35,6 @@ func (i *Interactor) produceDeploymentStatisticsOfRepo(ctx context.Context, r *e
 		}
 	}
 
-	// Calculate changes from the lastest deployment.
 	{
 		ld, err := i.Store.FindPrevSuccessDeployment(ctx, d)
 		if ent.IsNotFound(err) {
@@ -53,11 +51,17 @@ func (i *Interactor) produceDeploymentStatisticsOfRepo(ctx context.Context, r *e
 			}
 		}
 
-		_, fs, err := i.SCM.CompareCommits(ctx, d.Edges.User, r, ld.Sha, d.Sha, 1, 100)
+		cms, fs, err := i.SCM.CompareCommits(ctx, d.Edges.User, r, ld.Sha, d.Sha, 1, 100)
 		if err != nil {
 			return nil, err
 		}
 
+		for _, cm := range cms {
+			leadTime := d.UpdatedAt.Sub(cm.Author.Date)
+			s.LeadTimeSeconds = s.LeadTimeSeconds + int(leadTime.Seconds())
+		}
+
+		// Changes from the latest deployment.
 		for _, f := range fs {
 			s.Additions = s.Additions + f.Additions
 			s.Deletions = s.Deletions + f.Deletions

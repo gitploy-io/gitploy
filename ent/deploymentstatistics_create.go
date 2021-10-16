@@ -97,6 +97,20 @@ func (dsc *DeploymentStatisticsCreate) SetNillableChanges(i *int) *DeploymentSta
 	return dsc
 }
 
+// SetLeadTimeSeconds sets the "lead_time_seconds" field.
+func (dsc *DeploymentStatisticsCreate) SetLeadTimeSeconds(i int) *DeploymentStatisticsCreate {
+	dsc.mutation.SetLeadTimeSeconds(i)
+	return dsc
+}
+
+// SetNillableLeadTimeSeconds sets the "lead_time_seconds" field if the given value is not nil.
+func (dsc *DeploymentStatisticsCreate) SetNillableLeadTimeSeconds(i *int) *DeploymentStatisticsCreate {
+	if i != nil {
+		dsc.SetLeadTimeSeconds(*i)
+	}
+	return dsc
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (dsc *DeploymentStatisticsCreate) SetCreatedAt(t time.Time) *DeploymentStatisticsCreate {
 	dsc.mutation.SetCreatedAt(t)
@@ -227,6 +241,10 @@ func (dsc *DeploymentStatisticsCreate) defaults() {
 		v := deploymentstatistics.DefaultChanges
 		dsc.mutation.SetChanges(v)
 	}
+	if _, ok := dsc.mutation.LeadTimeSeconds(); !ok {
+		v := deploymentstatistics.DefaultLeadTimeSeconds
+		dsc.mutation.SetLeadTimeSeconds(v)
+	}
 	if _, ok := dsc.mutation.CreatedAt(); !ok {
 		v := deploymentstatistics.DefaultCreatedAt()
 		dsc.mutation.SetCreatedAt(v)
@@ -256,6 +274,9 @@ func (dsc *DeploymentStatisticsCreate) check() error {
 	}
 	if _, ok := dsc.mutation.Changes(); !ok {
 		return &ValidationError{Name: "changes", err: errors.New(`ent: missing required field "changes"`)}
+	}
+	if _, ok := dsc.mutation.LeadTimeSeconds(); !ok {
+		return &ValidationError{Name: "lead_time_seconds", err: errors.New(`ent: missing required field "lead_time_seconds"`)}
 	}
 	if _, ok := dsc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "created_at"`)}
@@ -343,6 +364,14 @@ func (dsc *DeploymentStatisticsCreate) createSpec() (*DeploymentStatistics, *sql
 			Column: deploymentstatistics.FieldChanges,
 		})
 		_node.Changes = value
+	}
+	if value, ok := dsc.mutation.LeadTimeSeconds(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: deploymentstatistics.FieldLeadTimeSeconds,
+		})
+		_node.LeadTimeSeconds = value
 	}
 	if value, ok := dsc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
