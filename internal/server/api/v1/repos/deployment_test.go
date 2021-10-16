@@ -69,7 +69,7 @@ func TestRepo_ListDeploymentChanges(t *testing.T) {
 				{
 					SHA: head,
 				},
-			}, nil)
+			}, []*vo.CommitFile{}, nil)
 
 		// Ready the router to handle it.
 		gin.SetMode(gin.ReleaseMode)

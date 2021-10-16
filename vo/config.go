@@ -79,6 +79,10 @@ func (c *Config) GetEnv(name string) *Env {
 	return nil
 }
 
+func (e *Env) IsProductionEnvironment() bool {
+	return e.ProductionEnvironment != nil && *e.ProductionEnvironment
+}
+
 func (e *Env) IsApprovalEabled() bool {
 	if e.Approval == nil {
 		return false
