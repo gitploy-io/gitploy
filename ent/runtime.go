@@ -117,12 +117,16 @@ func init() {
 	deploymentstatisticsDescChanges := deploymentstatisticsFields[5].Descriptor()
 	// deploymentstatistics.DefaultChanges holds the default value on creation for the changes field.
 	deploymentstatistics.DefaultChanges = deploymentstatisticsDescChanges.Default.(int)
+	// deploymentstatisticsDescLeadTimeSeconds is the schema descriptor for lead_time_seconds field.
+	deploymentstatisticsDescLeadTimeSeconds := deploymentstatisticsFields[6].Descriptor()
+	// deploymentstatistics.DefaultLeadTimeSeconds holds the default value on creation for the lead_time_seconds field.
+	deploymentstatistics.DefaultLeadTimeSeconds = deploymentstatisticsDescLeadTimeSeconds.Default.(int)
 	// deploymentstatisticsDescCreatedAt is the schema descriptor for created_at field.
-	deploymentstatisticsDescCreatedAt := deploymentstatisticsFields[6].Descriptor()
+	deploymentstatisticsDescCreatedAt := deploymentstatisticsFields[7].Descriptor()
 	// deploymentstatistics.DefaultCreatedAt holds the default value on creation for the created_at field.
 	deploymentstatistics.DefaultCreatedAt = deploymentstatisticsDescCreatedAt.Default.(func() time.Time)
 	// deploymentstatisticsDescUpdatedAt is the schema descriptor for updated_at field.
-	deploymentstatisticsDescUpdatedAt := deploymentstatisticsFields[7].Descriptor()
+	deploymentstatisticsDescUpdatedAt := deploymentstatisticsFields[8].Descriptor()
 	// deploymentstatistics.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	deploymentstatistics.DefaultUpdatedAt = deploymentstatisticsDescUpdatedAt.Default.(func() time.Time)
 	// deploymentstatistics.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.

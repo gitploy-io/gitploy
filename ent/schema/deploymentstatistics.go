@@ -28,6 +28,8 @@ func (DeploymentStatistics) Fields() []ent.Field {
 			Default(0),
 		field.Int("changes").
 			Default(0),
+		field.Int("lead_time_seconds").
+			Default(0),
 		field.Time("created_at").
 			Default(time.Now),
 		field.Time("updated_at").

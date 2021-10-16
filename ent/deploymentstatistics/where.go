@@ -135,6 +135,13 @@ func Changes(v int) predicate.DeploymentStatistics {
 	})
 }
 
+// LeadTimeSeconds applies equality check predicate on the "lead_time_seconds" field. It's identical to LeadTimeSecondsEQ.
+func LeadTimeSeconds(v int) predicate.DeploymentStatistics {
+	return predicate.DeploymentStatistics(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldLeadTimeSeconds), v))
+	})
+}
+
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.DeploymentStatistics {
 	return predicate.DeploymentStatistics(func(s *sql.Selector) {
@@ -644,6 +651,82 @@ func ChangesLT(v int) predicate.DeploymentStatistics {
 func ChangesLTE(v int) predicate.DeploymentStatistics {
 	return predicate.DeploymentStatistics(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldChanges), v))
+	})
+}
+
+// LeadTimeSecondsEQ applies the EQ predicate on the "lead_time_seconds" field.
+func LeadTimeSecondsEQ(v int) predicate.DeploymentStatistics {
+	return predicate.DeploymentStatistics(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldLeadTimeSeconds), v))
+	})
+}
+
+// LeadTimeSecondsNEQ applies the NEQ predicate on the "lead_time_seconds" field.
+func LeadTimeSecondsNEQ(v int) predicate.DeploymentStatistics {
+	return predicate.DeploymentStatistics(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldLeadTimeSeconds), v))
+	})
+}
+
+// LeadTimeSecondsIn applies the In predicate on the "lead_time_seconds" field.
+func LeadTimeSecondsIn(vs ...int) predicate.DeploymentStatistics {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.DeploymentStatistics(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldLeadTimeSeconds), v...))
+	})
+}
+
+// LeadTimeSecondsNotIn applies the NotIn predicate on the "lead_time_seconds" field.
+func LeadTimeSecondsNotIn(vs ...int) predicate.DeploymentStatistics {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.DeploymentStatistics(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldLeadTimeSeconds), v...))
+	})
+}
+
+// LeadTimeSecondsGT applies the GT predicate on the "lead_time_seconds" field.
+func LeadTimeSecondsGT(v int) predicate.DeploymentStatistics {
+	return predicate.DeploymentStatistics(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldLeadTimeSeconds), v))
+	})
+}
+
+// LeadTimeSecondsGTE applies the GTE predicate on the "lead_time_seconds" field.
+func LeadTimeSecondsGTE(v int) predicate.DeploymentStatistics {
+	return predicate.DeploymentStatistics(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldLeadTimeSeconds), v))
+	})
+}
+
+// LeadTimeSecondsLT applies the LT predicate on the "lead_time_seconds" field.
+func LeadTimeSecondsLT(v int) predicate.DeploymentStatistics {
+	return predicate.DeploymentStatistics(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldLeadTimeSeconds), v))
+	})
+}
+
+// LeadTimeSecondsLTE applies the LTE predicate on the "lead_time_seconds" field.
+func LeadTimeSecondsLTE(v int) predicate.DeploymentStatistics {
+	return predicate.DeploymentStatistics(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldLeadTimeSeconds), v))
 	})
 }
 
