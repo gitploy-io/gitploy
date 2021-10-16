@@ -120,12 +120,76 @@ func (c *collector) Collect(ch chan<- prometheus.Metric) {
 						"",
 						"deployment_count",
 					),
-					"The count of success deployment for each environment, respectively.",
+					"The count of success deployment of the production environment.",
 					[]string{"namespace", "name", "env"},
 					nil,
 				),
 				prometheus.GaugeValue,
 				float64(dc.Count),
+				dc.Edges.Repo.Namespace, dc.Edges.Repo.Name, dc.Env,
+			)
+
+			ch <- prometheus.MustNewConstMetric(
+				prometheus.NewDesc(
+					prometheus.BuildFQName(
+						namespace,
+						"",
+						"rollback_count",
+					),
+					"The count of rollback of the production environment.",
+					[]string{"namespace", "name", "env"},
+					nil,
+				),
+				prometheus.GaugeValue,
+				float64(dc.RollbackCount),
+				dc.Edges.Repo.Namespace, dc.Edges.Repo.Name, dc.Env,
+			)
+
+			ch <- prometheus.MustNewConstMetric(
+				prometheus.NewDesc(
+					prometheus.BuildFQName(
+						namespace,
+						"",
+						"line_additions",
+					),
+					"The count of added lines from the latest deployment of the production environment.",
+					[]string{"namespace", "name", "env"},
+					nil,
+				),
+				prometheus.GaugeValue,
+				float64(dc.Additions),
+				dc.Edges.Repo.Namespace, dc.Edges.Repo.Name, dc.Env,
+			)
+
+			ch <- prometheus.MustNewConstMetric(
+				prometheus.NewDesc(
+					prometheus.BuildFQName(
+						namespace,
+						"",
+						"line_deletions",
+					),
+					"The count of deleted lines from the latest deployment of the production environment.",
+					[]string{"namespace", "name", "env"},
+					nil,
+				),
+				prometheus.GaugeValue,
+				float64(dc.Deletions),
+				dc.Edges.Repo.Namespace, dc.Edges.Repo.Name, dc.Env,
+			)
+
+			ch <- prometheus.MustNewConstMetric(
+				prometheus.NewDesc(
+					prometheus.BuildFQName(
+						namespace,
+						"",
+						"line_changes",
+					),
+					"The count of changed lines from the latest deployment of the production environment.",
+					[]string{"namespace", "name", "env"},
+					nil,
+				),
+				prometheus.GaugeValue,
+				float64(dc.Changes),
 				dc.Edges.Repo.Namespace, dc.Edges.Repo.Name, dc.Env,
 			)
 		}
