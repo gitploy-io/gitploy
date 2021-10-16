@@ -25,6 +25,13 @@ type (
 		TargetURL string      `json:"target_url"`
 		State     StatusState `json:"state"`
 	}
+
+	CommitFile struct {
+		FileName  string `json:"filename"`
+		Additions int    `json:"addtitions"`
+		Deletions int    `json:"deletions"`
+		Changes   int    `json:"changes"`
+	}
 )
 
 const (

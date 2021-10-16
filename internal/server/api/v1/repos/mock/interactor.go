@@ -52,12 +52,13 @@ func (mr *MockInteractorMockRecorder) ActivateRepo(ctx, u, r, c interface{}) *go
 }
 
 // CompareCommits mocks base method.
-func (m *MockInteractor) CompareCommits(ctx context.Context, u *ent.User, r *ent.Repo, base, head string, page, perPage int) ([]*vo.Commit, error) {
+func (m *MockInteractor) CompareCommits(ctx context.Context, u *ent.User, r *ent.Repo, base, head string, page, perPage int) ([]*vo.Commit, []*vo.CommitFile, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CompareCommits", ctx, u, r, base, head, page, perPage)
 	ret0, _ := ret[0].([]*vo.Commit)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	ret1, _ := ret[1].([]*vo.CommitFile)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
 }
 
 // CompareCommits indicates an expected call of CompareCommits.
