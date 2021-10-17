@@ -1,8 +1,6 @@
 package schema
 
 import (
-	"time"
-
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema/edge"
@@ -56,10 +54,10 @@ func (Deployment) Fields() []ent.Field {
 		field.Int("required_approval_count").
 			Default(0),
 		field.Time("created_at").
-			Default(time.Now),
+			Default(nowUTC),
 		field.Time("updated_at").
-			Default(time.Now).
-			UpdateDefault(time.Now),
+			Default(nowUTC).
+			UpdateDefault(nowUTC),
 		// Edges
 		field.Int64("user_id"),
 		field.Int64("repo_id"),

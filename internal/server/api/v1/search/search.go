@@ -95,7 +95,7 @@ func (s *Search) SearchDeployments(c *gin.Context) {
 	v, _ := c.Get(gb.KeyUser)
 	u := v.(*ent.User)
 
-	if ds, err = s.i.SearchDeployments(ctx, u, ss, o, f, t, p, pp); err != nil {
+	if ds, err = s.i.SearchDeployments(ctx, u, ss, o, f.UTC(), t.UTC(), p, pp); err != nil {
 		s.log.Error("It has failed to search deployments.", zap.Error(err))
 		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to search deployments.")
 		return
@@ -159,7 +159,7 @@ func (s *Search) SearchApprovals(c *gin.Context) {
 	v, _ := c.Get(gb.KeyUser)
 	u := v.(*ent.User)
 
-	if ds, err = s.i.SearchApprovals(ctx, u, ss, f, t, p, pp); err != nil {
+	if ds, err = s.i.SearchApprovals(ctx, u, ss, f.UTC(), t.UTC(), p, pp); err != nil {
 		s.log.Error("It has failed to search deployments.", zap.Error(err))
 		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to search deployments.")
 		return

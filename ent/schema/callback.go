@@ -1,8 +1,6 @@
 package schema
 
 import (
-	"time"
-
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
@@ -29,10 +27,10 @@ func (Callback) Fields() []ent.Field {
 				"unlock",
 			),
 		field.Time("created_at").
-			Default(time.Now),
+			Default(nowUTC),
 		field.Time("updated_at").
-			Default(time.Now).
-			UpdateDefault(time.Now),
+			Default(nowUTC).
+			UpdateDefault(nowUTC),
 		field.Int64("repo_id"),
 	}
 }

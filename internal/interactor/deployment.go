@@ -110,7 +110,7 @@ L:
 				break L
 			}
 		case t := <-ticker.C:
-			ds, err := i.ListInactiveDeploymentsLessThanTime(ctx, t.Add(-30*time.Minute), 1, 30)
+			ds, err := i.ListInactiveDeploymentsLessThanTime(ctx, t.Add(-30*time.Minute).UTC(), 1, 30)
 			if err != nil {
 				i.log.Error("It has failed to read inactive deployments.", zap.Error(err))
 				continue

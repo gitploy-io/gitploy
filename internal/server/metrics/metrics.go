@@ -85,7 +85,7 @@ func (c *collector) Collect(ch chan<- prometheus.Metric) {
 			err error
 		)
 
-		start := time.Now()
+		start := time.Now().UTC()
 		defer func() {
 			c.lastTime = start
 		}()

@@ -1,8 +1,6 @@
 package schema
 
 import (
-	"time"
-
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
@@ -22,10 +20,10 @@ func (DeploymentStatus) Fields() []ent.Field {
 		field.String("log_url").
 			Optional(),
 		field.Time("created_at").
-			Default(time.Now),
+			Default(nowUTC),
 		field.Time("updated_at").
-			Default(time.Now).
-			UpdateDefault(time.Now),
+			Default(nowUTC).
+			UpdateDefault(nowUTC),
 
 		// edges
 		field.Int("deployment_id"),

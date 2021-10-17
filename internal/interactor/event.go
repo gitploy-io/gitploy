@@ -29,7 +29,7 @@ L:
 			}
 
 		case t := <-ticker.C:
-			es, err := i.ListEventsGreaterThanTime(ctx, t.Add(-period))
+			es, err := i.ListEventsGreaterThanTime(ctx, t.Add(-period).UTC())
 			if err != nil {
 				i.log.Error("It has failed to read events.", zap.Error(err))
 				continue

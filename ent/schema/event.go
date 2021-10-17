@@ -1,8 +1,6 @@
 package schema
 
 import (
-	"time"
-
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
@@ -29,7 +27,7 @@ func (Event) Fields() []ent.Field {
 				"deleted",
 			),
 		field.Time("created_at").
-			Default(time.Now),
+			Default(nowUTC),
 		field.Int("deployment_id").
 			Optional(),
 		field.Int("approval_id").

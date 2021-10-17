@@ -1,9 +1,6 @@
 package schema
 
 import (
-	"math/rand"
-	"time"
-
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema/edge"
@@ -35,10 +32,10 @@ func (User) Fields() []ent.Field {
 			DefaultFunc(generateHash).
 			Sensitive(),
 		field.Time("created_at").
-			Default(time.Now),
+			Default(nowUTC),
 		field.Time("updated_at").
-			Default(time.Now).
-			UpdateDefault(time.Now),
+			Default(nowUTC).
+			UpdateDefault(nowUTC),
 	}
 }
 
@@ -58,15 +55,4 @@ func (User) Edges() []ent.Edge {
 		edge.To("approvals", Approval.Type),
 		edge.To("locks", Lock.Type),
 	}
-}
-
-func generateHash() string {
-	rand.Seed(time.Now().UnixNano())
-
-	var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
-	b := make([]rune, 32)
-	for i := range b {
-		b[i] = letterRunes[rand.Intn(len(letterRunes))]
-	}
-	return string(b)
 }
