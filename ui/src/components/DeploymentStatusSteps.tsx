@@ -1,46 +1,48 @@
-import { Steps, Popover } from "antd"
+import { Timeline, Typography } from "antd"
 import moment from "moment"
 
-import { Deployment } from "../models"
-import DeploymentStatusBadge from "./DeploymentStatusBadge"
+import { DeploymentStatus } from "../models"
 
-const { Step } = Steps
+const { Paragraph, Text, Link } = Typography
 
 interface DeploymentStatusStepsProps {
-    deployment: Deployment
+    statuses: DeploymentStatus[]
 }
 
 export default function DeploymentStatusSteps(props: DeploymentStatusStepsProps): JSX.Element {
-    if (typeof props.deployment.statuses === "undefined" 
-        || props.deployment.statuses.length === 0) {
-        return (
-            <DeploymentStatusBadge deployment={props.deployment}/>
-        )
-    }
-
     return  (
-        <Steps 
-            current={props.deployment.statuses.length - 1}
-            size="small" 
-            responsive
+        <Timeline
+            style={{
+                position: "relative",
+                top: 15,
+                paddingBottom: 0
+            }}
         >
-            {props.deployment.statuses.map((status, idx) => {
-                const title = (status.logUrl)?
-                    <a href={status.logUrl}>{status.status}</a> :
-                    <span>{status.status}</span>
-
-                const description = (status.description)?
-                    `${status.description.replace(/\.$/,' ')} at ${moment(status.createdAt).format('HH:mm:ss')}` :
-                    moment(status.createdAt).format('HH:mm:ss')
-
-                return (<Step 
-                            key={idx}
-                            style={{width: "100px"}}
-                            status="finish"
-                            icon={<span>•</span>}
-                            title={<Popover content={description}>{title}</Popover>}
-                        />)
+            {props.statuses.map((status, idx) => {
+                return (
+                    <Timeline.Item 
+                        color={getStatusColor(status.status)}
+                        style={(idx === props.statuses.length - 1)? {paddingBottom: 0} : {}}
+                    >
+                        <Paragraph style={{margin: 0}}>
+                            <Text strong>{status.description}</Text> 
+                            {(status.logUrl !== "")? <Link href={status.logUrl}> View</Link> : <></>}<br/>
+                            <Text>Updated</Text> <Text code className="gitploy-code">{status.status}</Text> <Text>at {moment(status.createdAt).format('HH:mm:ss')}</Text>
+                        </Paragraph>
+                    </Timeline.Item>
+                )
             })}
-        </Steps>
+        </Timeline>
     )
+}
+
+const getStatusColor = (status: string) => {
+    switch (status) {
+        case "success":
+            return "green"
+        case "failure":
+            return "red"
+        default:
+            return "#722ed1"
+    }
 }

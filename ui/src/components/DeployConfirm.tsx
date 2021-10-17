@@ -4,6 +4,7 @@ import { useState } from "react"
 
 import { Deployment, Commit } from "../models"
 import DeploymentRefCode from "./DeploymentRefCode"
+import DeploymentStatusBadge from "./DeploymentStatusBadge"
 import DeploymentStatusSteps from "./DeploymentStatusSteps"
 
 const { Paragraph, Text } = Typography
@@ -48,7 +49,18 @@ export default function DeployConfirm(props: DeployConfirmProps): JSX.Element {
                 {...layout}
                 label="Status"
             >
-                <DeploymentStatusSteps deployment={props.deployment}/>
+                {(props.deployment.statuses)? 
+                    <Collapse ghost>
+                        <Panel
+                            key={1}
+                            header={<DeploymentStatusBadge deployment={props.deployment} />}
+                            style={{position: "relative", top: "-5px", left: "-15px"}}
+                        >
+                            <DeploymentStatusSteps statuses={props.deployment.statuses}/>
+                        </Panel>
+                    </Collapse> :
+                    <DeploymentStatusBadge deployment={props.deployment} />
+                }
             </Form.Item>
             <Form.Item
                 {...layout}
@@ -83,7 +95,7 @@ export default function DeployConfirm(props: DeployConfirmProps): JSX.Element {
                 <Collapse ghost >
                     <Panel 
                         key={1} 
-                        header="Click" 
+                        header="Show" 
                         // Fix the position to align with the field.
                         style={{position: "relative", top: "-5px", left: "-15px"}}
                     >
@@ -123,7 +135,7 @@ function CommitChanges(props: CommitChangesProps): JSX.Element {
 
     return (
         <Timeline>
-            {props.changes.slice(0, 10).map((change, idx) => {
+            {props.changes.map((change, idx) => {
                 return <Timeline.Item key={idx} color="gray">
                     <CommitChange commit={change} />
                 </Timeline.Item>
