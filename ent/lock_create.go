@@ -216,7 +216,7 @@ func (lc *LockCreate) createSpec() (*Lock, *sqlgraph.CreateSpec) {
 			Value:  value,
 			Column: lock.FieldExpiredAt,
 		})
-		_node.ExpiredAt = value
+		_node.ExpiredAt = &value
 	}
 	if value, ok := lc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

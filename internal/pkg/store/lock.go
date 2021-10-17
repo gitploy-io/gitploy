@@ -11,7 +11,9 @@ import (
 func (s *Store) ListExpiredLocksLessThanTime(ctx context.Context, t time.Time) ([]*ent.Lock, error) {
 	return s.c.Lock.
 		Query().
-		Where(lock.ExpiredAtLT(t)).
+		Where(
+			lock.ExpiredAtLT(t),
+		).
 		WithUser().
 		WithRepo().
 		All(ctx)
@@ -74,7 +76,7 @@ func (s *Store) CreateLock(ctx context.Context, l *ent.Lock) (*ent.Lock, error) 
 	return s.c.Lock.
 		Create().
 		SetEnv(l.Env).
-		SetExpiredAt(l.ExpiredAt).
+		SetNillableExpiredAt(l.ExpiredAt).
 		SetRepoID(l.RepoID).
 		SetUserID(l.UserID).
 		Save(ctx)
@@ -83,7 +85,7 @@ func (s *Store) CreateLock(ctx context.Context, l *ent.Lock) (*ent.Lock, error) 
 func (s *Store) UpdateLock(ctx context.Context, l *ent.Lock) (*ent.Lock, error) {
 	return s.c.Lock.
 		UpdateOne(l).
-		SetExpiredAt(l.ExpiredAt).
+		SetNillableExpiredAt(l.ExpiredAt).
 		Save(ctx)
 }
 

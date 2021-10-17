@@ -157,7 +157,7 @@ func TestRepo_UpdateLock(t *testing.T) {
 			UpdateLock(gomock.Any(), gomock.Eq(&ent.Lock{
 				ID:        input.id,
 				Env:       "production",
-				ExpiredAt: expiredAt,
+				ExpiredAt: &expiredAt,
 			})).
 			DoAndReturn(func(_ context.Context, l *ent.Lock) (*ent.Lock, error) {
 				return l, nil

@@ -54,14 +54,16 @@ func (r *Repo) CreateLock(c *gin.Context) {
 	}
 
 	var (
-		expiredAt time.Time = time.Time{}
-		err       error
+		expiredAt *time.Time
 	)
 	if p.ExpiredAt != nil {
-		if expiredAt, err = time.Parse(time.RFC3339, *p.ExpiredAt); err != nil {
+		e, err := time.Parse(time.RFC3339, *p.ExpiredAt)
+		if err != nil {
 			gb.ErrorResponse(c, http.StatusBadRequest, "Invalid format of \"expired_at\" parameter, RFC3339 format only.")
 			return
 		}
+
+		expiredAt = &e
 	}
 
 	vr, _ := c.Get(KeyRepo)
@@ -140,12 +142,15 @@ func (r *Repo) UpdateLock(c *gin.Context) {
 		return
 	}
 
-	expiredAt := time.Time{}
+	var expiredAt *time.Time
 	if p.ExpiredAt != nil {
-		if expiredAt, err = time.Parse(time.RFC3339, *p.ExpiredAt); err != nil {
+		e, err := time.Parse(time.RFC3339, *p.ExpiredAt)
+		if err != nil {
 			gb.ErrorResponse(c, http.StatusBadRequest, "Invalid format of \"expired_at\" parameter, RFC3339 format only.")
 			return
 		}
+
+		expiredAt = &e
 	}
 
 	l, err := r.i.FindLockByID(ctx, id)
@@ -161,7 +166,7 @@ func (r *Repo) UpdateLock(c *gin.Context) {
 
 	if p.ExpiredAt != nil {
 		l.ExpiredAt = expiredAt
-		r.log.Debug("Update the expired_at of the lock.", zap.Int("id", l.ID), zap.Time("expired_at", l.ExpiredAt))
+		r.log.Debug("Update the expired_at of the lock.", zap.Int("id", l.ID), zap.Timep("expired_at", l.ExpiredAt))
 	}
 
 	if _, err := r.i.UpdateLock(ctx, l); err != nil {
