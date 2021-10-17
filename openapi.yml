@@ -1876,7 +1876,6 @@ components:
       required:
         - id
         - env
-        - expired_at
         - created_at
     Config:
       type: object

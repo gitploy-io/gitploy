@@ -14,6 +14,7 @@ interface LockListProps {
     locks: Lock[]
     onClickLock(env: string): void
     onClickUnlock(env: string): void
+    onChangeExpiredAt(env: string, expiredAt: Date): void
 }
 
 export default function LockList(props: LockListProps): JSX.Element {
@@ -27,9 +28,17 @@ export default function LockList(props: LockListProps): JSX.Element {
                     <List.Item
                         actions={[
                             <DatePicker 
-                                placeholder=""
-                                showTime={{ defaultValue: moment('00:00:00', 'HH:mm:ss') }} 
-                                style={{width: 40}}
+                                placeholder="Set up auto unlock"
+                                allowClear={false}
+                                showNow={false}
+                                showTime={{defaultValue: moment("00:00:00", "HH:mm:ss")}}
+                                value={(lock.expiredAt)? moment(lock.expiredAt) : null}
+                                onChange={(date) => {
+                                    if (date) {
+                                        props.onChangeExpiredAt(env.name, new Date(date.format()))
+                                    }
+                                }}
+                                style={{width: 170}}
                             />
                             ,
                             <Button danger

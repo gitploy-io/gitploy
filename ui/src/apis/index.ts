@@ -36,7 +36,8 @@ import {
 import {
     listLocks,
     lock,
-    unlock
+    unlock,
+    updateLock
 } from "./lock"
 import { getLicense  } from "./license"
 import { subscribeEvents } from "./events"
@@ -82,6 +83,7 @@ export {
     listLocks,
     lock,
     unlock,
+    updateLock,
     getLicense,
     subscribeEvents
 }

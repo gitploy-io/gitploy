@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/AlekSi/pointer"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"go.uber.org/zap"
@@ -63,7 +64,7 @@ func (r *Repo) CreateLock(c *gin.Context) {
 			return
 		}
 
-		expiredAt = &e
+		expiredAt = pointer.ToTime(e.UTC())
 	}
 
 	vr, _ := c.Get(KeyRepo)
@@ -150,7 +151,7 @@ func (r *Repo) UpdateLock(c *gin.Context) {
 			return
 		}
 
-		expiredAt = &e
+		expiredAt = pointer.ToTime(e.UTC())
 	}
 
 	l, err := r.i.FindLockByID(ctx, id)

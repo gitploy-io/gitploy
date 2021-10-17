@@ -10,7 +10,8 @@ import {
     getConfig,
     listLocks as _listLocks,
     lock as _lock,
-    unlock as _unlock
+    unlock as _unlock,
+    updateLock
 } from "../apis"
 
 interface RepoLockState {
@@ -95,6 +96,27 @@ export const unlock = createAsyncThunk<Lock, string, { state: {repoLock: RepoLoc
     },
 )
 
+export const setAutoUnlock = createAsyncThunk<Lock, {env: string, expiredAt: Date}, { state: {repoLock: RepoLockState} }>(
+    'repoLock/setAutoUnlock', 
+    async ({env, expiredAt}, { getState, rejectWithValue }) => {
+        const { namespace, name, locks } = getState().repoLock
+
+        const lock = locks.find((lock) => lock.env === env)
+        if (!lock) {
+            throw new Error("The env is not found.")
+        }
+
+        try {
+            return await updateLock(namespace, name, lock.id, {expiredAt})
+        } catch (e) {
+            if (e instanceof HttpForbiddenError) {
+                message.warn("Only write permission can enable auto unlock.", 3)
+            }
+            return rejectWithValue(e)
+        }
+    },
+)
+
 export const repoLockSlice = createSlice({
     name: "repoLock",
     initialState,
@@ -124,6 +146,11 @@ export const repoLockSlice = createSlice({
                 if (idx !== -1) {
                     state.locks.splice(idx, 1)
                 }
+            })
+            .addCase(setAutoUnlock.fulfilled, (state, action) => {
+                state.locks = state.locks.map((lock) => {
+                    return (lock.id !== action.payload.id)? lock : action.payload
+                })
             })
     }
 })
