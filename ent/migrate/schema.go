@@ -195,11 +195,6 @@ var (
 				Unique:  false,
 				Columns: []*schema.Column{DeploymentStatisticsColumns[9]},
 			},
-			{
-				Name:    "deploymentcount_updated_at",
-				Unique:  false,
-				Columns: []*schema.Column{DeploymentCountsColumns[6]},
-			},
 		},
 	}
 	// DeploymentStatusColumns holds the columns for the "deployment_status" table.
