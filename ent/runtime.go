@@ -152,7 +152,7 @@ func init() {
 	lockFields := schema.Lock{}.Fields()
 	_ = lockFields
 	// lockDescCreatedAt is the schema descriptor for created_at field.
-	lockDescCreatedAt := lockFields[1].Descriptor()
+	lockDescCreatedAt := lockFields[2].Descriptor()
 	// lock.DefaultCreatedAt holds the default value on creation for the created_at field.
 	lock.DefaultCreatedAt = lockDescCreatedAt.Default.(func() time.Time)
 	permFields := schema.Perm{}.Fields()

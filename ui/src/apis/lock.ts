@@ -8,6 +8,7 @@ import { Lock, User, HttpForbiddenError, HttpUnprocessableEntityError } from "..
 interface LockData {
     id: number
     env: string
+    expired_at?: string
     created_at: string
     edges: {
         user?: UserData
@@ -24,6 +25,7 @@ const mapDataToLock = (data: LockData): Lock => {
     return {
         id: data.id,
         env: data.env,
+        expiredAt: (data.expired_at)? new Date(data.expired_at) : undefined,
         createdAt: new Date(data.created_at),
         user,
     }
@@ -73,4 +75,26 @@ export const unlock = async (namespace: string, name: string, id: number): Promi
         const {message} = await res.json()
         throw new HttpForbiddenError(message)
     }
+}
+
+export const updateLock = async (namespace: string, name: string, id: number, payload: {expiredAt?: Date}): Promise<Lock> => {
+    const expired_at: string | undefined = (payload.expiredAt)? payload.expiredAt.toISOString() : undefined
+
+    const res = await _fetch(`${instance}/api/v1/repos/${namespace}/${name}/locks/${id}`, {
+        headers,
+        credentials: 'same-origin',
+        method: "PATCH",
+        body: JSON.stringify({
+            expired_at,
+        }),
+    })
+
+    if (res.status === StatusCodes.FORBIDDEN) {
+        const {message} = await res.json()
+        throw new HttpForbiddenError(message)
+    }
+
+    const lock = res.json()
+        .then(data => mapDataToLock(data))
+    return lock
 }

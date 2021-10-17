@@ -68,5 +68,11 @@ func NewInteractor(c *InteractorConfig) *Interactor {
 		i.log.Info("Start the worker canceling inactive deployments.")
 		i.runClosingInactiveDeployment(i.stopCh)
 	}()
+
+	go func() {
+		i.log.Info("Start the worker for the auto unlock.")
+		i.runAutoUnlock(i.stopCh)
+	}()
+
 	return i
 }

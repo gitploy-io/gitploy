@@ -694,6 +694,21 @@ func (mr *MockStoreMockRecorder) ListEventsGreaterThanTime(ctx, t interface{}) *
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListEventsGreaterThanTime", reflect.TypeOf((*MockStore)(nil).ListEventsGreaterThanTime), ctx, t)
 }
 
+// ListExpiredLocksLessThanTime mocks base method.
+func (m *MockStore) ListExpiredLocksLessThanTime(ctx context.Context, t time.Time) ([]*ent.Lock, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListExpiredLocksLessThanTime", ctx, t)
+	ret0, _ := ret[0].([]*ent.Lock)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListExpiredLocksLessThanTime indicates an expected call of ListExpiredLocksLessThanTime.
+func (mr *MockStoreMockRecorder) ListExpiredLocksLessThanTime(ctx, t interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListExpiredLocksLessThanTime", reflect.TypeOf((*MockStore)(nil).ListExpiredLocksLessThanTime), ctx, t)
+}
+
 // ListInactiveDeploymentsLessThanTime mocks base method.
 func (m *MockStore) ListInactiveDeploymentsLessThanTime(ctx context.Context, t time.Time, page, perPage int) ([]*ent.Deployment, error) {
 	m.ctrl.T.Helper()
@@ -872,6 +887,21 @@ func (m *MockStore) UpdateDeploymentStatistics(ctx context.Context, s *ent.Deplo
 func (mr *MockStoreMockRecorder) UpdateDeploymentStatistics(ctx, s interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateDeploymentStatistics", reflect.TypeOf((*MockStore)(nil).UpdateDeploymentStatistics), ctx, s)
+}
+
+// UpdateLock mocks base method.
+func (m *MockStore) UpdateLock(ctx context.Context, l *ent.Lock) (*ent.Lock, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateLock", ctx, l)
+	ret0, _ := ret[0].(*ent.Lock)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdateLock indicates an expected call of UpdateLock.
+func (mr *MockStoreMockRecorder) UpdateLock(ctx, l interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateLock", reflect.TypeOf((*MockStore)(nil).UpdateLock), ctx, l)
 }
 
 // UpdatePerm mocks base method.

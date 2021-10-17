@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"time"
 
+	"github.com/AlekSi/pointer"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"go.uber.org/zap"
@@ -17,7 +19,12 @@ import (
 
 type (
 	lockPostPayload struct {
-		Env string `json:"env"`
+		Env       string  `json:"env"`
+		ExpiredAt *string `json:"expired_at,omitempty"`
+	}
+
+	lockPatchPayload struct {
+		ExpiredAt *string `json:"expired_at,omitempty"`
 	}
 )
 
@@ -45,6 +52,19 @@ func (r *Repo) CreateLock(c *gin.Context) {
 		r.log.Error("It has failed to bind the payload.", zap.Error(err))
 		gb.ErrorResponse(c, http.StatusBadRequest, "It has failed to bind the payload.")
 		return
+	}
+
+	var (
+		expiredAt *time.Time
+	)
+	if p.ExpiredAt != nil {
+		e, err := time.Parse(time.RFC3339, *p.ExpiredAt)
+		if err != nil {
+			gb.ErrorResponse(c, http.StatusBadRequest, "Invalid format of \"expired_at\" parameter, RFC3339 format only.")
+			return
+		}
+
+		expiredAt = pointer.ToTime(e.UTC())
 	}
 
 	vr, _ := c.Get(KeyRepo)
@@ -83,9 +103,10 @@ func (r *Repo) CreateLock(c *gin.Context) {
 
 	// Lock the environment.
 	l, err := r.i.CreateLock(ctx, &ent.Lock{
-		Env:    p.Env,
-		UserID: u.ID,
-		RepoID: re.ID,
+		Env:       p.Env,
+		ExpiredAt: expiredAt,
+		UserID:    u.ID,
+		RepoID:    re.ID,
 	})
 	if err != nil {
 		r.log.Error("It has failed to lock the env.", zap.Error(err))
@@ -99,6 +120,67 @@ func (r *Repo) CreateLock(c *gin.Context) {
 
 	r.log.Debug("Lock the env.", zap.String("env", p.Env))
 	gb.Response(c, http.StatusCreated, l)
+}
+
+func (r *Repo) UpdateLock(c *gin.Context) {
+	ctx := c.Request.Context()
+
+	var (
+		sid = c.Param("lockID")
+	)
+
+	id, err := strconv.Atoi(sid)
+	if err != nil {
+		r.log.Error("The lock ID must to be number.", zap.Error(err))
+		gb.ErrorResponse(c, http.StatusBadRequest, "The lock ID must to be number.")
+		return
+	}
+
+	p := &lockPatchPayload{}
+	if err := c.ShouldBindBodyWith(p, binding.JSON); err != nil {
+		r.log.Error("It has failed to bind the payload.", zap.Error(err))
+		gb.ErrorResponse(c, http.StatusBadRequest, "It has failed to bind the payload.")
+		return
+	}
+
+	var expiredAt *time.Time
+	if p.ExpiredAt != nil {
+		e, err := time.Parse(time.RFC3339, *p.ExpiredAt)
+		if err != nil {
+			gb.ErrorResponse(c, http.StatusBadRequest, "Invalid format of \"expired_at\" parameter, RFC3339 format only.")
+			return
+		}
+
+		expiredAt = pointer.ToTime(e.UTC())
+	}
+
+	l, err := r.i.FindLockByID(ctx, id)
+	if ent.IsNotFound(err) {
+		r.log.Warn("The lock is not found.", zap.Error(err))
+		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "The lock is not found.")
+		return
+	} else if err != nil {
+		r.log.Error("It has failed to find the lock.", zap.Error(err))
+		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to find the lock.")
+		return
+	}
+
+	if p.ExpiredAt != nil {
+		l.ExpiredAt = expiredAt
+		r.log.Debug("Update the expired_at of the lock.", zap.Int("id", l.ID), zap.Timep("expired_at", l.ExpiredAt))
+	}
+
+	if _, err := r.i.UpdateLock(ctx, l); err != nil {
+		r.log.Error("It has failed to update the lock.", zap.Error(err))
+		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to update the lock.")
+		return
+	}
+
+	if nl, err := r.i.FindLockByID(ctx, l.ID); err == nil {
+		l = nl
+	}
+
+	gb.Response(c, http.StatusOK, l)
 }
 
 func (r *Repo) DeleteLock(c *gin.Context) {

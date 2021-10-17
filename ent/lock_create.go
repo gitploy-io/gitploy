@@ -28,6 +28,20 @@ func (lc *LockCreate) SetEnv(s string) *LockCreate {
 	return lc
 }
 
+// SetExpiredAt sets the "expired_at" field.
+func (lc *LockCreate) SetExpiredAt(t time.Time) *LockCreate {
+	lc.mutation.SetExpiredAt(t)
+	return lc
+}
+
+// SetNillableExpiredAt sets the "expired_at" field if the given value is not nil.
+func (lc *LockCreate) SetNillableExpiredAt(t *time.Time) *LockCreate {
+	if t != nil {
+		lc.SetExpiredAt(*t)
+	}
+	return lc
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (lc *LockCreate) SetCreatedAt(t time.Time) *LockCreate {
 	lc.mutation.SetCreatedAt(t)
@@ -195,6 +209,14 @@ func (lc *LockCreate) createSpec() (*Lock, *sqlgraph.CreateSpec) {
 			Column: lock.FieldEnv,
 		})
 		_node.Env = value
+	}
+	if value, ok := lc.mutation.ExpiredAt(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: lock.FieldExpiredAt,
+		})
+		_node.ExpiredAt = &value
 	}
 	if value, ok := lc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

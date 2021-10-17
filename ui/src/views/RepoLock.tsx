@@ -5,7 +5,7 @@ import { PageHeader, Button } from 'antd'
 import { Result } from "antd"
 
 import { useAppSelector, useAppDispatch } from "../redux/hooks"
-import { fetchConfig, listLocks, lock, unlock, repoLockSlice as slice} from "../redux/repoLock"
+import { fetchConfig, listLocks, lock, unlock, repoLockSlice as slice, setAutoUnlock} from "../redux/repoLock"
 import LockList from '../components/LockList'
 
 interface Params {
@@ -55,6 +55,10 @@ export default function RepoLock(): JSX.Element {
         dispatch(unlock(env))
     }
 
+    const onChangeExpiredAt = (env: string, expiredAt: Date) => {
+        dispatch(setAutoUnlock({env, expiredAt}))
+    }
+
     return <div>
         <div>
             <PageHeader title="Lock" subTitle="Lock the environment."/>
@@ -65,6 +69,7 @@ export default function RepoLock(): JSX.Element {
                 locks={locks}
                 onClickLock={onClickLock}
                 onClickUnlock={onClickUnlock}
+                onChangeExpiredAt={onChangeExpiredAt}
             />
         </div>
     </div>

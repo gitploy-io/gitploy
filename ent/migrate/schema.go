@@ -262,6 +262,7 @@ var (
 	LocksColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "env", Type: field.TypeString},
+		{Name: "expired_at", Type: field.TypeTime, Nullable: true},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "repo_id", Type: field.TypeInt64, Nullable: true},
 		{Name: "user_id", Type: field.TypeInt64, Nullable: true},
@@ -274,13 +275,13 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "locks_repos_locks",
-				Columns:    []*schema.Column{LocksColumns[3]},
+				Columns:    []*schema.Column{LocksColumns[4]},
 				RefColumns: []*schema.Column{ReposColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
 			{
 				Symbol:     "locks_users_locks",
-				Columns:    []*schema.Column{LocksColumns[4]},
+				Columns:    []*schema.Column{LocksColumns[5]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -289,7 +290,7 @@ var (
 			{
 				Name:    "lock_repo_id_env",
 				Unique:  true,
-				Columns: []*schema.Column{LocksColumns[3], LocksColumns[1]},
+				Columns: []*schema.Column{LocksColumns[4], LocksColumns[1]},
 			},
 		},
 	}

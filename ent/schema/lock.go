@@ -18,6 +18,9 @@ type Lock struct {
 func (Lock) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("env"),
+		field.Time("expired_at").
+			Optional().
+			Nillable(),
 		field.Time("created_at").
 			Default(time.Now),
 		// Edges
