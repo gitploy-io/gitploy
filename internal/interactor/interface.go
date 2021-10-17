@@ -74,6 +74,7 @@ type (
 		UpdateApproval(ctx context.Context, a *ent.Approval) (*ent.Approval, error)
 		DeleteApproval(ctx context.Context, a *ent.Approval) error
 
+		ListExpiredLocksLessThanTime(ctx context.Context, t time.Time) ([]*ent.Lock, error)
 		ListLocksOfRepo(ctx context.Context, r *ent.Repo) ([]*ent.Lock, error)
 		FindLockOfRepoByEnv(ctx context.Context, r *ent.Repo, env string) (*ent.Lock, error)
 		HasLockOfRepoForEnv(ctx context.Context, r *ent.Repo, env string) (bool, error)

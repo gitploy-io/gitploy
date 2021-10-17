@@ -2,10 +2,20 @@ package store
 
 import (
 	"context"
+	"time"
 
 	"github.com/gitploy-io/gitploy/ent"
 	"github.com/gitploy-io/gitploy/ent/lock"
 )
+
+func (s *Store) ListExpiredLocksLessThanTime(ctx context.Context, t time.Time) ([]*ent.Lock, error) {
+	return s.c.Lock.
+		Query().
+		Where(lock.ExpiredAtLT(t)).
+		WithUser().
+		WithRepo().
+		All(ctx)
+}
 
 func (s *Store) ListLocksOfRepo(ctx context.Context, r *ent.Repo) ([]*ent.Lock, error) {
 	return s.c.Lock.
