@@ -20,7 +20,7 @@ L:
 				break L
 			}
 		case t := <-ticker.C:
-			ls, err := i.ListExpiredLocksLessThanTime(ctx, t)
+			ls, err := i.ListExpiredLocksLessThanTime(ctx, t.UTC())
 			if err != nil {
 				i.log.Error("It has failed to read expired locks.", zap.Error(err))
 				continue
@@ -28,7 +28,7 @@ L:
 
 			for _, l := range ls {
 				i.DeleteLock(ctx, l)
-				i.log.Debug("Delete the expired lock.", zap.Int("id", l.ID))
+				i.log.Debug("Delete the expired lock.", zap.Int("id", l.ID), zap.Time("time", t))
 			}
 		}
 	}

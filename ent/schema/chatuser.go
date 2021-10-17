@@ -1,8 +1,6 @@
 package schema
 
 import (
-	"time"
-
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
@@ -25,10 +23,10 @@ func (ChatUser) Fields() []ent.Field {
 		field.String("bot_token").
 			Sensitive(),
 		field.Time("created_at").
-			Default(time.Now),
+			Default(nowUTC),
 		field.Time("updated_at").
-			Default(time.Now).
-			UpdateDefault(time.Now),
+			Default(nowUTC).
+			UpdateDefault(nowUTC),
 		field.Int64("user_id"),
 	}
 }

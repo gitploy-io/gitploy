@@ -43,7 +43,7 @@ func (s *Syncher) Sync(c *gin.Context) {
 		return
 	}
 
-	syncTime := time.Now()
+	syncTime := time.Now().UTC()
 	syncCnt := 0
 	for _, re := range remotes {
 		// Skip un-selected repositories.

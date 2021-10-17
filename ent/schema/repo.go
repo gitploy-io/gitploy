@@ -1,8 +1,6 @@
 package schema
 
 import (
-	"time"
-
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema/edge"
@@ -30,10 +28,10 @@ func (Repo) Fields() []ent.Field {
 		field.Int64("webhook_id").
 			Optional(),
 		field.Time("created_at").
-			Default(time.Now),
+			Default(nowUTC),
 		field.Time("updated_at").
-			Default(time.Now).
-			UpdateDefault(time.Now),
+			Default(nowUTC).
+			UpdateDefault(nowUTC),
 		// Denormalization to sort with deployment.
 		field.Time("latest_deployed_at").
 			Optional(),

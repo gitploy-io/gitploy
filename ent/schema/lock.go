@@ -1,8 +1,6 @@
 package schema
 
 import (
-	"time"
-
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
@@ -22,7 +20,7 @@ func (Lock) Fields() []ent.Field {
 			Optional().
 			Nillable(),
 		field.Time("created_at").
-			Default(time.Now),
+			Default(nowUTC),
 		// Edges
 		field.Int64("user_id"),
 		field.Int64("repo_id"),
