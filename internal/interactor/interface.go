@@ -79,6 +79,7 @@ type (
 		HasLockOfRepoForEnv(ctx context.Context, r *ent.Repo, env string) (bool, error)
 		FindLockByID(ctx context.Context, id int) (*ent.Lock, error)
 		CreateLock(ctx context.Context, l *ent.Lock) (*ent.Lock, error)
+		UpdateLock(ctx context.Context, l *ent.Lock) (*ent.Lock, error)
 		DeleteLock(ctx context.Context, l *ent.Lock) error
 
 		ListEventsGreaterThanTime(ctx context.Context, t time.Time) ([]*ent.Event, error)

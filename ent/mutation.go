@@ -6122,6 +6122,7 @@ type LockMutation struct {
 	typ           string
 	id            *int
 	env           *string
+	expired_at    *time.Time
 	created_at    *time.Time
 	clearedFields map[string]struct{}
 	user          *int64
@@ -6246,6 +6247,55 @@ func (m *LockMutation) OldEnv(ctx context.Context) (v string, err error) {
 // ResetEnv resets all changes to the "env" field.
 func (m *LockMutation) ResetEnv() {
 	m.env = nil
+}
+
+// SetExpiredAt sets the "expired_at" field.
+func (m *LockMutation) SetExpiredAt(t time.Time) {
+	m.expired_at = &t
+}
+
+// ExpiredAt returns the value of the "expired_at" field in the mutation.
+func (m *LockMutation) ExpiredAt() (r time.Time, exists bool) {
+	v := m.expired_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldExpiredAt returns the old "expired_at" field's value of the Lock entity.
+// If the Lock object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *LockMutation) OldExpiredAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldExpiredAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldExpiredAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldExpiredAt: %w", err)
+	}
+	return oldValue.ExpiredAt, nil
+}
+
+// ClearExpiredAt clears the value of the "expired_at" field.
+func (m *LockMutation) ClearExpiredAt() {
+	m.expired_at = nil
+	m.clearedFields[lock.FieldExpiredAt] = struct{}{}
+}
+
+// ExpiredAtCleared returns if the "expired_at" field was cleared in this mutation.
+func (m *LockMutation) ExpiredAtCleared() bool {
+	_, ok := m.clearedFields[lock.FieldExpiredAt]
+	return ok
+}
+
+// ResetExpiredAt resets all changes to the "expired_at" field.
+func (m *LockMutation) ResetExpiredAt() {
+	m.expired_at = nil
+	delete(m.clearedFields, lock.FieldExpiredAt)
 }
 
 // SetCreatedAt sets the "created_at" field.
@@ -6427,9 +6477,12 @@ func (m *LockMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *LockMutation) Fields() []string {
-	fields := make([]string, 0, 4)
+	fields := make([]string, 0, 5)
 	if m.env != nil {
 		fields = append(fields, lock.FieldEnv)
+	}
+	if m.expired_at != nil {
+		fields = append(fields, lock.FieldExpiredAt)
 	}
 	if m.created_at != nil {
 		fields = append(fields, lock.FieldCreatedAt)
@@ -6450,6 +6503,8 @@ func (m *LockMutation) Field(name string) (ent.Value, bool) {
 	switch name {
 	case lock.FieldEnv:
 		return m.Env()
+	case lock.FieldExpiredAt:
+		return m.ExpiredAt()
 	case lock.FieldCreatedAt:
 		return m.CreatedAt()
 	case lock.FieldUserID:
@@ -6467,6 +6522,8 @@ func (m *LockMutation) OldField(ctx context.Context, name string) (ent.Value, er
 	switch name {
 	case lock.FieldEnv:
 		return m.OldEnv(ctx)
+	case lock.FieldExpiredAt:
+		return m.OldExpiredAt(ctx)
 	case lock.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case lock.FieldUserID:
@@ -6488,6 +6545,13 @@ func (m *LockMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetEnv(v)
+		return nil
+	case lock.FieldExpiredAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetExpiredAt(v)
 		return nil
 	case lock.FieldCreatedAt:
 		v, ok := value.(time.Time)
@@ -6542,7 +6606,11 @@ func (m *LockMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *LockMutation) ClearedFields() []string {
-	return nil
+	var fields []string
+	if m.FieldCleared(lock.FieldExpiredAt) {
+		fields = append(fields, lock.FieldExpiredAt)
+	}
+	return fields
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -6555,6 +6623,11 @@ func (m *LockMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *LockMutation) ClearField(name string) error {
+	switch name {
+	case lock.FieldExpiredAt:
+		m.ClearExpiredAt()
+		return nil
+	}
 	return fmt.Errorf("unknown Lock nullable field %s", name)
 }
 
@@ -6564,6 +6637,9 @@ func (m *LockMutation) ResetField(name string) error {
 	switch name {
 	case lock.FieldEnv:
 		m.ResetEnv()
+		return nil
+	case lock.FieldExpiredAt:
+		m.ResetExpiredAt()
 		return nil
 	case lock.FieldCreatedAt:
 		m.ResetCreatedAt()

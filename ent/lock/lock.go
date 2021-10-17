@@ -13,6 +13,8 @@ const (
 	FieldID = "id"
 	// FieldEnv holds the string denoting the env field in the database.
 	FieldEnv = "env"
+	// FieldExpiredAt holds the string denoting the expired_at field in the database.
+	FieldExpiredAt = "expired_at"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// FieldUserID holds the string denoting the user_id field in the database.
@@ -45,6 +47,7 @@ const (
 var Columns = []string{
 	FieldID,
 	FieldEnv,
+	FieldExpiredAt,
 	FieldCreatedAt,
 	FieldUserID,
 	FieldRepoID,

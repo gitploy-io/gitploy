@@ -589,6 +589,21 @@ func (mr *MockInteractorMockRecorder) UpdateApproval(ctx, a interface{}) *gomock
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateApproval", reflect.TypeOf((*MockInteractor)(nil).UpdateApproval), ctx, a)
 }
 
+// UpdateLock mocks base method.
+func (m *MockInteractor) UpdateLock(ctx context.Context, l *ent.Lock) (*ent.Lock, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateLock", ctx, l)
+	ret0, _ := ret[0].(*ent.Lock)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdateLock indicates an expected call of UpdateLock.
+func (mr *MockInteractorMockRecorder) UpdateLock(ctx, l interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateLock", reflect.TypeOf((*MockInteractor)(nil).UpdateLock), ctx, l)
+}
+
 // UpdateRepo mocks base method.
 func (m *MockInteractor) UpdateRepo(ctx context.Context, r *ent.Repo) (*ent.Repo, error) {
 	m.ctrl.T.Helper()

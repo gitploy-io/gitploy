@@ -64,8 +64,16 @@ func (s *Store) CreateLock(ctx context.Context, l *ent.Lock) (*ent.Lock, error) 
 	return s.c.Lock.
 		Create().
 		SetEnv(l.Env).
+		SetExpiredAt(l.ExpiredAt).
 		SetRepoID(l.RepoID).
 		SetUserID(l.UserID).
+		Save(ctx)
+}
+
+func (s *Store) UpdateLock(ctx context.Context, l *ent.Lock) (*ent.Lock, error) {
+	return s.c.Lock.
+		UpdateOne(l).
+		SetExpiredAt(l.ExpiredAt).
 		Save(ctx)
 }
 

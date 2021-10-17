@@ -874,6 +874,21 @@ func (mr *MockStoreMockRecorder) UpdateDeploymentStatistics(ctx, s interface{}) 
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateDeploymentStatistics", reflect.TypeOf((*MockStore)(nil).UpdateDeploymentStatistics), ctx, s)
 }
 
+// UpdateLock mocks base method.
+func (m *MockStore) UpdateLock(ctx context.Context, l *ent.Lock) (*ent.Lock, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateLock", ctx, l)
+	ret0, _ := ret[0].(*ent.Lock)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdateLock indicates an expected call of UpdateLock.
+func (mr *MockStoreMockRecorder) UpdateLock(ctx, l interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateLock", reflect.TypeOf((*MockStore)(nil).UpdateLock), ctx, l)
+}
+
 // UpdatePerm mocks base method.
 func (m *MockStore) UpdatePerm(ctx context.Context, p *ent.Perm) (*ent.Perm, error) {
 	m.ctrl.T.Helper()

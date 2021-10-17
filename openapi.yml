@@ -1048,6 +1048,10 @@ paths:
                 env:
                   type: string
                   description: The name of env in deploy.yml
+                expired_at:
+                  type: string
+              required:
+                - env
       responses:
         '201':
           description: Lock
@@ -1066,6 +1070,52 @@ paths:
         '500':
           $ref: '#/components/responses/500InternalError'
   /repos/{namespace}/{name}/locks/{lockId}:
+    patch:
+      tags:
+        - Repo
+      summary: Patch the lock.
+      parameters:
+        - in: path
+          name: namespace
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: name
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: lockId
+          required: true
+          schema:
+            type: integer
+            description: The lock ID.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                expired_at:
+                  type: string
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+        '401': 
+          $ref: '#/components/responses/401Unauthorized'
+        '402':
+          $ref: '#/components/responses/402PaymentRequired'
+        '403': 
+          $ref: '#/components/responses/403Forbidden'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '500':
+          $ref: '#/components/responses/500InternalError'
     delete:
       tags:
         - Repo
@@ -1086,7 +1136,7 @@ paths:
           required: true
           schema:
             type: integer
-            description: The lock id.
+            description: The lock ID.
       responses:
         '200':
           description: Ok
@@ -1812,6 +1862,8 @@ components:
           type: number
         env:
           type: string
+        expired_at:
+          type: string
         created_at:
           type: string
         edges:
@@ -1824,6 +1876,7 @@ components:
       required:
         - id
         - env
+        - expired_at
         - created_at
     Config:
       type: object

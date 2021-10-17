@@ -20,6 +20,8 @@ type Lock struct {
 	ID int `json:"id,omitempty"`
 	// Env holds the value of the "env" field.
 	Env string `json:"env"`
+	// ExpiredAt holds the value of the "expired_at" field.
+	ExpiredAt time.Time `json:"expired_at,omitemtpy"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at"`
 	// UserID holds the value of the "user_id" field.
@@ -79,7 +81,7 @@ func (*Lock) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(sql.NullInt64)
 		case lock.FieldEnv:
 			values[i] = new(sql.NullString)
-		case lock.FieldCreatedAt:
+		case lock.FieldExpiredAt, lock.FieldCreatedAt:
 			values[i] = new(sql.NullTime)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Lock", columns[i])
@@ -107,6 +109,12 @@ func (l *Lock) assignValues(columns []string, values []interface{}) error {
 				return fmt.Errorf("unexpected type %T for field env", values[i])
 			} else if value.Valid {
 				l.Env = value.String
+			}
+		case lock.FieldExpiredAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field expired_at", values[i])
+			} else if value.Valid {
+				l.ExpiredAt = value.Time
 			}
 		case lock.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -166,6 +174,8 @@ func (l *Lock) String() string {
 	builder.WriteString(fmt.Sprintf("id=%v", l.ID))
 	builder.WriteString(", env=")
 	builder.WriteString(l.Env)
+	builder.WriteString(", expired_at=")
+	builder.WriteString(l.ExpiredAt.Format(time.ANSIC))
 	builder.WriteString(", created_at=")
 	builder.WriteString(l.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", user_id=")

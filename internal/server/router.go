@@ -155,6 +155,7 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 		repov1.DELETE("/:namespace/:name/approvals/:aid", rm.RepoReadPerm(), r.DeleteApproval)
 		repov1.GET("/:namespace/:name/locks", rm.RepoReadPerm(), r.ListLocks)
 		repov1.POST("/:namespace/:name/locks", rm.RepoWritePerm(), r.CreateLock)
+		repov1.PATCH("/:namespace/:name/locks/:lockID", rm.RepoWritePerm(), r.UpdateLock)
 		repov1.DELETE("/:namespace/:name/locks/:lockID", rm.RepoWritePerm(), r.DeleteLock)
 		repov1.GET("/:namespace/:name/perms", rm.RepoReadPerm(), r.ListPerms)
 		repov1.GET("/:namespace/:name/config", rm.RepoReadPerm(), r.GetConfig)

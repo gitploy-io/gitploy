@@ -36,6 +36,26 @@ func (lu *LockUpdate) SetEnv(s string) *LockUpdate {
 	return lu
 }
 
+// SetExpiredAt sets the "expired_at" field.
+func (lu *LockUpdate) SetExpiredAt(t time.Time) *LockUpdate {
+	lu.mutation.SetExpiredAt(t)
+	return lu
+}
+
+// SetNillableExpiredAt sets the "expired_at" field if the given value is not nil.
+func (lu *LockUpdate) SetNillableExpiredAt(t *time.Time) *LockUpdate {
+	if t != nil {
+		lu.SetExpiredAt(*t)
+	}
+	return lu
+}
+
+// ClearExpiredAt clears the value of the "expired_at" field.
+func (lu *LockUpdate) ClearExpiredAt() *LockUpdate {
+	lu.mutation.ClearExpiredAt()
+	return lu
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (lu *LockUpdate) SetCreatedAt(t time.Time) *LockUpdate {
 	lu.mutation.SetCreatedAt(t)
@@ -185,6 +205,19 @@ func (lu *LockUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: lock.FieldEnv,
 		})
 	}
+	if value, ok := lu.mutation.ExpiredAt(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: lock.FieldExpiredAt,
+		})
+	}
+	if lu.mutation.ExpiredAtCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Column: lock.FieldExpiredAt,
+		})
+	}
 	if value, ok := lu.mutation.CreatedAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
@@ -284,6 +317,26 @@ type LockUpdateOne struct {
 // SetEnv sets the "env" field.
 func (luo *LockUpdateOne) SetEnv(s string) *LockUpdateOne {
 	luo.mutation.SetEnv(s)
+	return luo
+}
+
+// SetExpiredAt sets the "expired_at" field.
+func (luo *LockUpdateOne) SetExpiredAt(t time.Time) *LockUpdateOne {
+	luo.mutation.SetExpiredAt(t)
+	return luo
+}
+
+// SetNillableExpiredAt sets the "expired_at" field if the given value is not nil.
+func (luo *LockUpdateOne) SetNillableExpiredAt(t *time.Time) *LockUpdateOne {
+	if t != nil {
+		luo.SetExpiredAt(*t)
+	}
+	return luo
+}
+
+// ClearExpiredAt clears the value of the "expired_at" field.
+func (luo *LockUpdateOne) ClearExpiredAt() *LockUpdateOne {
+	luo.mutation.ClearExpiredAt()
 	return luo
 }
 
@@ -458,6 +511,19 @@ func (luo *LockUpdateOne) sqlSave(ctx context.Context) (_node *Lock, err error) 
 			Type:   field.TypeString,
 			Value:  value,
 			Column: lock.FieldEnv,
+		})
+	}
+	if value, ok := luo.mutation.ExpiredAt(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: lock.FieldExpiredAt,
+		})
+	}
+	if luo.mutation.ExpiredAtCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Column: lock.FieldExpiredAt,
 		})
 	}
 	if value, ok := luo.mutation.CreatedAt(); ok {

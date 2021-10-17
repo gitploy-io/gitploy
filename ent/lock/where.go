@@ -100,6 +100,13 @@ func Env(v string) predicate.Lock {
 	})
 }
 
+// ExpiredAt applies equality check predicate on the "expired_at" field. It's identical to ExpiredAtEQ.
+func ExpiredAt(v time.Time) predicate.Lock {
+	return predicate.Lock(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldExpiredAt), v))
+	})
+}
+
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.Lock {
 	return predicate.Lock(func(s *sql.Selector) {
@@ -229,6 +236,96 @@ func EnvEqualFold(v string) predicate.Lock {
 func EnvContainsFold(v string) predicate.Lock {
 	return predicate.Lock(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldEnv), v))
+	})
+}
+
+// ExpiredAtEQ applies the EQ predicate on the "expired_at" field.
+func ExpiredAtEQ(v time.Time) predicate.Lock {
+	return predicate.Lock(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldExpiredAt), v))
+	})
+}
+
+// ExpiredAtNEQ applies the NEQ predicate on the "expired_at" field.
+func ExpiredAtNEQ(v time.Time) predicate.Lock {
+	return predicate.Lock(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldExpiredAt), v))
+	})
+}
+
+// ExpiredAtIn applies the In predicate on the "expired_at" field.
+func ExpiredAtIn(vs ...time.Time) predicate.Lock {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Lock(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldExpiredAt), v...))
+	})
+}
+
+// ExpiredAtNotIn applies the NotIn predicate on the "expired_at" field.
+func ExpiredAtNotIn(vs ...time.Time) predicate.Lock {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Lock(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldExpiredAt), v...))
+	})
+}
+
+// ExpiredAtGT applies the GT predicate on the "expired_at" field.
+func ExpiredAtGT(v time.Time) predicate.Lock {
+	return predicate.Lock(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldExpiredAt), v))
+	})
+}
+
+// ExpiredAtGTE applies the GTE predicate on the "expired_at" field.
+func ExpiredAtGTE(v time.Time) predicate.Lock {
+	return predicate.Lock(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldExpiredAt), v))
+	})
+}
+
+// ExpiredAtLT applies the LT predicate on the "expired_at" field.
+func ExpiredAtLT(v time.Time) predicate.Lock {
+	return predicate.Lock(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldExpiredAt), v))
+	})
+}
+
+// ExpiredAtLTE applies the LTE predicate on the "expired_at" field.
+func ExpiredAtLTE(v time.Time) predicate.Lock {
+	return predicate.Lock(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldExpiredAt), v))
+	})
+}
+
+// ExpiredAtIsNil applies the IsNil predicate on the "expired_at" field.
+func ExpiredAtIsNil() predicate.Lock {
+	return predicate.Lock(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldExpiredAt)))
+	})
+}
+
+// ExpiredAtNotNil applies the NotNil predicate on the "expired_at" field.
+func ExpiredAtNotNil() predicate.Lock {
+	return predicate.Lock(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldExpiredAt)))
 	})
 }
 
