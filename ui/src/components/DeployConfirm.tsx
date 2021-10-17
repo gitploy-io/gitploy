@@ -83,7 +83,7 @@ export default function DeployConfirm(props: DeployConfirmProps): JSX.Element {
                 <Collapse ghost >
                     <Panel 
                         key={1} 
-                        header="Click" 
+                        header="Show" 
                         // Fix the position to align with the field.
                         style={{position: "relative", top: "-5px", left: "-15px"}}
                     >
@@ -123,7 +123,7 @@ function CommitChanges(props: CommitChangesProps): JSX.Element {
 
     return (
         <Timeline>
-            {props.changes.slice(0, 10).map((change, idx) => {
+            {props.changes.map((change, idx) => {
                 return <Timeline.Item key={idx} color="gray">
                     <CommitChange commit={change} />
                 </Timeline.Item>
