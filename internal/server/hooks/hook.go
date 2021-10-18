@@ -157,8 +157,8 @@ func mapGithubDeploymentStatus(e *github.DeploymentStatusEvent) *ent.DeploymentS
 		Status:      *e.DeploymentStatus.State,
 		Description: *e.DeploymentStatus.Description,
 		LogURL:      logURL,
-		CreatedAt:   e.DeploymentStatus.CreatedAt.Time,
-		UpdatedAt:   e.Deployment.UpdatedAt.Time,
+		CreatedAt:   e.DeploymentStatus.CreatedAt.Time.UTC(),
+		UpdatedAt:   e.DeploymentStatus.UpdatedAt.Time.UTC(),
 	}
 
 	return ds
