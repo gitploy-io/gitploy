@@ -98,7 +98,7 @@ func (h *Hooks) handleGithubHook(c *gin.Context) {
 	}
 
 	ds.DeploymentID = d.ID
-	if ds, err = h.i.CreateDeploymentStatus(ctx, ds); err != nil {
+	if ds, err = h.i.SyncDeploymentStatus(ctx, ds); err != nil {
 		h.log.Error("It has failed to create a new the deployment status.", zap.Error(err))
 		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to create a new the deployment status.")
 		return
@@ -139,26 +139,26 @@ func isGithubDeploymentStatusEvent(c *gin.Context) bool {
 	return c.GetHeader(headerGtihubEvent) == "deployment_status"
 }
 
-func mapGithubDeploymentStatus(gds *github.DeploymentStatusEvent) *ent.DeploymentStatus {
+func mapGithubDeploymentStatus(e *github.DeploymentStatusEvent) *ent.DeploymentStatus {
 	var (
-		state       = *gds.DeploymentStatus.State
-		description = *gds.DeploymentStatus.Description
-		logURL      string
+		logURL string
 	)
 
 	// target_url is deprecated.
-	if gds.DeploymentStatus.TargetURL != nil {
-		logURL = *gds.DeploymentStatus.TargetURL
+	if e.DeploymentStatus.TargetURL != nil {
+		logURL = *e.DeploymentStatus.TargetURL
 	}
 
-	if gds.DeploymentStatus.LogURL != nil {
-		logURL = *gds.DeploymentStatus.LogURL
+	if e.DeploymentStatus.LogURL != nil {
+		logURL = *e.DeploymentStatus.LogURL
 	}
 
 	ds := &ent.DeploymentStatus{
-		Status:      state,
-		Description: description,
+		Status:      *e.DeploymentStatus.State,
+		Description: *e.DeploymentStatus.Description,
 		LogURL:      logURL,
+		CreatedAt:   e.DeploymentStatus.CreatedAt.Time.UTC(),
+		UpdatedAt:   e.DeploymentStatus.UpdatedAt.Time.UTC(),
 	}
 
 	return ds

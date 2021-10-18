@@ -1,6 +1,8 @@
 package hooks
 
 import (
+	"encoding/json"
+	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -8,8 +10,10 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang/mock/gomock"
+	"github.com/google/go-github/v32/github"
 
 	"github.com/gitploy-io/gitploy/ent"
+	"github.com/gitploy-io/gitploy/ent/deployment"
 	"github.com/gitploy-io/gitploy/internal/server/hooks/mock"
 )
 
@@ -18,31 +22,41 @@ func init() {
 }
 
 func TestHook_HandleHook(t *testing.T) {
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
+	t.Run("Listen the deployment event.", func(t *testing.T) {
+		e := &github.DeploymentStatusEvent{}
+		bytes, _ := ioutil.ReadFile("./testdata/github.hook.json")
+		if err := json.Unmarshal(bytes, &e); err != nil {
+			t.Fatalf("It has failed to unmarshal: %s", err)
+		}
 
-	m := mock.NewMockInteractor(ctrl)
+		ctrl := gomock.NewController(t)
+		defer ctrl.Finish()
 
-	m.
-		EXPECT().
-		FindDeploymentByUID(gomock.Any(), gomock.Eq(int64(145988746))).
-		Return(&ent.Deployment{
-			ID:  1,
-			UID: 145988746,
-		}, nil)
+		m := mock.NewMockInteractor(ctrl)
 
-	t.Run("", func(t *testing.T) {
 		m.
 			EXPECT().
-			CreateDeploymentStatus(gomock.Any(), gomock.Eq(&ent.DeploymentStatus{
-				Status:       "success",
-				Description:  "Deployed successfully.",
+			FindDeploymentByUID(gomock.Any(), gomock.Eq(int64(*e.Deployment.ID))).
+			Return(&ent.Deployment{
+				ID:  1,
+				UID: *e.Deployment.ID,
+			}, nil)
+
+		m.
+			EXPECT().
+			SyncDeploymentStatus(gomock.Any(), gomock.Eq(&ent.DeploymentStatus{
+				Status:       *e.DeploymentStatus.State,
+				Description:  *e.DeploymentStatus.Description,
+				CreatedAt:    e.DeploymentStatus.CreatedAt.Time.UTC(),
+				UpdatedAt:    e.DeploymentStatus.UpdatedAt.Time.UTC(),
 				DeploymentID: 1,
 			})).
 			Return(&ent.DeploymentStatus{
 				ID:           1,
-				Status:       "success",
-				Description:  "Deployed successfully.",
+				Status:       *e.DeploymentStatus.State,
+				Description:  *e.DeploymentStatus.Description,
+				CreatedAt:    e.DeploymentStatus.CreatedAt.Time.UTC(),
+				UpdatedAt:    e.DeploymentStatus.UpdatedAt.Time.UTC(),
 				DeploymentID: 1,
 			}, nil)
 
@@ -50,13 +64,13 @@ func TestHook_HandleHook(t *testing.T) {
 			EXPECT().
 			UpdateDeployment(gomock.Any(), gomock.Eq(&ent.Deployment{
 				ID:     1,
-				UID:    145988746,
-				Status: "success",
+				UID:    *e.Deployment.ID,
+				Status: deployment.StatusSuccess,
 			})).
 			Return(&ent.Deployment{
 				ID:     1,
-				UID:    145988746,
-				Status: "success",
+				UID:    *e.Deployment.ID,
+				Status: deployment.StatusSuccess,
 			}, nil)
 
 		m.
