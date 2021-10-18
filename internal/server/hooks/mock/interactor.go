@@ -35,21 +35,6 @@ func (m *MockInteractor) EXPECT() *MockInteractorMockRecorder {
 	return m.recorder
 }
 
-// CreateDeploymentStatus mocks base method.
-func (m *MockInteractor) CreateDeploymentStatus(ctx context.Context, s *ent.DeploymentStatus) (*ent.DeploymentStatus, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateDeploymentStatus", ctx, s)
-	ret0, _ := ret[0].(*ent.DeploymentStatus)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// CreateDeploymentStatus indicates an expected call of CreateDeploymentStatus.
-func (mr *MockInteractorMockRecorder) CreateDeploymentStatus(ctx, s interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateDeploymentStatus", reflect.TypeOf((*MockInteractor)(nil).CreateDeploymentStatus), ctx, s)
-}
-
 // CreateEvent mocks base method.
 func (m *MockInteractor) CreateEvent(ctx context.Context, e *ent.Event) (*ent.Event, error) {
 	m.ctrl.T.Helper()
@@ -78,6 +63,21 @@ func (m *MockInteractor) FindDeploymentByUID(ctx context.Context, uid int64) (*e
 func (mr *MockInteractorMockRecorder) FindDeploymentByUID(ctx, uid interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindDeploymentByUID", reflect.TypeOf((*MockInteractor)(nil).FindDeploymentByUID), ctx, uid)
+}
+
+// SyncDeploymentStatus mocks base method.
+func (m *MockInteractor) SyncDeploymentStatus(ctx context.Context, ds *ent.DeploymentStatus) (*ent.DeploymentStatus, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SyncDeploymentStatus", ctx, ds)
+	ret0, _ := ret[0].(*ent.DeploymentStatus)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// SyncDeploymentStatus indicates an expected call of SyncDeploymentStatus.
+func (mr *MockInteractorMockRecorder) SyncDeploymentStatus(ctx, ds interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SyncDeploymentStatus", reflect.TypeOf((*MockInteractor)(nil).SyncDeploymentStatus), ctx, ds)
 }
 
 // ProduceDeploymentStatisticsOfRepo mocks base method.

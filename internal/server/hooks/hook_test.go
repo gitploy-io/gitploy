@@ -34,7 +34,7 @@ func TestHook_HandleHook(t *testing.T) {
 	t.Run("", func(t *testing.T) {
 		m.
 			EXPECT().
-			CreateDeploymentStatus(gomock.Any(), gomock.Eq(&ent.DeploymentStatus{
+			SyncDeploymentStatus(gomock.Any(), gomock.Eq(&ent.DeploymentStatus{
 				Status:       "success",
 				Description:  "Deployed successfully.",
 				DeploymentID: 1,

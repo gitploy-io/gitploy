@@ -15,3 +15,15 @@ func (s *Store) CreateDeploymentStatus(ctx context.Context, ds *ent.DeploymentSt
 		SetDeploymentID(ds.DeploymentID).
 		Save(ctx)
 }
+
+func (s *Store) SyncDeploymentStatus(ctx context.Context, ds *ent.DeploymentStatus) (*ent.DeploymentStatus, error) {
+	return s.c.DeploymentStatus.
+		Create().
+		SetStatus(ds.Status).
+		SetDescription(ds.Description).
+		SetLogURL(ds.LogURL).
+		SetDeploymentID(ds.DeploymentID).
+		SetCreatedAt(ds.CreatedAt).
+		SetUpdatedAt(ds.UpdatedAt).
+		Save(ctx)
+}

@@ -784,6 +784,21 @@ func (mr *MockStoreMockRecorder) ListUsers(ctx, login, page, perPage interface{}
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListUsers", reflect.TypeOf((*MockStore)(nil).ListUsers), ctx, login, page, perPage)
 }
 
+// SyncDeploymentStatus mocks base method.
+func (m *MockStore) SyncDeploymentStatus(ctx context.Context, ds *ent.DeploymentStatus) (*ent.DeploymentStatus, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SyncDeploymentStatus", ctx, ds)
+	ret0, _ := ret[0].(*ent.DeploymentStatus)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// SyncDeploymentStatus indicates an expected call of SyncDeploymentStatus.
+func (mr *MockStoreMockRecorder) SyncDeploymentStatus(ctx, ds interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SyncDeploymentStatus", reflect.TypeOf((*MockStore)(nil).SyncDeploymentStatus), ctx, ds)
+}
+
 // SearchApprovals mocks base method.
 func (m *MockStore) SearchApprovals(ctx context.Context, u *ent.User, s []approval.Status, from, to time.Time, page, perPage int) ([]*ent.Approval, error) {
 	m.ctrl.T.Helper()
