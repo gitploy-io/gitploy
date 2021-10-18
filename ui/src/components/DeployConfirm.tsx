@@ -49,7 +49,7 @@ export default function DeployConfirm(props: DeployConfirmProps): JSX.Element {
                 {...layout}
                 label="Status"
             >
-                {(props.deployment.statuses)? 
+                {(props.deployment.statuses && props.deployment.statuses.length > 0)? 
                     <Collapse ghost>
                         <Panel
                             key={1}
