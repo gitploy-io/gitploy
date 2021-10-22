@@ -31,13 +31,13 @@ scrape_configs:
 Gitploy provides the following Gitploy metrics. *Note that Some metrics are provided only for the production environment* (i.e. `production_environment: true` in the configuration file).
 
 * **gitploy_requests_total** <br/> How many HTTP requests processed, partitioned by status code and HTTP method.
-* **gitploy_request_duration_seconds**<br/> The HTTP request latencies in seconds.
-* **gitploy_deployment_count** <br/> The count of success deployment of the production environment.
-* **gitploy_rollback_count**<br/> The count of rollback of the production environment.
-* **gitploy_line_additions**<br/> The count of added lines from the latest deployment of the production environment.
-* **gitploy_line_deletions**<br/> The count of deleted lines from the latest deployment of the production environment.
-* **gitploy_line_changes**<br/> The count of changed lines from the latest deployment of the production environment.
-* **gitploy_lead_time_seconds**<br/> The amount of time it takes a commit to get into production.
+* **gitploy_request_duration_seconds**<br/> The HTTP request latencies in seconds
+* **gitploy_deployment_count** <br/> The total deployment count of the production deployments.
+* **gitploy_rollback_count**<br/> The total rollback count of the production deployments.
+* **gitploy_line_additions**<br/> The total added lines of the production deployments.
+* **gitploy_line_deletions**<br/> The total deleted lines of the production deployments.
+* **gitploy_line_changes**<br/> The total changed lines of the production deployments.
+* **gitploy_lead_time_seconds**<br/> The total amount of time it takes a commit to get into the production environments.
 * **gitploy_commit_count**<br/> The total commit count of production deployments.
 * **gitploy_member_count**<br/> The total count of members.
 * **gitploy_member_limit**<br/> The limit count of members.
