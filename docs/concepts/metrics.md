@@ -38,5 +38,6 @@ Gitploy provides the following Gitploy metrics. *Note that Some metrics are prov
 * **gitploy_line_deletions**<br/> The count of deleted lines from the latest deployment of the production environment.
 * **gitploy_line_changes**<br/> The count of changed lines from the latest deployment of the production environment.
 * **gitploy_lead_time_seconds**<br/> The amount of time it takes a commit to get into production.
+* **gitploy_commit_count**<br/> The total commit count of production deployments.
 * **gitploy_member_count**<br/> The total count of members.
 * **gitploy_member_limit**<br/> The limit count of members.
