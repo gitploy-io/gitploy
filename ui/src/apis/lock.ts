@@ -3,7 +3,7 @@ import { StatusCodes } from "http-status-codes"
 import { instance, headers } from "./setting"
 import { _fetch } from "./_base"
 import { UserData, mapDataToUser } from "./user"
-import { Lock, User, HttpForbiddenError, HttpUnprocessableEntityError } from "../models"
+import { Lock, User, HttpForbiddenError, HttpNotFoundError, HttpUnprocessableEntityError } from "../models"
 
 interface LockData {
     id: number
@@ -92,6 +92,11 @@ export const updateLock = async (namespace: string, name: string, id: number, pa
     if (res.status === StatusCodes.FORBIDDEN) {
         const {message} = await res.json()
         throw new HttpForbiddenError(message)
+    }
+
+    if (res.status === StatusCodes.NOT_FOUND) {
+        const {message} = await res.json()
+        throw new HttpNotFoundError(message)
     }
 
     const lock = res.json()
