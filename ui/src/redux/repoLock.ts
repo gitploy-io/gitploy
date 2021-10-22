@@ -1,6 +1,5 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit'
 import { message } from "antd"
-import moment from 'moment'
 
 import {
     Config,
