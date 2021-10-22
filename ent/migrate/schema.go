@@ -167,6 +167,7 @@ var (
 		{Name: "deletions", Type: field.TypeInt, Default: 0},
 		{Name: "changes", Type: field.TypeInt, Default: 0},
 		{Name: "lead_time_seconds", Type: field.TypeInt, Default: 0},
+		{Name: "commit_count", Type: field.TypeInt, Default: 0},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "repo_id", Type: field.TypeInt64, Nullable: true},
@@ -179,7 +180,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "deployment_statistics_repos_deployment_statistics",
-				Columns:    []*schema.Column{DeploymentStatisticsColumns[10]},
+				Columns:    []*schema.Column{DeploymentStatisticsColumns[11]},
 				RefColumns: []*schema.Column{ReposColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
@@ -188,12 +189,12 @@ var (
 			{
 				Name:    "deploymentstatistics_repo_id_env",
 				Unique:  true,
-				Columns: []*schema.Column{DeploymentStatisticsColumns[10], DeploymentStatisticsColumns[1]},
+				Columns: []*schema.Column{DeploymentStatisticsColumns[11], DeploymentStatisticsColumns[1]},
 			},
 			{
 				Name:    "deploymentstatistics_updated_at",
 				Unique:  false,
-				Columns: []*schema.Column{DeploymentStatisticsColumns[9]},
+				Columns: []*schema.Column{DeploymentStatisticsColumns[10]},
 			},
 		},
 	}

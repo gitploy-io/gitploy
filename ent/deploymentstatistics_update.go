@@ -161,6 +161,27 @@ func (dsu *DeploymentStatisticsUpdate) AddLeadTimeSeconds(i int) *DeploymentStat
 	return dsu
 }
 
+// SetCommitCount sets the "commit_count" field.
+func (dsu *DeploymentStatisticsUpdate) SetCommitCount(i int) *DeploymentStatisticsUpdate {
+	dsu.mutation.ResetCommitCount()
+	dsu.mutation.SetCommitCount(i)
+	return dsu
+}
+
+// SetNillableCommitCount sets the "commit_count" field if the given value is not nil.
+func (dsu *DeploymentStatisticsUpdate) SetNillableCommitCount(i *int) *DeploymentStatisticsUpdate {
+	if i != nil {
+		dsu.SetCommitCount(*i)
+	}
+	return dsu
+}
+
+// AddCommitCount adds i to the "commit_count" field.
+func (dsu *DeploymentStatisticsUpdate) AddCommitCount(i int) *DeploymentStatisticsUpdate {
+	dsu.mutation.AddCommitCount(i)
+	return dsu
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (dsu *DeploymentStatisticsUpdate) SetCreatedAt(t time.Time) *DeploymentStatisticsUpdate {
 	dsu.mutation.SetCreatedAt(t)
@@ -389,6 +410,20 @@ func (dsu *DeploymentStatisticsUpdate) sqlSave(ctx context.Context) (n int, err 
 			Column: deploymentstatistics.FieldLeadTimeSeconds,
 		})
 	}
+	if value, ok := dsu.mutation.CommitCount(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: deploymentstatistics.FieldCommitCount,
+		})
+	}
+	if value, ok := dsu.mutation.AddedCommitCount(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: deploymentstatistics.FieldCommitCount,
+		})
+	}
 	if value, ok := dsu.mutation.CreatedAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
@@ -586,6 +621,27 @@ func (dsuo *DeploymentStatisticsUpdateOne) SetNillableLeadTimeSeconds(i *int) *D
 // AddLeadTimeSeconds adds i to the "lead_time_seconds" field.
 func (dsuo *DeploymentStatisticsUpdateOne) AddLeadTimeSeconds(i int) *DeploymentStatisticsUpdateOne {
 	dsuo.mutation.AddLeadTimeSeconds(i)
+	return dsuo
+}
+
+// SetCommitCount sets the "commit_count" field.
+func (dsuo *DeploymentStatisticsUpdateOne) SetCommitCount(i int) *DeploymentStatisticsUpdateOne {
+	dsuo.mutation.ResetCommitCount()
+	dsuo.mutation.SetCommitCount(i)
+	return dsuo
+}
+
+// SetNillableCommitCount sets the "commit_count" field if the given value is not nil.
+func (dsuo *DeploymentStatisticsUpdateOne) SetNillableCommitCount(i *int) *DeploymentStatisticsUpdateOne {
+	if i != nil {
+		dsuo.SetCommitCount(*i)
+	}
+	return dsuo
+}
+
+// AddCommitCount adds i to the "commit_count" field.
+func (dsuo *DeploymentStatisticsUpdateOne) AddCommitCount(i int) *DeploymentStatisticsUpdateOne {
+	dsuo.mutation.AddCommitCount(i)
 	return dsuo
 }
 
@@ -839,6 +895,20 @@ func (dsuo *DeploymentStatisticsUpdateOne) sqlSave(ctx context.Context) (_node *
 			Type:   field.TypeInt,
 			Value:  value,
 			Column: deploymentstatistics.FieldLeadTimeSeconds,
+		})
+	}
+	if value, ok := dsuo.mutation.CommitCount(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: deploymentstatistics.FieldCommitCount,
+		})
+	}
+	if value, ok := dsuo.mutation.AddedCommitCount(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: deploymentstatistics.FieldCommitCount,
 		})
 	}
 	if value, ok := dsuo.mutation.CreatedAt(); ok {

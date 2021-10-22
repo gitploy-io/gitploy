@@ -25,6 +25,8 @@ const (
 	FieldChanges = "changes"
 	// FieldLeadTimeSeconds holds the string denoting the lead_time_seconds field in the database.
 	FieldLeadTimeSeconds = "lead_time_seconds"
+	// FieldCommitCount holds the string denoting the commit_count field in the database.
+	FieldCommitCount = "commit_count"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
@@ -54,6 +56,7 @@ var Columns = []string{
 	FieldDeletions,
 	FieldChanges,
 	FieldLeadTimeSeconds,
+	FieldCommitCount,
 	FieldCreatedAt,
 	FieldUpdatedAt,
 	FieldRepoID,
@@ -82,6 +85,8 @@ var (
 	DefaultChanges int
 	// DefaultLeadTimeSeconds holds the default value on creation for the "lead_time_seconds" field.
 	DefaultLeadTimeSeconds int
+	// DefaultCommitCount holds the default value on creation for the "commit_count" field.
+	DefaultCommitCount int
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
 	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.

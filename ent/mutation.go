@@ -3621,6 +3621,8 @@ type DeploymentStatisticsMutation struct {
 	addchanges           *int
 	lead_time_seconds    *int
 	addlead_time_seconds *int
+	commit_count         *int
+	addcommit_count      *int
 	created_at           *time.Time
 	updated_at           *time.Time
 	clearedFields        map[string]struct{}
@@ -4082,6 +4084,62 @@ func (m *DeploymentStatisticsMutation) ResetLeadTimeSeconds() {
 	m.addlead_time_seconds = nil
 }
 
+// SetCommitCount sets the "commit_count" field.
+func (m *DeploymentStatisticsMutation) SetCommitCount(i int) {
+	m.commit_count = &i
+	m.addcommit_count = nil
+}
+
+// CommitCount returns the value of the "commit_count" field in the mutation.
+func (m *DeploymentStatisticsMutation) CommitCount() (r int, exists bool) {
+	v := m.commit_count
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCommitCount returns the old "commit_count" field's value of the DeploymentStatistics entity.
+// If the DeploymentStatistics object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DeploymentStatisticsMutation) OldCommitCount(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldCommitCount is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldCommitCount requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCommitCount: %w", err)
+	}
+	return oldValue.CommitCount, nil
+}
+
+// AddCommitCount adds i to the "commit_count" field.
+func (m *DeploymentStatisticsMutation) AddCommitCount(i int) {
+	if m.addcommit_count != nil {
+		*m.addcommit_count += i
+	} else {
+		m.addcommit_count = &i
+	}
+}
+
+// AddedCommitCount returns the value that was added to the "commit_count" field in this mutation.
+func (m *DeploymentStatisticsMutation) AddedCommitCount() (r int, exists bool) {
+	v := m.addcommit_count
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetCommitCount resets all changes to the "commit_count" field.
+func (m *DeploymentStatisticsMutation) ResetCommitCount() {
+	m.commit_count = nil
+	m.addcommit_count = nil
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (m *DeploymentStatisticsMutation) SetCreatedAt(t time.Time) {
 	m.created_at = &t
@@ -4235,7 +4293,7 @@ func (m *DeploymentStatisticsMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *DeploymentStatisticsMutation) Fields() []string {
-	fields := make([]string, 0, 10)
+	fields := make([]string, 0, 11)
 	if m.env != nil {
 		fields = append(fields, deploymentstatistics.FieldEnv)
 	}
@@ -4256,6 +4314,9 @@ func (m *DeploymentStatisticsMutation) Fields() []string {
 	}
 	if m.lead_time_seconds != nil {
 		fields = append(fields, deploymentstatistics.FieldLeadTimeSeconds)
+	}
+	if m.commit_count != nil {
+		fields = append(fields, deploymentstatistics.FieldCommitCount)
 	}
 	if m.created_at != nil {
 		fields = append(fields, deploymentstatistics.FieldCreatedAt)
@@ -4288,6 +4349,8 @@ func (m *DeploymentStatisticsMutation) Field(name string) (ent.Value, bool) {
 		return m.Changes()
 	case deploymentstatistics.FieldLeadTimeSeconds:
 		return m.LeadTimeSeconds()
+	case deploymentstatistics.FieldCommitCount:
+		return m.CommitCount()
 	case deploymentstatistics.FieldCreatedAt:
 		return m.CreatedAt()
 	case deploymentstatistics.FieldUpdatedAt:
@@ -4317,6 +4380,8 @@ func (m *DeploymentStatisticsMutation) OldField(ctx context.Context, name string
 		return m.OldChanges(ctx)
 	case deploymentstatistics.FieldLeadTimeSeconds:
 		return m.OldLeadTimeSeconds(ctx)
+	case deploymentstatistics.FieldCommitCount:
+		return m.OldCommitCount(ctx)
 	case deploymentstatistics.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case deploymentstatistics.FieldUpdatedAt:
@@ -4381,6 +4446,13 @@ func (m *DeploymentStatisticsMutation) SetField(name string, value ent.Value) er
 		}
 		m.SetLeadTimeSeconds(v)
 		return nil
+	case deploymentstatistics.FieldCommitCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCommitCount(v)
+		return nil
 	case deploymentstatistics.FieldCreatedAt:
 		v, ok := value.(time.Time)
 		if !ok {
@@ -4428,6 +4500,9 @@ func (m *DeploymentStatisticsMutation) AddedFields() []string {
 	if m.addlead_time_seconds != nil {
 		fields = append(fields, deploymentstatistics.FieldLeadTimeSeconds)
 	}
+	if m.addcommit_count != nil {
+		fields = append(fields, deploymentstatistics.FieldCommitCount)
+	}
 	return fields
 }
 
@@ -4448,6 +4523,8 @@ func (m *DeploymentStatisticsMutation) AddedField(name string) (ent.Value, bool)
 		return m.AddedChanges()
 	case deploymentstatistics.FieldLeadTimeSeconds:
 		return m.AddedLeadTimeSeconds()
+	case deploymentstatistics.FieldCommitCount:
+		return m.AddedCommitCount()
 	}
 	return nil, false
 }
@@ -4499,6 +4576,13 @@ func (m *DeploymentStatisticsMutation) AddField(name string, value ent.Value) er
 		}
 		m.AddLeadTimeSeconds(v)
 		return nil
+	case deploymentstatistics.FieldCommitCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddCommitCount(v)
+		return nil
 	}
 	return fmt.Errorf("unknown DeploymentStatistics numeric field %s", name)
 }
@@ -4546,6 +4630,9 @@ func (m *DeploymentStatisticsMutation) ResetField(name string) error {
 		return nil
 	case deploymentstatistics.FieldLeadTimeSeconds:
 		m.ResetLeadTimeSeconds()
+		return nil
+	case deploymentstatistics.FieldCommitCount:
+		m.ResetCommitCount()
 		return nil
 	case deploymentstatistics.FieldCreatedAt:
 		m.ResetCreatedAt()
