@@ -56,6 +56,8 @@ func (i *Interactor) produceDeploymentStatisticsOfRepo(ctx context.Context, r *e
 			return nil, err
 		}
 
+		s.CommitCount = s.CommitCount + len(cms)
+
 		for _, cm := range cms {
 			leadTime := d.UpdatedAt.Sub(cm.Author.Date)
 			s.LeadTimeSeconds = s.LeadTimeSeconds + int(leadTime.Seconds())
