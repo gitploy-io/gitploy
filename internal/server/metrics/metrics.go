@@ -118,7 +118,7 @@ func (c *collector) Collect(ch chan<- prometheus.Metric) {
 					prometheus.BuildFQName(
 						namespace,
 						"",
-						"deployment_count",
+						"total_deployment_count",
 					),
 					"The total deployment count of the production deployments.",
 					[]string{"namespace", "name", "env"},
@@ -134,7 +134,7 @@ func (c *collector) Collect(ch chan<- prometheus.Metric) {
 					prometheus.BuildFQName(
 						namespace,
 						"",
-						"rollback_count",
+						"total_rollback_count",
 					),
 					"The total rollback count of the production deployments.",
 					[]string{"namespace", "name", "env"},
@@ -150,7 +150,7 @@ func (c *collector) Collect(ch chan<- prometheus.Metric) {
 					prometheus.BuildFQName(
 						namespace,
 						"",
-						"line_additions",
+						"total_line_additions",
 					),
 					"The total added lines of the production deployments.",
 					[]string{"namespace", "name", "env"},
@@ -166,7 +166,7 @@ func (c *collector) Collect(ch chan<- prometheus.Metric) {
 					prometheus.BuildFQName(
 						namespace,
 						"",
-						"line_deletions",
+						"total_line_deletions",
 					),
 					"The total deleted lines of the production deployments.",
 					[]string{"namespace", "name", "env"},
@@ -182,7 +182,7 @@ func (c *collector) Collect(ch chan<- prometheus.Metric) {
 					prometheus.BuildFQName(
 						namespace,
 						"",
-						"line_changes",
+						"total_line_changes",
 					),
 					"The total changed lines of the production deployments.",
 					[]string{"namespace", "name", "env"},
@@ -198,7 +198,7 @@ func (c *collector) Collect(ch chan<- prometheus.Metric) {
 					prometheus.BuildFQName(
 						namespace,
 						"",
-						"lead_time_seconds",
+						"total_lead_time_seconds",
 					),
 					"The total amount of time it takes a commit to get into the production environments.",
 					[]string{"namespace", "name", "env"},
@@ -214,7 +214,7 @@ func (c *collector) Collect(ch chan<- prometheus.Metric) {
 					prometheus.BuildFQName(
 						namespace,
 						"",
-						"commit_count",
+						"total_commit_count",
 					),
 					"The total commit count of production deployments.",
 					[]string{"namespace", "name", "env"},
