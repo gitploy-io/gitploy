@@ -1,10 +1,12 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit'
 import { message } from "antd"
+import moment from 'moment'
 
 import {
     Config,
     Lock,
-    HttpForbiddenError
+    HttpForbiddenError,
+    HttpNotFoundError
 } from "../models"
 import {
     getConfig,
@@ -107,10 +109,17 @@ export const setAutoUnlock = createAsyncThunk<Lock, {env: string, expiredAt: Dat
         }
 
         try {
-            return await updateLock(namespace, name, lock.id, {expiredAt})
+            const ret = await updateLock(namespace, name, lock.id, {expiredAt})
+            message.info(`Setting auto-unlock.`)
+
+            return ret
         } catch (e) {
             if (e instanceof HttpForbiddenError) {
                 message.warn("Only write permission can enable auto unlock.", 3)
+            }
+
+            if (e instanceof HttpNotFoundError) {
+                message.warn("Lock is not found.")
             }
             return rejectWithValue(e)
         }
