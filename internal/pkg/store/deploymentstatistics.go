@@ -47,6 +47,7 @@ func (s *Store) CreateDeploymentStatistics(ctx context.Context, ds *ent.Deployme
 		SetDeletions(ds.Deletions).
 		SetChanges(ds.Changes).
 		SetLeadTimeSeconds(ds.LeadTimeSeconds).
+		SetCommitCount(ds.CommitCount).
 		SetRepoID(ds.RepoID).
 		Save(ctx)
 }
@@ -60,5 +61,6 @@ func (s *Store) UpdateDeploymentStatistics(ctx context.Context, ds *ent.Deployme
 		SetDeletions(ds.Deletions).
 		SetChanges(ds.Changes).
 		SetLeadTimeSeconds(ds.LeadTimeSeconds).
+		SetCommitCount(ds.CommitCount).
 		Save(ctx)
 }

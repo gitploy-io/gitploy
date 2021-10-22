@@ -142,6 +142,13 @@ func LeadTimeSeconds(v int) predicate.DeploymentStatistics {
 	})
 }
 
+// CommitCount applies equality check predicate on the "commit_count" field. It's identical to CommitCountEQ.
+func CommitCount(v int) predicate.DeploymentStatistics {
+	return predicate.DeploymentStatistics(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldCommitCount), v))
+	})
+}
+
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.DeploymentStatistics {
 	return predicate.DeploymentStatistics(func(s *sql.Selector) {
@@ -727,6 +734,82 @@ func LeadTimeSecondsLT(v int) predicate.DeploymentStatistics {
 func LeadTimeSecondsLTE(v int) predicate.DeploymentStatistics {
 	return predicate.DeploymentStatistics(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldLeadTimeSeconds), v))
+	})
+}
+
+// CommitCountEQ applies the EQ predicate on the "commit_count" field.
+func CommitCountEQ(v int) predicate.DeploymentStatistics {
+	return predicate.DeploymentStatistics(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldCommitCount), v))
+	})
+}
+
+// CommitCountNEQ applies the NEQ predicate on the "commit_count" field.
+func CommitCountNEQ(v int) predicate.DeploymentStatistics {
+	return predicate.DeploymentStatistics(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldCommitCount), v))
+	})
+}
+
+// CommitCountIn applies the In predicate on the "commit_count" field.
+func CommitCountIn(vs ...int) predicate.DeploymentStatistics {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.DeploymentStatistics(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldCommitCount), v...))
+	})
+}
+
+// CommitCountNotIn applies the NotIn predicate on the "commit_count" field.
+func CommitCountNotIn(vs ...int) predicate.DeploymentStatistics {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.DeploymentStatistics(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldCommitCount), v...))
+	})
+}
+
+// CommitCountGT applies the GT predicate on the "commit_count" field.
+func CommitCountGT(v int) predicate.DeploymentStatistics {
+	return predicate.DeploymentStatistics(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldCommitCount), v))
+	})
+}
+
+// CommitCountGTE applies the GTE predicate on the "commit_count" field.
+func CommitCountGTE(v int) predicate.DeploymentStatistics {
+	return predicate.DeploymentStatistics(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldCommitCount), v))
+	})
+}
+
+// CommitCountLT applies the LT predicate on the "commit_count" field.
+func CommitCountLT(v int) predicate.DeploymentStatistics {
+	return predicate.DeploymentStatistics(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldCommitCount), v))
+	})
+}
+
+// CommitCountLTE applies the LTE predicate on the "commit_count" field.
+func CommitCountLTE(v int) predicate.DeploymentStatistics {
+	return predicate.DeploymentStatistics(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldCommitCount), v))
 	})
 }
 

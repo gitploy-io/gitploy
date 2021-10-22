@@ -208,6 +208,22 @@ func (c *collector) Collect(ch chan<- prometheus.Metric) {
 				float64(dc.LeadTimeSeconds),
 				dc.Edges.Repo.Namespace, dc.Edges.Repo.Name, dc.Env,
 			)
+
+			ch <- prometheus.MustNewConstMetric(
+				prometheus.NewDesc(
+					prometheus.BuildFQName(
+						namespace,
+						"",
+						"commit_count",
+					),
+					"The total commit count of production deployments.",
+					[]string{"namespace", "name", "env"},
+					nil,
+				),
+				prometheus.GaugeValue,
+				float64(dc.LeadTimeSeconds),
+				dc.Edges.Repo.Namespace, dc.Edges.Repo.Name, dc.Env,
+			)
 		}
 
 		c.log.Debug("Collect deployment_count metrics successfully.")

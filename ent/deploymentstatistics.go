@@ -31,6 +31,8 @@ type DeploymentStatistics struct {
 	Changes int `json:"changes"`
 	// LeadTimeSeconds holds the value of the "lead_time_seconds" field.
 	LeadTimeSeconds int `json:"lead_time_seconds"`
+	// CommitCount holds the value of the "commit_count" field.
+	CommitCount int `json:"commit_count"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -70,7 +72,7 @@ func (*DeploymentStatistics) scanValues(columns []string) ([]interface{}, error)
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case deploymentstatistics.FieldID, deploymentstatistics.FieldCount, deploymentstatistics.FieldRollbackCount, deploymentstatistics.FieldAdditions, deploymentstatistics.FieldDeletions, deploymentstatistics.FieldChanges, deploymentstatistics.FieldLeadTimeSeconds, deploymentstatistics.FieldRepoID:
+		case deploymentstatistics.FieldID, deploymentstatistics.FieldCount, deploymentstatistics.FieldRollbackCount, deploymentstatistics.FieldAdditions, deploymentstatistics.FieldDeletions, deploymentstatistics.FieldChanges, deploymentstatistics.FieldLeadTimeSeconds, deploymentstatistics.FieldCommitCount, deploymentstatistics.FieldRepoID:
 			values[i] = new(sql.NullInt64)
 		case deploymentstatistics.FieldEnv:
 			values[i] = new(sql.NullString)
@@ -139,6 +141,12 @@ func (ds *DeploymentStatistics) assignValues(columns []string, values []interfac
 			} else if value.Valid {
 				ds.LeadTimeSeconds = int(value.Int64)
 			}
+		case deploymentstatistics.FieldCommitCount:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field commit_count", values[i])
+			} else if value.Valid {
+				ds.CommitCount = int(value.Int64)
+			}
 		case deploymentstatistics.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
@@ -204,6 +212,8 @@ func (ds *DeploymentStatistics) String() string {
 	builder.WriteString(fmt.Sprintf("%v", ds.Changes))
 	builder.WriteString(", lead_time_seconds=")
 	builder.WriteString(fmt.Sprintf("%v", ds.LeadTimeSeconds))
+	builder.WriteString(", commit_count=")
+	builder.WriteString(fmt.Sprintf("%v", ds.CommitCount))
 	builder.WriteString(", created_at=")
 	builder.WriteString(ds.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", updated_at=")
