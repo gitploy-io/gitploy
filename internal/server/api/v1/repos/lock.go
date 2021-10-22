@@ -157,7 +157,7 @@ func (r *Repo) UpdateLock(c *gin.Context) {
 	l, err := r.i.FindLockByID(ctx, id)
 	if ent.IsNotFound(err) {
 		r.log.Warn("The lock is not found.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "The lock is not found.")
+		gb.ErrorResponse(c, http.StatusNotFound, "The lock is not found.")
 		return
 	} else if err != nil {
 		r.log.Error("It has failed to find the lock.", zap.Error(err))
@@ -200,7 +200,7 @@ func (r *Repo) DeleteLock(c *gin.Context) {
 	l, err := r.i.FindLockByID(ctx, id)
 	if ent.IsNotFound(err) {
 		r.log.Warn("The lock is not found.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "The lock is not found.")
+		gb.ErrorResponse(c, http.StatusNotFound, "The lock is not found.")
 		return
 	} else if err != nil {
 		r.log.Error("It has failed to find the lock.", zap.Error(err))
