@@ -221,7 +221,7 @@ func (c *collector) Collect(ch chan<- prometheus.Metric) {
 					nil,
 				),
 				prometheus.GaugeValue,
-				float64(dc.LeadTimeSeconds),
+				float64(dc.CommitCount),
 				dc.Edges.Repo.Namespace, dc.Edges.Repo.Name, dc.Env,
 			)
 		}
