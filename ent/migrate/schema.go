@@ -385,6 +385,11 @@ var (
 				Unique:  false,
 				Columns: []*schema.Column{ReposColumns[2]},
 			},
+			{
+				Name:    "repo_active",
+				Unique:  false,
+				Columns: []*schema.Column{ReposColumns[5]},
+			},
 		},
 	}
 	// UsersColumns holds the columns for the "users" table.

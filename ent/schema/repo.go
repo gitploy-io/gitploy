@@ -69,5 +69,7 @@ func (Repo) Indexes() []ent.Index {
 		index.Fields("namespace", "name").
 			Unique(),
 		index.Fields("name"),
+		// Count active repositories for metrics.
+		index.Fields("active"),
 	}
 }
