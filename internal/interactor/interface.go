@@ -14,11 +14,11 @@ import (
 
 type (
 	Store interface {
+		CountUsers(context.Context) (int, error)
 		ListUsers(ctx context.Context, login string, page, perPage int) ([]*ent.User, error)
 		FindUserByID(ctx context.Context, id int64) (*ent.User, error)
 		FindUserByHash(ctx context.Context, hash string) (*ent.User, error)
 		FindUserByLogin(ctx context.Context, login string) (*ent.User, error)
-		CountUsers(context.Context) (int, error)
 		CreateUser(ctx context.Context, u *ent.User) (*ent.User, error)
 		UpdateUser(ctx context.Context, u *ent.User) (*ent.User, error)
 		DeleteUser(ctx context.Context, u *ent.User) error
@@ -28,6 +28,8 @@ type (
 		UpdateChatUser(ctx context.Context, cu *ent.ChatUser) (*ent.ChatUser, error)
 		DeleteChatUser(ctx context.Context, cu *ent.ChatUser) error
 
+		CountActiveRepos(ctx context.Context) (int, error)
+		CountRepos(ctx context.Context) (int, error)
 		ListReposOfUser(ctx context.Context, u *ent.User, q, namespace, name string, sorted bool, page, perPage int) ([]*ent.Repo, error)
 		FindRepoOfUserByID(ctx context.Context, u *ent.User, id int64) (*ent.Repo, error)
 		FindRepoOfUserByNamespaceName(ctx context.Context, u *ent.User, namespace, name string) (*ent.Repo, error)
