@@ -41,3 +41,5 @@ Gitploy provides the following Gitploy metrics. *Note that Some metrics are prov
 * **gitploy_total_commit_count**<br/> The total commit count of production deployments.
 * **gitploy_member_count**<br/> The total count of members.
 * **gitploy_member_limit**<br/> The limit count of members.
+* **gitploy_total_active_repo_count**<br/> The count of active repositories.
+* **gitploy_total_repo_count**<br/> The count of repositories.

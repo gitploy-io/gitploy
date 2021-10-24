@@ -10,6 +10,8 @@ import (
 
 type (
 	Interactor interface {
+		CountActiveRepos(ctx context.Context) (int, error)
+		CountRepos(ctx context.Context) (int, error)
 		ListAllDeploymentStatistics(ctx context.Context) ([]*ent.DeploymentStatistics, error)
 		ListDeploymentStatisticsGreaterThanTime(ctx context.Context, updated time.Time) ([]*ent.DeploymentStatistics, error)
 		GetLicense(ctx context.Context) (*vo.License, error)

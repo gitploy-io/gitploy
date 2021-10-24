@@ -221,7 +221,7 @@ func (c *collector) Collect(ch chan<- prometheus.Metric) {
 					nil,
 				),
 				prometheus.GaugeValue,
-				float64(dc.LeadTimeSeconds),
+				float64(dc.CommitCount),
 				dc.Edges.Repo.Namespace, dc.Edges.Repo.Name, dc.Env,
 			)
 		}
@@ -265,6 +265,50 @@ func (c *collector) Collect(ch chan<- prometheus.Metric) {
 			prometheus.GaugeValue,
 			float64(lic.MemberLimit),
 			string(lic.Kind),
+		)
+	}
+
+	{
+		acnt, err := c.i.CountActiveRepos(ctx)
+		if err != nil {
+			c.log.Error("It has failed to count active repositories.", zap.Error(err))
+			return
+		}
+
+		cnt, err := c.i.CountRepos(ctx)
+		if err != nil {
+			c.log.Error("It has failed to count total repositories.", zap.Error(err))
+			return
+		}
+
+		ch <- prometheus.MustNewConstMetric(
+			prometheus.NewDesc(
+				prometheus.BuildFQName(
+					namespace,
+					"",
+					"total_active_repo_count",
+				),
+				"The count of active repositories.",
+				nil,
+				nil,
+			),
+			prometheus.GaugeValue,
+			float64(acnt),
+		)
+
+		ch <- prometheus.MustNewConstMetric(
+			prometheus.NewDesc(
+				prometheus.BuildFQName(
+					namespace,
+					"",
+					"total_repo_count",
+				),
+				"The count of repositories.",
+				nil,
+				nil,
+			),
+			prometheus.GaugeValue,
+			float64(cnt),
 		)
 	}
 }

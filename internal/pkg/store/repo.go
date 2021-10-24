@@ -11,6 +11,19 @@ import (
 	"github.com/gitploy-io/gitploy/vo"
 )
 
+func (s *Store) CountActiveRepos(ctx context.Context) (int, error) {
+	return s.c.Repo.
+		Query().
+		Where(repo.ActiveEQ(true)).
+		Count(ctx)
+}
+
+func (s *Store) CountRepos(ctx context.Context) (int, error) {
+	return s.c.Repo.
+		Query().
+		Count(ctx)
+}
+
 func (s *Store) ListReposOfUser(ctx context.Context, u *ent.User, q, namespace, name string, sorted bool, page, perPage int) ([]*ent.Repo, error) {
 	// Build the query with parameters.
 	qry := s.c.Repo.
