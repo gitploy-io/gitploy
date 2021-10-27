@@ -1,3 +1,9 @@
+// Copyright 2021 Gitploy.IO Inc. All rights reserved.
+// Use of this source code is governed by the Gitploy Non-Commercial License
+// that can be found in the LICENSE file.
+
+// +build !oss
+
 package slack
 
 import (
@@ -10,26 +16,6 @@ import (
 	"github.com/gitploy-io/gitploy/ent/callback"
 	"github.com/slack-go/slack"
 	"go.uber.org/zap"
-	"golang.org/x/oauth2"
-)
-
-type (
-	Slack struct {
-		host  string
-		proto string
-
-		c *oauth2.Config
-		i Interactor
-
-		log *zap.Logger
-	}
-
-	SlackConfig struct {
-		ServerHost  string
-		ServerProto string
-		*oauth2.Config
-		Interactor
-	}
 )
 
 const (
@@ -101,25 +87,4 @@ func (s *Slack) Interact(c *gin.Context) {
 	} else if cb.Type == callback.TypeUnlock {
 		s.interactUnlock(c)
 	}
-}
-
-func postResponseMessage(channelID, responseURL, message string) error {
-	_, _, _, err := slack.
-		New("").
-		SendMessage(
-			channelID,
-			slack.MsgOptionResponseURL(responseURL, "ephemeral"),
-			slack.MsgOptionText(message, false),
-		)
-	return err
-}
-
-func postBotMessage(cu *ent.ChatUser, message string) error {
-	_, _, _, err := slack.
-		New(cu.BotToken).
-		SendMessage(
-			cu.ID,
-			slack.MsgOptionText(message, false),
-		)
-	return err
 }
