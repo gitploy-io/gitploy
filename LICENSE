@@ -1,5 +1,14 @@
 Copyright 2021 Gitploy.IO, Inc.
 
+The Gitploy Community Edition is licensed under the Apache License,
+Version 2.0 (the "Apache License"). 
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+The source files in this repository are under the Apache License 
+basically, but some files are under the Gitploy Non-Commercial License. 
+The header of files indicating which license they are under.
+
 The Gitploy Enterprise Edition is licensed under the Gitploy
 Non-Commercial License (the "Non-Commercial License"). A copy of
 the Non-Commercial License is provided below.
