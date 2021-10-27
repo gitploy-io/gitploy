@@ -1,4 +1,5 @@
 import { createSlice, Middleware, MiddlewareAPI, isRejectedWithValue, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit"
+import { message } from "antd"
 
 import { 
     User, 
@@ -56,7 +57,12 @@ export const apiMiddleware: Middleware = (api: MiddlewareAPI) => (
     } else if (action.payload instanceof HttpInternalServerError) {
         api.dispatch(mainSlice.actions.setAvailable(false))
     } else if (action.payload instanceof HttpPaymentRequiredError) {
-        api.dispatch(mainSlice.actions.setExpired(true))
+        // Only display the message to prevent damaging the user expirence.
+        if (process.env.REACT_APP_GITPLOY_OSS?.toUpperCase() === "TRUE") {
+            message.warn("Sorry, it is limited to the community edition.")
+        } else {
+            api.dispatch(mainSlice.actions.setExpired(true))
+        }
     }
 
     next(action)
