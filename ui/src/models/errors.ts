@@ -28,7 +28,7 @@ export class HttpPaymentRequiredError extends HttpRequestError {
     constructor(public m: string) {
         super(StatusCodes.PAYMENT_REQUIRED, m)
 
-        Object.setPrototypeOf(this, HttpUnauthorizedError.prototype)
+        Object.setPrototypeOf(this, HttpPaymentRequiredError.prototype)
     }
 }
 

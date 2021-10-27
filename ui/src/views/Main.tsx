@@ -43,6 +43,11 @@ export default function Main(props: any) {
         }
     }, [dispatch])
 
+    const onClickRetry = () => {
+        dispatch(slice.actions.setAvailable(true))
+        dispatch(slice.actions.setExpired(false))
+    }
+
     const [ isRecentActivitiesVisible, setRecentActivitiesVisible ] = useState(false)
 
     const showRecentActivities = () => {
@@ -63,6 +68,7 @@ export default function Main(props: any) {
             status="error"
             title="Server Internal Error"
             subTitle="Sorry, something went wrong. Contact administrator."
+            extra={[<Button key="console" type="primary" onClick={onClickRetry}>Retry</Button>]}
         />
     } else if (!authorized) {
         content = <Result
@@ -78,6 +84,7 @@ export default function Main(props: any) {
             status="warning"
             title="License Expired"
             subTitle="Sorry, the license is expired."
+            extra={[<Button key="console" type="primary" onClick={onClickRetry}>Retry</Button>]}
         />
     } else {
         content = props.children
