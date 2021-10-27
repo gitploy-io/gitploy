@@ -1,0 +1,4 @@
+1. Clone the repository
+2. Build the Docker image:
+
+    docker build -t gitploy .
