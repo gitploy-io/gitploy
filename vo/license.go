@@ -7,7 +7,11 @@ const (
 )
 
 const (
-	LicenseKindTrial    LicenseKind = "trial"
+	// LicenseKindOSS is a license for the community edition.
+	LicenseKindOSS LicenseKind = "oss"
+	// LicenseKindTrial is a trial license of the enterprise edition.
+	LicenseKindTrial LicenseKind = "trial"
+	// LicenseKindStandard is a license of the enterprise edition.
 	LicenseKindStandard LicenseKind = "standard"
 )
 
@@ -28,6 +32,13 @@ type (
 	}
 )
 
+func NewOSSLicense() *License {
+	return &License{
+		Kind:        LicenseKindOSS,
+		MemberCount: -1,
+	}
+}
+
 func NewTrialLicense(cnt int) *License {
 	return &License{
 		Kind:        LicenseKindTrial,
@@ -45,14 +56,24 @@ func NewStandardLicense(cnt int, d *SigningData) *License {
 	}
 }
 
+func (l *License) IsOSS() bool {
+	return l.Kind == LicenseKindOSS
+}
+
 func (l *License) IsTrial() bool {
 	return l.Kind == LicenseKindTrial
 }
 
+func (l *License) IsStandard() bool {
+	return l.Kind == LicenseKindStandard
+}
+
+// IsOverLimit verify it is over the limit of the license.
 func (l *License) IsOverLimit() bool {
 	return l.MemberCount > l.MemberLimit
 }
 
+// IsExpired verify that the license is expired or not.
 func (l *License) IsExpired() bool {
 	return l.ExpiredAt.Before(time.Now())
 }

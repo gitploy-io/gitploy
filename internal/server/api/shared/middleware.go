@@ -34,12 +34,16 @@ func (m *Middleware) IsLicenseExpired() gin.HandlerFunc {
 			return
 		}
 
+		if lic.IsOSS() {
+			return
+		}
+
 		if lic.IsOverLimit() {
 			gb.AbortWithErrorResponse(c, http.StatusPaymentRequired, "The member count is over the limit.")
 			return
 		}
 
-		if !lic.IsTrial() && lic.IsExpired() {
+		if lic.IsStandard() && lic.IsExpired() {
 			now := time.Now()
 			if lic.ExpiredAt.Add(extraDuration).Before(now) {
 				gb.AbortWithErrorResponse(c, http.StatusPaymentRequired, "The license is expired.")

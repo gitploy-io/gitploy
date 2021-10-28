@@ -15,6 +15,33 @@ import (
 func TestMiddleware_IsLicenseExpired(t *testing.T) {
 	month := 30 * 24 * time.Hour
 
+	t.Run("Return 200 when the license is OSS.", func(t *testing.T) {
+		ctrl := gomock.NewController(t)
+		m := mock.NewMockInteractor(ctrl)
+
+		m.
+			EXPECT().
+			GetLicense(gomock.Any()).
+			Return(vo.NewOSSLicense(), nil)
+
+		gin.SetMode(gin.ReleaseMode)
+		router := gin.New()
+
+		lm := NewMiddleware(m)
+		router.GET("/repos", lm.IsLicenseExpired(), func(c *gin.Context) {
+			c.Status(http.StatusOK)
+		})
+
+		req, _ := http.NewRequest("GET", "/repos", nil)
+		w := httptest.NewRecorder()
+
+		router.ServeHTTP(w, req)
+
+		if w.Code != http.StatusOK {
+			t.Fatalf("IsLicenseExpired = %v, wanted %v", w.Code, http.StatusOK)
+		}
+	})
+
 	t.Run("Return 402 error when the count of member is over the limit.", func(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		m := mock.NewMockInteractor(ctrl)
