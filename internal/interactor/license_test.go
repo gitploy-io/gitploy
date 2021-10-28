@@ -18,7 +18,12 @@ func TestStore_GetLicense(t *testing.T) {
 		store.
 			EXPECT().
 			CountUsers(gomock.AssignableToTypeOf(context.Background())).
-			Return(5, nil)
+			Return(vo.TrialMemberLimit, nil)
+
+		store.
+			EXPECT().
+			CountDeployments(gomock.AssignableToTypeOf(context.Background())).
+			Return(vo.TrialDeploymentLimit, nil)
 
 		i := &Interactor{Store: store}
 

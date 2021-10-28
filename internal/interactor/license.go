@@ -16,9 +16,10 @@ import (
 
 func (i *Interactor) GetLicense(ctx context.Context) (*vo.License, error) {
 	var (
-		cnt int
-		d   *vo.SigningData
-		err error
+		memberCnt     int
+		deploymentCnt int
+		d             *vo.SigningData
+		err           error
 	)
 
 	if cnt, err = i.Store.CountUsers(ctx); err != nil {
@@ -26,10 +27,13 @@ func (i *Interactor) GetLicense(ctx context.Context) (*vo.License, error) {
 			e.ErrorCodeInternalError,
 			err,
 		)
+
+	if deploymentCnt, err = i.Store.CountDeployments(ctx); err != nil {
+		return nil, err
 	}
 
 	if i.licenseKey == "" {
-		lic := vo.NewTrialLicense(cnt)
+		lic := vo.NewTrialLicense(memberCnt, deploymentCnt)
 		return lic, nil
 	}
 
@@ -40,6 +44,6 @@ func (i *Interactor) GetLicense(ctx context.Context) (*vo.License, error) {
 		)
 	}
 
-	lic := vo.NewStandardLicense(cnt, d)
+	lic := vo.NewStandardLicense(memberCnt, d)
 	return lic, nil
 }

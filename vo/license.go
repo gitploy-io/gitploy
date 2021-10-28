@@ -3,7 +3,8 @@ package vo
 import "time"
 
 const (
-	TrialMemberLimit = 5
+	TrialMemberLimit     = 5
+	TrialDeploymentLimit = 5000
 )
 
 const (
@@ -19,10 +20,12 @@ type (
 	LicenseKind string
 
 	License struct {
-		Kind        LicenseKind `json:"kind"`
-		MemberCount int         `json:"member_count"`
-		MemberLimit int         `json:"memeber_limit"`
-		ExpiredAt   time.Time   `json:"expired_at"`
+		Kind            LicenseKind `json:"kind"`
+		MemberCount     int         `json:"member_count"`
+		MemberLimit     int         `json:"memeber_limit"`
+		DeploymentCount int         `json:"deployment_count"`
+		DeploymentLimit int         `json:"deployment_limit"`
+		ExpiredAt       time.Time   `json:"expired_at"`
 	}
 
 	// SigningData marshal and unmarshal the content of license.
@@ -34,25 +37,29 @@ type (
 
 func NewOSSLicense() *License {
 	return &License{
-		Kind:        LicenseKindOSS,
-		MemberCount: -1,
+		Kind:            LicenseKindOSS,
+		MemberCount:     -1,
+		DeploymentCount: -1,
 	}
 }
 
-func NewTrialLicense(cnt int) *License {
+func NewTrialLicense(memberCnt, deploymentCnt int) *License {
 	return &License{
-		Kind:        LicenseKindTrial,
-		MemberCount: cnt,
-		MemberLimit: TrialMemberLimit,
+		Kind:            LicenseKindTrial,
+		MemberCount:     memberCnt,
+		MemberLimit:     TrialMemberLimit,
+		DeploymentCount: deploymentCnt,
+		DeploymentLimit: TrialDeploymentLimit,
 	}
 }
 
-func NewStandardLicense(cnt int, d *SigningData) *License {
+func NewStandardLicense(memberCnt int, d *SigningData) *License {
 	return &License{
-		Kind:        LicenseKindStandard,
-		MemberCount: cnt,
-		MemberLimit: d.MemberLimit,
-		ExpiredAt:   d.ExpiredAt,
+		Kind:            LicenseKindStandard,
+		MemberCount:     memberCnt,
+		MemberLimit:     d.MemberLimit,
+		DeploymentCount: -1,
+		ExpiredAt:       d.ExpiredAt,
 	}
 }
 
@@ -70,7 +77,7 @@ func (l *License) IsStandard() bool {
 
 // IsOverLimit verify it is over the limit of the license.
 func (l *License) IsOverLimit() bool {
-	return l.MemberCount > l.MemberLimit
+	return l.MemberCount > l.MemberLimit || l.DeploymentCount > l.DeploymentLimit
 }
 
 // IsExpired verify that the license is expired or not.

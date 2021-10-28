@@ -49,7 +49,7 @@ func TestMiddleware_IsLicenseExpired(t *testing.T) {
 		m.
 			EXPECT().
 			GetLicense(gomock.Any()).
-			Return(vo.NewTrialLicense(7), nil)
+			Return(vo.NewTrialLicense(vo.TrialMemberLimit+1, vo.TrialDeploymentLimit), nil)
 
 		gin.SetMode(gin.ReleaseMode)
 		router := gin.New()
@@ -76,7 +76,7 @@ func TestMiddleware_IsLicenseExpired(t *testing.T) {
 		m.
 			EXPECT().
 			GetLicense(gomock.Any()).
-			Return(vo.NewTrialLicense(vo.TrialMemberLimit), nil)
+			Return(vo.NewTrialLicense(vo.TrialMemberLimit, vo.TrialDeploymentLimit), nil)
 
 		gin.SetMode(gin.ReleaseMode)
 		router := gin.New()
