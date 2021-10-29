@@ -3,6 +3,7 @@ package interactor
 import (
 	"context"
 
+	"github.com/gitploy-io/gitploy/pkg/e"
 	"github.com/gitploy-io/gitploy/pkg/license"
 	"github.com/gitploy-io/gitploy/vo"
 )
@@ -15,7 +16,10 @@ func (i *Interactor) GetLicense(ctx context.Context) (*vo.License, error) {
 	)
 
 	if cnt, err = i.Store.CountUsers(ctx); err != nil {
-		return nil, err
+		return nil, e.NewError(
+			e.ErrorCodeInternalError,
+			err,
+		)
 	}
 
 	if i.licenseKey == "" {
@@ -24,7 +28,10 @@ func (i *Interactor) GetLicense(ctx context.Context) (*vo.License, error) {
 	}
 
 	if d, err = license.Decode(i.licenseKey); err != nil {
-		return nil, err
+		return nil, e.NewError(
+			e.ErrorCodeLicenseDecode,
+			err,
+		)
 	}
 
 	lic := vo.NewStandardLicense(cnt, d)
