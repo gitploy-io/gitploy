@@ -333,21 +333,6 @@ func (mr *MockInteractorMockRecorder) GetConfig(ctx, u, r interface{}) *gomock.C
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetConfig", reflect.TypeOf((*MockInteractor)(nil).GetConfig), ctx, u, r)
 }
 
-// GetNextDeploymentNumberOfRepo mocks base method.
-func (m *MockInteractor) GetNextDeploymentNumberOfRepo(ctx context.Context, r *ent.Repo) (int, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetNextDeploymentNumberOfRepo", ctx, r)
-	ret0, _ := ret[0].(int)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetNextDeploymentNumberOfRepo indicates an expected call of GetNextDeploymentNumberOfRepo.
-func (mr *MockInteractorMockRecorder) GetNextDeploymentNumberOfRepo(ctx, r interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetNextDeploymentNumberOfRepo", reflect.TypeOf((*MockInteractor)(nil).GetNextDeploymentNumberOfRepo), ctx, r)
-}
-
 // GetTag mocks base method.
 func (m *MockInteractor) GetTag(ctx context.Context, u *ent.User, r *ent.Repo, tag string) (*vo.Tag, error) {
 	m.ctrl.T.Helper()

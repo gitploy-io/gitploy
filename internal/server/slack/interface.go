@@ -29,7 +29,6 @@ type (
 
 		ListDeploymentsOfRepo(ctx context.Context, r *ent.Repo, env string, status string, page, perPage int) ([]*ent.Deployment, error)
 		FindDeploymentByID(ctx context.Context, id int) (*ent.Deployment, error)
-		GetNextDeploymentNumberOfRepo(ctx context.Context, r *ent.Repo) (int, error)
 		Deploy(ctx context.Context, u *ent.User, re *ent.Repo, d *ent.Deployment, env *vo.Env) (*ent.Deployment, error)
 		GetConfig(ctx context.Context, u *ent.User, r *ent.Repo) (*vo.Config, error)
 

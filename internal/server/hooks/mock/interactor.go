@@ -65,21 +65,6 @@ func (mr *MockInteractorMockRecorder) FindDeploymentByUID(ctx, uid interface{}) 
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindDeploymentByUID", reflect.TypeOf((*MockInteractor)(nil).FindDeploymentByUID), ctx, uid)
 }
 
-// SyncDeploymentStatus mocks base method.
-func (m *MockInteractor) SyncDeploymentStatus(ctx context.Context, ds *ent.DeploymentStatus) (*ent.DeploymentStatus, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SyncDeploymentStatus", ctx, ds)
-	ret0, _ := ret[0].(*ent.DeploymentStatus)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// SyncDeploymentStatus indicates an expected call of SyncDeploymentStatus.
-func (mr *MockInteractorMockRecorder) SyncDeploymentStatus(ctx, ds interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SyncDeploymentStatus", reflect.TypeOf((*MockInteractor)(nil).SyncDeploymentStatus), ctx, ds)
-}
-
 // ProduceDeploymentStatisticsOfRepo mocks base method.
 func (m *MockInteractor) ProduceDeploymentStatisticsOfRepo(ctx context.Context, r *ent.Repo, d *ent.Deployment) (*ent.DeploymentStatistics, error) {
 	m.ctrl.T.Helper()
@@ -93,6 +78,21 @@ func (m *MockInteractor) ProduceDeploymentStatisticsOfRepo(ctx context.Context, 
 func (mr *MockInteractorMockRecorder) ProduceDeploymentStatisticsOfRepo(ctx, r, d interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ProduceDeploymentStatisticsOfRepo", reflect.TypeOf((*MockInteractor)(nil).ProduceDeploymentStatisticsOfRepo), ctx, r, d)
+}
+
+// SyncDeploymentStatus mocks base method.
+func (m *MockInteractor) SyncDeploymentStatus(ctx context.Context, ds *ent.DeploymentStatus) (*ent.DeploymentStatus, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SyncDeploymentStatus", ctx, ds)
+	ret0, _ := ret[0].(*ent.DeploymentStatus)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// SyncDeploymentStatus indicates an expected call of SyncDeploymentStatus.
+func (mr *MockInteractorMockRecorder) SyncDeploymentStatus(ctx, ds interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SyncDeploymentStatus", reflect.TypeOf((*MockInteractor)(nil).SyncDeploymentStatus), ctx, ds)
 }
 
 // UpdateDeployment mocks base method.

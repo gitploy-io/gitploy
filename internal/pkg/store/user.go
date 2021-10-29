@@ -5,7 +5,22 @@ import (
 
 	"github.com/gitploy-io/gitploy/ent"
 	"github.com/gitploy-io/gitploy/ent/user"
+	"github.com/gitploy-io/gitploy/pkg/e"
 )
+
+func (s *Store) CountUsers(ctx context.Context) (int, error) {
+	cnt, err := s.c.User.
+		Query().
+		Count(ctx)
+	if err != nil {
+		return 0, e.NewError(
+			e.ErrorCodeInternalError,
+			err,
+		)
+	}
+
+	return cnt, nil
+}
 
 func (s *Store) ListUsers(ctx context.Context, login string, page, perPage int) ([]*ent.User, error) {
 	return s.c.User.
@@ -52,12 +67,6 @@ func (s *Store) FindUserByLogin(ctx context.Context, login string) (*ent.User, e
 		).
 		WithChatUser().
 		Only(ctx)
-}
-
-func (s *Store) CountUsers(ctx context.Context) (int, error) {
-	return s.c.User.
-		Query().
-		Count(ctx)
 }
 
 func (s *Store) CreateUser(ctx context.Context, u *ent.User) (*ent.User, error) {

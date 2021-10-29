@@ -13,9 +13,17 @@ import (
 )
 
 func (s *Store) CountDeployments(ctx context.Context) (int, error) {
-	return s.c.Deployment.
+	cnt, err := s.c.Deployment.
 		Query().
 		Count(ctx)
+	if err != nil {
+		return 0, e.NewError(
+			e.ErrorCodeInternalError,
+			err,
+		)
+	}
+
+	return cnt, nil
 }
 
 func (s *Store) SearchDeployments(ctx context.Context, u *ent.User, ss []deployment.Status, owned bool, from time.Time, to time.Time, page, perPage int) ([]*ent.Deployment, error) {
