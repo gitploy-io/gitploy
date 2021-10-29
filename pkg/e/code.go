@@ -34,3 +34,7 @@ func NewError(code ErrorCode, wrap error) *Error {
 func (e *Error) Error() string {
 	return fmt.Sprintf("code: %s, message: %s : %s", e.Code, GetMessage(e.Code), e.Wrap)
 }
+
+func (e *Error) Unwrap() error {
+	return e.Wrap
+}
