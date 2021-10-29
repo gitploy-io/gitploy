@@ -83,6 +83,21 @@ func (mr *MockStoreMockRecorder) CountActiveRepos(ctx interface{}) *gomock.Call 
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CountActiveRepos", reflect.TypeOf((*MockStore)(nil).CountActiveRepos), ctx)
 }
 
+// CountDeployments mocks base method.
+func (m *MockStore) CountDeployments(ctx context.Context) (int, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CountDeployments", ctx)
+	ret0, _ := ret[0].(int)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CountDeployments indicates an expected call of CountDeployments.
+func (mr *MockStoreMockRecorder) CountDeployments(ctx interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CountDeployments", reflect.TypeOf((*MockStore)(nil).CountDeployments), ctx)
+}
+
 // CountRepos mocks base method.
 func (m *MockStore) CountRepos(ctx context.Context) (int, error) {
 	m.ctrl.T.Helper()

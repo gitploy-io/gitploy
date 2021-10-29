@@ -11,6 +11,12 @@ import (
 	"github.com/gitploy-io/gitploy/ent/predicate"
 )
 
+func (s *Store) CountDeployments(ctx context.Context) (int, error) {
+	return s.c.Deployment.
+		Query().
+		Count(ctx)
+}
+
 func (s *Store) SearchDeployments(ctx context.Context, u *ent.User, ss []deployment.Status, owned bool, from time.Time, to time.Time, page, perPage int) ([]*ent.Deployment, error) {
 	statusIn := func(ss []deployment.Status) predicate.Deployment {
 		if len(ss) == 0 {
