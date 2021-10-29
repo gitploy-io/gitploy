@@ -120,35 +120,21 @@ func (r *Repo) CreateDeployment(c *gin.Context) {
 		return
 	}
 
-	var (
-		number int
+	d, err := r.i.Deploy(ctx, u, re,
+		&ent.Deployment{
+			Type: deployment.Type(p.Type),
+			Env:  p.Env,
+			Ref:  p.Ref,
+		},
+		cf.GetEnv(p.Env),
 	)
-	if number, err = r.i.GetNextDeploymentNumberOfRepo(ctx, re); err != nil {
-		r.log.Error("failed to get the next deployment number.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to the next deployment number.")
+	if err != nil {
+		r.log.Error("It has failed to deploy.", zap.Error(err))
+		gb.ResponseWithError(c, err)
 		return
 	}
 
-	d, err := r.i.Deploy(ctx, u, re, &ent.Deployment{
-		Number: number,
-		Type:   deployment.Type(p.Type),
-		Env:    p.Env,
-		Ref:    p.Ref,
-	}, cf.GetEnv(p.Env))
-	if ent.IsConstraintError(err) {
-		r.log.Warn("The conflict occurs.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusConflict, "The conflict occurs, please retry.")
-		return
-	} else if vo.IsUnprocessibleDeploymentError(err) {
-		r.log.Warn("It is unprocessable entity.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "There is a merge conflict or the commit's status checks failed.")
-		return
-	} else if err != nil {
-		r.log.Error("failed to deploy.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to deploy.")
-		return
-	}
-
+	// Dispatch the event.
 	if _, err := r.i.CreateEvent(ctx, &ent.Event{
 		Kind:         event.KindDeployment,
 		Type:         event.TypeCreated,
@@ -314,34 +300,18 @@ func (r *Repo) RollbackDeployment(c *gin.Context) {
 		return
 	}
 
-	var (
-		next int
+	d, err = r.i.Deploy(ctx, u, re,
+		&ent.Deployment{
+			Type:       d.Type,
+			Env:        d.Env,
+			Ref:        d.Ref,
+			IsRollback: true,
+		},
+		cf.GetEnv(d.Env),
 	)
-
-	if next, err = r.i.GetNextDeploymentNumberOfRepo(ctx, re); err != nil {
-		r.log.Error("failed to get the next deployment number.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to the next deployment number.")
-		return
-	}
-
-	d, err = r.i.Deploy(ctx, u, re, &ent.Deployment{
-		Number:     next,
-		Type:       d.Type,
-		Env:        d.Env,
-		Ref:        d.Ref,
-		IsRollback: true,
-	}, cf.GetEnv(d.Env))
-	if ent.IsConstraintError(err) {
-		r.log.Warn("The conflict occurs.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusConflict, "The conflict occurs, please retry.")
-		return
-	} else if vo.IsUnprocessibleDeploymentError(err) {
-		r.log.Warn("It is unprocessable entity.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "There is a merge conflict or the commit's status checks failed.")
-		return
-	} else if err != nil {
-		r.log.Error("It has failed to rollback.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to rollback.")
+	if err != nil {
+		r.log.Error("It has failed to deploy.", zap.Error(err))
+		gb.ResponseWithError(c, err)
 		return
 	}
 

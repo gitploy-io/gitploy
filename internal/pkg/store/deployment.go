@@ -9,6 +9,7 @@ import (
 	"github.com/gitploy-io/gitploy/ent/deployment"
 	"github.com/gitploy-io/gitploy/ent/perm"
 	"github.com/gitploy-io/gitploy/ent/predicate"
+	"github.com/gitploy-io/gitploy/pkg/e"
 )
 
 func (s *Store) CountDeployments(ctx context.Context) (int, error) {
@@ -214,8 +215,16 @@ func (s *Store) CreateDeployment(ctx context.Context, d *ent.Deployment) (*ent.D
 		SetUserID(d.UserID).
 		SetRepoID(d.RepoID).
 		Save(ctx)
-	if err != nil {
-		return nil, err
+	if ent.IsConstraintError(err) {
+		return nil, e.NewError(
+			e.ErrorCodeDeploymentConflict,
+			err,
+		)
+	} else if err != nil {
+		return nil, e.NewError(
+			e.ErrorCodeInternalError,
+			err,
+		)
 	}
 
 	s.c.Repo.
@@ -241,7 +250,10 @@ func (s *Store) UpdateDeployment(ctx context.Context, d *ent.Deployment) (*ent.D
 		SetStatus(d.Status).
 		Save(ctx)
 	if err != nil {
-		return nil, err
+		return nil, e.NewError(
+			e.ErrorCodeInternalError,
+			err,
+		)
 	}
 
 	return d, nil

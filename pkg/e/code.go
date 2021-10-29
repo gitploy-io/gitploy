@@ -5,8 +5,12 @@ import (
 )
 
 const (
-	// ErrorCodeMergeConflict is that the ref can't be merged into the main branch.
-	ErrorCodeMergeConflict ErrorCode = "merge_conflict"
+	// ErrorCodeDeploymentConflict is the deployment number is conflicted.
+	ErrorCodeDeploymentConflict ErrorCode = "deployment_conflict"
+	// ErrorCodeDeploymentUndeployable is that the merge conflict occurs or a commit status has failed.
+	ErrorCodeDeploymentUndeployable ErrorCode = "deployment_undeployable"
+	// ErrorCodeDeploymentInvalid is the payload is invalid.
+	ErrorCodeDeploymentInvalid ErrorCode = "deployment_invalid"
 
 	// ErrorCodeLicenseDecode is that the license.
 	ErrorCodeLicenseDecode ErrorCode = "license_decode"

@@ -310,19 +310,15 @@ func (s *Slack) interactDeploy(c *gin.Context) {
 		return
 	}
 
-	number, err := s.i.GetNextDeploymentNumberOfRepo(ctx, cb.Edges.Repo)
-	if err != nil {
-		s.log.Error("It has failed to get the next deployment number.", zap.Error(err))
-		c.Status(http.StatusInternalServerError)
-		return
-	}
-
-	d, err := s.i.Deploy(ctx, cu.Edges.User, cb.Edges.Repo, &ent.Deployment{
-		Number: number,
-		Type:   deployment.Type(sm.Type),
-		Env:    sm.Env,
-		Ref:    sm.Ref,
-	}, env)
+	d, err := s.i.Deploy(ctx, cu.Edges.User, cb.Edges.Repo,
+		&ent.Deployment{
+			Type: deployment.Type(sm.Type),
+			Env:  sm.Env,
+			Ref:  sm.Ref,
+		},
+		env,
+	)
+	// TODO: Handle to post a message with the error.
 	if ent.IsConstraintError(err) {
 		postBotMessage(cu, "The conflict occurs, please retry.")
 		c.Status(http.StatusOK)

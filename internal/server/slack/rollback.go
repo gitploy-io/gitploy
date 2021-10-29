@@ -255,21 +255,14 @@ func (s *Slack) interactRollback(c *gin.Context) {
 		return
 	}
 
-	next, err := s.i.GetNextDeploymentNumberOfRepo(ctx, cb.Edges.Repo)
-	if err != nil {
-		s.log.Error("It has failed to get the next deployment number.", zap.Error(err))
-		c.Status(http.StatusInternalServerError)
-		return
-	}
-
 	d, err = s.i.Deploy(ctx, cu.Edges.User, cb.Edges.Repo, &ent.Deployment{
-		Number:     next,
 		Type:       deployment.Type(d.Type),
 		Ref:        d.Ref,
 		Sha:        d.Sha,
 		Env:        d.Env,
 		IsRollback: true,
 	}, env)
+	// TODO: Handle to post a message with the error.
 	if ent.IsConstraintError(err) {
 		postBotMessage(cu, "The conflict occurs, please retry.")
 		c.Status(http.StatusOK)

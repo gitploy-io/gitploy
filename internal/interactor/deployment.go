@@ -9,46 +9,75 @@ import (
 	"github.com/gitploy-io/gitploy/ent"
 	"github.com/gitploy-io/gitploy/ent/approval"
 	"github.com/gitploy-io/gitploy/ent/deployment"
+	"github.com/gitploy-io/gitploy/pkg/e"
 	"github.com/gitploy-io/gitploy/vo"
 	"go.uber.org/zap"
 )
 
-func (i *Interactor) Deploy(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, e *vo.Env) (*ent.Deployment, error) {
-	d.ProductionEnvironment = e.IsProductionEnvironment()
-	d.UserID = u.ID
-	d.RepoID = r.ID
-
-	if !e.IsApprovalEabled() {
-		rd, err := i.SCM.CreateRemoteDeployment(ctx, u, r, d, e)
-		if err != nil {
-			return nil, err
-		}
-
-		// Save the state of the remote deployment.
-		d.UID = rd.UID
-		d.Sha = rd.SHA
-		d.HTMLURL = rd.HTLMURL
-		d.Status = deployment.StatusCreated
-
-		d, err := i.Store.CreateDeployment(ctx, d)
-		if err != nil {
-			return nil, fmt.Errorf("It failed to save a new deployment.: %w", err)
-		}
-
-		i.CreateDeploymentStatus(ctx, &ent.DeploymentStatus{
-			Status:       string(deployment.StatusCreated),
-			Description:  "Gitploy starts to deploy.",
-			DeploymentID: d.ID,
-		})
-
-		return d, nil
+func (i *Interactor) Deploy(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, env *vo.Env) (*ent.Deployment, error) {
+	number, err := i.Store.GetNextDeploymentNumberOfRepo(ctx, r)
+	if err != nil {
+		return nil, e.NewError(
+			e.ErrorCodeInternalError,
+			err,
+		)
 	}
 
-	d.IsApprovalEnabled = true
-	d.RequiredApprovalCount = e.Approval.RequiredCount
-	d.Status = deployment.StatusWaiting
+	if env.IsApprovalEabled() {
+		d := &ent.Deployment{
+			Number:                number,
+			Type:                  d.Type,
+			Env:                   d.Env,
+			Ref:                   d.Ref,
+			Status:                deployment.StatusWaiting,
+			ProductionEnvironment: env.IsProductionEnvironment(),
+			IsRollback:            d.IsRollback,
+			IsApprovalEnabled:     true,
+			RequiredApprovalCount: env.Approval.RequiredCount,
+			UserID:                u.ID,
+			RepoID:                r.ID,
+		}
 
-	return i.Store.CreateDeployment(ctx, d)
+		i.log.Debug("Save a new deployment to wait approvals.", zap.Any("deployment", d))
+		return i.Store.CreateDeployment(ctx, d)
+	}
+
+	i.log.Debug("Create a new remote deployment.")
+	rd, err := i.SCM.CreateRemoteDeployment(ctx, u, r, d, env)
+	if err != nil {
+		return nil, err
+	}
+
+	d = &ent.Deployment{
+		Number:                number,
+		Type:                  d.Type,
+		Env:                   d.Env,
+		Ref:                   d.Ref,
+		Status:                deployment.StatusCreated,
+		UID:                   rd.UID,
+		Sha:                   rd.SHA,
+		HTMLURL:               rd.HTLMURL,
+		ProductionEnvironment: env.IsProductionEnvironment(),
+		IsRollback:            d.IsRollback,
+		IsApprovalEnabled:     false,
+		RequiredApprovalCount: 0,
+		UserID:                u.ID,
+		RepoID:                r.ID,
+	}
+
+	i.log.Debug("Create a new deployment with the payload.", zap.Any("deployment", d))
+	d, err = i.Store.CreateDeployment(ctx, d)
+	if err != nil {
+		return nil, fmt.Errorf("It failed to save a new deployment.: %w", err)
+	}
+
+	i.CreateDeploymentStatus(ctx, &ent.DeploymentStatus{
+		Status:       string(deployment.StatusCreated),
+		Description:  "Gitploy starts to deploy.",
+		DeploymentID: d.ID,
+	})
+
+	return d, nil
 }
 
 func (i *Interactor) IsApproved(ctx context.Context, d *ent.Deployment) bool {
