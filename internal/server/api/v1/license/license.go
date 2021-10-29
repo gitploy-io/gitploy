@@ -24,7 +24,7 @@ func (l *Licenser) GetLicense(c *gin.Context) {
 
 	lic, err := l.i.GetLicense(ctx)
 	if err != nil {
-		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to get the license.")
+		gb.ResponseWithError(c, err)
 		return
 	}
 
