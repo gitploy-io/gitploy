@@ -130,26 +130,13 @@ func TestRepo_CreateDeployment(t *testing.T) {
 				},
 			}, nil)
 
-		t.Log("Check the lock for env.")
-		m.
-			EXPECT().
-			HasLockOfRepoForEnv(gomock.Any(), gomock.AssignableToTypeOf(&ent.Repo{}), input.payload.Env).
-			Return(false, nil)
-
-		t.Log("Return the next deployment number.")
-		m.
-			EXPECT().
-			GetNextDeploymentNumberOfRepo(gomock.Any(), gomock.AssignableToTypeOf(&ent.Repo{})).
-			Return(4, nil)
-
 		t.Log("Deploy with the payload successfully.")
 		m.
 			EXPECT().
 			Deploy(gomock.Any(), gomock.AssignableToTypeOf(&ent.User{}), gomock.AssignableToTypeOf(&ent.Repo{}), gomock.Eq(&ent.Deployment{
-				Number: 4,
-				Type:   deployment.Type(input.payload.Type),
-				Env:    input.payload.Env,
-				Ref:    input.payload.Ref,
+				Type: deployment.Type(input.payload.Type),
+				Env:  input.payload.Env,
+				Ref:  input.payload.Ref,
 			}), gomock.AssignableToTypeOf(&vo.Env{})).
 			Return(&ent.Deployment{}, nil)
 

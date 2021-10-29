@@ -19,7 +19,7 @@ import (
 )
 
 const (
-	linkUnprocessalbeEntity = "https://github.com/gitploy-io/gitploy/discussions/64"
+// linkUnprocessalbeEntity = "https://github.com/gitploy-io/gitploy/discussions/64"
 )
 
 const (

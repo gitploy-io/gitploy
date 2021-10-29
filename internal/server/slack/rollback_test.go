@@ -61,23 +61,10 @@ func TestSlack_interactRollback(t *testing.T) {
 				},
 			}, nil)
 
-		t.Log("Check the lock.")
-		m.
-			EXPECT().
-			HasLockOfRepoForEnv(gomock.Any(), gomock.AssignableToTypeOf(&ent.Repo{}), "prod").
-			Return(false, nil)
-
-		t.Log("Get the next number of deployment.")
-		m.
-			EXPECT().
-			GetNextDeploymentNumberOfRepo(gomock.Any(), gomock.AssignableToTypeOf(&ent.Repo{})).
-			Return(4, nil)
-
 		t.Log("Roll back with the returned deployment.")
 		m.
 			EXPECT().
 			Deploy(gomock.Any(), gomock.AssignableToTypeOf(&ent.User{}), gomock.AssignableToTypeOf(&ent.Repo{}), &ent.Deployment{
-				Number:     4,
 				Type:       deployment.TypeCommit,
 				Ref:        "main",
 				Sha:        "ee411aa",

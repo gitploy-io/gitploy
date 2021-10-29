@@ -57,26 +57,13 @@ func TestSlack_interactDeploy(t *testing.T) {
 				},
 			}, nil)
 
-		t.Log("Check the lock.")
-		m.
-			EXPECT().
-			HasLockOfRepoForEnv(gomock.Any(), gomock.AssignableToTypeOf(&ent.Repo{}), env).
-			Return(false, nil)
-
-		t.Log("Get the next number of deployment.")
-		m.
-			EXPECT().
-			GetNextDeploymentNumberOfRepo(gomock.Any(), gomock.AssignableToTypeOf(&ent.Repo{})).
-			Return(4, nil)
-
 		t.Log("Deploy with the payload.")
 		m.
 			EXPECT().
 			Deploy(gomock.Any(), gomock.AssignableToTypeOf(&ent.User{}), gomock.AssignableToTypeOf(&ent.Repo{}), &ent.Deployment{
-				Number: 4,
-				Type:   deployment.TypeBranch,
-				Ref:    branch,
-				Env:    env,
+				Type: deployment.TypeBranch,
+				Ref:  branch,
+				Env:  env,
 			}, gomock.AssignableToTypeOf(&vo.Env{})).
 			DoAndReturn(func(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, e *vo.Env) (*ent.Deployment, error) {
 				return d, nil

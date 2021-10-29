@@ -38,10 +38,9 @@ func TestInteractor_Deploy(t *testing.T) {
 				ID: 1,
 			},
 			d: &ent.Deployment{
-				Number: 3,
-				Type:   deployment.TypeCommit,
-				Ref:    "3ee3221",
-				Env:    "local",
+				Type: deployment.TypeCommit,
+				Ref:  "3ee3221",
+				Env:  "local",
 			},
 			e: &vo.Env{},
 		}
@@ -55,6 +54,18 @@ func TestInteractor_Deploy(t *testing.T) {
 			UID = 1000
 		)
 
+		t.Log("MOCK - Check the environment is locked.")
+		store.
+			EXPECT().
+			HasLockOfRepoForEnv(ctx, gomock.Eq(input.r), gomock.Eq(input.d.Env)).
+			Return(false, nil)
+
+		t.Log("MOCK - Get the next deployment number.")
+		store.
+			EXPECT().
+			GetNextDeploymentNumberOfRepo(ctx, gomock.Eq(input.r)).
+			Return(1, nil)
+
 		t.Logf("Returns a new remote deployment with UID = %d", UID)
 		scm.
 			EXPECT().
@@ -67,7 +78,7 @@ func TestInteractor_Deploy(t *testing.T) {
 		store.
 			EXPECT().
 			CreateDeployment(ctx, gomock.Eq(&ent.Deployment{
-				Number: input.d.Number,
+				Number: 1,
 				Type:   input.d.Type,
 				Ref:    input.d.Ref,
 				Env:    input.d.Env,
@@ -95,7 +106,7 @@ func TestInteractor_Deploy(t *testing.T) {
 
 		expected := &ent.Deployment{
 			ID:     ID,
-			Number: input.d.Number,
+			Number: 1,
 			Type:   input.d.Type,
 			Ref:    input.d.Ref,
 			Env:    input.d.Env,
@@ -144,11 +155,23 @@ func TestInteractor_Deploy(t *testing.T) {
 			ID = 1
 		)
 
+		t.Log("MOCK - Check the environment is locked.")
+		store.
+			EXPECT().
+			HasLockOfRepoForEnv(ctx, gomock.Eq(input.r), gomock.Eq(input.d.Env)).
+			Return(false, nil)
+
+		t.Log("MOCK - Get the next deployment number.")
+		store.
+			EXPECT().
+			GetNextDeploymentNumberOfRepo(ctx, gomock.Eq(input.r)).
+			Return(1, nil)
+
 		t.Logf("Check the deployment has configurations of approval.")
 		store.
 			EXPECT().
 			CreateDeployment(ctx, gomock.Eq(&ent.Deployment{
-				Number:                input.d.Number,
+				Number:                1,
 				Type:                  input.d.Type,
 				Ref:                   input.d.Ref,
 				Env:                   input.d.Env,
@@ -173,7 +196,7 @@ func TestInteractor_Deploy(t *testing.T) {
 
 		expected := &ent.Deployment{
 			ID:                    ID,
-			Number:                input.d.Number,
+			Number:                1,
 			Type:                  input.d.Type,
 			Ref:                   input.d.Ref,
 			Env:                   input.d.Env,
