@@ -23,17 +23,11 @@ func (i *Interactor) GetLicense(ctx context.Context) (*vo.License, error) {
 	)
 
 	if memberCnt, err = i.Store.CountUsers(ctx); err != nil {
-		return nil, e.NewError(
-			e.ErrorCodeInternalError,
-			err,
-		)
+		return nil, err
 	}
 
 	if deploymentCnt, err = i.Store.CountDeployments(ctx); err != nil {
-		return nil, e.NewError(
-			e.ErrorCodeInternalError,
-			err,
-		)
+		return nil, err
 	}
 
 	if i.licenseKey == "" {
