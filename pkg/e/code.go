@@ -7,10 +7,12 @@ import (
 const (
 	// ErrorCodeDeploymentConflict is the deployment number is conflicted.
 	ErrorCodeDeploymentConflict ErrorCode = "deployment_conflict"
-	// ErrorCodeDeploymentUndeployable is that the merge conflict occurs or a commit status has failed.
-	ErrorCodeDeploymentUndeployable ErrorCode = "deployment_undeployable"
 	// ErrorCodeDeploymentInvalid is the payload is invalid.
 	ErrorCodeDeploymentInvalid ErrorCode = "deployment_invalid"
+	// ErrorCodeDeploymentLocked is when the environment is locked.
+	ErrorCodeDeploymentLocked ErrorCode = "deployment_locked"
+	// ErrorCodeDeploymentUndeployable is that the merge conflict occurs or a commit status has failed.
+	ErrorCodeDeploymentUndeployable ErrorCode = "deployment_undeployable"
 
 	// ErrorCodeLicenseDecode is that the license.
 	ErrorCodeLicenseDecode ErrorCode = "license_decode"

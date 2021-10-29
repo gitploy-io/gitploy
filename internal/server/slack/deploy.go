@@ -300,16 +300,6 @@ func (s *Slack) interactDeploy(c *gin.Context) {
 		return
 	}
 
-	if locked, err := s.i.HasLockOfRepoForEnv(ctx, cb.Edges.Repo, sm.Env); locked {
-		postBotMessage(cu, fmt.Sprintf("The `%s` environment is locked. You should unlock the environment before deploying.", sm.Env))
-		c.Status(http.StatusOK)
-		return
-	} else if err != nil {
-		s.log.Error("It has failed to check the lock.", zap.Error(err))
-		c.Status(http.StatusInternalServerError)
-		return
-	}
-
 	d, err := s.i.Deploy(ctx, cu.Edges.User, cb.Edges.Repo,
 		&ent.Deployment{
 			Type: deployment.Type(sm.Type),
@@ -318,18 +308,10 @@ func (s *Slack) interactDeploy(c *gin.Context) {
 		},
 		env,
 	)
-	// TODO: Handle to post a message with the error.
-	if ent.IsConstraintError(err) {
-		postBotMessage(cu, "The conflict occurs, please retry.")
-		c.Status(http.StatusOK)
-		return
-	} else if vo.IsUnprocessibleDeploymentError(err) {
-		postBotMessage(cu, fmt.Sprintf("It is unprocessible entity. (Discussion <%s|#64>)", linkUnprocessalbeEntity))
-		c.Status(http.StatusOK)
-		return
-	} else if err != nil {
+	if err != nil {
 		s.log.Error("It has failed to deploy.", zap.Error(err))
-		c.Status(http.StatusInternalServerError)
+		postMessageWithError(cu, err)
+		c.Status(http.StatusOK)
 		return
 	}
 

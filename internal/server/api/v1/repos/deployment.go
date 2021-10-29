@@ -110,16 +110,6 @@ func (r *Repo) CreateDeployment(c *gin.Context) {
 		return
 	}
 
-	if locked, err := r.i.HasLockOfRepoForEnv(ctx, re, p.Env); locked {
-		r.log.Info("The environment is locked.", zap.String("env", p.Env))
-		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "The environment is locked.")
-		return
-	} else if err != nil {
-		r.log.Error("It has failed to check the lock.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to check the lock.")
-		return
-	}
-
 	d, err := r.i.Deploy(ctx, u, re,
 		&ent.Deployment{
 			Type: deployment.Type(p.Type),
@@ -287,16 +277,6 @@ func (r *Repo) RollbackDeployment(c *gin.Context) {
 	if err := cf.GetEnv(d.Env).Eval(&vo.EvalValues{IsRollback: true}); err != nil {
 		r.log.Warn("It has failed to eval variables in the config.", zap.Error(err))
 		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "It has failed to eval variables in the config.")
-		return
-	}
-
-	if locked, err := r.i.HasLockOfRepoForEnv(ctx, re, d.Env); locked {
-		r.log.Info("The environment is locked.", zap.String("env", d.Env))
-		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "The environment is locked.")
-		return
-	} else if err != nil {
-		r.log.Error("It has failed to check the lock.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to check the lock.")
 		return
 	}
 

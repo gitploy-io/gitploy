@@ -4,8 +4,9 @@ import "net/http"
 
 var messages = map[ErrorCode]string{
 	ErrorCodeDeploymentConflict:     "The conflict occurs, please retry.",
-	ErrorCodeDeploymentUndeployable: "There is merge conflict or a commit status check failed.",
 	ErrorCodeDeploymentInvalid:      "The validation has failed.",
+	ErrorCodeDeploymentLocked:       "The environment is locked.",
+	ErrorCodeDeploymentUndeployable: "There is merge conflict or a commit status check failed.",
 	ErrorCodeLicenseDecode:          "Decoding the license is failed.",
 	ErrorCodeInternalError:          "Server internal error.",
 }
@@ -21,8 +22,9 @@ func GetMessage(code ErrorCode) string {
 
 var httpCodes = map[ErrorCode]int{
 	ErrorCodeDeploymentConflict:     http.StatusUnprocessableEntity,
-	ErrorCodeDeploymentUndeployable: http.StatusUnprocessableEntity,
 	ErrorCodeDeploymentInvalid:      http.StatusUnprocessableEntity,
+	ErrorCodeDeploymentLocked:       http.StatusUnprocessableEntity,
+	ErrorCodeDeploymentUndeployable: http.StatusUnprocessableEntity,
 	ErrorCodeLicenseDecode:          http.StatusUnprocessableEntity,
 	ErrorCodeInternalError:          http.StatusInternalServerError,
 }

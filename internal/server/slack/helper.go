@@ -4,6 +4,7 @@ import (
 	"strconv"
 
 	"github.com/gitploy-io/gitploy/ent"
+	"github.com/gitploy-io/gitploy/pkg/e"
 	"github.com/slack-go/slack"
 )
 
@@ -20,6 +21,23 @@ func postResponseMessage(channelID, responseURL, message string) error {
 
 func postBotMessage(cu *ent.ChatUser, message string) error {
 	_, _, _, err := slack.
+		New(cu.BotToken).
+		SendMessage(
+			cu.ID,
+			slack.MsgOptionText(message, false),
+		)
+	return err
+}
+
+func postMessageWithError(cu *ent.ChatUser, err error) error {
+	var message string
+	if ge, ok := err.(*e.Error); ok {
+		message = e.GetMessage(ge.Code)
+	} else {
+		message = err.Error()
+	}
+
+	_, _, _, err = slack.
 		New(cu.BotToken).
 		SendMessage(
 			cu.ID,

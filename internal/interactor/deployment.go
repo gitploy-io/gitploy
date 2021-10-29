@@ -15,6 +15,16 @@ import (
 )
 
 func (i *Interactor) Deploy(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, env *vo.Env) (*ent.Deployment, error) {
+	// Verify the payload is deployable.
+	if locked, err := i.Store.HasLockOfRepoForEnv(ctx, r, d.Env); locked {
+		return nil, e.NewError(
+			e.ErrorCodeDeploymentLocked,
+			err,
+		)
+	} else if err != nil {
+		return nil, err
+	}
+
 	number, err := i.Store.GetNextDeploymentNumberOfRepo(ctx, r)
 	if err != nil {
 		return nil, e.NewError(
