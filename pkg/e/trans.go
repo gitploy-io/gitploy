@@ -3,9 +3,12 @@ package e
 import "net/http"
 
 var messages = map[ErrorCode]string{
-	ErrorCodeMergeConflict: "There is merge conflict.",
-	ErrorCodeLicenseDecode: "Decoding the license is failed.",
-	ErrorCodeInternalError: "Server internal error.",
+	ErrorCodeDeploymentConflict:     "The conflict occurs, please retry.",
+	ErrorCodeDeploymentInvalid:      "The validation has failed.",
+	ErrorCodeDeploymentLocked:       "The environment is locked.",
+	ErrorCodeDeploymentUndeployable: "There is merge conflict or a commit status check failed.",
+	ErrorCodeLicenseDecode:          "Decoding the license is failed.",
+	ErrorCodeInternalError:          "Server internal error.",
 }
 
 func GetMessage(code ErrorCode) string {
@@ -18,9 +21,12 @@ func GetMessage(code ErrorCode) string {
 }
 
 var httpCodes = map[ErrorCode]int{
-	ErrorCodeMergeConflict: http.StatusUnprocessableEntity,
-	ErrorCodeLicenseDecode: http.StatusUnprocessableEntity,
-	ErrorCodeInternalError: http.StatusInternalServerError,
+	ErrorCodeDeploymentConflict:     http.StatusUnprocessableEntity,
+	ErrorCodeDeploymentInvalid:      http.StatusUnprocessableEntity,
+	ErrorCodeDeploymentLocked:       http.StatusUnprocessableEntity,
+	ErrorCodeDeploymentUndeployable: http.StatusUnprocessableEntity,
+	ErrorCodeLicenseDecode:          http.StatusUnprocessableEntity,
+	ErrorCodeInternalError:          http.StatusInternalServerError,
 }
 
 func GetHttpCode(code ErrorCode) int {

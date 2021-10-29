@@ -19,7 +19,7 @@ import (
 )
 
 const (
-	linkUnprocessalbeEntity = "https://github.com/gitploy-io/gitploy/discussions/64"
+// linkUnprocessalbeEntity = "https://github.com/gitploy-io/gitploy/discussions/64"
 )
 
 const (
@@ -300,40 +300,18 @@ func (s *Slack) interactDeploy(c *gin.Context) {
 		return
 	}
 
-	if locked, err := s.i.HasLockOfRepoForEnv(ctx, cb.Edges.Repo, sm.Env); locked {
-		postBotMessage(cu, fmt.Sprintf("The `%s` environment is locked. You should unlock the environment before deploying.", sm.Env))
-		c.Status(http.StatusOK)
-		return
-	} else if err != nil {
-		s.log.Error("It has failed to check the lock.", zap.Error(err))
-		c.Status(http.StatusInternalServerError)
-		return
-	}
-
-	number, err := s.i.GetNextDeploymentNumberOfRepo(ctx, cb.Edges.Repo)
+	d, err := s.i.Deploy(ctx, cu.Edges.User, cb.Edges.Repo,
+		&ent.Deployment{
+			Type: deployment.Type(sm.Type),
+			Env:  sm.Env,
+			Ref:  sm.Ref,
+		},
+		env,
+	)
 	if err != nil {
-		s.log.Error("It has failed to get the next deployment number.", zap.Error(err))
-		c.Status(http.StatusInternalServerError)
-		return
-	}
-
-	d, err := s.i.Deploy(ctx, cu.Edges.User, cb.Edges.Repo, &ent.Deployment{
-		Number: number,
-		Type:   deployment.Type(sm.Type),
-		Env:    sm.Env,
-		Ref:    sm.Ref,
-	}, env)
-	if ent.IsConstraintError(err) {
-		postBotMessage(cu, "The conflict occurs, please retry.")
-		c.Status(http.StatusOK)
-		return
-	} else if vo.IsUnprocessibleDeploymentError(err) {
-		postBotMessage(cu, fmt.Sprintf("It is unprocessible entity. (Discussion <%s|#64>)", linkUnprocessalbeEntity))
-		c.Status(http.StatusOK)
-		return
-	} else if err != nil {
 		s.log.Error("It has failed to deploy.", zap.Error(err))
-		c.Status(http.StatusInternalServerError)
+		postMessageWithError(cu, err)
+		c.Status(http.StatusOK)
 		return
 	}
 

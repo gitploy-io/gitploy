@@ -7,36 +7,40 @@ import (
 	"net/http"
 
 	"github.com/gitploy-io/gitploy/ent"
+	"github.com/gitploy-io/gitploy/pkg/e"
 	"github.com/gitploy-io/gitploy/vo"
 	"github.com/google/go-github/v32/github"
 )
 
-func (g *Github) CreateRemoteDeployment(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, e *vo.Env) (*vo.RemoteDeployment, error) {
+func (g *Github) CreateRemoteDeployment(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, env *vo.Env) (*vo.RemoteDeployment, error) {
 	gd, res, err := g.Client(ctx, u.Token).
 		Repositories.
 		CreateDeployment(ctx, r.Namespace, r.Name, &github.DeploymentRequest{
 			Ref:                   github.String(d.Ref),
-			Environment:           github.String(e.Name),
-			Task:                  e.Task,
-			Description:           e.Description,
-			AutoMerge:             e.AutoMerge,
-			RequiredContexts:      e.RequiredContexts,
-			Payload:               e.Payload,
-			ProductionEnvironment: e.ProductionEnvironment,
+			Environment:           github.String(env.Name),
+			Task:                  env.Task,
+			Description:           env.Description,
+			AutoMerge:             env.AutoMerge,
+			RequiredContexts:      env.RequiredContexts,
+			Payload:               env.Payload,
+			ProductionEnvironment: env.ProductionEnvironment,
 		})
 	if res.StatusCode == http.StatusConflict {
-		return nil, &vo.UnprocessibleDeploymentError{
-			Message: "There is a merge conflict or the commit's status checks failed",
-			Err:     err,
-		}
+		return nil, e.NewError(
+			e.ErrorCodeDeploymentUndeployable,
+			err,
+		)
 	} else if res.StatusCode == http.StatusUnprocessableEntity {
-		return nil, &vo.UnprocessibleDeploymentError{
-			Message: "Validation failed",
-			Err:     err,
-		}
+		return nil, e.NewError(
+			e.ErrorCodeDeploymentInvalid,
+			err,
+		)
 	}
 	if err != nil {
-		return nil, err
+		return nil, e.NewError(
+			e.ErrorCodeInternalError,
+			err,
+		)
 	}
 
 	var url string

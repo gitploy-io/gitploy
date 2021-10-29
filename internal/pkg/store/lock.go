@@ -6,6 +6,7 @@ import (
 
 	"github.com/gitploy-io/gitploy/ent"
 	"github.com/gitploy-io/gitploy/ent/lock"
+	"github.com/gitploy-io/gitploy/pkg/e"
 )
 
 func (s *Store) ListExpiredLocksLessThanTime(ctx context.Context, t time.Time) ([]*ent.Lock, error) {
@@ -55,7 +56,10 @@ func (s *Store) HasLockOfRepoForEnv(ctx context.Context, r *ent.Repo, env string
 		WithRepo().
 		Count(ctx)
 	if err != nil {
-		return false, err
+		return false, e.NewError(
+			e.ErrorCodeInternalError,
+			err,
+		)
 	}
 
 	return cnt > 0, nil

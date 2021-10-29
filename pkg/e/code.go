@@ -5,8 +5,14 @@ import (
 )
 
 const (
-	// ErrorCodeMergeConflict is that the ref can't be merged into the main branch.
-	ErrorCodeMergeConflict ErrorCode = "merge_conflict"
+	// ErrorCodeDeploymentConflict is the deployment number is conflicted.
+	ErrorCodeDeploymentConflict ErrorCode = "deployment_conflict"
+	// ErrorCodeDeploymentInvalid is the payload is invalid.
+	ErrorCodeDeploymentInvalid ErrorCode = "deployment_invalid"
+	// ErrorCodeDeploymentLocked is when the environment is locked.
+	ErrorCodeDeploymentLocked ErrorCode = "deployment_locked"
+	// ErrorCodeDeploymentUndeployable is that the merge conflict occurs or a commit status has failed.
+	ErrorCodeDeploymentUndeployable ErrorCode = "deployment_undeployable"
 
 	// ErrorCodeLicenseDecode is that the license.
 	ErrorCodeLicenseDecode ErrorCode = "license_decode"
@@ -32,7 +38,7 @@ func NewError(code ErrorCode, wrap error) *Error {
 }
 
 func (e *Error) Error() string {
-	return fmt.Sprintf("code: %s, message: %s : %s", e.Code, GetMessage(e.Code), e.Wrap)
+	return fmt.Sprintf("code: %s, message: %s, wrap: %s", e.Code, GetMessage(e.Code), e.Wrap)
 }
 
 func (e *Error) Unwrap() error {
