@@ -29,10 +29,28 @@ func postBotMessage(cu *ent.ChatUser, message string) error {
 	return err
 }
 
+func postResponseWithError(channelID, responseURL string, err error) error {
+	var message string
+	if ge, ok := err.(*e.Error); ok {
+		message = ge.Message
+	} else {
+		message = err.Error()
+	}
+
+	_, _, _, err = slack.
+		New("").
+		SendMessage(
+			channelID,
+			slack.MsgOptionResponseURL(responseURL, "ephemeral"),
+			slack.MsgOptionText(message, false),
+		)
+	return err
+}
+
 func postMessageWithError(cu *ent.ChatUser, err error) error {
 	var message string
 	if ge, ok := err.(*e.Error); ok {
-		message = e.GetMessage(ge.Code)
+		message = ge.Message
 	} else {
 		message = err.Error()
 	}
