@@ -81,6 +81,10 @@ func (Deployment) Edges() []ent.Edge {
 			Annotations(entsql.Annotation{
 				OnDelete: entsql.Cascade,
 			}),
+		edge.To("comments", Comment.Type).
+			Annotations(entsql.Annotation{
+				OnDelete: entsql.Cascade,
+			}),
 		edge.To("deployment_statuses", DeploymentStatus.Type).
 			Annotations(entsql.Annotation{
 				OnDelete: entsql.Cascade,

@@ -78,6 +78,10 @@ type (
 		UpdateApproval(ctx context.Context, a *ent.Approval) (*ent.Approval, error)
 		DeleteApproval(ctx context.Context, a *ent.Approval) error
 
+		ListCommentsOfDeployment(ctx context.Context, d *ent.Deployment) ([]*ent.Comment, error)
+		FindCommentByID(ctx context.Context, id int) (*ent.Comment, error)
+		CreateComment(ctx context.Context, cmt *ent.Comment) (*ent.Comment, error)
+
 		ListExpiredLocksLessThanTime(ctx context.Context, t time.Time) ([]*ent.Lock, error)
 		ListLocksOfRepo(ctx context.Context, r *ent.Repo) ([]*ent.Lock, error)
 		FindLockOfRepoByEnv(ctx context.Context, r *ent.Repo, env string) (*ent.Lock, error)

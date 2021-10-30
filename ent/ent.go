@@ -11,6 +11,7 @@ import (
 	"github.com/gitploy-io/gitploy/ent/approval"
 	"github.com/gitploy-io/gitploy/ent/callback"
 	"github.com/gitploy-io/gitploy/ent/chatuser"
+	"github.com/gitploy-io/gitploy/ent/comment"
 	"github.com/gitploy-io/gitploy/ent/deployment"
 	"github.com/gitploy-io/gitploy/ent/deploymentstatistics"
 	"github.com/gitploy-io/gitploy/ent/deploymentstatus"
@@ -43,6 +44,7 @@ func columnChecker(table string) func(string) error {
 		approval.Table:             approval.ValidColumn,
 		callback.Table:             callback.ValidColumn,
 		chatuser.Table:             chatuser.ValidColumn,
+		comment.Table:              comment.ValidColumn,
 		deployment.Table:           deployment.ValidColumn,
 		deploymentstatistics.Table: deploymentstatistics.ValidColumn,
 		deploymentstatus.Table:     deploymentstatus.ValidColumn,

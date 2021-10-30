@@ -12,6 +12,8 @@ var messages = map[ErrorCode]string{
 	ErrorCodeDeploymentUndeployable: "There is merge conflict or a commit status check failed.",
 	ErrorCodeLicenseDecode:          "Decoding the license is failed.",
 	ErrorCodeRefNotFound:            "The reference is not found.",
+	ErrorCodeInvalidRequest:         "Invalid request parameter.",
+	ErrorCodeNotFound:               "It is not found.",
 	ErrorCodeInternalError:          "Server internal error.",
 }
 
@@ -34,6 +36,8 @@ var httpCodes = map[ErrorCode]int{
 	ErrorCodeDeploymentUndeployable: http.StatusUnprocessableEntity,
 	ErrorCodeLicenseDecode:          http.StatusUnprocessableEntity,
 	ErrorCodeRefNotFound:            http.StatusNotFound,
+	ErrorCodeInvalidRequest:         http.StatusBadRequest,
+	ErrorCodeNotFound:               http.StatusNotFound,
 	ErrorCodeInternalError:          http.StatusInternalServerError,
 }
 

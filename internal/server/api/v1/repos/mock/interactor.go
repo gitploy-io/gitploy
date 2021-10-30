@@ -82,6 +82,21 @@ func (mr *MockInteractorMockRecorder) CreateApproval(ctx, a interface{}) *gomock
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateApproval", reflect.TypeOf((*MockInteractor)(nil).CreateApproval), ctx, a)
 }
 
+// CreateComment mocks base method.
+func (m *MockInteractor) CreateComment(ctx context.Context, cmt *ent.Comment) (*ent.Comment, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateComment", ctx, cmt)
+	ret0, _ := ret[0].(*ent.Comment)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreateComment indicates an expected call of CreateComment.
+func (mr *MockInteractorMockRecorder) CreateComment(ctx, cmt interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateComment", reflect.TypeOf((*MockInteractor)(nil).CreateComment), ctx, cmt)
+}
+
 // CreateEvent mocks base method.
 func (m *MockInteractor) CreateEvent(ctx context.Context, e *ent.Event) (*ent.Event, error) {
 	m.ctrl.T.Helper()
@@ -213,6 +228,21 @@ func (m *MockInteractor) FindApprovalOfUser(ctx context.Context, d *ent.Deployme
 func (mr *MockInteractorMockRecorder) FindApprovalOfUser(ctx, d, u interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindApprovalOfUser", reflect.TypeOf((*MockInteractor)(nil).FindApprovalOfUser), ctx, d, u)
+}
+
+// FindCommentByID mocks base method.
+func (m *MockInteractor) FindCommentByID(ctx context.Context, id int) (*ent.Comment, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindCommentByID", ctx, id)
+	ret0, _ := ret[0].(*ent.Comment)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindCommentByID indicates an expected call of FindCommentByID.
+func (mr *MockInteractorMockRecorder) FindCommentByID(ctx, id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindCommentByID", reflect.TypeOf((*MockInteractor)(nil).FindCommentByID), ctx, id)
 }
 
 // FindDeploymentByID mocks base method.
@@ -452,6 +482,21 @@ func (m *MockInteractor) ListBranches(ctx context.Context, u *ent.User, r *ent.R
 func (mr *MockInteractorMockRecorder) ListBranches(ctx, u, r, page, perPage interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListBranches", reflect.TypeOf((*MockInteractor)(nil).ListBranches), ctx, u, r, page, perPage)
+}
+
+// ListCommentsOfDeployment mocks base method.
+func (m *MockInteractor) ListCommentsOfDeployment(ctx context.Context, d *ent.Deployment) ([]*ent.Comment, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListCommentsOfDeployment", ctx, d)
+	ret0, _ := ret[0].([]*ent.Comment)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListCommentsOfDeployment indicates an expected call of ListCommentsOfDeployment.
+func (mr *MockInteractorMockRecorder) ListCommentsOfDeployment(ctx, d interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListCommentsOfDeployment", reflect.TypeOf((*MockInteractor)(nil).ListCommentsOfDeployment), ctx, d)
 }
 
 // ListCommitStatuses mocks base method.

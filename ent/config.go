@@ -27,6 +27,7 @@ type hooks struct {
 	Approval             []ent.Hook
 	Callback             []ent.Hook
 	ChatUser             []ent.Hook
+	Comment              []ent.Hook
 	Deployment           []ent.Hook
 	DeploymentStatistics []ent.Hook
 	DeploymentStatus     []ent.Hook

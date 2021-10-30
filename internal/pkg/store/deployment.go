@@ -150,7 +150,7 @@ func (s *Store) FindDeploymentByID(ctx context.Context, id int) (*ent.Deployment
 }
 
 func (s *Store) FindDeploymentOfRepoByNumber(ctx context.Context, r *ent.Repo, number int) (*ent.Deployment, error) {
-	return s.c.Deployment.
+	d, err := s.c.Deployment.
 		Query().
 		Where(
 			deployment.And(
@@ -162,6 +162,11 @@ func (s *Store) FindDeploymentOfRepoByNumber(ctx context.Context, r *ent.Repo, n
 		WithUser().
 		WithDeploymentStatuses().
 		First(ctx)
+	if ent.IsNotFound(err) {
+		return nil, e.NewErrorWithMessage(e.ErrorCodeNotFound, "The deployment is not found.", err)
+	}
+
+	return d, nil
 }
 
 func (s *Store) FindDeploymentByUID(ctx context.Context, uid int64) (*ent.Deployment, error) {
