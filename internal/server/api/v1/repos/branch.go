@@ -8,7 +8,6 @@ import (
 
 	"github.com/gitploy-io/gitploy/ent"
 	gb "github.com/gitploy-io/gitploy/internal/server/global"
-	"github.com/gitploy-io/gitploy/vo"
 )
 
 func (r *Repo) ListBranches(c *gin.Context) {
@@ -47,13 +46,9 @@ func (r *Repo) GetBranch(c *gin.Context) {
 	repo := rv.(*ent.Repo)
 
 	b, err := r.i.GetBranch(ctx, u, repo, branch)
-	if vo.IsRefNotFoundError(err) {
-		r.log.Warn("The branch is not found.", zap.String("repo", repo.Name), zap.String("branch", branch), zap.Error(err))
-		gb.ErrorResponse(c, http.StatusNotFound, "The branch is not found.")
-		return
-	} else if err != nil {
-		r.log.Error("failed to get the branch.", zap.String("repo", repo.Name), zap.String("branch", branch), zap.Error(err))
-		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to get the branch.")
+	if err != nil {
+		r.log.Error("It has failed to get the branch.", zap.Error(err))
+		gb.ResponseWithError(c, err)
 		return
 	}
 

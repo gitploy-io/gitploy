@@ -25,6 +25,9 @@ const (
 	// ErrorCodeLicenseDecode is that the license.
 	ErrorCodeLicenseDecode ErrorCode = "license_decode"
 
+	// ErrorCodeRefNotFound is that the ref is not found.
+	ErrorCodeRefNotFound ErrorCode = "ref_not_found"
+
 	ErrorCodeInternalError ErrorCode = "internal_error"
 )
 

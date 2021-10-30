@@ -8,6 +8,7 @@ import (
 	graphql "github.com/shurcooL/githubv4"
 
 	"github.com/gitploy-io/gitploy/ent"
+	"github.com/gitploy-io/gitploy/pkg/e"
 	"github.com/gitploy-io/gitploy/vo"
 )
 
@@ -72,12 +73,15 @@ func (g *Github) GetCommit(ctx context.Context, u *ent.User, r *ent.Repo, sha st
 		GetCommit(ctx, r.Namespace, r.Name, sha)
 	// Github returns Unprocessable entity if the commit is not found.
 	if res.StatusCode == http.StatusNotFound || res.StatusCode == http.StatusUnprocessableEntity {
-		return nil, &vo.RefNotFoundError{
-			Ref: sha,
-		}
-	}
-	if err != nil {
-		return nil, err
+		return nil, e.NewError(
+			e.ErrorCodeRefNotFound,
+			err,
+		)
+	} else if err != nil {
+		return nil, e.NewError(
+			e.ErrorCodeInternalError,
+			err,
+		)
 	}
 
 	return mapGithubCommitToCommit(cm), nil
@@ -93,7 +97,10 @@ func (g *Github) ListCommitStatuses(ctx context.Context, u *ent.User, r *ent.Rep
 		PerPage: 100,
 	})
 	if err != nil {
-		return nil, err
+		return nil, e.NewError(
+			e.ErrorCodeInternalError,
+			err,
+		)
 	}
 
 	for _, rs := range cs.Statuses {
@@ -108,12 +115,15 @@ func (g *Github) ListCommitStatuses(ctx context.Context, u *ent.User, r *ent.Rep
 	})
 	// check-runs secures the commit is exist.
 	if res.StatusCode == http.StatusUnprocessableEntity {
-		return nil, &vo.RefNotFoundError{
-			Ref: sha,
-		}
-	}
-	if err != nil {
-		return nil, err
+		return nil, e.NewError(
+			e.ErrorCodeRefNotFound,
+			err,
+		)
+	} else if err != nil {
+		return nil, e.NewError(
+			e.ErrorCodeInternalError,
+			err,
+		)
 	}
 
 	for _, c := range result.CheckRuns {
@@ -133,7 +143,10 @@ func (g *Github) ListBranches(ctx context.Context, u *ent.User, r *ent.Repo, pag
 			},
 		})
 	if err != nil {
-		return nil, err
+		return nil, e.NewError(
+			e.ErrorCodeInternalError,
+			err,
+		)
 	}
 
 	branches := []*vo.Branch{}
@@ -149,12 +162,15 @@ func (g *Github) GetBranch(ctx context.Context, u *ent.User, r *ent.Repo, branch
 		Repositories.
 		GetBranch(ctx, r.Namespace, r.Name, branch)
 	if res.StatusCode == http.StatusNotFound {
-		return nil, &vo.RefNotFoundError{
-			Ref: branch,
-		}
-	}
-	if err != nil {
-		return nil, err
+		return nil, e.NewError(
+			e.ErrorCodeRefNotFound,
+			err,
+		)
+	} else if err != nil {
+		return nil, e.NewError(
+			e.ErrorCodeInternalError,
+			err,
+		)
 	}
 
 	return mapGithubBranchToBranch(b), nil
@@ -226,13 +242,17 @@ func (g *Github) GetTag(ctx context.Context, u *ent.User, r *ent.Repo, tag strin
 		"tag":       graphql.String(tag),
 	}
 	if err := client.Query(ctx, &q, v); err != nil {
-		return nil, err
+		return nil, e.NewError(
+			e.ErrorCodeInternalError,
+			err,
+		)
 	}
 
 	if q.Repository.Refs.TotalCount == 0 {
-		return nil, &vo.RefNotFoundError{
-			Ref: tag,
-		}
+		return nil, e.NewError(
+			e.ErrorCodeRefNotFound,
+			nil,
+		)
 	}
 
 	n := q.Repository.Refs.Nodes[0]
