@@ -1,6 +1,7 @@
 package e
 
 import (
+	"errors"
 	"fmt"
 )
 
@@ -25,15 +26,17 @@ type (
 	ErrorCode   string
 
 	Error struct {
-		Code ErrorCode
-		Wrap error
+		Code    ErrorCode
+		Message string
+		Wrap    error
 	}
 )
 
 func NewError(code ErrorCode, wrap error) *Error {
 	return &Error{
-		Code: code,
-		Wrap: wrap,
+		Code:    code,
+		Message: GetMessage(code),
+		Wrap:    wrap,
 	}
 }
 
@@ -43,4 +46,25 @@ func (e *Error) Error() string {
 
 func (e *Error) Unwrap() error {
 	return e.Wrap
+}
+
+func IsError(err error) bool {
+	var ge *Error
+	return errors.As(err, &ge)
+}
+
+// HasErrorCode verify the type of error and the code.
+func HasErrorCode(err error, codes ...ErrorCode) bool {
+	var ge *Error
+	if !errors.As(err, &ge) {
+		return false
+	}
+
+	for _, code := range codes {
+		if ge.Code == code {
+			return true
+		}
+	}
+
+	return false
 }
