@@ -81,12 +81,12 @@ func (r *Repo) CreateLock(c *gin.Context) {
 
 	cfg, err := r.i.GetConfig(ctx, u, re)
 	if e.HasErrorCode(err, e.ErrorCodeConfigNotFound) {
-		r.log.Error("The configuration file is not found.", zap.Error(err))
+		gb.LogWithError(r.log, "The configuration file is not found.", err)
 		// To override the HTTP status 422.
 		gb.ResponseWithStatusAndError(c, http.StatusUnprocessableEntity, err)
 		return
 	} else if err != nil {
-		r.log.Error("It has failed to get the configuration.")
+		gb.LogWithError(r.log, "It has failed to get the configuration.", err)
 		gb.ResponseWithError(c, err)
 		return
 	}

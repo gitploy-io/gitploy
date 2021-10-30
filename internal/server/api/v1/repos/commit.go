@@ -50,7 +50,7 @@ func (r *Repo) GetCommit(c *gin.Context) {
 
 	commit, err := r.i.GetCommit(ctx, u, repo, sha)
 	if err != nil {
-		r.log.Error("It has failed to get the commit.", zap.Error(err))
+		gb.LogWithError(r.log, "It has failed to get the commit.", err)
 		gb.ResponseWithError(c, err)
 		return
 	}
@@ -73,7 +73,7 @@ func (r *Repo) ListStatuses(c *gin.Context) {
 
 	ss, err := r.i.ListCommitStatuses(ctx, u, repo, sha)
 	if err != nil {
-		r.log.Error("It has failed to list commit statuses.", zap.Error(err))
+		gb.LogWithError(r.log, "It has failed to list commit statuses.", err)
 		gb.ResponseWithError(c, err)
 		return
 	}

@@ -47,7 +47,7 @@ func (r *Repo) GetTag(c *gin.Context) {
 
 	t, err := r.i.GetTag(ctx, u, repo, tag)
 	if err != nil {
-		r.log.Error("It has failed to get the tag.", zap.Error(err))
+		gb.LogWithError(r.log, "It has failed to get the tag.", err)
 		gb.ResponseWithError(c, err)
 		return
 	}

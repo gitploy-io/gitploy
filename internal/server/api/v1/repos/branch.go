@@ -47,7 +47,7 @@ func (r *Repo) GetBranch(c *gin.Context) {
 
 	b, err := r.i.GetBranch(ctx, u, repo, branch)
 	if err != nil {
-		r.log.Error("It has failed to get the branch.", zap.Error(err))
+		gb.LogWithError(r.log, "It has failed to get the branch.", err)
 		gb.ResponseWithError(c, err)
 		return
 	}
