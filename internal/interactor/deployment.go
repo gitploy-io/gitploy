@@ -14,8 +14,9 @@ import (
 	"go.uber.org/zap"
 )
 
+// Deploy creates a new remote deployment basically.
+// But if the approval flag is enabled, it saves the deployment only.
 func (i *Interactor) Deploy(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, env *vo.Env) (*ent.Deployment, error) {
-	// Verify the payload is deployable.
 	if locked, err := i.Store.HasLockOfRepoForEnv(ctx, r, d.Env); locked {
 		return nil, e.NewError(
 			e.ErrorCodeDeploymentLocked,
@@ -53,7 +54,7 @@ func (i *Interactor) Deploy(ctx context.Context, u *ent.User, r *ent.Repo, d *en
 	}
 
 	i.log.Debug("Create a new remote deployment.")
-	rd, err := i.SCM.CreateRemoteDeployment(ctx, u, r, d, env)
+	rd, err := i.createRemoteDeployment(ctx, u, r, d, env)
 	if err != nil {
 		return nil, err
 	}
@@ -103,16 +104,25 @@ func (i *Interactor) IsApproved(ctx context.Context, d *ent.Deployment) bool {
 	return approved >= d.RequiredApprovalCount
 }
 
-func (i *Interactor) CreateRemoteDeployment(ctx context.Context, u *ent.User, re *ent.Repo, d *ent.Deployment, e *vo.Env) (*ent.Deployment, error) {
-	// Rollback configures it can deploy the ref without any constraints.
-	// 1) Set auto_merge false to avoid the merge conflict.
-	// 2) Set required_contexts empty to skip the verfication.
-	if d.IsRollback {
-		e.AutoMerge = pointer.ToBool(false)
-		e.RequiredContexts = &[]string{}
+// DeployToRemote create a new remote deployment after the deployment was approved.
+func (i *Interactor) DeployToRemote(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, env *vo.Env) (*ent.Deployment, error) {
+	if locked, err := i.Store.HasLockOfRepoForEnv(ctx, r, d.Env); locked {
+		return nil, e.NewError(
+			e.ErrorCodeDeploymentLocked,
+			err,
+		)
+	} else if err != nil {
+		return nil, err
 	}
 
-	rd, err := i.SCM.CreateRemoteDeployment(ctx, u, re, d, e)
+	if d.IsApprovalEnabled && !i.IsApproved(ctx, d) {
+		return nil, e.NewError(
+			e.ErrorCodeDeploymentUnapproved,
+			nil,
+		)
+	}
+
+	rd, err := i.createRemoteDeployment(ctx, u, r, d, env)
 	if err != nil {
 		return nil, err
 	}
@@ -134,6 +144,18 @@ func (i *Interactor) CreateRemoteDeployment(ctx context.Context, u *ent.User, re
 	})
 
 	return d, nil
+}
+
+func (i *Interactor) createRemoteDeployment(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, env *vo.Env) (*vo.RemoteDeployment, error) {
+	// Rollback configures it can deploy the ref without any constraints.
+	// 1) Set auto_merge false to avoid the merge conflict.
+	// 2) Set required_contexts empty to skip the verfication.
+	if d.IsRollback {
+		env.AutoMerge = pointer.ToBool(false)
+		env.RequiredContexts = &[]string{}
+	}
+
+	return i.SCM.CreateRemoteDeployment(ctx, u, r, d, env)
 }
 
 func (i *Interactor) runClosingInactiveDeployment(stop <-chan struct{}) {

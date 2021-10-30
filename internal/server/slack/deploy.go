@@ -75,13 +75,9 @@ func (s *Slack) handleDeployCmd(c *gin.Context) {
 	}
 
 	config, err := s.i.GetConfig(ctx, cu.Edges.User, r)
-	if vo.IsConfigNotFoundError(err) || vo.IsConfigParseError(err) {
-		postResponseMessage(cmd.ChannelID, cmd.ResponseURL, "The config is invalid.")
+	if err != nil {
+		postResponseWithError(cmd.ChannelID, cmd.ResponseURL, err)
 		c.Status(http.StatusOK)
-		return
-	} else if err != nil {
-		s.log.Error("It has failed to get the config file.", zap.Error(err))
-		c.Status(http.StatusInternalServerError)
 		return
 	}
 
@@ -277,23 +273,19 @@ func (s *Slack) interactDeploy(c *gin.Context) {
 	}
 
 	cfg, err := s.i.GetConfig(ctx, cu.Edges.User, cb.Edges.Repo)
-	if vo.IsConfigNotFoundError(err) || vo.IsConfigParseError(err) {
-		postBotMessage(cu, "The config is invlid.")
+	if err != nil {
+		postMessageWithError(cu, err)
 		c.Status(http.StatusOK)
-		return
-	} else if err != nil {
-		s.log.Error("It has failed to get the config.", zap.Error(err))
-		c.Status(http.StatusInternalServerError)
 		return
 	}
 
-	if !cfg.HasEnv(sm.Env) {
+	var env *vo.Env
+	if env = cfg.GetEnv(sm.Env); env == nil {
 		postBotMessage(cu, "The env is not defined in the config.")
 		c.Status(http.StatusOK)
 		return
 	}
 
-	env := cfg.GetEnv(sm.Env)
 	if err := env.Eval(&vo.EvalValues{}); err != nil {
 		postBotMessage(cu, "It has failed to eval variables in the config.")
 		c.Status(http.StatusOK)

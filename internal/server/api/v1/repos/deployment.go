@@ -13,6 +13,7 @@ import (
 	"github.com/gitploy-io/gitploy/ent/deployment"
 	"github.com/gitploy-io/gitploy/ent/event"
 	gb "github.com/gitploy-io/gitploy/internal/server/global"
+	"github.com/gitploy-io/gitploy/pkg/e"
 	"github.com/gitploy-io/gitploy/vo"
 )
 
@@ -88,23 +89,25 @@ func (r *Repo) CreateDeployment(c *gin.Context) {
 	re := vr.(*ent.Repo)
 
 	cf, err := r.i.GetConfig(ctx, u, re)
-	if vo.IsConfigNotFoundError(err) || vo.IsConfigParseError(err) {
-		r.log.Warn("The configuration is invalid.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "The configuration is invalid.")
+	if e.HasErrorCode(err, e.ErrorCodeConfigNotFound) {
+		r.log.Error("The configuration file is not found.", zap.Error(err))
+		// To override the HTTP status 422.
+		gb.ResponseWithStatusAndError(c, http.StatusUnprocessableEntity, err)
 		return
 	} else if err != nil {
-		r.log.Error("failed to get the configuration file.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to get the configuraton file.")
+		r.log.Error("It has failed to get the configuration.")
+		gb.ResponseWithError(c, err)
 		return
 	}
 
-	if !cf.HasEnv(p.Env) {
-		r.log.Warn("The environment is not defined in the config.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "The environment is not defined in the config.")
+	var env *vo.Env
+	if env = cf.GetEnv(p.Env); env == nil {
+		r.log.Warn("The environment is not defined in the configuration.", zap.Error(err))
+		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "The environment is not defined in the configuration.")
 		return
 	}
 
-	if err := cf.GetEnv(p.Env).Eval(&vo.EvalValues{}); err != nil {
+	if err := env.Eval(&vo.EvalValues{}); err != nil {
 		r.log.Warn("It has failed to eval variables in the config.", zap.Error(err))
 		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "It has failed to eval variables in the config.")
 		return
@@ -124,7 +127,6 @@ func (r *Repo) CreateDeployment(c *gin.Context) {
 		return
 	}
 
-	// Dispatch the event.
 	if _, err := r.i.CreateEvent(ctx, &ent.Event{
 		Kind:         event.KindDeployment,
 		Type:         event.TypeCreated,
@@ -169,54 +171,34 @@ func (r *Repo) UpdateDeployment(c *gin.Context) {
 	}
 
 	cf, err := r.i.GetConfig(ctx, u, re)
-	if vo.IsConfigNotFoundError(err) || vo.IsConfigParseError(err) {
-		r.log.Warn("The configuration is invalid.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "The configuration is invalid.")
+	if e.HasErrorCode(err, e.ErrorCodeConfigNotFound) {
+		r.log.Error("The configuration file is not found.", zap.Error(err))
+		// To override the HTTP status 422.
+		gb.ResponseWithStatusAndError(c, http.StatusUnprocessableEntity, err)
 		return
 	} else if err != nil {
-		r.log.Error("failed to get the configuration file.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to get the configuraton file.")
+		r.log.Error("It has failed to get the configuration.")
+		gb.ResponseWithError(c, err)
 		return
 	}
 
-	if !cf.HasEnv(d.Env) {
+	var env *vo.Env
+	if env = cf.GetEnv(d.Env); env == nil {
 		r.log.Warn("The environment is not defined in the config.", zap.Error(err))
 		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "The environment is not defined in the config.")
 		return
 	}
 
-	if err := cf.GetEnv(d.Env).Eval(&vo.EvalValues{IsRollback: d.IsRollback}); err != nil {
+	if err := env.Eval(&vo.EvalValues{IsRollback: d.IsRollback}); err != nil {
 		r.log.Warn("It has failed to eval variables in the config.", zap.Error(err))
 		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "It has failed to eval variables in the config.")
 		return
 	}
 
-	if locked, err := r.i.HasLockOfRepoForEnv(ctx, re, d.Env); locked {
-		r.log.Info("The environment is locked.", zap.String("env", d.Env))
-		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "The environment is locked.")
-		return
-	} else if err != nil {
-		r.log.Error("It has failed to check the lock.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to check the lock.")
-		return
-	}
-
 	if p.Status == string(deployment.StatusCreated) && d.Status == deployment.StatusWaiting {
-		// Check the deployment is approved:
-		// Approved >= Required Approval Count
-		if !r.i.IsApproved(ctx, d) {
-			r.log.Warn("The deployment is not approved yet.", zap.Int("deployment_id", d.ID))
-			gb.ErrorResponse(c, http.StatusUnprocessableEntity, "It is not approved yet.")
-			return
-		}
-
-		if d, err = r.i.CreateRemoteDeployment(ctx, u, re, d, cf.GetEnv(d.Env)); vo.IsUnprocessibleDeploymentError(err) {
-			r.log.Warn("It is unprocessible entity.", zap.Error(err))
-			gb.ErrorResponse(c, http.StatusUnprocessableEntity, "There is a merge conflict or the commit's status checks failed.")
-			return
-		} else if err != nil {
-			r.log.Error("It has failed to create the remote deployment.", zap.Error(err))
-			gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to create the remote deployment.")
+		if d, err = r.i.DeployToRemote(ctx, u, re, d, env); err != nil {
+			r.log.Error("It has failed to deploy to the remote.", zap.Error(err))
+			gb.ResponseWithError(c, err)
 			return
 		}
 
@@ -258,23 +240,25 @@ func (r *Repo) RollbackDeployment(c *gin.Context) {
 	}
 
 	cf, err := r.i.GetConfig(ctx, u, re)
-	if vo.IsConfigNotFoundError(err) || vo.IsConfigParseError(err) {
-		r.log.Warn("The configuration is invalid.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "The configuration is invalid.")
+	if e.HasErrorCode(err, e.ErrorCodeConfigNotFound) {
+		r.log.Error("The configuration file is not found.", zap.Error(err))
+		// To override the HTTP status 422.
+		gb.ResponseWithStatusAndError(c, http.StatusUnprocessableEntity, err)
 		return
 	} else if err != nil {
-		r.log.Error("failed to get the configuration file.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to get the configuraton file.")
+		r.log.Error("It has failed to get the configuration.")
+		gb.ResponseWithError(c, err)
 		return
 	}
 
-	if !cf.HasEnv(d.Env) {
+	var env *vo.Env
+	if env = cf.GetEnv(d.Env); env == nil {
 		r.log.Warn("The environment is not defined in the configuration.", zap.Error(err))
 		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "The environment is not defined in the configuration.")
 		return
 	}
 
-	if err := cf.GetEnv(d.Env).Eval(&vo.EvalValues{IsRollback: true}); err != nil {
+	if err := env.Eval(&vo.EvalValues{IsRollback: true}); err != nil {
 		r.log.Warn("It has failed to eval variables in the config.", zap.Error(err))
 		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "It has failed to eval variables in the config.")
 		return
@@ -410,17 +394,9 @@ func (r *Repo) GetConfig(c *gin.Context) {
 	ctx := c.Request.Context()
 
 	config, err := r.i.GetConfig(ctx, u, re)
-	if vo.IsConfigNotFoundError(err) {
-		r.log.Warn("failed to find the config file.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusNotFound, "It has failed to find the configuraton file.")
-		return
-	} else if vo.IsConfigParseError(err) {
-		r.log.Warn("failed to parse the config.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "It has failed to parse the configuraton file.")
-		return
-	} else if err != nil {
-		r.log.Error("failed to get the config file.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to get the config file.")
+	if err != nil {
+		r.log.Error("It has failed to get the configuration.", zap.Error(err))
+		gb.ResponseWithError(c, err)
 		return
 	}
 

@@ -1,16 +1,24 @@
 package e
 
 import (
+	"errors"
 	"fmt"
 )
 
 const (
+	// ErrorCodeConfigNotFound is that the configuration file is not found.
+	ErrorCodeConfigNotFound ErrorCode = "config_not_found"
+	// ErrorCodeConfigParseError is that an error occurs when it parse the file.
+	ErrorCodeConfigParseError ErrorCode = "config_parse_error"
+
 	// ErrorCodeDeploymentConflict is the deployment number is conflicted.
 	ErrorCodeDeploymentConflict ErrorCode = "deployment_conflict"
 	// ErrorCodeDeploymentInvalid is the payload is invalid.
 	ErrorCodeDeploymentInvalid ErrorCode = "deployment_invalid"
 	// ErrorCodeDeploymentLocked is when the environment is locked.
 	ErrorCodeDeploymentLocked ErrorCode = "deployment_locked"
+	// ErrorCodeDeploymentUnapproved is when the deployment is not approved.
+	ErrorCodeDeploymentUnapproved ErrorCode = "deployment_unapproved"
 	// ErrorCodeDeploymentUndeployable is that the merge conflict occurs or a commit status has failed.
 	ErrorCodeDeploymentUndeployable ErrorCode = "deployment_undeployable"
 
@@ -25,15 +33,17 @@ type (
 	ErrorCode   string
 
 	Error struct {
-		Code ErrorCode
-		Wrap error
+		Code    ErrorCode
+		Message string
+		Wrap    error
 	}
 )
 
 func NewError(code ErrorCode, wrap error) *Error {
 	return &Error{
-		Code: code,
-		Wrap: wrap,
+		Code:    code,
+		Message: GetMessage(code),
+		Wrap:    wrap,
 	}
 }
 
@@ -43,4 +53,25 @@ func (e *Error) Error() string {
 
 func (e *Error) Unwrap() error {
 	return e.Wrap
+}
+
+func IsError(err error) bool {
+	var ge *Error
+	return errors.As(err, &ge)
+}
+
+// HasErrorCode verify the type of error and the code.
+func HasErrorCode(err error, codes ...ErrorCode) bool {
+	var ge *Error
+	if !errors.As(err, &ge) {
+		return false
+	}
+
+	for _, code := range codes {
+		if ge.Code == code {
+			return true
+		}
+	}
+
+	return false
 }

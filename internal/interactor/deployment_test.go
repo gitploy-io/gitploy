@@ -212,7 +212,7 @@ func TestInteractor_Deploy(t *testing.T) {
 	})
 }
 
-func TestInteractor_CreateRemoteDeployment(t *testing.T) {
+func TestInteractor_DeployToRemote(t *testing.T) {
 	ctx := gomock.Any()
 
 	t.Run("create a new remote deployment and update the deployment.", func(t *testing.T) {
@@ -238,7 +238,13 @@ func TestInteractor_CreateRemoteDeployment(t *testing.T) {
 			UID = 1000
 		)
 
-		t.Logf("Returns a new remote deployment with UID = %d", UID)
+		t.Log("MOCK - Check the environment is locked.")
+		store.
+			EXPECT().
+			HasLockOfRepoForEnv(ctx, gomock.AssignableToTypeOf(&ent.Repo{}), gomock.AssignableToTypeOf("")).
+			Return(false, nil)
+
+		t.Logf("MOCK - Returns a new remote deployment with UID = %d", UID)
 		scm.
 			EXPECT().
 			CreateRemoteDeployment(ctx, gomock.Eq(input.u), gomock.Eq(input.r), gomock.Eq(input.d), gomock.Eq(input.e)).
@@ -246,11 +252,12 @@ func TestInteractor_CreateRemoteDeployment(t *testing.T) {
 				UID: UID,
 			}, nil)
 
-		t.Logf("Check the deployment input has UID")
+		t.Logf("MOCK - Check the deployment input has UID")
 		store.
 			EXPECT().
 			UpdateDeployment(ctx, gomock.Eq(&ent.Deployment{
 				ID:     input.d.ID,
+				Env:    input.d.Env,
 				UID:    UID,
 				Status: deployment.StatusCreated,
 			})).
@@ -264,7 +271,7 @@ func TestInteractor_CreateRemoteDeployment(t *testing.T) {
 
 		i := newMockInteractor(store, scm)
 
-		d, err := i.CreateRemoteDeployment(context.Background(), input.u, input.r, input.d, input.e)
+		d, err := i.DeployToRemote(context.Background(), input.u, input.r, input.d, input.e)
 		if err != nil {
 			t.Errorf("CreateRemoteDeployment returns a error: %s", err)
 			t.FailNow()
