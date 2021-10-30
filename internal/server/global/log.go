@@ -20,5 +20,4 @@ func LogWithError(logger *zap.Logger, message string, err error) {
 	}
 
 	logger.Warn(message, zap.Error(err))
-	return
 }
