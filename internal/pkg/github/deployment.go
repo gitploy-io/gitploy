@@ -75,9 +75,10 @@ func (g *Github) GetConfig(ctx context.Context, u *ent.User, r *ent.Repo) (*vo.C
 		Repositories.
 		GetContents(ctx, r.Namespace, r.Name, r.ConfigPath, &github.RepositoryContentGetOptions{})
 	if res.StatusCode == http.StatusNotFound {
-		return nil, &vo.ConfigNotFoundError{
-			RepoName: r.Name,
-		}
+		return nil, e.NewError(
+			e.ErrorCodeConfigNotFound,
+			err,
+		)
 	} else if err != nil {
 		return nil, err
 	}
@@ -89,10 +90,10 @@ func (g *Github) GetConfig(ctx context.Context, u *ent.User, r *ent.Repo) (*vo.C
 
 	c := &vo.Config{}
 	if err := vo.UnmarshalYAML([]byte(content), c); err != nil {
-		return nil, &vo.ConfigParseError{
-			RepoName: r.Name,
-			Err:      err,
-		}
+		return nil, e.NewError(
+			e.ErrorCodeConfigParseError,
+			err,
+		)
 	}
 
 	return c, nil

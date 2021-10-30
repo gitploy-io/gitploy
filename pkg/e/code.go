@@ -6,6 +6,11 @@ import (
 )
 
 const (
+	// ErrorCodeConfigNotFound is that the configuration file is not found.
+	ErrorCodeConfigNotFound ErrorCode = "config_not_found"
+	// ErrorCodeConfigParseError is that an error occurs when it parse the file.
+	ErrorCodeConfigParseError ErrorCode = "config_parse_error"
+
 	// ErrorCodeDeploymentConflict is the deployment number is conflicted.
 	ErrorCodeDeploymentConflict ErrorCode = "deployment_conflict"
 	// ErrorCodeDeploymentInvalid is the payload is invalid.
