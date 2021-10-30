@@ -8,7 +8,6 @@ import (
 
 	"github.com/gitploy-io/gitploy/ent"
 	gb "github.com/gitploy-io/gitploy/internal/server/global"
-	"github.com/gitploy-io/gitploy/vo"
 )
 
 func (r *Repo) ListTags(c *gin.Context) {
@@ -47,13 +46,9 @@ func (r *Repo) GetTag(c *gin.Context) {
 	repo := rv.(*ent.Repo)
 
 	t, err := r.i.GetTag(ctx, u, repo, tag)
-	if vo.IsRefNotFoundError(err) {
-		r.log.Warn("the tag is not found.", zap.String("repo", repo.Name), zap.String("tag", tag), zap.Error(err))
-		gb.ErrorResponse(c, http.StatusNotFound, "the tag is not found.")
-		return
-	} else if err != nil {
-		r.log.Error("failed to get the tag.", zap.String("repo", repo.Name), zap.String("tag", tag), zap.Error(err))
-		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to get the tag.")
+	if err != nil {
+		r.log.Error("It has failed to get the tag.", zap.Error(err))
+		gb.ResponseWithError(c, err)
 		return
 	}
 

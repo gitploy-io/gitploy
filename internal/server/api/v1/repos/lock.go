@@ -20,7 +20,7 @@ import (
 	"github.com/gitploy-io/gitploy/ent"
 	"github.com/gitploy-io/gitploy/internal/server/global"
 	gb "github.com/gitploy-io/gitploy/internal/server/global"
-	"github.com/gitploy-io/gitploy/vo"
+	"github.com/gitploy-io/gitploy/pkg/e"
 )
 
 type (
@@ -79,15 +79,15 @@ func (r *Repo) CreateLock(c *gin.Context) {
 	vu, _ := c.Get(global.KeyUser)
 	u := vu.(*ent.User)
 
-	// Validate the payload, it check whether the env exist or not in deploy.yml.
 	cfg, err := r.i.GetConfig(ctx, u, re)
-	if vo.IsConfigNotFoundError(err) || vo.IsConfigParseError(err) {
-		r.log.Warn("The config is invalid.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "The config is invalid.")
+	if e.HasErrorCode(err, e.ErrorCodeConfigNotFound) {
+		r.log.Error("The configuration file is not found.", zap.Error(err))
+		// To override the HTTP status 422.
+		gb.ResponseWithStatusAndError(c, http.StatusUnprocessableEntity, err)
 		return
 	} else if err != nil {
-		r.log.Error("It has failed to get the config file.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to get the config file.")
+		r.log.Error("It has failed to get the configuration.")
+		gb.ResponseWithError(c, err)
 		return
 	}
 

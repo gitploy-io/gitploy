@@ -15,6 +15,7 @@ import (
 	"github.com/gitploy-io/gitploy/ent/callback"
 	"github.com/gitploy-io/gitploy/ent/deployment"
 	"github.com/gitploy-io/gitploy/ent/event"
+	"github.com/gitploy-io/gitploy/pkg/e"
 	"github.com/gitploy-io/gitploy/vo"
 )
 
@@ -261,7 +262,7 @@ func (s *Slack) interactDeploy(c *gin.Context) {
 
 	// Validate the entity is processible.
 	_, err := s.getCommitSha(ctx, cu.Edges.User, cb.Edges.Repo, sm.Type, sm.Ref)
-	if vo.IsRefNotFoundError(err) {
+	if e.HasErrorCode(err, e.ErrorCodeRefNotFound) {
 		c.JSON(http.StatusOK, buildErrorsPayload(map[string]string{
 			blockRef: "The reference is not found.",
 		}))

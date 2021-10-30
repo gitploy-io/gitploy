@@ -57,13 +57,9 @@ func (s *Slack) handleLockCmd(c *gin.Context) {
 
 	// Build the modal with unlocked envs.
 	config, err := s.i.GetConfig(ctx, cu.Edges.User, r)
-	if vo.IsConfigNotFoundError(err) || vo.IsConfigParseError(err) {
-		postResponseMessage(cmd.ChannelID, cmd.ResponseURL, "The config is invalid.")
+	if err != nil {
+		postMessageWithError(cu, err)
 		c.Status(http.StatusOK)
-		return
-	} else if err != nil {
-		s.log.Error("It has failed to get the config file.", zap.Error(err))
-		c.Status(http.StatusInternalServerError)
 		return
 	}
 
