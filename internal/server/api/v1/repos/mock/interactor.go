@@ -112,21 +112,6 @@ func (mr *MockInteractorMockRecorder) CreateLock(ctx, l interface{}) *gomock.Cal
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateLock", reflect.TypeOf((*MockInteractor)(nil).CreateLock), ctx, l)
 }
 
-// CreateRemoteDeployment mocks base method.
-func (m *MockInteractor) CreateRemoteDeployment(ctx context.Context, u *ent.User, re *ent.Repo, d *ent.Deployment, env *vo.Env) (*ent.Deployment, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateRemoteDeployment", ctx, u, re, d, env)
-	ret0, _ := ret[0].(*ent.Deployment)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// CreateRemoteDeployment indicates an expected call of CreateRemoteDeployment.
-func (mr *MockInteractorMockRecorder) CreateRemoteDeployment(ctx, u, re, d, env interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateRemoteDeployment", reflect.TypeOf((*MockInteractor)(nil).CreateRemoteDeployment), ctx, u, re, d, env)
-}
-
 // DeactivateRepo mocks base method.
 func (m *MockInteractor) DeactivateRepo(ctx context.Context, u *ent.User, r *ent.Repo) (*ent.Repo, error) {
 	m.ctrl.T.Helper()
@@ -183,6 +168,21 @@ func (m *MockInteractor) Deploy(ctx context.Context, u *ent.User, re *ent.Repo, 
 func (mr *MockInteractorMockRecorder) Deploy(ctx, u, re, d, env interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Deploy", reflect.TypeOf((*MockInteractor)(nil).Deploy), ctx, u, re, d, env)
+}
+
+// DeployToRemote mocks base method.
+func (m *MockInteractor) DeployToRemote(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, env *vo.Env) (*ent.Deployment, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeployToRemote", ctx, u, r, d, env)
+	ret0, _ := ret[0].(*ent.Deployment)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// DeployToRemote indicates an expected call of DeployToRemote.
+func (mr *MockInteractorMockRecorder) DeployToRemote(ctx, u, r, d, env interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeployToRemote", reflect.TypeOf((*MockInteractor)(nil).DeployToRemote), ctx, u, r, d, env)
 }
 
 // FindApprovalByID mocks base method.

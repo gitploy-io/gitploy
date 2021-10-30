@@ -195,32 +195,10 @@ func (r *Repo) UpdateDeployment(c *gin.Context) {
 		return
 	}
 
-	if locked, err := r.i.HasLockOfRepoForEnv(ctx, re, d.Env); locked {
-		r.log.Info("The environment is locked.", zap.String("env", d.Env))
-		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "The environment is locked.")
-		return
-	} else if err != nil {
-		r.log.Error("It has failed to check the lock.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to check the lock.")
-		return
-	}
-
 	if p.Status == string(deployment.StatusCreated) && d.Status == deployment.StatusWaiting {
-		// Check the deployment is approved:
-		// Approved >= Required Approval Count
-		if !r.i.IsApproved(ctx, d) {
-			r.log.Warn("The deployment is not approved yet.", zap.Int("deployment_id", d.ID))
-			gb.ErrorResponse(c, http.StatusUnprocessableEntity, "It is not approved yet.")
-			return
-		}
-
-		if d, err = r.i.CreateRemoteDeployment(ctx, u, re, d, cf.GetEnv(d.Env)); vo.IsUnprocessibleDeploymentError(err) {
-			r.log.Warn("It is unprocessible entity.", zap.Error(err))
-			gb.ErrorResponse(c, http.StatusUnprocessableEntity, "There is a merge conflict or the commit's status checks failed.")
-			return
-		} else if err != nil {
-			r.log.Error("It has failed to create the remote deployment.", zap.Error(err))
-			gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to create the remote deployment.")
+		if d, err = r.i.DeployToRemote(ctx, u, re, d, env); err != nil {
+			r.log.Error("It has failed to deploy to the remote.", zap.Error(err))
+			gb.ResponseWithError(c, err)
 			return
 		}
 
