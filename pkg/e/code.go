@@ -7,6 +7,7 @@ import (
 
 const (
 	// ErrorCodeConfigNotFound is that the configuration file is not found.
+	// TODO: migrate into ErrorCodeNotFound
 	ErrorCodeConfigNotFound ErrorCode = "config_not_found"
 	// ErrorCodeConfigParseError is that an error occurs when it parse the file.
 	ErrorCodeConfigParseError ErrorCode = "config_parse_error"
@@ -26,9 +27,13 @@ const (
 	ErrorCodeLicenseDecode ErrorCode = "license_decode"
 
 	// ErrorCodeRefNotFound is that the ref is not found.
+	// TODO: migrate into ErrorCodeNotFound
 	ErrorCodeRefNotFound ErrorCode = "ref_not_found"
 
-	ErrorCodeInternalError ErrorCode = "internal_error"
+	// General purpose error codes.
+	ErrorCodeInvalidRequest ErrorCode = "invalid_request"
+	ErrorCodeNotFound       ErrorCode = "not_found"
+	ErrorCodeInternalError  ErrorCode = "internal_error"
 )
 
 type (
@@ -46,6 +51,14 @@ func NewError(code ErrorCode, wrap error) *Error {
 	return &Error{
 		Code:    code,
 		Message: GetMessage(code),
+		Wrap:    wrap,
+	}
+}
+
+func NewErrorWithMessage(code ErrorCode, message string, wrap error) *Error {
+	return &Error{
+		Code:    code,
+		Message: message,
 		Wrap:    wrap,
 	}
 }
