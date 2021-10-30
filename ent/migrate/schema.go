@@ -85,6 +85,36 @@ var (
 			},
 		},
 	}
+	// CommentsColumns holds the columns for the "comments" table.
+	CommentsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "status", Type: field.TypeEnum, Enums: []string{"approved", "rejected"}},
+		{Name: "comment", Type: field.TypeString},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deployment_id", Type: field.TypeInt, Nullable: true},
+		{Name: "user_id", Type: field.TypeInt64, Nullable: true},
+	}
+	// CommentsTable holds the schema information for the "comments" table.
+	CommentsTable = &schema.Table{
+		Name:       "comments",
+		Columns:    CommentsColumns,
+		PrimaryKey: []*schema.Column{CommentsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "comments_deployments_comments",
+				Columns:    []*schema.Column{CommentsColumns[5]},
+				RefColumns: []*schema.Column{DeploymentsColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "comments_users_comments",
+				Columns:    []*schema.Column{CommentsColumns[6]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+	}
 	// DeploymentsColumns holds the columns for the "deployments" table.
 	DeploymentsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
@@ -416,6 +446,7 @@ var (
 		ApprovalsTable,
 		CallbacksTable,
 		ChatUsersTable,
+		CommentsTable,
 		DeploymentsTable,
 		DeploymentStatisticsTable,
 		DeploymentStatusTable,
@@ -433,6 +464,8 @@ func init() {
 	ApprovalsTable.ForeignKeys[1].RefTable = UsersTable
 	CallbacksTable.ForeignKeys[0].RefTable = ReposTable
 	ChatUsersTable.ForeignKeys[0].RefTable = UsersTable
+	CommentsTable.ForeignKeys[0].RefTable = DeploymentsTable
+	CommentsTable.ForeignKeys[1].RefTable = UsersTable
 	DeploymentsTable.ForeignKeys[0].RefTable = ReposTable
 	DeploymentsTable.ForeignKeys[1].RefTable = UsersTable
 	DeploymentStatisticsTable.ForeignKeys[0].RefTable = ReposTable

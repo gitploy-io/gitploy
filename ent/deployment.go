@@ -63,13 +63,15 @@ type DeploymentEdges struct {
 	Repo *Repo `json:"repo,omitempty"`
 	// Approvals holds the value of the approvals edge.
 	Approvals []*Approval `json:"approvals,omitempty"`
+	// Comments holds the value of the comments edge.
+	Comments []*Comment `json:"comments,omitempty"`
 	// DeploymentStatuses holds the value of the deployment_statuses edge.
 	DeploymentStatuses []*DeploymentStatus `json:"deployment_statuses,omitempty"`
 	// Event holds the value of the event edge.
 	Event []*Event `json:"event,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [5]bool
+	loadedTypes [6]bool
 }
 
 // UserOrErr returns the User value or an error if the edge
@@ -109,10 +111,19 @@ func (e DeploymentEdges) ApprovalsOrErr() ([]*Approval, error) {
 	return nil, &NotLoadedError{edge: "approvals"}
 }
 
+// CommentsOrErr returns the Comments value or an error if the edge
+// was not loaded in eager-loading.
+func (e DeploymentEdges) CommentsOrErr() ([]*Comment, error) {
+	if e.loadedTypes[3] {
+		return e.Comments, nil
+	}
+	return nil, &NotLoadedError{edge: "comments"}
+}
+
 // DeploymentStatusesOrErr returns the DeploymentStatuses value or an error if the edge
 // was not loaded in eager-loading.
 func (e DeploymentEdges) DeploymentStatusesOrErr() ([]*DeploymentStatus, error) {
-	if e.loadedTypes[3] {
+	if e.loadedTypes[4] {
 		return e.DeploymentStatuses, nil
 	}
 	return nil, &NotLoadedError{edge: "deployment_statuses"}
@@ -121,7 +132,7 @@ func (e DeploymentEdges) DeploymentStatusesOrErr() ([]*DeploymentStatus, error) 
 // EventOrErr returns the Event value or an error if the edge
 // was not loaded in eager-loading.
 func (e DeploymentEdges) EventOrErr() ([]*Event, error) {
-	if e.loadedTypes[4] {
+	if e.loadedTypes[5] {
 		return e.Event, nil
 	}
 	return nil, &NotLoadedError{edge: "event"}
@@ -275,6 +286,11 @@ func (d *Deployment) QueryRepo() *RepoQuery {
 // QueryApprovals queries the "approvals" edge of the Deployment entity.
 func (d *Deployment) QueryApprovals() *ApprovalQuery {
 	return (&DeploymentClient{config: d.config}).QueryApprovals(d)
+}
+
+// QueryComments queries the "comments" edge of the Deployment entity.
+func (d *Deployment) QueryComments() *CommentQuery {
+	return (&DeploymentClient{config: d.config}).QueryComments(d)
 }
 
 // QueryDeploymentStatuses queries the "deployment_statuses" edge of the Deployment entity.

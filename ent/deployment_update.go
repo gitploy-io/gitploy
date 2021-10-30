@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/gitploy-io/gitploy/ent/approval"
+	"github.com/gitploy-io/gitploy/ent/comment"
 	"github.com/gitploy-io/gitploy/ent/deployment"
 	"github.com/gitploy-io/gitploy/ent/deploymentstatus"
 	"github.com/gitploy-io/gitploy/ent/event"
@@ -273,6 +274,21 @@ func (du *DeploymentUpdate) AddApprovals(a ...*Approval) *DeploymentUpdate {
 	return du.AddApprovalIDs(ids...)
 }
 
+// AddCommentIDs adds the "comments" edge to the Comment entity by IDs.
+func (du *DeploymentUpdate) AddCommentIDs(ids ...int) *DeploymentUpdate {
+	du.mutation.AddCommentIDs(ids...)
+	return du
+}
+
+// AddComments adds the "comments" edges to the Comment entity.
+func (du *DeploymentUpdate) AddComments(c ...*Comment) *DeploymentUpdate {
+	ids := make([]int, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return du.AddCommentIDs(ids...)
+}
+
 // AddDeploymentStatusIDs adds the "deployment_statuses" edge to the DeploymentStatus entity by IDs.
 func (du *DeploymentUpdate) AddDeploymentStatusIDs(ids ...int) *DeploymentUpdate {
 	du.mutation.AddDeploymentStatusIDs(ids...)
@@ -339,6 +355,27 @@ func (du *DeploymentUpdate) RemoveApprovals(a ...*Approval) *DeploymentUpdate {
 		ids[i] = a[i].ID
 	}
 	return du.RemoveApprovalIDs(ids...)
+}
+
+// ClearComments clears all "comments" edges to the Comment entity.
+func (du *DeploymentUpdate) ClearComments() *DeploymentUpdate {
+	du.mutation.ClearComments()
+	return du
+}
+
+// RemoveCommentIDs removes the "comments" edge to Comment entities by IDs.
+func (du *DeploymentUpdate) RemoveCommentIDs(ids ...int) *DeploymentUpdate {
+	du.mutation.RemoveCommentIDs(ids...)
+	return du
+}
+
+// RemoveComments removes "comments" edges to Comment entities.
+func (du *DeploymentUpdate) RemoveComments(c ...*Comment) *DeploymentUpdate {
+	ids := make([]int, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return du.RemoveCommentIDs(ids...)
 }
 
 // ClearDeploymentStatuses clears all "deployment_statuses" edges to the DeploymentStatus entity.
@@ -757,6 +794,60 @@ func (du *DeploymentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if du.mutation.CommentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   deployment.CommentsTable,
+			Columns: []string{deployment.CommentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: comment.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := du.mutation.RemovedCommentsIDs(); len(nodes) > 0 && !du.mutation.CommentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   deployment.CommentsTable,
+			Columns: []string{deployment.CommentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: comment.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := du.mutation.CommentsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   deployment.CommentsTable,
+			Columns: []string{deployment.CommentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: comment.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if du.mutation.DeploymentStatusesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
@@ -1124,6 +1215,21 @@ func (duo *DeploymentUpdateOne) AddApprovals(a ...*Approval) *DeploymentUpdateOn
 	return duo.AddApprovalIDs(ids...)
 }
 
+// AddCommentIDs adds the "comments" edge to the Comment entity by IDs.
+func (duo *DeploymentUpdateOne) AddCommentIDs(ids ...int) *DeploymentUpdateOne {
+	duo.mutation.AddCommentIDs(ids...)
+	return duo
+}
+
+// AddComments adds the "comments" edges to the Comment entity.
+func (duo *DeploymentUpdateOne) AddComments(c ...*Comment) *DeploymentUpdateOne {
+	ids := make([]int, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return duo.AddCommentIDs(ids...)
+}
+
 // AddDeploymentStatusIDs adds the "deployment_statuses" edge to the DeploymentStatus entity by IDs.
 func (duo *DeploymentUpdateOne) AddDeploymentStatusIDs(ids ...int) *DeploymentUpdateOne {
 	duo.mutation.AddDeploymentStatusIDs(ids...)
@@ -1190,6 +1296,27 @@ func (duo *DeploymentUpdateOne) RemoveApprovals(a ...*Approval) *DeploymentUpdat
 		ids[i] = a[i].ID
 	}
 	return duo.RemoveApprovalIDs(ids...)
+}
+
+// ClearComments clears all "comments" edges to the Comment entity.
+func (duo *DeploymentUpdateOne) ClearComments() *DeploymentUpdateOne {
+	duo.mutation.ClearComments()
+	return duo
+}
+
+// RemoveCommentIDs removes the "comments" edge to Comment entities by IDs.
+func (duo *DeploymentUpdateOne) RemoveCommentIDs(ids ...int) *DeploymentUpdateOne {
+	duo.mutation.RemoveCommentIDs(ids...)
+	return duo
+}
+
+// RemoveComments removes "comments" edges to Comment entities.
+func (duo *DeploymentUpdateOne) RemoveComments(c ...*Comment) *DeploymentUpdateOne {
+	ids := make([]int, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return duo.RemoveCommentIDs(ids...)
 }
 
 // ClearDeploymentStatuses clears all "deployment_statuses" edges to the DeploymentStatus entity.
@@ -1624,6 +1751,60 @@ func (duo *DeploymentUpdateOne) sqlSave(ctx context.Context) (_node *Deployment,
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
 					Column: approval.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if duo.mutation.CommentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   deployment.CommentsTable,
+			Columns: []string{deployment.CommentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: comment.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := duo.mutation.RemovedCommentsIDs(); len(nodes) > 0 && !duo.mutation.CommentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   deployment.CommentsTable,
+			Columns: []string{deployment.CommentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: comment.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := duo.mutation.CommentsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   deployment.CommentsTable,
+			Columns: []string{deployment.CommentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: comment.FieldID,
 				},
 			},
 		}
