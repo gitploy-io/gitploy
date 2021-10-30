@@ -19,7 +19,7 @@ func (Comment) Fields() []ent.Field {
 				"approved",
 				"rejected",
 			),
-		field.String("comment"),
+		field.Text("comment"),
 		field.Time("created_at").
 			Default(nowUTC),
 		field.Time("updated_at").
