@@ -90,12 +90,12 @@ func (r *Repo) CreateDeployment(c *gin.Context) {
 
 	cf, err := r.i.GetConfig(ctx, u, re)
 	if e.HasErrorCode(err, e.ErrorCodeConfigNotFound) {
-		r.log.Error("The configuration file is not found.", zap.Error(err))
+		gb.LogWithError(r.log, "The configuration file is not found.", err)
 		// To override the HTTP status 422.
 		gb.ResponseWithStatusAndError(c, http.StatusUnprocessableEntity, err)
 		return
 	} else if err != nil {
-		r.log.Error("It has failed to get the configuration.")
+		gb.LogWithError(r.log, "It has failed to get the configuration.", err)
 		gb.ResponseWithError(c, err)
 		return
 	}
@@ -122,7 +122,7 @@ func (r *Repo) CreateDeployment(c *gin.Context) {
 		cf.GetEnv(p.Env),
 	)
 	if err != nil {
-		r.log.Error("It has failed to deploy.", zap.Error(err))
+		gb.LogWithError(r.log, "It has failed to deploy.", err)
 		gb.ResponseWithError(c, err)
 		return
 	}
@@ -172,12 +172,12 @@ func (r *Repo) UpdateDeployment(c *gin.Context) {
 
 	cf, err := r.i.GetConfig(ctx, u, re)
 	if e.HasErrorCode(err, e.ErrorCodeConfigNotFound) {
-		r.log.Error("The configuration file is not found.", zap.Error(err))
+		gb.LogWithError(r.log, "The configuration file is not found.", err)
 		// To override the HTTP status 422.
 		gb.ResponseWithStatusAndError(c, http.StatusUnprocessableEntity, err)
 		return
 	} else if err != nil {
-		r.log.Error("It has failed to get the configuration.")
+		gb.LogWithError(r.log, "It has failed to get the configuration.", err)
 		gb.ResponseWithError(c, err)
 		return
 	}
@@ -197,7 +197,7 @@ func (r *Repo) UpdateDeployment(c *gin.Context) {
 
 	if p.Status == string(deployment.StatusCreated) && d.Status == deployment.StatusWaiting {
 		if d, err = r.i.DeployToRemote(ctx, u, re, d, env); err != nil {
-			r.log.Error("It has failed to deploy to the remote.", zap.Error(err))
+			gb.LogWithError(r.log, "It has failed to deploy to the remote.", err)
 			gb.ResponseWithError(c, err)
 			return
 		}
@@ -241,12 +241,12 @@ func (r *Repo) RollbackDeployment(c *gin.Context) {
 
 	cf, err := r.i.GetConfig(ctx, u, re)
 	if e.HasErrorCode(err, e.ErrorCodeConfigNotFound) {
-		r.log.Error("The configuration file is not found.", zap.Error(err))
+		gb.LogWithError(r.log, "The configuration file is not found.", err)
 		// To override the HTTP status 422.
 		gb.ResponseWithStatusAndError(c, http.StatusUnprocessableEntity, err)
 		return
 	} else if err != nil {
-		r.log.Error("It has failed to get the configuration.")
+		gb.LogWithError(r.log, "It has failed to get the configuration.", err)
 		gb.ResponseWithError(c, err)
 		return
 	}
@@ -274,7 +274,7 @@ func (r *Repo) RollbackDeployment(c *gin.Context) {
 		cf.GetEnv(d.Env),
 	)
 	if err != nil {
-		r.log.Error("It has failed to deploy.", zap.Error(err))
+		gb.LogWithError(r.log, "It has failed to deploy.", err)
 		gb.ResponseWithError(c, err)
 		return
 	}
@@ -336,7 +336,7 @@ func (r *Repo) ListDeploymentChanges(c *gin.Context) {
 	if sha == "" {
 		sha, err = r.getCommitSha(ctx, u, re, d.Type, d.Ref)
 		if err != nil {
-			r.log.Error("It has failed to get the commit SHA.", zap.Error(err))
+			gb.LogWithError(r.log, "It has failed to get the commit SHA.", err)
 			gb.ResponseWithError(c, err)
 			return
 		}
@@ -391,7 +391,7 @@ func (r *Repo) GetConfig(c *gin.Context) {
 
 	config, err := r.i.GetConfig(ctx, u, re)
 	if err != nil {
-		r.log.Error("It has failed to get the configuration.", zap.Error(err))
+		gb.LogWithError(r.log, "It has failed to get the configuration.", err)
 		gb.ResponseWithError(c, err)
 		return
 	}
