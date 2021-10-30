@@ -173,6 +173,21 @@ func (mr *MockStoreMockRecorder) CreateChatUser(ctx, cu interface{}) *gomock.Cal
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateChatUser", reflect.TypeOf((*MockStore)(nil).CreateChatUser), ctx, cu)
 }
 
+// CreateComment mocks base method.
+func (m *MockStore) CreateComment(ctx context.Context, cmt *ent.Comment) (*ent.Comment, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateComment", ctx, cmt)
+	ret0, _ := ret[0].(*ent.Comment)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreateComment indicates an expected call of CreateComment.
+func (mr *MockStoreMockRecorder) CreateComment(ctx, cmt interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateComment", reflect.TypeOf((*MockStore)(nil).CreateComment), ctx, cmt)
+}
+
 // CreateDeployment mocks base method.
 func (m *MockStore) CreateDeployment(ctx context.Context, d *ent.Deployment) (*ent.Deployment, error) {
 	m.ctrl.T.Helper()
@@ -422,6 +437,21 @@ func (m *MockStore) FindChatUserByID(ctx context.Context, id string) (*ent.ChatU
 func (mr *MockStoreMockRecorder) FindChatUserByID(ctx, id interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindChatUserByID", reflect.TypeOf((*MockStore)(nil).FindChatUserByID), ctx, id)
+}
+
+// FindCommentByID mocks base method.
+func (m *MockStore) FindCommentByID(ctx context.Context, id int) (*ent.Comment, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindCommentByID", ctx, id)
+	ret0, _ := ret[0].(*ent.Comment)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindCommentByID indicates an expected call of FindCommentByID.
+func (mr *MockStoreMockRecorder) FindCommentByID(ctx, id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindCommentByID", reflect.TypeOf((*MockStore)(nil).FindCommentByID), ctx, id)
 }
 
 // FindDeploymentByID mocks base method.
@@ -692,6 +722,21 @@ func (m *MockStore) ListApprovals(ctx context.Context, d *ent.Deployment) ([]*en
 func (mr *MockStoreMockRecorder) ListApprovals(ctx, d interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListApprovals", reflect.TypeOf((*MockStore)(nil).ListApprovals), ctx, d)
+}
+
+// ListCommentsOfDeployment mocks base method.
+func (m *MockStore) ListCommentsOfDeployment(ctx context.Context, d *ent.Deployment) ([]*ent.Comment, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListCommentsOfDeployment", ctx, d)
+	ret0, _ := ret[0].([]*ent.Comment)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListCommentsOfDeployment indicates an expected call of ListCommentsOfDeployment.
+func (mr *MockStoreMockRecorder) ListCommentsOfDeployment(ctx, d interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListCommentsOfDeployment", reflect.TypeOf((*MockStore)(nil).ListCommentsOfDeployment), ctx, d)
 }
 
 // ListDeploymentStatisticsGreaterThanTime mocks base method.

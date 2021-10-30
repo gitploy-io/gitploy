@@ -1033,7 +1033,7 @@ paths:
     post:
       tags:
         - Repo
-      summary: Post a new approval.
+      summary: Post a new comment.
       parameters:
         - in: path
           name: namespace
@@ -1108,6 +1108,12 @@ paths:
           schema:
             type: integer
             description: The deployment number.
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            description: The comment ID.
       responses:
         '200':
           description: Return the comment.
