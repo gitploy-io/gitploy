@@ -9,6 +9,7 @@ import (
 
 	"github.com/gitploy-io/gitploy/ent"
 	gb "github.com/gitploy-io/gitploy/internal/server/global"
+	"github.com/gitploy-io/gitploy/pkg/e"
 )
 
 func (r *Repo) ListComments(c *gin.Context) {
@@ -20,5 +21,8 @@ func (r *Repo) GetComment(c *gin.Context) {
 }
 
 func (r *Repo) CreateComment(c *gin.Context) {
-	gb.ErrorResponse(c, http.StatusPaymentRequired, "It is limited to the community edition.")
+	gb.ResponseWithError(
+		c,
+		e.NewError(e.ErrorCodeLicenseRequired, nil),
+	)
 }

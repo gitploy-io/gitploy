@@ -23,8 +23,10 @@ const (
 	// ErrorCodeDeploymentUndeployable is that the merge conflict occurs or a commit status has failed.
 	ErrorCodeDeploymentUndeployable ErrorCode = "deployment_undeployable"
 
-	// ErrorCodeLicenseDecode is that the license.
+	// ErrorCodeLicenseDecode is the error when the license is decoded.
 	ErrorCodeLicenseDecode ErrorCode = "license_decode"
+	// ErrorCodeLicenseRequired is that the license is required.
+	ErrorCodeLicenseRequired ErrorCode = "license_required"
 
 	// General purpose error codes.
 	ErrorCodeInvalidRequest      ErrorCode = "invalid_request"
