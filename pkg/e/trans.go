@@ -3,7 +3,6 @@ package e
 import "net/http"
 
 var messages = map[ErrorCode]string{
-	ErrorCodeConfigNotFound:         "The configuration file is not found.",
 	ErrorCodeConfigParseError:       "The configuration is invalid.",
 	ErrorCodeDeploymentConflict:     "The conflict occurs, please retry.",
 	ErrorCodeDeploymentInvalid:      "The validation has failed.",
@@ -29,7 +28,6 @@ func GetMessage(code ErrorCode) string {
 }
 
 var httpCodes = map[ErrorCode]int{
-	ErrorCodeConfigNotFound:         http.StatusNotFound,
 	ErrorCodeConfigParseError:       http.StatusUnprocessableEntity,
 	ErrorCodeDeploymentConflict:     http.StatusUnprocessableEntity,
 	ErrorCodeDeploymentInvalid:      http.StatusUnprocessableEntity,

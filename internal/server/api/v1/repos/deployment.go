@@ -90,7 +90,7 @@ func (r *Repo) CreateDeployment(c *gin.Context) {
 	re := vr.(*ent.Repo)
 
 	cf, err := r.i.GetConfig(ctx, u, re)
-	if e.HasErrorCode(err, e.ErrorCodeConfigNotFound) {
+	if e.HasErrorCode(err, e.ErrorCodeNotFound) {
 		gb.LogWithError(r.log, "The configuration file is not found.", err)
 		// To override the HTTP status 422.
 		gb.ResponseWithStatusAndError(c, http.StatusUnprocessableEntity, err)
@@ -179,7 +179,7 @@ func (r *Repo) UpdateDeployment(c *gin.Context) {
 	}
 
 	cf, err := r.i.GetConfig(ctx, u, re)
-	if e.HasErrorCode(err, e.ErrorCodeConfigNotFound) {
+	if e.HasErrorCode(err, e.ErrorCodeNotFound) {
 		gb.LogWithError(r.log, "The configuration file is not found.", err)
 		// To override the HTTP status 422.
 		gb.ResponseWithStatusAndError(c, http.StatusUnprocessableEntity, err)
@@ -251,7 +251,7 @@ func (r *Repo) RollbackDeployment(c *gin.Context) {
 	}
 
 	cf, err := r.i.GetConfig(ctx, u, re)
-	if e.HasErrorCode(err, e.ErrorCodeConfigNotFound) {
+	if e.HasErrorCode(err, e.ErrorCodeNotFound) {
 		gb.LogWithError(r.log, "The configuration file is not found.", err)
 		// To override the HTTP status 422.
 		gb.ResponseWithStatusAndError(c, http.StatusUnprocessableEntity, err)

@@ -75,8 +75,9 @@ func (g *Github) GetConfig(ctx context.Context, u *ent.User, r *ent.Repo) (*vo.C
 		Repositories.
 		GetContents(ctx, r.Namespace, r.Name, r.ConfigPath, &github.RepositoryContentGetOptions{})
 	if res.StatusCode == http.StatusNotFound {
-		return nil, e.NewError(
-			e.ErrorCodeConfigNotFound,
+		return nil, e.NewErrorWithMessage(
+			e.ErrorCodeNotFound,
+			"The configuration file is not found.",
 			err,
 		)
 	} else if err != nil {
