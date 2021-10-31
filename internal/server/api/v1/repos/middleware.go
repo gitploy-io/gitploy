@@ -7,6 +7,7 @@ import (
 	"github.com/gitploy-io/gitploy/ent"
 	"github.com/gitploy-io/gitploy/ent/perm"
 	gb "github.com/gitploy-io/gitploy/internal/server/global"
+	"github.com/gitploy-io/gitploy/pkg/e"
 	"go.uber.org/zap"
 )
 
@@ -41,24 +42,20 @@ func (rm *RepoMiddleware) RepoReadPerm() gin.HandlerFunc {
 		u := v.(*ent.User)
 
 		r, err := rm.i.FindRepoOfUserByNamespaceName(ctx, u, namespace, name)
-		if ent.IsNotFound(err) {
-			rm.log.Warn("The repository is not found.", zap.String("repo", namespace+"/"+name), zap.Error(err))
-			gb.AbortWithErrorResponse(c, http.StatusNotFound, "The repository is not found.")
-			return
-		} else if err != nil {
-			rm.log.Error("It has failed to get the repository.", zap.String("repo", namespace+"/"+name), zap.Error(err))
-			gb.AbortWithErrorResponse(c, http.StatusInternalServerError, "It has failed to get the repository.")
+		if err != nil {
+			gb.LogWithError(rm.log, "Failed to find the repository.", err)
+			gb.AbortWithError(c, err)
 			return
 		}
 
 		_, err = rm.i.FindPermOfRepo(ctx, r, u)
-		if ent.IsNotFound(err) {
-			rm.log.Warn("It is denied to access the repository.", zap.String("repo", namespace+"/"+name), zap.Error(err))
-			gb.AbortWithErrorResponse(c, http.StatusForbidden, "It is denied to access the repository.")
+		if e.HasErrorCode(err, e.ErrorCodeNotFound) {
+			gb.LogWithError(rm.log, "It is denied to acess the repository.", err)
+			gb.AbortWithStatusAndError(c, http.StatusForbidden, err)
 			return
 		} else if err != nil {
-			rm.log.Error("It has failed to get the permission.", zap.String("repo", namespace+"/"+name), zap.Error(err))
-			gb.AbortWithErrorResponse(c, http.StatusInternalServerError, "It has failed to get the permission.")
+			gb.LogWithError(rm.log, "Failed to find the permission.", err)
+			gb.AbortWithError(c, err)
 			return
 		}
 
@@ -79,30 +76,30 @@ func (rm *RepoMiddleware) RepoWritePerm() gin.HandlerFunc {
 		u := v.(*ent.User)
 
 		r, err := rm.i.FindRepoOfUserByNamespaceName(ctx, u, namespace, name)
-		if ent.IsNotFound(err) {
-			rm.log.Warn("The repository is not found.", zap.String("repo", namespace+"/"+name), zap.Error(err))
-			gb.AbortWithErrorResponse(c, http.StatusNotFound, "The repository is not found.")
-			return
-		} else if err != nil {
-			rm.log.Error("It has failed to get the repository.", zap.String("repo", namespace+"/"+name), zap.Error(err))
-			gb.AbortWithErrorResponse(c, http.StatusInternalServerError, "It has failed to get the repository.")
+		if err != nil {
+			gb.LogWithError(rm.log, "Failed to find the repository.", err)
+			gb.AbortWithError(c, err)
 			return
 		}
 
 		p, err := rm.i.FindPermOfRepo(ctx, r, u)
-		if ent.IsNotFound(err) {
-			rm.log.Warn("It is denied to access the repository.", zap.String("repo", namespace+"/"+name), zap.Error(err))
-			gb.AbortWithErrorResponse(c, http.StatusForbidden, "It is denied to access the repository.")
+		if e.HasErrorCode(err, e.ErrorCodeNotFound) {
+			gb.LogWithError(rm.log, "It is denied to acess the repository.", err)
+			gb.AbortWithStatusAndError(c, http.StatusForbidden, err)
 			return
 		} else if err != nil {
-			rm.log.Error("It has failed to get the repository.", zap.String("repo", namespace+"/"+name), zap.Error(err))
-			gb.AbortWithErrorResponse(c, http.StatusInternalServerError, "It has failed to get the permission.")
+			gb.LogWithError(rm.log, "Failed to find the permission.", err)
+			gb.AbortWithError(c, err)
 			return
 		}
 
 		if !(p.RepoPerm == perm.RepoPermWrite || p.RepoPerm == perm.RepoPermAdmin) {
 			rm.log.Warn("The access is forbidden. Only write permission can access.", zap.String("repo", namespace+"/"+name))
-			gb.AbortWithErrorResponse(c, http.StatusForbidden, "Only write permission can access.")
+			gb.AbortWithStatusAndError(
+				c,
+				http.StatusForbidden,
+				e.NewErrorWithMessage(e.ErrorPermissionRequired, "Only write permission can access.", nil),
+			)
 			return
 		}
 
@@ -123,30 +120,30 @@ func (rm *RepoMiddleware) RepoAdminPerm() gin.HandlerFunc {
 		u := v.(*ent.User)
 
 		r, err := rm.i.FindRepoOfUserByNamespaceName(ctx, u, namespace, name)
-		if ent.IsNotFound(err) {
-			rm.log.Warn("The repository is not found.", zap.String("repo", namespace+"/"+name), zap.Error(err))
-			gb.AbortWithErrorResponse(c, http.StatusNotFound, "The repository is not found.")
-			return
-		} else if err != nil {
-			rm.log.Error("It has failed to get the repository.", zap.String("repo", namespace+"/"+name), zap.Error(err))
-			gb.AbortWithErrorResponse(c, http.StatusInternalServerError, "It has failed to get the repository.")
+		if err != nil {
+			gb.LogWithError(rm.log, "Failed to find the repository.", err)
+			gb.AbortWithError(c, err)
 			return
 		}
 
 		p, err := rm.i.FindPermOfRepo(ctx, r, u)
-		if ent.IsNotFound(err) {
-			rm.log.Warn("It is denied to access the repo.", zap.String("repo", namespace+"/"+name), zap.Error(err))
-			gb.AbortWithErrorResponse(c, http.StatusForbidden, "It is denied to access the repo.")
+		if e.HasErrorCode(err, e.ErrorCodeNotFound) {
+			gb.LogWithError(rm.log, "It is denied to acess the repository.", err)
+			gb.AbortWithStatusAndError(c, http.StatusForbidden, err)
 			return
 		} else if err != nil {
-			rm.log.Error("It has failed to get the permission.", zap.String("repo", namespace+"/"+name), zap.Error(err))
-			gb.AbortWithErrorResponse(c, http.StatusInternalServerError, "It has failed to get the permission.")
+			gb.LogWithError(rm.log, "Failed to find the permission.", err)
+			gb.AbortWithError(c, err)
 			return
 		}
 
 		if p.RepoPerm != perm.RepoPermAdmin {
 			rm.log.Warn("The access is forbidden. Only admin permission can access.", zap.String("repo", namespace+"/"+name))
-			gb.AbortWithErrorResponse(c, http.StatusForbidden, "Only admin permission can access.")
+			gb.AbortWithStatusAndError(
+				c,
+				http.StatusForbidden,
+				e.NewErrorWithMessage(e.ErrorPermissionRequired, "Only admin permission can access.", nil),
+			)
 			return
 		}
 

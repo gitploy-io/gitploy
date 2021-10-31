@@ -13,6 +13,7 @@ var messages = map[ErrorCode]string{
 	ErrorCodeLicenseDecode:          "Decoding the license is failed.",
 	ErrorCodeLicenseRequired:        "The license is required.",
 	ErrorCodeInvalidRequest:         "Invalid request parameter.",
+	ErrorPermissionRequired:         "The permission is required",
 	ErrorCodeNotFound:               "It is not found.",
 	ErrorCodeUnprocessableEntity:    "Invalid request payload.",
 	ErrorCodeInternalError:          "Server internal error.",
@@ -39,6 +40,7 @@ var httpCodes = map[ErrorCode]int{
 	ErrorCodeLicenseRequired:        http.StatusPaymentRequired,
 	ErrorCodeInvalidRequest:         http.StatusBadRequest,
 	ErrorCodeNotFound:               http.StatusNotFound,
+	ErrorPermissionRequired:         http.StatusForbidden,
 	ErrorCodeUnprocessableEntity:    http.StatusUnprocessableEntity,
 	ErrorCodeInternalError:          http.StatusInternalServerError,
 }

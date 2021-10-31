@@ -30,6 +30,7 @@ const (
 
 	// General purpose error codes.
 	ErrorCodeInvalidRequest      ErrorCode = "invalid_request"
+	ErrorPermissionRequired      ErrorCode = "permission_required"
 	ErrorCodeNotFound            ErrorCode = "not_found"
 	ErrorCodeUnprocessableEntity ErrorCode = "unprocessable_entity"
 	ErrorCodeInternalError       ErrorCode = "internal_error"
