@@ -104,7 +104,10 @@ func (r *Repo) CreateDeployment(c *gin.Context) {
 	var env *vo.Env
 	if env = cf.GetEnv(p.Env); env == nil {
 		r.log.Warn("The environment is not defined in the configuration.")
-		gb.ResponseWithStatusAndError(c, http.StatusUnprocessableEntity, err)
+		gb.ResponseWithError(
+			c,
+			e.NewErrorWithMessage(e.ErrorCodeConfigParseError, "The environment is not defiend in the configuration.", nil),
+		)
 		return
 	}
 
@@ -190,7 +193,10 @@ func (r *Repo) UpdateDeployment(c *gin.Context) {
 	var env *vo.Env
 	if env = cf.GetEnv(d.Env); env == nil {
 		r.log.Warn("The environment is not defined in the configuration.")
-		gb.ResponseWithStatusAndError(c, http.StatusUnprocessableEntity, err)
+		gb.ResponseWithError(
+			c,
+			e.NewErrorWithMessage(e.ErrorCodeConfigParseError, "The environment is not defiend in the configuration.", nil),
+		)
 		return
 	}
 
@@ -259,7 +265,10 @@ func (r *Repo) RollbackDeployment(c *gin.Context) {
 	var env *vo.Env
 	if env = cf.GetEnv(d.Env); env == nil {
 		r.log.Warn("The environment is not defined in the configuration.")
-		gb.ResponseWithStatusAndError(c, http.StatusUnprocessableEntity, err)
+		gb.ResponseWithError(
+			c,
+			e.NewErrorWithMessage(e.ErrorCodeConfigParseError, "The environment is not defiend in the configuration.", nil),
+		)
 		return
 	}
 

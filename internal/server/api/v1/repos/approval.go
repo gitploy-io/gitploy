@@ -86,7 +86,7 @@ func (r *Repo) GetMyApproval(c *gin.Context) {
 	if number, err = strconv.Atoi(c.Param("number")); err != nil {
 		gb.ResponseWithError(
 			c,
-			e.NewErrorWithMessage(e.ErrorCodeInvalidRequest, "The number must be integer.", nil),
+			e.NewErrorWithMessage(e.ErrorCodeInvalidRequest, "The number must be number.", nil),
 		)
 		return
 	}
@@ -128,7 +128,7 @@ func (r *Repo) CreateApproval(c *gin.Context) {
 	if number, err = strconv.Atoi(c.Param("number")); err != nil {
 		gb.ResponseWithError(
 			c,
-			e.NewErrorWithMessage(e.ErrorCodeInvalidRequest, "The number must be integer.", nil),
+			e.NewErrorWithMessage(e.ErrorCodeInvalidRequest, "The number must be number.", nil),
 		)
 		return
 	}
@@ -214,7 +214,7 @@ func (r *Repo) UpdateMyApproval(c *gin.Context) {
 	if number, err = strconv.Atoi(c.Param("number")); err != nil {
 		gb.ResponseWithError(
 			c,
-			e.NewErrorWithMessage(e.ErrorCodeInvalidRequest, "The number must be integer.", nil),
+			e.NewErrorWithMessage(e.ErrorCodeInvalidRequest, "The number must be number.", nil),
 		)
 		return
 	}
@@ -282,7 +282,7 @@ func (r *Repo) DeleteApproval(c *gin.Context) {
 	if aid, err = strconv.Atoi(c.Param("aid")); err != nil {
 		gb.ResponseWithError(
 			c,
-			e.NewErrorWithMessage(e.ErrorCodeInvalidRequest, "The number must be integer.", nil),
+			e.NewErrorWithMessage(e.ErrorCodeInvalidRequest, "The number must be number.", nil),
 		)
 		return
 	}

@@ -37,7 +37,7 @@ func (r *Repo) ListComments(c *gin.Context) {
 	if number, err = strconv.Atoi(c.Param("number")); err != nil {
 		gb.ResponseWithError(
 			c,
-			e.NewErrorWithMessage(e.ErrorCodeInvalidRequest, "The number must be integer.", nil),
+			e.NewErrorWithMessage(e.ErrorCodeInvalidRequest, "The number must be number.", nil),
 		)
 		return
 	}
@@ -72,7 +72,7 @@ func (r *Repo) GetComment(c *gin.Context) {
 	if id, err = strconv.Atoi(c.Param("id")); err != nil {
 		gb.ResponseWithError(
 			c,
-			e.NewErrorWithMessage(e.ErrorCodeInvalidRequest, "The id must be integer.", nil),
+			e.NewErrorWithMessage(e.ErrorCodeInvalidRequest, "The id must be number.", nil),
 		)
 		return
 	}
@@ -99,7 +99,7 @@ func (r *Repo) CreateComment(c *gin.Context) {
 		r.log.Warn("Failed to parse 'number'.", zap.Error(err))
 		gb.ResponseWithError(
 			c,
-			e.NewErrorWithMessage(e.ErrorCodeInvalidRequest, "The number must be integer.", err),
+			e.NewErrorWithMessage(e.ErrorCodeInvalidRequest, "The number must be number.", err),
 		)
 		return
 	}
