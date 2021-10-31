@@ -116,7 +116,7 @@ func (s *Store) CreateApproval(ctx context.Context, a *ent.Approval) (*ent.Appro
 	if ent.IsValidationError(err) {
 		return nil, e.NewErrorWithMessage(
 			e.ErrorCodeUnprocessableEntity,
-			fmt.Sprintf("The value of \"%s\" field is invalid.", err.(*ent.ValidationError).Name),
+			fmt.Sprintf("Failed to create a approval. The value of \"%s\" field is invalid.", err.(*ent.ValidationError).Name),
 			err)
 	} else if err != nil {
 		return nil, e.NewError(e.ErrorCodeInternalError, err)
@@ -133,7 +133,7 @@ func (s *Store) UpdateApproval(ctx context.Context, a *ent.Approval) (*ent.Appro
 	if ent.IsValidationError(err) {
 		return nil, e.NewErrorWithMessage(
 			e.ErrorCodeUnprocessableEntity,
-			fmt.Sprintf("The value of \"%s\" field is invalid.", err.(*ent.ValidationError).Name),
+			fmt.Sprintf("Failed to update the approval. The value of \"%s\" field is invalid.", err.(*ent.ValidationError).Name),
 			err)
 	} else if err != nil {
 		return nil, e.NewError(e.ErrorCodeInternalError, err)

@@ -255,7 +255,7 @@ func (s *Store) CreateDeployment(ctx context.Context, d *ent.Deployment) (*ent.D
 	} else if ent.IsValidationError(err) {
 		return nil, e.NewErrorWithMessage(
 			e.ErrorCodeUnprocessableEntity,
-			fmt.Sprintf("The value of \"%s\" field is invalid.", err.(*ent.ValidationError).Name),
+			fmt.Sprintf("Failed to create a deployment. The value of \"%s\" field is invalid.", err.(*ent.ValidationError).Name),
 			err)
 	} else if err != nil {
 		return nil, e.NewError(e.ErrorCodeInternalError, err)
@@ -286,7 +286,7 @@ func (s *Store) UpdateDeployment(ctx context.Context, d *ent.Deployment) (*ent.D
 	if ent.IsValidationError(err) {
 		return nil, e.NewErrorWithMessage(
 			e.ErrorCodeUnprocessableEntity,
-			fmt.Sprintf("The value of \"%s\" field is invalid.", err.(*ent.ValidationError).Name),
+			fmt.Sprintf("Failed to update a deployment. The value of \"%s\" field is invalid.", err.(*ent.ValidationError).Name),
 			err)
 	} else if err != nil {
 		return nil, e.NewError(e.ErrorCodeInternalError, err)

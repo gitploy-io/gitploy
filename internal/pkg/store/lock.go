@@ -104,7 +104,7 @@ func (s *Store) CreateLock(ctx context.Context, l *ent.Lock) (*ent.Lock, error) 
 	if ent.IsValidationError(err) {
 		return nil, e.NewErrorWithMessage(
 			e.ErrorCodeUnprocessableEntity,
-			fmt.Sprintf("The value of \"%s\" field is invalid.", err.(*ent.ValidationError).Name),
+			fmt.Sprintf("Failed to create a lock. The value of \"%s\" field is invalid.", err.(*ent.ValidationError).Name),
 			err)
 	} else if err != nil {
 		return nil, e.NewError(e.ErrorCodeInternalError, err)
@@ -121,7 +121,7 @@ func (s *Store) UpdateLock(ctx context.Context, l *ent.Lock) (*ent.Lock, error) 
 	if ent.IsValidationError(err) {
 		return nil, e.NewErrorWithMessage(
 			e.ErrorCodeUnprocessableEntity,
-			fmt.Sprintf("The value of \"%s\" field is invalid.", err.(*ent.ValidationError).Name),
+			fmt.Sprintf("Failed to update the lock. The value of \"%s\" field is invalid.", err.(*ent.ValidationError).Name),
 			err)
 	} else if err != nil {
 		return nil, e.NewError(e.ErrorCodeInternalError, err)
