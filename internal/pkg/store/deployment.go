@@ -2,6 +2,7 @@ package store
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
@@ -232,6 +233,7 @@ func (s *Store) FindPrevSuccessDeployment(ctx context.Context, d *ent.Deployment
 // CreateDeployment create a new deployment, and
 // it updates the 'latest_deployed_at' field of the repository.
 func (s *Store) CreateDeployment(ctx context.Context, d *ent.Deployment) (*ent.Deployment, error) {
+	// TODO: Group by a transaction
 	d, err := s.c.Deployment.Create().
 		SetNumber(d.Number).
 		SetType(d.Type).
@@ -250,6 +252,11 @@ func (s *Store) CreateDeployment(ctx context.Context, d *ent.Deployment) (*ent.D
 		Save(ctx)
 	if ent.IsConstraintError(err) {
 		return nil, e.NewError(e.ErrorCodeDeploymentConflict, err)
+	} else if ent.IsValidationError(err) {
+		return nil, e.NewErrorWithMessage(
+			e.ErrorCodeUnprocessableEntity,
+			fmt.Sprintf("The value of \"%s\" field is invalid.", err.(*ent.ValidationError).Name),
+			err)
 	} else if err != nil {
 		return nil, e.NewError(e.ErrorCodeInternalError, err)
 	}
@@ -276,7 +283,12 @@ func (s *Store) UpdateDeployment(ctx context.Context, d *ent.Deployment) (*ent.D
 		SetRequiredApprovalCount(d.RequiredApprovalCount).
 		SetStatus(d.Status).
 		Save(ctx)
-	if err != nil {
+	if ent.IsValidationError(err) {
+		return nil, e.NewErrorWithMessage(
+			e.ErrorCodeUnprocessableEntity,
+			fmt.Sprintf("The value of \"%s\" field is invalid.", err.(*ent.ValidationError).Name),
+			err)
+	} else if err != nil {
 		return nil, e.NewError(e.ErrorCodeInternalError, err)
 	}
 

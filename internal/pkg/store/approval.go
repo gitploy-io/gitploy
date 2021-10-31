@@ -2,6 +2,7 @@ package store
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
@@ -107,11 +108,21 @@ func (s *Store) FindApprovalOfUser(ctx context.Context, d *ent.Deployment, u *en
 }
 
 func (s *Store) CreateApproval(ctx context.Context, a *ent.Approval) (*ent.Approval, error) {
-	return s.c.Approval.
+	ap, err := s.c.Approval.
 		Create().
 		SetUserID(a.UserID).
 		SetDeploymentID(a.DeploymentID).
 		Save(ctx)
+	if ent.IsValidationError(err) {
+		return nil, e.NewErrorWithMessage(
+			e.ErrorCodeUnprocessableEntity,
+			fmt.Sprintf("The value of \"%s\" field is invalid.", err.(*ent.ValidationError).Name),
+			err)
+	} else if err != nil {
+		return nil, e.NewError(e.ErrorCodeInternalError, err)
+	}
+
+	return ap, nil
 }
 
 func (s *Store) UpdateApproval(ctx context.Context, a *ent.Approval) (*ent.Approval, error) {
@@ -120,7 +131,10 @@ func (s *Store) UpdateApproval(ctx context.Context, a *ent.Approval) (*ent.Appro
 		SetStatus(a.Status).
 		Save(ctx)
 	if ent.IsValidationError(err) {
-		return nil, e.NewError(e.ErrorCodeUnprocessableEntity, err)
+		return nil, e.NewErrorWithMessage(
+			e.ErrorCodeUnprocessableEntity,
+			fmt.Sprintf("The value of \"%s\" field is invalid.", err.(*ent.ValidationError).Name),
+			err)
 	} else if err != nil {
 		return nil, e.NewError(e.ErrorCodeInternalError, err)
 	}
