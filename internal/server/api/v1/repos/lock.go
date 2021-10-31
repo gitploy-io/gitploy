@@ -41,7 +41,7 @@ func (r *Repo) ListLocks(c *gin.Context) {
 
 	locks, err := r.i.ListLocksOfRepo(ctx, re)
 	if err != nil {
-		gb.LogWithError(r.log, "Failed to list locks.", err)
+		r.log.Check(gb.GetZapLogLevel(err), "Failed to list locks.").Write(zap.Error(err))
 		gb.ResponseWithError(c, err)
 		return
 	}
@@ -86,12 +86,12 @@ func (r *Repo) CreateLock(c *gin.Context) {
 
 	cfg, err := r.i.GetConfig(ctx, u, re)
 	if e.HasErrorCode(err, e.ErrorCodeNotFound) {
-		gb.LogWithError(r.log, "The configuration file is not found.", err)
+		r.log.Check(gb.GetZapLogLevel(err), "The configuration file is not found.").Write(zap.Error(err))
 		// To override the HTTP status 422.
 		gb.ResponseWithStatusAndError(c, http.StatusUnprocessableEntity, err)
 		return
 	} else if err != nil {
-		gb.LogWithError(r.log, "It has failed to get the configuration.", err)
+		r.log.Check(gb.GetZapLogLevel(err), "It has failed to get the configuration.").Write(zap.Error(err))
 		gb.ResponseWithError(c, err)
 		return
 	}
@@ -114,7 +114,7 @@ func (r *Repo) CreateLock(c *gin.Context) {
 		)
 		return
 	} else if err != nil {
-		gb.LogWithError(r.log, "Failed to check the lock.", err)
+		r.log.Check(gb.GetZapLogLevel(err), "Failed to check the lock.").Write(zap.Error(err))
 		gb.ResponseWithError(c, err)
 		return
 	}
@@ -127,7 +127,7 @@ func (r *Repo) CreateLock(c *gin.Context) {
 		RepoID:    re.ID,
 	})
 	if err != nil {
-		gb.LogWithError(r.log, "Failed to create a new lock.", err)
+		r.log.Check(gb.GetZapLogLevel(err), "Failed to create a new lock.").Write(zap.Error(err))
 		gb.ResponseWithError(c, err)
 		return
 	}
@@ -181,7 +181,7 @@ func (r *Repo) UpdateLock(c *gin.Context) {
 
 	l, err := r.i.FindLockByID(ctx, id)
 	if err != nil {
-		gb.LogWithError(r.log, "The lock is not found.", err)
+		r.log.Check(gb.GetZapLogLevel(err), "The lock is not found.").Write(zap.Error(err))
 		gb.ResponseWithError(c, err)
 		return
 	}
@@ -192,7 +192,7 @@ func (r *Repo) UpdateLock(c *gin.Context) {
 	}
 
 	if _, err := r.i.UpdateLock(ctx, l); err != nil {
-		gb.LogWithError(r.log, "Failed to update the lock.", err)
+		r.log.Check(gb.GetZapLogLevel(err), "Failed to update the lock.").Write(zap.Error(err))
 		gb.ResponseWithError(c, err)
 		return
 	}
@@ -222,13 +222,13 @@ func (r *Repo) DeleteLock(c *gin.Context) {
 
 	l, err := r.i.FindLockByID(ctx, id)
 	if err != nil {
-		gb.LogWithError(r.log, "Failed to find the lock.", err)
+		r.log.Check(gb.GetZapLogLevel(err), "Failed to find the lock.").Write(zap.Error(err))
 		gb.ResponseWithError(c, err)
 		return
 	}
 
 	if err := r.i.DeleteLock(ctx, l); err != nil {
-		gb.LogWithError(r.log, "Failed to delete the lock.", err)
+		r.log.Check(gb.GetZapLogLevel(err), "Failed to delete the lock.").Write(zap.Error(err))
 		gb.ResponseWithError(c, err)
 		return
 	}

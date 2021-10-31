@@ -53,7 +53,7 @@ func (s *Stream) GetEvents(c *gin.Context) {
 		events <- e
 	}
 	if err := s.i.SubscribeEvent(sub); err != nil {
-		gb.LogWithError(s.log, "Failed to subscribe notification events", err)
+		s.log.Check(gb.GetZapLogLevel(err), "Failed to subscribe notification events").Write(zap.Error(err))
 		gb.ResponseWithError(c, err)
 		return
 	}

@@ -66,7 +66,7 @@ func (r *Repo) ListRepos(c *gin.Context) {
 
 	repos, err := r.i.ListReposOfUser(ctx, u, q, namespace, name, sorted, atoi(page), atoi(perPage))
 	if err != nil {
-		gb.LogWithError(r.log, "Failed to list repositories.", err)
+		r.log.Check(gb.GetZapLogLevel(err), "Failed to list repositories.").Write(zap.Error(err))
 		gb.ResponseWithError(c, err)
 		return
 	}
@@ -103,13 +103,13 @@ func (r *Repo) UpdateRepo(c *gin.Context) {
 				Secret:      r.WebhookSecret,
 				InsecureSSL: r.WebhookSSL,
 			}); err != nil {
-				gb.LogWithError(r.log, "Failed to activate the repository.", err)
+				r.log.Check(gb.GetZapLogLevel(err), "Failed to activate the repository.").Write(zap.Error(err))
 				gb.ResponseWithError(c, err)
 				return
 			}
 		} else if !*p.Active && re.Active {
 			if re, err = r.i.DeactivateRepo(ctx, u, re); err != nil {
-				gb.LogWithError(r.log, "Failed to deactivate the repository.", err)
+				r.log.Check(gb.GetZapLogLevel(err), "Failed to deactivate the repository.").Write(zap.Error(err))
 				gb.ResponseWithError(c, err)
 				return
 			}
@@ -121,7 +121,7 @@ func (r *Repo) UpdateRepo(c *gin.Context) {
 			re.ConfigPath = *p.ConfigPath
 
 			if re, err = r.i.UpdateRepo(ctx, re); err != nil {
-				gb.LogWithError(r.log, "Failed to update the repository.", err)
+				r.log.Check(gb.GetZapLogLevel(err), "Failed to update the repository.").Write(zap.Error(err))
 				gb.ResponseWithError(c, err)
 				return
 			}

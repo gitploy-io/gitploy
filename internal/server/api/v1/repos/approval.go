@@ -43,14 +43,14 @@ func (r *Repo) ListApprovals(c *gin.Context) {
 
 	d, err := r.i.FindDeploymentOfRepoByNumber(ctx, re, atoi(number))
 	if err != nil {
-		gb.LogWithError(r.log, "Failed to find the deployment.", err)
+		r.log.Check(gb.GetZapLogLevel(err), "Failed to find the deployment.").Write(zap.Error(err))
 		gb.ResponseWithError(c, err)
 		return
 	}
 
 	as, err := r.i.ListApprovals(ctx, d)
 	if err != nil {
-		gb.LogWithError(r.log, "Failed to list approvals.", err)
+		r.log.Check(gb.GetZapLogLevel(err), "Failed to list approvals.").Write(zap.Error(err))
 		gb.ResponseWithError(c, err)
 		return
 	}
@@ -67,7 +67,7 @@ func (r *Repo) GetApproval(c *gin.Context) {
 
 	ap, err := r.i.FindApprovalByID(ctx, atoi(aid))
 	if err != nil {
-		gb.LogWithError(r.log, "Failed to find the approval.", err)
+		r.log.Check(gb.GetZapLogLevel(err), "Failed to find the approval.").Write(zap.Error(err))
 		gb.ResponseWithError(c, err)
 		return
 	}
@@ -99,14 +99,14 @@ func (r *Repo) GetMyApproval(c *gin.Context) {
 
 	d, err := r.i.FindDeploymentOfRepoByNumber(ctx, re, number)
 	if err != nil {
-		gb.LogWithError(r.log, "Failed to find the deployment.", err)
+		r.log.Check(gb.GetZapLogLevel(err), "Failed to find the deployment.").Write(zap.Error(err))
 		gb.ResponseWithError(c, err)
 		return
 	}
 
 	a, err := r.i.FindApprovalOfUser(ctx, d, u)
 	if err != nil {
-		gb.LogWithError(r.log, "Failed to find the user's approval.", err)
+		r.log.Check(gb.GetZapLogLevel(err), "Failed to find the user's approval.").Write(zap.Error(err))
 		gb.ResponseWithError(c, err)
 		return
 	}
@@ -145,7 +145,7 @@ func (r *Repo) CreateApproval(c *gin.Context) {
 
 	d, err := r.i.FindDeploymentOfRepoByNumber(ctx, re, number)
 	if err != nil {
-		gb.LogWithError(r.log, "Failed to find the deployment.", err)
+		r.log.Check(gb.GetZapLogLevel(err), "Failed to find the deployment.").Write(zap.Error(err))
 		gb.ResponseWithError(c, err)
 		return
 	}
@@ -153,27 +153,29 @@ func (r *Repo) CreateApproval(c *gin.Context) {
 	// TODO: Migrate the business logic into the interactor.
 	user, err := r.i.FindUserByID(ctx, p.UserID)
 	if err != nil {
-		gb.LogWithError(r.log, "Failed to find the user.", err)
+		r.log.Check(gb.GetZapLogLevel(err), "Failed to find the user.").Write(zap.Error(err))
 		gb.ResponseWithError(c, err)
 		return
 	}
 
 	_, err = r.i.FindPermOfRepo(ctx, re, user)
 	if e.HasErrorCode(err, e.ErrorCodeNotFound) {
-		gb.LogWithError(r.log, "The approver has no permission for the repository.", err)
+		r.log.Warn("The approver has no permission for the repository.", zap.Error(err))
 		// Override the HTTP status.
 		gb.ResponseWithStatusAndError(c, http.StatusUnprocessableEntity, err)
 		return
 	} else if err != nil {
-		gb.LogWithError(r.log, "Failed to find the perm of approver.", err)
+		r.log.Check(gb.GetZapLogLevel(err), "Failed to find the perm of approver.").Write(zap.Error(err))
 		gb.ResponseWithError(c, err)
 		return
 	}
 
 	if d.Edges.User != nil && user.ID == d.Edges.User.ID {
-		err := e.NewErrorWithMessage(e.ErrorCodeUnprocessableEntity, "The deployer can not be the approver.", nil)
-		gb.LogWithError(r.log, "Failed to create a new approval.", err)
-		gb.ResponseWithError(c, err)
+		r.log.Warn("Failed to create a new approval.", zap.Error(err))
+		gb.ResponseWithError(
+			c,
+			e.NewErrorWithMessage(e.ErrorCodeUnprocessableEntity, "The deployer can not be the approver.", nil),
+		)
 		return
 	}
 
@@ -182,7 +184,7 @@ func (r *Repo) CreateApproval(c *gin.Context) {
 		DeploymentID: d.ID,
 	})
 	if err != nil {
-		gb.LogWithError(r.log, "Failed to create a new approval.", err)
+		r.log.Check(gb.GetZapLogLevel(err), "Failed to create a new approval.").Write(zap.Error(err))
 		gb.ResponseWithError(c, err)
 		return
 	}
@@ -237,14 +239,14 @@ func (r *Repo) UpdateMyApproval(c *gin.Context) {
 
 	d, err := r.i.FindDeploymentOfRepoByNumber(ctx, re, number)
 	if err != nil {
-		gb.LogWithError(r.log, "Failed to find the deployment.", err)
+		r.log.Check(gb.GetZapLogLevel(err), "Failed to find the deployment.").Write(zap.Error(err))
 		gb.ResponseWithError(c, err)
 		return
 	}
 
 	a, err := r.i.FindApprovalOfUser(ctx, d, u)
 	if err != nil {
-		gb.LogWithError(r.log, "Failed to find the user's approval.", err)
+		r.log.Check(gb.GetZapLogLevel(err), "Failed to find the user's approval.").Write(zap.Error(err))
 		gb.ResponseWithError(c, err)
 		return
 	}
@@ -252,7 +254,7 @@ func (r *Repo) UpdateMyApproval(c *gin.Context) {
 	if p.Status != string(a.Status) {
 		a.Status = approval.Status(p.Status)
 		if a, err = r.i.UpdateApproval(ctx, a); err != nil {
-			gb.LogWithError(r.log, "Failed to update the approval.", err)
+			r.log.Check(gb.GetZapLogLevel(err), "Failed to update the approval.").Write(zap.Error(err))
 			gb.ResponseWithError(c, err)
 			return
 		}
@@ -292,13 +294,13 @@ func (r *Repo) DeleteApproval(c *gin.Context) {
 
 	ap, err := r.i.FindApprovalByID(ctx, aid)
 	if err != nil {
-		gb.LogWithError(r.log, "Failed to find the approval.", err)
+		r.log.Check(gb.GetZapLogLevel(err), "Failed to find the approval.").Write(zap.Error(err))
 		gb.ResponseWithError(c, err)
 		return
 	}
 
 	if err := r.i.DeleteApproval(ctx, ap); err != nil {
-		gb.LogWithError(r.log, "Failed to delete the approval.", err)
+		r.log.Check(gb.GetZapLogLevel(err), "Failed to delete the approval.").Write(zap.Error(err))
 		gb.ResponseWithError(c, err)
 		return
 	}

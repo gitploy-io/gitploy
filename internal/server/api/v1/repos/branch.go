@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
 
 	"github.com/gitploy-io/gitploy/ent"
 	gb "github.com/gitploy-io/gitploy/internal/server/global"
@@ -25,7 +26,7 @@ func (r *Repo) ListBranches(c *gin.Context) {
 
 	branches, err := r.i.ListBranches(ctx, u, repo, atoi(page), atoi(perPage))
 	if err != nil {
-		gb.LogWithError(r.log, "Failed to list branches.", err)
+		r.log.Check(gb.GetZapLogLevel(err), "Failed to list branches.").Write(zap.Error(err))
 		gb.ResponseWithError(c, err)
 		return
 	}
@@ -47,7 +48,7 @@ func (r *Repo) GetBranch(c *gin.Context) {
 
 	b, err := r.i.GetBranch(ctx, u, repo, branch)
 	if err != nil {
-		gb.LogWithError(r.log, "Failed to get the branch.", err)
+		r.log.Check(gb.GetZapLogLevel(err), "Failed to get the branch.").Write(zap.Error(err))
 		gb.ResponseWithError(c, err)
 		return
 	}

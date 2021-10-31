@@ -58,7 +58,7 @@ func (u *User) ListUsers(c *gin.Context) {
 
 	us, err := u.i.ListUsers(ctx, q, p, pp)
 	if err != nil {
-		gb.LogWithError(u.log, "Failed to list users.", err)
+		u.log.Check(gb.GetZapLogLevel(err), "Failed to list users.").Write(zap.Error(err))
 		gb.ResponseWithError(c, err)
 		return
 	}
@@ -95,7 +95,7 @@ func (u *User) UpdateUser(c *gin.Context) {
 
 	du, err := u.i.FindUserByID(ctx, id)
 	if err != nil {
-		gb.LogWithError(u.log, "Failed to find the user.", err)
+		u.log.Check(gb.GetZapLogLevel(err), "Failed to find the user.").Write(zap.Error(err))
 		gb.ResponseWithError(c, err)
 		return
 	}
@@ -103,7 +103,7 @@ func (u *User) UpdateUser(c *gin.Context) {
 	if p.Admin != nil {
 		du.Admin = *p.Admin
 		if du, err = u.i.UpdateUser(ctx, du); err != nil {
-			gb.LogWithError(u.log, "Failed to update the user.", err)
+			u.log.Check(gb.GetZapLogLevel(err), "Failed to update the user.").Write(zap.Error(err))
 			gb.ResponseWithError(c, err)
 			return
 		}
@@ -131,13 +131,13 @@ func (u *User) DeleteUser(c *gin.Context) {
 
 	du, err := u.i.FindUserByID(ctx, id)
 	if err != nil {
-		gb.LogWithError(u.log, "Failed to find the user.", err)
+		u.log.Check(gb.GetZapLogLevel(err), "Failed to find the user.").Write(zap.Error(err))
 		gb.ResponseWithError(c, err)
 		return
 	}
 
 	if err := u.i.DeleteUser(ctx, du); err != nil {
-		gb.LogWithError(u.log, "Failed to delete the user.", err)
+		u.log.Check(gb.GetZapLogLevel(err), "Failed to delete the user.").Write(zap.Error(err))
 		gb.ResponseWithError(c, err)
 		return
 	}
@@ -153,7 +153,7 @@ func (u *User) GetMyUser(c *gin.Context) {
 
 	uv, err := u.i.FindUserByID(ctx, uv.ID)
 	if err != nil {
-		gb.LogWithError(u.log, "Failed to find the user.", err)
+		u.log.Check(gb.GetZapLogLevel(err), "Failed to find the user.").Write(zap.Error(err))
 		gb.ResponseWithError(c, err)
 		return
 	}
@@ -173,7 +173,7 @@ func (u *User) GetRateLimit(c *gin.Context) {
 	)
 
 	if rl, err = u.i.GetRateLimit(ctx, uv); err != nil {
-		gb.LogWithError(u.log, "Failed to get the rate-limit.", err)
+		u.log.Check(gb.GetZapLogLevel(err), "Failed to get the rate-limit.").Write(zap.Error(err))
 		gb.ResponseWithError(c, err)
 		return
 	}

@@ -47,14 +47,14 @@ func (r *Repo) ListComments(c *gin.Context) {
 
 	d, err := r.i.FindDeploymentOfRepoByNumber(ctx, re, number)
 	if err != nil {
-		gb.LogWithError(r.log, "Failed to find the deployment.", err)
+		r.log.Check(gb.GetZapLogLevel(err), "Failed to find the deployment.").Write(zap.Error(err))
 		gb.ResponseWithError(c, err)
 		return
 	}
 
 	cmts, err := r.i.ListCommentsOfDeployment(ctx, d)
 	if err != nil {
-		gb.LogWithError(r.log, "Failed to list comments.", err)
+		r.log.Check(gb.GetZapLogLevel(err), "Failed to list comments.").Write(zap.Error(err))
 		gb.ResponseWithError(c, err)
 		return
 	}
@@ -79,7 +79,7 @@ func (r *Repo) GetComment(c *gin.Context) {
 
 	cmt, err := r.i.FindCommentByID(ctx, id)
 	if err != nil {
-		gb.LogWithError(r.log, "Failed to find the comment.", err)
+		r.log.Check(gb.GetZapLogLevel(err), "Failed to find the comment.").Write(zap.Error(err))
 		gb.ResponseWithError(c, err)
 		return
 	}
@@ -122,7 +122,7 @@ func (r *Repo) CreateComment(c *gin.Context) {
 
 	d, err := r.i.FindDeploymentOfRepoByNumber(ctx, re, number)
 	if err != nil {
-		gb.LogWithError(r.log, "Failed to find the deployment.", err)
+		r.log.Check(gb.GetZapLogLevel(err), "Failed to find the deployment.").Write(zap.Error(err))
 		gb.ResponseWithError(c, err)
 		return
 	}
@@ -134,7 +134,7 @@ func (r *Repo) CreateComment(c *gin.Context) {
 		DeploymentID: d.ID,
 	})
 	if err != nil {
-		gb.LogWithError(r.log, "Failed to create a new comment.", err)
+		r.log.Check(gb.GetZapLogLevel(err), "Failed to create a new comment.").Write(zap.Error(err))
 		gb.ResponseWithError(c, err)
 		return
 	}

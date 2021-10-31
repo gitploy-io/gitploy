@@ -61,7 +61,6 @@ func setGlobalLogger(debug bool) {
 		config.Encoding = "json"
 	} else {
 		config = zap.NewProductionConfig()
-		config.DisableStacktrace = true
 	}
 
 	logger, _ := config.Build()

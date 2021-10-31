@@ -61,7 +61,7 @@ func NewErrorWithMessage(code ErrorCode, message string, wrap error) *Error {
 }
 
 func (e *Error) Error() string {
-	return fmt.Sprintf("code: %s, message: %s, wrap: %s", e.Code, GetMessage(e.Code), e.Wrap)
+	return fmt.Sprintf("code: %s, message: %s, wrap: %s", e.Code, e.Message, e.Wrap)
 }
 
 func (e *Error) Unwrap() error {

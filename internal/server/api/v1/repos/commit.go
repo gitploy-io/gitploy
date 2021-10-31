@@ -7,6 +7,7 @@ import (
 	"github.com/gitploy-io/gitploy/ent"
 	gb "github.com/gitploy-io/gitploy/internal/server/global"
 	"github.com/gitploy-io/gitploy/vo"
+	"go.uber.org/zap"
 )
 
 func (r *Repo) ListCommits(c *gin.Context) {
@@ -26,7 +27,7 @@ func (r *Repo) ListCommits(c *gin.Context) {
 
 	commits, err := r.i.ListCommits(ctx, u, repo, branch, atoi(page), atoi(perPage))
 	if err != nil {
-		gb.LogWithError(r.log, "Failed to list commits.", err)
+		r.log.Check(gb.GetZapLogLevel(err), "Failed to list commits.").Write(zap.Error(err))
 		gb.ResponseWithError(c, err)
 		return
 	}
@@ -49,7 +50,7 @@ func (r *Repo) GetCommit(c *gin.Context) {
 
 	commit, err := r.i.GetCommit(ctx, u, repo, sha)
 	if err != nil {
-		gb.LogWithError(r.log, "Failed to get the commit.", err)
+		r.log.Check(gb.GetZapLogLevel(err), "Failed to get the commit.").Write(zap.Error(err))
 		gb.ResponseWithError(c, err)
 		return
 	}
@@ -72,7 +73,7 @@ func (r *Repo) ListStatuses(c *gin.Context) {
 
 	ss, err := r.i.ListCommitStatuses(ctx, u, repo, sha)
 	if err != nil {
-		gb.LogWithError(r.log, "Failed to list commit statuses.", err)
+		r.log.Check(gb.GetZapLogLevel(err), "Failed to list commit statuses.").Write(zap.Error(err))
 		gb.ResponseWithError(c, err)
 		return
 	}

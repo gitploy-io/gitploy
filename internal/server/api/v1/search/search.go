@@ -112,7 +112,7 @@ func (s *Search) SearchDeployments(c *gin.Context) {
 	u := v.(*ent.User)
 
 	if ds, err = s.i.SearchDeployments(ctx, u, ss, o, f.UTC(), t.UTC(), p, pp); err != nil {
-		gb.LogWithError(s.log, "Failed to search deployments.", err)
+		s.log.Check(gb.GetZapLogLevel(err), "Failed to search deployments.").Write(zap.Error(err))
 		gb.ResponseWithError(c, err)
 		return
 	}
@@ -188,7 +188,7 @@ func (s *Search) SearchApprovals(c *gin.Context) {
 	u := v.(*ent.User)
 
 	if ds, err = s.i.SearchApprovals(ctx, u, ss, f.UTC(), t.UTC(), p, pp); err != nil {
-		gb.LogWithError(s.log, "Failed to search deployments.", err)
+		s.log.Check(gb.GetZapLogLevel(err), "Failed to search deployments.").Write(zap.Error(err))
 		gb.ResponseWithError(c, err)
 		return
 	}

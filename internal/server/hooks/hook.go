@@ -102,21 +102,21 @@ func (h *Hooks) handleGithubHook(c *gin.Context) {
 	uid := *evt.Deployment.ID
 	d, err := h.i.FindDeploymentByUID(ctx, uid)
 	if err != nil {
-		gb.LogWithError(h.log, "Failed to find the deployment by UID.", err)
+		h.log.Check(gb.GetZapLogLevel(err), "Failed to find the deployment by UID.").Write(zap.Error(err))
 		gb.ResponseWithError(c, err)
 		return
 	}
 
 	ds.DeploymentID = d.ID
 	if ds, err = h.i.SyncDeploymentStatus(ctx, ds); err != nil {
-		gb.LogWithError(h.log, "Failed to create a new the deployment status.", err)
+		h.log.Check(gb.GetZapLogLevel(err), "Failed to create a new the deployment status.").Write(zap.Error(err))
 		gb.ResponseWithError(c, err)
 		return
 	}
 
 	d.Status = mapGithubState(ds.Status)
 	if _, err := h.i.UpdateDeployment(ctx, d); err != nil {
-		gb.LogWithError(h.log, "Failed to update the deployment.", err)
+		h.log.Check(gb.GetZapLogLevel(err), "Failed to update the deployment.").Write(zap.Error(err))
 		gb.ResponseWithError(c, err)
 		return
 	}

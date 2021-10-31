@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
 
 	"github.com/gitploy-io/gitploy/ent"
 	gb "github.com/gitploy-io/gitploy/internal/server/global"
@@ -24,7 +25,7 @@ func (r *Repo) ListTags(c *gin.Context) {
 
 	tags, err := r.i.ListTags(ctx, u, repo, atoi(page), atoi(perPage))
 	if err != nil {
-		gb.LogWithError(r.log, "Failed to list tags.", err)
+		r.log.Check(gb.GetZapLogLevel(err), "Failed to list tags.").Write(zap.Error(err))
 		gb.ResponseWithError(c, err)
 		return
 	}
@@ -46,7 +47,7 @@ func (r *Repo) GetTag(c *gin.Context) {
 
 	t, err := r.i.GetTag(ctx, u, repo, tag)
 	if err != nil {
-		gb.LogWithError(r.log, "Failed to get the tag.", err)
+		r.log.Check(gb.GetZapLogLevel(err), "Failed to get the tag.").Write(zap.Error(err))
 		gb.ResponseWithError(c, err)
 		return
 	}

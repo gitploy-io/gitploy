@@ -43,18 +43,18 @@ func (rm *RepoMiddleware) RepoReadPerm() gin.HandlerFunc {
 
 		r, err := rm.i.FindRepoOfUserByNamespaceName(ctx, u, namespace, name)
 		if err != nil {
-			gb.LogWithError(rm.log, "Failed to find the repository.", err)
+			rm.log.Check(gb.GetZapLogLevel(err), "Failed to find the repository.").Write(zap.Error(err))
 			gb.AbortWithError(c, err)
 			return
 		}
 
 		_, err = rm.i.FindPermOfRepo(ctx, r, u)
 		if e.HasErrorCode(err, e.ErrorCodeNotFound) {
-			gb.LogWithError(rm.log, "It is denied to acess the repository.", err)
+			rm.log.Check(gb.GetZapLogLevel(err), "It is denied to acess the repository.").Write(zap.Error(err))
 			gb.AbortWithStatusAndError(c, http.StatusForbidden, err)
 			return
 		} else if err != nil {
-			gb.LogWithError(rm.log, "Failed to find the permission.", err)
+			rm.log.Check(gb.GetZapLogLevel(err), "Failed to find the permission.").Write(zap.Error(err))
 			gb.AbortWithError(c, err)
 			return
 		}
@@ -77,18 +77,18 @@ func (rm *RepoMiddleware) RepoWritePerm() gin.HandlerFunc {
 
 		r, err := rm.i.FindRepoOfUserByNamespaceName(ctx, u, namespace, name)
 		if err != nil {
-			gb.LogWithError(rm.log, "Failed to find the repository.", err)
+			rm.log.Check(gb.GetZapLogLevel(err), "Failed to find the repository.").Write(zap.Error(err))
 			gb.AbortWithError(c, err)
 			return
 		}
 
 		p, err := rm.i.FindPermOfRepo(ctx, r, u)
 		if e.HasErrorCode(err, e.ErrorCodeNotFound) {
-			gb.LogWithError(rm.log, "It is denied to acess the repository.", err)
+			rm.log.Check(gb.GetZapLogLevel(err), "It is denied to acess the repository.").Write(zap.Error(err))
 			gb.AbortWithStatusAndError(c, http.StatusForbidden, err)
 			return
 		} else if err != nil {
-			gb.LogWithError(rm.log, "Failed to find the permission.", err)
+			rm.log.Check(gb.GetZapLogLevel(err), "Failed to find the permission.").Write(zap.Error(err))
 			gb.AbortWithError(c, err)
 			return
 		}
@@ -121,18 +121,18 @@ func (rm *RepoMiddleware) RepoAdminPerm() gin.HandlerFunc {
 
 		r, err := rm.i.FindRepoOfUserByNamespaceName(ctx, u, namespace, name)
 		if err != nil {
-			gb.LogWithError(rm.log, "Failed to find the repository.", err)
+			rm.log.Check(gb.GetZapLogLevel(err), "Failed to find the repository.").Write(zap.Error(err))
 			gb.AbortWithError(c, err)
 			return
 		}
 
 		p, err := rm.i.FindPermOfRepo(ctx, r, u)
 		if e.HasErrorCode(err, e.ErrorCodeNotFound) {
-			gb.LogWithError(rm.log, "It is denied to acess the repository.", err)
+			rm.log.Check(gb.GetZapLogLevel(err), "It is denied to acess the repository.").Write(zap.Error(err))
 			gb.AbortWithStatusAndError(c, http.StatusForbidden, err)
 			return
 		} else if err != nil {
-			gb.LogWithError(rm.log, "Failed to find the permission.", err)
+			rm.log.Check(gb.GetZapLogLevel(err), "Failed to find the permission.").Write(zap.Error(err))
 			gb.AbortWithError(c, err)
 			return
 		}

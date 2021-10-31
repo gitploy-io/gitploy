@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
 
 	"github.com/gitploy-io/gitploy/ent"
 	gb "github.com/gitploy-io/gitploy/internal/server/global"
@@ -27,7 +28,7 @@ func (r *Repo) ListPerms(c *gin.Context) {
 
 	perms, err := r.i.ListPermsOfRepo(ctx, re, q, page, perPage)
 	if err != nil {
-		gb.LogWithError(r.log, "Failed to list permissions.", err)
+		r.log.Check(gb.GetZapLogLevel(err), "Failed to list permissions.").Write(zap.Error(err))
 		gb.ResponseWithError(c, err)
 		return
 	}
