@@ -2,16 +2,18 @@ package store
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/gitploy-io/gitploy/ent"
 	"github.com/gitploy-io/gitploy/ent/perm"
 	"github.com/gitploy-io/gitploy/ent/repo"
 	"github.com/gitploy-io/gitploy/ent/user"
+	"github.com/gitploy-io/gitploy/pkg/e"
 )
 
 func (s *Store) ListPermsOfRepo(ctx context.Context, r *ent.Repo, q string, page, perPage int) ([]*ent.Perm, error) {
-	return s.c.Perm.
+	perms, err := s.c.Perm.
 		Query().
 		Where(
 			perm.And(
@@ -24,10 +26,15 @@ func (s *Store) ListPermsOfRepo(ctx context.Context, r *ent.Repo, q string, page
 		Limit(perPage).
 		Offset(offset(page, perPage)).
 		All(ctx)
+	if err != nil {
+		return nil, e.NewError(e.ErrorCodeInternalError, err)
+	}
+
+	return perms, nil
 }
 
 func (s *Store) FindPermOfRepo(ctx context.Context, r *ent.Repo, u *ent.User) (*ent.Perm, error) {
-	return s.c.Perm.
+	p, err := s.c.Perm.
 		Query().
 		Where(
 			perm.And(
@@ -38,24 +45,51 @@ func (s *Store) FindPermOfRepo(ctx context.Context, r *ent.Repo, u *ent.User) (*
 		WithRepo().
 		WithUser().
 		Only(ctx)
+	if ent.IsNotFound(err) {
+		return nil, e.NewErrorWithMessage(e.ErrorCodeNotFound, "The user has no permission for the repository.", err)
+	} else if err != nil {
+		return nil, e.NewError(e.ErrorCodeInternalError, err)
+	}
+
+	return p, nil
 }
 
 func (s *Store) CreatePerm(ctx context.Context, p *ent.Perm) (*ent.Perm, error) {
-	return s.c.Perm.
+	perm, err := s.c.Perm.
 		Create().
 		SetRepoPerm(p.RepoPerm).
 		SetSyncedAt(p.SyncedAt).
 		SetUserID(p.UserID).
 		SetRepoID(p.RepoID).
 		Save(ctx)
+	if ent.IsValidationError(err) {
+		return nil, e.NewErrorWithMessage(
+			e.ErrorCodeUnprocessableEntity,
+			fmt.Sprintf("The value of \"%s\" field is invalid.", err.(*ent.ValidationError).Name),
+			err)
+	} else if err != nil {
+		return nil, e.NewError(e.ErrorCodeInternalError, err)
+	}
+
+	return perm, nil
 }
 
 func (s *Store) UpdatePerm(ctx context.Context, p *ent.Perm) (*ent.Perm, error) {
-	return s.c.Perm.
+	perm, err := s.c.Perm.
 		UpdateOne(p).
 		SetRepoPerm(p.RepoPerm).
 		SetSyncedAt(p.SyncedAt).
 		Save(ctx)
+	if ent.IsValidationError(err) {
+		return nil, e.NewErrorWithMessage(
+			e.ErrorCodeUnprocessableEntity,
+			fmt.Sprintf("The value of \"%s\" field is invalid.", err.(*ent.ValidationError).Name),
+			err)
+	} else if err != nil {
+		return nil, e.NewError(e.ErrorCodeInternalError, err)
+	}
+
+	return perm, nil
 }
 
 func (s *Store) DeletePermsOfUserLessThanSyncedAt(ctx context.Context, u *ent.User, t time.Time) (int, error) {
@@ -82,7 +116,7 @@ func (s *Store) DeletePermsOfUserLessThanSyncedAt(ctx context.Context, u *ent.Us
 			Exec(ctx)
 		return err
 	}); err != nil {
-		return 0, err
+		return 0, e.NewError(e.ErrorCodeInternalError, err)
 	}
 
 	return cnt, nil

@@ -13,6 +13,7 @@ import (
 	"github.com/gitploy-io/gitploy/ent/approval"
 	"github.com/gitploy-io/gitploy/ent/deployment"
 	gb "github.com/gitploy-io/gitploy/internal/server/global"
+	"github.com/gitploy-io/gitploy/pkg/e"
 )
 
 const (
@@ -63,27 +64,42 @@ func (s *Search) SearchDeployments(c *gin.Context) {
 	}
 
 	if o, err = strconv.ParseBool(owned); err != nil {
-		gb.ErrorResponse(c, http.StatusBadRequest, "Invalid format of \"owned\" parameter.")
+		gb.ResponseWithError(
+			c,
+			e.NewErrorWithMessage(e.ErrorCodeInvalidRequest, "The owned must be boolean.", err),
+		)
 		return
 	}
 
 	if f, err = time.Parse(time.RFC3339, from); err != nil {
-		gb.ErrorResponse(c, http.StatusBadRequest, "Invalid format of \"from\" parameter, RFC3339 format only.")
+		gb.ResponseWithError(
+			c,
+			e.NewErrorWithMessage(e.ErrorCodeInvalidRequest, "Invalid format of \"from\" parameter, RFC3339 format only.", err),
+		)
 		return
 	}
 
 	if t, err = time.Parse(time.RFC3339, to); err != nil {
-		gb.ErrorResponse(c, http.StatusBadRequest, "Invalid format of \"to\" parameter, RFC3339 format only.")
+		gb.ResponseWithError(
+			c,
+			e.NewErrorWithMessage(e.ErrorCodeInvalidRequest, "Invalid format of \"to\" parameter, RFC3339 format only.", err),
+		)
 		return
 	}
 
 	if p, err = strconv.Atoi(page); err != nil {
-		gb.ErrorResponse(c, http.StatusBadRequest, "Invalid format of \"page\" parameter.")
+		gb.ResponseWithError(
+			c,
+			e.NewErrorWithMessage(e.ErrorCodeInvalidRequest, "Invalid format of \"page\" parameter.", err),
+		)
 		return
 	}
 
 	if pp, err = strconv.Atoi(perPage); err != nil {
-		gb.ErrorResponse(c, http.StatusBadRequest, "Invalid format of \"per_page\" parameter.")
+		gb.ResponseWithError(
+			c,
+			e.NewErrorWithMessage(e.ErrorCodeInvalidRequest, "Invalid format of \"per_page\" parameter.", err),
+		)
 		return
 	}
 
@@ -96,8 +112,8 @@ func (s *Search) SearchDeployments(c *gin.Context) {
 	u := v.(*ent.User)
 
 	if ds, err = s.i.SearchDeployments(ctx, u, ss, o, f.UTC(), t.UTC(), p, pp); err != nil {
-		s.log.Error("It has failed to search deployments.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to search deployments.")
+		s.log.Check(gb.GetZapLogLevel(err), "Failed to search deployments.").Write(zap.Error(err))
+		gb.ResponseWithError(c, err)
 		return
 	}
 
@@ -132,22 +148,34 @@ func (s *Search) SearchApprovals(c *gin.Context) {
 	}
 
 	if f, err = time.Parse(time.RFC3339, from); err != nil {
-		gb.ErrorResponse(c, http.StatusBadRequest, "Invalid format of \"from\" parameter, RFC3339 format only.")
+		gb.ResponseWithError(
+			c,
+			e.NewErrorWithMessage(e.ErrorCodeInvalidRequest, "Invalid format of \"from\" parameter.", err),
+		)
 		return
 	}
 
 	if t, err = time.Parse(time.RFC3339, to); err != nil {
-		gb.ErrorResponse(c, http.StatusBadRequest, "Invalid format of \"to\" parameter, RFC3339 format only.")
+		gb.ResponseWithError(
+			c,
+			e.NewErrorWithMessage(e.ErrorCodeInvalidRequest, "Invalid format of \"to\" parameter.", err),
+		)
 		return
 	}
 
 	if p, err = strconv.Atoi(page); err != nil {
-		gb.ErrorResponse(c, http.StatusBadRequest, "Invalid format of \"page\" parameter.")
+		gb.ResponseWithError(
+			c,
+			e.NewErrorWithMessage(e.ErrorCodeInvalidRequest, "Invalid format of \"page\" parameter.", err),
+		)
 		return
 	}
 
 	if pp, err = strconv.Atoi(perPage); err != nil {
-		gb.ErrorResponse(c, http.StatusBadRequest, "Invalid format of \"per_page\" parameter.")
+		gb.ResponseWithError(
+			c,
+			e.NewErrorWithMessage(e.ErrorCodeInvalidRequest, "Invalid format of \"per_page\" parameter.", err),
+		)
 		return
 	}
 
@@ -160,8 +188,8 @@ func (s *Search) SearchApprovals(c *gin.Context) {
 	u := v.(*ent.User)
 
 	if ds, err = s.i.SearchApprovals(ctx, u, ss, f.UTC(), t.UTC(), p, pp); err != nil {
-		s.log.Error("It has failed to search deployments.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to search deployments.")
+		s.log.Check(gb.GetZapLogLevel(err), "Failed to search deployments.").Write(zap.Error(err))
+		gb.ResponseWithError(c, err)
 		return
 	}
 

@@ -10,6 +10,7 @@ import (
 
 	"github.com/gitploy-io/gitploy/ent"
 	gb "github.com/gitploy-io/gitploy/internal/server/global"
+	"github.com/gitploy-io/gitploy/pkg/e"
 	"github.com/gitploy-io/gitploy/vo"
 )
 
@@ -42,17 +43,23 @@ func (u *User) ListUsers(c *gin.Context) {
 	)
 
 	if p, err = strconv.Atoi(c.DefaultQuery("page", "1")); err != nil {
-		gb.ErrorResponse(c, http.StatusBadRequest, "Invalid format \"page\".")
+		gb.ResponseWithError(
+			c,
+			e.NewErrorWithMessage(e.ErrorCodeInvalidRequest, "The page must be number.", err),
+		)
 	}
 
 	if pp, err = strconv.Atoi(c.DefaultQuery("per_page", "30")); err != nil {
-		gb.ErrorResponse(c, http.StatusBadRequest, "Invalid format \"per_page\".")
+		gb.ResponseWithError(
+			c,
+			e.NewErrorWithMessage(e.ErrorCodeInvalidRequest, "The per_page must be number.", err),
+		)
 	}
 
 	us, err := u.i.ListUsers(ctx, q, p, pp)
 	if err != nil {
-		u.log.Error("It has failed to list users.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to list users.")
+		u.log.Check(gb.GetZapLogLevel(err), "Failed to list users.").Write(zap.Error(err))
+		gb.ResponseWithError(c, err)
 		return
 	}
 
@@ -68,34 +75,36 @@ func (u *User) UpdateUser(c *gin.Context) {
 	)
 
 	if id, err = strconv.ParseInt(c.Param("id"), 10, 64); err != nil {
-		u.log.Error("Invalid ID of user.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusBadRequest, "Invalid ID of user.")
+		u.log.Warn("The id must be number.", zap.Error(err))
+		gb.ResponseWithError(
+			c,
+			e.NewErrorWithMessage(e.ErrorCodeInvalidRequest, "The id must be number.", err),
+		)
 		return
 	}
 
 	p := &userPatchPayload{}
 	if err := c.ShouldBindBodyWith(p, binding.JSON); err != nil {
-		u.log.Error("It has failed to binding the payload.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusBadRequest, "It has failed to binding the payload.")
+		u.log.Warn("It has failed to binding the payload.", zap.Error(err))
+		gb.ResponseWithError(
+			c,
+			e.NewErrorWithMessage(e.ErrorCodeInvalidRequest, "It has failed to binding the payload.", err),
+		)
 		return
 	}
 
 	du, err := u.i.FindUserByID(ctx, id)
-	if ent.IsNotFound(err) {
-		u.log.Warn("The deleting user is not found.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "The deleting user is not found.")
-		return
-	} else if err != nil {
-		u.log.Error("It has failed to get the user.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to get the user.")
+	if err != nil {
+		u.log.Check(gb.GetZapLogLevel(err), "Failed to find the user.").Write(zap.Error(err))
+		gb.ResponseWithError(c, err)
 		return
 	}
 
 	if p.Admin != nil {
 		du.Admin = *p.Admin
 		if du, err = u.i.UpdateUser(ctx, du); err != nil {
-			u.log.Error("It has failed to patch the user.", zap.Error(err))
-			gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to delete the user.")
+			u.log.Check(gb.GetZapLogLevel(err), "Failed to update the user.").Write(zap.Error(err))
+			gb.ResponseWithError(c, err)
 			return
 		}
 	}
@@ -112,25 +121,24 @@ func (u *User) DeleteUser(c *gin.Context) {
 	)
 
 	if id, err = strconv.ParseInt(c.Param("id"), 10, 64); err != nil {
-		u.log.Error("Invalid ID of user.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusBadRequest, "Invalid ID of user.")
+		u.log.Warn("The id must be number.", zap.Error(err))
+		gb.ResponseWithError(
+			c,
+			e.NewErrorWithMessage(e.ErrorCodeInvalidRequest, "The id must be number.", err),
+		)
 		return
 	}
 
 	du, err := u.i.FindUserByID(ctx, id)
-	if ent.IsNotFound(err) {
-		u.log.Warn("The deleting user is not found.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "The deleting user is not found.")
-		return
-	} else if err != nil {
-		u.log.Error("It has failed to get the user.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to get the user.")
+	if err != nil {
+		u.log.Check(gb.GetZapLogLevel(err), "Failed to find the user.").Write(zap.Error(err))
+		gb.ResponseWithError(c, err)
 		return
 	}
 
 	if err := u.i.DeleteUser(ctx, du); err != nil {
-		u.log.Error("It has failed to delete the user.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to delete the user.")
+		u.log.Check(gb.GetZapLogLevel(err), "Failed to delete the user.").Write(zap.Error(err))
+		gb.ResponseWithError(c, err)
 		return
 	}
 
@@ -145,8 +153,8 @@ func (u *User) GetMyUser(c *gin.Context) {
 
 	uv, err := u.i.FindUserByID(ctx, uv.ID)
 	if err != nil {
-		u.log.Error("failed to find the user.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to find the user.")
+		u.log.Check(gb.GetZapLogLevel(err), "Failed to find the user.").Write(zap.Error(err))
+		gb.ResponseWithError(c, err)
 		return
 	}
 
@@ -165,8 +173,8 @@ func (u *User) GetRateLimit(c *gin.Context) {
 	)
 
 	if rl, err = u.i.GetRateLimit(ctx, uv); err != nil {
-		u.log.Error("It has failed to get the rate-limit.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to get the rate-limit.")
+		u.log.Check(gb.GetZapLogLevel(err), "Failed to get the rate-limit.").Write(zap.Error(err))
+		gb.ResponseWithError(c, err)
 		return
 	}
 

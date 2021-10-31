@@ -38,8 +38,8 @@ func (s *Syncher) Sync(c *gin.Context) {
 
 	remotes, err := s.i.ListRemoteRepos(ctx, u)
 	if err != nil {
-		s.log.Error("It has failed to list remote repositories.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to list remote repositories.")
+		s.log.Check(gb.GetZapLogLevel(err), "Failed to list remote repositories.").Write(zap.Error(err))
+		gb.ResponseWithError(c, err)
 		return
 	}
 
@@ -62,8 +62,8 @@ func (s *Syncher) Sync(c *gin.Context) {
 	// Delete staled perms.
 	var cnt int
 	if cnt, err = s.i.DeletePermsOfUserLessThanSyncedAt(ctx, u, syncTime); err != nil {
-		s.log.Error("It has failed to delete staled repositories.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to delete staled repositories.")
+		s.log.Check(gb.GetZapLogLevel(err), "Failed to delete staled repositories.").Write(zap.Error(err))
+		gb.ResponseWithError(c, err)
 		return
 	}
 	s.log.Debug(fmt.Sprintf("Delete %d staled perms.", cnt))

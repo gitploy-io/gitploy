@@ -9,6 +9,7 @@ import (
 
 	"github.com/gitploy-io/gitploy/ent"
 	gb "github.com/gitploy-io/gitploy/internal/server/global"
+	"github.com/gitploy-io/gitploy/pkg/e"
 )
 
 func (r *Repo) ListApprovals(c *gin.Context) {
@@ -24,13 +25,22 @@ func (r *Repo) GetMyApproval(c *gin.Context) {
 }
 
 func (r *Repo) CreateApproval(c *gin.Context) {
-	gb.ErrorResponse(c, http.StatusPaymentRequired, "It is limited to the community edition.")
+	gb.ResponseWithError(
+		c,
+		e.NewError(e.ErrorCodeLicenseRequired, nil),
+	)
 }
 
 func (r *Repo) UpdateMyApproval(c *gin.Context) {
-	gb.ErrorResponse(c, http.StatusPaymentRequired, "It is limited to the community edition.")
+	gb.ResponseWithError(
+		c,
+		e.NewError(e.ErrorCodeLicenseRequired, nil),
+	)
 }
 
 func (r *Repo) DeleteApproval(c *gin.Context) {
-	gb.ErrorResponse(c, http.StatusPaymentRequired, "It is limited to the community edition.")
+	gb.ResponseWithError(
+		c,
+		e.NewError(e.ErrorCodeLicenseRequired, nil),
+	)
 }

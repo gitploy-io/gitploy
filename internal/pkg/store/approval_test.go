@@ -9,6 +9,7 @@ import (
 	"github.com/gitploy-io/gitploy/ent/approval"
 	"github.com/gitploy-io/gitploy/ent/enttest"
 	"github.com/gitploy-io/gitploy/ent/migrate"
+	"github.com/gitploy-io/gitploy/pkg/e"
 )
 
 func TestStore_SearchApprovals(t *testing.T) {
@@ -78,4 +79,62 @@ func TestStore_SearchApprovals(t *testing.T) {
 		}
 	})
 
+}
+
+func TestStore_UpdateApproval(t *testing.T) {
+	t.Run("Return unprocessable_entity error when the status is invalid.", func(t *testing.T) {
+		ctx := context.Background()
+
+		client := enttest.Open(t,
+			"sqlite3",
+			"file:ent?mode=memory&cache=shared&_fk=1",
+			enttest.WithMigrateOptions(migrate.WithForeignKeys(false)),
+		)
+		defer client.Close()
+
+		a := client.Approval.
+			Create().
+			SetUserID(1).
+			SetDeploymentID(1).
+			SaveX(ctx)
+
+		store := NewStore(client)
+
+		t.Log("Update the approval with the invalid value.")
+		a.Status = approval.Status("VALUE")
+		_, err := store.UpdateApproval(ctx, a)
+		if !e.HasErrorCode(err, e.ErrorCodeUnprocessableEntity) {
+			t.Fatalf("UpdateApproval return error = %v, wanted ErrorCodeUnprocessableEntity", err)
+		}
+	})
+
+	t.Run("Return the updated approval.", func(t *testing.T) {
+		ctx := context.Background()
+
+		client := enttest.Open(t,
+			"sqlite3",
+			"file:ent?mode=memory&cache=shared&_fk=1",
+			enttest.WithMigrateOptions(migrate.WithForeignKeys(false)),
+		)
+		defer client.Close()
+
+		a := client.Approval.
+			Create().
+			SetUserID(1).
+			SetDeploymentID(1).
+			SaveX(ctx)
+
+		store := NewStore(client)
+
+		t.Log("Update the approval ")
+		a.Status = approval.StatusApproved
+		a, err := store.UpdateApproval(ctx, a)
+		if err != nil {
+			t.Fatalf("UpdateApproval returns an error: %v", err)
+		}
+
+		if a.Status != approval.StatusApproved {
+			t.Fatalf("UpdateApproval status = %v, wanted %v", a.Status, approval.StatusApproved)
+		}
+	})
 }

@@ -7,7 +7,6 @@
 package repos
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -42,8 +41,8 @@ func (r *Repo) ListLocks(c *gin.Context) {
 
 	locks, err := r.i.ListLocksOfRepo(ctx, re)
 	if err != nil {
-		r.log.Error("It has failed to list locks.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to list locks.")
+		r.log.Check(gb.GetZapLogLevel(err), "Failed to list locks.").Write(zap.Error(err))
+		gb.ResponseWithError(c, err)
 		return
 	}
 
@@ -56,7 +55,10 @@ func (r *Repo) CreateLock(c *gin.Context) {
 	p := &lockPostPayload{}
 	if err := c.ShouldBindBodyWith(p, binding.JSON); err != nil {
 		r.log.Error("It has failed to bind the payload.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusBadRequest, "It has failed to bind the payload.")
+		gb.ResponseWithError(
+			c,
+			e.NewErrorWithMessage(e.ErrorCodeInvalidRequest, "It has failed to bind the payload.", err),
+		)
 		return
 	}
 
@@ -64,13 +66,16 @@ func (r *Repo) CreateLock(c *gin.Context) {
 		expiredAt *time.Time
 	)
 	if p.ExpiredAt != nil {
-		e, err := time.Parse(time.RFC3339, *p.ExpiredAt)
+		exp, err := time.Parse(time.RFC3339, *p.ExpiredAt)
 		if err != nil {
-			gb.ErrorResponse(c, http.StatusBadRequest, "Invalid format of \"expired_at\" parameter, RFC3339 format only.")
+			gb.ResponseWithError(
+				c,
+				e.NewErrorWithMessage(e.ErrorCodeInvalidRequest, "Invalid format of \"expired_at\" parameter, RFC3339 format only.", err),
+			)
 			return
 		}
 
-		expiredAt = pointer.ToTime(e.UTC())
+		expiredAt = pointer.ToTime(exp.UTC())
 	}
 
 	vr, _ := c.Get(KeyRepo)
@@ -80,30 +85,37 @@ func (r *Repo) CreateLock(c *gin.Context) {
 	u := vu.(*ent.User)
 
 	cfg, err := r.i.GetConfig(ctx, u, re)
-	if e.HasErrorCode(err, e.ErrorCodeConfigNotFound) {
-		gb.LogWithError(r.log, "The configuration file is not found.", err)
+	if e.HasErrorCode(err, e.ErrorCodeNotFound) {
+		r.log.Check(gb.GetZapLogLevel(err), "The configuration file is not found.").Write(zap.Error(err))
 		// To override the HTTP status 422.
 		gb.ResponseWithStatusAndError(c, http.StatusUnprocessableEntity, err)
 		return
 	} else if err != nil {
-		gb.LogWithError(r.log, "It has failed to get the configuration.", err)
+		r.log.Check(gb.GetZapLogLevel(err), "It has failed to get the configuration.").Write(zap.Error(err))
 		gb.ResponseWithError(c, err)
 		return
 	}
 
 	if !cfg.HasEnv(p.Env) {
-		r.log.Warn("The env is not found.", zap.String("env", p.Env))
-		gb.ErrorResponse(c, http.StatusUnprocessableEntity, fmt.Sprintf("The '%s' env is not found.", p.Env))
+		r.log.Warn("The environment is not defined in the configuration.")
+		gb.ResponseWithError(
+			c,
+			e.NewErrorWithMessage(e.ErrorCodeConfigParseError, "The environment is not defiend in the configuration.", nil),
+		)
 		return
 	}
 
+	// TODO: migrate the business logic into the interactor.
 	if ok, err := r.i.HasLockOfRepoForEnv(ctx, re, p.Env); ok {
 		r.log.Warn("The lock already exist.", zap.String("env", p.Env))
-		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "The lock already exist.")
+		gb.ResponseWithError(
+			c,
+			e.NewErrorWithMessage(e.ErrorCodeUnprocessableEntity, "The lock already exist.", err),
+		)
 		return
 	} else if err != nil {
-		r.log.Error("It has failed to check the lock.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to check the lock.")
+		r.log.Check(gb.GetZapLogLevel(err), "Failed to check the lock.").Write(zap.Error(err))
+		gb.ResponseWithError(c, err)
 		return
 	}
 
@@ -115,8 +127,8 @@ func (r *Repo) CreateLock(c *gin.Context) {
 		RepoID:    re.ID,
 	})
 	if err != nil {
-		r.log.Error("It has failed to lock the env.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to lock the env.")
+		r.log.Check(gb.GetZapLogLevel(err), "Failed to create a new lock.").Write(zap.Error(err))
+		gb.ResponseWithError(c, err)
 		return
 	}
 
@@ -132,42 +144,45 @@ func (r *Repo) UpdateLock(c *gin.Context) {
 	ctx := c.Request.Context()
 
 	var (
-		sid = c.Param("lockID")
+		id  int
+		err error
 	)
 
-	id, err := strconv.Atoi(sid)
-	if err != nil {
-		r.log.Error("The lock ID must to be number.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusBadRequest, "The lock ID must to be number.")
+	if id, err = strconv.Atoi(c.Param("lockID")); err != nil {
+		gb.ResponseWithError(
+			c,
+			e.NewErrorWithMessage(e.ErrorCodeInvalidRequest, "The ID must be number.", nil),
+		)
 		return
 	}
 
 	p := &lockPatchPayload{}
 	if err := c.ShouldBindBodyWith(p, binding.JSON); err != nil {
-		r.log.Error("It has failed to bind the payload.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusBadRequest, "It has failed to bind the payload.")
+		gb.ResponseWithError(
+			c,
+			e.NewErrorWithMessage(e.ErrorCodeInvalidRequest, "It has failed to bind the payload.", nil),
+		)
 		return
 	}
 
 	var expiredAt *time.Time
 	if p.ExpiredAt != nil {
-		e, err := time.Parse(time.RFC3339, *p.ExpiredAt)
+		exp, err := time.Parse(time.RFC3339, *p.ExpiredAt)
 		if err != nil {
-			gb.ErrorResponse(c, http.StatusBadRequest, "Invalid format of \"expired_at\" parameter, RFC3339 format only.")
+			gb.ResponseWithError(
+				c,
+				e.NewErrorWithMessage(e.ErrorCodeInvalidRequest, "Invalid format of \"expired_at\" parameter, RFC3339 format only.", err),
+			)
 			return
 		}
 
-		expiredAt = pointer.ToTime(e.UTC())
+		expiredAt = pointer.ToTime(exp.UTC())
 	}
 
 	l, err := r.i.FindLockByID(ctx, id)
-	if ent.IsNotFound(err) {
-		r.log.Warn("The lock is not found.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusNotFound, "The lock is not found.")
-		return
-	} else if err != nil {
-		r.log.Error("It has failed to find the lock.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to find the lock.")
+	if err != nil {
+		r.log.Check(gb.GetZapLogLevel(err), "The lock is not found.").Write(zap.Error(err))
+		gb.ResponseWithError(c, err)
 		return
 	}
 
@@ -177,8 +192,8 @@ func (r *Repo) UpdateLock(c *gin.Context) {
 	}
 
 	if _, err := r.i.UpdateLock(ctx, l); err != nil {
-		r.log.Error("It has failed to update the lock.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to update the lock.")
+		r.log.Check(gb.GetZapLogLevel(err), "Failed to update the lock.").Write(zap.Error(err))
+		gb.ResponseWithError(c, err)
 		return
 	}
 
@@ -193,30 +208,28 @@ func (r *Repo) DeleteLock(c *gin.Context) {
 	ctx := c.Request.Context()
 
 	var (
-		sid = c.Param("lockID")
+		id  int
+		err error
 	)
 
-	id, err := strconv.Atoi(sid)
-	if err != nil {
-		r.log.Error("The lock ID must to be number.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusBadRequest, "The lock ID must to be number.")
+	if id, err = strconv.Atoi(c.Param("lockID")); err != nil {
+		gb.ResponseWithError(
+			c,
+			e.NewErrorWithMessage(e.ErrorCodeInvalidRequest, "The ID must be number.", nil),
+		)
 		return
 	}
 
 	l, err := r.i.FindLockByID(ctx, id)
-	if ent.IsNotFound(err) {
-		r.log.Warn("The lock is not found.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusNotFound, "The lock is not found.")
-		return
-	} else if err != nil {
-		r.log.Error("It has failed to find the lock.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to find the lock.")
+	if err != nil {
+		r.log.Check(gb.GetZapLogLevel(err), "Failed to find the lock.").Write(zap.Error(err))
+		gb.ResponseWithError(c, err)
 		return
 	}
 
 	if err := r.i.DeleteLock(ctx, l); err != nil {
-		r.log.Error("It has failed to delete the lock.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to delete the lock.")
+		r.log.Check(gb.GetZapLogLevel(err), "Failed to delete the lock.").Write(zap.Error(err))
+		gb.ResponseWithError(c, err)
 		return
 	}
 

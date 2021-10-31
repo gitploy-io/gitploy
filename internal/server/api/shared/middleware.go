@@ -6,6 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	gb "github.com/gitploy-io/gitploy/internal/server/global"
+	"github.com/gitploy-io/gitploy/pkg/e"
 )
 
 const (
@@ -30,7 +31,7 @@ func (m *Middleware) IsLicenseExpired() gin.HandlerFunc {
 
 		lic, err := m.i.GetLicense(ctx)
 		if err != nil {
-			gb.AbortWithErrorResponse(c, http.StatusInternalServerError, "It has failed to get the license.")
+			gb.AbortWithStatusAndError(c, http.StatusInternalServerError, err)
 			return
 		}
 
@@ -39,14 +40,22 @@ func (m *Middleware) IsLicenseExpired() gin.HandlerFunc {
 		}
 
 		if lic.IsOverLimit() {
-			gb.AbortWithErrorResponse(c, http.StatusPaymentRequired, "The member count is over the limit.")
+			gb.AbortWithStatusAndError(
+				c,
+				http.StatusPaymentRequired,
+				e.NewErrorWithMessage(e.ErrorCodeLicenseRequired, "The license is over the limit.", nil),
+			)
 			return
 		}
 
 		if lic.IsStandard() && lic.IsExpired() {
 			now := time.Now()
 			if lic.ExpiredAt.Add(extraDuration).Before(now) {
-				gb.AbortWithErrorResponse(c, http.StatusPaymentRequired, "The license is expired.")
+				gb.AbortWithStatusAndError(
+					c,
+					http.StatusPaymentRequired,
+					e.NewErrorWithMessage(e.ErrorCodeLicenseRequired, "The license is expired.", nil),
+				)
 				return
 			}
 		}

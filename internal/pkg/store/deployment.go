@@ -2,6 +2,7 @@ package store
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
@@ -17,10 +18,7 @@ func (s *Store) CountDeployments(ctx context.Context) (int, error) {
 		Query().
 		Count(ctx)
 	if err != nil {
-		return 0, e.NewError(
-			e.ErrorCodeInternalError,
-			err,
-		)
+		return 0, e.NewError(e.ErrorCodeInternalError, err)
 	}
 
 	return cnt, nil
@@ -138,7 +136,7 @@ func (s *Store) ListDeploymentsOfRepo(ctx context.Context, r *ent.Repo, env stri
 }
 
 func (s *Store) FindDeploymentByID(ctx context.Context, id int) (*ent.Deployment, error) {
-	return s.c.Deployment.
+	d, err := s.c.Deployment.
 		Query().
 		Where(
 			deployment.IDEQ(id),
@@ -146,7 +144,14 @@ func (s *Store) FindDeploymentByID(ctx context.Context, id int) (*ent.Deployment
 		WithRepo().
 		WithUser().
 		WithDeploymentStatuses().
-		First(ctx)
+		Only(ctx)
+	if ent.IsNotFound(err) {
+		return nil, e.NewErrorWithMessage(e.ErrorCodeNotFound, "The deployment is not found.", err)
+	} else if err != nil {
+		return nil, e.NewError(e.ErrorCodeInternalError, err)
+	}
+
+	return d, nil
 }
 
 func (s *Store) FindDeploymentOfRepoByNumber(ctx context.Context, r *ent.Repo, number int) (*ent.Deployment, error) {
@@ -161,16 +166,18 @@ func (s *Store) FindDeploymentOfRepoByNumber(ctx context.Context, r *ent.Repo, n
 		WithRepo().
 		WithUser().
 		WithDeploymentStatuses().
-		First(ctx)
+		Only(ctx)
 	if ent.IsNotFound(err) {
 		return nil, e.NewErrorWithMessage(e.ErrorCodeNotFound, "The deployment is not found.", err)
+	} else if err != nil {
+		return nil, e.NewError(e.ErrorCodeInternalError, err)
 	}
 
 	return d, nil
 }
 
 func (s *Store) FindDeploymentByUID(ctx context.Context, uid int64) (*ent.Deployment, error) {
-	return s.c.Deployment.
+	d, err := s.c.Deployment.
 		Query().
 		Where(
 			deployment.UIDEQ(uid),
@@ -178,7 +185,14 @@ func (s *Store) FindDeploymentByUID(ctx context.Context, uid int64) (*ent.Deploy
 		WithRepo().
 		WithUser().
 		WithDeploymentStatuses().
-		First(ctx)
+		Only(ctx)
+	if ent.IsNotFound(err) {
+		return nil, e.NewErrorWithMessage(e.ErrorCodeNotFound, "The deployment is not found.", err)
+	} else if err != nil {
+		return nil, e.NewError(e.ErrorCodeInternalError, err)
+	}
+
+	return d, nil
 }
 
 func (s *Store) GetNextDeploymentNumberOfRepo(ctx context.Context, r *ent.Repo) (int, error) {
@@ -195,7 +209,7 @@ func (s *Store) GetNextDeploymentNumberOfRepo(ctx context.Context, r *ent.Repo) 
 }
 
 func (s *Store) FindPrevSuccessDeployment(ctx context.Context, d *ent.Deployment) (*ent.Deployment, error) {
-	return s.c.Deployment.
+	d, err := s.c.Deployment.
 		Query().
 		Where(
 			deployment.And(
@@ -207,11 +221,19 @@ func (s *Store) FindPrevSuccessDeployment(ctx context.Context, d *ent.Deployment
 		).
 		Order(ent.Desc(deployment.FieldCreatedAt)).
 		First(ctx)
+	if ent.IsNotFound(err) {
+		return nil, e.NewErrorWithMessage(e.ErrorCodeNotFound, "The deployment is not found.", err)
+	} else if err != nil {
+		return nil, e.NewError(e.ErrorCodeInternalError, err)
+	}
+
+	return d, nil
 }
 
 // CreateDeployment create a new deployment, and
 // it updates the 'latest_deployed_at' field of the repository.
 func (s *Store) CreateDeployment(ctx context.Context, d *ent.Deployment) (*ent.Deployment, error) {
+	// TODO: Group by a transaction
 	d, err := s.c.Deployment.Create().
 		SetNumber(d.Number).
 		SetType(d.Type).
@@ -229,15 +251,14 @@ func (s *Store) CreateDeployment(ctx context.Context, d *ent.Deployment) (*ent.D
 		SetRepoID(d.RepoID).
 		Save(ctx)
 	if ent.IsConstraintError(err) {
-		return nil, e.NewError(
-			e.ErrorCodeDeploymentConflict,
-			err,
-		)
+		return nil, e.NewError(e.ErrorCodeDeploymentConflict, err)
+	} else if ent.IsValidationError(err) {
+		return nil, e.NewErrorWithMessage(
+			e.ErrorCodeUnprocessableEntity,
+			fmt.Sprintf("Failed to create a deployment. The value of \"%s\" field is invalid.", err.(*ent.ValidationError).Name),
+			err)
 	} else if err != nil {
-		return nil, e.NewError(
-			e.ErrorCodeInternalError,
-			err,
-		)
+		return nil, e.NewError(e.ErrorCodeInternalError, err)
 	}
 
 	s.c.Repo.
@@ -262,11 +283,13 @@ func (s *Store) UpdateDeployment(ctx context.Context, d *ent.Deployment) (*ent.D
 		SetRequiredApprovalCount(d.RequiredApprovalCount).
 		SetStatus(d.Status).
 		Save(ctx)
-	if err != nil {
-		return nil, e.NewError(
-			e.ErrorCodeInternalError,
-			err,
-		)
+	if ent.IsValidationError(err) {
+		return nil, e.NewErrorWithMessage(
+			e.ErrorCodeUnprocessableEntity,
+			fmt.Sprintf("Failed to update a deployment. The value of \"%s\" field is invalid.", err.(*ent.ValidationError).Name),
+			err)
+	} else if err != nil {
+		return nil, e.NewError(e.ErrorCodeInternalError, err)
 	}
 
 	return d, nil

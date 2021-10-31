@@ -6,9 +6,6 @@ import (
 )
 
 const (
-	// ErrorCodeConfigNotFound is that the configuration file is not found.
-	// TODO: migrate into ErrorCodeNotFound
-	ErrorCodeConfigNotFound ErrorCode = "config_not_found"
 	// ErrorCodeConfigParseError is that an error occurs when it parse the file.
 	ErrorCodeConfigParseError ErrorCode = "config_parse_error"
 
@@ -23,17 +20,17 @@ const (
 	// ErrorCodeDeploymentUndeployable is that the merge conflict occurs or a commit status has failed.
 	ErrorCodeDeploymentUndeployable ErrorCode = "deployment_undeployable"
 
-	// ErrorCodeLicenseDecode is that the license.
+	// ErrorCodeLicenseDecode is the error when the license is decoded.
 	ErrorCodeLicenseDecode ErrorCode = "license_decode"
-
-	// ErrorCodeRefNotFound is that the ref is not found.
-	// TODO: migrate into ErrorCodeNotFound
-	ErrorCodeRefNotFound ErrorCode = "ref_not_found"
+	// ErrorCodeLicenseRequired is that the license is required.
+	ErrorCodeLicenseRequired ErrorCode = "license_required"
 
 	// General purpose error codes.
-	ErrorCodeInvalidRequest ErrorCode = "invalid_request"
-	ErrorCodeNotFound       ErrorCode = "not_found"
-	ErrorCodeInternalError  ErrorCode = "internal_error"
+	ErrorCodeInvalidRequest      ErrorCode = "invalid_request"
+	ErrorPermissionRequired      ErrorCode = "permission_required"
+	ErrorCodeNotFound            ErrorCode = "not_found"
+	ErrorCodeUnprocessableEntity ErrorCode = "unprocessable_entity"
+	ErrorCodeInternalError       ErrorCode = "internal_error"
 )
 
 type (
@@ -64,7 +61,7 @@ func NewErrorWithMessage(code ErrorCode, message string, wrap error) *Error {
 }
 
 func (e *Error) Error() string {
-	return fmt.Sprintf("code: %s, message: %s, wrap: %s", e.Code, GetMessage(e.Code), e.Wrap)
+	return fmt.Sprintf("code: %s, message: %s, wrap: %s", e.Code, e.Message, e.Wrap)
 }
 
 func (e *Error) Unwrap() error {

@@ -27,8 +27,8 @@ func (r *Repo) ListCommits(c *gin.Context) {
 
 	commits, err := r.i.ListCommits(ctx, u, repo, branch, atoi(page), atoi(perPage))
 	if err != nil {
-		r.log.Error("failed to list commits.", zap.String("repo", repo.Name), zap.Error(err))
-		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to list commits.")
+		r.log.Check(gb.GetZapLogLevel(err), "Failed to list commits.").Write(zap.Error(err))
+		gb.ResponseWithError(c, err)
 		return
 	}
 
@@ -50,7 +50,7 @@ func (r *Repo) GetCommit(c *gin.Context) {
 
 	commit, err := r.i.GetCommit(ctx, u, repo, sha)
 	if err != nil {
-		gb.LogWithError(r.log, "It has failed to get the commit.", err)
+		r.log.Check(gb.GetZapLogLevel(err), "Failed to get the commit.").Write(zap.Error(err))
 		gb.ResponseWithError(c, err)
 		return
 	}
@@ -73,7 +73,7 @@ func (r *Repo) ListStatuses(c *gin.Context) {
 
 	ss, err := r.i.ListCommitStatuses(ctx, u, repo, sha)
 	if err != nil {
-		gb.LogWithError(r.log, "It has failed to list commit statuses.", err)
+		r.log.Check(gb.GetZapLogLevel(err), "Failed to list commit statuses.").Write(zap.Error(err))
 		gb.ResponseWithError(c, err)
 		return
 	}

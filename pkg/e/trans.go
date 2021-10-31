@@ -3,7 +3,6 @@ package e
 import "net/http"
 
 var messages = map[ErrorCode]string{
-	ErrorCodeConfigNotFound:         "The configuration file is not found.",
 	ErrorCodeConfigParseError:       "The configuration is invalid.",
 	ErrorCodeDeploymentConflict:     "The conflict occurs, please retry.",
 	ErrorCodeDeploymentInvalid:      "The validation has failed.",
@@ -11,9 +10,11 @@ var messages = map[ErrorCode]string{
 	ErrorCodeDeploymentUnapproved:   "The deployment is not approved",
 	ErrorCodeDeploymentUndeployable: "There is merge conflict or a commit status check failed.",
 	ErrorCodeLicenseDecode:          "Decoding the license is failed.",
-	ErrorCodeRefNotFound:            "The reference is not found.",
+	ErrorCodeLicenseRequired:        "The license is required.",
 	ErrorCodeInvalidRequest:         "Invalid request parameter.",
+	ErrorPermissionRequired:         "The permission is required",
 	ErrorCodeNotFound:               "It is not found.",
+	ErrorCodeUnprocessableEntity:    "Invalid request payload.",
 	ErrorCodeInternalError:          "Server internal error.",
 }
 
@@ -27,7 +28,6 @@ func GetMessage(code ErrorCode) string {
 }
 
 var httpCodes = map[ErrorCode]int{
-	ErrorCodeConfigNotFound:         http.StatusNotFound,
 	ErrorCodeConfigParseError:       http.StatusUnprocessableEntity,
 	ErrorCodeDeploymentConflict:     http.StatusUnprocessableEntity,
 	ErrorCodeDeploymentInvalid:      http.StatusUnprocessableEntity,
@@ -35,9 +35,11 @@ var httpCodes = map[ErrorCode]int{
 	ErrorCodeDeploymentUnapproved:   http.StatusUnprocessableEntity,
 	ErrorCodeDeploymentUndeployable: http.StatusUnprocessableEntity,
 	ErrorCodeLicenseDecode:          http.StatusUnprocessableEntity,
-	ErrorCodeRefNotFound:            http.StatusNotFound,
+	ErrorCodeLicenseRequired:        http.StatusPaymentRequired,
 	ErrorCodeInvalidRequest:         http.StatusBadRequest,
 	ErrorCodeNotFound:               http.StatusNotFound,
+	ErrorPermissionRequired:         http.StatusForbidden,
+	ErrorCodeUnprocessableEntity:    http.StatusUnprocessableEntity,
 	ErrorCodeInternalError:          http.StatusInternalServerError,
 }
 

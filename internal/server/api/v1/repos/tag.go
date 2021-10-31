@@ -25,8 +25,8 @@ func (r *Repo) ListTags(c *gin.Context) {
 
 	tags, err := r.i.ListTags(ctx, u, repo, atoi(page), atoi(perPage))
 	if err != nil {
-		r.log.Error("failed to list tags.", zap.String("repo", repo.Name), zap.Error(err))
-		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to list tags.")
+		r.log.Check(gb.GetZapLogLevel(err), "Failed to list tags.").Write(zap.Error(err))
+		gb.ResponseWithError(c, err)
 		return
 	}
 
@@ -47,7 +47,7 @@ func (r *Repo) GetTag(c *gin.Context) {
 
 	t, err := r.i.GetTag(ctx, u, repo, tag)
 	if err != nil {
-		gb.LogWithError(r.log, "It has failed to get the tag.", err)
+		r.log.Check(gb.GetZapLogLevel(err), "Failed to get the tag.").Write(zap.Error(err))
 		gb.ResponseWithError(c, err)
 		return
 	}

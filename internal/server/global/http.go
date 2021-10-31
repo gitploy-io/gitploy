@@ -11,12 +11,6 @@ func Response(c *gin.Context, httpCode int, data interface{}) {
 	c.JSON(httpCode, data)
 }
 
-func ErrorResponse(c *gin.Context, httpCode int, message string) {
-	c.JSON(httpCode, map[string]string{
-		"message": message,
-	})
-}
-
 func ResponseWithError(c *gin.Context, err error) {
 	if ge, ok := err.(*e.Error); ok {
 		c.JSON(e.GetHttpCode(ge.Code), map[string]string{
@@ -32,7 +26,7 @@ func ResponseWithError(c *gin.Context, err error) {
 	})
 }
 
-// ResponseWithStatusAndError
+// ResponseWithStatusAndError overrides the HTTP status.
 func ResponseWithStatusAndError(c *gin.Context, status int, err error) {
 	if ge, ok := err.(*e.Error); ok {
 		c.JSON(status, map[string]string{
@@ -48,8 +42,33 @@ func ResponseWithStatusAndError(c *gin.Context, status int, err error) {
 	})
 }
 
-func AbortWithErrorResponse(c *gin.Context, httpCode int, message string) {
-	c.AbortWithStatusJSON(httpCode, map[string]string{
-		"message": message,
+func AbortWithError(c *gin.Context, err error) {
+	if ge, ok := err.(*e.Error); ok {
+		c.AbortWithStatusJSON(e.GetHttpCode(ge.Code), map[string]string{
+			"code":    string(ge.Code),
+			"message": ge.Message,
+		})
+		return
+	}
+
+	c.AbortWithStatusJSON(http.StatusInternalServerError, map[string]string{
+		"code":    string(e.ErrorCodeInternalError),
+		"message": err.Error(),
+	})
+}
+
+// AbortWithStatusAndError overrides the HTTP status.
+func AbortWithStatusAndError(c *gin.Context, status int, err error) {
+	if ge, ok := err.(*e.Error); ok {
+		c.AbortWithStatusJSON(status, map[string]string{
+			"code":    string(ge.Code),
+			"message": ge.Message,
+		})
+		return
+	}
+
+	c.AbortWithStatusJSON(http.StatusInternalServerError, map[string]string{
+		"code":    string(e.ErrorCodeInternalError),
+		"message": err.Error(),
 	})
 }

@@ -10,7 +10,6 @@ import (
 	"context"
 	"fmt"
 	"math/rand"
-	"net/http"
 	"time"
 
 	"github.com/gin-contrib/sse"
@@ -54,8 +53,8 @@ func (s *Stream) GetEvents(c *gin.Context) {
 		events <- e
 	}
 	if err := s.i.SubscribeEvent(sub); err != nil {
-		s.log.Error("failed to subscribe notification events", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to connect.")
+		s.log.Check(gb.GetZapLogLevel(err), "Failed to subscribe notification events").Write(zap.Error(err))
+		gb.ResponseWithError(c, err)
 		return
 	}
 

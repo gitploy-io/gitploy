@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin/binding"
 	"github.com/gitploy-io/gitploy/ent"
 	gb "github.com/gitploy-io/gitploy/internal/server/global"
+	"github.com/gitploy-io/gitploy/pkg/e"
 	"github.com/gitploy-io/gitploy/vo"
 	"go.uber.org/zap"
 )
@@ -56,15 +57,17 @@ func (r *Repo) ListRepos(c *gin.Context) {
 
 	sorted, err := strconv.ParseBool(sort)
 	if err != nil {
-		r.log.Error("invalid sort value.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusBadRequest, "It was invalid request.")
+		gb.ResponseWithError(
+			c,
+			e.NewErrorWithMessage(e.ErrorCodeInvalidRequest, "The \"sort\" field must be boolean.", err),
+		)
 		return
 	}
 
 	repos, err := r.i.ListReposOfUser(ctx, u, q, namespace, name, sorted, atoi(page), atoi(perPage))
 	if err != nil {
-		r.log.Error("failed to list repositories.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to list repositories.")
+		r.log.Check(gb.GetZapLogLevel(err), "Failed to list repositories.").Write(zap.Error(err))
+		gb.ResponseWithError(c, err)
 		return
 	}
 
@@ -83,7 +86,10 @@ func (r *Repo) UpdateRepo(c *gin.Context) {
 	p := &repoPatchPayload{}
 	var err error
 	if err := c.ShouldBindBodyWith(p, binding.JSON); err != nil {
-		gb.ErrorResponse(c, http.StatusBadRequest, "It has failed to bind the body")
+		gb.ResponseWithError(
+			c,
+			e.NewErrorWithMessage(e.ErrorCodeInvalidRequest, "It has failed to bind the body.", err),
+		)
 		return
 	}
 
@@ -97,14 +103,14 @@ func (r *Repo) UpdateRepo(c *gin.Context) {
 				Secret:      r.WebhookSecret,
 				InsecureSSL: r.WebhookSSL,
 			}); err != nil {
-				r.log.Error("It has failed to activate the repo.", zap.Error(err), zap.String("url", r.WebhookURL))
-				gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to activate the repository.")
+				r.log.Check(gb.GetZapLogLevel(err), "Failed to activate the repository.").Write(zap.Error(err))
+				gb.ResponseWithError(c, err)
 				return
 			}
 		} else if !*p.Active && re.Active {
 			if re, err = r.i.DeactivateRepo(ctx, u, re); err != nil {
-				r.log.Error("failed to deactivate the repo.", zap.Error(err))
-				gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to deactivate the repository.")
+				r.log.Check(gb.GetZapLogLevel(err), "Failed to deactivate the repository.").Write(zap.Error(err))
+				gb.ResponseWithError(c, err)
 				return
 			}
 		}
@@ -115,8 +121,8 @@ func (r *Repo) UpdateRepo(c *gin.Context) {
 			re.ConfigPath = *p.ConfigPath
 
 			if re, err = r.i.UpdateRepo(ctx, re); err != nil {
-				r.log.Error("failed to update the repo", zap.Error(err))
-				gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to update the repository.")
+				r.log.Check(gb.GetZapLogLevel(err), "Failed to update the repository.").Write(zap.Error(err))
+				gb.ResponseWithError(c, err)
 				return
 			}
 		}

@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/gitploy-io/gitploy/ent"
+	"github.com/gitploy-io/gitploy/pkg/e"
 	"github.com/gitploy-io/gitploy/vo"
 	"github.com/google/go-github/v32/github"
 )
@@ -11,7 +12,7 @@ import (
 func (g *Github) ListRemoteRepos(ctx context.Context, u *ent.User) ([]*vo.RemoteRepo, error) {
 	grs, err := g.listRemoteRepos(ctx, u)
 	if err != nil {
-		return nil, err
+		return nil, e.NewError(e.ErrorCodeInternalError, err)
 	}
 
 	remotes := make([]*vo.RemoteRepo, 0)

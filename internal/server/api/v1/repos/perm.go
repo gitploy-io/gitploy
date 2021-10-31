@@ -28,8 +28,8 @@ func (r *Repo) ListPerms(c *gin.Context) {
 
 	perms, err := r.i.ListPermsOfRepo(ctx, re, q, page, perPage)
 	if err != nil {
-		r.log.Error("failed to get permissions.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to get permissions.")
+		r.log.Check(gb.GetZapLogLevel(err), "Failed to list permissions.").Write(zap.Error(err))
+		gb.ResponseWithError(c, err)
 		return
 	}
 

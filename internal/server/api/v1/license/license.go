@@ -27,7 +27,7 @@ func (l *Licenser) GetLicense(c *gin.Context) {
 
 	lic, err := l.i.GetLicense(ctx)
 	if err != nil {
-		gb.LogWithError(l.log, "It has failed to get the license.", err)
+		l.log.Check(gb.GetZapLogLevel(err), "It has failed to get the license.").Write(zap.Error(err))
 		gb.ResponseWithError(c, err)
 		return
 	}

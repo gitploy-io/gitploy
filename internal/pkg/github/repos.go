@@ -73,15 +73,9 @@ func (g *Github) GetCommit(ctx context.Context, u *ent.User, r *ent.Repo, sha st
 		GetCommit(ctx, r.Namespace, r.Name, sha)
 	// Github returns Unprocessable entity if the commit is not found.
 	if res.StatusCode == http.StatusNotFound || res.StatusCode == http.StatusUnprocessableEntity {
-		return nil, e.NewError(
-			e.ErrorCodeRefNotFound,
-			err,
-		)
+		return nil, e.NewErrorWithMessage(e.ErrorCodeNotFound, "The commit is not found.", err)
 	} else if err != nil {
-		return nil, e.NewError(
-			e.ErrorCodeInternalError,
-			err,
-		)
+		return nil, e.NewError(e.ErrorCodeInternalError, err)
 	}
 
 	return mapGithubCommitToCommit(cm), nil
@@ -97,10 +91,7 @@ func (g *Github) ListCommitStatuses(ctx context.Context, u *ent.User, r *ent.Rep
 		PerPage: 100,
 	})
 	if err != nil {
-		return nil, e.NewError(
-			e.ErrorCodeInternalError,
-			err,
-		)
+		return nil, err
 	}
 
 	for _, rs := range cs.Statuses {
@@ -115,10 +106,7 @@ func (g *Github) ListCommitStatuses(ctx context.Context, u *ent.User, r *ent.Rep
 	})
 	// check-runs secures the commit is exist.
 	if res.StatusCode == http.StatusUnprocessableEntity {
-		return nil, e.NewError(
-			e.ErrorCodeRefNotFound,
-			err,
-		)
+		return nil, e.NewErrorWithMessage(e.ErrorCodeNotFound, "The commit is not found.", err)
 	} else if err != nil {
 		return nil, e.NewError(
 			e.ErrorCodeInternalError,
@@ -143,10 +131,7 @@ func (g *Github) ListBranches(ctx context.Context, u *ent.User, r *ent.Repo, pag
 			},
 		})
 	if err != nil {
-		return nil, e.NewError(
-			e.ErrorCodeInternalError,
-			err,
-		)
+		return nil, e.NewError(e.ErrorCodeInternalError, err)
 	}
 
 	branches := []*vo.Branch{}
@@ -162,15 +147,9 @@ func (g *Github) GetBranch(ctx context.Context, u *ent.User, r *ent.Repo, branch
 		Repositories.
 		GetBranch(ctx, r.Namespace, r.Name, branch)
 	if res.StatusCode == http.StatusNotFound {
-		return nil, e.NewError(
-			e.ErrorCodeRefNotFound,
-			err,
-		)
+		return nil, e.NewErrorWithMessage(e.ErrorCodeNotFound, "The branch is not found.", err)
 	} else if err != nil {
-		return nil, e.NewError(
-			e.ErrorCodeInternalError,
-			err,
-		)
+		return nil, e.NewError(e.ErrorCodeInternalError, err)
 	}
 
 	return mapGithubBranchToBranch(b), nil
@@ -249,10 +228,7 @@ func (g *Github) GetTag(ctx context.Context, u *ent.User, r *ent.Repo, tag strin
 	}
 
 	if q.Repository.Refs.TotalCount == 0 {
-		return nil, e.NewError(
-			e.ErrorCodeRefNotFound,
-			nil,
-		)
+		return nil, e.NewErrorWithMessage(e.ErrorCodeNotFound, "The tag is not found.", nil)
 	}
 
 	n := q.Repository.Refs.Nodes[0]
@@ -278,7 +254,7 @@ func (g *Github) CreateWebhook(ctx context.Context, u *ent.User, r *ent.Repo, c 
 			Active: github.Bool(true),
 		})
 	if err != nil {
-		return -1, err
+		return -1, e.NewErrorWithMessage(e.ErrorCodeInternalError, "It has failed to create a webhook.", err)
 	}
 
 	return *h.ID, nil
