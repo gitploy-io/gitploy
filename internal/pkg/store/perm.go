@@ -116,7 +116,7 @@ func (s *Store) DeletePermsOfUserLessThanSyncedAt(ctx context.Context, u *ent.Us
 			Exec(ctx)
 		return err
 	}); err != nil {
-		return 0, err
+		return 0, e.NewError(e.ErrorCodeInternalError, err)
 	}
 
 	return cnt, nil
