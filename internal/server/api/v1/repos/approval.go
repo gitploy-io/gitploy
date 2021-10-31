@@ -133,7 +133,10 @@ func (r *Repo) CreateApproval(c *gin.Context) {
 	p := &approvalPostPayload{}
 	if err := c.ShouldBindBodyWith(p, binding.JSON); err != nil {
 		r.log.Warn("failed to bind the payload.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusBadRequest, "It has failed to bind the payload.")
+		gb.ResponseWithError(
+			c,
+			e.NewErrorWithMessage(e.ErrorCodeInvalidRequest, "It has failed to bind the playload.", nil),
+		)
 		return
 	}
 
@@ -219,7 +222,10 @@ func (r *Repo) UpdateMyApproval(c *gin.Context) {
 	p := &approvalPatchPayload{}
 	if err := c.ShouldBindBodyWith(p, binding.JSON); err != nil {
 		r.log.Warn("failed to bind the payload.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusBadRequest, "It has failed to bind the payload.")
+		gb.ResponseWithError(
+			c,
+			e.NewErrorWithMessage(e.ErrorCodeInvalidRequest, "It has failed to bind the payload.", nil),
+		)
 		return
 	}
 
