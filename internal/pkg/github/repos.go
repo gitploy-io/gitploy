@@ -143,10 +143,7 @@ func (g *Github) ListBranches(ctx context.Context, u *ent.User, r *ent.Repo, pag
 			},
 		})
 	if err != nil {
-		return nil, e.NewError(
-			e.ErrorCodeInternalError,
-			err,
-		)
+		return nil, e.NewError(e.ErrorCodeInternalError, err)
 	}
 
 	branches := []*vo.Branch{}
@@ -162,15 +159,9 @@ func (g *Github) GetBranch(ctx context.Context, u *ent.User, r *ent.Repo, branch
 		Repositories.
 		GetBranch(ctx, r.Namespace, r.Name, branch)
 	if res.StatusCode == http.StatusNotFound {
-		return nil, e.NewError(
-			e.ErrorCodeRefNotFound,
-			err,
-		)
+		return nil, e.NewErrorWithMessage(e.ErrorCodeNotFound, "The branch is not found.", err)
 	} else if err != nil {
-		return nil, e.NewError(
-			e.ErrorCodeInternalError,
-			err,
-		)
+		return nil, e.NewError(e.ErrorCodeInternalError, err)
 	}
 
 	return mapGithubBranchToBranch(b), nil

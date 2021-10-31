@@ -4,18 +4,18 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"go.uber.org/zap"
 
 	"github.com/gitploy-io/gitploy/ent"
 	gb "github.com/gitploy-io/gitploy/internal/server/global"
 )
 
 func (r *Repo) ListBranches(c *gin.Context) {
+	ctx := c.Request.Context()
+
 	var (
 		page    = c.DefaultQuery("page", "1")
 		perPage = c.DefaultQuery("per_page", "30")
 	)
-	ctx := c.Request.Context()
 
 	uv, _ := c.Get(gb.KeyUser)
 	u := uv.(*ent.User)
@@ -25,8 +25,8 @@ func (r *Repo) ListBranches(c *gin.Context) {
 
 	branches, err := r.i.ListBranches(ctx, u, repo, atoi(page), atoi(perPage))
 	if err != nil {
-		r.log.Error("failed to list branches.", zap.String("repo", repo.Name), zap.Error(err))
-		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to list branches.")
+		gb.LogWithError(r.log, "Failed to list branches.", err)
+		gb.ResponseWithError(c, err)
 		return
 	}
 
@@ -47,7 +47,7 @@ func (r *Repo) GetBranch(c *gin.Context) {
 
 	b, err := r.i.GetBranch(ctx, u, repo, branch)
 	if err != nil {
-		gb.LogWithError(r.log, "It has failed to get the branch.", err)
+		gb.LogWithError(r.log, "Failed to get the branch.", err)
 		gb.ResponseWithError(c, err)
 		return
 	}
