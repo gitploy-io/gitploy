@@ -219,7 +219,7 @@ func (s *Store) FindPrevSuccessDeployment(ctx context.Context, d *ent.Deployment
 			),
 		).
 		Order(ent.Desc(deployment.FieldCreatedAt)).
-		Only(ctx)
+		First(ctx)
 	if ent.IsNotFound(err) {
 		return nil, e.NewErrorWithMessage(e.ErrorCodeNotFound, "The deployment is not found.", err)
 	} else if err != nil {

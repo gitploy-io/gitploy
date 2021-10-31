@@ -332,7 +332,10 @@ func (r *Repo) ListDeploymentChanges(c *gin.Context) {
 	}
 
 	ld, err := r.i.FindPrevSuccessDeployment(ctx, d)
-	if err != nil {
+	if e.HasErrorCode(err, e.ErrorCodeNotFound) {
+		r.log.Debug("The previous deployment is not found.")
+		gb.Response(c, http.StatusOK, []*vo.Commit{})
+	} else if err != nil {
 		gb.LogWithError(r.log, "Failed to find the deployments.", err)
 		gb.ResponseWithError(c, err)
 	}
