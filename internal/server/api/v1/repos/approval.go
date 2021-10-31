@@ -105,10 +105,7 @@ func (r *Repo) GetMyApproval(c *gin.Context) {
 	}
 
 	a, err := r.i.FindApprovalOfUser(ctx, d, u)
-	if e.HasErrorCode(err, e.ErrorCodeNotFound) {
-		gb.ResponseWithError(c, err)
-		return
-	} else if err != nil {
+	if err != nil {
 		gb.LogWithError(r.log, "Failed to find the user's approval.", err)
 		gb.ResponseWithError(c, err)
 		return

@@ -335,9 +335,11 @@ func (r *Repo) ListDeploymentChanges(c *gin.Context) {
 	if e.HasErrorCode(err, e.ErrorCodeNotFound) {
 		r.log.Debug("The previous deployment is not found.")
 		gb.Response(c, http.StatusOK, []*vo.Commit{})
+		return
 	} else if err != nil {
 		gb.LogWithError(r.log, "Failed to find the deployments.", err)
 		gb.ResponseWithError(c, err)
+		return
 	}
 
 	// Get SHA when the status of deployment is waiting.
