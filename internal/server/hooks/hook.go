@@ -12,6 +12,7 @@ import (
 	"github.com/gitploy-io/gitploy/ent/deployment"
 	"github.com/gitploy-io/gitploy/ent/event"
 	gb "github.com/gitploy-io/gitploy/internal/server/global"
+	"github.com/gitploy-io/gitploy/pkg/e"
 )
 
 type (
@@ -51,7 +52,10 @@ func (h *Hooks) HandleHook(c *gin.Context) {
 		return
 	}
 
-	gb.ErrorResponse(c, http.StatusBadRequest, "It is invalid request.")
+	gb.ResponseWithError(
+		c,
+		e.NewError(e.ErrorCodeInvalidRequest, nil),
+	)
 }
 
 func (h *Hooks) handleGithubHook(c *gin.Context) {
@@ -62,10 +66,13 @@ func (h *Hooks) handleGithubHook(c *gin.Context) {
 		return
 	}
 
-	e := &github.DeploymentStatusEvent{}
-	if err := c.ShouldBindBodyWith(e, binding.JSON); err != nil {
-		h.log.Error("failed to bind the payload.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusBadRequest, "It is invalid request.")
+	evt := &github.DeploymentStatusEvent{}
+	if err := c.ShouldBindBodyWith(evt, binding.JSON); err != nil {
+		h.log.Warn("failed to bind the payload.", zap.Error(err))
+		gb.ResponseWithError(
+			c,
+			e.NewErrorWithMessage(e.ErrorCodeInvalidRequest, "It has failed to bind the payload.", err),
+		)
 		return
 	}
 
@@ -80,34 +87,37 @@ func (h *Hooks) handleGithubHook(c *gin.Context) {
 		sig := c.GetHeader(headerGithubSignature)
 
 		if err := github.ValidateSignature(sig, payload, []byte(secret)); err != nil {
-			h.log.Error("failed to validate the signature.", zap.Error(err))
-			gb.ErrorResponse(c, http.StatusBadRequest, "It has failed to validate the signature.")
+			h.log.Warn("Failed to validate the signature.", zap.Error(err))
+			gb.ResponseWithError(
+				c,
+				e.NewErrorWithMessage(e.ErrorCodeInvalidRequest, "It has failed to validate the signature.", err),
+			)
 			return
 		}
 	}
 
 	// Convert event to the deployment status.
-	ds := mapGithubDeploymentStatus(e)
+	ds := mapGithubDeploymentStatus(evt)
 
-	uid := *e.Deployment.ID
+	uid := *evt.Deployment.ID
 	d, err := h.i.FindDeploymentByUID(ctx, uid)
 	if err != nil {
-		h.log.Error("It has failed to find the deployment by UID.", zap.Int64("deployment_uid", uid), zap.Error(err))
-		gb.ErrorResponse(c, http.StatusBadRequest, "It has failed to find the deployment by UID.")
+		gb.LogWithError(h.log, "Failed to find the deployment by UID.", err)
+		gb.ResponseWithError(c, err)
 		return
 	}
 
 	ds.DeploymentID = d.ID
 	if ds, err = h.i.SyncDeploymentStatus(ctx, ds); err != nil {
-		h.log.Error("It has failed to create a new the deployment status.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to create a new the deployment status.")
+		gb.LogWithError(h.log, "Failed to create a new the deployment status.", err)
+		gb.ResponseWithError(c, err)
 		return
 	}
 
 	d.Status = mapGithubState(ds.Status)
 	if _, err := h.i.UpdateDeployment(ctx, d); err != nil {
-		h.log.Error("It has failed to update the deployment status.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to update the deployment status.")
+		gb.LogWithError(h.log, "Failed to update the deployment.", err)
+		gb.ResponseWithError(c, err)
 		return
 	}
 
