@@ -254,7 +254,7 @@ func (g *Github) CreateWebhook(ctx context.Context, u *ent.User, r *ent.Repo, c 
 			Active: github.Bool(true),
 		})
 	if err != nil {
-		return -1, err
+		return -1, e.NewErrorWithMessage(e.ErrorCodeInternalError, "It has failed to create a webhook.", err)
 	}
 
 	return *h.ID, nil

@@ -2,26 +2,38 @@ package store
 
 import (
 	"context"
+	"fmt"
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/gitploy-io/gitploy/ent"
 	"github.com/gitploy-io/gitploy/ent/deployment"
 	"github.com/gitploy-io/gitploy/ent/perm"
 	"github.com/gitploy-io/gitploy/ent/repo"
+	"github.com/gitploy-io/gitploy/pkg/e"
 	"github.com/gitploy-io/gitploy/vo"
 )
 
 func (s *Store) CountActiveRepos(ctx context.Context) (int, error) {
-	return s.c.Repo.
+	cnt, err := s.c.Repo.
 		Query().
 		Where(repo.ActiveEQ(true)).
 		Count(ctx)
+	if err != nil {
+		return 0, e.NewError(e.ErrorCodeInternalError, err)
+	}
+
+	return cnt, nil
 }
 
 func (s *Store) CountRepos(ctx context.Context) (int, error) {
-	return s.c.Repo.
+	cnt, err := s.c.Repo.
 		Query().
 		Count(ctx)
+	if err != nil {
+		return 0, e.NewError(e.ErrorCodeInternalError, err)
+	}
+
+	return cnt, nil
 }
 
 func (s *Store) ListReposOfUser(ctx context.Context, u *ent.User, q, namespace, name string, sorted bool, page, perPage int) ([]*ent.Repo, error) {
@@ -63,7 +75,7 @@ func (s *Store) ListReposOfUser(ctx context.Context, u *ent.User, q, namespace, 
 
 	repos, err := qry.All(ctx)
 	if err != nil {
-		return nil, err
+		return nil, e.NewError(e.ErrorCodeInternalError, err)
 	}
 
 	for _, r := range repos {
@@ -74,7 +86,7 @@ func (s *Store) ListReposOfUser(ctx context.Context, u *ent.User, q, namespace, 
 			WithUser().
 			All(ctx)
 		if err != nil {
-			return nil, err
+			return nil, e.NewError(e.ErrorCodeInternalError, err)
 		}
 
 		r.Edges.Deployments = deployments
@@ -83,11 +95,18 @@ func (s *Store) ListReposOfUser(ctx context.Context, u *ent.User, q, namespace, 
 }
 
 func (s *Store) FindRepoByID(ctx context.Context, id int64) (*ent.Repo, error) {
-	return s.c.Repo.Get(ctx, id)
+	r, err := s.c.Repo.Get(ctx, id)
+	if ent.IsNotFound(err) {
+		return nil, e.NewErrorWithMessage(e.ErrorCodeNotFound, "The repository is not found.", err)
+	} else if err != nil {
+		return nil, e.NewError(e.ErrorCodeInternalError, err)
+	}
+
+	return r, nil
 }
 
 func (s *Store) FindRepoOfUserByID(ctx context.Context, u *ent.User, id int64) (*ent.Repo, error) {
-	return s.c.Repo.
+	r, err := s.c.Repo.
 		Query().
 		Where(func(s *sql.Selector) {
 			t := sql.Table(perm.Table)
@@ -100,6 +119,13 @@ func (s *Store) FindRepoOfUserByID(ctx context.Context, u *ent.User, id int64) (
 			repo.IDEQ(id),
 		).
 		Only(ctx)
+	if ent.IsNotFound(err) {
+		return nil, e.NewErrorWithMessage(e.ErrorCodeNotFound, "The repository is not found.", err)
+	} else if err != nil {
+		return nil, e.NewError(e.ErrorCodeInternalError, err)
+	}
+
+	return r, nil
 }
 
 func (s *Store) FindRepoOfUserByNamespaceName(ctx context.Context, u *ent.User, namespace, name string) (*ent.Repo, error) {
@@ -119,42 +145,84 @@ func (s *Store) FindRepoOfUserByNamespaceName(ctx context.Context, u *ent.User, 
 			),
 		).
 		Only(ctx)
-	if err != nil {
-		return nil, err
+	if ent.IsNotFound(err) {
+		return nil, e.NewErrorWithMessage(e.ErrorCodeNotFound, "The repository is not found.", err)
+	} else if err != nil {
+		return nil, e.NewError(e.ErrorCodeInternalError, err)
 	}
 
 	return r, nil
 }
 
 func (s *Store) SyncRepo(ctx context.Context, r *vo.RemoteRepo) (*ent.Repo, error) {
-	return s.c.Repo.
+	ret, err := s.c.Repo.
 		Create().
 		SetID(r.ID).
 		SetNamespace(r.Namespace).
 		SetName(r.Name).
 		SetDescription(r.Description).
 		Save(ctx)
+	if ent.IsValidationError(err) {
+		return nil, e.NewErrorWithMessage(
+			e.ErrorCodeUnprocessableEntity,
+			fmt.Sprintf("The value of \"%s\" field is invalid.", err.(*ent.ValidationError).Name),
+			err)
+	} else if err != nil {
+		return nil, e.NewError(e.ErrorCodeInternalError, err)
+	}
+
+	return ret, nil
 }
 
 func (s *Store) UpdateRepo(ctx context.Context, r *ent.Repo) (*ent.Repo, error) {
-	return s.c.Repo.
+	ret, err := s.c.Repo.
 		UpdateOne(r).
 		SetConfigPath(r.ConfigPath).
 		Save(ctx)
+	if ent.IsValidationError(err) {
+		return nil, e.NewErrorWithMessage(
+			e.ErrorCodeUnprocessableEntity,
+			fmt.Sprintf("The value of \"%s\" field is invalid.", err.(*ent.ValidationError).Name),
+			err)
+	} else if err != nil {
+		return nil, e.NewError(e.ErrorCodeInternalError, err)
+	}
+
+	return ret, nil
 }
 
 func (s *Store) Activate(ctx context.Context, r *ent.Repo) (*ent.Repo, error) {
-	return s.c.Repo.
+	ret, err := s.c.Repo.
 		UpdateOne(r).
 		SetActive(true).
 		SetWebhookID(r.WebhookID).
 		Save(ctx)
+	if ent.IsValidationError(err) {
+		return nil, e.NewErrorWithMessage(
+			e.ErrorCodeUnprocessableEntity,
+			fmt.Sprintf("The value of \"%s\" field is invalid.", err.(*ent.ValidationError).Name),
+			err)
+	} else if err != nil {
+		return nil, e.NewError(e.ErrorCodeInternalError, err)
+	}
+
+	return ret, nil
 }
 
 func (s *Store) Deactivate(ctx context.Context, r *ent.Repo) (*ent.Repo, error) {
-	return s.c.Repo.
+	ret, err := s.c.Repo.
 		UpdateOne(r).
 		SetActive(false).
 		SetWebhookID(0).
 		Save(ctx)
+	if ent.IsValidationError(err) {
+		return nil, e.NewErrorWithMessage(
+			e.ErrorCodeUnprocessableEntity,
+			fmt.Sprintf("The value of \"%s\" field is invalid.", err.(*ent.ValidationError).Name),
+			err)
+	} else if err != nil {
+		return nil, e.NewError(e.ErrorCodeInternalError, err)
+	}
+
+	return ret, nil
 }
