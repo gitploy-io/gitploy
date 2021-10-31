@@ -2,6 +2,7 @@ package store
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/gitploy-io/gitploy/ent"
@@ -12,7 +13,7 @@ import (
 )
 
 func (s *Store) ListPermsOfRepo(ctx context.Context, r *ent.Repo, q string, page, perPage int) ([]*ent.Perm, error) {
-	return s.c.Perm.
+	perms, err := s.c.Perm.
 		Query().
 		Where(
 			perm.And(
@@ -25,6 +26,11 @@ func (s *Store) ListPermsOfRepo(ctx context.Context, r *ent.Repo, q string, page
 		Limit(perPage).
 		Offset(offset(page, perPage)).
 		All(ctx)
+	if err != nil {
+		return nil, e.NewError(e.ErrorCodeInternalError, err)
+	}
+
+	return perms, nil
 }
 
 func (s *Store) FindPermOfRepo(ctx context.Context, r *ent.Repo, u *ent.User) (*ent.Perm, error) {
@@ -49,21 +55,41 @@ func (s *Store) FindPermOfRepo(ctx context.Context, r *ent.Repo, u *ent.User) (*
 }
 
 func (s *Store) CreatePerm(ctx context.Context, p *ent.Perm) (*ent.Perm, error) {
-	return s.c.Perm.
+	perm, err := s.c.Perm.
 		Create().
 		SetRepoPerm(p.RepoPerm).
 		SetSyncedAt(p.SyncedAt).
 		SetUserID(p.UserID).
 		SetRepoID(p.RepoID).
 		Save(ctx)
+	if ent.IsValidationError(err) {
+		return nil, e.NewErrorWithMessage(
+			e.ErrorCodeUnprocessableEntity,
+			fmt.Sprintf("The value of \"%s\" field is invalid.", err.(*ent.ValidationError).Name),
+			err)
+	} else if err != nil {
+		return nil, e.NewError(e.ErrorCodeInternalError, err)
+	}
+
+	return perm, nil
 }
 
 func (s *Store) UpdatePerm(ctx context.Context, p *ent.Perm) (*ent.Perm, error) {
-	return s.c.Perm.
+	perm, err := s.c.Perm.
 		UpdateOne(p).
 		SetRepoPerm(p.RepoPerm).
 		SetSyncedAt(p.SyncedAt).
 		Save(ctx)
+	if ent.IsValidationError(err) {
+		return nil, e.NewErrorWithMessage(
+			e.ErrorCodeUnprocessableEntity,
+			fmt.Sprintf("The value of \"%s\" field is invalid.", err.(*ent.ValidationError).Name),
+			err)
+	} else if err != nil {
+		return nil, e.NewError(e.ErrorCodeInternalError, err)
+	}
+
+	return perm, nil
 }
 
 func (s *Store) DeletePermsOfUserLessThanSyncedAt(ctx context.Context, u *ent.User, t time.Time) (int, error) {
