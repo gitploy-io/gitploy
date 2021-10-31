@@ -26,10 +26,6 @@ const (
 	// ErrorCodeLicenseDecode is that the license.
 	ErrorCodeLicenseDecode ErrorCode = "license_decode"
 
-	// ErrorCodeRefNotFound is that the ref is not found.
-	// TODO: migrate into ErrorCodeNotFound
-	ErrorCodeRefNotFound ErrorCode = "ref_not_found"
-
 	// General purpose error codes.
 	ErrorCodeInvalidRequest      ErrorCode = "invalid_request"
 	ErrorCodeNotFound            ErrorCode = "not_found"

@@ -7,7 +7,6 @@ import (
 	"github.com/gitploy-io/gitploy/ent"
 	gb "github.com/gitploy-io/gitploy/internal/server/global"
 	"github.com/gitploy-io/gitploy/vo"
-	"go.uber.org/zap"
 )
 
 func (r *Repo) ListCommits(c *gin.Context) {
@@ -27,8 +26,8 @@ func (r *Repo) ListCommits(c *gin.Context) {
 
 	commits, err := r.i.ListCommits(ctx, u, repo, branch, atoi(page), atoi(perPage))
 	if err != nil {
-		r.log.Error("failed to list commits.", zap.String("repo", repo.Name), zap.Error(err))
-		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to list commits.")
+		gb.LogWithError(r.log, "Failed to list commits.", err)
+		gb.ResponseWithError(c, err)
 		return
 	}
 
@@ -50,7 +49,7 @@ func (r *Repo) GetCommit(c *gin.Context) {
 
 	commit, err := r.i.GetCommit(ctx, u, repo, sha)
 	if err != nil {
-		gb.LogWithError(r.log, "It has failed to get the commit.", err)
+		gb.LogWithError(r.log, "Failed to get the commit.", err)
 		gb.ResponseWithError(c, err)
 		return
 	}
@@ -73,7 +72,7 @@ func (r *Repo) ListStatuses(c *gin.Context) {
 
 	ss, err := r.i.ListCommitStatuses(ctx, u, repo, sha)
 	if err != nil {
-		gb.LogWithError(r.log, "It has failed to list commit statuses.", err)
+		gb.LogWithError(r.log, "Failed to list commit statuses.", err)
 		gb.ResponseWithError(c, err)
 		return
 	}
