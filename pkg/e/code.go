@@ -6,9 +6,6 @@ import (
 )
 
 const (
-	// ErrorCodeConfigNotFound is that the configuration file is not found.
-	// TODO: migrate into ErrorCodeNotFound
-	ErrorCodeConfigNotFound ErrorCode = "config_not_found"
 	// ErrorCodeConfigParseError is that an error occurs when it parse the file.
 	ErrorCodeConfigParseError ErrorCode = "config_parse_error"
 
