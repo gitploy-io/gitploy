@@ -2,11 +2,12 @@ package vo
 
 import (
 	"encoding/json"
-	"fmt"
 	"strconv"
 
 	"github.com/drone/envsubst"
 	"gopkg.in/yaml.v3"
+
+	eutil "github.com/gitploy-io/gitploy/pkg/e"
 )
 
 type (
@@ -94,7 +95,7 @@ func (e *Env) IsApprovalEabled() bool {
 func (e *Env) Eval(v *EvalValues) error {
 	byts, err := json.Marshal(e)
 	if err != nil {
-		return fmt.Errorf("failed to marshal the env: %w", err)
+		return eutil.NewError(eutil.ErrorCodeConfigParseError, err)
 	}
 
 	// Evaluates variables
@@ -124,11 +125,11 @@ func (e *Env) Eval(v *EvalValues) error {
 
 	evalued, err := envsubst.Eval(string(byts), mapper)
 	if err != nil {
-		return fmt.Errorf("failed to eval variables: %w", err)
+		return eutil.NewError(eutil.ErrorCodeConfigParseError, err)
 	}
 
 	if err := json.Unmarshal([]byte(evalued), e); err != nil {
-		return fmt.Errorf("failed to unmarshal to the env: %w", err)
+		return eutil.NewError(eutil.ErrorCodeConfigParseError, err)
 	}
 
 	return nil

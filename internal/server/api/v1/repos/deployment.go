@@ -43,8 +43,8 @@ func (r *Repo) ListDeployments(c *gin.Context) {
 
 	ds, err := r.i.ListDeploymentsOfRepo(ctx, re, env, status, atoi(page), atoi(perPage))
 	if err != nil {
-		r.log.Error("failed to list deployments.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to list deployments.")
+		gb.LogWithError(r.log, "Failed to list deployments.", err)
+		gb.ResponseWithError(c, err)
 		return
 	}
 
@@ -62,12 +62,10 @@ func (r *Repo) GetDeploymentByNumber(c *gin.Context) {
 	ctx := c.Request.Context()
 
 	d, err := r.i.FindDeploymentOfRepoByNumber(ctx, re, atoi(number))
-	if ent.IsNotFound(err) {
-		r.log.Warn("the deployment is not found.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusNotFound, "The deployment is not found.")
-	} else if err != nil {
-		r.log.Error("failed to find deployment.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusNotFound, "It has failed to find the deployment.")
+	if err != nil {
+		gb.LogWithError(r.log, "Failed to get the deployments.", err)
+		gb.ResponseWithError(c, err)
+		return
 	}
 
 	gb.Response(c, http.StatusOK, d)
@@ -78,7 +76,10 @@ func (r *Repo) CreateDeployment(c *gin.Context) {
 
 	p := &deploymentPostPayload{}
 	if err := c.ShouldBindBodyWith(p, binding.JSON); err != nil {
-		gb.ErrorResponse(c, http.StatusBadRequest, "It has failed to bind the payload.")
+		gb.ResponseWithError(
+			c,
+			e.NewErrorWithMessage(e.ErrorCodeInvalidRequest, "It has failed to bind the payload.", nil),
+		)
 		return
 	}
 
@@ -102,14 +103,14 @@ func (r *Repo) CreateDeployment(c *gin.Context) {
 
 	var env *vo.Env
 	if env = cf.GetEnv(p.Env); env == nil {
-		r.log.Warn("The environment is not defined in the configuration.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "The environment is not defined in the configuration.")
+		r.log.Warn("The environment is not defined in the configuration.")
+		gb.ResponseWithStatusAndError(c, http.StatusUnprocessableEntity, err)
 		return
 	}
 
 	if err := env.Eval(&vo.EvalValues{}); err != nil {
-		r.log.Warn("It has failed to eval variables in the config.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "It has failed to eval variables in the config.")
+		gb.LogWithError(r.log, "Failed to evaluate variables in the configuration.", err)
+		gb.ResponseWithError(c, err)
 		return
 	}
 
@@ -122,7 +123,7 @@ func (r *Repo) CreateDeployment(c *gin.Context) {
 		cf.GetEnv(p.Env),
 	)
 	if err != nil {
-		gb.LogWithError(r.log, "It has failed to deploy.", err)
+		gb.LogWithError(r.log, "Failed to deploy.", err)
 		gb.ResponseWithError(c, err)
 		return
 	}
@@ -154,7 +155,10 @@ func (r *Repo) UpdateDeployment(c *gin.Context) {
 
 	p := &deploymentPatchPayload{}
 	if err := c.ShouldBindBodyWith(p, binding.JSON); err != nil {
-		gb.ErrorResponse(c, http.StatusBadRequest, "It has failed to bind the payload.")
+		gb.ResponseWithError(
+			c,
+			e.NewErrorWithMessage(e.ErrorCodeInvalidRequest, "It has failed to bind the payload.", nil),
+		)
 		return
 	}
 
@@ -165,9 +169,10 @@ func (r *Repo) UpdateDeployment(c *gin.Context) {
 	re := vr.(*ent.Repo)
 
 	d, err := r.i.FindDeploymentOfRepoByNumber(ctx, re, atoi(number))
-	if ent.IsNotFound(err) {
-		r.log.Warn("the deployment is not found.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusNotFound, "The deployment is not found.")
+	if err != nil {
+		gb.LogWithError(r.log, "Failed to find the deployments.", err)
+		gb.ResponseWithError(c, err)
+		return
 	}
 
 	cf, err := r.i.GetConfig(ctx, u, re)
@@ -184,14 +189,14 @@ func (r *Repo) UpdateDeployment(c *gin.Context) {
 
 	var env *vo.Env
 	if env = cf.GetEnv(d.Env); env == nil {
-		r.log.Warn("The environment is not defined in the config.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "The environment is not defined in the config.")
+		r.log.Warn("The environment is not defined in the configuration.")
+		gb.ResponseWithStatusAndError(c, http.StatusUnprocessableEntity, err)
 		return
 	}
 
 	if err := env.Eval(&vo.EvalValues{IsRollback: d.IsRollback}); err != nil {
-		r.log.Warn("It has failed to eval variables in the config.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "It has failed to eval variables in the config.")
+		gb.LogWithError(r.log, "Failed to evaluate variables in the configuration.", err)
+		gb.ResponseWithError(c, err)
 		return
 	}
 
@@ -233,9 +238,9 @@ func (r *Repo) RollbackDeployment(c *gin.Context) {
 	re := vr.(*ent.Repo)
 
 	d, err := r.i.FindDeploymentOfRepoByNumber(ctx, re, atoi(number))
-	if ent.IsNotFound(err) {
-		r.log.Warn("the deployment is not found.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusNotFound, "The deployment is not found.")
+	if err != nil {
+		gb.LogWithError(r.log, "Failed to find the deployments.", err)
+		gb.ResponseWithError(c, err)
 		return
 	}
 
@@ -253,14 +258,14 @@ func (r *Repo) RollbackDeployment(c *gin.Context) {
 
 	var env *vo.Env
 	if env = cf.GetEnv(d.Env); env == nil {
-		r.log.Warn("The environment is not defined in the configuration.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "The environment is not defined in the configuration.")
+		r.log.Warn("The environment is not defined in the configuration.")
+		gb.ResponseWithStatusAndError(c, http.StatusUnprocessableEntity, err)
 		return
 	}
 
 	if err := env.Eval(&vo.EvalValues{IsRollback: true}); err != nil {
-		r.log.Warn("It has failed to eval variables in the config.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusUnprocessableEntity, "It has failed to eval variables in the config.")
+		gb.LogWithError(r.log, "Failed to evaluate variables in the configuration.", err)
+		gb.ResponseWithError(c, err)
 		return
 	}
 
@@ -274,7 +279,7 @@ func (r *Repo) RollbackDeployment(c *gin.Context) {
 		cf.GetEnv(d.Env),
 	)
 	if err != nil {
-		gb.LogWithError(r.log, "It has failed to deploy.", err)
+		gb.LogWithError(r.log, "Failed to deploy.", err)
 		gb.ResponseWithError(c, err)
 		return
 	}
@@ -311,24 +316,16 @@ func (r *Repo) ListDeploymentChanges(c *gin.Context) {
 	re := vr.(*ent.Repo)
 
 	d, err := r.i.FindDeploymentOfRepoByNumber(ctx, re, atoi(number))
-	if ent.IsNotFound(err) {
-		r.log.Warn("The deployment is not found.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusNotFound, "The deployment is not found.")
-		return
-	} else if err != nil {
-		r.log.Error("It has failed to find the deployment.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to find the deployment.")
+	if err != nil {
+		gb.LogWithError(r.log, "Failed to find the deployments.", err)
+		gb.ResponseWithError(c, err)
 		return
 	}
 
 	ld, err := r.i.FindPrevSuccessDeployment(ctx, d)
-	if ent.IsNotFound(err) {
-		gb.Response(c, http.StatusOK, []*vo.Commit{})
-		return
-	} else if err != nil {
-		r.log.Error("It has failed to find the comparable deployment.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to find the comparable deployment.")
-		return
+	if err != nil {
+		gb.LogWithError(r.log, "Failed to find the deployments.", err)
+		gb.ResponseWithError(c, err)
 	}
 
 	// Get SHA when the status of deployment is waiting.
@@ -344,8 +341,8 @@ func (r *Repo) ListDeploymentChanges(c *gin.Context) {
 
 	commits, _, err := r.i.CompareCommits(ctx, u, re, ld.Sha, sha, atoi(page), atoi(perPage))
 	if err != nil {
-		r.log.Error("It has failed to compare two commits.", zap.Error(err))
-		gb.ErrorResponse(c, http.StatusInternalServerError, "It has failed to compare two commits.")
+		gb.LogWithError(r.log, "Failed to compare two commits.", err)
+		gb.ResponseWithError(c, err)
 		return
 	}
 
@@ -391,7 +388,7 @@ func (r *Repo) GetConfig(c *gin.Context) {
 
 	config, err := r.i.GetConfig(ctx, u, re)
 	if err != nil {
-		gb.LogWithError(r.log, "It has failed to get the configuration.", err)
+		gb.LogWithError(r.log, "Failed to get the configuration.", err)
 		gb.ResponseWithError(c, err)
 		return
 	}
