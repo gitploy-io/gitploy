@@ -31,9 +31,10 @@ const (
 	ErrorCodeRefNotFound ErrorCode = "ref_not_found"
 
 	// General purpose error codes.
-	ErrorCodeInvalidRequest ErrorCode = "invalid_request"
-	ErrorCodeNotFound       ErrorCode = "not_found"
-	ErrorCodeInternalError  ErrorCode = "internal_error"
+	ErrorCodeInvalidRequest      ErrorCode = "invalid_request"
+	ErrorCodeNotFound            ErrorCode = "not_found"
+	ErrorCodeUnprocessableEntity ErrorCode = "unprocessable_entity"
+	ErrorCodeInternalError       ErrorCode = "internal_error"
 )
 
 type (

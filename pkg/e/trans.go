@@ -14,6 +14,7 @@ var messages = map[ErrorCode]string{
 	ErrorCodeRefNotFound:            "The reference is not found.",
 	ErrorCodeInvalidRequest:         "Invalid request parameter.",
 	ErrorCodeNotFound:               "It is not found.",
+	ErrorCodeUnprocessableEntity:    "Invalid request payload.",
 	ErrorCodeInternalError:          "Server internal error.",
 }
 
@@ -38,6 +39,7 @@ var httpCodes = map[ErrorCode]int{
 	ErrorCodeRefNotFound:            http.StatusNotFound,
 	ErrorCodeInvalidRequest:         http.StatusBadRequest,
 	ErrorCodeNotFound:               http.StatusNotFound,
+	ErrorCodeUnprocessableEntity:    http.StatusUnprocessableEntity,
 	ErrorCodeInternalError:          http.StatusInternalServerError,
 }
 
