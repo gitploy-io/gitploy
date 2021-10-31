@@ -13,10 +13,7 @@ func (s *Store) CountUsers(ctx context.Context) (int, error) {
 		Query().
 		Count(ctx)
 	if err != nil {
-		return 0, e.NewError(
-			e.ErrorCodeInternalError,
-			err,
-		)
+		return 0, e.NewError(e.ErrorCodeInternalError, err)
 	}
 
 	return cnt, nil
@@ -40,33 +37,54 @@ func (s *Store) ListUsers(ctx context.Context, login string, page, perPage int) 
 //
 // Note that add new indexes if you need to more edges.
 func (s *Store) FindUserByID(ctx context.Context, id int64) (*ent.User, error) {
-	return s.c.User.
+	u, err := s.c.User.
 		Query().
 		Where(
 			user.IDEQ(id),
 		).
 		WithChatUser().
 		First(ctx)
+	if ent.IsNotFound(err) {
+		return nil, e.NewErrorWithMessage(e.ErrorCodeNotFound, "The user is not found.", err)
+	} else if err != nil {
+		return nil, e.NewError(e.ErrorCodeInternalError, err)
+	}
+
+	return u, nil
 }
 
 func (s *Store) FindUserByHash(ctx context.Context, hash string) (*ent.User, error) {
-	return s.c.User.
+	u, err := s.c.User.
 		Query().
 		Where(
 			user.HashEQ(hash),
 		).
 		WithChatUser().
 		Only(ctx)
+	if ent.IsNotFound(err) {
+		return nil, e.NewErrorWithMessage(e.ErrorCodeNotFound, "The user is not found.", err)
+	} else if err != nil {
+		return nil, e.NewError(e.ErrorCodeInternalError, err)
+	}
+
+	return u, nil
 }
 
 func (s *Store) FindUserByLogin(ctx context.Context, login string) (*ent.User, error) {
-	return s.c.User.
+	u, err := s.c.User.
 		Query().
 		Where(
 			user.LoginEQ(login),
 		).
 		WithChatUser().
 		Only(ctx)
+	if ent.IsNotFound(err) {
+		return nil, e.NewErrorWithMessage(e.ErrorCodeNotFound, "The user is not found.", err)
+	} else if err != nil {
+		return nil, e.NewError(e.ErrorCodeInternalError, err)
+	}
+
+	return u, nil
 }
 
 func (s *Store) CreateUser(ctx context.Context, u *ent.User) (*ent.User, error) {

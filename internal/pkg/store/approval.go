@@ -8,6 +8,7 @@ import (
 	"github.com/gitploy-io/gitploy/ent"
 	"github.com/gitploy-io/gitploy/ent/approval"
 	"github.com/gitploy-io/gitploy/ent/predicate"
+	"github.com/gitploy-io/gitploy/pkg/e"
 )
 
 func (s *Store) SearchApprovals(ctx context.Context, u *ent.User, ss []approval.Status, from time.Time, to time.Time, page, perPage int) ([]*ent.Approval, error) {
@@ -59,7 +60,7 @@ func (s *Store) ListApprovals(ctx context.Context, d *ent.Deployment) ([]*ent.Ap
 }
 
 func (s *Store) FindApprovalByID(ctx context.Context, id int) (*ent.Approval, error) {
-	return s.c.Approval.
+	ap, err := s.c.Approval.
 		Query().
 		Where(
 			approval.IDEQ(id),
@@ -71,10 +72,17 @@ func (s *Store) FindApprovalByID(ctx context.Context, id int) (*ent.Approval, er
 				WithUser()
 		}).
 		First(ctx)
+	if ent.IsNotFound(err) {
+		return nil, e.NewErrorWithMessage(e.ErrorCodeNotFound, "The approval is not found.", err)
+	} else if err != nil {
+		return nil, e.NewError(e.ErrorCodeInternalError, err)
+	}
+
+	return ap, nil
 }
 
 func (s *Store) FindApprovalOfUser(ctx context.Context, d *ent.Deployment, u *ent.User) (*ent.Approval, error) {
-	return s.c.Approval.
+	ap, err := s.c.Approval.
 		Query().
 		Where(
 			approval.And(
@@ -89,6 +97,13 @@ func (s *Store) FindApprovalOfUser(ctx context.Context, d *ent.Deployment, u *en
 				WithUser()
 		}).
 		First(ctx)
+	if ent.IsNotFound(err) {
+		return nil, e.NewErrorWithMessage(e.ErrorCodeNotFound, "The user's approval is not found.", err)
+	} else if err != nil {
+		return nil, e.NewError(e.ErrorCodeInternalError, err)
+	}
+
+	return ap, nil
 }
 
 func (s *Store) CreateApproval(ctx context.Context, a *ent.Approval) (*ent.Approval, error) {
@@ -100,10 +115,17 @@ func (s *Store) CreateApproval(ctx context.Context, a *ent.Approval) (*ent.Appro
 }
 
 func (s *Store) UpdateApproval(ctx context.Context, a *ent.Approval) (*ent.Approval, error) {
-	return s.c.Approval.
+	ap, err := s.c.Approval.
 		UpdateOne(a).
 		SetStatus(a.Status).
 		Save(ctx)
+	if ent.IsValidationError(err) {
+		return nil, e.NewError(e.ErrorCodeUnprocessableEntity, err)
+	} else if err != nil {
+		return nil, e.NewError(e.ErrorCodeInternalError, err)
+	}
+
+	return ap, nil
 }
 
 func (s *Store) DeleteApproval(ctx context.Context, a *ent.Approval) error {
