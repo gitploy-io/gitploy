@@ -39,6 +39,10 @@ type (
 		UpdateApproval(ctx context.Context, a *ent.Approval) (*ent.Approval, error)
 		DeleteApproval(ctx context.Context, a *ent.Approval) error
 
+		ListReviews(ctx context.Context, d *ent.Deployment) ([]*ent.Review, error)
+		FindReviewOfUser(ctx context.Context, u *ent.User, d *ent.Deployment) (*ent.Review, error)
+		UpdateReview(ctx context.Context, rv *ent.Review) (*ent.Review, error)
+
 		ListLocksOfRepo(ctx context.Context, r *ent.Repo) ([]*ent.Lock, error)
 		HasLockOfRepoForEnv(ctx context.Context, r *ent.Repo, env string) (bool, error)
 		FindLockByID(ctx context.Context, id int) (*ent.Lock, error)

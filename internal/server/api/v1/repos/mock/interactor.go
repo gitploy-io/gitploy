@@ -320,6 +320,21 @@ func (mr *MockInteractorMockRecorder) FindRepoOfUserByNamespaceName(ctx, u, name
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindRepoOfUserByNamespaceName", reflect.TypeOf((*MockInteractor)(nil).FindRepoOfUserByNamespaceName), ctx, u, namespace, name)
 }
 
+// FindReviewOfUser mocks base method.
+func (m *MockInteractor) FindReviewOfUser(ctx context.Context, u *ent.User, d *ent.Deployment) (*ent.Review, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindReviewOfUser", ctx, u, d)
+	ret0, _ := ret[0].(*ent.Review)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindReviewOfUser indicates an expected call of FindReviewOfUser.
+func (mr *MockInteractorMockRecorder) FindReviewOfUser(ctx, u, d interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindReviewOfUser", reflect.TypeOf((*MockInteractor)(nil).FindReviewOfUser), ctx, u, d)
+}
+
 // FindUserByID mocks base method.
 func (m *MockInteractor) FindUserByID(ctx context.Context, id int64) (*ent.User, error) {
 	m.ctrl.T.Helper()
@@ -544,6 +559,21 @@ func (mr *MockInteractorMockRecorder) ListReposOfUser(ctx, u, q, namespace, name
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListReposOfUser", reflect.TypeOf((*MockInteractor)(nil).ListReposOfUser), ctx, u, q, namespace, name, sorted, page, perPage)
 }
 
+// ListReviews mocks base method.
+func (m *MockInteractor) ListReviews(ctx context.Context, d *ent.Deployment) ([]*ent.Review, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListReviews", ctx, d)
+	ret0, _ := ret[0].([]*ent.Review)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListReviews indicates an expected call of ListReviews.
+func (mr *MockInteractorMockRecorder) ListReviews(ctx, d interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListReviews", reflect.TypeOf((*MockInteractor)(nil).ListReviews), ctx, d)
+}
+
 // ListTags mocks base method.
 func (m *MockInteractor) ListTags(ctx context.Context, u *ent.User, r *ent.Repo, page, perPage int) ([]*vo.Tag, error) {
 	m.ctrl.T.Helper()
@@ -602,4 +632,19 @@ func (m *MockInteractor) UpdateRepo(ctx context.Context, r *ent.Repo) (*ent.Repo
 func (mr *MockInteractorMockRecorder) UpdateRepo(ctx, r interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateRepo", reflect.TypeOf((*MockInteractor)(nil).UpdateRepo), ctx, r)
+}
+
+// UpdateReview mocks base method.
+func (m *MockInteractor) UpdateReview(ctx context.Context, rv *ent.Review) (*ent.Review, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateReview", ctx, rv)
+	ret0, _ := ret[0].(*ent.Review)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdateReview indicates an expected call of UpdateReview.
+func (mr *MockInteractorMockRecorder) UpdateReview(ctx, rv interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateReview", reflect.TypeOf((*MockInteractor)(nil).UpdateReview), ctx, rv)
 }

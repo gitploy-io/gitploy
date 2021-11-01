@@ -12,15 +12,15 @@ import (
 	"github.com/gitploy-io/gitploy/pkg/e"
 )
 
-func (r *Repo) ListComments(c *gin.Context) {
-	gb.Response(c, http.StatusOK, make([]*ent.Comment, 0))
+func (r *Repo) ListReviews(c *gin.Context) {
+	gb.Response(c, http.StatusOK, make([]*ent.Review, 0))
 }
 
-func (r *Repo) GetComment(c *gin.Context) {
+func (r *Repo) GetUserApproval(c *gin.Context) {
 	gb.Response(c, http.StatusNotFound, nil)
 }
 
-func (r *Repo) CreateComment(c *gin.Context) {
+func (r *Repo) UpdateUserReview(c *gin.Context) {
 	gb.ResponseWithError(
 		c,
 		e.NewError(e.ErrorCodeLicenseRequired, nil),
