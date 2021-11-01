@@ -39,5 +39,8 @@ type Perm func(*sql.Selector)
 // Repo is the predicate function for repo builders.
 type Repo func(*sql.Selector)
 
+// Review is the predicate function for review builders.
+type Review func(*sql.Selector)
+
 // User is the predicate function for user builders.
 type User func(*sql.Selector)

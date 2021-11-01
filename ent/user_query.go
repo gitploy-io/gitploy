@@ -19,6 +19,7 @@ import (
 	"github.com/gitploy-io/gitploy/ent/lock"
 	"github.com/gitploy-io/gitploy/ent/perm"
 	"github.com/gitploy-io/gitploy/ent/predicate"
+	"github.com/gitploy-io/gitploy/ent/review"
 	"github.com/gitploy-io/gitploy/ent/user"
 )
 
@@ -36,6 +37,7 @@ type UserQuery struct {
 	withPerms       *PermQuery
 	withDeployments *DeploymentQuery
 	withApprovals   *ApprovalQuery
+	withReviews     *ReviewQuery
 	withLocks       *LockQuery
 	modifiers       []func(s *sql.Selector)
 	// intermediate query (i.e. traversal path).
@@ -155,6 +157,28 @@ func (uq *UserQuery) QueryApprovals() *ApprovalQuery {
 			sqlgraph.From(user.Table, user.FieldID, selector),
 			sqlgraph.To(approval.Table, approval.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, user.ApprovalsTable, user.ApprovalsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(uq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryReviews chains the current query on the "reviews" edge.
+func (uq *UserQuery) QueryReviews() *ReviewQuery {
+	query := &ReviewQuery{config: uq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := uq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := uq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, selector),
+			sqlgraph.To(review.Table, review.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.ReviewsTable, user.ReviewsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(uq.driver.Dialect(), step)
 		return fromU, nil
@@ -369,6 +393,7 @@ func (uq *UserQuery) Clone() *UserQuery {
 		withPerms:       uq.withPerms.Clone(),
 		withDeployments: uq.withDeployments.Clone(),
 		withApprovals:   uq.withApprovals.Clone(),
+		withReviews:     uq.withReviews.Clone(),
 		withLocks:       uq.withLocks.Clone(),
 		// clone intermediate query.
 		sql:  uq.sql.Clone(),
@@ -417,6 +442,17 @@ func (uq *UserQuery) WithApprovals(opts ...func(*ApprovalQuery)) *UserQuery {
 		opt(query)
 	}
 	uq.withApprovals = query
+	return uq
+}
+
+// WithReviews tells the query-builder to eager-load the nodes that are connected to
+// the "reviews" edge. The optional arguments are used to configure the query builder of the edge.
+func (uq *UserQuery) WithReviews(opts ...func(*ReviewQuery)) *UserQuery {
+	query := &ReviewQuery{config: uq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	uq.withReviews = query
 	return uq
 }
 
@@ -496,11 +532,12 @@ func (uq *UserQuery) sqlAll(ctx context.Context) ([]*User, error) {
 	var (
 		nodes       = []*User{}
 		_spec       = uq.querySpec()
-		loadedTypes = [5]bool{
+		loadedTypes = [6]bool{
 			uq.withChatUser != nil,
 			uq.withPerms != nil,
 			uq.withDeployments != nil,
 			uq.withApprovals != nil,
+			uq.withReviews != nil,
 			uq.withLocks != nil,
 		}
 	)
@@ -623,6 +660,31 @@ func (uq *UserQuery) sqlAll(ctx context.Context) ([]*User, error) {
 				return nil, fmt.Errorf(`unexpected foreign-key "user_id" returned %v for node %v`, fk, n.ID)
 			}
 			node.Edges.Approvals = append(node.Edges.Approvals, n)
+		}
+	}
+
+	if query := uq.withReviews; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[int64]*User)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.Reviews = []*Review{}
+		}
+		query.Where(predicate.Review(func(s *sql.Selector) {
+			s.Where(sql.InValues(user.ReviewsColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.UserID
+			node, ok := nodeids[fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "user_id" returned %v for node %v`, fk, n.ID)
+			}
+			node.Edges.Reviews = append(node.Edges.Reviews, n)
 		}
 	}
 

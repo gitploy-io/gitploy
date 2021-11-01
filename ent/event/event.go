@@ -22,12 +22,16 @@ const (
 	FieldDeploymentID = "deployment_id"
 	// FieldApprovalID holds the string denoting the approval_id field in the database.
 	FieldApprovalID = "approval_id"
+	// FieldReviewID holds the string denoting the review_id field in the database.
+	FieldReviewID = "review_id"
 	// FieldDeletedID holds the string denoting the deleted_id field in the database.
 	FieldDeletedID = "deleted_id"
 	// EdgeDeployment holds the string denoting the deployment edge name in mutations.
 	EdgeDeployment = "deployment"
 	// EdgeApproval holds the string denoting the approval edge name in mutations.
 	EdgeApproval = "approval"
+	// EdgeReview holds the string denoting the review edge name in mutations.
+	EdgeReview = "review"
 	// EdgeNotificationRecord holds the string denoting the notification_record edge name in mutations.
 	EdgeNotificationRecord = "notification_record"
 	// Table holds the table name of the event in the database.
@@ -46,6 +50,13 @@ const (
 	ApprovalInverseTable = "approvals"
 	// ApprovalColumn is the table column denoting the approval relation/edge.
 	ApprovalColumn = "approval_id"
+	// ReviewTable is the table that holds the review relation/edge.
+	ReviewTable = "events"
+	// ReviewInverseTable is the table name for the Review entity.
+	// It exists in this package in order to avoid circular dependency with the "review" package.
+	ReviewInverseTable = "reviews"
+	// ReviewColumn is the table column denoting the review relation/edge.
+	ReviewColumn = "review_id"
 	// NotificationRecordTable is the table that holds the notification_record relation/edge.
 	NotificationRecordTable = "notification_records"
 	// NotificationRecordInverseTable is the table name for the NotificationRecord entity.
@@ -63,6 +74,7 @@ var Columns = []string{
 	FieldCreatedAt,
 	FieldDeploymentID,
 	FieldApprovalID,
+	FieldReviewID,
 	FieldDeletedID,
 }
 
@@ -88,6 +100,7 @@ type Kind string
 const (
 	KindDeployment Kind = "deployment"
 	KindApproval   Kind = "approval"
+	KindReview     Kind = "review"
 )
 
 func (k Kind) String() string {
@@ -97,7 +110,7 @@ func (k Kind) String() string {
 // KindValidator is a validator for the "kind" field enum values. It is called by the builders before save.
 func KindValidator(k Kind) error {
 	switch k {
-	case KindDeployment, KindApproval:
+	case KindDeployment, KindApproval, KindReview:
 		return nil
 	default:
 		return fmt.Errorf("event: invalid enum value for kind field: %q", k)

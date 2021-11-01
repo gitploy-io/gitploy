@@ -114,6 +114,13 @@ func ApprovalID(v int) predicate.Event {
 	})
 }
 
+// ReviewID applies equality check predicate on the "review_id" field. It's identical to ReviewIDEQ.
+func ReviewID(v int) predicate.Event {
+	return predicate.Event(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldReviewID), v))
+	})
+}
+
 // DeletedID applies equality check predicate on the "deleted_id" field. It's identical to DeletedIDEQ.
 func DeletedID(v int) predicate.Event {
 	return predicate.Event(func(s *sql.Selector) {
@@ -417,6 +424,68 @@ func ApprovalIDNotNil() predicate.Event {
 	})
 }
 
+// ReviewIDEQ applies the EQ predicate on the "review_id" field.
+func ReviewIDEQ(v int) predicate.Event {
+	return predicate.Event(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldReviewID), v))
+	})
+}
+
+// ReviewIDNEQ applies the NEQ predicate on the "review_id" field.
+func ReviewIDNEQ(v int) predicate.Event {
+	return predicate.Event(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldReviewID), v))
+	})
+}
+
+// ReviewIDIn applies the In predicate on the "review_id" field.
+func ReviewIDIn(vs ...int) predicate.Event {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Event(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldReviewID), v...))
+	})
+}
+
+// ReviewIDNotIn applies the NotIn predicate on the "review_id" field.
+func ReviewIDNotIn(vs ...int) predicate.Event {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Event(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldReviewID), v...))
+	})
+}
+
+// ReviewIDIsNil applies the IsNil predicate on the "review_id" field.
+func ReviewIDIsNil() predicate.Event {
+	return predicate.Event(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldReviewID)))
+	})
+}
+
+// ReviewIDNotNil applies the NotNil predicate on the "review_id" field.
+func ReviewIDNotNil() predicate.Event {
+	return predicate.Event(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldReviewID)))
+	})
+}
+
 // DeletedIDEQ applies the EQ predicate on the "deleted_id" field.
 func DeletedIDEQ(v int) predicate.Event {
 	return predicate.Event(func(s *sql.Selector) {
@@ -554,6 +623,34 @@ func HasApprovalWith(preds ...predicate.Approval) predicate.Event {
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(ApprovalInverseTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, ApprovalTable, ApprovalColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasReview applies the HasEdge predicate on the "review" edge.
+func HasReview() predicate.Event {
+	return predicate.Event(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(ReviewTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, ReviewTable, ReviewColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasReviewWith applies the HasEdge predicate on the "review" edge with a given conditions (other predicates).
+func HasReviewWith(preds ...predicate.Review) predicate.Event {
+	return predicate.Event(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(ReviewInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, ReviewTable, ReviewColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

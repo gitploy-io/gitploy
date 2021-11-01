@@ -20,6 +20,7 @@ import (
 	"github.com/gitploy-io/gitploy/ent/perm"
 	"github.com/gitploy-io/gitploy/ent/predicate"
 	"github.com/gitploy-io/gitploy/ent/repo"
+	"github.com/gitploy-io/gitploy/ent/review"
 	"github.com/gitploy-io/gitploy/ent/user"
 
 	"entgo.io/ent"
@@ -45,6 +46,7 @@ const (
 	TypeNotificationRecord   = "NotificationRecord"
 	TypePerm                 = "Perm"
 	TypeRepo                 = "Repo"
+	TypeReview               = "Review"
 	TypeUser                 = "User"
 )
 
@@ -2019,6 +2021,9 @@ type DeploymentMutation struct {
 	approvals                  map[int]struct{}
 	removedapprovals           map[int]struct{}
 	clearedapprovals           bool
+	reviews                    map[int]struct{}
+	removedreviews             map[int]struct{}
+	clearedreviews             bool
 	deployment_statuses        map[int]struct{}
 	removeddeployment_statuses map[int]struct{}
 	cleareddeployment_statuses bool
@@ -2891,6 +2896,60 @@ func (m *DeploymentMutation) ResetApprovals() {
 	m.removedapprovals = nil
 }
 
+// AddReviewIDs adds the "reviews" edge to the Review entity by ids.
+func (m *DeploymentMutation) AddReviewIDs(ids ...int) {
+	if m.reviews == nil {
+		m.reviews = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.reviews[ids[i]] = struct{}{}
+	}
+}
+
+// ClearReviews clears the "reviews" edge to the Review entity.
+func (m *DeploymentMutation) ClearReviews() {
+	m.clearedreviews = true
+}
+
+// ReviewsCleared reports if the "reviews" edge to the Review entity was cleared.
+func (m *DeploymentMutation) ReviewsCleared() bool {
+	return m.clearedreviews
+}
+
+// RemoveReviewIDs removes the "reviews" edge to the Review entity by IDs.
+func (m *DeploymentMutation) RemoveReviewIDs(ids ...int) {
+	if m.removedreviews == nil {
+		m.removedreviews = make(map[int]struct{})
+	}
+	for i := range ids {
+		delete(m.reviews, ids[i])
+		m.removedreviews[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedReviews returns the removed IDs of the "reviews" edge to the Review entity.
+func (m *DeploymentMutation) RemovedReviewsIDs() (ids []int) {
+	for id := range m.removedreviews {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ReviewsIDs returns the "reviews" edge IDs in the mutation.
+func (m *DeploymentMutation) ReviewsIDs() (ids []int) {
+	for id := range m.reviews {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetReviews resets all changes to the "reviews" edge.
+func (m *DeploymentMutation) ResetReviews() {
+	m.reviews = nil
+	m.clearedreviews = false
+	m.removedreviews = nil
+}
+
 // AddDeploymentStatusIDs adds the "deployment_statuses" edge to the DeploymentStatus entity by ids.
 func (m *DeploymentMutation) AddDeploymentStatusIDs(ids ...int) {
 	if m.deployment_statuses == nil {
@@ -3432,7 +3491,7 @@ func (m *DeploymentMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *DeploymentMutation) AddedEdges() []string {
-	edges := make([]string, 0, 5)
+	edges := make([]string, 0, 6)
 	if m.user != nil {
 		edges = append(edges, deployment.EdgeUser)
 	}
@@ -3441,6 +3500,9 @@ func (m *DeploymentMutation) AddedEdges() []string {
 	}
 	if m.approvals != nil {
 		edges = append(edges, deployment.EdgeApprovals)
+	}
+	if m.reviews != nil {
+		edges = append(edges, deployment.EdgeReviews)
 	}
 	if m.deployment_statuses != nil {
 		edges = append(edges, deployment.EdgeDeploymentStatuses)
@@ -3469,6 +3531,12 @@ func (m *DeploymentMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case deployment.EdgeReviews:
+		ids := make([]ent.Value, 0, len(m.reviews))
+		for id := range m.reviews {
+			ids = append(ids, id)
+		}
+		return ids
 	case deployment.EdgeDeploymentStatuses:
 		ids := make([]ent.Value, 0, len(m.deployment_statuses))
 		for id := range m.deployment_statuses {
@@ -3487,9 +3555,12 @@ func (m *DeploymentMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *DeploymentMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 5)
+	edges := make([]string, 0, 6)
 	if m.removedapprovals != nil {
 		edges = append(edges, deployment.EdgeApprovals)
+	}
+	if m.removedreviews != nil {
+		edges = append(edges, deployment.EdgeReviews)
 	}
 	if m.removeddeployment_statuses != nil {
 		edges = append(edges, deployment.EdgeDeploymentStatuses)
@@ -3507,6 +3578,12 @@ func (m *DeploymentMutation) RemovedIDs(name string) []ent.Value {
 	case deployment.EdgeApprovals:
 		ids := make([]ent.Value, 0, len(m.removedapprovals))
 		for id := range m.removedapprovals {
+			ids = append(ids, id)
+		}
+		return ids
+	case deployment.EdgeReviews:
+		ids := make([]ent.Value, 0, len(m.removedreviews))
+		for id := range m.removedreviews {
 			ids = append(ids, id)
 		}
 		return ids
@@ -3528,7 +3605,7 @@ func (m *DeploymentMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *DeploymentMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 5)
+	edges := make([]string, 0, 6)
 	if m.cleareduser {
 		edges = append(edges, deployment.EdgeUser)
 	}
@@ -3537,6 +3614,9 @@ func (m *DeploymentMutation) ClearedEdges() []string {
 	}
 	if m.clearedapprovals {
 		edges = append(edges, deployment.EdgeApprovals)
+	}
+	if m.clearedreviews {
+		edges = append(edges, deployment.EdgeReviews)
 	}
 	if m.cleareddeployment_statuses {
 		edges = append(edges, deployment.EdgeDeploymentStatuses)
@@ -3557,6 +3637,8 @@ func (m *DeploymentMutation) EdgeCleared(name string) bool {
 		return m.clearedrepo
 	case deployment.EdgeApprovals:
 		return m.clearedapprovals
+	case deployment.EdgeReviews:
+		return m.clearedreviews
 	case deployment.EdgeDeploymentStatuses:
 		return m.cleareddeployment_statuses
 	case deployment.EdgeEvent:
@@ -3591,6 +3673,9 @@ func (m *DeploymentMutation) ResetEdge(name string) error {
 		return nil
 	case deployment.EdgeApprovals:
 		m.ResetApprovals()
+		return nil
+	case deployment.EdgeReviews:
+		m.ResetReviews()
 		return nil
 	case deployment.EdgeDeploymentStatuses:
 		m.ResetDeploymentStatuses()
@@ -5400,6 +5485,8 @@ type EventMutation struct {
 	cleareddeployment          bool
 	approval                   *int
 	clearedapproval            bool
+	review                     *int
+	clearedreview              bool
 	notification_record        *int
 	clearednotification_record bool
 	done                       bool
@@ -5692,6 +5779,55 @@ func (m *EventMutation) ResetApprovalID() {
 	delete(m.clearedFields, event.FieldApprovalID)
 }
 
+// SetReviewID sets the "review_id" field.
+func (m *EventMutation) SetReviewID(i int) {
+	m.review = &i
+}
+
+// ReviewID returns the value of the "review_id" field in the mutation.
+func (m *EventMutation) ReviewID() (r int, exists bool) {
+	v := m.review
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldReviewID returns the old "review_id" field's value of the Event entity.
+// If the Event object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EventMutation) OldReviewID(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldReviewID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldReviewID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldReviewID: %w", err)
+	}
+	return oldValue.ReviewID, nil
+}
+
+// ClearReviewID clears the value of the "review_id" field.
+func (m *EventMutation) ClearReviewID() {
+	m.review = nil
+	m.clearedFields[event.FieldReviewID] = struct{}{}
+}
+
+// ReviewIDCleared returns if the "review_id" field was cleared in this mutation.
+func (m *EventMutation) ReviewIDCleared() bool {
+	_, ok := m.clearedFields[event.FieldReviewID]
+	return ok
+}
+
+// ResetReviewID resets all changes to the "review_id" field.
+func (m *EventMutation) ResetReviewID() {
+	m.review = nil
+	delete(m.clearedFields, event.FieldReviewID)
+}
+
 // SetDeletedID sets the "deleted_id" field.
 func (m *EventMutation) SetDeletedID(i int) {
 	m.deleted_id = &i
@@ -5814,6 +5950,32 @@ func (m *EventMutation) ResetApproval() {
 	m.clearedapproval = false
 }
 
+// ClearReview clears the "review" edge to the Review entity.
+func (m *EventMutation) ClearReview() {
+	m.clearedreview = true
+}
+
+// ReviewCleared reports if the "review" edge to the Review entity was cleared.
+func (m *EventMutation) ReviewCleared() bool {
+	return m.ReviewIDCleared() || m.clearedreview
+}
+
+// ReviewIDs returns the "review" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// ReviewID instead. It exists only for internal usage by the builders.
+func (m *EventMutation) ReviewIDs() (ids []int) {
+	if id := m.review; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetReview resets all changes to the "review" edge.
+func (m *EventMutation) ResetReview() {
+	m.review = nil
+	m.clearedreview = false
+}
+
 // SetNotificationRecordID sets the "notification_record" edge to the NotificationRecord entity by id.
 func (m *EventMutation) SetNotificationRecordID(id int) {
 	m.notification_record = &id
@@ -5872,7 +6034,7 @@ func (m *EventMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *EventMutation) Fields() []string {
-	fields := make([]string, 0, 6)
+	fields := make([]string, 0, 7)
 	if m.kind != nil {
 		fields = append(fields, event.FieldKind)
 	}
@@ -5887,6 +6049,9 @@ func (m *EventMutation) Fields() []string {
 	}
 	if m.approval != nil {
 		fields = append(fields, event.FieldApprovalID)
+	}
+	if m.review != nil {
+		fields = append(fields, event.FieldReviewID)
 	}
 	if m.deleted_id != nil {
 		fields = append(fields, event.FieldDeletedID)
@@ -5909,6 +6074,8 @@ func (m *EventMutation) Field(name string) (ent.Value, bool) {
 		return m.DeploymentID()
 	case event.FieldApprovalID:
 		return m.ApprovalID()
+	case event.FieldReviewID:
+		return m.ReviewID()
 	case event.FieldDeletedID:
 		return m.DeletedID()
 	}
@@ -5930,6 +6097,8 @@ func (m *EventMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldDeploymentID(ctx)
 	case event.FieldApprovalID:
 		return m.OldApprovalID(ctx)
+	case event.FieldReviewID:
+		return m.OldReviewID(ctx)
 	case event.FieldDeletedID:
 		return m.OldDeletedID(ctx)
 	}
@@ -5975,6 +6144,13 @@ func (m *EventMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetApprovalID(v)
+		return nil
+	case event.FieldReviewID:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetReviewID(v)
 		return nil
 	case event.FieldDeletedID:
 		v, ok := value.(int)
@@ -6034,6 +6210,9 @@ func (m *EventMutation) ClearedFields() []string {
 	if m.FieldCleared(event.FieldApprovalID) {
 		fields = append(fields, event.FieldApprovalID)
 	}
+	if m.FieldCleared(event.FieldReviewID) {
+		fields = append(fields, event.FieldReviewID)
+	}
 	if m.FieldCleared(event.FieldDeletedID) {
 		fields = append(fields, event.FieldDeletedID)
 	}
@@ -6056,6 +6235,9 @@ func (m *EventMutation) ClearField(name string) error {
 		return nil
 	case event.FieldApprovalID:
 		m.ClearApprovalID()
+		return nil
+	case event.FieldReviewID:
+		m.ClearReviewID()
 		return nil
 	case event.FieldDeletedID:
 		m.ClearDeletedID()
@@ -6083,6 +6265,9 @@ func (m *EventMutation) ResetField(name string) error {
 	case event.FieldApprovalID:
 		m.ResetApprovalID()
 		return nil
+	case event.FieldReviewID:
+		m.ResetReviewID()
+		return nil
 	case event.FieldDeletedID:
 		m.ResetDeletedID()
 		return nil
@@ -6092,12 +6277,15 @@ func (m *EventMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *EventMutation) AddedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.deployment != nil {
 		edges = append(edges, event.EdgeDeployment)
 	}
 	if m.approval != nil {
 		edges = append(edges, event.EdgeApproval)
+	}
+	if m.review != nil {
+		edges = append(edges, event.EdgeReview)
 	}
 	if m.notification_record != nil {
 		edges = append(edges, event.EdgeNotificationRecord)
@@ -6117,6 +6305,10 @@ func (m *EventMutation) AddedIDs(name string) []ent.Value {
 		if id := m.approval; id != nil {
 			return []ent.Value{*id}
 		}
+	case event.EdgeReview:
+		if id := m.review; id != nil {
+			return []ent.Value{*id}
+		}
 	case event.EdgeNotificationRecord:
 		if id := m.notification_record; id != nil {
 			return []ent.Value{*id}
@@ -6127,7 +6319,7 @@ func (m *EventMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *EventMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	return edges
 }
 
@@ -6141,12 +6333,15 @@ func (m *EventMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *EventMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.cleareddeployment {
 		edges = append(edges, event.EdgeDeployment)
 	}
 	if m.clearedapproval {
 		edges = append(edges, event.EdgeApproval)
+	}
+	if m.clearedreview {
+		edges = append(edges, event.EdgeReview)
 	}
 	if m.clearednotification_record {
 		edges = append(edges, event.EdgeNotificationRecord)
@@ -6162,6 +6357,8 @@ func (m *EventMutation) EdgeCleared(name string) bool {
 		return m.cleareddeployment
 	case event.EdgeApproval:
 		return m.clearedapproval
+	case event.EdgeReview:
+		return m.clearedreview
 	case event.EdgeNotificationRecord:
 		return m.clearednotification_record
 	}
@@ -6177,6 +6374,9 @@ func (m *EventMutation) ClearEdge(name string) error {
 		return nil
 	case event.EdgeApproval:
 		m.ClearApproval()
+		return nil
+	case event.EdgeReview:
+		m.ClearReview()
 		return nil
 	case event.EdgeNotificationRecord:
 		m.ClearNotificationRecord()
@@ -6194,6 +6394,9 @@ func (m *EventMutation) ResetEdge(name string) error {
 		return nil
 	case event.EdgeApproval:
 		m.ResetApproval()
+		return nil
+	case event.EdgeReview:
+		m.ResetReview()
 		return nil
 	case event.EdgeNotificationRecord:
 		m.ResetNotificationRecord()
@@ -9105,6 +9308,700 @@ func (m *RepoMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown Repo edge %s", name)
 }
 
+// ReviewMutation represents an operation that mutates the Review nodes in the graph.
+type ReviewMutation struct {
+	config
+	op                Op
+	typ               string
+	id                *int
+	status            *review.Status
+	created_at        *time.Time
+	updated_at        *time.Time
+	clearedFields     map[string]struct{}
+	user              *int64
+	cleareduser       bool
+	deployment        *int
+	cleareddeployment bool
+	event             map[int]struct{}
+	removedevent      map[int]struct{}
+	clearedevent      bool
+	done              bool
+	oldValue          func(context.Context) (*Review, error)
+	predicates        []predicate.Review
+}
+
+var _ ent.Mutation = (*ReviewMutation)(nil)
+
+// reviewOption allows management of the mutation configuration using functional options.
+type reviewOption func(*ReviewMutation)
+
+// newReviewMutation creates new mutation for the Review entity.
+func newReviewMutation(c config, op Op, opts ...reviewOption) *ReviewMutation {
+	m := &ReviewMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeReview,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withReviewID sets the ID field of the mutation.
+func withReviewID(id int) reviewOption {
+	return func(m *ReviewMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *Review
+		)
+		m.oldValue = func(ctx context.Context) (*Review, error) {
+			once.Do(func() {
+				if m.done {
+					err = fmt.Errorf("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().Review.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withReview sets the old Review of the mutation.
+func withReview(node *Review) reviewOption {
+	return func(m *ReviewMutation) {
+		m.oldValue = func(context.Context) (*Review, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m ReviewMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m ReviewMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, fmt.Errorf("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *ReviewMutation) ID() (id int, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// SetStatus sets the "status" field.
+func (m *ReviewMutation) SetStatus(r review.Status) {
+	m.status = &r
+}
+
+// Status returns the value of the "status" field in the mutation.
+func (m *ReviewMutation) Status() (r review.Status, exists bool) {
+	v := m.status
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldStatus returns the old "status" field's value of the Review entity.
+// If the Review object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ReviewMutation) OldStatus(ctx context.Context) (v review.Status, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldStatus is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldStatus requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldStatus: %w", err)
+	}
+	return oldValue.Status, nil
+}
+
+// ResetStatus resets all changes to the "status" field.
+func (m *ReviewMutation) ResetStatus() {
+	m.status = nil
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *ReviewMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *ReviewMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the Review entity.
+// If the Review object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ReviewMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *ReviewMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *ReviewMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *ReviewMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the Review entity.
+// If the Review object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ReviewMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *ReviewMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// SetUserID sets the "user_id" field.
+func (m *ReviewMutation) SetUserID(i int64) {
+	m.user = &i
+}
+
+// UserID returns the value of the "user_id" field in the mutation.
+func (m *ReviewMutation) UserID() (r int64, exists bool) {
+	v := m.user
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUserID returns the old "user_id" field's value of the Review entity.
+// If the Review object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ReviewMutation) OldUserID(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldUserID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldUserID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUserID: %w", err)
+	}
+	return oldValue.UserID, nil
+}
+
+// ResetUserID resets all changes to the "user_id" field.
+func (m *ReviewMutation) ResetUserID() {
+	m.user = nil
+}
+
+// SetDeploymentID sets the "deployment_id" field.
+func (m *ReviewMutation) SetDeploymentID(i int) {
+	m.deployment = &i
+}
+
+// DeploymentID returns the value of the "deployment_id" field in the mutation.
+func (m *ReviewMutation) DeploymentID() (r int, exists bool) {
+	v := m.deployment
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeploymentID returns the old "deployment_id" field's value of the Review entity.
+// If the Review object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ReviewMutation) OldDeploymentID(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldDeploymentID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldDeploymentID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeploymentID: %w", err)
+	}
+	return oldValue.DeploymentID, nil
+}
+
+// ResetDeploymentID resets all changes to the "deployment_id" field.
+func (m *ReviewMutation) ResetDeploymentID() {
+	m.deployment = nil
+}
+
+// ClearUser clears the "user" edge to the User entity.
+func (m *ReviewMutation) ClearUser() {
+	m.cleareduser = true
+}
+
+// UserCleared reports if the "user" edge to the User entity was cleared.
+func (m *ReviewMutation) UserCleared() bool {
+	return m.cleareduser
+}
+
+// UserIDs returns the "user" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// UserID instead. It exists only for internal usage by the builders.
+func (m *ReviewMutation) UserIDs() (ids []int64) {
+	if id := m.user; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetUser resets all changes to the "user" edge.
+func (m *ReviewMutation) ResetUser() {
+	m.user = nil
+	m.cleareduser = false
+}
+
+// ClearDeployment clears the "deployment" edge to the Deployment entity.
+func (m *ReviewMutation) ClearDeployment() {
+	m.cleareddeployment = true
+}
+
+// DeploymentCleared reports if the "deployment" edge to the Deployment entity was cleared.
+func (m *ReviewMutation) DeploymentCleared() bool {
+	return m.cleareddeployment
+}
+
+// DeploymentIDs returns the "deployment" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// DeploymentID instead. It exists only for internal usage by the builders.
+func (m *ReviewMutation) DeploymentIDs() (ids []int) {
+	if id := m.deployment; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetDeployment resets all changes to the "deployment" edge.
+func (m *ReviewMutation) ResetDeployment() {
+	m.deployment = nil
+	m.cleareddeployment = false
+}
+
+// AddEventIDs adds the "event" edge to the Event entity by ids.
+func (m *ReviewMutation) AddEventIDs(ids ...int) {
+	if m.event == nil {
+		m.event = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.event[ids[i]] = struct{}{}
+	}
+}
+
+// ClearEvent clears the "event" edge to the Event entity.
+func (m *ReviewMutation) ClearEvent() {
+	m.clearedevent = true
+}
+
+// EventCleared reports if the "event" edge to the Event entity was cleared.
+func (m *ReviewMutation) EventCleared() bool {
+	return m.clearedevent
+}
+
+// RemoveEventIDs removes the "event" edge to the Event entity by IDs.
+func (m *ReviewMutation) RemoveEventIDs(ids ...int) {
+	if m.removedevent == nil {
+		m.removedevent = make(map[int]struct{})
+	}
+	for i := range ids {
+		delete(m.event, ids[i])
+		m.removedevent[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedEvent returns the removed IDs of the "event" edge to the Event entity.
+func (m *ReviewMutation) RemovedEventIDs() (ids []int) {
+	for id := range m.removedevent {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// EventIDs returns the "event" edge IDs in the mutation.
+func (m *ReviewMutation) EventIDs() (ids []int) {
+	for id := range m.event {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetEvent resets all changes to the "event" edge.
+func (m *ReviewMutation) ResetEvent() {
+	m.event = nil
+	m.clearedevent = false
+	m.removedevent = nil
+}
+
+// Where appends a list predicates to the ReviewMutation builder.
+func (m *ReviewMutation) Where(ps ...predicate.Review) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// Op returns the operation name.
+func (m *ReviewMutation) Op() Op {
+	return m.op
+}
+
+// Type returns the node type of this mutation (Review).
+func (m *ReviewMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *ReviewMutation) Fields() []string {
+	fields := make([]string, 0, 5)
+	if m.status != nil {
+		fields = append(fields, review.FieldStatus)
+	}
+	if m.created_at != nil {
+		fields = append(fields, review.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, review.FieldUpdatedAt)
+	}
+	if m.user != nil {
+		fields = append(fields, review.FieldUserID)
+	}
+	if m.deployment != nil {
+		fields = append(fields, review.FieldDeploymentID)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *ReviewMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case review.FieldStatus:
+		return m.Status()
+	case review.FieldCreatedAt:
+		return m.CreatedAt()
+	case review.FieldUpdatedAt:
+		return m.UpdatedAt()
+	case review.FieldUserID:
+		return m.UserID()
+	case review.FieldDeploymentID:
+		return m.DeploymentID()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *ReviewMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case review.FieldStatus:
+		return m.OldStatus(ctx)
+	case review.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case review.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	case review.FieldUserID:
+		return m.OldUserID(ctx)
+	case review.FieldDeploymentID:
+		return m.OldDeploymentID(ctx)
+	}
+	return nil, fmt.Errorf("unknown Review field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ReviewMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case review.FieldStatus:
+		v, ok := value.(review.Status)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetStatus(v)
+		return nil
+	case review.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case review.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	case review.FieldUserID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUserID(v)
+		return nil
+	case review.FieldDeploymentID:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeploymentID(v)
+		return nil
+	}
+	return fmt.Errorf("unknown Review field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *ReviewMutation) AddedFields() []string {
+	var fields []string
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *ReviewMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ReviewMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown Review numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *ReviewMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *ReviewMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *ReviewMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown Review nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *ReviewMutation) ResetField(name string) error {
+	switch name {
+	case review.FieldStatus:
+		m.ResetStatus()
+		return nil
+	case review.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case review.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	case review.FieldUserID:
+		m.ResetUserID()
+		return nil
+	case review.FieldDeploymentID:
+		m.ResetDeploymentID()
+		return nil
+	}
+	return fmt.Errorf("unknown Review field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *ReviewMutation) AddedEdges() []string {
+	edges := make([]string, 0, 3)
+	if m.user != nil {
+		edges = append(edges, review.EdgeUser)
+	}
+	if m.deployment != nil {
+		edges = append(edges, review.EdgeDeployment)
+	}
+	if m.event != nil {
+		edges = append(edges, review.EdgeEvent)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *ReviewMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case review.EdgeUser:
+		if id := m.user; id != nil {
+			return []ent.Value{*id}
+		}
+	case review.EdgeDeployment:
+		if id := m.deployment; id != nil {
+			return []ent.Value{*id}
+		}
+	case review.EdgeEvent:
+		ids := make([]ent.Value, 0, len(m.event))
+		for id := range m.event {
+			ids = append(ids, id)
+		}
+		return ids
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *ReviewMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 3)
+	if m.removedevent != nil {
+		edges = append(edges, review.EdgeEvent)
+	}
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *ReviewMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	case review.EdgeEvent:
+		ids := make([]ent.Value, 0, len(m.removedevent))
+		for id := range m.removedevent {
+			ids = append(ids, id)
+		}
+		return ids
+	}
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *ReviewMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 3)
+	if m.cleareduser {
+		edges = append(edges, review.EdgeUser)
+	}
+	if m.cleareddeployment {
+		edges = append(edges, review.EdgeDeployment)
+	}
+	if m.clearedevent {
+		edges = append(edges, review.EdgeEvent)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *ReviewMutation) EdgeCleared(name string) bool {
+	switch name {
+	case review.EdgeUser:
+		return m.cleareduser
+	case review.EdgeDeployment:
+		return m.cleareddeployment
+	case review.EdgeEvent:
+		return m.clearedevent
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *ReviewMutation) ClearEdge(name string) error {
+	switch name {
+	case review.EdgeUser:
+		m.ClearUser()
+		return nil
+	case review.EdgeDeployment:
+		m.ClearDeployment()
+		return nil
+	}
+	return fmt.Errorf("unknown Review unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *ReviewMutation) ResetEdge(name string) error {
+	switch name {
+	case review.EdgeUser:
+		m.ResetUser()
+		return nil
+	case review.EdgeDeployment:
+		m.ResetDeployment()
+		return nil
+	case review.EdgeEvent:
+		m.ResetEvent()
+		return nil
+	}
+	return fmt.Errorf("unknown Review edge %s", name)
+}
+
 // UserMutation represents an operation that mutates the User nodes in the graph.
 type UserMutation struct {
 	config
@@ -9132,6 +10029,9 @@ type UserMutation struct {
 	approvals          map[int]struct{}
 	removedapprovals   map[int]struct{}
 	clearedapprovals   bool
+	reviews            map[int]struct{}
+	removedreviews     map[int]struct{}
+	clearedreviews     bool
 	locks              map[int]struct{}
 	removedlocks       map[int]struct{}
 	clearedlocks       bool
@@ -9750,6 +10650,60 @@ func (m *UserMutation) ResetApprovals() {
 	m.removedapprovals = nil
 }
 
+// AddReviewIDs adds the "reviews" edge to the Review entity by ids.
+func (m *UserMutation) AddReviewIDs(ids ...int) {
+	if m.reviews == nil {
+		m.reviews = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.reviews[ids[i]] = struct{}{}
+	}
+}
+
+// ClearReviews clears the "reviews" edge to the Review entity.
+func (m *UserMutation) ClearReviews() {
+	m.clearedreviews = true
+}
+
+// ReviewsCleared reports if the "reviews" edge to the Review entity was cleared.
+func (m *UserMutation) ReviewsCleared() bool {
+	return m.clearedreviews
+}
+
+// RemoveReviewIDs removes the "reviews" edge to the Review entity by IDs.
+func (m *UserMutation) RemoveReviewIDs(ids ...int) {
+	if m.removedreviews == nil {
+		m.removedreviews = make(map[int]struct{})
+	}
+	for i := range ids {
+		delete(m.reviews, ids[i])
+		m.removedreviews[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedReviews returns the removed IDs of the "reviews" edge to the Review entity.
+func (m *UserMutation) RemovedReviewsIDs() (ids []int) {
+	for id := range m.removedreviews {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ReviewsIDs returns the "reviews" edge IDs in the mutation.
+func (m *UserMutation) ReviewsIDs() (ids []int) {
+	for id := range m.reviews {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetReviews resets all changes to the "reviews" edge.
+func (m *UserMutation) ResetReviews() {
+	m.reviews = nil
+	m.clearedreviews = false
+	m.removedreviews = nil
+}
+
 // AddLockIDs adds the "locks" edge to the Lock entity by ids.
 func (m *UserMutation) AddLockIDs(ids ...int) {
 	if m.locks == nil {
@@ -10058,7 +11012,7 @@ func (m *UserMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *UserMutation) AddedEdges() []string {
-	edges := make([]string, 0, 5)
+	edges := make([]string, 0, 6)
 	if m.chat_user != nil {
 		edges = append(edges, user.EdgeChatUser)
 	}
@@ -10070,6 +11024,9 @@ func (m *UserMutation) AddedEdges() []string {
 	}
 	if m.approvals != nil {
 		edges = append(edges, user.EdgeApprovals)
+	}
+	if m.reviews != nil {
+		edges = append(edges, user.EdgeReviews)
 	}
 	if m.locks != nil {
 		edges = append(edges, user.EdgeLocks)
@@ -10103,6 +11060,12 @@ func (m *UserMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case user.EdgeReviews:
+		ids := make([]ent.Value, 0, len(m.reviews))
+		for id := range m.reviews {
+			ids = append(ids, id)
+		}
+		return ids
 	case user.EdgeLocks:
 		ids := make([]ent.Value, 0, len(m.locks))
 		for id := range m.locks {
@@ -10115,7 +11078,7 @@ func (m *UserMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *UserMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 5)
+	edges := make([]string, 0, 6)
 	if m.removedperms != nil {
 		edges = append(edges, user.EdgePerms)
 	}
@@ -10124,6 +11087,9 @@ func (m *UserMutation) RemovedEdges() []string {
 	}
 	if m.removedapprovals != nil {
 		edges = append(edges, user.EdgeApprovals)
+	}
+	if m.removedreviews != nil {
+		edges = append(edges, user.EdgeReviews)
 	}
 	if m.removedlocks != nil {
 		edges = append(edges, user.EdgeLocks)
@@ -10153,6 +11119,12 @@ func (m *UserMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case user.EdgeReviews:
+		ids := make([]ent.Value, 0, len(m.removedreviews))
+		for id := range m.removedreviews {
+			ids = append(ids, id)
+		}
+		return ids
 	case user.EdgeLocks:
 		ids := make([]ent.Value, 0, len(m.removedlocks))
 		for id := range m.removedlocks {
@@ -10165,7 +11137,7 @@ func (m *UserMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *UserMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 5)
+	edges := make([]string, 0, 6)
 	if m.clearedchat_user {
 		edges = append(edges, user.EdgeChatUser)
 	}
@@ -10177,6 +11149,9 @@ func (m *UserMutation) ClearedEdges() []string {
 	}
 	if m.clearedapprovals {
 		edges = append(edges, user.EdgeApprovals)
+	}
+	if m.clearedreviews {
+		edges = append(edges, user.EdgeReviews)
 	}
 	if m.clearedlocks {
 		edges = append(edges, user.EdgeLocks)
@@ -10196,6 +11171,8 @@ func (m *UserMutation) EdgeCleared(name string) bool {
 		return m.cleareddeployments
 	case user.EdgeApprovals:
 		return m.clearedapprovals
+	case user.EdgeReviews:
+		return m.clearedreviews
 	case user.EdgeLocks:
 		return m.clearedlocks
 	}
@@ -10228,6 +11205,9 @@ func (m *UserMutation) ResetEdge(name string) error {
 		return nil
 	case user.EdgeApprovals:
 		m.ResetApprovals()
+		return nil
+	case user.EdgeReviews:
+		m.ResetReviews()
 		return nil
 	case user.EdgeLocks:
 		m.ResetLocks()

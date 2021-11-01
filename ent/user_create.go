@@ -15,6 +15,7 @@ import (
 	"github.com/gitploy-io/gitploy/ent/deployment"
 	"github.com/gitploy-io/gitploy/ent/lock"
 	"github.com/gitploy-io/gitploy/ent/perm"
+	"github.com/gitploy-io/gitploy/ent/review"
 	"github.com/gitploy-io/gitploy/ent/user"
 )
 
@@ -179,6 +180,21 @@ func (uc *UserCreate) AddApprovals(a ...*Approval) *UserCreate {
 		ids[i] = a[i].ID
 	}
 	return uc.AddApprovalIDs(ids...)
+}
+
+// AddReviewIDs adds the "reviews" edge to the Review entity by IDs.
+func (uc *UserCreate) AddReviewIDs(ids ...int) *UserCreate {
+	uc.mutation.AddReviewIDs(ids...)
+	return uc
+}
+
+// AddReviews adds the "reviews" edges to the Review entity.
+func (uc *UserCreate) AddReviews(r ...*Review) *UserCreate {
+	ids := make([]int, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return uc.AddReviewIDs(ids...)
 }
 
 // AddLockIDs adds the "locks" edge to the Lock entity by IDs.
@@ -487,6 +503,25 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
 					Column: approval.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := uc.mutation.ReviewsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.ReviewsTable,
+			Columns: []string{user.ReviewsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: review.FieldID,
 				},
 			},
 		}

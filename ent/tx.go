@@ -34,6 +34,8 @@ type Tx struct {
 	Perm *PermClient
 	// Repo is the client for interacting with the Repo builders.
 	Repo *RepoClient
+	// Review is the client for interacting with the Review builders.
+	Review *ReviewClient
 	// User is the client for interacting with the User builders.
 	User *UserClient
 
@@ -182,6 +184,7 @@ func (tx *Tx) init() {
 	tx.NotificationRecord = NewNotificationRecordClient(tx.config)
 	tx.Perm = NewPermClient(tx.config)
 	tx.Repo = NewRepoClient(tx.config)
+	tx.Review = NewReviewClient(tx.config)
 	tx.User = NewUserClient(tx.config)
 }
 

@@ -15,6 +15,7 @@ import (
 	"github.com/gitploy-io/gitploy/ent/lock"
 	"github.com/gitploy-io/gitploy/ent/perm"
 	"github.com/gitploy-io/gitploy/ent/repo"
+	"github.com/gitploy-io/gitploy/ent/review"
 	"github.com/gitploy-io/gitploy/ent/schema"
 	"github.com/gitploy-io/gitploy/ent/user"
 )
@@ -191,6 +192,18 @@ func init() {
 	repo.DefaultUpdatedAt = repoDescUpdatedAt.Default.(func() time.Time)
 	// repo.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	repo.UpdateDefaultUpdatedAt = repoDescUpdatedAt.UpdateDefault.(func() time.Time)
+	reviewFields := schema.Review{}.Fields()
+	_ = reviewFields
+	// reviewDescCreatedAt is the schema descriptor for created_at field.
+	reviewDescCreatedAt := reviewFields[1].Descriptor()
+	// review.DefaultCreatedAt holds the default value on creation for the created_at field.
+	review.DefaultCreatedAt = reviewDescCreatedAt.Default.(func() time.Time)
+	// reviewDescUpdatedAt is the schema descriptor for updated_at field.
+	reviewDescUpdatedAt := reviewFields[2].Descriptor()
+	// review.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	review.DefaultUpdatedAt = reviewDescUpdatedAt.Default.(func() time.Time)
+	// review.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	review.UpdateDefaultUpdatedAt = reviewDescUpdatedAt.UpdateDefault.(func() time.Time)
 	userFields := schema.User{}.Fields()
 	_ = userFields
 	// userDescAdmin is the schema descriptor for admin field.

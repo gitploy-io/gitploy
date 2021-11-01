@@ -20,6 +20,7 @@ import (
 	"github.com/gitploy-io/gitploy/ent/notificationrecord"
 	"github.com/gitploy-io/gitploy/ent/perm"
 	"github.com/gitploy-io/gitploy/ent/repo"
+	"github.com/gitploy-io/gitploy/ent/review"
 	"github.com/gitploy-io/gitploy/ent/user"
 
 	"entgo.io/ent/dialect"
@@ -54,6 +55,8 @@ type Client struct {
 	Perm *PermClient
 	// Repo is the client for interacting with the Repo builders.
 	Repo *RepoClient
+	// Review is the client for interacting with the Review builders.
+	Review *ReviewClient
 	// User is the client for interacting with the User builders.
 	User *UserClient
 }
@@ -80,6 +83,7 @@ func (c *Client) init() {
 	c.NotificationRecord = NewNotificationRecordClient(c.config)
 	c.Perm = NewPermClient(c.config)
 	c.Repo = NewRepoClient(c.config)
+	c.Review = NewReviewClient(c.config)
 	c.User = NewUserClient(c.config)
 }
 
@@ -125,6 +129,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		NotificationRecord:   NewNotificationRecordClient(cfg),
 		Perm:                 NewPermClient(cfg),
 		Repo:                 NewRepoClient(cfg),
+		Review:               NewReviewClient(cfg),
 		User:                 NewUserClient(cfg),
 	}, nil
 }
@@ -155,6 +160,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		NotificationRecord:   NewNotificationRecordClient(cfg),
 		Perm:                 NewPermClient(cfg),
 		Repo:                 NewRepoClient(cfg),
+		Review:               NewReviewClient(cfg),
 		User:                 NewUserClient(cfg),
 	}, nil
 }
@@ -196,6 +202,7 @@ func (c *Client) Use(hooks ...Hook) {
 	c.NotificationRecord.Use(hooks...)
 	c.Perm.Use(hooks...)
 	c.Repo.Use(hooks...)
+	c.Review.Use(hooks...)
 	c.User.Use(hooks...)
 }
 
@@ -682,6 +689,22 @@ func (c *DeploymentClient) QueryApprovals(d *Deployment) *ApprovalQuery {
 	return query
 }
 
+// QueryReviews queries the reviews edge of a Deployment.
+func (c *DeploymentClient) QueryReviews(d *Deployment) *ReviewQuery {
+	query := &ReviewQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := d.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(deployment.Table, deployment.FieldID, id),
+			sqlgraph.To(review.Table, review.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, deployment.ReviewsTable, deployment.ReviewsColumn),
+		)
+		fromV = sqlgraph.Neighbors(d.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // QueryDeploymentStatuses queries the deployment_statuses edge of a Deployment.
 func (c *DeploymentClient) QueryDeploymentStatuses(d *Deployment) *DeploymentStatusQuery {
 	query := &DeploymentStatusQuery{config: c.config}
@@ -1041,6 +1064,22 @@ func (c *EventClient) QueryApproval(e *Event) *ApprovalQuery {
 			sqlgraph.From(event.Table, event.FieldID, id),
 			sqlgraph.To(approval.Table, approval.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, event.ApprovalTable, event.ApprovalColumn),
+		)
+		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryReview queries the review edge of a Event.
+func (c *EventClient) QueryReview(e *Event) *ReviewQuery {
+	query := &ReviewQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := e.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(event.Table, event.FieldID, id),
+			sqlgraph.To(review.Table, review.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, event.ReviewTable, event.ReviewColumn),
 		)
 		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
 		return fromV, nil
@@ -1589,6 +1628,144 @@ func (c *RepoClient) Hooks() []Hook {
 	return c.hooks.Repo
 }
 
+// ReviewClient is a client for the Review schema.
+type ReviewClient struct {
+	config
+}
+
+// NewReviewClient returns a client for the Review from the given config.
+func NewReviewClient(c config) *ReviewClient {
+	return &ReviewClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `review.Hooks(f(g(h())))`.
+func (c *ReviewClient) Use(hooks ...Hook) {
+	c.hooks.Review = append(c.hooks.Review, hooks...)
+}
+
+// Create returns a create builder for Review.
+func (c *ReviewClient) Create() *ReviewCreate {
+	mutation := newReviewMutation(c.config, OpCreate)
+	return &ReviewCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Review entities.
+func (c *ReviewClient) CreateBulk(builders ...*ReviewCreate) *ReviewCreateBulk {
+	return &ReviewCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Review.
+func (c *ReviewClient) Update() *ReviewUpdate {
+	mutation := newReviewMutation(c.config, OpUpdate)
+	return &ReviewUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ReviewClient) UpdateOne(r *Review) *ReviewUpdateOne {
+	mutation := newReviewMutation(c.config, OpUpdateOne, withReview(r))
+	return &ReviewUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ReviewClient) UpdateOneID(id int) *ReviewUpdateOne {
+	mutation := newReviewMutation(c.config, OpUpdateOne, withReviewID(id))
+	return &ReviewUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Review.
+func (c *ReviewClient) Delete() *ReviewDelete {
+	mutation := newReviewMutation(c.config, OpDelete)
+	return &ReviewDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *ReviewClient) DeleteOne(r *Review) *ReviewDeleteOne {
+	return c.DeleteOneID(r.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *ReviewClient) DeleteOneID(id int) *ReviewDeleteOne {
+	builder := c.Delete().Where(review.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ReviewDeleteOne{builder}
+}
+
+// Query returns a query builder for Review.
+func (c *ReviewClient) Query() *ReviewQuery {
+	return &ReviewQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a Review entity by its id.
+func (c *ReviewClient) Get(ctx context.Context, id int) (*Review, error) {
+	return c.Query().Where(review.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ReviewClient) GetX(ctx context.Context, id int) *Review {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryUser queries the user edge of a Review.
+func (c *ReviewClient) QueryUser(r *Review) *UserQuery {
+	query := &UserQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := r.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(review.Table, review.FieldID, id),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, review.UserTable, review.UserColumn),
+		)
+		fromV = sqlgraph.Neighbors(r.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryDeployment queries the deployment edge of a Review.
+func (c *ReviewClient) QueryDeployment(r *Review) *DeploymentQuery {
+	query := &DeploymentQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := r.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(review.Table, review.FieldID, id),
+			sqlgraph.To(deployment.Table, deployment.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, review.DeploymentTable, review.DeploymentColumn),
+		)
+		fromV = sqlgraph.Neighbors(r.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryEvent queries the event edge of a Review.
+func (c *ReviewClient) QueryEvent(r *Review) *EventQuery {
+	query := &EventQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := r.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(review.Table, review.FieldID, id),
+			sqlgraph.To(event.Table, event.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, review.EventTable, review.EventColumn),
+		)
+		fromV = sqlgraph.Neighbors(r.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *ReviewClient) Hooks() []Hook {
+	return c.hooks.Review
+}
+
 // UserClient is a client for the User schema.
 type UserClient struct {
 	config
@@ -1731,6 +1908,22 @@ func (c *UserClient) QueryApprovals(u *User) *ApprovalQuery {
 			sqlgraph.From(user.Table, user.FieldID, id),
 			sqlgraph.To(approval.Table, approval.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, user.ApprovalsTable, user.ApprovalsColumn),
+		)
+		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryReviews queries the reviews edge of a User.
+func (c *UserClient) QueryReviews(u *User) *ReviewQuery {
+	query := &ReviewQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := u.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, id),
+			sqlgraph.To(review.Table, review.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.ReviewsTable, user.ReviewsColumn),
 		)
 		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
 		return fromV, nil

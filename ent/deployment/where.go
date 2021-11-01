@@ -1375,6 +1375,34 @@ func HasApprovalsWith(preds ...predicate.Approval) predicate.Deployment {
 	})
 }
 
+// HasReviews applies the HasEdge predicate on the "reviews" edge.
+func HasReviews() predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(ReviewsTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ReviewsTable, ReviewsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasReviewsWith applies the HasEdge predicate on the "reviews" edge with a given conditions (other predicates).
+func HasReviewsWith(preds ...predicate.Review) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(ReviewsInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ReviewsTable, ReviewsColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // HasDeploymentStatuses applies the HasEdge predicate on the "deployment_statuses" edge.
 func HasDeploymentStatuses() predicate.Deployment {
 	return predicate.Deployment(func(s *sql.Selector) {

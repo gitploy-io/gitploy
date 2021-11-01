@@ -19,6 +19,7 @@ import (
 	"github.com/gitploy-io/gitploy/ent/notificationrecord"
 	"github.com/gitploy-io/gitploy/ent/perm"
 	"github.com/gitploy-io/gitploy/ent/repo"
+	"github.com/gitploy-io/gitploy/ent/review"
 	"github.com/gitploy-io/gitploy/ent/user"
 )
 
@@ -51,6 +52,7 @@ func columnChecker(table string) func(string) error {
 		notificationrecord.Table:   notificationrecord.ValidColumn,
 		perm.Table:                 perm.ValidColumn,
 		repo.Table:                 repo.ValidColumn,
+		review.Table:               review.ValidColumn,
 		user.Table:                 user.ValidColumn,
 	}
 	check, ok := checks[table]

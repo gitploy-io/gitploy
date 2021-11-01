@@ -16,6 +16,7 @@ import (
 	"github.com/gitploy-io/gitploy/ent/lock"
 	"github.com/gitploy-io/gitploy/ent/perm"
 	"github.com/gitploy-io/gitploy/ent/predicate"
+	"github.com/gitploy-io/gitploy/ent/review"
 	"github.com/gitploy-io/gitploy/ent/user"
 )
 
@@ -160,6 +161,21 @@ func (uu *UserUpdate) AddApprovals(a ...*Approval) *UserUpdate {
 	return uu.AddApprovalIDs(ids...)
 }
 
+// AddReviewIDs adds the "reviews" edge to the Review entity by IDs.
+func (uu *UserUpdate) AddReviewIDs(ids ...int) *UserUpdate {
+	uu.mutation.AddReviewIDs(ids...)
+	return uu
+}
+
+// AddReviews adds the "reviews" edges to the Review entity.
+func (uu *UserUpdate) AddReviews(r ...*Review) *UserUpdate {
+	ids := make([]int, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return uu.AddReviewIDs(ids...)
+}
+
 // AddLockIDs adds the "locks" edge to the Lock entity by IDs.
 func (uu *UserUpdate) AddLockIDs(ids ...int) *UserUpdate {
 	uu.mutation.AddLockIDs(ids...)
@@ -247,6 +263,27 @@ func (uu *UserUpdate) RemoveApprovals(a ...*Approval) *UserUpdate {
 		ids[i] = a[i].ID
 	}
 	return uu.RemoveApprovalIDs(ids...)
+}
+
+// ClearReviews clears all "reviews" edges to the Review entity.
+func (uu *UserUpdate) ClearReviews() *UserUpdate {
+	uu.mutation.ClearReviews()
+	return uu
+}
+
+// RemoveReviewIDs removes the "reviews" edge to Review entities by IDs.
+func (uu *UserUpdate) RemoveReviewIDs(ids ...int) *UserUpdate {
+	uu.mutation.RemoveReviewIDs(ids...)
+	return uu
+}
+
+// RemoveReviews removes "reviews" edges to Review entities.
+func (uu *UserUpdate) RemoveReviews(r ...*Review) *UserUpdate {
+	ids := make([]int, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return uu.RemoveReviewIDs(ids...)
 }
 
 // ClearLocks clears all "locks" edges to the Lock entity.
@@ -604,6 +641,60 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if uu.mutation.ReviewsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.ReviewsTable,
+			Columns: []string{user.ReviewsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: review.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.RemovedReviewsIDs(); len(nodes) > 0 && !uu.mutation.ReviewsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.ReviewsTable,
+			Columns: []string{user.ReviewsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: review.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.ReviewsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.ReviewsTable,
+			Columns: []string{user.ReviewsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: review.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if uu.mutation.LocksCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
@@ -805,6 +896,21 @@ func (uuo *UserUpdateOne) AddApprovals(a ...*Approval) *UserUpdateOne {
 	return uuo.AddApprovalIDs(ids...)
 }
 
+// AddReviewIDs adds the "reviews" edge to the Review entity by IDs.
+func (uuo *UserUpdateOne) AddReviewIDs(ids ...int) *UserUpdateOne {
+	uuo.mutation.AddReviewIDs(ids...)
+	return uuo
+}
+
+// AddReviews adds the "reviews" edges to the Review entity.
+func (uuo *UserUpdateOne) AddReviews(r ...*Review) *UserUpdateOne {
+	ids := make([]int, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return uuo.AddReviewIDs(ids...)
+}
+
 // AddLockIDs adds the "locks" edge to the Lock entity by IDs.
 func (uuo *UserUpdateOne) AddLockIDs(ids ...int) *UserUpdateOne {
 	uuo.mutation.AddLockIDs(ids...)
@@ -892,6 +998,27 @@ func (uuo *UserUpdateOne) RemoveApprovals(a ...*Approval) *UserUpdateOne {
 		ids[i] = a[i].ID
 	}
 	return uuo.RemoveApprovalIDs(ids...)
+}
+
+// ClearReviews clears all "reviews" edges to the Review entity.
+func (uuo *UserUpdateOne) ClearReviews() *UserUpdateOne {
+	uuo.mutation.ClearReviews()
+	return uuo
+}
+
+// RemoveReviewIDs removes the "reviews" edge to Review entities by IDs.
+func (uuo *UserUpdateOne) RemoveReviewIDs(ids ...int) *UserUpdateOne {
+	uuo.mutation.RemoveReviewIDs(ids...)
+	return uuo
+}
+
+// RemoveReviews removes "reviews" edges to Review entities.
+func (uuo *UserUpdateOne) RemoveReviews(r ...*Review) *UserUpdateOne {
+	ids := make([]int, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return uuo.RemoveReviewIDs(ids...)
 }
 
 // ClearLocks clears all "locks" edges to the Lock entity.
@@ -1265,6 +1392,60 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
 					Column: approval.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uuo.mutation.ReviewsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.ReviewsTable,
+			Columns: []string{user.ReviewsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: review.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.RemovedReviewsIDs(); len(nodes) > 0 && !uuo.mutation.ReviewsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.ReviewsTable,
+			Columns: []string{user.ReviewsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: review.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.ReviewsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.ReviewsTable,
+			Columns: []string{user.ReviewsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: review.FieldID,
 				},
 			},
 		}

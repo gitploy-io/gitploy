@@ -12,6 +12,7 @@ import (
 	"github.com/gitploy-io/gitploy/ent/deployment"
 	"github.com/gitploy-io/gitploy/ent/event"
 	"github.com/gitploy-io/gitploy/ent/notificationrecord"
+	"github.com/gitploy-io/gitploy/ent/review"
 )
 
 // Event is the model entity for the Event schema.
@@ -29,6 +30,8 @@ type Event struct {
 	DeploymentID int `json:"deployment_id,omitemtpy"`
 	// ApprovalID holds the value of the "approval_id" field.
 	ApprovalID int `json:"approval_id,omitemtpy"`
+	// ReviewID holds the value of the "review_id" field.
+	ReviewID int `json:"review_id,omitemtpy"`
 	// DeletedID holds the value of the "deleted_id" field.
 	DeletedID int `json:"deleted_id,omitemtpy"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -42,11 +45,13 @@ type EventEdges struct {
 	Deployment *Deployment `json:"deployment,omitempty"`
 	// Approval holds the value of the approval edge.
 	Approval *Approval `json:"approval,omitempty"`
+	// Review holds the value of the review edge.
+	Review *Review `json:"review,omitempty"`
 	// NotificationRecord holds the value of the notification_record edge.
 	NotificationRecord *NotificationRecord `json:"notification_record,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [3]bool
+	loadedTypes [4]bool
 }
 
 // DeploymentOrErr returns the Deployment value or an error if the edge
@@ -77,10 +82,24 @@ func (e EventEdges) ApprovalOrErr() (*Approval, error) {
 	return nil, &NotLoadedError{edge: "approval"}
 }
 
+// ReviewOrErr returns the Review value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e EventEdges) ReviewOrErr() (*Review, error) {
+	if e.loadedTypes[2] {
+		if e.Review == nil {
+			// The edge review was loaded in eager-loading,
+			// but was not found.
+			return nil, &NotFoundError{label: review.Label}
+		}
+		return e.Review, nil
+	}
+	return nil, &NotLoadedError{edge: "review"}
+}
+
 // NotificationRecordOrErr returns the NotificationRecord value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e EventEdges) NotificationRecordOrErr() (*NotificationRecord, error) {
-	if e.loadedTypes[2] {
+	if e.loadedTypes[3] {
 		if e.NotificationRecord == nil {
 			// The edge notification_record was loaded in eager-loading,
 			// but was not found.
@@ -96,7 +115,7 @@ func (*Event) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case event.FieldID, event.FieldDeploymentID, event.FieldApprovalID, event.FieldDeletedID:
+		case event.FieldID, event.FieldDeploymentID, event.FieldApprovalID, event.FieldReviewID, event.FieldDeletedID:
 			values[i] = new(sql.NullInt64)
 		case event.FieldKind, event.FieldType:
 			values[i] = new(sql.NullString)
@@ -153,6 +172,12 @@ func (e *Event) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				e.ApprovalID = int(value.Int64)
 			}
+		case event.FieldReviewID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field review_id", values[i])
+			} else if value.Valid {
+				e.ReviewID = int(value.Int64)
+			}
 		case event.FieldDeletedID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field deleted_id", values[i])
@@ -172,6 +197,11 @@ func (e *Event) QueryDeployment() *DeploymentQuery {
 // QueryApproval queries the "approval" edge of the Event entity.
 func (e *Event) QueryApproval() *ApprovalQuery {
 	return (&EventClient{config: e.config}).QueryApproval(e)
+}
+
+// QueryReview queries the "review" edge of the Event entity.
+func (e *Event) QueryReview() *ReviewQuery {
+	return (&EventClient{config: e.config}).QueryReview(e)
 }
 
 // QueryNotificationRecord queries the "notification_record" edge of the Event entity.
@@ -212,6 +242,8 @@ func (e *Event) String() string {
 	builder.WriteString(fmt.Sprintf("%v", e.DeploymentID))
 	builder.WriteString(", approval_id=")
 	builder.WriteString(fmt.Sprintf("%v", e.ApprovalID))
+	builder.WriteString(", review_id=")
+	builder.WriteString(fmt.Sprintf("%v", e.ReviewID))
 	builder.WriteString(", deleted_id=")
 	builder.WriteString(fmt.Sprintf("%v", e.DeletedID))
 	builder.WriteByte(')')

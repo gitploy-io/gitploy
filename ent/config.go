@@ -35,6 +35,7 @@ type hooks struct {
 	NotificationRecord   []ent.Hook
 	Perm                 []ent.Hook
 	Repo                 []ent.Hook
+	Review               []ent.Hook
 	User                 []ent.Hook
 }
 

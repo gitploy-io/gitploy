@@ -17,6 +17,7 @@ import (
 	"github.com/gitploy-io/gitploy/ent/event"
 	"github.com/gitploy-io/gitploy/ent/predicate"
 	"github.com/gitploy-io/gitploy/ent/repo"
+	"github.com/gitploy-io/gitploy/ent/review"
 	"github.com/gitploy-io/gitploy/ent/user"
 )
 
@@ -273,6 +274,21 @@ func (du *DeploymentUpdate) AddApprovals(a ...*Approval) *DeploymentUpdate {
 	return du.AddApprovalIDs(ids...)
 }
 
+// AddReviewIDs adds the "reviews" edge to the Review entity by IDs.
+func (du *DeploymentUpdate) AddReviewIDs(ids ...int) *DeploymentUpdate {
+	du.mutation.AddReviewIDs(ids...)
+	return du
+}
+
+// AddReviews adds the "reviews" edges to the Review entity.
+func (du *DeploymentUpdate) AddReviews(r ...*Review) *DeploymentUpdate {
+	ids := make([]int, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return du.AddReviewIDs(ids...)
+}
+
 // AddDeploymentStatusIDs adds the "deployment_statuses" edge to the DeploymentStatus entity by IDs.
 func (du *DeploymentUpdate) AddDeploymentStatusIDs(ids ...int) *DeploymentUpdate {
 	du.mutation.AddDeploymentStatusIDs(ids...)
@@ -339,6 +355,27 @@ func (du *DeploymentUpdate) RemoveApprovals(a ...*Approval) *DeploymentUpdate {
 		ids[i] = a[i].ID
 	}
 	return du.RemoveApprovalIDs(ids...)
+}
+
+// ClearReviews clears all "reviews" edges to the Review entity.
+func (du *DeploymentUpdate) ClearReviews() *DeploymentUpdate {
+	du.mutation.ClearReviews()
+	return du
+}
+
+// RemoveReviewIDs removes the "reviews" edge to Review entities by IDs.
+func (du *DeploymentUpdate) RemoveReviewIDs(ids ...int) *DeploymentUpdate {
+	du.mutation.RemoveReviewIDs(ids...)
+	return du
+}
+
+// RemoveReviews removes "reviews" edges to Review entities.
+func (du *DeploymentUpdate) RemoveReviews(r ...*Review) *DeploymentUpdate {
+	ids := make([]int, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return du.RemoveReviewIDs(ids...)
 }
 
 // ClearDeploymentStatuses clears all "deployment_statuses" edges to the DeploymentStatus entity.
@@ -757,6 +794,60 @@ func (du *DeploymentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if du.mutation.ReviewsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   deployment.ReviewsTable,
+			Columns: []string{deployment.ReviewsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: review.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := du.mutation.RemovedReviewsIDs(); len(nodes) > 0 && !du.mutation.ReviewsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   deployment.ReviewsTable,
+			Columns: []string{deployment.ReviewsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: review.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := du.mutation.ReviewsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   deployment.ReviewsTable,
+			Columns: []string{deployment.ReviewsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: review.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if du.mutation.DeploymentStatusesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
@@ -1124,6 +1215,21 @@ func (duo *DeploymentUpdateOne) AddApprovals(a ...*Approval) *DeploymentUpdateOn
 	return duo.AddApprovalIDs(ids...)
 }
 
+// AddReviewIDs adds the "reviews" edge to the Review entity by IDs.
+func (duo *DeploymentUpdateOne) AddReviewIDs(ids ...int) *DeploymentUpdateOne {
+	duo.mutation.AddReviewIDs(ids...)
+	return duo
+}
+
+// AddReviews adds the "reviews" edges to the Review entity.
+func (duo *DeploymentUpdateOne) AddReviews(r ...*Review) *DeploymentUpdateOne {
+	ids := make([]int, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return duo.AddReviewIDs(ids...)
+}
+
 // AddDeploymentStatusIDs adds the "deployment_statuses" edge to the DeploymentStatus entity by IDs.
 func (duo *DeploymentUpdateOne) AddDeploymentStatusIDs(ids ...int) *DeploymentUpdateOne {
 	duo.mutation.AddDeploymentStatusIDs(ids...)
@@ -1190,6 +1296,27 @@ func (duo *DeploymentUpdateOne) RemoveApprovals(a ...*Approval) *DeploymentUpdat
 		ids[i] = a[i].ID
 	}
 	return duo.RemoveApprovalIDs(ids...)
+}
+
+// ClearReviews clears all "reviews" edges to the Review entity.
+func (duo *DeploymentUpdateOne) ClearReviews() *DeploymentUpdateOne {
+	duo.mutation.ClearReviews()
+	return duo
+}
+
+// RemoveReviewIDs removes the "reviews" edge to Review entities by IDs.
+func (duo *DeploymentUpdateOne) RemoveReviewIDs(ids ...int) *DeploymentUpdateOne {
+	duo.mutation.RemoveReviewIDs(ids...)
+	return duo
+}
+
+// RemoveReviews removes "reviews" edges to Review entities.
+func (duo *DeploymentUpdateOne) RemoveReviews(r ...*Review) *DeploymentUpdateOne {
+	ids := make([]int, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return duo.RemoveReviewIDs(ids...)
 }
 
 // ClearDeploymentStatuses clears all "deployment_statuses" edges to the DeploymentStatus entity.
@@ -1624,6 +1751,60 @@ func (duo *DeploymentUpdateOne) sqlSave(ctx context.Context) (_node *Deployment,
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
 					Column: approval.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if duo.mutation.ReviewsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   deployment.ReviewsTable,
+			Columns: []string{deployment.ReviewsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: review.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := duo.mutation.RemovedReviewsIDs(); len(nodes) > 0 && !duo.mutation.ReviewsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   deployment.ReviewsTable,
+			Columns: []string{deployment.ReviewsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: review.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := duo.mutation.ReviewsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   deployment.ReviewsTable,
+			Columns: []string{deployment.ReviewsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: review.FieldID,
 				},
 			},
 		}
