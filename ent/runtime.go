@@ -8,7 +8,6 @@ import (
 	"github.com/gitploy-io/gitploy/ent/approval"
 	"github.com/gitploy-io/gitploy/ent/callback"
 	"github.com/gitploy-io/gitploy/ent/chatuser"
-	"github.com/gitploy-io/gitploy/ent/comment"
 	"github.com/gitploy-io/gitploy/ent/deployment"
 	"github.com/gitploy-io/gitploy/ent/deploymentstatistics"
 	"github.com/gitploy-io/gitploy/ent/deploymentstatus"
@@ -64,18 +63,6 @@ func init() {
 	chatuser.DefaultUpdatedAt = chatuserDescUpdatedAt.Default.(func() time.Time)
 	// chatuser.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	chatuser.UpdateDefaultUpdatedAt = chatuserDescUpdatedAt.UpdateDefault.(func() time.Time)
-	commentFields := schema.Comment{}.Fields()
-	_ = commentFields
-	// commentDescCreatedAt is the schema descriptor for created_at field.
-	commentDescCreatedAt := commentFields[2].Descriptor()
-	// comment.DefaultCreatedAt holds the default value on creation for the created_at field.
-	comment.DefaultCreatedAt = commentDescCreatedAt.Default.(func() time.Time)
-	// commentDescUpdatedAt is the schema descriptor for updated_at field.
-	commentDescUpdatedAt := commentFields[3].Descriptor()
-	// comment.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	comment.DefaultUpdatedAt = commentDescUpdatedAt.Default.(func() time.Time)
-	// comment.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
-	comment.UpdateDefaultUpdatedAt = commentDescUpdatedAt.UpdateDefault.(func() time.Time)
 	deploymentFields := schema.Deployment{}.Fields()
 	_ = deploymentFields
 	// deploymentDescHTMLURL is the schema descriptor for html_url field.

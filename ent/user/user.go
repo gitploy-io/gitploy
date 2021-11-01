@@ -37,8 +37,6 @@ const (
 	EdgeDeployments = "deployments"
 	// EdgeApprovals holds the string denoting the approvals edge name in mutations.
 	EdgeApprovals = "approvals"
-	// EdgeComments holds the string denoting the comments edge name in mutations.
-	EdgeComments = "comments"
 	// EdgeLocks holds the string denoting the locks edge name in mutations.
 	EdgeLocks = "locks"
 	// Table holds the table name of the user in the database.
@@ -71,13 +69,6 @@ const (
 	ApprovalsInverseTable = "approvals"
 	// ApprovalsColumn is the table column denoting the approvals relation/edge.
 	ApprovalsColumn = "user_id"
-	// CommentsTable is the table that holds the comments relation/edge.
-	CommentsTable = "comments"
-	// CommentsInverseTable is the table name for the Comment entity.
-	// It exists in this package in order to avoid circular dependency with the "comment" package.
-	CommentsInverseTable = "comments"
-	// CommentsColumn is the table column denoting the comments relation/edge.
-	CommentsColumn = "user_id"
 	// LocksTable is the table that holds the locks relation/edge.
 	LocksTable = "locks"
 	// LocksInverseTable is the table name for the Lock entity.

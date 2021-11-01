@@ -15,9 +15,6 @@ type Callback func(*sql.Selector)
 // ChatUser is the predicate function for chatuser builders.
 type ChatUser func(*sql.Selector)
 
-// Comment is the predicate function for comment builders.
-type Comment func(*sql.Selector)
-
 // Deployment is the predicate function for deployment builders.
 type Deployment func(*sql.Selector)
 
