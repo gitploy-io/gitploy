@@ -50,8 +50,6 @@ const (
 	EdgeRepo = "repo"
 	// EdgeApprovals holds the string denoting the approvals edge name in mutations.
 	EdgeApprovals = "approvals"
-	// EdgeComments holds the string denoting the comments edge name in mutations.
-	EdgeComments = "comments"
 	// EdgeDeploymentStatuses holds the string denoting the deployment_statuses edge name in mutations.
 	EdgeDeploymentStatuses = "deployment_statuses"
 	// EdgeEvent holds the string denoting the event edge name in mutations.
@@ -79,13 +77,6 @@ const (
 	ApprovalsInverseTable = "approvals"
 	// ApprovalsColumn is the table column denoting the approvals relation/edge.
 	ApprovalsColumn = "deployment_id"
-	// CommentsTable is the table that holds the comments relation/edge.
-	CommentsTable = "comments"
-	// CommentsInverseTable is the table name for the Comment entity.
-	// It exists in this package in order to avoid circular dependency with the "comment" package.
-	CommentsInverseTable = "comments"
-	// CommentsColumn is the table column denoting the comments relation/edge.
-	CommentsColumn = "deployment_id"
 	// DeploymentStatusesTable is the table that holds the deployment_statuses relation/edge.
 	DeploymentStatusesTable = "deployment_status"
 	// DeploymentStatusesInverseTable is the table name for the DeploymentStatus entity.

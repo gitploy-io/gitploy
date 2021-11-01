@@ -50,13 +50,11 @@ type UserEdges struct {
 	Deployments []*Deployment `json:"deployments,omitempty"`
 	// Approvals holds the value of the approvals edge.
 	Approvals []*Approval `json:"approvals,omitempty"`
-	// Comments holds the value of the comments edge.
-	Comments []*Comment `json:"comments,omitempty"`
 	// Locks holds the value of the locks edge.
 	Locks []*Lock `json:"locks,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [6]bool
+	loadedTypes [5]bool
 }
 
 // ChatUserOrErr returns the ChatUser value or an error if the edge
@@ -100,19 +98,10 @@ func (e UserEdges) ApprovalsOrErr() ([]*Approval, error) {
 	return nil, &NotLoadedError{edge: "approvals"}
 }
 
-// CommentsOrErr returns the Comments value or an error if the edge
-// was not loaded in eager-loading.
-func (e UserEdges) CommentsOrErr() ([]*Comment, error) {
-	if e.loadedTypes[4] {
-		return e.Comments, nil
-	}
-	return nil, &NotLoadedError{edge: "comments"}
-}
-
 // LocksOrErr returns the Locks value or an error if the edge
 // was not loaded in eager-loading.
 func (e UserEdges) LocksOrErr() ([]*Lock, error) {
-	if e.loadedTypes[5] {
+	if e.loadedTypes[4] {
 		return e.Locks, nil
 	}
 	return nil, &NotLoadedError{edge: "locks"}
@@ -229,11 +218,6 @@ func (u *User) QueryDeployments() *DeploymentQuery {
 // QueryApprovals queries the "approvals" edge of the User entity.
 func (u *User) QueryApprovals() *ApprovalQuery {
 	return (&UserClient{config: u.config}).QueryApprovals(u)
-}
-
-// QueryComments queries the "comments" edge of the User entity.
-func (u *User) QueryComments() *CommentQuery {
-	return (&UserClient{config: u.config}).QueryComments(u)
 }
 
 // QueryLocks queries the "locks" edge of the User entity.

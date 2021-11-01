@@ -18,8 +18,6 @@ type Tx struct {
 	Callback *CallbackClient
 	// ChatUser is the client for interacting with the ChatUser builders.
 	ChatUser *ChatUserClient
-	// Comment is the client for interacting with the Comment builders.
-	Comment *CommentClient
 	// Deployment is the client for interacting with the Deployment builders.
 	Deployment *DeploymentClient
 	// DeploymentStatistics is the client for interacting with the DeploymentStatistics builders.
@@ -176,7 +174,6 @@ func (tx *Tx) init() {
 	tx.Approval = NewApprovalClient(tx.config)
 	tx.Callback = NewCallbackClient(tx.config)
 	tx.ChatUser = NewChatUserClient(tx.config)
-	tx.Comment = NewCommentClient(tx.config)
 	tx.Deployment = NewDeploymentClient(tx.config)
 	tx.DeploymentStatistics = NewDeploymentStatisticsClient(tx.config)
 	tx.DeploymentStatus = NewDeploymentStatusClient(tx.config)

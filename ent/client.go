@@ -12,7 +12,6 @@ import (
 	"github.com/gitploy-io/gitploy/ent/approval"
 	"github.com/gitploy-io/gitploy/ent/callback"
 	"github.com/gitploy-io/gitploy/ent/chatuser"
-	"github.com/gitploy-io/gitploy/ent/comment"
 	"github.com/gitploy-io/gitploy/ent/deployment"
 	"github.com/gitploy-io/gitploy/ent/deploymentstatistics"
 	"github.com/gitploy-io/gitploy/ent/deploymentstatus"
@@ -39,8 +38,6 @@ type Client struct {
 	Callback *CallbackClient
 	// ChatUser is the client for interacting with the ChatUser builders.
 	ChatUser *ChatUserClient
-	// Comment is the client for interacting with the Comment builders.
-	Comment *CommentClient
 	// Deployment is the client for interacting with the Deployment builders.
 	Deployment *DeploymentClient
 	// DeploymentStatistics is the client for interacting with the DeploymentStatistics builders.
@@ -75,7 +72,6 @@ func (c *Client) init() {
 	c.Approval = NewApprovalClient(c.config)
 	c.Callback = NewCallbackClient(c.config)
 	c.ChatUser = NewChatUserClient(c.config)
-	c.Comment = NewCommentClient(c.config)
 	c.Deployment = NewDeploymentClient(c.config)
 	c.DeploymentStatistics = NewDeploymentStatisticsClient(c.config)
 	c.DeploymentStatus = NewDeploymentStatusClient(c.config)
@@ -121,7 +117,6 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Approval:             NewApprovalClient(cfg),
 		Callback:             NewCallbackClient(cfg),
 		ChatUser:             NewChatUserClient(cfg),
-		Comment:              NewCommentClient(cfg),
 		Deployment:           NewDeploymentClient(cfg),
 		DeploymentStatistics: NewDeploymentStatisticsClient(cfg),
 		DeploymentStatus:     NewDeploymentStatusClient(cfg),
@@ -152,7 +147,6 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Approval:             NewApprovalClient(cfg),
 		Callback:             NewCallbackClient(cfg),
 		ChatUser:             NewChatUserClient(cfg),
-		Comment:              NewCommentClient(cfg),
 		Deployment:           NewDeploymentClient(cfg),
 		DeploymentStatistics: NewDeploymentStatisticsClient(cfg),
 		DeploymentStatus:     NewDeploymentStatusClient(cfg),
@@ -194,7 +188,6 @@ func (c *Client) Use(hooks ...Hook) {
 	c.Approval.Use(hooks...)
 	c.Callback.Use(hooks...)
 	c.ChatUser.Use(hooks...)
-	c.Comment.Use(hooks...)
 	c.Deployment.Use(hooks...)
 	c.DeploymentStatistics.Use(hooks...)
 	c.DeploymentStatus.Use(hooks...)
@@ -556,128 +549,6 @@ func (c *ChatUserClient) Hooks() []Hook {
 	return c.hooks.ChatUser
 }
 
-// CommentClient is a client for the Comment schema.
-type CommentClient struct {
-	config
-}
-
-// NewCommentClient returns a client for the Comment from the given config.
-func NewCommentClient(c config) *CommentClient {
-	return &CommentClient{config: c}
-}
-
-// Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `comment.Hooks(f(g(h())))`.
-func (c *CommentClient) Use(hooks ...Hook) {
-	c.hooks.Comment = append(c.hooks.Comment, hooks...)
-}
-
-// Create returns a create builder for Comment.
-func (c *CommentClient) Create() *CommentCreate {
-	mutation := newCommentMutation(c.config, OpCreate)
-	return &CommentCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// CreateBulk returns a builder for creating a bulk of Comment entities.
-func (c *CommentClient) CreateBulk(builders ...*CommentCreate) *CommentCreateBulk {
-	return &CommentCreateBulk{config: c.config, builders: builders}
-}
-
-// Update returns an update builder for Comment.
-func (c *CommentClient) Update() *CommentUpdate {
-	mutation := newCommentMutation(c.config, OpUpdate)
-	return &CommentUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOne returns an update builder for the given entity.
-func (c *CommentClient) UpdateOne(co *Comment) *CommentUpdateOne {
-	mutation := newCommentMutation(c.config, OpUpdateOne, withComment(co))
-	return &CommentUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOneID returns an update builder for the given id.
-func (c *CommentClient) UpdateOneID(id int) *CommentUpdateOne {
-	mutation := newCommentMutation(c.config, OpUpdateOne, withCommentID(id))
-	return &CommentUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// Delete returns a delete builder for Comment.
-func (c *CommentClient) Delete() *CommentDelete {
-	mutation := newCommentMutation(c.config, OpDelete)
-	return &CommentDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// DeleteOne returns a delete builder for the given entity.
-func (c *CommentClient) DeleteOne(co *Comment) *CommentDeleteOne {
-	return c.DeleteOneID(co.ID)
-}
-
-// DeleteOneID returns a delete builder for the given id.
-func (c *CommentClient) DeleteOneID(id int) *CommentDeleteOne {
-	builder := c.Delete().Where(comment.ID(id))
-	builder.mutation.id = &id
-	builder.mutation.op = OpDeleteOne
-	return &CommentDeleteOne{builder}
-}
-
-// Query returns a query builder for Comment.
-func (c *CommentClient) Query() *CommentQuery {
-	return &CommentQuery{
-		config: c.config,
-	}
-}
-
-// Get returns a Comment entity by its id.
-func (c *CommentClient) Get(ctx context.Context, id int) (*Comment, error) {
-	return c.Query().Where(comment.ID(id)).Only(ctx)
-}
-
-// GetX is like Get, but panics if an error occurs.
-func (c *CommentClient) GetX(ctx context.Context, id int) *Comment {
-	obj, err := c.Get(ctx, id)
-	if err != nil {
-		panic(err)
-	}
-	return obj
-}
-
-// QueryUser queries the user edge of a Comment.
-func (c *CommentClient) QueryUser(co *Comment) *UserQuery {
-	query := &UserQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := co.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(comment.Table, comment.FieldID, id),
-			sqlgraph.To(user.Table, user.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, comment.UserTable, comment.UserColumn),
-		)
-		fromV = sqlgraph.Neighbors(co.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryDeployment queries the deployment edge of a Comment.
-func (c *CommentClient) QueryDeployment(co *Comment) *DeploymentQuery {
-	query := &DeploymentQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := co.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(comment.Table, comment.FieldID, id),
-			sqlgraph.To(deployment.Table, deployment.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, comment.DeploymentTable, comment.DeploymentColumn),
-		)
-		fromV = sqlgraph.Neighbors(co.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// Hooks returns the client hooks.
-func (c *CommentClient) Hooks() []Hook {
-	return c.hooks.Comment
-}
-
 // DeploymentClient is a client for the Deployment schema.
 type DeploymentClient struct {
 	config
@@ -804,22 +675,6 @@ func (c *DeploymentClient) QueryApprovals(d *Deployment) *ApprovalQuery {
 			sqlgraph.From(deployment.Table, deployment.FieldID, id),
 			sqlgraph.To(approval.Table, approval.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, deployment.ApprovalsTable, deployment.ApprovalsColumn),
-		)
-		fromV = sqlgraph.Neighbors(d.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryComments queries the comments edge of a Deployment.
-func (c *DeploymentClient) QueryComments(d *Deployment) *CommentQuery {
-	query := &CommentQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := d.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(deployment.Table, deployment.FieldID, id),
-			sqlgraph.To(comment.Table, comment.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, deployment.CommentsTable, deployment.CommentsColumn),
 		)
 		fromV = sqlgraph.Neighbors(d.driver.Dialect(), step)
 		return fromV, nil
@@ -1876,22 +1731,6 @@ func (c *UserClient) QueryApprovals(u *User) *ApprovalQuery {
 			sqlgraph.From(user.Table, user.FieldID, id),
 			sqlgraph.To(approval.Table, approval.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, user.ApprovalsTable, user.ApprovalsColumn),
-		)
-		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryComments queries the comments edge of a User.
-func (c *UserClient) QueryComments(u *User) *CommentQuery {
-	query := &CommentQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := u.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(user.Table, user.FieldID, id),
-			sqlgraph.To(comment.Table, comment.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, user.CommentsTable, user.CommentsColumn),
 		)
 		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
 		return fromV, nil

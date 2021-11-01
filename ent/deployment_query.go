@@ -14,7 +14,6 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/gitploy-io/gitploy/ent/approval"
-	"github.com/gitploy-io/gitploy/ent/comment"
 	"github.com/gitploy-io/gitploy/ent/deployment"
 	"github.com/gitploy-io/gitploy/ent/deploymentstatus"
 	"github.com/gitploy-io/gitploy/ent/event"
@@ -36,7 +35,6 @@ type DeploymentQuery struct {
 	withUser               *UserQuery
 	withRepo               *RepoQuery
 	withApprovals          *ApprovalQuery
-	withComments           *CommentQuery
 	withDeploymentStatuses *DeploymentStatusQuery
 	withEvent              *EventQuery
 	modifiers              []func(s *sql.Selector)
@@ -135,28 +133,6 @@ func (dq *DeploymentQuery) QueryApprovals() *ApprovalQuery {
 			sqlgraph.From(deployment.Table, deployment.FieldID, selector),
 			sqlgraph.To(approval.Table, approval.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, deployment.ApprovalsTable, deployment.ApprovalsColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(dq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
-// QueryComments chains the current query on the "comments" edge.
-func (dq *DeploymentQuery) QueryComments() *CommentQuery {
-	query := &CommentQuery{config: dq.config}
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := dq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := dq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(deployment.Table, deployment.FieldID, selector),
-			sqlgraph.To(comment.Table, comment.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, deployment.CommentsTable, deployment.CommentsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(dq.driver.Dialect(), step)
 		return fromU, nil
@@ -392,7 +368,6 @@ func (dq *DeploymentQuery) Clone() *DeploymentQuery {
 		withUser:               dq.withUser.Clone(),
 		withRepo:               dq.withRepo.Clone(),
 		withApprovals:          dq.withApprovals.Clone(),
-		withComments:           dq.withComments.Clone(),
 		withDeploymentStatuses: dq.withDeploymentStatuses.Clone(),
 		withEvent:              dq.withEvent.Clone(),
 		// clone intermediate query.
@@ -431,17 +406,6 @@ func (dq *DeploymentQuery) WithApprovals(opts ...func(*ApprovalQuery)) *Deployme
 		opt(query)
 	}
 	dq.withApprovals = query
-	return dq
-}
-
-// WithComments tells the query-builder to eager-load the nodes that are connected to
-// the "comments" edge. The optional arguments are used to configure the query builder of the edge.
-func (dq *DeploymentQuery) WithComments(opts ...func(*CommentQuery)) *DeploymentQuery {
-	query := &CommentQuery{config: dq.config}
-	for _, opt := range opts {
-		opt(query)
-	}
-	dq.withComments = query
 	return dq
 }
 
@@ -532,11 +496,10 @@ func (dq *DeploymentQuery) sqlAll(ctx context.Context) ([]*Deployment, error) {
 	var (
 		nodes       = []*Deployment{}
 		_spec       = dq.querySpec()
-		loadedTypes = [6]bool{
+		loadedTypes = [5]bool{
 			dq.withUser != nil,
 			dq.withRepo != nil,
 			dq.withApprovals != nil,
-			dq.withComments != nil,
 			dq.withDeploymentStatuses != nil,
 			dq.withEvent != nil,
 		}
@@ -638,31 +601,6 @@ func (dq *DeploymentQuery) sqlAll(ctx context.Context) ([]*Deployment, error) {
 				return nil, fmt.Errorf(`unexpected foreign-key "deployment_id" returned %v for node %v`, fk, n.ID)
 			}
 			node.Edges.Approvals = append(node.Edges.Approvals, n)
-		}
-	}
-
-	if query := dq.withComments; query != nil {
-		fks := make([]driver.Value, 0, len(nodes))
-		nodeids := make(map[int]*Deployment)
-		for i := range nodes {
-			fks = append(fks, nodes[i].ID)
-			nodeids[nodes[i].ID] = nodes[i]
-			nodes[i].Edges.Comments = []*Comment{}
-		}
-		query.Where(predicate.Comment(func(s *sql.Selector) {
-			s.Where(sql.InValues(deployment.CommentsColumn, fks...))
-		}))
-		neighbors, err := query.All(ctx)
-		if err != nil {
-			return nil, err
-		}
-		for _, n := range neighbors {
-			fk := n.DeploymentID
-			node, ok := nodeids[fk]
-			if !ok {
-				return nil, fmt.Errorf(`unexpected foreign-key "deployment_id" returned %v for node %v`, fk, n.ID)
-			}
-			node.Edges.Comments = append(node.Edges.Comments, n)
 		}
 	}
 

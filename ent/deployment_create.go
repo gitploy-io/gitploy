@@ -11,7 +11,6 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/gitploy-io/gitploy/ent/approval"
-	"github.com/gitploy-io/gitploy/ent/comment"
 	"github.com/gitploy-io/gitploy/ent/deployment"
 	"github.com/gitploy-io/gitploy/ent/deploymentstatus"
 	"github.com/gitploy-io/gitploy/ent/event"
@@ -233,21 +232,6 @@ func (dc *DeploymentCreate) AddApprovals(a ...*Approval) *DeploymentCreate {
 		ids[i] = a[i].ID
 	}
 	return dc.AddApprovalIDs(ids...)
-}
-
-// AddCommentIDs adds the "comments" edge to the Comment entity by IDs.
-func (dc *DeploymentCreate) AddCommentIDs(ids ...int) *DeploymentCreate {
-	dc.mutation.AddCommentIDs(ids...)
-	return dc
-}
-
-// AddComments adds the "comments" edges to the Comment entity.
-func (dc *DeploymentCreate) AddComments(c ...*Comment) *DeploymentCreate {
-	ids := make([]int, len(c))
-	for i := range c {
-		ids[i] = c[i].ID
-	}
-	return dc.AddCommentIDs(ids...)
 }
 
 // AddDeploymentStatusIDs adds the "deployment_statuses" edge to the DeploymentStatus entity by IDs.
@@ -637,25 +621,6 @@ func (dc *DeploymentCreate) createSpec() (*Deployment, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
 					Column: approval.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := dc.mutation.CommentsIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   deployment.CommentsTable,
-			Columns: []string{deployment.CommentsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: comment.FieldID,
 				},
 			},
 		}
