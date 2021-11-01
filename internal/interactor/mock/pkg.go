@@ -263,6 +263,21 @@ func (mr *MockStoreMockRecorder) CreatePerm(ctx, p interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreatePerm", reflect.TypeOf((*MockStore)(nil).CreatePerm), ctx, p)
 }
 
+// CreateReview mocks base method.
+func (m *MockStore) CreateReview(ctx context.Context, rv *ent.Review) (*ent.Review, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateReview", ctx, rv)
+	ret0, _ := ret[0].(*ent.Review)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreateReview indicates an expected call of CreateReview.
+func (mr *MockStoreMockRecorder) CreateReview(ctx, rv interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateReview", reflect.TypeOf((*MockStore)(nil).CreateReview), ctx, rv)
+}
+
 // CreateUser mocks base method.
 func (m *MockStore) CreateUser(ctx context.Context, u *ent.User) (*ent.User, error) {
 	m.ctrl.T.Helper()

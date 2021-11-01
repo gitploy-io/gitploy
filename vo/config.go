@@ -29,11 +29,20 @@ type (
 		// Approval is the configuration of Approval,
 		// It is disabled when it is empty.
 		Approval *Approval `json:"approval,omitempty" yaml:"approval"`
+
+		// Review is the configuration of Review,
+		// It is disabled when it is empty.
+		Review *Review `json:"review,omitempty" yaml:"review"`
 	}
 
 	Approval struct {
 		Enabled       bool `json:"enabled" yaml:"enabled"`
 		RequiredCount int  `json:"required_count" yaml:"required_count"`
+	}
+
+	Review struct {
+		Enabled   bool     `json:"enabled" yaml:"enabled"`
+		Reviewers []string `json:"reviewers" yaml:"reviewers"`
 	}
 
 	EvalValues struct {
@@ -90,6 +99,10 @@ func (e *Env) IsApprovalEabled() bool {
 	}
 
 	return e.Approval.Enabled
+}
+
+func (e *Env) HasReview() bool {
+	return e.Review != nil && e.Review.Enabled
 }
 
 func (e *Env) Eval(v *EvalValues) error {

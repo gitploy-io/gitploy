@@ -16,7 +16,7 @@ const (
 	// ErrorCodeDeploymentLocked is when the environment is locked.
 	ErrorCodeDeploymentLocked ErrorCode = "deployment_locked"
 	// ErrorCodeDeploymentUnapproved is when the deployment is not approved.
-	ErrorCodeDeploymentUnapproved ErrorCode = "deployment_unapproved"
+	ErrorCodeDeploymentNotApproved ErrorCode = "deployment_not_approved"
 	// ErrorCodeDeploymentUndeployable is that the merge conflict occurs or a commit status has failed.
 	ErrorCodeDeploymentUndeployable ErrorCode = "deployment_undeployable"
 

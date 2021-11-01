@@ -80,6 +80,7 @@ type (
 
 		ListReviews(ctx context.Context, d *ent.Deployment) ([]*ent.Review, error)
 		FindReviewOfUser(ctx context.Context, u *ent.User, d *ent.Deployment) (*ent.Review, error)
+		CreateReview(ctx context.Context, rv *ent.Review) (*ent.Review, error)
 		UpdateReview(ctx context.Context, rv *ent.Review) (*ent.Review, error)
 
 		ListExpiredLocksLessThanTime(ctx context.Context, t time.Time) ([]*ent.Lock, error)

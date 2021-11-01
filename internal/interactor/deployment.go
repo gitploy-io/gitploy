@@ -7,8 +7,8 @@ import (
 
 	"github.com/AlekSi/pointer"
 	"github.com/gitploy-io/gitploy/ent"
-	"github.com/gitploy-io/gitploy/ent/approval"
 	"github.com/gitploy-io/gitploy/ent/deployment"
+	"github.com/gitploy-io/gitploy/ent/review"
 	"github.com/gitploy-io/gitploy/pkg/e"
 	"github.com/gitploy-io/gitploy/vo"
 	"go.uber.org/zap"
@@ -34,7 +34,7 @@ func (i *Interactor) Deploy(ctx context.Context, u *ent.User, r *ent.Repo, d *en
 		)
 	}
 
-	if env.IsApprovalEabled() {
+	if env.HasReview() {
 		d := &ent.Deployment{
 			Number:                number,
 			Type:                  d.Type,
@@ -43,14 +43,24 @@ func (i *Interactor) Deploy(ctx context.Context, u *ent.User, r *ent.Repo, d *en
 			Status:                deployment.StatusWaiting,
 			ProductionEnvironment: env.IsProductionEnvironment(),
 			IsRollback:            d.IsRollback,
-			IsApprovalEnabled:     true,
-			RequiredApprovalCount: env.Approval.RequiredCount,
 			UserID:                u.ID,
 			RepoID:                r.ID,
 		}
 
-		i.log.Debug("Save a new deployment to wait approvals.", zap.Any("deployment", d))
-		return i.Store.CreateDeployment(ctx, d)
+		i.log.Debug("Save the deployment to wait reviews.")
+		d, err = i.Store.CreateDeployment(ctx, d)
+		if err != nil {
+			return nil, err
+		}
+
+		for _, rvr := range env.Review.Reviewers {
+			i.log.Debug(fmt.Sprintf("Request a review to %s.", rvr))
+			if _, err := i.requestReviewByLogin(ctx, d, rvr); err != nil {
+				i.log.Error("Failed to request the review.", zap.Error(err))
+			}
+		}
+
+		return d, nil
 	}
 
 	i.log.Debug("Create a new remote deployment.")
@@ -70,8 +80,6 @@ func (i *Interactor) Deploy(ctx context.Context, u *ent.User, r *ent.Repo, d *en
 		HTMLURL:               rd.HTLMURL,
 		ProductionEnvironment: env.IsProductionEnvironment(),
 		IsRollback:            d.IsRollback,
-		IsApprovalEnabled:     false,
-		RequiredApprovalCount: 0,
 		UserID:                u.ID,
 		RepoID:                r.ID,
 	}
@@ -92,16 +100,21 @@ func (i *Interactor) Deploy(ctx context.Context, u *ent.User, r *ent.Repo, d *en
 }
 
 func (i *Interactor) IsApproved(ctx context.Context, d *ent.Deployment) bool {
-	as, _ := i.ListApprovals(ctx, d)
+	rvs, _ := i.ListReviews(ctx, d)
 
-	approved := 0
-	for _, a := range as {
-		if a.Status == approval.StatusApproved {
-			approved = approved + 1
+	for _, r := range rvs {
+		if r.Status == review.StatusRejected {
+			return false
 		}
 	}
 
-	return approved >= d.RequiredApprovalCount
+	for _, r := range rvs {
+		if r.Status == review.StatusApproved {
+			return true
+		}
+	}
+
+	return false
 }
 
 // DeployToRemote create a new remote deployment after the deployment was approved.
@@ -115,9 +128,9 @@ func (i *Interactor) DeployToRemote(ctx context.Context, u *ent.User, r *ent.Rep
 		return nil, err
 	}
 
-	if d.IsApprovalEnabled && !i.IsApproved(ctx, d) {
+	if !i.IsApproved(ctx, d) {
 		return nil, e.NewError(
-			e.ErrorCodeDeploymentUnapproved,
+			e.ErrorCodeDeploymentNotApproved,
 			nil,
 		)
 	}

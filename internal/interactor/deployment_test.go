@@ -7,6 +7,7 @@ import (
 
 	"github.com/gitploy-io/gitploy/ent"
 	"github.com/gitploy-io/gitploy/ent/deployment"
+	"github.com/gitploy-io/gitploy/ent/review"
 	"github.com/gitploy-io/gitploy/internal/interactor/mock"
 	"github.com/gitploy-io/gitploy/vo"
 	"github.com/golang/mock/gomock"
@@ -24,23 +25,15 @@ func newMockInteractor(store Store, scm SCM) *Interactor {
 func TestInteractor_Deploy(t *testing.T) {
 	ctx := gomock.Any()
 
-	t.Run("create a new deployment.", func(t *testing.T) {
+	t.Run("Return a new deployment.", func(t *testing.T) {
 		input := struct {
-			u *ent.User
-			r *ent.Repo
 			d *ent.Deployment
 			e *vo.Env
 		}{
-			u: &ent.User{
-				ID: 1,
-			},
-			r: &ent.Repo{
-				ID: 1,
-			},
 			d: &ent.Deployment{
-				Type: deployment.TypeCommit,
-				Ref:  "3ee3221",
-				Env:  "local",
+				Type: deployment.TypeBranch,
+				Ref:  "main",
+				Env:  "production",
 			},
 			e: &vo.Env{},
 		}
@@ -50,45 +43,39 @@ func TestInteractor_Deploy(t *testing.T) {
 		scm := mock.NewMockSCM(ctrl)
 
 		const (
-			ID  = 1
 			UID = 1000
 		)
 
-		t.Log("MOCK - Check the environment is locked.")
 		store.
 			EXPECT().
-			HasLockOfRepoForEnv(ctx, gomock.Eq(input.r), gomock.Eq(input.d.Env)).
+			HasLockOfRepoForEnv(ctx, gomock.AssignableToTypeOf(&ent.Repo{}), gomock.AssignableToTypeOf("")).
 			Return(false, nil)
 
-		t.Log("MOCK - Get the next deployment number.")
 		store.
 			EXPECT().
-			GetNextDeploymentNumberOfRepo(ctx, gomock.Eq(input.r)).
+			GetNextDeploymentNumberOfRepo(ctx, gomock.AssignableToTypeOf(&ent.Repo{})).
 			Return(1, nil)
 
-		t.Logf("Returns a new remote deployment with UID = %d", UID)
 		scm.
 			EXPECT().
-			CreateRemoteDeployment(ctx, gomock.Eq(input.u), gomock.Eq(input.r), gomock.Eq(input.d), gomock.Eq(input.e)).
+			CreateRemoteDeployment(ctx, gomock.Eq(&ent.User{}), gomock.Eq(&ent.Repo{}), gomock.AssignableToTypeOf(&ent.Deployment{}), gomock.Eq(&vo.Env{})).
 			Return(&vo.RemoteDeployment{
 				UID: UID,
 			}, nil)
 
-		t.Logf("Check the deployment input has UID")
+		t.Logf("MOCK - compare the deployment parameter.")
 		store.
 			EXPECT().
 			CreateDeployment(ctx, gomock.Eq(&ent.Deployment{
-				Number: 1,
+				Number: 1, // The next deployment number.
 				Type:   input.d.Type,
 				Ref:    input.d.Ref,
 				Env:    input.d.Env,
 				UID:    UID,
 				Status: deployment.StatusCreated,
-				UserID: input.u.ID,
-				RepoID: input.r.ID,
 			})).
 			DoAndReturn(func(ctx context.Context, d *ent.Deployment) (interface{}, interface{}) {
-				d.ID = ID
+				d.ID = 1
 				return d, nil
 			})
 
@@ -98,51 +85,45 @@ func TestInteractor_Deploy(t *testing.T) {
 
 		i := newMockInteractor(store, scm)
 
-		d, err := i.Deploy(context.Background(), input.u, input.r, input.d, input.e)
+		d, err := i.Deploy(context.Background(), &ent.User{}, &ent.Repo{}, input.d, input.e)
 		if err != nil {
 			t.Errorf("Deploy returns a error: %s", err)
 			t.FailNow()
 		}
 
 		expected := &ent.Deployment{
-			ID:     ID,
+			ID:     1,
 			Number: 1,
 			Type:   input.d.Type,
 			Ref:    input.d.Ref,
 			Env:    input.d.Env,
 			UID:    UID,
 			Status: deployment.StatusCreated,
-			UserID: input.u.ID,
-			RepoID: input.r.ID,
 		}
 		if !reflect.DeepEqual(d, expected) {
 			t.Errorf("Deploy = %v, wanted %v", d, expected)
 		}
 	})
 
-	t.Run("create a new deployment with the approval configuration.", func(t *testing.T) {
+	t.Run("Return the waiting deployment and reviews.", func(t *testing.T) {
 		input := struct {
-			u *ent.User
-			r *ent.Repo
 			d *ent.Deployment
 			e *vo.Env
 		}{
-			u: &ent.User{
-				ID: 1,
-			},
-			r: &ent.Repo{
-				ID: 1,
-			},
 			d: &ent.Deployment{
 				Number: 3,
-				Type:   deployment.TypeCommit,
-				Ref:    "3ee3221",
-				Env:    "local",
+				Type:   deployment.TypeBranch,
+				Ref:    "main",
+				Env:    "production",
 			},
 			e: &vo.Env{
 				Approval: &vo.Approval{
 					Enabled:       true,
 					RequiredCount: 1,
+				},
+				Review: &vo.Review{
+					Enabled:   true,
+					Reviewers: []string{"octocat"},
 				},
 			},
 		}
@@ -151,60 +132,61 @@ func TestInteractor_Deploy(t *testing.T) {
 		store := mock.NewMockStore(ctrl)
 		scm := mock.NewMockSCM(ctrl)
 
-		const (
-			ID = 1
-		)
-
-		t.Log("MOCK - Check the environment is locked.")
 		store.
 			EXPECT().
-			HasLockOfRepoForEnv(ctx, gomock.Eq(input.r), gomock.Eq(input.d.Env)).
+			HasLockOfRepoForEnv(ctx, gomock.AssignableToTypeOf(&ent.Repo{}), gomock.AssignableToTypeOf("")).
 			Return(false, nil)
 
-		t.Log("MOCK - Get the next deployment number.")
 		store.
 			EXPECT().
-			GetNextDeploymentNumberOfRepo(ctx, gomock.Eq(input.r)).
+			GetNextDeploymentNumberOfRepo(ctx, gomock.AssignableToTypeOf(&ent.Repo{})).
 			Return(1, nil)
 
-		t.Logf("Check the deployment has configurations of approval.")
+		t.Logf("MOCK - compare the deployment parameter.")
 		store.
 			EXPECT().
 			CreateDeployment(ctx, gomock.Eq(&ent.Deployment{
-				Number:                1,
-				Type:                  input.d.Type,
-				Ref:                   input.d.Ref,
-				Env:                   input.d.Env,
-				IsApprovalEnabled:     true,
-				RequiredApprovalCount: input.e.Approval.RequiredCount,
-				Status:                deployment.StatusWaiting,
-				UserID:                input.u.ID,
-				RepoID:                input.r.ID,
+				Number: 1,
+				Type:   input.d.Type,
+				Ref:    input.d.Ref,
+				Env:    input.d.Env,
+				Status: deployment.StatusWaiting,
 			})).
 			DoAndReturn(func(ctx context.Context, d *ent.Deployment) (interface{}, interface{}) {
-				d.ID = ID
+				d.ID = 1
 				return d, nil
 			})
 
+		store.
+			EXPECT().
+			FindUserByLogin(ctx, gomock.AssignableToTypeOf("")).
+			Return(&ent.User{}, nil)
+
+		store.
+			EXPECT().
+			CreateReview(ctx, gomock.AssignableToTypeOf(&ent.Review{})).
+			Return(&ent.Review{}, nil)
+
+		store.
+			EXPECT().
+			CreateEvent(ctx, gomock.AssignableToTypeOf(&ent.Event{})).
+			Return(&ent.Event{}, nil)
+
 		i := newMockInteractor(store, scm)
 
-		d, err := i.Deploy(context.Background(), input.u, input.r, input.d, input.e)
+		d, err := i.Deploy(context.Background(), &ent.User{}, &ent.Repo{}, input.d, input.e)
 		if err != nil {
 			t.Errorf("Deploy returns a error: %s", err)
 			t.FailNow()
 		}
 
 		expected := &ent.Deployment{
-			ID:                    ID,
-			Number:                1,
-			Type:                  input.d.Type,
-			Ref:                   input.d.Ref,
-			Env:                   input.d.Env,
-			IsApprovalEnabled:     true,
-			RequiredApprovalCount: input.e.Approval.RequiredCount,
-			Status:                deployment.StatusWaiting,
-			UserID:                input.u.ID,
-			RepoID:                input.r.ID,
+			ID:     1,
+			Number: 1,
+			Type:   input.d.Type,
+			Ref:    input.d.Ref,
+			Env:    input.d.Env,
+			Status: deployment.StatusWaiting,
 		}
 		if !reflect.DeepEqual(d, expected) {
 			t.Errorf("Deploy = %v, wanted %v", d, expected)
@@ -217,16 +199,10 @@ func TestInteractor_DeployToRemote(t *testing.T) {
 
 	t.Run("create a new remote deployment and update the deployment.", func(t *testing.T) {
 		input := struct {
-			u *ent.User
-			r *ent.Repo
 			d *ent.Deployment
 			e *vo.Env
 		}{
-			u: &ent.User{},
-			r: &ent.Repo{},
-			d: &ent.Deployment{
-				ID: 1,
-			},
+			d: &ent.Deployment{},
 			e: &vo.Env{},
 		}
 
@@ -238,26 +214,32 @@ func TestInteractor_DeployToRemote(t *testing.T) {
 			UID = 1000
 		)
 
-		t.Log("MOCK - Check the environment is locked.")
 		store.
 			EXPECT().
 			HasLockOfRepoForEnv(ctx, gomock.AssignableToTypeOf(&ent.Repo{}), gomock.AssignableToTypeOf("")).
 			Return(false, nil)
 
-		t.Logf("MOCK - Returns a new remote deployment with UID = %d", UID)
+		// Return a approved review.
+		store.
+			EXPECT().
+			ListReviews(ctx, gomock.AssignableToTypeOf(&ent.Deployment{})).
+			Return([]*ent.Review{
+				{
+					Status: review.StatusApproved,
+				},
+			}, nil)
+
 		scm.
 			EXPECT().
-			CreateRemoteDeployment(ctx, gomock.Eq(input.u), gomock.Eq(input.r), gomock.Eq(input.d), gomock.Eq(input.e)).
+			CreateRemoteDeployment(ctx, gomock.AssignableToTypeOf(&ent.User{}), gomock.AssignableToTypeOf(&ent.Repo{}), gomock.AssignableToTypeOf(&ent.Deployment{}), gomock.AssignableToTypeOf(&vo.Env{})).
 			Return(&vo.RemoteDeployment{
 				UID: UID,
 			}, nil)
 
-		t.Logf("MOCK - Check the deployment input has UID")
+		t.Log("MOCK - Compare the deployment parameter.")
 		store.
 			EXPECT().
 			UpdateDeployment(ctx, gomock.Eq(&ent.Deployment{
-				ID:     input.d.ID,
-				Env:    input.d.Env,
 				UID:    UID,
 				Status: deployment.StatusCreated,
 			})).
@@ -271,7 +253,7 @@ func TestInteractor_DeployToRemote(t *testing.T) {
 
 		i := newMockInteractor(store, scm)
 
-		d, err := i.DeployToRemote(context.Background(), input.u, input.r, input.d, input.e)
+		d, err := i.DeployToRemote(context.Background(), &ent.User{}, &ent.Repo{}, input.d, input.e)
 		if err != nil {
 			t.Errorf("CreateRemoteDeployment returns a error: %s", err)
 			t.FailNow()

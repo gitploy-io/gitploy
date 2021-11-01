@@ -62,6 +62,25 @@ func (s *Store) FindReviewOfUser(ctx context.Context, u *ent.User, d *ent.Deploy
 	return rv, nil
 }
 
+func (s *Store) CreateReview(ctx context.Context, rv *ent.Review) (*ent.Review, error) {
+	rv, err := s.c.Review.
+		Create().
+		SetDeploymentID(rv.DeploymentID).
+		SetUserID(rv.UserID).
+		Save(ctx)
+	if ent.IsValidationError(err) {
+		return nil, e.NewErrorWithMessage(
+			e.ErrorCodeUnprocessableEntity,
+			fmt.Sprintf("Failed to create a review. The value of \"%s\" field is invalid.", err.(*ent.ValidationError).Name),
+			err,
+		)
+	} else if err != nil {
+		return nil, e.NewError(e.ErrorCodeInternalError, err)
+	}
+
+	return s.FindReviewByID(ctx, rv.ID)
+}
+
 func (s *Store) UpdateReview(ctx context.Context, rv *ent.Review) (*ent.Review, error) {
 	rv, err := s.c.Review.
 		UpdateOne(rv).
