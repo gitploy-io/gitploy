@@ -1090,6 +1090,19 @@ paths:
           schema:
             type: integer
             description: The deployment number.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  enum:
+                    - approved
+                    - rejected
+              required:
+                - status
       responses:
         '200':
           description: Return the review.
