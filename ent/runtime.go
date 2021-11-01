@@ -78,20 +78,12 @@ func init() {
 	deploymentDescIsRollback := deploymentFields[9].Descriptor()
 	// deployment.DefaultIsRollback holds the default value on creation for the is_rollback field.
 	deployment.DefaultIsRollback = deploymentDescIsRollback.Default.(bool)
-	// deploymentDescIsApprovalEnabled is the schema descriptor for is_approval_enabled field.
-	deploymentDescIsApprovalEnabled := deploymentFields[10].Descriptor()
-	// deployment.DefaultIsApprovalEnabled holds the default value on creation for the is_approval_enabled field.
-	deployment.DefaultIsApprovalEnabled = deploymentDescIsApprovalEnabled.Default.(bool)
-	// deploymentDescRequiredApprovalCount is the schema descriptor for required_approval_count field.
-	deploymentDescRequiredApprovalCount := deploymentFields[11].Descriptor()
-	// deployment.DefaultRequiredApprovalCount holds the default value on creation for the required_approval_count field.
-	deployment.DefaultRequiredApprovalCount = deploymentDescRequiredApprovalCount.Default.(int)
 	// deploymentDescCreatedAt is the schema descriptor for created_at field.
-	deploymentDescCreatedAt := deploymentFields[12].Descriptor()
+	deploymentDescCreatedAt := deploymentFields[10].Descriptor()
 	// deployment.DefaultCreatedAt holds the default value on creation for the created_at field.
 	deployment.DefaultCreatedAt = deploymentDescCreatedAt.Default.(func() time.Time)
 	// deploymentDescUpdatedAt is the schema descriptor for updated_at field.
-	deploymentDescUpdatedAt := deploymentFields[13].Descriptor()
+	deploymentDescUpdatedAt := deploymentFields[11].Descriptor()
 	// deployment.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	deployment.DefaultUpdatedAt = deploymentDescUpdatedAt.Default.(func() time.Time)
 	// deployment.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.

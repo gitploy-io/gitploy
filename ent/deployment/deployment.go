@@ -32,10 +32,6 @@ const (
 	FieldProductionEnvironment = "production_environment"
 	// FieldIsRollback holds the string denoting the is_rollback field in the database.
 	FieldIsRollback = "is_rollback"
-	// FieldIsApprovalEnabled holds the string denoting the is_approval_enabled field in the database.
-	FieldIsApprovalEnabled = "is_approval_enabled"
-	// FieldRequiredApprovalCount holds the string denoting the required_approval_count field in the database.
-	FieldRequiredApprovalCount = "required_approval_count"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
@@ -44,6 +40,10 @@ const (
 	FieldUserID = "user_id"
 	// FieldRepoID holds the string denoting the repo_id field in the database.
 	FieldRepoID = "repo_id"
+	// FieldIsApprovalEnabled holds the string denoting the is_approval_enabled field in the database.
+	FieldIsApprovalEnabled = "is_approval_enabled"
+	// FieldRequiredApprovalCount holds the string denoting the required_approval_count field in the database.
+	FieldRequiredApprovalCount = "required_approval_count"
 	// EdgeUser holds the string denoting the user edge name in mutations.
 	EdgeUser = "user"
 	// EdgeRepo holds the string denoting the repo edge name in mutations.
@@ -115,12 +115,12 @@ var Columns = []string{
 	FieldHTMLURL,
 	FieldProductionEnvironment,
 	FieldIsRollback,
-	FieldIsApprovalEnabled,
-	FieldRequiredApprovalCount,
 	FieldCreatedAt,
 	FieldUpdatedAt,
 	FieldUserID,
 	FieldRepoID,
+	FieldIsApprovalEnabled,
+	FieldRequiredApprovalCount,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -140,10 +140,6 @@ var (
 	DefaultProductionEnvironment bool
 	// DefaultIsRollback holds the default value on creation for the "is_rollback" field.
 	DefaultIsRollback bool
-	// DefaultIsApprovalEnabled holds the default value on creation for the "is_approval_enabled" field.
-	DefaultIsApprovalEnabled bool
-	// DefaultRequiredApprovalCount holds the default value on creation for the "required_approval_count" field.
-	DefaultRequiredApprovalCount int
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
 	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.

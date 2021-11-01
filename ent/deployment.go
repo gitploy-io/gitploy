@@ -38,10 +38,6 @@ type Deployment struct {
 	ProductionEnvironment bool `json:"production_environment"`
 	// IsRollback holds the value of the "is_rollback" field.
 	IsRollback bool `json:"is_rollback"`
-	// IsApprovalEnabled holds the value of the "is_approval_enabled" field.
-	IsApprovalEnabled bool `json:"is_approval_enabled"`
-	// RequiredApprovalCount holds the value of the "required_approval_count" field.
-	RequiredApprovalCount int `json:"required_approval_count"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -50,6 +46,10 @@ type Deployment struct {
 	UserID int64 `json:"user_id"`
 	// RepoID holds the value of the "repo_id" field.
 	RepoID int64 `json:"repo_id"`
+	// IsApprovalEnabled holds the value of the "is_approval_enabled" field.
+	IsApprovalEnabled *bool `json:"is_approval_enabled,omitemtpy"`
+	// RequiredApprovalCount holds the value of the "required_approval_count" field.
+	RequiredApprovalCount *int `json:"required_approval_count,omitemtpy"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the DeploymentQuery when eager-loading is set.
 	Edges DeploymentEdges `json:"edges"`
@@ -145,7 +145,7 @@ func (*Deployment) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case deployment.FieldProductionEnvironment, deployment.FieldIsRollback, deployment.FieldIsApprovalEnabled:
 			values[i] = new(sql.NullBool)
-		case deployment.FieldID, deployment.FieldNumber, deployment.FieldUID, deployment.FieldRequiredApprovalCount, deployment.FieldUserID, deployment.FieldRepoID:
+		case deployment.FieldID, deployment.FieldNumber, deployment.FieldUID, deployment.FieldUserID, deployment.FieldRepoID, deployment.FieldRequiredApprovalCount:
 			values[i] = new(sql.NullInt64)
 		case deployment.FieldType, deployment.FieldEnv, deployment.FieldRef, deployment.FieldStatus, deployment.FieldSha, deployment.FieldHTMLURL:
 			values[i] = new(sql.NullString)
@@ -232,18 +232,6 @@ func (d *Deployment) assignValues(columns []string, values []interface{}) error 
 			} else if value.Valid {
 				d.IsRollback = value.Bool
 			}
-		case deployment.FieldIsApprovalEnabled:
-			if value, ok := values[i].(*sql.NullBool); !ok {
-				return fmt.Errorf("unexpected type %T for field is_approval_enabled", values[i])
-			} else if value.Valid {
-				d.IsApprovalEnabled = value.Bool
-			}
-		case deployment.FieldRequiredApprovalCount:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field required_approval_count", values[i])
-			} else if value.Valid {
-				d.RequiredApprovalCount = int(value.Int64)
-			}
 		case deployment.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
@@ -267,6 +255,20 @@ func (d *Deployment) assignValues(columns []string, values []interface{}) error 
 				return fmt.Errorf("unexpected type %T for field repo_id", values[i])
 			} else if value.Valid {
 				d.RepoID = value.Int64
+			}
+		case deployment.FieldIsApprovalEnabled:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field is_approval_enabled", values[i])
+			} else if value.Valid {
+				d.IsApprovalEnabled = new(bool)
+				*d.IsApprovalEnabled = value.Bool
+			}
+		case deployment.FieldRequiredApprovalCount:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field required_approval_count", values[i])
+			} else if value.Valid {
+				d.RequiredApprovalCount = new(int)
+				*d.RequiredApprovalCount = int(value.Int64)
 			}
 		}
 	}
@@ -346,10 +348,6 @@ func (d *Deployment) String() string {
 	builder.WriteString(fmt.Sprintf("%v", d.ProductionEnvironment))
 	builder.WriteString(", is_rollback=")
 	builder.WriteString(fmt.Sprintf("%v", d.IsRollback))
-	builder.WriteString(", is_approval_enabled=")
-	builder.WriteString(fmt.Sprintf("%v", d.IsApprovalEnabled))
-	builder.WriteString(", required_approval_count=")
-	builder.WriteString(fmt.Sprintf("%v", d.RequiredApprovalCount))
 	builder.WriteString(", created_at=")
 	builder.WriteString(d.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", updated_at=")
@@ -358,6 +356,14 @@ func (d *Deployment) String() string {
 	builder.WriteString(fmt.Sprintf("%v", d.UserID))
 	builder.WriteString(", repo_id=")
 	builder.WriteString(fmt.Sprintf("%v", d.RepoID))
+	if v := d.IsApprovalEnabled; v != nil {
+		builder.WriteString(", is_approval_enabled=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	if v := d.RequiredApprovalCount; v != nil {
+		builder.WriteString(", required_approval_count=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
 	builder.WriteByte(')')
 	return builder.String()
 }

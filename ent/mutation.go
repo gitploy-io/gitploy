@@ -2008,11 +2008,11 @@ type DeploymentMutation struct {
 	html_url                   *string
 	production_environment     *bool
 	is_rollback                *bool
+	created_at                 *time.Time
+	updated_at                 *time.Time
 	is_approval_enabled        *bool
 	required_approval_count    *int
 	addrequired_approval_count *int
-	created_at                 *time.Time
-	updated_at                 *time.Time
 	clearedFields              map[string]struct{}
 	user                       *int64
 	cleareduser                bool
@@ -2554,98 +2554,6 @@ func (m *DeploymentMutation) ResetIsRollback() {
 	m.is_rollback = nil
 }
 
-// SetIsApprovalEnabled sets the "is_approval_enabled" field.
-func (m *DeploymentMutation) SetIsApprovalEnabled(b bool) {
-	m.is_approval_enabled = &b
-}
-
-// IsApprovalEnabled returns the value of the "is_approval_enabled" field in the mutation.
-func (m *DeploymentMutation) IsApprovalEnabled() (r bool, exists bool) {
-	v := m.is_approval_enabled
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldIsApprovalEnabled returns the old "is_approval_enabled" field's value of the Deployment entity.
-// If the Deployment object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *DeploymentMutation) OldIsApprovalEnabled(ctx context.Context) (v bool, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, fmt.Errorf("OldIsApprovalEnabled is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, fmt.Errorf("OldIsApprovalEnabled requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldIsApprovalEnabled: %w", err)
-	}
-	return oldValue.IsApprovalEnabled, nil
-}
-
-// ResetIsApprovalEnabled resets all changes to the "is_approval_enabled" field.
-func (m *DeploymentMutation) ResetIsApprovalEnabled() {
-	m.is_approval_enabled = nil
-}
-
-// SetRequiredApprovalCount sets the "required_approval_count" field.
-func (m *DeploymentMutation) SetRequiredApprovalCount(i int) {
-	m.required_approval_count = &i
-	m.addrequired_approval_count = nil
-}
-
-// RequiredApprovalCount returns the value of the "required_approval_count" field in the mutation.
-func (m *DeploymentMutation) RequiredApprovalCount() (r int, exists bool) {
-	v := m.required_approval_count
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldRequiredApprovalCount returns the old "required_approval_count" field's value of the Deployment entity.
-// If the Deployment object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *DeploymentMutation) OldRequiredApprovalCount(ctx context.Context) (v int, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, fmt.Errorf("OldRequiredApprovalCount is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, fmt.Errorf("OldRequiredApprovalCount requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldRequiredApprovalCount: %w", err)
-	}
-	return oldValue.RequiredApprovalCount, nil
-}
-
-// AddRequiredApprovalCount adds i to the "required_approval_count" field.
-func (m *DeploymentMutation) AddRequiredApprovalCount(i int) {
-	if m.addrequired_approval_count != nil {
-		*m.addrequired_approval_count += i
-	} else {
-		m.addrequired_approval_count = &i
-	}
-}
-
-// AddedRequiredApprovalCount returns the value that was added to the "required_approval_count" field in this mutation.
-func (m *DeploymentMutation) AddedRequiredApprovalCount() (r int, exists bool) {
-	v := m.addrequired_approval_count
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// ResetRequiredApprovalCount resets all changes to the "required_approval_count" field.
-func (m *DeploymentMutation) ResetRequiredApprovalCount() {
-	m.required_approval_count = nil
-	m.addrequired_approval_count = nil
-}
-
 // SetCreatedAt sets the "created_at" field.
 func (m *DeploymentMutation) SetCreatedAt(t time.Time) {
 	m.created_at = &t
@@ -2788,6 +2696,125 @@ func (m *DeploymentMutation) OldRepoID(ctx context.Context) (v int64, err error)
 // ResetRepoID resets all changes to the "repo_id" field.
 func (m *DeploymentMutation) ResetRepoID() {
 	m.repo = nil
+}
+
+// SetIsApprovalEnabled sets the "is_approval_enabled" field.
+func (m *DeploymentMutation) SetIsApprovalEnabled(b bool) {
+	m.is_approval_enabled = &b
+}
+
+// IsApprovalEnabled returns the value of the "is_approval_enabled" field in the mutation.
+func (m *DeploymentMutation) IsApprovalEnabled() (r bool, exists bool) {
+	v := m.is_approval_enabled
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsApprovalEnabled returns the old "is_approval_enabled" field's value of the Deployment entity.
+// If the Deployment object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DeploymentMutation) OldIsApprovalEnabled(ctx context.Context) (v *bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldIsApprovalEnabled is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldIsApprovalEnabled requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsApprovalEnabled: %w", err)
+	}
+	return oldValue.IsApprovalEnabled, nil
+}
+
+// ClearIsApprovalEnabled clears the value of the "is_approval_enabled" field.
+func (m *DeploymentMutation) ClearIsApprovalEnabled() {
+	m.is_approval_enabled = nil
+	m.clearedFields[deployment.FieldIsApprovalEnabled] = struct{}{}
+}
+
+// IsApprovalEnabledCleared returns if the "is_approval_enabled" field was cleared in this mutation.
+func (m *DeploymentMutation) IsApprovalEnabledCleared() bool {
+	_, ok := m.clearedFields[deployment.FieldIsApprovalEnabled]
+	return ok
+}
+
+// ResetIsApprovalEnabled resets all changes to the "is_approval_enabled" field.
+func (m *DeploymentMutation) ResetIsApprovalEnabled() {
+	m.is_approval_enabled = nil
+	delete(m.clearedFields, deployment.FieldIsApprovalEnabled)
+}
+
+// SetRequiredApprovalCount sets the "required_approval_count" field.
+func (m *DeploymentMutation) SetRequiredApprovalCount(i int) {
+	m.required_approval_count = &i
+	m.addrequired_approval_count = nil
+}
+
+// RequiredApprovalCount returns the value of the "required_approval_count" field in the mutation.
+func (m *DeploymentMutation) RequiredApprovalCount() (r int, exists bool) {
+	v := m.required_approval_count
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRequiredApprovalCount returns the old "required_approval_count" field's value of the Deployment entity.
+// If the Deployment object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DeploymentMutation) OldRequiredApprovalCount(ctx context.Context) (v *int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldRequiredApprovalCount is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldRequiredApprovalCount requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRequiredApprovalCount: %w", err)
+	}
+	return oldValue.RequiredApprovalCount, nil
+}
+
+// AddRequiredApprovalCount adds i to the "required_approval_count" field.
+func (m *DeploymentMutation) AddRequiredApprovalCount(i int) {
+	if m.addrequired_approval_count != nil {
+		*m.addrequired_approval_count += i
+	} else {
+		m.addrequired_approval_count = &i
+	}
+}
+
+// AddedRequiredApprovalCount returns the value that was added to the "required_approval_count" field in this mutation.
+func (m *DeploymentMutation) AddedRequiredApprovalCount() (r int, exists bool) {
+	v := m.addrequired_approval_count
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearRequiredApprovalCount clears the value of the "required_approval_count" field.
+func (m *DeploymentMutation) ClearRequiredApprovalCount() {
+	m.required_approval_count = nil
+	m.addrequired_approval_count = nil
+	m.clearedFields[deployment.FieldRequiredApprovalCount] = struct{}{}
+}
+
+// RequiredApprovalCountCleared returns if the "required_approval_count" field was cleared in this mutation.
+func (m *DeploymentMutation) RequiredApprovalCountCleared() bool {
+	_, ok := m.clearedFields[deployment.FieldRequiredApprovalCount]
+	return ok
+}
+
+// ResetRequiredApprovalCount resets all changes to the "required_approval_count" field.
+func (m *DeploymentMutation) ResetRequiredApprovalCount() {
+	m.required_approval_count = nil
+	m.addrequired_approval_count = nil
+	delete(m.clearedFields, deployment.FieldRequiredApprovalCount)
 }
 
 // ClearUser clears the "user" edge to the User entity.
@@ -3108,12 +3135,6 @@ func (m *DeploymentMutation) Fields() []string {
 	if m.is_rollback != nil {
 		fields = append(fields, deployment.FieldIsRollback)
 	}
-	if m.is_approval_enabled != nil {
-		fields = append(fields, deployment.FieldIsApprovalEnabled)
-	}
-	if m.required_approval_count != nil {
-		fields = append(fields, deployment.FieldRequiredApprovalCount)
-	}
 	if m.created_at != nil {
 		fields = append(fields, deployment.FieldCreatedAt)
 	}
@@ -3125,6 +3146,12 @@ func (m *DeploymentMutation) Fields() []string {
 	}
 	if m.repo != nil {
 		fields = append(fields, deployment.FieldRepoID)
+	}
+	if m.is_approval_enabled != nil {
+		fields = append(fields, deployment.FieldIsApprovalEnabled)
+	}
+	if m.required_approval_count != nil {
+		fields = append(fields, deployment.FieldRequiredApprovalCount)
 	}
 	return fields
 }
@@ -3154,10 +3181,6 @@ func (m *DeploymentMutation) Field(name string) (ent.Value, bool) {
 		return m.ProductionEnvironment()
 	case deployment.FieldIsRollback:
 		return m.IsRollback()
-	case deployment.FieldIsApprovalEnabled:
-		return m.IsApprovalEnabled()
-	case deployment.FieldRequiredApprovalCount:
-		return m.RequiredApprovalCount()
 	case deployment.FieldCreatedAt:
 		return m.CreatedAt()
 	case deployment.FieldUpdatedAt:
@@ -3166,6 +3189,10 @@ func (m *DeploymentMutation) Field(name string) (ent.Value, bool) {
 		return m.UserID()
 	case deployment.FieldRepoID:
 		return m.RepoID()
+	case deployment.FieldIsApprovalEnabled:
+		return m.IsApprovalEnabled()
+	case deployment.FieldRequiredApprovalCount:
+		return m.RequiredApprovalCount()
 	}
 	return nil, false
 }
@@ -3195,10 +3222,6 @@ func (m *DeploymentMutation) OldField(ctx context.Context, name string) (ent.Val
 		return m.OldProductionEnvironment(ctx)
 	case deployment.FieldIsRollback:
 		return m.OldIsRollback(ctx)
-	case deployment.FieldIsApprovalEnabled:
-		return m.OldIsApprovalEnabled(ctx)
-	case deployment.FieldRequiredApprovalCount:
-		return m.OldRequiredApprovalCount(ctx)
 	case deployment.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case deployment.FieldUpdatedAt:
@@ -3207,6 +3230,10 @@ func (m *DeploymentMutation) OldField(ctx context.Context, name string) (ent.Val
 		return m.OldUserID(ctx)
 	case deployment.FieldRepoID:
 		return m.OldRepoID(ctx)
+	case deployment.FieldIsApprovalEnabled:
+		return m.OldIsApprovalEnabled(ctx)
+	case deployment.FieldRequiredApprovalCount:
+		return m.OldRequiredApprovalCount(ctx)
 	}
 	return nil, fmt.Errorf("unknown Deployment field %s", name)
 }
@@ -3286,20 +3313,6 @@ func (m *DeploymentMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetIsRollback(v)
 		return nil
-	case deployment.FieldIsApprovalEnabled:
-		v, ok := value.(bool)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetIsApprovalEnabled(v)
-		return nil
-	case deployment.FieldRequiredApprovalCount:
-		v, ok := value.(int)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetRequiredApprovalCount(v)
-		return nil
 	case deployment.FieldCreatedAt:
 		v, ok := value.(time.Time)
 		if !ok {
@@ -3327,6 +3340,20 @@ func (m *DeploymentMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetRepoID(v)
+		return nil
+	case deployment.FieldIsApprovalEnabled:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsApprovalEnabled(v)
+		return nil
+	case deployment.FieldRequiredApprovalCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRequiredApprovalCount(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Deployment field %s", name)
@@ -3406,6 +3433,12 @@ func (m *DeploymentMutation) ClearedFields() []string {
 	if m.FieldCleared(deployment.FieldHTMLURL) {
 		fields = append(fields, deployment.FieldHTMLURL)
 	}
+	if m.FieldCleared(deployment.FieldIsApprovalEnabled) {
+		fields = append(fields, deployment.FieldIsApprovalEnabled)
+	}
+	if m.FieldCleared(deployment.FieldRequiredApprovalCount) {
+		fields = append(fields, deployment.FieldRequiredApprovalCount)
+	}
 	return fields
 }
 
@@ -3428,6 +3461,12 @@ func (m *DeploymentMutation) ClearField(name string) error {
 		return nil
 	case deployment.FieldHTMLURL:
 		m.ClearHTMLURL()
+		return nil
+	case deployment.FieldIsApprovalEnabled:
+		m.ClearIsApprovalEnabled()
+		return nil
+	case deployment.FieldRequiredApprovalCount:
+		m.ClearRequiredApprovalCount()
 		return nil
 	}
 	return fmt.Errorf("unknown Deployment nullable field %s", name)
@@ -3467,12 +3506,6 @@ func (m *DeploymentMutation) ResetField(name string) error {
 	case deployment.FieldIsRollback:
 		m.ResetIsRollback()
 		return nil
-	case deployment.FieldIsApprovalEnabled:
-		m.ResetIsApprovalEnabled()
-		return nil
-	case deployment.FieldRequiredApprovalCount:
-		m.ResetRequiredApprovalCount()
-		return nil
 	case deployment.FieldCreatedAt:
 		m.ResetCreatedAt()
 		return nil
@@ -3484,6 +3517,12 @@ func (m *DeploymentMutation) ResetField(name string) error {
 		return nil
 	case deployment.FieldRepoID:
 		m.ResetRepoID()
+		return nil
+	case deployment.FieldIsApprovalEnabled:
+		m.ResetIsApprovalEnabled()
+		return nil
+	case deployment.FieldRequiredApprovalCount:
+		m.ResetRequiredApprovalCount()
 		return nil
 	}
 	return fmt.Errorf("unknown Deployment field %s", name)
