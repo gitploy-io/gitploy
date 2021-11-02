@@ -28,8 +28,6 @@ export interface DeploymentData {
     status: string
     uid: number
     is_rollback: boolean
-    is_approval_enabled: boolean
-    required_approval_count: number
     auto_deploy: boolean
     created_at: string
     updated_at: string
@@ -77,8 +75,6 @@ export const mapDataToDeployment = (data: DeploymentData): Deployment => {
         status: mapDeploymentStatusEnum(data.status),
         uid: data.uid,
         isRollback: data.is_rollback,
-        isApprovalEanbled: data.is_approval_enabled,
-        requiredApprovalCount: data.required_approval_count,
         createdAt: new Date(data.created_at),
         updatedAt: new Date(data.updated_at),
         deployer,

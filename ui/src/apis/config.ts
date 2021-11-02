@@ -15,23 +15,20 @@ interface EnvData {
         enabled: boolean
         required_count: number
     }
+    review?: {
+        enabled: boolean
+        reviewers: string[]
+    }
 }
 
 const mapDataToConfig = (data: ConfigData): Config => {
     const envs: Env[] = data.envs.map((e: EnvData) => {
-        let approval: EnvApproval | undefined
-
-        if (e.approval) {
-            approval = {
-                enabled: e.approval.enabled,
-                required_count: e.approval.required_count,
-            }
-        }
+        const { review } = e
 
         return {
             name: e.name,
             requiredContexts: e.required_contexts,
-            approval
+            review,
         }
     })
 

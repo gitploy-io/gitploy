@@ -34,6 +34,11 @@ import {
     setApprovalDeclined 
 } from "./approval"
 import {
+    listReviews,
+    approveReview,
+    rejectReview,
+} from "./review"
+import {
     listLocks,
     lock,
     unlock,
@@ -80,6 +85,9 @@ export {
     getMyApproval,
     setApprovalApproved,
     setApprovalDeclined,
+    listReviews,
+    approveReview,
+    rejectReview,
     listLocks,
     lock,
     unlock,
