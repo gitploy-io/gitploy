@@ -2,7 +2,7 @@ import { StatusCodes } from 'http-status-codes'
 
 import { instance, headers } from './setting'
 import { _fetch } from "./_base"
-import { Config, Env, EnvApproval, HttpNotFoundError } from '../models'
+import { Config, Env, HttpNotFoundError } from '../models'
 
 interface ConfigData {
     envs: EnvData[]

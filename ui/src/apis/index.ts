@@ -35,6 +35,7 @@ import {
 } from "./approval"
 import {
     listReviews,
+    getUserReview,
     approveReview,
     rejectReview,
 } from "./review"
@@ -86,6 +87,7 @@ export {
     setApprovalApproved,
     setApprovalDeclined,
     listReviews,
+    getUserReview,
     approveReview,
     rejectReview,
     listLocks,

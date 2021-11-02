@@ -4,7 +4,7 @@ import { useParams } from "react-router-dom";
 import { PageHeader, Result, Button } from "antd";
 
 import { useAppSelector, useAppDispatch } from "../redux/hooks"
-import { User,DeploymentType, Branch, Commit, Tag, RequestStatus, Env } from "../models";
+import { DeploymentType, Branch, Commit, Tag, RequestStatus, Env } from "../models";
 import { 
     fetchConfig, 
     repoDeploySlice, 
@@ -36,7 +36,6 @@ export default function RepoDeploy(): JSX.Element {
     const { 
         display,
         config, 
-        env,
         envs, 
         currentDeployment,
         branches, 
@@ -45,7 +44,6 @@ export default function RepoDeploy(): JSX.Element {
         commitStatuses,
         tags, 
         tagStatuses,
-        candidates,
         deploying } = useAppSelector(state => state.repoDeploy, shallowEqual)
     const dispatch = useAppDispatch()
 
@@ -100,18 +98,6 @@ export default function RepoDeploy(): JSX.Element {
         dispatch(addTagManually(option.value))
     }
 
-    const onSearchCandidates = (login: string) => {
-        dispatch(searchCandidates(login))
-    }
-
-    const onSelectCandidate = (candidate: User) => {
-        dispatch(actions.addApprover(candidate))
-    }
-
-    const onDeselectCandidate = (candidate: User) => {
-        dispatch(actions.deleteApprover(candidate))
-    }
-
     const onClickDeploy = () => {
         const f = async () => {
             await dispatch(deploy())
@@ -164,11 +150,6 @@ export default function RepoDeploy(): JSX.Element {
                     tagStatuses={tagStatuses}
                     deploying={deploying === RequestStatus.Pending}
                     onClickDeploy={onClickDeploy} 
-                    approvalEnabled={(env?.approval?.enabled)? true : false}
-                    candidates={candidates}
-                    onSearchCandidates={onSearchCandidates}
-                    onSelectCandidate={onSelectCandidate}
-                    onDeselectCandidate={onDeselectCandidate}
                 />
             </div>
         </div>

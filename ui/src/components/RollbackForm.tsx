@@ -1,8 +1,7 @@
 import { Form, Select, Button, Avatar } from 'antd'
 import moment from 'moment'
 
-import { User, Deployment, Env } from "../models"
-import ApproversSelect from "./ApproversSelect"
+import { Deployment, Env } from "../models"
 import DeploymentRefCode from './DeploymentRefCode'
 
 interface RollbackFormProps {
@@ -12,11 +11,6 @@ interface RollbackFormProps {
     onSelectDeployment(deployment: Deployment): void
     onClickRollback(): void
     deploying: boolean
-    approvalEnabled: boolean
-    candidates: User[]
-    onSelectCandidate(candidate: User): void
-    onDeselectCandidate(candidate: User): void
-    onSearchCandidates(login: string): void
 }
 
 export default function RollbackForm(props: RollbackFormProps): JSX.Element {
@@ -93,17 +87,6 @@ export default function RollbackForm(props: RollbackFormProps): JSX.Element {
                         })}
                 </Select>
             </Form.Item>
-            <Form.Item
-                {...layout}
-                style={(props.approvalEnabled)? {}: {display: "none"}}
-                label="Approvers"
-                name="approvers">
-                    <ApproversSelect 
-                        candidates={props.candidates}
-                        onSearchCandidates={props.onSearchCandidates}
-                        onSelectCandidate={props.onSelectCandidate}
-                        onDeselectCandidate={props.onDeselectCandidate} />
-            </Form.Item> 
             <Form.Item {...submitLayout}>
                 <Button 
                     loading={props.deploying}

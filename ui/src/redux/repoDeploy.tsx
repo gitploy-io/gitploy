@@ -29,7 +29,6 @@ import {
     listTags, 
     getTag, 
     createDeployment,
-    createApproval,
     getMe,
 } from '../apis'
 
@@ -55,14 +54,6 @@ interface RepoDeployState {
     tag?: Tag 
     tagStatuses: Status[]
     tags: Tag[]
-    /**
-     * Approval selecter.
-     * approvalEnabled - The approvers field is displayed when it is enabled.
-     * approvers - selected approvers from candidates.
-    */
-    approvers: User[]
-    candidates: User[]
-    user?: User
     deploying: RequestStatus
     deployId: string
 }
@@ -78,8 +69,6 @@ const initialState: RepoDeployState = {
     commits: [],
     tagStatuses: [],
     tags: [],
-    approvers: [],
-    candidates: [],
     deploying: RequestStatus.Idle,
     deployId: "",
 }
@@ -270,7 +259,7 @@ export const fetchUser = createAsyncThunk<User, void, { state: {repoDeploy: Repo
 export const deploy = createAsyncThunk<void, void, { state: {repoDeploy: RepoDeployState}}> (
     "repoDeploy/deploy",
     async (_ , { getState, rejectWithValue, requestId }) => {
-        const { namespace, name, env, type, branch, commit, tag, approvers, deploying, deployId } = getState().repoDeploy
+        const { namespace, name, env, type, branch, commit, tag, deploying, deployId } = getState().repoDeploy
         if (!env) {
             throw new Error("The env is undefined.")
         }
@@ -291,20 +280,16 @@ export const deploy = createAsyncThunk<void, void, { state: {repoDeploy: RepoDep
                 throw new Error("The type should be one of them: commit, branch, and tag.")
             }
 
-            if (!env.approval?.enabled) {
+            if (!env.review?.enabled) {
                 const msg = <span>
-                    It starts to deploy. <a href={`/${namespace}/${name}/deployments/${deployment.number}`}>#{deployment.number}</a>
+                    Starts to deploy. <a href={`/${namespace}/${name}/deployments/${deployment.number}`}>#{deployment.number}</a>
                 </span>
                 message.success(msg, 3)
                 return
             }
 
-            approvers.forEach(async (approver) => {
-                await createApproval(namespace, name, deployment.number, approver.id)
-            })
-
             const msg = <span>
-                It is waiting approvals. <a href={`/${namespace}/${name}/deployments/${deployment.number}`}>#{deployment.number}</a>
+                Request a review to reviewers. <a href={`/${namespace}/${name}/deployments/${deployment.number}`}>#{deployment.number}</a>
             </span>
             message.success(msg, 3)
         } catch(e) {
@@ -350,23 +335,6 @@ export const repoDeploySlice = createSlice({
         setTag: (state, action: PayloadAction<Tag>) => {
             state.tag = action.payload
         },
-        addApprover: (state, action: PayloadAction<User>) => {
-            const candidate = action.payload
-
-            // Check already exist or not.
-            const approver = state.approvers.find(approver => approver.id === candidate.id)
-            if (approver !== undefined) {
-                return
-            }
-
-            state.approvers.push(candidate)
-        },
-        deleteApprover: (state, action: PayloadAction<User>) => {
-            const candidate = action.payload
-
-            const approvers = state.approvers.filter(approver => approver.id !== candidate.id)
-            state.approvers = approvers
-        },
     },
     extraReducers: builder => {
         builder
@@ -409,15 +377,6 @@ export const repoDeploySlice = createSlice({
             })
             .addCase(addTagManually.fulfilled, (state, action) => {
                 state.tags.unshift(action.payload)
-            })
-            .addCase(searchCandidates.pending, (state) => {
-                state.candidates = []
-            })
-            .addCase(searchCandidates.fulfilled, (state, action) => {
-                state.candidates = action.payload.filter(candidate => (candidate.id !== state.user?.id))
-            })
-            .addCase(fetchUser.fulfilled, (state, action) => {
-                state.user = action.payload
             })
             .addCase(deploy.pending, (state, action) => {
                 if (state.deploying === RequestStatus.Idle) {

@@ -1,11 +1,10 @@
 import { useState } from "react"
 import { Form, Select, Radio, Button, Typography, Avatar, Tag as AntdTag } from "antd"
 
-import { Branch, Commit, Tag, Deployment, DeploymentType, Status, User, Env } from "../models"
+import { Branch, Commit, Tag, Deployment, DeploymentType, Status, Env } from "../models"
 
 import CreatableSelect, {Option as Op} from "./CreatableSelect"
 import StatusStateIcon from "./StatusStateIcon"
-import ApproversSelect from "./ApproversSelect"
 import moment from "moment"
 
 export type Option = Op
@@ -31,12 +30,6 @@ interface DeployFormProps {
     tagStatuses: Status[]
     deploying: boolean
     onClickDeploy(): void
-    // properties for approvers.
-    approvalEnabled: boolean
-    candidates: User[]
-    onSelectCandidate(candidate: User): void
-    onDeselectCandidate(candidate: User): void
-    onSearchCandidates(login: string): void
 }
 
 export default function DeployForm(props: DeployFormProps): JSX.Element {
@@ -273,17 +266,6 @@ export default function DeployForm(props: DeployFormProps): JSX.Element {
                     &nbsp; <StatusStateIcon statuses={props.tagStatuses} /> 
                 </span>
             </Form.Item>
-            <Form.Item
-                {...layout}
-                style={(props.approvalEnabled)? {}: styleHide}
-                label="Approvers"
-                name="approvers">
-                    <ApproversSelect 
-                        candidates={props.candidates}
-                        onSearchCandidates={props.onSearchCandidates}
-                        onSelectCandidate={props.onSelectCandidate}
-                        onDeselectCandidate={props.onDeselectCandidate} />
-            </Form.Item> 
             <Form.Item {...submitLayout}>
                 <Button 
                     loading={props.deploying}

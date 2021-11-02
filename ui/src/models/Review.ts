@@ -6,8 +6,8 @@ export interface Review {
     status: ReviewStatusEnum
     createdAt: Date
     updatedAt: Date
-    user: User | null
-    deployment: Deployment | null
+    user?: User 
+    deployment?: Deployment 
 }
 
 export enum ReviewStatusEnum {

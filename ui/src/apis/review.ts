@@ -25,8 +25,8 @@ export interface ReviewData {
 
 // eslint-disable-next-line
 export const mapDataToReview = (data: ReviewData): Review => {
-    let user: User | null = null
-    let deployment: Deployment | null = null
+    let user: User | undefined 
+    let deployment: Deployment | undefined 
 
     if ("user" in data.edges) {
         user = mapDataToUser(data.edges.user)
@@ -52,7 +52,7 @@ const mapDataToApprovalStatus = (status: string): ReviewStatusEnum => {
             return ReviewStatusEnum.Pending
         case "approved":
             return ReviewStatusEnum.Approved
-        case "declined":
+        case "rejected":
             return ReviewStatusEnum.Rejected
         default:
             return ReviewStatusEnum.Pending

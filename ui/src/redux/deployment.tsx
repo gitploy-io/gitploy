@@ -2,10 +2,9 @@ import { message } from "antd"
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit'
 
 import { 
-    User,
     Deployment, 
     Commit,
-    Approval, 
+    Review,
     Event,
     RequestStatus, 
     HttpNotFoundError, 
@@ -15,14 +14,11 @@ import {
 import { 
     getDeployment, 
     updateDeploymentStatusCreated, 
-    listPerms,
-    listApprovals, 
-    createApproval as _createApproval,
-    deleteApproval as _deleteApproval,
-    getMyApproval, 
-    setApprovalApproved, 
-    setApprovalDeclined, 
-    listDeploymentChanges
+    listReviews,
+    getUserReview,
+    approveReview,
+    rejectReview,
+    listDeploymentChanges,
 } from "../apis"
 
 interface DeploymentState {
@@ -34,12 +30,8 @@ interface DeploymentState {
     changes: Commit[]
     deploying: RequestStatus
     deployId: string
-
-    // approvals is requested approvals.
-    approvals: Approval[]
-    candidates: User[]
-    // myApproval exist if user have requested.
-    myApproval?: Approval
+    reviews: Review[]
+    userReview?: Review
 }
 
 const initialState: DeploymentState = {
@@ -50,8 +42,7 @@ const initialState: DeploymentState = {
     changes: [],
     deploying: RequestStatus.Idle,
     deployId: "",
-    approvals: [],
-    candidates: [],
+    reviews: [],
 }
 
 export const fetchDeployment = createAsyncThunk<Deployment, void, { state: {deployment: DeploymentState} }>(
@@ -112,45 +103,29 @@ export const deployToSCM = createAsyncThunk<Deployment, void, { state: {deployme
     },
 )
 
-export const fetchApprovals = createAsyncThunk<Approval[], void, { state: {deployment: DeploymentState} }>(
-    'deployment/fetchApprovals', 
+export const fetchReviews = createAsyncThunk<Review[], void, { state: {deployment: DeploymentState} }>(
+    'deployment/fetchReviews', 
     async (_, { getState, rejectWithValue } ) => {
         const { namespace, name, number } = getState().deployment
 
         try {
-            const approvals = await listApprovals(namespace, name, number)
-            return approvals
+            const reviews = await listReviews(namespace, name, number)
+            return reviews
         } catch(e) { 
             return rejectWithValue(e)
         }
     },
 )
 
-export const searchCandidates = createAsyncThunk<User[], string, { state: {deployment: DeploymentState }}>(
-    "deployment/fetchCandidates",
-    async (q, { getState, rejectWithValue }) => {
-        const { namespace, name } = getState().deployment
-
-        try {
-            const perms = await listPerms(namespace, name, q)
-            const candidates = perms.map((p) => {
-                return p.user
-            })
-            return candidates
-        } catch(e) {
-            return rejectWithValue(e)
-        }
-    }
-)
-
-export const createApproval = createAsyncThunk<Approval, User, { state: {deployment: DeploymentState }}>(
-    "deployment/createApprover",
-    async (candidate, { getState, rejectWithValue }) => {
+export const approve = createAsyncThunk<Review, void, { state: {deployment: DeploymentState }}>(
+    "deployment/approve",
+    async (_, { getState, rejectWithValue }) => {
         const { namespace, name, number } = getState().deployment
 
         try {
-            const approval = await _createApproval(namespace, name, number, candidate.id)
-            return approval
+            const review = await approveReview(namespace, name, number)
+            message.info("Approve to deploy.")
+            return review
         } catch(e) {
             return rejectWithValue(e)
         }
@@ -158,28 +133,29 @@ export const createApproval = createAsyncThunk<Approval, User, { state: {deploym
 )
 
 
-export const deleteApproval = createAsyncThunk<Approval, Approval, { state: {deployment: DeploymentState }}>(
-    "deployment/deleteApprover",
-    async (approval, { getState, rejectWithValue }) => {
-        const { namespace, name } = getState().deployment
+export const reject = createAsyncThunk<Review, void, { state: {deployment: DeploymentState }}>(
+    "deployment/reject",
+    async (_, { getState, rejectWithValue }) => {
+        const { namespace, name, number } = getState().deployment
 
         try {
-            await _deleteApproval(namespace, name, approval.id)
-            return approval
+            const review = await rejectReview(namespace, name, number)
+            message.info("Reject to deploy.")
+            return review
         } catch(e) {
             return rejectWithValue(e)
         }
     }
 )
 
-export const fetchMyApproval = createAsyncThunk<Approval, void, { state: {deployment: DeploymentState} }>(
-    'deployment/fetchMyApproval', 
+export const fetchUserReview = createAsyncThunk<Review, void, { state: {deployment: DeploymentState} }>(
+    "deployment/fetchUserReview", 
     async (_, { getState, rejectWithValue } ) => {
         const { namespace, name, number } = getState().deployment
 
         try {
-            const approval = await getMyApproval(namespace, name, number)
-            return approval
+            const review = await getUserReview(namespace, name, number)
+            return review
         } catch(e) { 
             if (e instanceof HttpNotFoundError ) {
                 return rejectWithValue(e)
@@ -190,33 +166,6 @@ export const fetchMyApproval = createAsyncThunk<Approval, void, { state: {deploy
     },
 )
 
-export const approve = createAsyncThunk<Approval, void, { state: {deployment: DeploymentState} }>(
-    'deployment/approve', 
-    async (_, { getState, rejectWithValue } ) => {
-        const { namespace, name, number } = getState().deployment
-
-        try {
-            const approval = await setApprovalApproved(namespace, name, number)
-            return approval
-        } catch(e) { 
-            return rejectWithValue(e)
-        }
-    },
-)
-
-export const decline = createAsyncThunk<Approval, void, { state: {deployment: DeploymentState} }>(
-    'deployment/decline', 
-    async (_, { getState, rejectWithValue } ) => {
-        const { namespace, name, number } = getState().deployment
-
-        try {
-            const approval = await setApprovalDeclined(namespace, name, number)
-            return approval
-        } catch(e) { 
-            return rejectWithValue(e)
-        }
-    },
-)
 
 export const deploymentSlice = createSlice({
     name: "deployment",
@@ -261,44 +210,23 @@ export const deploymentSlice = createSlice({
             .addCase(deployToSCM.rejected, (state) => {
                 state.deploying = RequestStatus.Idle
             })
-            .addCase(fetchApprovals.fulfilled, (state, action) => {
-                state.approvals = action.payload
-            })
-            .addCase(searchCandidates.pending, (state) => {
-                state.candidates = []
-            })
-            .addCase(searchCandidates.fulfilled, (state, action) => {
-                state.candidates = action.payload.filter(candidate => candidate.id !== state.deployment?.deployer?.id)
-            })
-            .addCase(createApproval.fulfilled, (state, action) => {
-                state.approvals.push(action.payload)
-            })
-            .addCase(deleteApproval.fulfilled, (state, action) => {
-                const approval = action.payload
-                state.approvals = state.approvals.filter(a => a.id !== approval.id)
-            })
-            .addCase(fetchMyApproval.fulfilled, (state, action) => {
-                state.myApproval = action.payload
+            .addCase(fetchReviews.fulfilled, (state, action) => {
+                state.reviews = action.payload
             })
             .addCase(approve.fulfilled, (state, action) => {
-                const myApproval = action.payload
-                state.myApproval = myApproval
-                state.approvals = state.approvals.map((approval) => {
-                    if (approval.id === myApproval.id) {
-                        return myApproval
-                    } 
-                    return approval
+                state.userReview = action.payload
+                state.reviews = state.reviews.map((review) => {
+                    return (review.id === action.payload.id)? action.payload : review
                 })
             })
-            .addCase(decline.fulfilled, (state, action) => {
-                const myApproval = action.payload
-                state.myApproval = myApproval
-                state.approvals = state.approvals.map((approval) => {
-                    if (approval.id === myApproval.id) {
-                        return myApproval
-                    } 
-                    return approval
+            .addCase(reject.fulfilled, (state, action) => {
+                state.userReview = action.payload
+                state.reviews = state.reviews.map((review) => {
+                    return (review.id === action.payload.id)? action.payload : review
                 })
+            })
+            .addCase(fetchUserReview.fulfilled, (state, action) => {
+                state.userReview = action.payload
             })
     }
 })

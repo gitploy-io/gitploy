@@ -8,30 +8,26 @@ import {
     deploymentSlice as slice, 
     fetchDeployment, 
     fetchDeploymentChanges,
-    fetchApprovals, 
-    fetchMyApproval,
     deployToSCM,
-    searchCandidates,
-    createApproval,
-    deleteApproval,
+    fetchReviews,
     approve,
-    decline,
+    reject,
+    fetchUserReview,
 } from "../redux/deployment"
 import { 
-    User, 
     Deployment, 
     DeploymentStatusEnum, 
-    Approval,
-    ApprovalStatus,
+    Review,
+    ReviewStatusEnum,
     RequestStatus
 } from "../models"
 import { subscribeEvents } from "../apis"
 
 import Main from "./Main"
-import ApproversSelector from "../components/ApproversSelector"
-import ApprovalDropdown from "../components/ApprovalDropdown"
+import ReviewDropdown from "../components/ReviewDropdown"
 import Spin from "../components/Spin"
 import DeployConfirm from "../components/DeployConfirm"
+import ReviewList from "../components/ReviewList"
 
 interface Params {
     namespace: string
@@ -46,9 +42,8 @@ export default function DeploymentView(): JSX.Element {
         deployment, 
         changes,
         deploying,
-        approvals, 
-        candidates, 
-        myApproval 
+        reviews,
+        userReview,
     } = useAppSelector(state => state.deployment, shallowEqual )
     const dispatch = useAppDispatch()
 
@@ -56,11 +51,10 @@ export default function DeploymentView(): JSX.Element {
         const f = async () => {
             await dispatch(slice.actions.init({namespace, name, number: parseInt(number, 10)}))
             await dispatch(fetchDeployment())
-            await dispatch(fetchApprovals())
-            await dispatch(fetchMyApproval())
+            await dispatch(fetchReviews())
+            await dispatch(fetchUserReview())
             await dispatch(slice.actions.setDisplay(true))
             await dispatch(fetchDeploymentChanges())
-            await dispatch(searchCandidates(""))
         }
         f()
 
@@ -74,12 +68,7 @@ export default function DeploymentView(): JSX.Element {
         // eslint-disable-next-line 
     }, [dispatch])
 
-    const approvers: User[] = []
-    approvals.forEach(approval => {
-        if (approval.user !== null) {
-            approvers.push(approval.user)
-        }
-    })
+    const hasReview = reviews.length > 0
 
     const onClickDeploy = () => {
         dispatch(deployToSCM())
@@ -89,32 +78,12 @@ export default function DeploymentView(): JSX.Element {
         dispatch(approve())
     }
 
-    const onClickDecline = () => {
-        dispatch(decline())
+    const onClickReject = () => {
+        dispatch(reject())
     }
 
     const onBack = () => {
         window.location.href = `/${namespace}/${name}`
-    }
-
-    const onSearchCandidates = (login: string) => {
-        dispatch(searchCandidates(login))
-    }
-
-    const onSelectCandidate = (id: string) => {
-        const approval = approvals.find(a => a.user?.id === parseInt(id)) 
-
-        if (approval !== undefined) {
-            dispatch(deleteApproval(approval))
-            return
-        }
-
-        const candidate = candidates.find(c => c.id === parseInt(id))
-        if (candidate === undefined) {
-            throw new Error("The candidate is not found")
-        }
-
-        dispatch(createApproval(candidate))
     }
 
     if (!display) {
@@ -139,11 +108,11 @@ export default function DeploymentView(): JSX.Element {
     }
 
     // buttons
-    const approvalDropdown = (myApproval)?
-        <ApprovalDropdown 
+    const approvalDropdown = (userReview)?
+        <ReviewDropdown 
             key="approval" 
             onClickApprove={onClickApprove}
-            onClickDecline={onClickDecline}/>:
+            onClickReject={onClickReject}/>:
         null
 
     return (
@@ -173,20 +142,16 @@ export default function DeploymentView(): JSX.Element {
                 <Row>
                     <Col xs={{span: 24}} md={{span: 0}}>
                         {/* Mobile view */}
-                        {(deployment.isApprovalEanbled) ? 
-                            <ApproversSelector 
-                                approvers={approvers}
-                                candidates={candidates}
-                                approvals={approvals}
-                                onSearchCandidates={onSearchCandidates}
-                                onSelectCandidate={onSelectCandidate}
+                        {(hasReview) ? 
+                            <ReviewList 
+                                reviews={reviews}
                             /> :
                             null}
                         <Divider />
                     </Col>
-                    <Col xs={{span: 24}} md={(deployment.isApprovalEanbled)? {span: 18} : {span: 21}}>
+                    <Col xs={{span: 24}} md={(hasReview)? {span: 18} : {span: 21}}>
                         <DeployConfirm 
-                            isDeployable={isDeployable(deployment, approvals)}
+                            isDeployable={isDeployable(deployment, reviews)}
                             deploying={RequestStatus.Pending === deploying}
                             deployment={deployment}
                             changes={changes}
@@ -195,13 +160,9 @@ export default function DeploymentView(): JSX.Element {
                     </Col>
                     <Col xs={{span: 0}} md={{span: 6}}>
                         {/* Desktop view */}
-                        {(deployment.isApprovalEanbled) ? 
-                            <ApproversSelector 
-                                approvers={approvers}
-                                candidates={candidates}
-                                approvals={approvals}
-                                onSearchCandidates={onSearchCandidates}
-                                onSelectCandidate={onSelectCandidate}
+                        {(hasReview) ? 
+                            <ReviewList 
+                                reviews={reviews}
                             /> :
                             null}
                     </Col>
@@ -211,18 +172,22 @@ export default function DeploymentView(): JSX.Element {
     )
 }
 
-function isDeployable(deployment: Deployment, approvals: Approval[]): boolean {
+function isDeployable(deployment: Deployment, reviews: Review[]): boolean {
     if (deployment.status !== DeploymentStatusEnum.Waiting) {
         return false
     }
 
-    // requiredApprovalCount have to be equal or greater than approved.
-    let approved = 0
-    approvals.forEach((approval) => {
-        if (approval.status === ApprovalStatus.Approved) {
-            approved++
+    for (let i = 0; i < reviews.length; i++) {
+        if (reviews[i].status === ReviewStatusEnum.Rejected) {
+            return false
         }
-    })
+    }
 
-    return approved >= deployment.requiredApprovalCount
+    for (let i = 0; i < reviews.length; i++) {
+        if (reviews[i].status === ReviewStatusEnum.Approved) {
+            return true
+        }
+    }
+
+    return false
 }

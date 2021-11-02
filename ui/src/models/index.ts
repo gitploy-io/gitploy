@@ -5,7 +5,7 @@ import Deployment, {
     DeploymentType,
     DeploymentStatus,
 } from "./Deployment"
-import Config, { Env, EnvApproval } from "./Config"
+import Config, { Env } from "./Config"
 import Commit, { Author, Status, StatusState } from "./Commit"
 import Branch from "./Branch"
 import Tag from "./Tag"
@@ -33,7 +33,6 @@ export type {
     DeploymentStatus,
     Config,
     Env,
-    EnvApproval,
     Commit,
     Author,
     Status,

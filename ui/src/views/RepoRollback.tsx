@@ -13,7 +13,7 @@ import {
     rollback,
 } from "../redux/repoRollback"
 
-import { User, Deployment, RequestStatus, Env } from '../models'
+import { Deployment, RequestStatus, Env } from '../models'
 import RollbackForm from "../components/RollbackForm";
 
 const { actions } = repoRollbackSlice
@@ -28,9 +28,7 @@ export default function RepoHome(): JSX.Element {
     const {
         display,
         config,
-        env,
         envs,
-        candidates,
         deployments, 
         deploying } = useAppSelector(state => state.repoRollback, shallowEqual)
     const dispatch = useAppDispatch()
@@ -54,18 +52,6 @@ export default function RepoHome(): JSX.Element {
 
     const onSelectDeployment = (deployment: Deployment) => {
         dispatch(actions.setDeployment(deployment))
-    }
-
-    const onSearchCandidates = (login: string) => {
-        dispatch(searchCandidates(login))
-    }
-
-    const onSelectCandidate = (candidate: User) => {
-        dispatch(actions.addApprover(candidate))
-    }
-
-    const onDeselectCandidate = (candidate: User) => {
-        dispatch(actions.deleteApprover(candidate))
     }
 
     const onClickRollback = () => {
@@ -108,11 +94,7 @@ export default function RepoHome(): JSX.Element {
                     onSelectDeployment={onSelectDeployment}
                     onClickRollback={onClickRollback}
                     deploying={deploying === RequestStatus.Pending} 
-                    approvalEnabled={(env?.approval?.enabled)? true : false}
-                    candidates={candidates}
-                    onSearchCandidates={onSearchCandidates}
-                    onSelectCandidate={onSelectCandidate}
-                    onDeselectCandidate={onDeselectCandidate} />
+                />
             </div>
         </div>
     )

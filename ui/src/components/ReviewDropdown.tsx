@@ -1,22 +1,23 @@
 import { Dropdown, Menu, Button } from "antd"
 
-interface ApprovalDropdownProps {
+interface ReviewDropdownProps {
     onClickApprove(): void
-    onClickDecline(): void
+    onClickReject(): void
 }
 
-export default function ApprovalDropdown(props: ApprovalDropdownProps): JSX.Element {
+export default function ReviewDropdown(props: ReviewDropdownProps): JSX.Element {
     return (
-        <Dropdown overlay={<Menu>
+        <Dropdown overlay={
+            <Menu>
                 <Menu.Item key="0">
                     <Button type="text" onClick={props.onClickApprove}>Approve</Button>
                 </Menu.Item>
                 <Menu.Item key="1">
-                    <Button type="text" onClick={props.onClickDecline}>Decline</Button>
+                    <Button type="text" onClick={props.onClickReject}>Reject</Button>
                 </Menu.Item>
             </Menu>
         }>
-            <Button >Approval</Button>
+            <Button >Review</Button>
         </Dropdown>
     )
 
