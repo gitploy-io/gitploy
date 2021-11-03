@@ -120,6 +120,26 @@ func (s *Search) SearchDeployments(c *gin.Context) {
 	gb.Response(c, http.StatusOK, ds)
 }
 
+func (s *Search) SearchAssignedReviews(c *gin.Context) {
+	ctx := c.Request.Context()
+
+	var (
+		rvs []*ent.Review
+		err error
+	)
+
+	v, _ := c.Get(gb.KeyUser)
+	u := v.(*ent.User)
+
+	if rvs, err = s.i.SearchReviews(ctx, u); err != nil {
+		s.log.Check(gb.GetZapLogLevel(err), "Failed to search reviews.").Write(zap.Error(err))
+		gb.ResponseWithError(c, err)
+		return
+	}
+
+	gb.Response(c, http.StatusOK, rvs)
+}
+
 func (s *Search) SearchApprovals(c *gin.Context) {
 	ctx := c.Request.Context()
 

@@ -5,9 +5,31 @@ import (
 	"fmt"
 
 	"github.com/gitploy-io/gitploy/ent"
+	"github.com/gitploy-io/gitploy/ent/approval"
+	"github.com/gitploy-io/gitploy/ent/deployment"
 	"github.com/gitploy-io/gitploy/ent/review"
 	"github.com/gitploy-io/gitploy/pkg/e"
 )
+
+func (s *Store) SearchReviews(ctx context.Context, u *ent.User) ([]*ent.Review, error) {
+	return s.c.Review.
+		Query().
+		Where(
+			review.And(
+				review.UserID(u.ID),
+				review.HasDeploymentWith(deployment.StatusEQ(deployment.StatusWaiting)),
+				review.StatusEQ(review.StatusPending),
+			),
+		).
+		WithUser().
+		WithDeployment(func(dq *ent.DeploymentQuery) {
+			dq.
+				WithRepo().
+				WithUser()
+		}).
+		Order(ent.Desc(approval.FieldCreatedAt)).
+		All(ctx)
+}
 
 func (s *Store) ListReviews(ctx context.Context, d *ent.Deployment) ([]*ent.Review, error) {
 	rvs, err := s.c.Review.

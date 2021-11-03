@@ -12,6 +12,7 @@ import (
 type (
 	Interactor interface {
 		SearchDeployments(ctx context.Context, u *ent.User, s []deployment.Status, owned bool, from time.Time, to time.Time, page, perPage int) ([]*ent.Deployment, error)
+		SearchReviews(ctx context.Context, u *ent.User) ([]*ent.Review, error)
 		SearchApprovals(ctx context.Context, u *ent.User, s []approval.Status, from time.Time, to time.Time, page, perPage int) ([]*ent.Approval, error)
 	}
 )

@@ -78,6 +78,7 @@ type (
 		UpdateApproval(ctx context.Context, a *ent.Approval) (*ent.Approval, error)
 		DeleteApproval(ctx context.Context, a *ent.Approval) error
 
+		SearchReviews(ctx context.Context, u *ent.User) ([]*ent.Review, error)
 		ListReviews(ctx context.Context, d *ent.Deployment) ([]*ent.Review, error)
 		FindReviewOfUser(ctx context.Context, u *ent.User, d *ent.Deployment) (*ent.Review, error)
 		CreateReview(ctx context.Context, rv *ent.Review) (*ent.Review, error)

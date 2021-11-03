@@ -186,6 +186,7 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 	{
 		s := search.NewSearch(c.Interactor)
 		searchv1.GET("/deployments", s.SearchDeployments)
+		searchv1.GET("/reviews", s.SearchAssignedReviews)
 		searchv1.GET("/approvals", s.SearchApprovals)
 	}
 

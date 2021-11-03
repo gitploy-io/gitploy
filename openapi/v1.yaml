@@ -1556,6 +1556,26 @@ paths:
           $ref: '#/components/responses/401Unauthorized'
         '500':
           $ref: '#/components/responses/500InternalError'
+  /search/reviews:
+    get:
+      tags:
+        - Search
+      summary: Search assigned reviews.
+      responses:
+        '200':
+          description: Returns deployments which matches to conditions.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Deployments'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401': 
+          $ref: '#/components/responses/401Unauthorized'
+        '402':
+          $ref: '#/components/responses/402PaymentRequired'
+        '500':
+          $ref: '#/components/responses/500InternalError'
   /search/approvals:
     get:
       tags:

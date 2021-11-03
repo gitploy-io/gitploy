@@ -904,6 +904,21 @@ func (mr *MockStoreMockRecorder) SearchDeployments(ctx, u, s, owned, from, to, p
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SearchDeployments", reflect.TypeOf((*MockStore)(nil).SearchDeployments), ctx, u, s, owned, from, to, page, perPage)
 }
 
+// SearchReviews mocks base method.
+func (m *MockStore) SearchReviews(ctx context.Context, u *ent.User) ([]*ent.Review, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SearchReviews", ctx, u)
+	ret0, _ := ret[0].([]*ent.Review)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// SearchReviews indicates an expected call of SearchReviews.
+func (mr *MockStoreMockRecorder) SearchReviews(ctx, u interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SearchReviews", reflect.TypeOf((*MockStore)(nil).SearchReviews), ctx, u)
+}
+
 // SyncDeploymentStatus mocks base method.
 func (m *MockStore) SyncDeploymentStatus(ctx context.Context, ds *ent.DeploymentStatus) (*ent.DeploymentStatus, error) {
 	m.ctrl.T.Helper()
