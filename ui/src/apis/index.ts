@@ -34,6 +34,7 @@ import {
     setApprovalDeclined 
 } from "./approval"
 import {
+    searchReviews,
     listReviews,
     getUserReview,
     approveReview,
@@ -86,6 +87,7 @@ export {
     getMyApproval,
     setApprovalApproved,
     setApprovalDeclined,
+    searchReviews,
     listReviews,
     getUserReview,
     approveReview,

@@ -59,6 +59,17 @@ const mapDataToApprovalStatus = (status: string): ReviewStatusEnum => {
     }
 }
 
+export const searchReviews = async (): Promise<Review[]> => {
+    const reviews: Review[] = await _fetch(`${instance}/api/v1/search/reviews`, {
+        credentials: "same-origin",
+        headers,
+    })
+        .then(res => res.json())
+        .then(data => data.map((d:any): Review => mapDataToReview(d)))
+
+    return reviews
+}
+
 export const listReviews = async (namespace: string, name: string, number: number): Promise<Review[]> => {
     const res = await _fetch(`${instance}/api/v1/repos/${namespace}/${name}/deployments/${number}/reviews`, {
         credentials: "same-origin",

@@ -5,15 +5,18 @@ import {
     User, 
     Deployment, 
     DeploymentStatusEnum, 
-    Approval, 
-    ApprovalStatus, 
+    Review,
     Event,
-    EventTypeEnum,
     HttpInternalServerError, 
     HttpUnauthorizedError, 
     License,
 } from "../models"
-import { getMe, searchDeployments as _searchDeployments, searchApprovals as _searchApprovals, getLicense } from "../apis"
+import { 
+    getMe, 
+    searchDeployments as _searchDeployments, 
+    searchReviews as _searchReviews,
+    getLicense 
+} from "../apis"
 import { HttpPaymentRequiredError } from "../models/errors"
 
 interface MainState {
@@ -22,7 +25,7 @@ interface MainState {
     expired: boolean
     user?: User 
     deployments: Deployment[]
-    approvals: Approval[]
+    reviews: Review[]
     license?: License
 }
 
@@ -31,17 +34,13 @@ const initialState: MainState = {
     authorized: true,
     expired: false,
     deployments: [],
-    approvals: [],
+    reviews: [],
 }
 
 const runningDeploymentStatus: DeploymentStatusEnum[] = [
     DeploymentStatusEnum.Waiting,
     DeploymentStatusEnum.Created,
     DeploymentStatusEnum.Running,
-]
-
-const pendingApprovalStatus: ApprovalStatus[] = [
-    ApprovalStatus.Pending
 ]
 
 export const apiMiddleware: Middleware = (api: MiddlewareAPI) => (
@@ -92,12 +91,12 @@ export const searchDeployments = createAsyncThunk<Deployment[], void, { state: {
     }
 )
 
-export const searchApprovals = createAsyncThunk<Approval[], void, { state: { main: MainState } }>(
-    "main/searchApprovals",
+export const searchReviews = createAsyncThunk<Review[], void, { state: { main: MainState } }>(
+    "main/searchReviews",
     async (_, { rejectWithValue }) => {
         try {
-            const approvals = await _searchApprovals(pendingApprovalStatus)
-            return approvals
+            const reviews = await _searchReviews()
+            return reviews
         } catch (e) {
             return rejectWithValue(e)
         }
@@ -160,41 +159,42 @@ export const mainSlice = createSlice({
             state.deployments.unshift(event.deployment)
         },
         handleApprovalEvent: (state, action: PayloadAction<Event>) => {
-            const event = action.payload
+            // TODO: handle event.
+            // const event = action.payload
             
-            if (event.type === EventTypeEnum.Deleted) {
-                const idx = state.approvals.findIndex((approval) => {
-                    return event.deletedId === approval.id 
-                })
+            // if (event.type === EventTypeEnum.Deleted) {
+            //     const idx = state.approvals.findIndex((approval) => {
+            //         return event.deletedId === approval.id 
+            //     })
 
-                if (idx !== -1) {
-                    state.approvals.splice(idx, 1)
-                    return
-                }
-            }
+            //     if (idx !== -1) {
+            //         state.approvals.splice(idx, 1)
+            //         return
+            //     }
+            // }
 
-            const user = state.user
-            if (!user) {
-                throw new Error("Unauthorized user.")
-            }
+            // const user = state.user
+            // if (!user) {
+            //     throw new Error("Unauthorized user.")
+            // }
 
-            // Handling the event when the owner is same.
-            if (event.approval?.user?.id !== user.id) {
-                return
-            }
+            // // Handling the event when the owner is same.
+            // if (event.approval?.user?.id !== user.id) {
+            //     return
+            // }
 
-            const idx = state.approvals.findIndex((approval) => {
-                return event.approval?.id === approval.id 
-            })
+            // const idx = state.approvals.findIndex((approval) => {
+            //     return event.approval?.id === approval.id 
+            // })
 
-            if (idx !== -1) {
-                if (event.type === EventTypeEnum.Updated) {
-                    state.approvals.splice(idx, 1)
-                    return
-                }
-            } 
+            // if (idx !== -1) {
+            //     if (event.type === EventTypeEnum.Updated) {
+            //         state.approvals.splice(idx, 1)
+            //         return
+            //     }
+            // } 
 
-            state.approvals.unshift(event.approval)
+            // state.approvals.unshift(event.approval)
         },
     },
     extraReducers: builder => {
@@ -207,8 +207,8 @@ export const mainSlice = createSlice({
                 state.deployments = action.payload
             })
 
-            .addCase(searchApprovals.fulfilled, (state, action) => {
-                state.approvals = action.payload
+            .addCase(searchReviews.fulfilled, (state, action) => {
+                state.reviews = action.payload
             })
 
             .addCase(fetchLicense.fulfilled, (state, action) => {
