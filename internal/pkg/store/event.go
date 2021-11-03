@@ -37,6 +37,15 @@ func (s *Store) ListEventsGreaterThanTime(ctx context.Context, t time.Time) ([]*
 				WithRepo().
 				WithDeploymentStatuses()
 		}).
+		WithReview(func(rq *ent.ReviewQuery) {
+			rq.
+				WithUser().
+				WithDeployment(func(dq *ent.DeploymentQuery) {
+					dq.
+						WithUser().
+						WithRepo()
+				})
+		}).
 		Limit(limit).
 		All(ctx)
 }
@@ -53,6 +62,8 @@ func (s *Store) CreateEvent(ctx context.Context, e *ent.Event) (*ent.Event, erro
 		qry = qry.SetDeploymentID(e.DeploymentID)
 	} else if e.Kind == event.KindApproval {
 		qry = qry.SetApprovalID(e.ApprovalID)
+	} else if e.Kind == event.KindReview {
+		qry = qry.SetReviewID(e.ReviewID)
 	}
 
 	return qry.Save(ctx)

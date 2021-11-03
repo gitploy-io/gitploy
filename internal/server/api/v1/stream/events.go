@@ -109,13 +109,13 @@ func (s *Stream) hasPermForEvent(ctx context.Context, u *ent.User, e *ent.Event)
 		return true, nil
 	}
 
-	if e.Kind == event.KindApproval {
-		a, err := s.i.FindApprovalByID(ctx, e.ApprovalID)
+	if e.Kind == event.KindReview {
+		rv, err := s.i.FindReviewByID(ctx, e.ReviewID)
 		if err != nil {
 			return false, err
 		}
 
-		d, err := s.i.FindDeploymentByID(ctx, a.DeploymentID)
+		d, err := s.i.FindDeploymentByID(ctx, rv.DeploymentID)
 		if err != nil {
 			return false, err
 		}
@@ -129,7 +129,7 @@ func (s *Stream) hasPermForEvent(ctx context.Context, u *ent.User, e *ent.Event)
 		return true, nil
 	}
 
-	return false, fmt.Errorf("The type of event is not \"deployment\" or \"approval\".")
+	return false, fmt.Errorf("The type of event is not \"deployment\" or \"review\".")
 }
 
 func randstr() string {

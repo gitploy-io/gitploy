@@ -604,6 +604,21 @@ func (mr *MockStoreMockRecorder) FindRepoOfUserByNamespaceName(ctx, u, namespace
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindRepoOfUserByNamespaceName", reflect.TypeOf((*MockStore)(nil).FindRepoOfUserByNamespaceName), ctx, u, namespace, name)
 }
 
+// FindReviewByID mocks base method.
+func (m *MockStore) FindReviewByID(ctx context.Context, id int) (*ent.Review, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindReviewByID", ctx, id)
+	ret0, _ := ret[0].(*ent.Review)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindReviewByID indicates an expected call of FindReviewByID.
+func (mr *MockStoreMockRecorder) FindReviewByID(ctx, id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindReviewByID", reflect.TypeOf((*MockStore)(nil).FindReviewByID), ctx, id)
+}
+
 // FindReviewOfUser mocks base method.
 func (m *MockStore) FindReviewOfUser(ctx context.Context, u *ent.User, d *ent.Deployment) (*ent.Review, error) {
 	m.ctrl.T.Helper()
