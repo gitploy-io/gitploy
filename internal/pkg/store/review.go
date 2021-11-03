@@ -12,7 +12,7 @@ import (
 )
 
 func (s *Store) SearchReviews(ctx context.Context, u *ent.User) ([]*ent.Review, error) {
-	return s.c.Review.
+	rvs, err := s.c.Review.
 		Query().
 		Where(
 			review.And(
@@ -29,6 +29,11 @@ func (s *Store) SearchReviews(ctx context.Context, u *ent.User) ([]*ent.Review, 
 		}).
 		Order(ent.Desc(approval.FieldCreatedAt)).
 		All(ctx)
+	if err != nil {
+		return nil, e.NewError(e.ErrorCodeInternalError, err)
+	}
+
+	return rvs, nil
 }
 
 func (s *Store) ListReviews(ctx context.Context, d *ent.Deployment) ([]*ent.Review, error) {
