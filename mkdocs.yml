@@ -15,7 +15,7 @@ nav:
     - "How it works": concepts/how-it-work.md
     - "deploy.yml": concepts/deploy.yml.md
     - Deployment: concepts/deployment.md
-    - Approval: concepts/approval.md
+    - Review: concepts/review.md
     - Lock: concepts/lock.md
     - Permission: concepts/permission.md
     - Chatops: concepts/chatops.md

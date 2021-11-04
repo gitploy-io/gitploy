@@ -4,10 +4,7 @@ Gitploy configures a pipeline with a simple, easy‑to‑read file that you comm
 
 ## Environments
 
-The configuration file is configured for each environment, respectively. The following example is the fundamental structure of a configuration file.
-
-<details>
-<summary>Fundamental structure</summary>
+You can configure each environments, respectively. The configuration have to be under the `evns` field. The following example show each environments have different configuration.
 
 ```yaml
 envs:
@@ -21,42 +18,29 @@ envs:
       - docker-image
 ```
 
-</details>
+## Parameters of GitHub deployment API
 
-## Parameters for Github deployment API
-
-When Gitploy deploys, it posts a new deployment to GitHub [deployments API](https://docs.github.com/en/rest/reference/repos#create-a-deployment) with parameters from the configuration file. The configuration file provides fields to configure all parameters of GitHub deployment API. You can check the [document](../references/deploy.yml.md) for the detail.
-
-<details>
-<summary>GitHub parameter field</summary>
+Internally, Gitploy posts a deployment to GitHub [deployments API](https://docs.github.com/en/rest/reference/repos#create-a-deployment) with parameters from the configuration file. These parameter help you can verify the artifact before you start to deploy. The configuration file provides fields to configure all parameters of GitHub deployment API. You can check the [document](../references/deploy.yml.md) for the detail.
 
 ```yaml
 envs:
   - name: production
     task: deploy:lambda
-    description: Start to deploy to the production.
+    description: Start deploying to the production.
     auto_merge: false
     required_contexts:
       - test
       - integration-test
     production_environment: true
 ```
+## Review
 
-</details>
-
-## Approval
-
-Gitploy provides the approval step to protect to deploy until it matches the required approving approvals.
-
-<details>
-<summary>Enable Approval</summary>
+Gitploy provides the review process. You can list up to users on the configuration file. You can check the [document](./review.md) for the detail.
 
 ```yaml
 envs:
   - name: production
-    approval:
+    review:
       enabled: true
-      required_count: 1
+      reviewers: ["ocotocat", "noah"]
 ```
-
-</details>

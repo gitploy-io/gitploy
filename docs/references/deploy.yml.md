@@ -17,14 +17,14 @@ Field                    |Type                     |Required  |Description
 `required_contexts`      |*[]string*               |`false`   |This field allows you to specify a subset of contexts that must be success. 
 `payload`                |*object* or *string*     |`false`   |This field is JSON payload with extra information about the deployment. 
 `production_environment` |*boolean*                |`false`   |This field specifies whether this runtime environment is production or not.
-`approval`               |*[Approval](#approval)*  |`false`   |This field configures approval.
+`review`               |*[Review](#review)*  |`false`   |This field configures review.
 
-## Approval
+## Review
 
 Field            |Type      |Tag     |Description
 ---              |---       |---     |---
-`enabled`        |*boolean* |`true`  |This field make to enable the approval feature. The default value is `false`.
-`required_count` |*integer* |`false` |This field determine how many the required approving approvals is needs to deploy. The default value is `0`.
+`enabled`        |*boolean* |`true`  |This field make to enable the review feature. The default value is `false`.
+`reviewers`      |*[]string* |`false` |This field list up reviewers. The default value is `[]`. You should specify maintainers of the project.
 
 ## Variables
 

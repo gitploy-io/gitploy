@@ -9,7 +9,7 @@ The permission of the repository is determined while Gitploy synchronizes with G
 
 Here are capabilities for each permission: 
 
-* **Read** - Users can read all activities that happened in the repository, such as deployments, approvals. And users are also capable of responding to the approval.
+* **Read** - Users can read all activities that happened in the repository, such as deployments, reviews. And users are also capable of responding to the review.
 
 * **Write** - Users can lock, deploy, and rollback. 
 
