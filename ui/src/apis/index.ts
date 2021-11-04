@@ -24,15 +24,6 @@ import { listBranches, getBranch } from './branch'
 import { listTags, getTag } from './tag'
 import { listUsers, updateUser, deleteUser, getMe, getRateLimit } from "./user"
 import { checkSlack } from "./chat"
-import { 
-    searchApprovals, 
-    listApprovals, 
-    getMyApproval, 
-    createApproval, 
-    deleteApproval, 
-    setApprovalApproved, 
-    setApprovalDeclined 
-} from "./approval"
 import {
     searchReviews,
     listReviews,
@@ -80,13 +71,6 @@ export {
     getMe,
     getRateLimit,
     checkSlack,
-    searchApprovals,
-    listApprovals,
-    createApproval,
-    deleteApproval,
-    getMyApproval,
-    setApprovalApproved,
-    setApprovalDeclined,
     searchReviews,
     listReviews,
     getUserReview,

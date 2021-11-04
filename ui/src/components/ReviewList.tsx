@@ -23,7 +23,7 @@ export default function ReviewList(props: ReviewListProps): JSX.Element {
                         {props.reviews.map((r, idx) => {
                             return (
                                 <div key={idx}>
-                                    {mapApprovalStatusToIcon(r.status)}&nbsp;<UserAvatar user={r.user}/>
+                                    {mapReviewStatusToIcon(r.status)}&nbsp;<UserAvatar user={r.user}/>
                                 </div>
                             )
                         })}
@@ -34,7 +34,7 @@ export default function ReviewList(props: ReviewListProps): JSX.Element {
     )
 }
 
-function mapApprovalStatusToIcon(status: ReviewStatusEnum): JSX.Element {
+function mapReviewStatusToIcon(status: ReviewStatusEnum): JSX.Element {
     switch (status) {
         case ReviewStatusEnum.Pending:
             return <span style={{color: "gray"}}>•</span>

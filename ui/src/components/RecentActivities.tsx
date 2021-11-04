@@ -57,7 +57,7 @@ function ReviewList(props: ReviewListProps): JSX.Element {
         dataSource={props.reviews}
         renderItem={(review) => {
             if (!review.deployment) {
-                throw new ReferenceError("The deployment of the approval is not found.")
+                throw new ReferenceError("The deployment of the review is not found.")
             }
             const d = review.deployment
             const title = (d?.repo) ? `${d.repo.namespace}/${d.repo.name} #${d.number}` : `Deployment #${d.number}`

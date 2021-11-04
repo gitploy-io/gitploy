@@ -21,7 +21,7 @@ import (
 	gb "github.com/gitploy-io/gitploy/internal/server/global"
 )
 
-// GetEvents streams events of deployment, or approval.
+// GetEvents streams events of deployment, or review.
 func (s *Stream) GetEvents(c *gin.Context) {
 	ctx := c.Request.Context()
 

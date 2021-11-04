@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/gitploy-io/gitploy/ent"
-	"github.com/gitploy-io/gitploy/ent/approval"
 	"github.com/gitploy-io/gitploy/ent/deployment"
 	"github.com/gitploy-io/gitploy/ent/review"
 	"github.com/gitploy-io/gitploy/pkg/e"
@@ -27,7 +26,7 @@ func (s *Store) SearchReviews(ctx context.Context, u *ent.User) ([]*ent.Review, 
 				WithRepo().
 				WithUser()
 		}).
-		Order(ent.Desc(approval.FieldCreatedAt)).
+		Order(ent.Desc(review.FieldCreatedAt)).
 		All(ctx)
 	if err != nil {
 		return nil, e.NewError(e.ErrorCodeInternalError, err)

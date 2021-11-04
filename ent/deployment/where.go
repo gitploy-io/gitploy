@@ -1375,34 +1375,6 @@ func HasRepoWith(preds ...predicate.Repo) predicate.Deployment {
 	})
 }
 
-// HasApprovals applies the HasEdge predicate on the "approvals" edge.
-func HasApprovals() predicate.Deployment {
-	return predicate.Deployment(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(ApprovalsTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, ApprovalsTable, ApprovalsColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasApprovalsWith applies the HasEdge predicate on the "approvals" edge with a given conditions (other predicates).
-func HasApprovalsWith(preds ...predicate.Approval) predicate.Deployment {
-	return predicate.Deployment(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(ApprovalsInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, ApprovalsTable, ApprovalsColumn),
-		)
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
 // HasReviews applies the HasEdge predicate on the "reviews" edge.
 func HasReviews() predicate.Deployment {
 	return predicate.Deployment(func(s *sql.Selector) {

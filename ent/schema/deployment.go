@@ -81,10 +81,6 @@ func (Deployment) Edges() []ent.Edge {
 			Field("repo_id").
 			Unique().
 			Required(),
-		edge.To("approvals", Approval.Type).
-			Annotations(entsql.Annotation{
-				OnDelete: entsql.Cascade,
-			}),
 		edge.To("reviews", Review.Type).
 			Annotations(entsql.Annotation{
 				OnDelete: entsql.Cascade,

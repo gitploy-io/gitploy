@@ -5,7 +5,6 @@ package ent
 import (
 	"time"
 
-	"github.com/gitploy-io/gitploy/ent/approval"
 	"github.com/gitploy-io/gitploy/ent/callback"
 	"github.com/gitploy-io/gitploy/ent/chatuser"
 	"github.com/gitploy-io/gitploy/ent/deployment"
@@ -24,18 +23,6 @@ import (
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
-	approvalFields := schema.Approval{}.Fields()
-	_ = approvalFields
-	// approvalDescCreatedAt is the schema descriptor for created_at field.
-	approvalDescCreatedAt := approvalFields[1].Descriptor()
-	// approval.DefaultCreatedAt holds the default value on creation for the created_at field.
-	approval.DefaultCreatedAt = approvalDescCreatedAt.Default.(func() time.Time)
-	// approvalDescUpdatedAt is the schema descriptor for updated_at field.
-	approvalDescUpdatedAt := approvalFields[2].Descriptor()
-	// approval.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	approval.DefaultUpdatedAt = approvalDescUpdatedAt.Default.(func() time.Time)
-	// approval.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
-	approval.UpdateDefaultUpdatedAt = approvalDescUpdatedAt.UpdateDefault.(func() time.Time)
 	callbackFields := schema.Callback{}.Fields()
 	_ = callbackFields
 	// callbackDescHash is the schema descriptor for hash field.

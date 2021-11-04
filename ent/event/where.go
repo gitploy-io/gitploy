@@ -410,6 +410,34 @@ func ApprovalIDNotIn(vs ...int) predicate.Event {
 	})
 }
 
+// ApprovalIDGT applies the GT predicate on the "approval_id" field.
+func ApprovalIDGT(v int) predicate.Event {
+	return predicate.Event(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldApprovalID), v))
+	})
+}
+
+// ApprovalIDGTE applies the GTE predicate on the "approval_id" field.
+func ApprovalIDGTE(v int) predicate.Event {
+	return predicate.Event(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldApprovalID), v))
+	})
+}
+
+// ApprovalIDLT applies the LT predicate on the "approval_id" field.
+func ApprovalIDLT(v int) predicate.Event {
+	return predicate.Event(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldApprovalID), v))
+	})
+}
+
+// ApprovalIDLTE applies the LTE predicate on the "approval_id" field.
+func ApprovalIDLTE(v int) predicate.Event {
+	return predicate.Event(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldApprovalID), v))
+	})
+}
+
 // ApprovalIDIsNil applies the IsNil predicate on the "approval_id" field.
 func ApprovalIDIsNil() predicate.Event {
 	return predicate.Event(func(s *sql.Selector) {
@@ -595,34 +623,6 @@ func HasDeploymentWith(preds ...predicate.Deployment) predicate.Event {
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(DeploymentInverseTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, DeploymentTable, DeploymentColumn),
-		)
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
-// HasApproval applies the HasEdge predicate on the "approval" edge.
-func HasApproval() predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(ApprovalTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, ApprovalTable, ApprovalColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasApprovalWith applies the HasEdge predicate on the "approval" edge with a given conditions (other predicates).
-func HasApprovalWith(preds ...predicate.Approval) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(ApprovalInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, ApprovalTable, ApprovalColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

@@ -1,5 +1,4 @@
 import Deployment from "./Deployment"
-import Approval from "./Approval"
 import { Review } from "./Review"
 
 export default interface Event {
@@ -7,14 +6,12 @@ export default interface Event {
     kind: EventKindEnum
     type: EventTypeEnum
     deployment?: Deployment
-    approval?: Approval
     review?: Review
     deletedId: number 
 }
 
 export enum EventKindEnum {
     Deployment = "deployment",
-    Approval = "approval",
     Review = "review"
 }
 

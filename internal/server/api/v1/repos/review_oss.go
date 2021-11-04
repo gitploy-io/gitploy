@@ -16,7 +16,7 @@ func (r *Repo) ListReviews(c *gin.Context) {
 	gb.Response(c, http.StatusOK, make([]*ent.Review, 0))
 }
 
-func (r *Repo) GetUserApproval(c *gin.Context) {
+func (r *Repo) GetUserReview(c *gin.Context) {
 	gb.Response(c, http.StatusNotFound, nil)
 }
 

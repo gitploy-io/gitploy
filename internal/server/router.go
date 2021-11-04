@@ -147,12 +147,6 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 		repov1.PATCH("/:namespace/:name/deployments/:number", rm.RepoWritePerm(), r.UpdateDeployment)
 		repov1.GET("/:namespace/:name/deployments/:number/changes", rm.RepoReadPerm(), r.ListDeploymentChanges)
 		repov1.POST("/:namespace/:name/deployments/:number/rollback", rm.RepoWritePerm(), r.RollbackDeployment)
-		repov1.GET("/:namespace/:name/deployments/:number/approvals", rm.RepoReadPerm(), r.ListApprovals)
-		repov1.POST("/:namespace/:name/deployments/:number/approvals", rm.RepoReadPerm(), r.CreateApproval)
-		repov1.GET("/:namespace/:name/deployments/:number/approval", rm.RepoReadPerm(), r.GetMyApproval)
-		repov1.PATCH("/:namespace/:name/deployments/:number/approval", rm.RepoReadPerm(), r.UpdateMyApproval)
-		repov1.GET("/:namespace/:name/approvals/:aid", rm.RepoReadPerm(), r.GetApproval)
-		repov1.DELETE("/:namespace/:name/approvals/:aid", rm.RepoReadPerm(), r.DeleteApproval)
 		repov1.GET("/:namespace/:name/deployments/:number/reviews", rm.RepoReadPerm(), r.ListReviews)
 		repov1.GET("/:namespace/:name/deployments/:number/review", rm.RepoReadPerm(), r.GetUserReview)
 		repov1.PATCH("/:namespace/:name/deployments/:number/review", rm.RepoReadPerm(), r.UpdateUserReview)
@@ -187,7 +181,6 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 		s := search.NewSearch(c.Interactor)
 		searchv1.GET("/deployments", s.SearchDeployments)
 		searchv1.GET("/reviews", s.SearchAssignedReviews)
-		searchv1.GET("/approvals", s.SearchApprovals)
 	}
 
 	licensev1 := v1.Group("/license")

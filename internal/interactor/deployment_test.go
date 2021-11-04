@@ -117,10 +117,6 @@ func TestInteractor_Deploy(t *testing.T) {
 				Env:    "production",
 			},
 			e: &vo.Env{
-				Approval: &vo.Approval{
-					Enabled:       true,
-					RequiredCount: 1,
-				},
 				Review: &vo.Review{
 					Enabled:   true,
 					Reviewers: []string{"octocat"},

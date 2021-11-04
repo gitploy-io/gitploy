@@ -108,9 +108,9 @@ export default function DeploymentView(): JSX.Element {
     }
 
     // buttons
-    const approvalDropdown = (userReview)?
+    const reviewDropdown = (userReview)?
         <ReviewDropdown 
-            key="approval" 
+            key="review" 
             onClickApprove={onClickApprove}
             onClickReject={onClickReject}/>:
         null
@@ -133,7 +133,7 @@ export default function DeploymentView(): JSX.Element {
                             <Breadcrumb.Item>{number}</Breadcrumb.Item>
                         </Breadcrumb>}
                     extra={[
-                        approvalDropdown,
+                        reviewDropdown,
                     ]}
                     onBack={onBack} 
                 />

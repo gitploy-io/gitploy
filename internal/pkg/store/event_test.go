@@ -23,7 +23,7 @@ func TestStore_CreateEvent(t *testing.T) {
 		s := NewStore(client)
 
 		e, err := s.CreateEvent(ctx, &ent.Event{
-			Kind:      event.KindApproval,
+			Kind:      event.KindReview,
 			Type:      event.TypeDeleted,
 			DeletedID: 1,
 		})

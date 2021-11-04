@@ -13,7 +13,6 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/gitploy-io/gitploy/ent/approval"
 	"github.com/gitploy-io/gitploy/ent/deployment"
 	"github.com/gitploy-io/gitploy/ent/event"
 	"github.com/gitploy-io/gitploy/ent/notificationrecord"
@@ -32,7 +31,6 @@ type EventQuery struct {
 	predicates []predicate.Event
 	// eager-loading edges.
 	withDeployment         *DeploymentQuery
-	withApproval           *ApprovalQuery
 	withReview             *ReviewQuery
 	withNotificationRecord *NotificationRecordQuery
 	modifiers              []func(s *sql.Selector)
@@ -87,28 +85,6 @@ func (eq *EventQuery) QueryDeployment() *DeploymentQuery {
 			sqlgraph.From(event.Table, event.FieldID, selector),
 			sqlgraph.To(deployment.Table, deployment.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, event.DeploymentTable, event.DeploymentColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(eq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
-// QueryApproval chains the current query on the "approval" edge.
-func (eq *EventQuery) QueryApproval() *ApprovalQuery {
-	query := &ApprovalQuery{config: eq.config}
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := eq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := eq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(event.Table, event.FieldID, selector),
-			sqlgraph.To(approval.Table, approval.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, event.ApprovalTable, event.ApprovalColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(eq.driver.Dialect(), step)
 		return fromU, nil
@@ -342,7 +318,6 @@ func (eq *EventQuery) Clone() *EventQuery {
 		order:                  append([]OrderFunc{}, eq.order...),
 		predicates:             append([]predicate.Event{}, eq.predicates...),
 		withDeployment:         eq.withDeployment.Clone(),
-		withApproval:           eq.withApproval.Clone(),
 		withReview:             eq.withReview.Clone(),
 		withNotificationRecord: eq.withNotificationRecord.Clone(),
 		// clone intermediate query.
@@ -359,17 +334,6 @@ func (eq *EventQuery) WithDeployment(opts ...func(*DeploymentQuery)) *EventQuery
 		opt(query)
 	}
 	eq.withDeployment = query
-	return eq
-}
-
-// WithApproval tells the query-builder to eager-load the nodes that are connected to
-// the "approval" edge. The optional arguments are used to configure the query builder of the edge.
-func (eq *EventQuery) WithApproval(opts ...func(*ApprovalQuery)) *EventQuery {
-	query := &ApprovalQuery{config: eq.config}
-	for _, opt := range opts {
-		opt(query)
-	}
-	eq.withApproval = query
 	return eq
 }
 
@@ -460,9 +424,8 @@ func (eq *EventQuery) sqlAll(ctx context.Context) ([]*Event, error) {
 	var (
 		nodes       = []*Event{}
 		_spec       = eq.querySpec()
-		loadedTypes = [4]bool{
+		loadedTypes = [3]bool{
 			eq.withDeployment != nil,
-			eq.withApproval != nil,
 			eq.withReview != nil,
 			eq.withNotificationRecord != nil,
 		}
@@ -512,32 +475,6 @@ func (eq *EventQuery) sqlAll(ctx context.Context) ([]*Event, error) {
 			}
 			for i := range nodes {
 				nodes[i].Edges.Deployment = n
-			}
-		}
-	}
-
-	if query := eq.withApproval; query != nil {
-		ids := make([]int, 0, len(nodes))
-		nodeids := make(map[int][]*Event)
-		for i := range nodes {
-			fk := nodes[i].ApprovalID
-			if _, ok := nodeids[fk]; !ok {
-				ids = append(ids, fk)
-			}
-			nodeids[fk] = append(nodeids[fk], nodes[i])
-		}
-		query.Where(approval.IDIn(ids...))
-		neighbors, err := query.All(ctx)
-		if err != nil {
-			return nil, err
-		}
-		for _, n := range neighbors {
-			nodes, ok := nodeids[n.ID]
-			if !ok {
-				return nil, fmt.Errorf(`unexpected foreign-key "approval_id" returned %v`, n.ID)
-			}
-			for i := range nodes {
-				nodes[i].Edges.Approval = n
 			}
 		}
 	}

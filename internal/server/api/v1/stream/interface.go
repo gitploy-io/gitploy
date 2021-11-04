@@ -11,7 +11,6 @@ type (
 		SubscribeEvent(fn func(e *ent.Event)) error
 		UnsubscribeEvent(fn func(e *ent.Event)) error
 		FindDeploymentByID(ctx context.Context, id int) (*ent.Deployment, error)
-		FindApprovalByID(ctx context.Context, id int) (*ent.Approval, error)
 		FindReviewByID(ctx context.Context, id int) (*ent.Review, error)
 		FindPermOfRepo(ctx context.Context, r *ent.Repo, u *ent.User) (*ent.Perm, error)
 	}

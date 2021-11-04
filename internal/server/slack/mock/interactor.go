@@ -50,21 +50,6 @@ func (mr *MockInteractorMockRecorder) CheckNotificationRecordOfEvent(ctx, e inte
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CheckNotificationRecordOfEvent", reflect.TypeOf((*MockInteractor)(nil).CheckNotificationRecordOfEvent), ctx, e)
 }
 
-// CreateApproval mocks base method.
-func (m *MockInteractor) CreateApproval(ctx context.Context, a *ent.Approval) (*ent.Approval, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateApproval", ctx, a)
-	ret0, _ := ret[0].(*ent.Approval)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// CreateApproval indicates an expected call of CreateApproval.
-func (mr *MockInteractorMockRecorder) CreateApproval(ctx, a interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateApproval", reflect.TypeOf((*MockInteractor)(nil).CreateApproval), ctx, a)
-}
-
 // CreateCallback mocks base method.
 func (m *MockInteractor) CreateCallback(ctx context.Context, cb *ent.Callback) (*ent.Callback, error) {
 	m.ctrl.T.Helper()

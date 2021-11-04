@@ -35,8 +35,6 @@ const (
 	EdgePerms = "perms"
 	// EdgeDeployments holds the string denoting the deployments edge name in mutations.
 	EdgeDeployments = "deployments"
-	// EdgeApprovals holds the string denoting the approvals edge name in mutations.
-	EdgeApprovals = "approvals"
 	// EdgeReviews holds the string denoting the reviews edge name in mutations.
 	EdgeReviews = "reviews"
 	// EdgeLocks holds the string denoting the locks edge name in mutations.
@@ -64,13 +62,6 @@ const (
 	DeploymentsInverseTable = "deployments"
 	// DeploymentsColumn is the table column denoting the deployments relation/edge.
 	DeploymentsColumn = "user_id"
-	// ApprovalsTable is the table that holds the approvals relation/edge.
-	ApprovalsTable = "approvals"
-	// ApprovalsInverseTable is the table name for the Approval entity.
-	// It exists in this package in order to avoid circular dependency with the "approval" package.
-	ApprovalsInverseTable = "approvals"
-	// ApprovalsColumn is the table column denoting the approvals relation/edge.
-	ApprovalsColumn = "user_id"
 	// ReviewsTable is the table that holds the reviews relation/edge.
 	ReviewsTable = "reviews"
 	// ReviewsInverseTable is the table name for the Review entity.

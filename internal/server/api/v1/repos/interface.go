@@ -32,13 +32,6 @@ type (
 		DeployToRemote(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, env *vo.Env) (*ent.Deployment, error)
 		GetConfig(ctx context.Context, u *ent.User, r *ent.Repo) (*vo.Config, error)
 
-		ListApprovals(ctx context.Context, d *ent.Deployment) ([]*ent.Approval, error)
-		FindApprovalByID(ctx context.Context, id int) (*ent.Approval, error)
-		FindApprovalOfUser(ctx context.Context, d *ent.Deployment, u *ent.User) (*ent.Approval, error)
-		CreateApproval(ctx context.Context, a *ent.Approval) (*ent.Approval, error)
-		UpdateApproval(ctx context.Context, a *ent.Approval) (*ent.Approval, error)
-		DeleteApproval(ctx context.Context, a *ent.Approval) error
-
 		ListReviews(ctx context.Context, d *ent.Deployment) ([]*ent.Review, error)
 		FindReviewOfUser(ctx context.Context, u *ent.User, d *ent.Deployment) (*ent.Review, error)
 		UpdateReview(ctx context.Context, rv *ent.Review) (*ent.Review, error)

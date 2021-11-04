@@ -11,10 +11,6 @@ interface ConfigData {
 interface EnvData {
     name: string
     required_contexts?: string[]
-    approval?: {
-        enabled: boolean
-        required_count: number
-    }
     review?: {
         enabled: boolean
         reviewers: string[]

@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/gitploy-io/gitploy/ent/approval"
 	"github.com/gitploy-io/gitploy/ent/deployment"
 	"github.com/gitploy-io/gitploy/ent/event"
 	"github.com/gitploy-io/gitploy/ent/notificationrecord"
@@ -43,15 +42,13 @@ type Event struct {
 type EventEdges struct {
 	// Deployment holds the value of the deployment edge.
 	Deployment *Deployment `json:"deployment,omitempty"`
-	// Approval holds the value of the approval edge.
-	Approval *Approval `json:"approval,omitempty"`
 	// Review holds the value of the review edge.
 	Review *Review `json:"review,omitempty"`
 	// NotificationRecord holds the value of the notification_record edge.
 	NotificationRecord *NotificationRecord `json:"notification_record,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [4]bool
+	loadedTypes [3]bool
 }
 
 // DeploymentOrErr returns the Deployment value or an error if the edge
@@ -68,24 +65,10 @@ func (e EventEdges) DeploymentOrErr() (*Deployment, error) {
 	return nil, &NotLoadedError{edge: "deployment"}
 }
 
-// ApprovalOrErr returns the Approval value or an error if the edge
-// was not loaded in eager-loading, or loaded but was not found.
-func (e EventEdges) ApprovalOrErr() (*Approval, error) {
-	if e.loadedTypes[1] {
-		if e.Approval == nil {
-			// The edge approval was loaded in eager-loading,
-			// but was not found.
-			return nil, &NotFoundError{label: approval.Label}
-		}
-		return e.Approval, nil
-	}
-	return nil, &NotLoadedError{edge: "approval"}
-}
-
 // ReviewOrErr returns the Review value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e EventEdges) ReviewOrErr() (*Review, error) {
-	if e.loadedTypes[2] {
+	if e.loadedTypes[1] {
 		if e.Review == nil {
 			// The edge review was loaded in eager-loading,
 			// but was not found.
@@ -99,7 +82,7 @@ func (e EventEdges) ReviewOrErr() (*Review, error) {
 // NotificationRecordOrErr returns the NotificationRecord value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e EventEdges) NotificationRecordOrErr() (*NotificationRecord, error) {
-	if e.loadedTypes[3] {
+	if e.loadedTypes[2] {
 		if e.NotificationRecord == nil {
 			// The edge notification_record was loaded in eager-loading,
 			// but was not found.
@@ -192,11 +175,6 @@ func (e *Event) assignValues(columns []string, values []interface{}) error {
 // QueryDeployment queries the "deployment" edge of the Event entity.
 func (e *Event) QueryDeployment() *DeploymentQuery {
 	return (&EventClient{config: e.config}).QueryDeployment(e)
-}
-
-// QueryApproval queries the "approval" edge of the Event entity.
-func (e *Event) QueryApproval() *ApprovalQuery {
-	return (&EventClient{config: e.config}).QueryApproval(e)
 }
 
 // QueryReview queries the "review" edge of the Event entity.

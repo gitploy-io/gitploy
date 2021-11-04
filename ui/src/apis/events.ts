@@ -1,9 +1,8 @@
 import { instance } from './setting'
 
 import { DeploymentData, mapDataToDeployment } from "./deployment"
-import { ApprovalData, mapDataToApproval } from "./approval"
 import { ReviewData, mapDataToReview } from "./review"
-import { Deployment, Approval, Review, Event, EventKindEnum, EventTypeEnum } from "../models"
+import { Deployment, Review, Event, EventKindEnum, EventTypeEnum } from "../models"
 
 interface EventData {
     id: number
@@ -12,7 +11,6 @@ interface EventData {
     deleted_id: number
     edges: {
         deployment?: DeploymentData
-        approval?: ApprovalData
         review?: ReviewData
     }
 }
@@ -21,15 +19,11 @@ const mapDataToEvent = (data: EventData): Event => {
     let kind: EventKindEnum
     let type: EventTypeEnum
     let deployment: Deployment | undefined
-    let approval: Approval | undefined
     let review: Review | undefined
 
     switch (data.kind) {
         case "deployment":
             kind = EventKindEnum.Deployment
-            break
-        case "approval":
-            kind = EventKindEnum.Approval
             break
         case "review":
             kind = EventKindEnum.Review
@@ -56,10 +50,6 @@ const mapDataToEvent = (data: EventData): Event => {
         deployment = mapDataToDeployment(data.edges.deployment)
     }
 
-    if (data.edges.approval) {
-        approval = mapDataToApproval(data.edges.approval)
-    }
-
     if (data.edges.review) {
         review = mapDataToReview(data.edges.review)
     }
@@ -70,7 +60,6 @@ const mapDataToEvent = (data: EventData): Event => {
         type,
         deletedId: data.deleted_id,
         deployment,
-        approval,
         review
     } 
 }

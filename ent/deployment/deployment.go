@@ -48,8 +48,6 @@ const (
 	EdgeUser = "user"
 	// EdgeRepo holds the string denoting the repo edge name in mutations.
 	EdgeRepo = "repo"
-	// EdgeApprovals holds the string denoting the approvals edge name in mutations.
-	EdgeApprovals = "approvals"
 	// EdgeReviews holds the string denoting the reviews edge name in mutations.
 	EdgeReviews = "reviews"
 	// EdgeDeploymentStatuses holds the string denoting the deployment_statuses edge name in mutations.
@@ -72,13 +70,6 @@ const (
 	RepoInverseTable = "repos"
 	// RepoColumn is the table column denoting the repo relation/edge.
 	RepoColumn = "repo_id"
-	// ApprovalsTable is the table that holds the approvals relation/edge.
-	ApprovalsTable = "approvals"
-	// ApprovalsInverseTable is the table name for the Approval entity.
-	// It exists in this package in order to avoid circular dependency with the "approval" package.
-	ApprovalsInverseTable = "approvals"
-	// ApprovalsColumn is the table column denoting the approvals relation/edge.
-	ApprovalsColumn = "deployment_id"
 	// ReviewsTable is the table that holds the reviews relation/edge.
 	ReviewsTable = "reviews"
 	// ReviewsInverseTable is the table name for the Review entity.

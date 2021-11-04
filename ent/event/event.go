@@ -28,8 +28,6 @@ const (
 	FieldDeletedID = "deleted_id"
 	// EdgeDeployment holds the string denoting the deployment edge name in mutations.
 	EdgeDeployment = "deployment"
-	// EdgeApproval holds the string denoting the approval edge name in mutations.
-	EdgeApproval = "approval"
 	// EdgeReview holds the string denoting the review edge name in mutations.
 	EdgeReview = "review"
 	// EdgeNotificationRecord holds the string denoting the notification_record edge name in mutations.
@@ -43,13 +41,6 @@ const (
 	DeploymentInverseTable = "deployments"
 	// DeploymentColumn is the table column denoting the deployment relation/edge.
 	DeploymentColumn = "deployment_id"
-	// ApprovalTable is the table that holds the approval relation/edge.
-	ApprovalTable = "events"
-	// ApprovalInverseTable is the table name for the Approval entity.
-	// It exists in this package in order to avoid circular dependency with the "approval" package.
-	ApprovalInverseTable = "approvals"
-	// ApprovalColumn is the table column denoting the approval relation/edge.
-	ApprovalColumn = "approval_id"
 	// ReviewTable is the table that holds the review relation/edge.
 	ReviewTable = "events"
 	// ReviewInverseTable is the table name for the Review entity.

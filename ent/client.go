@@ -9,7 +9,6 @@ import (
 
 	"github.com/gitploy-io/gitploy/ent/migrate"
 
-	"github.com/gitploy-io/gitploy/ent/approval"
 	"github.com/gitploy-io/gitploy/ent/callback"
 	"github.com/gitploy-io/gitploy/ent/chatuser"
 	"github.com/gitploy-io/gitploy/ent/deployment"
@@ -33,8 +32,6 @@ type Client struct {
 	config
 	// Schema is the client for creating, migrating and dropping schema.
 	Schema *migrate.Schema
-	// Approval is the client for interacting with the Approval builders.
-	Approval *ApprovalClient
 	// Callback is the client for interacting with the Callback builders.
 	Callback *CallbackClient
 	// ChatUser is the client for interacting with the ChatUser builders.
@@ -72,7 +69,6 @@ func NewClient(opts ...Option) *Client {
 
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
-	c.Approval = NewApprovalClient(c.config)
 	c.Callback = NewCallbackClient(c.config)
 	c.ChatUser = NewChatUserClient(c.config)
 	c.Deployment = NewDeploymentClient(c.config)
@@ -118,7 +114,6 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	return &Tx{
 		ctx:                  ctx,
 		config:               cfg,
-		Approval:             NewApprovalClient(cfg),
 		Callback:             NewCallbackClient(cfg),
 		ChatUser:             NewChatUserClient(cfg),
 		Deployment:           NewDeploymentClient(cfg),
@@ -149,7 +144,6 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
 		config:               cfg,
-		Approval:             NewApprovalClient(cfg),
 		Callback:             NewCallbackClient(cfg),
 		ChatUser:             NewChatUserClient(cfg),
 		Deployment:           NewDeploymentClient(cfg),
@@ -168,7 +162,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 // Debug returns a new debug-client. It's used to get verbose logging on specific operations.
 //
 //	client.Debug().
-//		Approval.
+//		Callback.
 //		Query().
 //		Count(ctx)
 //
@@ -191,7 +185,6 @@ func (c *Client) Close() error {
 // Use adds the mutation hooks to all the entity clients.
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
-	c.Approval.Use(hooks...)
 	c.Callback.Use(hooks...)
 	c.ChatUser.Use(hooks...)
 	c.Deployment.Use(hooks...)
@@ -204,144 +197,6 @@ func (c *Client) Use(hooks ...Hook) {
 	c.Repo.Use(hooks...)
 	c.Review.Use(hooks...)
 	c.User.Use(hooks...)
-}
-
-// ApprovalClient is a client for the Approval schema.
-type ApprovalClient struct {
-	config
-}
-
-// NewApprovalClient returns a client for the Approval from the given config.
-func NewApprovalClient(c config) *ApprovalClient {
-	return &ApprovalClient{config: c}
-}
-
-// Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `approval.Hooks(f(g(h())))`.
-func (c *ApprovalClient) Use(hooks ...Hook) {
-	c.hooks.Approval = append(c.hooks.Approval, hooks...)
-}
-
-// Create returns a create builder for Approval.
-func (c *ApprovalClient) Create() *ApprovalCreate {
-	mutation := newApprovalMutation(c.config, OpCreate)
-	return &ApprovalCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// CreateBulk returns a builder for creating a bulk of Approval entities.
-func (c *ApprovalClient) CreateBulk(builders ...*ApprovalCreate) *ApprovalCreateBulk {
-	return &ApprovalCreateBulk{config: c.config, builders: builders}
-}
-
-// Update returns an update builder for Approval.
-func (c *ApprovalClient) Update() *ApprovalUpdate {
-	mutation := newApprovalMutation(c.config, OpUpdate)
-	return &ApprovalUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOne returns an update builder for the given entity.
-func (c *ApprovalClient) UpdateOne(a *Approval) *ApprovalUpdateOne {
-	mutation := newApprovalMutation(c.config, OpUpdateOne, withApproval(a))
-	return &ApprovalUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOneID returns an update builder for the given id.
-func (c *ApprovalClient) UpdateOneID(id int) *ApprovalUpdateOne {
-	mutation := newApprovalMutation(c.config, OpUpdateOne, withApprovalID(id))
-	return &ApprovalUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// Delete returns a delete builder for Approval.
-func (c *ApprovalClient) Delete() *ApprovalDelete {
-	mutation := newApprovalMutation(c.config, OpDelete)
-	return &ApprovalDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// DeleteOne returns a delete builder for the given entity.
-func (c *ApprovalClient) DeleteOne(a *Approval) *ApprovalDeleteOne {
-	return c.DeleteOneID(a.ID)
-}
-
-// DeleteOneID returns a delete builder for the given id.
-func (c *ApprovalClient) DeleteOneID(id int) *ApprovalDeleteOne {
-	builder := c.Delete().Where(approval.ID(id))
-	builder.mutation.id = &id
-	builder.mutation.op = OpDeleteOne
-	return &ApprovalDeleteOne{builder}
-}
-
-// Query returns a query builder for Approval.
-func (c *ApprovalClient) Query() *ApprovalQuery {
-	return &ApprovalQuery{
-		config: c.config,
-	}
-}
-
-// Get returns a Approval entity by its id.
-func (c *ApprovalClient) Get(ctx context.Context, id int) (*Approval, error) {
-	return c.Query().Where(approval.ID(id)).Only(ctx)
-}
-
-// GetX is like Get, but panics if an error occurs.
-func (c *ApprovalClient) GetX(ctx context.Context, id int) *Approval {
-	obj, err := c.Get(ctx, id)
-	if err != nil {
-		panic(err)
-	}
-	return obj
-}
-
-// QueryUser queries the user edge of a Approval.
-func (c *ApprovalClient) QueryUser(a *Approval) *UserQuery {
-	query := &UserQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := a.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(approval.Table, approval.FieldID, id),
-			sqlgraph.To(user.Table, user.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, approval.UserTable, approval.UserColumn),
-		)
-		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryDeployment queries the deployment edge of a Approval.
-func (c *ApprovalClient) QueryDeployment(a *Approval) *DeploymentQuery {
-	query := &DeploymentQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := a.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(approval.Table, approval.FieldID, id),
-			sqlgraph.To(deployment.Table, deployment.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, approval.DeploymentTable, approval.DeploymentColumn),
-		)
-		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryEvent queries the event edge of a Approval.
-func (c *ApprovalClient) QueryEvent(a *Approval) *EventQuery {
-	query := &EventQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := a.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(approval.Table, approval.FieldID, id),
-			sqlgraph.To(event.Table, event.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, approval.EventTable, approval.EventColumn),
-		)
-		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// Hooks returns the client hooks.
-func (c *ApprovalClient) Hooks() []Hook {
-	return c.hooks.Approval
 }
 
 // CallbackClient is a client for the Callback schema.
@@ -666,22 +521,6 @@ func (c *DeploymentClient) QueryRepo(d *Deployment) *RepoQuery {
 			sqlgraph.From(deployment.Table, deployment.FieldID, id),
 			sqlgraph.To(repo.Table, repo.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, deployment.RepoTable, deployment.RepoColumn),
-		)
-		fromV = sqlgraph.Neighbors(d.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryApprovals queries the approvals edge of a Deployment.
-func (c *DeploymentClient) QueryApprovals(d *Deployment) *ApprovalQuery {
-	query := &ApprovalQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := d.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(deployment.Table, deployment.FieldID, id),
-			sqlgraph.To(approval.Table, approval.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, deployment.ApprovalsTable, deployment.ApprovalsColumn),
 		)
 		fromV = sqlgraph.Neighbors(d.driver.Dialect(), step)
 		return fromV, nil
@@ -1048,22 +887,6 @@ func (c *EventClient) QueryDeployment(e *Event) *DeploymentQuery {
 			sqlgraph.From(event.Table, event.FieldID, id),
 			sqlgraph.To(deployment.Table, deployment.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, event.DeploymentTable, event.DeploymentColumn),
-		)
-		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryApproval queries the approval edge of a Event.
-func (c *EventClient) QueryApproval(e *Event) *ApprovalQuery {
-	query := &ApprovalQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := e.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(event.Table, event.FieldID, id),
-			sqlgraph.To(approval.Table, approval.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, event.ApprovalTable, event.ApprovalColumn),
 		)
 		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
 		return fromV, nil
@@ -1892,22 +1715,6 @@ func (c *UserClient) QueryDeployments(u *User) *DeploymentQuery {
 			sqlgraph.From(user.Table, user.FieldID, id),
 			sqlgraph.To(deployment.Table, deployment.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, user.DeploymentsTable, user.DeploymentsColumn),
-		)
-		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryApprovals queries the approvals edge of a User.
-func (c *UserClient) QueryApprovals(u *User) *ApprovalQuery {
-	query := &ApprovalQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := u.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(user.Table, user.FieldID, id),
-			sqlgraph.To(approval.Table, approval.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, user.ApprovalsTable, user.ApprovalsColumn),
 		)
 		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
 		return fromV, nil

@@ -10,7 +10,6 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/gitploy-io/gitploy/ent/approval"
 	"github.com/gitploy-io/gitploy/ent/deployment"
 	"github.com/gitploy-io/gitploy/ent/event"
 	"github.com/gitploy-io/gitploy/ent/notificationrecord"
@@ -79,6 +78,7 @@ func (eu *EventUpdate) ClearDeploymentID() *EventUpdate {
 
 // SetApprovalID sets the "approval_id" field.
 func (eu *EventUpdate) SetApprovalID(i int) *EventUpdate {
+	eu.mutation.ResetApprovalID()
 	eu.mutation.SetApprovalID(i)
 	return eu
 }
@@ -88,6 +88,12 @@ func (eu *EventUpdate) SetNillableApprovalID(i *int) *EventUpdate {
 	if i != nil {
 		eu.SetApprovalID(*i)
 	}
+	return eu
+}
+
+// AddApprovalID adds i to the "approval_id" field.
+func (eu *EventUpdate) AddApprovalID(i int) *EventUpdate {
+	eu.mutation.AddApprovalID(i)
 	return eu
 }
 
@@ -149,11 +155,6 @@ func (eu *EventUpdate) SetDeployment(d *Deployment) *EventUpdate {
 	return eu.SetDeploymentID(d.ID)
 }
 
-// SetApproval sets the "approval" edge to the Approval entity.
-func (eu *EventUpdate) SetApproval(a *Approval) *EventUpdate {
-	return eu.SetApprovalID(a.ID)
-}
-
 // SetReview sets the "review" edge to the Review entity.
 func (eu *EventUpdate) SetReview(r *Review) *EventUpdate {
 	return eu.SetReviewID(r.ID)
@@ -186,12 +187,6 @@ func (eu *EventUpdate) Mutation() *EventMutation {
 // ClearDeployment clears the "deployment" edge to the Deployment entity.
 func (eu *EventUpdate) ClearDeployment() *EventUpdate {
 	eu.mutation.ClearDeployment()
-	return eu
-}
-
-// ClearApproval clears the "approval" edge to the Approval entity.
-func (eu *EventUpdate) ClearApproval() *EventUpdate {
-	eu.mutation.ClearApproval()
 	return eu
 }
 
@@ -321,6 +316,26 @@ func (eu *EventUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: event.FieldCreatedAt,
 		})
 	}
+	if value, ok := eu.mutation.ApprovalID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: event.FieldApprovalID,
+		})
+	}
+	if value, ok := eu.mutation.AddedApprovalID(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: event.FieldApprovalID,
+		})
+	}
+	if eu.mutation.ApprovalIDCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Column: event.FieldApprovalID,
+		})
+	}
 	if value, ok := eu.mutation.DeletedID(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeInt,
@@ -368,41 +383,6 @@ func (eu *EventUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
 					Column: deployment.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if eu.mutation.ApprovalCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   event.ApprovalTable,
-			Columns: []string{event.ApprovalColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: approval.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := eu.mutation.ApprovalIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   event.ApprovalTable,
-			Columns: []string{event.ApprovalColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: approval.FieldID,
 				},
 			},
 		}
@@ -548,6 +528,7 @@ func (euo *EventUpdateOne) ClearDeploymentID() *EventUpdateOne {
 
 // SetApprovalID sets the "approval_id" field.
 func (euo *EventUpdateOne) SetApprovalID(i int) *EventUpdateOne {
+	euo.mutation.ResetApprovalID()
 	euo.mutation.SetApprovalID(i)
 	return euo
 }
@@ -557,6 +538,12 @@ func (euo *EventUpdateOne) SetNillableApprovalID(i *int) *EventUpdateOne {
 	if i != nil {
 		euo.SetApprovalID(*i)
 	}
+	return euo
+}
+
+// AddApprovalID adds i to the "approval_id" field.
+func (euo *EventUpdateOne) AddApprovalID(i int) *EventUpdateOne {
+	euo.mutation.AddApprovalID(i)
 	return euo
 }
 
@@ -618,11 +605,6 @@ func (euo *EventUpdateOne) SetDeployment(d *Deployment) *EventUpdateOne {
 	return euo.SetDeploymentID(d.ID)
 }
 
-// SetApproval sets the "approval" edge to the Approval entity.
-func (euo *EventUpdateOne) SetApproval(a *Approval) *EventUpdateOne {
-	return euo.SetApprovalID(a.ID)
-}
-
 // SetReview sets the "review" edge to the Review entity.
 func (euo *EventUpdateOne) SetReview(r *Review) *EventUpdateOne {
 	return euo.SetReviewID(r.ID)
@@ -655,12 +637,6 @@ func (euo *EventUpdateOne) Mutation() *EventMutation {
 // ClearDeployment clears the "deployment" edge to the Deployment entity.
 func (euo *EventUpdateOne) ClearDeployment() *EventUpdateOne {
 	euo.mutation.ClearDeployment()
-	return euo
-}
-
-// ClearApproval clears the "approval" edge to the Approval entity.
-func (euo *EventUpdateOne) ClearApproval() *EventUpdateOne {
-	euo.mutation.ClearApproval()
 	return euo
 }
 
@@ -814,6 +790,26 @@ func (euo *EventUpdateOne) sqlSave(ctx context.Context) (_node *Event, err error
 			Column: event.FieldCreatedAt,
 		})
 	}
+	if value, ok := euo.mutation.ApprovalID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: event.FieldApprovalID,
+		})
+	}
+	if value, ok := euo.mutation.AddedApprovalID(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: event.FieldApprovalID,
+		})
+	}
+	if euo.mutation.ApprovalIDCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Column: event.FieldApprovalID,
+		})
+	}
 	if value, ok := euo.mutation.DeletedID(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeInt,
@@ -861,41 +857,6 @@ func (euo *EventUpdateOne) sqlSave(ctx context.Context) (_node *Event, err error
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
 					Column: deployment.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if euo.mutation.ApprovalCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   event.ApprovalTable,
-			Columns: []string{event.ApprovalColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: approval.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := euo.mutation.ApprovalIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   event.ApprovalTable,
-			Columns: []string{event.ApprovalColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: approval.FieldID,
 				},
 			},
 		}

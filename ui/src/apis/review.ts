@@ -38,7 +38,7 @@ export const mapDataToReview = (data: ReviewData): Review => {
 
     return  {
         id: data.id,
-        status: mapDataToApprovalStatus(data.status),
+        status: mapDataToReviewStatus(data.status),
         createdAt: new Date(data.created_at),
         updatedAt: new Date(data.updated_at),
         user,
@@ -46,7 +46,7 @@ export const mapDataToReview = (data: ReviewData): Review => {
     }
 }
 
-const mapDataToApprovalStatus = (status: string): ReviewStatusEnum => {
+const mapDataToReviewStatus = (status: string): ReviewStatusEnum => {
     switch (status) {
         case "pending":
             return ReviewStatusEnum.Pending

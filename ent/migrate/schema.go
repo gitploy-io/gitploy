@@ -8,35 +8,6 @@ import (
 )
 
 var (
-	// ApprovalsColumns holds the columns for the "approvals" table.
-	ApprovalsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "status", Type: field.TypeEnum, Enums: []string{"pending", "declined", "approved"}, Default: "pending"},
-		{Name: "created_at", Type: field.TypeTime},
-		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "deployment_id", Type: field.TypeInt, Nullable: true},
-		{Name: "user_id", Type: field.TypeInt64, Nullable: true},
-	}
-	// ApprovalsTable holds the schema information for the "approvals" table.
-	ApprovalsTable = &schema.Table{
-		Name:       "approvals",
-		Columns:    ApprovalsColumns,
-		PrimaryKey: []*schema.Column{ApprovalsColumns[0]},
-		ForeignKeys: []*schema.ForeignKey{
-			{
-				Symbol:     "approvals_deployments_approvals",
-				Columns:    []*schema.Column{ApprovalsColumns[4]},
-				RefColumns: []*schema.Column{DeploymentsColumns[0]},
-				OnDelete:   schema.Cascade,
-			},
-			{
-				Symbol:     "approvals_users_approvals",
-				Columns:    []*schema.Column{ApprovalsColumns[5]},
-				RefColumns: []*schema.Column{UsersColumns[0]},
-				OnDelete:   schema.SetNull,
-			},
-		},
-	}
 	// CallbacksColumns holds the columns for the "callbacks" table.
 	CallbacksColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
@@ -228,8 +199,8 @@ var (
 		{Name: "kind", Type: field.TypeEnum, Enums: []string{"deployment", "approval", "review"}},
 		{Name: "type", Type: field.TypeEnum, Enums: []string{"created", "updated", "deleted"}},
 		{Name: "created_at", Type: field.TypeTime},
-		{Name: "deleted_id", Type: field.TypeInt, Nullable: true},
 		{Name: "approval_id", Type: field.TypeInt, Nullable: true},
+		{Name: "deleted_id", Type: field.TypeInt, Nullable: true},
 		{Name: "deployment_id", Type: field.TypeInt, Nullable: true},
 		{Name: "review_id", Type: field.TypeInt, Nullable: true},
 	}
@@ -239,12 +210,6 @@ var (
 		Columns:    EventsColumns,
 		PrimaryKey: []*schema.Column{EventsColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
-			{
-				Symbol:     "events_approvals_event",
-				Columns:    []*schema.Column{EventsColumns[5]},
-				RefColumns: []*schema.Column{ApprovalsColumns[0]},
-				OnDelete:   schema.Cascade,
-			},
 			{
 				Symbol:     "events_deployments_event",
 				Columns:    []*schema.Column{EventsColumns[6]},
@@ -449,7 +414,6 @@ var (
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
-		ApprovalsTable,
 		CallbacksTable,
 		ChatUsersTable,
 		DeploymentsTable,
@@ -466,17 +430,14 @@ var (
 )
 
 func init() {
-	ApprovalsTable.ForeignKeys[0].RefTable = DeploymentsTable
-	ApprovalsTable.ForeignKeys[1].RefTable = UsersTable
 	CallbacksTable.ForeignKeys[0].RefTable = ReposTable
 	ChatUsersTable.ForeignKeys[0].RefTable = UsersTable
 	DeploymentsTable.ForeignKeys[0].RefTable = ReposTable
 	DeploymentsTable.ForeignKeys[1].RefTable = UsersTable
 	DeploymentStatisticsTable.ForeignKeys[0].RefTable = ReposTable
 	DeploymentStatusTable.ForeignKeys[0].RefTable = DeploymentsTable
-	EventsTable.ForeignKeys[0].RefTable = ApprovalsTable
-	EventsTable.ForeignKeys[1].RefTable = DeploymentsTable
-	EventsTable.ForeignKeys[2].RefTable = ReviewsTable
+	EventsTable.ForeignKeys[0].RefTable = DeploymentsTable
+	EventsTable.ForeignKeys[1].RefTable = ReviewsTable
 	LocksTable.ForeignKeys[0].RefTable = ReposTable
 	LocksTable.ForeignKeys[1].RefTable = UsersTable
 	NotificationRecordsTable.ForeignKeys[0].RefTable = EventsTable

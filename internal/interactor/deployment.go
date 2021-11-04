@@ -14,8 +14,6 @@ import (
 	"go.uber.org/zap"
 )
 
-// Deploy creates a new remote deployment basically.
-// But if the approval flag is enabled, it saves the deployment only.
 func (i *Interactor) Deploy(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, env *vo.Env) (*ent.Deployment, error) {
 	if locked, err := i.Store.HasLockOfRepoForEnv(ctx, r, d.Env); locked {
 		return nil, e.NewError(

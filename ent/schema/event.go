@@ -48,10 +48,6 @@ func (Event) Edges() []ent.Edge {
 			Ref("event").
 			Field("deployment_id").
 			Unique(),
-		edge.From("approval", Approval.Type).
-			Ref("event").
-			Field("approval_id").
-			Unique(),
 		edge.From("review", Review.Type).
 			Ref("event").
 			Field("review_id").

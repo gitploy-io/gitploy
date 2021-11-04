@@ -61,8 +61,6 @@ type DeploymentEdges struct {
 	User *User `json:"user,omitempty"`
 	// Repo holds the value of the repo edge.
 	Repo *Repo `json:"repo,omitempty"`
-	// Approvals holds the value of the approvals edge.
-	Approvals []*Approval `json:"approvals,omitempty"`
 	// Reviews holds the value of the reviews edge.
 	Reviews []*Review `json:"reviews,omitempty"`
 	// DeploymentStatuses holds the value of the deployment_statuses edge.
@@ -71,7 +69,7 @@ type DeploymentEdges struct {
 	Event []*Event `json:"event,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [6]bool
+	loadedTypes [5]bool
 }
 
 // UserOrErr returns the User value or an error if the edge
@@ -102,19 +100,10 @@ func (e DeploymentEdges) RepoOrErr() (*Repo, error) {
 	return nil, &NotLoadedError{edge: "repo"}
 }
 
-// ApprovalsOrErr returns the Approvals value or an error if the edge
-// was not loaded in eager-loading.
-func (e DeploymentEdges) ApprovalsOrErr() ([]*Approval, error) {
-	if e.loadedTypes[2] {
-		return e.Approvals, nil
-	}
-	return nil, &NotLoadedError{edge: "approvals"}
-}
-
 // ReviewsOrErr returns the Reviews value or an error if the edge
 // was not loaded in eager-loading.
 func (e DeploymentEdges) ReviewsOrErr() ([]*Review, error) {
-	if e.loadedTypes[3] {
+	if e.loadedTypes[2] {
 		return e.Reviews, nil
 	}
 	return nil, &NotLoadedError{edge: "reviews"}
@@ -123,7 +112,7 @@ func (e DeploymentEdges) ReviewsOrErr() ([]*Review, error) {
 // DeploymentStatusesOrErr returns the DeploymentStatuses value or an error if the edge
 // was not loaded in eager-loading.
 func (e DeploymentEdges) DeploymentStatusesOrErr() ([]*DeploymentStatus, error) {
-	if e.loadedTypes[4] {
+	if e.loadedTypes[3] {
 		return e.DeploymentStatuses, nil
 	}
 	return nil, &NotLoadedError{edge: "deployment_statuses"}
@@ -132,7 +121,7 @@ func (e DeploymentEdges) DeploymentStatusesOrErr() ([]*DeploymentStatus, error) 
 // EventOrErr returns the Event value or an error if the edge
 // was not loaded in eager-loading.
 func (e DeploymentEdges) EventOrErr() ([]*Event, error) {
-	if e.loadedTypes[5] {
+	if e.loadedTypes[4] {
 		return e.Event, nil
 	}
 	return nil, &NotLoadedError{edge: "event"}
@@ -283,11 +272,6 @@ func (d *Deployment) QueryUser() *UserQuery {
 // QueryRepo queries the "repo" edge of the Deployment entity.
 func (d *Deployment) QueryRepo() *RepoQuery {
 	return (&DeploymentClient{config: d.config}).QueryRepo(d)
-}
-
-// QueryApprovals queries the "approvals" edge of the Deployment entity.
-func (d *Deployment) QueryApprovals() *ApprovalQuery {
-	return (&DeploymentClient{config: d.config}).QueryApprovals(d)
 }
 
 // QueryReviews queries the "reviews" edge of the Deployment entity.

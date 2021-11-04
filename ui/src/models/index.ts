@@ -10,7 +10,6 @@ import Commit, { Author, Status, StatusState } from "./Commit"
 import Branch from "./Branch"
 import Tag from "./Tag"
 import User, { ChatUser, RateLimit } from "./User"
-import Approval, { ApprovalStatus } from "./Approval"
 import { Review, ReviewStatusEnum } from "./Review"
 import Lock from "./Lock"
 import License from "./License"
@@ -41,7 +40,6 @@ export type {
     User,
     ChatUser,
     RateLimit,
-    Approval,
     Review,
     Lock,
     License,
@@ -60,7 +58,6 @@ export {
     DeploymentType,
     StatusState,
     RequestStatus,
-    ApprovalStatus,
     ReviewStatusEnum,
     EventKindEnum, 
     EventTypeEnum

@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/gitploy-io/gitploy/ent"
-	"github.com/gitploy-io/gitploy/ent/approval"
 	"github.com/gitploy-io/gitploy/ent/deployment"
 	"github.com/gitploy-io/gitploy/vo"
 )
@@ -69,14 +68,6 @@ type (
 
 		CreateCallback(ctx context.Context, cb *ent.Callback) (*ent.Callback, error)
 		FindCallbackByHash(ctx context.Context, hash string) (*ent.Callback, error)
-
-		SearchApprovals(ctx context.Context, u *ent.User, s []approval.Status, from time.Time, to time.Time, page, perPage int) ([]*ent.Approval, error)
-		ListApprovals(ctx context.Context, d *ent.Deployment) ([]*ent.Approval, error)
-		FindApprovalByID(ctx context.Context, id int) (*ent.Approval, error)
-		FindApprovalOfUser(ctx context.Context, d *ent.Deployment, u *ent.User) (*ent.Approval, error)
-		CreateApproval(ctx context.Context, a *ent.Approval) (*ent.Approval, error)
-		UpdateApproval(ctx context.Context, a *ent.Approval) (*ent.Approval, error)
-		DeleteApproval(ctx context.Context, a *ent.Approval) error
 
 		SearchReviews(ctx context.Context, u *ent.User) ([]*ent.Review, error)
 		ListReviews(ctx context.Context, d *ent.Deployment) ([]*ent.Review, error)

@@ -52,7 +52,6 @@ func (User) Edges() []ent.Edge {
 				OnDelete: entsql.Cascade,
 			}),
 		edge.To("deployments", Deployment.Type),
-		edge.To("approvals", Approval.Type),
 		edge.To("reviews", Review.Type),
 		edge.To("locks", Lock.Type),
 	}

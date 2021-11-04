@@ -9,19 +9,6 @@ import (
 	"github.com/gitploy-io/gitploy/ent"
 )
 
-// The ApprovalFunc type is an adapter to allow the use of ordinary
-// function as Approval mutator.
-type ApprovalFunc func(context.Context, *ent.ApprovalMutation) (ent.Value, error)
-
-// Mutate calls f(ctx, m).
-func (f ApprovalFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	mv, ok := m.(*ent.ApprovalMutation)
-	if !ok {
-		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ApprovalMutation", m)
-	}
-	return f(ctx, mv)
-}
-
 // The CallbackFunc type is an adapter to allow the use of ordinary
 // function as Callback mutator.
 type CallbackFunc func(context.Context, *ent.CallbackMutation) (ent.Value, error)

@@ -89,7 +89,7 @@ func (s *Slack) notifyReviewEvent(ctx context.Context, e *ent.Event) {
 	)
 
 	if r = e.Edges.Review; r == nil {
-		s.log.Error("The eager loading of approval has failed.")
+		s.log.Error("The eager loading of review has failed.")
 		return
 	}
 
@@ -107,7 +107,7 @@ func (s *Slack) notifyReviewEvent(ctx context.Context, e *ent.Event) {
 
 		recipient, err := s.i.FindUserByID(ctx, r.Edges.User.ID)
 		if err != nil {
-			s.log.Error("It has failed to find the recipient of the approval.", zap.Error(err))
+			s.log.Error("It has failed to find the recipient of the review.", zap.Error(err))
 			return
 		}
 		if recipient.Edges.ChatUser == nil {
@@ -124,14 +124,14 @@ func (s *Slack) notifyReviewEvent(ctx context.Context, e *ent.Event) {
 
 	if e.Type == event.TypeUpdated {
 		option := slack.MsgOptionAttachments(slack.Attachment{
-			Color:   mapApprovalStatusToColor(r.Status),
+			Color:   mapReviewStatusToColor(r.Status),
 			Pretext: "*Review Responded*",
 			Text:    fmt.Sprintf("%s *%s* the deployment <%s|#%d> of `%s`.", r.Edges.User.Login, r.Status, s.buildDeploymentLink(d.Edges.Repo, d), d.Number, d.Edges.Repo.GetFullName()),
 		})
 
 		requester, err := s.i.FindUserByID(ctx, d.Edges.User.ID)
 		if err != nil {
-			s.log.Error("It has failed to find the requester of the approval.", zap.Error(err))
+			s.log.Error("It has failed to find the requester of the review.", zap.Error(err))
 			return
 		}
 		if requester.Edges.ChatUser == nil {
@@ -168,7 +168,7 @@ func mapDeploymentStatusToColor(status deployment.Status) string {
 	}
 }
 
-func mapApprovalStatusToColor(status review.Status) string {
+func mapReviewStatusToColor(status review.Status) string {
 	switch status {
 	case review.StatusPending:
 		return colorGray

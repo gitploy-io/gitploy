@@ -10,7 +10,6 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/gitploy-io/gitploy/ent/approval"
 	"github.com/gitploy-io/gitploy/ent/deployment"
 	"github.com/gitploy-io/gitploy/ent/deploymentstatus"
 	"github.com/gitploy-io/gitploy/ent/event"
@@ -218,21 +217,6 @@ func (dc *DeploymentCreate) SetUser(u *User) *DeploymentCreate {
 // SetRepo sets the "repo" edge to the Repo entity.
 func (dc *DeploymentCreate) SetRepo(r *Repo) *DeploymentCreate {
 	return dc.SetRepoID(r.ID)
-}
-
-// AddApprovalIDs adds the "approvals" edge to the Approval entity by IDs.
-func (dc *DeploymentCreate) AddApprovalIDs(ids ...int) *DeploymentCreate {
-	dc.mutation.AddApprovalIDs(ids...)
-	return dc
-}
-
-// AddApprovals adds the "approvals" edges to the Approval entity.
-func (dc *DeploymentCreate) AddApprovals(a ...*Approval) *DeploymentCreate {
-	ids := make([]int, len(a))
-	for i := range a {
-		ids[i] = a[i].ID
-	}
-	return dc.AddApprovalIDs(ids...)
 }
 
 // AddReviewIDs adds the "reviews" edge to the Review entity by IDs.
@@ -610,25 +594,6 @@ func (dc *DeploymentCreate) createSpec() (*Deployment, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.RepoID = nodes[0]
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := dc.mutation.ApprovalsIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   deployment.ApprovalsTable,
-			Columns: []string{deployment.ApprovalsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: approval.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := dc.mutation.ReviewsIDs(); len(nodes) > 0 {
