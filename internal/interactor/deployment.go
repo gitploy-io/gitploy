@@ -52,6 +52,10 @@ func (i *Interactor) Deploy(ctx context.Context, u *ent.User, r *ent.Repo, d *en
 		}
 
 		for _, rvr := range env.Review.Reviewers {
+			if rvr == u.Login {
+				continue
+			}
+
 			i.log.Debug(fmt.Sprintf("Request a review to %s.", rvr))
 			if _, err := i.requestReviewByLogin(ctx, d, rvr); err != nil {
 				i.log.Error("Failed to request the review.", zap.Error(err))
