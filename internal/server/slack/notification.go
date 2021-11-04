@@ -102,7 +102,7 @@ func (s *Slack) notifyReviewEvent(ctx context.Context, e *ent.Event) {
 		option := slack.MsgOptionAttachments(slack.Attachment{
 			Color:   colorPurple,
 			Pretext: "*Review Requested*",
-			Text:    fmt.Sprintf("%s has requested the review for the deployment <%s|#%d> of `%s`.", d.Edges.User.Login, s.buildDeploymentLink(d.Edges.Repo, d), d.Number, d.Edges.Repo.GetFullName()),
+			Text:    fmt.Sprintf("%s requested the review for the deployment <%s|#%d> of `%s`.", d.Edges.User.Login, s.buildDeploymentLink(d.Edges.Repo, d), d.Number, d.Edges.Repo.GetFullName()),
 		})
 
 		recipient, err := s.i.FindUserByID(ctx, r.Edges.User.ID)
@@ -125,8 +125,8 @@ func (s *Slack) notifyReviewEvent(ctx context.Context, e *ent.Event) {
 	if e.Type == event.TypeUpdated {
 		option := slack.MsgOptionAttachments(slack.Attachment{
 			Color:   mapApprovalStatusToColor(r.Status),
-			Pretext: "*Approval Responded*",
-			Text:    fmt.Sprintf("%s has *%s* the deployment <%s|#%d> of `%s`.", r.Edges.User.Login, r.Status, s.buildDeploymentLink(d.Edges.Repo, d), d.Number, d.Edges.Repo.GetFullName()),
+			Pretext: "*Review Responded*",
+			Text:    fmt.Sprintf("%s *%s* the deployment <%s|#%d> of `%s`.", r.Edges.User.Login, r.Status, s.buildDeploymentLink(d.Edges.Repo, d), d.Number, d.Edges.Repo.GetFullName()),
 		})
 
 		requester, err := s.i.FindUserByID(ctx, d.Edges.User.ID)

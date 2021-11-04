@@ -7,6 +7,8 @@ import {
     DeploymentStatusEnum, 
     Review,
     Event,
+    EventKindEnum,
+    EventTypeEnum,
     HttpInternalServerError, 
     HttpUnauthorizedError, 
     License,
@@ -158,43 +160,36 @@ export const mainSlice = createSlice({
             
             state.deployments.unshift(event.deployment)
         },
-        handleApprovalEvent: (state, action: PayloadAction<Event>) => {
-            // TODO: handle event.
-            // const event = action.payload
+        handleReviewEvent: (state, action: PayloadAction<Event>) => {
+            const event = action.payload
+
+            if (action.payload.kind !== EventKindEnum.Review) {
+                return
+            }
             
-            // if (event.type === EventTypeEnum.Deleted) {
-            //     const idx = state.approvals.findIndex((approval) => {
-            //         return event.deletedId === approval.id 
-            //     })
+            const user = state.user
+            if (!user) {
+                throw new Error("Unauthorized user.")
+            }
 
-            //     if (idx !== -1) {
-            //         state.approvals.splice(idx, 1)
-            //         return
-            //     }
-            // }
+            // Handling the event when the user own the event.
+            if (event.review?.user?.id !== user.id) {
+                return
+            }
 
-            // const user = state.user
-            // if (!user) {
-            //     throw new Error("Unauthorized user.")
-            // }
+            if (event.type === EventTypeEnum.Created) {
+                state.reviews.unshift(event.review)
+                return
+            }
 
-            // // Handling the event when the owner is same.
-            // if (event.approval?.user?.id !== user.id) {
-            //     return
-            // }
+            const idx = state.reviews.findIndex((review) => {
+                return event.review?.id === review.id 
+            })
 
-            // const idx = state.approvals.findIndex((approval) => {
-            //     return event.approval?.id === approval.id 
-            // })
-
-            // if (idx !== -1) {
-            //     if (event.type === EventTypeEnum.Updated) {
-            //         state.approvals.splice(idx, 1)
-            //         return
-            //     }
-            // } 
-
-            // state.approvals.unshift(event.approval)
+            if (idx !== -1) {
+                state.reviews.splice(idx, 1)
+                return
+            } 
         },
     },
     extraReducers: builder => {

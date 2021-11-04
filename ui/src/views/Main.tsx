@@ -35,7 +35,7 @@ export default function Main(props: any) {
 
         const sub = subscribeEvents((event) => {
             dispatch(slice.actions.handleDeploymentEvent(event))
-            dispatch(slice.actions.handleApprovalEvent(event))
+            dispatch(slice.actions.handleReviewEvent(event))
         })
 
         return () => {
