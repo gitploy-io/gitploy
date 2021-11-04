@@ -10,10 +10,10 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/gitploy-io/gitploy/ent/approval"
 	"github.com/gitploy-io/gitploy/ent/deployment"
 	"github.com/gitploy-io/gitploy/ent/event"
 	"github.com/gitploy-io/gitploy/ent/notificationrecord"
+	"github.com/gitploy-io/gitploy/ent/review"
 )
 
 // EventCreate is the builder for creating a Event entity.
@@ -77,6 +77,20 @@ func (ec *EventCreate) SetNillableApprovalID(i *int) *EventCreate {
 	return ec
 }
 
+// SetReviewID sets the "review_id" field.
+func (ec *EventCreate) SetReviewID(i int) *EventCreate {
+	ec.mutation.SetReviewID(i)
+	return ec
+}
+
+// SetNillableReviewID sets the "review_id" field if the given value is not nil.
+func (ec *EventCreate) SetNillableReviewID(i *int) *EventCreate {
+	if i != nil {
+		ec.SetReviewID(*i)
+	}
+	return ec
+}
+
 // SetDeletedID sets the "deleted_id" field.
 func (ec *EventCreate) SetDeletedID(i int) *EventCreate {
 	ec.mutation.SetDeletedID(i)
@@ -96,9 +110,9 @@ func (ec *EventCreate) SetDeployment(d *Deployment) *EventCreate {
 	return ec.SetDeploymentID(d.ID)
 }
 
-// SetApproval sets the "approval" edge to the Approval entity.
-func (ec *EventCreate) SetApproval(a *Approval) *EventCreate {
-	return ec.SetApprovalID(a.ID)
+// SetReview sets the "review" edge to the Review entity.
+func (ec *EventCreate) SetReview(r *Review) *EventCreate {
+	return ec.SetReviewID(r.ID)
 }
 
 // SetNotificationRecordID sets the "notification_record" edge to the NotificationRecord entity by ID.
@@ -269,6 +283,14 @@ func (ec *EventCreate) createSpec() (*Event, *sqlgraph.CreateSpec) {
 		})
 		_node.CreatedAt = value
 	}
+	if value, ok := ec.mutation.ApprovalID(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: event.FieldApprovalID,
+		})
+		_node.ApprovalID = value
+	}
 	if value, ok := ec.mutation.DeletedID(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeInt,
@@ -297,24 +319,24 @@ func (ec *EventCreate) createSpec() (*Event, *sqlgraph.CreateSpec) {
 		_node.DeploymentID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := ec.mutation.ApprovalIDs(); len(nodes) > 0 {
+	if nodes := ec.mutation.ReviewIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   event.ApprovalTable,
-			Columns: []string{event.ApprovalColumn},
+			Table:   event.ReviewTable,
+			Columns: []string{event.ReviewColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: approval.FieldID,
+					Column: review.FieldID,
 				},
 			},
 		}
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.ApprovalID = nodes[0]
+		_node.ReviewID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := ec.mutation.NotificationRecordIDs(); len(nodes) > 0 {

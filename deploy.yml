@@ -22,6 +22,8 @@ envs:
       - "react-test"
       - "publish-image"
     production_environment: true
-    approval:
+    review:
       enabled: true
-      required_count: 0
+      reviewers: 
+        - hanjunlee
+        - noah-qa

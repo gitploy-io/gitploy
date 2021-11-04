@@ -13,12 +13,12 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/gitploy-io/gitploy/ent/approval"
 	"github.com/gitploy-io/gitploy/ent/deployment"
 	"github.com/gitploy-io/gitploy/ent/deploymentstatus"
 	"github.com/gitploy-io/gitploy/ent/event"
 	"github.com/gitploy-io/gitploy/ent/predicate"
 	"github.com/gitploy-io/gitploy/ent/repo"
+	"github.com/gitploy-io/gitploy/ent/review"
 	"github.com/gitploy-io/gitploy/ent/user"
 )
 
@@ -34,7 +34,7 @@ type DeploymentQuery struct {
 	// eager-loading edges.
 	withUser               *UserQuery
 	withRepo               *RepoQuery
-	withApprovals          *ApprovalQuery
+	withReviews            *ReviewQuery
 	withDeploymentStatuses *DeploymentStatusQuery
 	withEvent              *EventQuery
 	modifiers              []func(s *sql.Selector)
@@ -118,9 +118,9 @@ func (dq *DeploymentQuery) QueryRepo() *RepoQuery {
 	return query
 }
 
-// QueryApprovals chains the current query on the "approvals" edge.
-func (dq *DeploymentQuery) QueryApprovals() *ApprovalQuery {
-	query := &ApprovalQuery{config: dq.config}
+// QueryReviews chains the current query on the "reviews" edge.
+func (dq *DeploymentQuery) QueryReviews() *ReviewQuery {
+	query := &ReviewQuery{config: dq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := dq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -131,8 +131,8 @@ func (dq *DeploymentQuery) QueryApprovals() *ApprovalQuery {
 		}
 		step := sqlgraph.NewStep(
 			sqlgraph.From(deployment.Table, deployment.FieldID, selector),
-			sqlgraph.To(approval.Table, approval.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, deployment.ApprovalsTable, deployment.ApprovalsColumn),
+			sqlgraph.To(review.Table, review.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, deployment.ReviewsTable, deployment.ReviewsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(dq.driver.Dialect(), step)
 		return fromU, nil
@@ -367,7 +367,7 @@ func (dq *DeploymentQuery) Clone() *DeploymentQuery {
 		predicates:             append([]predicate.Deployment{}, dq.predicates...),
 		withUser:               dq.withUser.Clone(),
 		withRepo:               dq.withRepo.Clone(),
-		withApprovals:          dq.withApprovals.Clone(),
+		withReviews:            dq.withReviews.Clone(),
 		withDeploymentStatuses: dq.withDeploymentStatuses.Clone(),
 		withEvent:              dq.withEvent.Clone(),
 		// clone intermediate query.
@@ -398,14 +398,14 @@ func (dq *DeploymentQuery) WithRepo(opts ...func(*RepoQuery)) *DeploymentQuery {
 	return dq
 }
 
-// WithApprovals tells the query-builder to eager-load the nodes that are connected to
-// the "approvals" edge. The optional arguments are used to configure the query builder of the edge.
-func (dq *DeploymentQuery) WithApprovals(opts ...func(*ApprovalQuery)) *DeploymentQuery {
-	query := &ApprovalQuery{config: dq.config}
+// WithReviews tells the query-builder to eager-load the nodes that are connected to
+// the "reviews" edge. The optional arguments are used to configure the query builder of the edge.
+func (dq *DeploymentQuery) WithReviews(opts ...func(*ReviewQuery)) *DeploymentQuery {
+	query := &ReviewQuery{config: dq.config}
 	for _, opt := range opts {
 		opt(query)
 	}
-	dq.withApprovals = query
+	dq.withReviews = query
 	return dq
 }
 
@@ -499,7 +499,7 @@ func (dq *DeploymentQuery) sqlAll(ctx context.Context) ([]*Deployment, error) {
 		loadedTypes = [5]bool{
 			dq.withUser != nil,
 			dq.withRepo != nil,
-			dq.withApprovals != nil,
+			dq.withReviews != nil,
 			dq.withDeploymentStatuses != nil,
 			dq.withEvent != nil,
 		}
@@ -579,16 +579,16 @@ func (dq *DeploymentQuery) sqlAll(ctx context.Context) ([]*Deployment, error) {
 		}
 	}
 
-	if query := dq.withApprovals; query != nil {
+	if query := dq.withReviews; query != nil {
 		fks := make([]driver.Value, 0, len(nodes))
 		nodeids := make(map[int]*Deployment)
 		for i := range nodes {
 			fks = append(fks, nodes[i].ID)
 			nodeids[nodes[i].ID] = nodes[i]
-			nodes[i].Edges.Approvals = []*Approval{}
+			nodes[i].Edges.Reviews = []*Review{}
 		}
-		query.Where(predicate.Approval(func(s *sql.Selector) {
-			s.Where(sql.InValues(deployment.ApprovalsColumn, fks...))
+		query.Where(predicate.Review(func(s *sql.Selector) {
+			s.Where(sql.InValues(deployment.ReviewsColumn, fks...))
 		}))
 		neighbors, err := query.All(ctx)
 		if err != nil {
@@ -600,7 +600,7 @@ func (dq *DeploymentQuery) sqlAll(ctx context.Context) ([]*Deployment, error) {
 			if !ok {
 				return nil, fmt.Errorf(`unexpected foreign-key "deployment_id" returned %v for node %v`, fk, n.ID)
 			}
-			node.Edges.Approvals = append(node.Edges.Approvals, n)
+			node.Edges.Reviews = append(node.Edges.Reviews, n)
 		}
 	}
 

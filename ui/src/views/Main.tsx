@@ -4,7 +4,7 @@ import { Layout, Menu, Row, Col, Result, Button, Drawer, Avatar, Dropdown, Badge
 import { SettingFilled } from "@ant-design/icons"
 
 import { useAppSelector, useAppDispatch } from "../redux/hooks"
-import { init, searchDeployments, searchApprovals, fetchLicense, mainSlice as slice } from "../redux/main"
+import { init, searchDeployments, searchReviews, fetchLicense, mainSlice as slice } from "../redux/main"
 import { subscribeEvents } from "../apis"
 
 import RecentActivities from "../components/RecentActivities"
@@ -22,7 +22,7 @@ export default function Main(props: any) {
         expired,
         user,
         deployments,
-        approvals,
+        reviews,
         license,
     } = useAppSelector(state => state.main, shallowEqual)
     const dispatch = useAppDispatch()
@@ -30,12 +30,12 @@ export default function Main(props: any) {
     useEffect(() => {
         dispatch(init())
         dispatch(searchDeployments())
-        dispatch(searchApprovals())
+        dispatch(searchReviews())
         dispatch(fetchLicense())
 
         const sub = subscribeEvents((event) => {
             dispatch(slice.actions.handleDeploymentEvent(event))
-            dispatch(slice.actions.handleApprovalEvent(event))
+            dispatch(slice.actions.handleReviewEvent(event))
         })
 
         return () => {
@@ -59,7 +59,7 @@ export default function Main(props: any) {
     }
 
     // Count of recent activities.
-    const countActivities = deployments.length + approvals.length
+    const countActivities = deployments.length + reviews.length
 
     let content: React.ReactElement
     if (!available) {
@@ -121,7 +121,7 @@ export default function Main(props: any) {
                         >
                             <RecentActivities 
                                 deployments={deployments}
-                                approvals={approvals}
+                                reviews={reviews}
                             />
                         </Drawer>
                         &nbsp; &nbsp;

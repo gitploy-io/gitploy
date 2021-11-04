@@ -8,18 +8,18 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/gitploy-io/gitploy/ent/approval"
 	"github.com/gitploy-io/gitploy/ent/deployment"
+	"github.com/gitploy-io/gitploy/ent/review"
 	"github.com/gitploy-io/gitploy/ent/user"
 )
 
-// Approval is the model entity for the Approval schema.
-type Approval struct {
+// Review is the model entity for the Review schema.
+type Review struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID int `json:"id,omitempty"`
 	// Status holds the value of the "status" field.
-	Status approval.Status `json:"status"`
+	Status review.Status `json:"status"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -29,12 +29,12 @@ type Approval struct {
 	// DeploymentID holds the value of the "deployment_id" field.
 	DeploymentID int `json:"deployment_id"`
 	// Edges holds the relations/edges for other nodes in the graph.
-	// The values are being populated by the ApprovalQuery when eager-loading is set.
-	Edges ApprovalEdges `json:"edges"`
+	// The values are being populated by the ReviewQuery when eager-loading is set.
+	Edges ReviewEdges `json:"edges"`
 }
 
-// ApprovalEdges holds the relations/edges for other nodes in the graph.
-type ApprovalEdges struct {
+// ReviewEdges holds the relations/edges for other nodes in the graph.
+type ReviewEdges struct {
 	// User holds the value of the user edge.
 	User *User `json:"user,omitempty"`
 	// Deployment holds the value of the deployment edge.
@@ -48,7 +48,7 @@ type ApprovalEdges struct {
 
 // UserOrErr returns the User value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e ApprovalEdges) UserOrErr() (*User, error) {
+func (e ReviewEdges) UserOrErr() (*User, error) {
 	if e.loadedTypes[0] {
 		if e.User == nil {
 			// The edge user was loaded in eager-loading,
@@ -62,7 +62,7 @@ func (e ApprovalEdges) UserOrErr() (*User, error) {
 
 // DeploymentOrErr returns the Deployment value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e ApprovalEdges) DeploymentOrErr() (*Deployment, error) {
+func (e ReviewEdges) DeploymentOrErr() (*Deployment, error) {
 	if e.loadedTypes[1] {
 		if e.Deployment == nil {
 			// The edge deployment was loaded in eager-loading,
@@ -76,7 +76,7 @@ func (e ApprovalEdges) DeploymentOrErr() (*Deployment, error) {
 
 // EventOrErr returns the Event value or an error if the edge
 // was not loaded in eager-loading.
-func (e ApprovalEdges) EventOrErr() ([]*Event, error) {
+func (e ReviewEdges) EventOrErr() ([]*Event, error) {
 	if e.loadedTypes[2] {
 		return e.Event, nil
 	}
@@ -84,129 +84,129 @@ func (e ApprovalEdges) EventOrErr() ([]*Event, error) {
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
-func (*Approval) scanValues(columns []string) ([]interface{}, error) {
+func (*Review) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case approval.FieldID, approval.FieldUserID, approval.FieldDeploymentID:
+		case review.FieldID, review.FieldUserID, review.FieldDeploymentID:
 			values[i] = new(sql.NullInt64)
-		case approval.FieldStatus:
+		case review.FieldStatus:
 			values[i] = new(sql.NullString)
-		case approval.FieldCreatedAt, approval.FieldUpdatedAt:
+		case review.FieldCreatedAt, review.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type Approval", columns[i])
+			return nil, fmt.Errorf("unexpected column %q for type Review", columns[i])
 		}
 	}
 	return values, nil
 }
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
-// to the Approval fields.
-func (a *Approval) assignValues(columns []string, values []interface{}) error {
+// to the Review fields.
+func (r *Review) assignValues(columns []string, values []interface{}) error {
 	if m, n := len(values), len(columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}
 	for i := range columns {
 		switch columns[i] {
-		case approval.FieldID:
+		case review.FieldID:
 			value, ok := values[i].(*sql.NullInt64)
 			if !ok {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
-			a.ID = int(value.Int64)
-		case approval.FieldStatus:
+			r.ID = int(value.Int64)
+		case review.FieldStatus:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field status", values[i])
 			} else if value.Valid {
-				a.Status = approval.Status(value.String)
+				r.Status = review.Status(value.String)
 			}
-		case approval.FieldCreatedAt:
+		case review.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
 			} else if value.Valid {
-				a.CreatedAt = value.Time
+				r.CreatedAt = value.Time
 			}
-		case approval.FieldUpdatedAt:
+		case review.FieldUpdatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
 			} else if value.Valid {
-				a.UpdatedAt = value.Time
+				r.UpdatedAt = value.Time
 			}
-		case approval.FieldUserID:
+		case review.FieldUserID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field user_id", values[i])
 			} else if value.Valid {
-				a.UserID = value.Int64
+				r.UserID = value.Int64
 			}
-		case approval.FieldDeploymentID:
+		case review.FieldDeploymentID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field deployment_id", values[i])
 			} else if value.Valid {
-				a.DeploymentID = int(value.Int64)
+				r.DeploymentID = int(value.Int64)
 			}
 		}
 	}
 	return nil
 }
 
-// QueryUser queries the "user" edge of the Approval entity.
-func (a *Approval) QueryUser() *UserQuery {
-	return (&ApprovalClient{config: a.config}).QueryUser(a)
+// QueryUser queries the "user" edge of the Review entity.
+func (r *Review) QueryUser() *UserQuery {
+	return (&ReviewClient{config: r.config}).QueryUser(r)
 }
 
-// QueryDeployment queries the "deployment" edge of the Approval entity.
-func (a *Approval) QueryDeployment() *DeploymentQuery {
-	return (&ApprovalClient{config: a.config}).QueryDeployment(a)
+// QueryDeployment queries the "deployment" edge of the Review entity.
+func (r *Review) QueryDeployment() *DeploymentQuery {
+	return (&ReviewClient{config: r.config}).QueryDeployment(r)
 }
 
-// QueryEvent queries the "event" edge of the Approval entity.
-func (a *Approval) QueryEvent() *EventQuery {
-	return (&ApprovalClient{config: a.config}).QueryEvent(a)
+// QueryEvent queries the "event" edge of the Review entity.
+func (r *Review) QueryEvent() *EventQuery {
+	return (&ReviewClient{config: r.config}).QueryEvent(r)
 }
 
-// Update returns a builder for updating this Approval.
-// Note that you need to call Approval.Unwrap() before calling this method if this Approval
+// Update returns a builder for updating this Review.
+// Note that you need to call Review.Unwrap() before calling this method if this Review
 // was returned from a transaction, and the transaction was committed or rolled back.
-func (a *Approval) Update() *ApprovalUpdateOne {
-	return (&ApprovalClient{config: a.config}).UpdateOne(a)
+func (r *Review) Update() *ReviewUpdateOne {
+	return (&ReviewClient{config: r.config}).UpdateOne(r)
 }
 
-// Unwrap unwraps the Approval entity that was returned from a transaction after it was closed,
+// Unwrap unwraps the Review entity that was returned from a transaction after it was closed,
 // so that all future queries will be executed through the driver which created the transaction.
-func (a *Approval) Unwrap() *Approval {
-	tx, ok := a.config.driver.(*txDriver)
+func (r *Review) Unwrap() *Review {
+	tx, ok := r.config.driver.(*txDriver)
 	if !ok {
-		panic("ent: Approval is not a transactional entity")
+		panic("ent: Review is not a transactional entity")
 	}
-	a.config.driver = tx.drv
-	return a
+	r.config.driver = tx.drv
+	return r
 }
 
 // String implements the fmt.Stringer.
-func (a *Approval) String() string {
+func (r *Review) String() string {
 	var builder strings.Builder
-	builder.WriteString("Approval(")
-	builder.WriteString(fmt.Sprintf("id=%v", a.ID))
+	builder.WriteString("Review(")
+	builder.WriteString(fmt.Sprintf("id=%v", r.ID))
 	builder.WriteString(", status=")
-	builder.WriteString(fmt.Sprintf("%v", a.Status))
+	builder.WriteString(fmt.Sprintf("%v", r.Status))
 	builder.WriteString(", created_at=")
-	builder.WriteString(a.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(r.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", updated_at=")
-	builder.WriteString(a.UpdatedAt.Format(time.ANSIC))
+	builder.WriteString(r.UpdatedAt.Format(time.ANSIC))
 	builder.WriteString(", user_id=")
-	builder.WriteString(fmt.Sprintf("%v", a.UserID))
+	builder.WriteString(fmt.Sprintf("%v", r.UserID))
 	builder.WriteString(", deployment_id=")
-	builder.WriteString(fmt.Sprintf("%v", a.DeploymentID))
+	builder.WriteString(fmt.Sprintf("%v", r.DeploymentID))
 	builder.WriteByte(')')
 	return builder.String()
 }
 
-// Approvals is a parsable slice of Approval.
-type Approvals []*Approval
+// Reviews is a parsable slice of Review.
+type Reviews []*Review
 
-func (a Approvals) config(cfg config) {
-	for _i := range a {
-		a[_i].config = cfg
+func (r Reviews) config(cfg config) {
+	for _i := range r {
+		r[_i].config = cfg
 	}
 }

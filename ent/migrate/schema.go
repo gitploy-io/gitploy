@@ -8,35 +8,6 @@ import (
 )
 
 var (
-	// ApprovalsColumns holds the columns for the "approvals" table.
-	ApprovalsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "status", Type: field.TypeEnum, Enums: []string{"pending", "declined", "approved"}, Default: "pending"},
-		{Name: "created_at", Type: field.TypeTime},
-		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "deployment_id", Type: field.TypeInt, Nullable: true},
-		{Name: "user_id", Type: field.TypeInt64, Nullable: true},
-	}
-	// ApprovalsTable holds the schema information for the "approvals" table.
-	ApprovalsTable = &schema.Table{
-		Name:       "approvals",
-		Columns:    ApprovalsColumns,
-		PrimaryKey: []*schema.Column{ApprovalsColumns[0]},
-		ForeignKeys: []*schema.ForeignKey{
-			{
-				Symbol:     "approvals_deployments_approvals",
-				Columns:    []*schema.Column{ApprovalsColumns[4]},
-				RefColumns: []*schema.Column{DeploymentsColumns[0]},
-				OnDelete:   schema.Cascade,
-			},
-			{
-				Symbol:     "approvals_users_approvals",
-				Columns:    []*schema.Column{ApprovalsColumns[5]},
-				RefColumns: []*schema.Column{UsersColumns[0]},
-				OnDelete:   schema.SetNull,
-			},
-		},
-	}
 	// CallbacksColumns holds the columns for the "callbacks" table.
 	CallbacksColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
@@ -98,10 +69,10 @@ var (
 		{Name: "html_url", Type: field.TypeString, Nullable: true, Size: 2000},
 		{Name: "production_environment", Type: field.TypeBool, Default: false},
 		{Name: "is_rollback", Type: field.TypeBool, Default: false},
-		{Name: "is_approval_enabled", Type: field.TypeBool, Default: false},
-		{Name: "required_approval_count", Type: field.TypeInt, Default: 0},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "is_approval_enabled", Type: field.TypeBool, Nullable: true},
+		{Name: "required_approval_count", Type: field.TypeInt, Nullable: true},
 		{Name: "repo_id", Type: field.TypeInt64, Nullable: true},
 		{Name: "user_id", Type: field.TypeInt64, Nullable: true},
 	}
@@ -128,17 +99,17 @@ var (
 			{
 				Name:    "deployment_repo_id_env_status_updated_at",
 				Unique:  false,
-				Columns: []*schema.Column{DeploymentsColumns[15], DeploymentsColumns[3], DeploymentsColumns[5], DeploymentsColumns[14]},
+				Columns: []*schema.Column{DeploymentsColumns[15], DeploymentsColumns[3], DeploymentsColumns[5], DeploymentsColumns[12]},
 			},
 			{
 				Name:    "deployment_repo_id_env_created_at",
 				Unique:  false,
-				Columns: []*schema.Column{DeploymentsColumns[15], DeploymentsColumns[3], DeploymentsColumns[13]},
+				Columns: []*schema.Column{DeploymentsColumns[15], DeploymentsColumns[3], DeploymentsColumns[11]},
 			},
 			{
 				Name:    "deployment_repo_id_created_at",
 				Unique:  false,
-				Columns: []*schema.Column{DeploymentsColumns[15], DeploymentsColumns[13]},
+				Columns: []*schema.Column{DeploymentsColumns[15], DeploymentsColumns[11]},
 			},
 			{
 				Name:    "deployment_number_repo_id",
@@ -153,7 +124,7 @@ var (
 			{
 				Name:    "deployment_status_created_at",
 				Unique:  false,
-				Columns: []*schema.Column{DeploymentsColumns[5], DeploymentsColumns[13]},
+				Columns: []*schema.Column{DeploymentsColumns[5], DeploymentsColumns[11]},
 			},
 		},
 	}
@@ -225,12 +196,13 @@ var (
 	// EventsColumns holds the columns for the "events" table.
 	EventsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "kind", Type: field.TypeEnum, Enums: []string{"deployment", "approval"}},
+		{Name: "kind", Type: field.TypeEnum, Enums: []string{"deployment", "approval", "review"}},
 		{Name: "type", Type: field.TypeEnum, Enums: []string{"created", "updated", "deleted"}},
 		{Name: "created_at", Type: field.TypeTime},
-		{Name: "deleted_id", Type: field.TypeInt, Nullable: true},
 		{Name: "approval_id", Type: field.TypeInt, Nullable: true},
+		{Name: "deleted_id", Type: field.TypeInt, Nullable: true},
 		{Name: "deployment_id", Type: field.TypeInt, Nullable: true},
+		{Name: "review_id", Type: field.TypeInt, Nullable: true},
 	}
 	// EventsTable holds the schema information for the "events" table.
 	EventsTable = &schema.Table{
@@ -239,15 +211,15 @@ var (
 		PrimaryKey: []*schema.Column{EventsColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "events_approvals_event",
-				Columns:    []*schema.Column{EventsColumns[5]},
-				RefColumns: []*schema.Column{ApprovalsColumns[0]},
-				OnDelete:   schema.Cascade,
-			},
-			{
 				Symbol:     "events_deployments_event",
 				Columns:    []*schema.Column{EventsColumns[6]},
 				RefColumns: []*schema.Column{DeploymentsColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "events_reviews_event",
+				Columns:    []*schema.Column{EventsColumns[7]},
+				RefColumns: []*schema.Column{ReviewsColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
 		},
@@ -392,6 +364,35 @@ var (
 			},
 		},
 	}
+	// ReviewsColumns holds the columns for the "reviews" table.
+	ReviewsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "status", Type: field.TypeEnum, Enums: []string{"pending", "rejected", "approved"}, Default: "pending"},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deployment_id", Type: field.TypeInt, Nullable: true},
+		{Name: "user_id", Type: field.TypeInt64, Nullable: true},
+	}
+	// ReviewsTable holds the schema information for the "reviews" table.
+	ReviewsTable = &schema.Table{
+		Name:       "reviews",
+		Columns:    ReviewsColumns,
+		PrimaryKey: []*schema.Column{ReviewsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "reviews_deployments_reviews",
+				Columns:    []*schema.Column{ReviewsColumns[4]},
+				RefColumns: []*schema.Column{DeploymentsColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "reviews_users_reviews",
+				Columns:    []*schema.Column{ReviewsColumns[5]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+	}
 	// UsersColumns holds the columns for the "users" table.
 	UsersColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt64, Increment: true},
@@ -413,7 +414,6 @@ var (
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
-		ApprovalsTable,
 		CallbacksTable,
 		ChatUsersTable,
 		DeploymentsTable,
@@ -424,24 +424,25 @@ var (
 		NotificationRecordsTable,
 		PermsTable,
 		ReposTable,
+		ReviewsTable,
 		UsersTable,
 	}
 )
 
 func init() {
-	ApprovalsTable.ForeignKeys[0].RefTable = DeploymentsTable
-	ApprovalsTable.ForeignKeys[1].RefTable = UsersTable
 	CallbacksTable.ForeignKeys[0].RefTable = ReposTable
 	ChatUsersTable.ForeignKeys[0].RefTable = UsersTable
 	DeploymentsTable.ForeignKeys[0].RefTable = ReposTable
 	DeploymentsTable.ForeignKeys[1].RefTable = UsersTable
 	DeploymentStatisticsTable.ForeignKeys[0].RefTable = ReposTable
 	DeploymentStatusTable.ForeignKeys[0].RefTable = DeploymentsTable
-	EventsTable.ForeignKeys[0].RefTable = ApprovalsTable
-	EventsTable.ForeignKeys[1].RefTable = DeploymentsTable
+	EventsTable.ForeignKeys[0].RefTable = DeploymentsTable
+	EventsTable.ForeignKeys[1].RefTable = ReviewsTable
 	LocksTable.ForeignKeys[0].RefTable = ReposTable
 	LocksTable.ForeignKeys[1].RefTable = UsersTable
 	NotificationRecordsTable.ForeignKeys[0].RefTable = EventsTable
 	PermsTable.ForeignKeys[0].RefTable = ReposTable
 	PermsTable.ForeignKeys[1].RefTable = UsersTable
+	ReviewsTable.ForeignKeys[0].RefTable = DeploymentsTable
+	ReviewsTable.ForeignKeys[1].RefTable = UsersTable
 }

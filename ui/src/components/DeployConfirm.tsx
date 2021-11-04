@@ -80,14 +80,6 @@ export default function DeployConfirm(props: DeployConfirmProps): JSX.Element {
             >
                 <Text>{moment(props.deployment.createdAt).format("YYYY-MM-DD HH:mm:ss")}</Text>
             </Form.Item>
-            {(props.deployment.isApprovalEanbled) ?
-                <Form.Item
-                    {...layout}
-                    label="Approval"
-                >
-                    <Text>{props.deployment.requiredApprovalCount}</Text>
-                </Form.Item>: 
-                null }
             <Form.Item
                 {...layout}
                 label="Changes"

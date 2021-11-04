@@ -10,139 +10,139 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/gitploy-io/gitploy/ent/approval"
 	"github.com/gitploy-io/gitploy/ent/deployment"
 	"github.com/gitploy-io/gitploy/ent/event"
+	"github.com/gitploy-io/gitploy/ent/review"
 	"github.com/gitploy-io/gitploy/ent/user"
 )
 
-// ApprovalCreate is the builder for creating a Approval entity.
-type ApprovalCreate struct {
+// ReviewCreate is the builder for creating a Review entity.
+type ReviewCreate struct {
 	config
-	mutation *ApprovalMutation
+	mutation *ReviewMutation
 	hooks    []Hook
 }
 
 // SetStatus sets the "status" field.
-func (ac *ApprovalCreate) SetStatus(a approval.Status) *ApprovalCreate {
-	ac.mutation.SetStatus(a)
-	return ac
+func (rc *ReviewCreate) SetStatus(r review.Status) *ReviewCreate {
+	rc.mutation.SetStatus(r)
+	return rc
 }
 
 // SetNillableStatus sets the "status" field if the given value is not nil.
-func (ac *ApprovalCreate) SetNillableStatus(a *approval.Status) *ApprovalCreate {
-	if a != nil {
-		ac.SetStatus(*a)
+func (rc *ReviewCreate) SetNillableStatus(r *review.Status) *ReviewCreate {
+	if r != nil {
+		rc.SetStatus(*r)
 	}
-	return ac
+	return rc
 }
 
 // SetCreatedAt sets the "created_at" field.
-func (ac *ApprovalCreate) SetCreatedAt(t time.Time) *ApprovalCreate {
-	ac.mutation.SetCreatedAt(t)
-	return ac
+func (rc *ReviewCreate) SetCreatedAt(t time.Time) *ReviewCreate {
+	rc.mutation.SetCreatedAt(t)
+	return rc
 }
 
 // SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
-func (ac *ApprovalCreate) SetNillableCreatedAt(t *time.Time) *ApprovalCreate {
+func (rc *ReviewCreate) SetNillableCreatedAt(t *time.Time) *ReviewCreate {
 	if t != nil {
-		ac.SetCreatedAt(*t)
+		rc.SetCreatedAt(*t)
 	}
-	return ac
+	return rc
 }
 
 // SetUpdatedAt sets the "updated_at" field.
-func (ac *ApprovalCreate) SetUpdatedAt(t time.Time) *ApprovalCreate {
-	ac.mutation.SetUpdatedAt(t)
-	return ac
+func (rc *ReviewCreate) SetUpdatedAt(t time.Time) *ReviewCreate {
+	rc.mutation.SetUpdatedAt(t)
+	return rc
 }
 
 // SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
-func (ac *ApprovalCreate) SetNillableUpdatedAt(t *time.Time) *ApprovalCreate {
+func (rc *ReviewCreate) SetNillableUpdatedAt(t *time.Time) *ReviewCreate {
 	if t != nil {
-		ac.SetUpdatedAt(*t)
+		rc.SetUpdatedAt(*t)
 	}
-	return ac
+	return rc
 }
 
 // SetUserID sets the "user_id" field.
-func (ac *ApprovalCreate) SetUserID(i int64) *ApprovalCreate {
-	ac.mutation.SetUserID(i)
-	return ac
+func (rc *ReviewCreate) SetUserID(i int64) *ReviewCreate {
+	rc.mutation.SetUserID(i)
+	return rc
 }
 
 // SetDeploymentID sets the "deployment_id" field.
-func (ac *ApprovalCreate) SetDeploymentID(i int) *ApprovalCreate {
-	ac.mutation.SetDeploymentID(i)
-	return ac
+func (rc *ReviewCreate) SetDeploymentID(i int) *ReviewCreate {
+	rc.mutation.SetDeploymentID(i)
+	return rc
 }
 
 // SetUser sets the "user" edge to the User entity.
-func (ac *ApprovalCreate) SetUser(u *User) *ApprovalCreate {
-	return ac.SetUserID(u.ID)
+func (rc *ReviewCreate) SetUser(u *User) *ReviewCreate {
+	return rc.SetUserID(u.ID)
 }
 
 // SetDeployment sets the "deployment" edge to the Deployment entity.
-func (ac *ApprovalCreate) SetDeployment(d *Deployment) *ApprovalCreate {
-	return ac.SetDeploymentID(d.ID)
+func (rc *ReviewCreate) SetDeployment(d *Deployment) *ReviewCreate {
+	return rc.SetDeploymentID(d.ID)
 }
 
 // AddEventIDs adds the "event" edge to the Event entity by IDs.
-func (ac *ApprovalCreate) AddEventIDs(ids ...int) *ApprovalCreate {
-	ac.mutation.AddEventIDs(ids...)
-	return ac
+func (rc *ReviewCreate) AddEventIDs(ids ...int) *ReviewCreate {
+	rc.mutation.AddEventIDs(ids...)
+	return rc
 }
 
 // AddEvent adds the "event" edges to the Event entity.
-func (ac *ApprovalCreate) AddEvent(e ...*Event) *ApprovalCreate {
+func (rc *ReviewCreate) AddEvent(e ...*Event) *ReviewCreate {
 	ids := make([]int, len(e))
 	for i := range e {
 		ids[i] = e[i].ID
 	}
-	return ac.AddEventIDs(ids...)
+	return rc.AddEventIDs(ids...)
 }
 
-// Mutation returns the ApprovalMutation object of the builder.
-func (ac *ApprovalCreate) Mutation() *ApprovalMutation {
-	return ac.mutation
+// Mutation returns the ReviewMutation object of the builder.
+func (rc *ReviewCreate) Mutation() *ReviewMutation {
+	return rc.mutation
 }
 
-// Save creates the Approval in the database.
-func (ac *ApprovalCreate) Save(ctx context.Context) (*Approval, error) {
+// Save creates the Review in the database.
+func (rc *ReviewCreate) Save(ctx context.Context) (*Review, error) {
 	var (
 		err  error
-		node *Approval
+		node *Review
 	)
-	ac.defaults()
-	if len(ac.hooks) == 0 {
-		if err = ac.check(); err != nil {
+	rc.defaults()
+	if len(rc.hooks) == 0 {
+		if err = rc.check(); err != nil {
 			return nil, err
 		}
-		node, err = ac.sqlSave(ctx)
+		node, err = rc.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*ApprovalMutation)
+			mutation, ok := m.(*ReviewMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
 			}
-			if err = ac.check(); err != nil {
+			if err = rc.check(); err != nil {
 				return nil, err
 			}
-			ac.mutation = mutation
-			if node, err = ac.sqlSave(ctx); err != nil {
+			rc.mutation = mutation
+			if node, err = rc.sqlSave(ctx); err != nil {
 				return nil, err
 			}
 			mutation.id = &node.ID
 			mutation.done = true
 			return node, err
 		})
-		for i := len(ac.hooks) - 1; i >= 0; i-- {
-			if ac.hooks[i] == nil {
+		for i := len(rc.hooks) - 1; i >= 0; i-- {
+			if rc.hooks[i] == nil {
 				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
 			}
-			mut = ac.hooks[i](mut)
+			mut = rc.hooks[i](mut)
 		}
-		if _, err := mut.Mutate(ctx, ac.mutation); err != nil {
+		if _, err := mut.Mutate(ctx, rc.mutation); err != nil {
 			return nil, err
 		}
 	}
@@ -150,8 +150,8 @@ func (ac *ApprovalCreate) Save(ctx context.Context) (*Approval, error) {
 }
 
 // SaveX calls Save and panics if Save returns an error.
-func (ac *ApprovalCreate) SaveX(ctx context.Context) *Approval {
-	v, err := ac.Save(ctx)
+func (rc *ReviewCreate) SaveX(ctx context.Context) *Review {
+	v, err := rc.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -159,68 +159,68 @@ func (ac *ApprovalCreate) SaveX(ctx context.Context) *Approval {
 }
 
 // Exec executes the query.
-func (ac *ApprovalCreate) Exec(ctx context.Context) error {
-	_, err := ac.Save(ctx)
+func (rc *ReviewCreate) Exec(ctx context.Context) error {
+	_, err := rc.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (ac *ApprovalCreate) ExecX(ctx context.Context) {
-	if err := ac.Exec(ctx); err != nil {
+func (rc *ReviewCreate) ExecX(ctx context.Context) {
+	if err := rc.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // defaults sets the default values of the builder before save.
-func (ac *ApprovalCreate) defaults() {
-	if _, ok := ac.mutation.Status(); !ok {
-		v := approval.DefaultStatus
-		ac.mutation.SetStatus(v)
+func (rc *ReviewCreate) defaults() {
+	if _, ok := rc.mutation.Status(); !ok {
+		v := review.DefaultStatus
+		rc.mutation.SetStatus(v)
 	}
-	if _, ok := ac.mutation.CreatedAt(); !ok {
-		v := approval.DefaultCreatedAt()
-		ac.mutation.SetCreatedAt(v)
+	if _, ok := rc.mutation.CreatedAt(); !ok {
+		v := review.DefaultCreatedAt()
+		rc.mutation.SetCreatedAt(v)
 	}
-	if _, ok := ac.mutation.UpdatedAt(); !ok {
-		v := approval.DefaultUpdatedAt()
-		ac.mutation.SetUpdatedAt(v)
+	if _, ok := rc.mutation.UpdatedAt(); !ok {
+		v := review.DefaultUpdatedAt()
+		rc.mutation.SetUpdatedAt(v)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (ac *ApprovalCreate) check() error {
-	if _, ok := ac.mutation.Status(); !ok {
+func (rc *ReviewCreate) check() error {
+	if _, ok := rc.mutation.Status(); !ok {
 		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "status"`)}
 	}
-	if v, ok := ac.mutation.Status(); ok {
-		if err := approval.StatusValidator(v); err != nil {
+	if v, ok := rc.mutation.Status(); ok {
+		if err := review.StatusValidator(v); err != nil {
 			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "status": %w`, err)}
 		}
 	}
-	if _, ok := ac.mutation.CreatedAt(); !ok {
+	if _, ok := rc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "created_at"`)}
 	}
-	if _, ok := ac.mutation.UpdatedAt(); !ok {
+	if _, ok := rc.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "updated_at"`)}
 	}
-	if _, ok := ac.mutation.UserID(); !ok {
+	if _, ok := rc.mutation.UserID(); !ok {
 		return &ValidationError{Name: "user_id", err: errors.New(`ent: missing required field "user_id"`)}
 	}
-	if _, ok := ac.mutation.DeploymentID(); !ok {
+	if _, ok := rc.mutation.DeploymentID(); !ok {
 		return &ValidationError{Name: "deployment_id", err: errors.New(`ent: missing required field "deployment_id"`)}
 	}
-	if _, ok := ac.mutation.UserID(); !ok {
+	if _, ok := rc.mutation.UserID(); !ok {
 		return &ValidationError{Name: "user", err: errors.New("ent: missing required edge \"user\"")}
 	}
-	if _, ok := ac.mutation.DeploymentID(); !ok {
+	if _, ok := rc.mutation.DeploymentID(); !ok {
 		return &ValidationError{Name: "deployment", err: errors.New("ent: missing required edge \"deployment\"")}
 	}
 	return nil
 }
 
-func (ac *ApprovalCreate) sqlSave(ctx context.Context) (*Approval, error) {
-	_node, _spec := ac.createSpec()
-	if err := sqlgraph.CreateNode(ctx, ac.driver, _spec); err != nil {
+func (rc *ReviewCreate) sqlSave(ctx context.Context) (*Review, error) {
+	_node, _spec := rc.createSpec()
+	if err := sqlgraph.CreateNode(ctx, rc.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
 			err = &ConstraintError{err.Error(), err}
 		}
@@ -231,47 +231,47 @@ func (ac *ApprovalCreate) sqlSave(ctx context.Context) (*Approval, error) {
 	return _node, nil
 }
 
-func (ac *ApprovalCreate) createSpec() (*Approval, *sqlgraph.CreateSpec) {
+func (rc *ReviewCreate) createSpec() (*Review, *sqlgraph.CreateSpec) {
 	var (
-		_node = &Approval{config: ac.config}
+		_node = &Review{config: rc.config}
 		_spec = &sqlgraph.CreateSpec{
-			Table: approval.Table,
+			Table: review.Table,
 			ID: &sqlgraph.FieldSpec{
 				Type:   field.TypeInt,
-				Column: approval.FieldID,
+				Column: review.FieldID,
 			},
 		}
 	)
-	if value, ok := ac.mutation.Status(); ok {
+	if value, ok := rc.mutation.Status(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeEnum,
 			Value:  value,
-			Column: approval.FieldStatus,
+			Column: review.FieldStatus,
 		})
 		_node.Status = value
 	}
-	if value, ok := ac.mutation.CreatedAt(); ok {
+	if value, ok := rc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  value,
-			Column: approval.FieldCreatedAt,
+			Column: review.FieldCreatedAt,
 		})
 		_node.CreatedAt = value
 	}
-	if value, ok := ac.mutation.UpdatedAt(); ok {
+	if value, ok := rc.mutation.UpdatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  value,
-			Column: approval.FieldUpdatedAt,
+			Column: review.FieldUpdatedAt,
 		})
 		_node.UpdatedAt = value
 	}
-	if nodes := ac.mutation.UserIDs(); len(nodes) > 0 {
+	if nodes := rc.mutation.UserIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   approval.UserTable,
-			Columns: []string{approval.UserColumn},
+			Table:   review.UserTable,
+			Columns: []string{review.UserColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -286,12 +286,12 @@ func (ac *ApprovalCreate) createSpec() (*Approval, *sqlgraph.CreateSpec) {
 		_node.UserID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := ac.mutation.DeploymentIDs(); len(nodes) > 0 {
+	if nodes := rc.mutation.DeploymentIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   approval.DeploymentTable,
-			Columns: []string{approval.DeploymentColumn},
+			Table:   review.DeploymentTable,
+			Columns: []string{review.DeploymentColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -306,12 +306,12 @@ func (ac *ApprovalCreate) createSpec() (*Approval, *sqlgraph.CreateSpec) {
 		_node.DeploymentID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := ac.mutation.EventIDs(); len(nodes) > 0 {
+	if nodes := rc.mutation.EventIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   approval.EventTable,
-			Columns: []string{approval.EventColumn},
+			Table:   review.EventTable,
+			Columns: []string{review.EventColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -328,23 +328,23 @@ func (ac *ApprovalCreate) createSpec() (*Approval, *sqlgraph.CreateSpec) {
 	return _node, _spec
 }
 
-// ApprovalCreateBulk is the builder for creating many Approval entities in bulk.
-type ApprovalCreateBulk struct {
+// ReviewCreateBulk is the builder for creating many Review entities in bulk.
+type ReviewCreateBulk struct {
 	config
-	builders []*ApprovalCreate
+	builders []*ReviewCreate
 }
 
-// Save creates the Approval entities in the database.
-func (acb *ApprovalCreateBulk) Save(ctx context.Context) ([]*Approval, error) {
-	specs := make([]*sqlgraph.CreateSpec, len(acb.builders))
-	nodes := make([]*Approval, len(acb.builders))
-	mutators := make([]Mutator, len(acb.builders))
-	for i := range acb.builders {
+// Save creates the Review entities in the database.
+func (rcb *ReviewCreateBulk) Save(ctx context.Context) ([]*Review, error) {
+	specs := make([]*sqlgraph.CreateSpec, len(rcb.builders))
+	nodes := make([]*Review, len(rcb.builders))
+	mutators := make([]Mutator, len(rcb.builders))
+	for i := range rcb.builders {
 		func(i int, root context.Context) {
-			builder := acb.builders[i]
+			builder := rcb.builders[i]
 			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-				mutation, ok := m.(*ApprovalMutation)
+				mutation, ok := m.(*ReviewMutation)
 				if !ok {
 					return nil, fmt.Errorf("unexpected mutation type %T", m)
 				}
@@ -355,11 +355,11 @@ func (acb *ApprovalCreateBulk) Save(ctx context.Context) ([]*Approval, error) {
 				nodes[i], specs[i] = builder.createSpec()
 				var err error
 				if i < len(mutators)-1 {
-					_, err = mutators[i+1].Mutate(root, acb.builders[i+1].mutation)
+					_, err = mutators[i+1].Mutate(root, rcb.builders[i+1].mutation)
 				} else {
 					spec := &sqlgraph.BatchCreateSpec{Nodes: specs}
 					// Invoke the actual operation on the latest mutation in the chain.
-					if err = sqlgraph.BatchCreate(ctx, acb.driver, spec); err != nil {
+					if err = sqlgraph.BatchCreate(ctx, rcb.driver, spec); err != nil {
 						if sqlgraph.IsConstraintError(err) {
 							err = &ConstraintError{err.Error(), err}
 						}
@@ -383,7 +383,7 @@ func (acb *ApprovalCreateBulk) Save(ctx context.Context) ([]*Approval, error) {
 		}(i, ctx)
 	}
 	if len(mutators) > 0 {
-		if _, err := mutators[0].Mutate(ctx, acb.builders[0].mutation); err != nil {
+		if _, err := mutators[0].Mutate(ctx, rcb.builders[0].mutation); err != nil {
 			return nil, err
 		}
 	}
@@ -391,8 +391,8 @@ func (acb *ApprovalCreateBulk) Save(ctx context.Context) ([]*Approval, error) {
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (acb *ApprovalCreateBulk) SaveX(ctx context.Context) []*Approval {
-	v, err := acb.Save(ctx)
+func (rcb *ReviewCreateBulk) SaveX(ctx context.Context) []*Review {
+	v, err := rcb.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -400,14 +400,14 @@ func (acb *ApprovalCreateBulk) SaveX(ctx context.Context) []*Approval {
 }
 
 // Exec executes the query.
-func (acb *ApprovalCreateBulk) Exec(ctx context.Context) error {
-	_, err := acb.Save(ctx)
+func (rcb *ReviewCreateBulk) Exec(ctx context.Context) error {
+	_, err := rcb.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (acb *ApprovalCreateBulk) ExecX(ctx context.Context) {
-	if err := acb.Exec(ctx); err != nil {
+func (rcb *ReviewCreateBulk) ExecX(ctx context.Context) {
+	if err := rcb.Exec(ctx); err != nil {
 		panic(err)
 	}
 }

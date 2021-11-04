@@ -1,7 +1,7 @@
 import { Tabs, List, Typography } from "antd"
 import moment from "moment"
 
-import { Deployment, Approval } from "../models"
+import { Deployment, Review } from "../models"
 
 import DeploymentRefCode from "./DeploymentRefCode"
 import DeploymentStatusBadge from "./DeploymentStatusBadge"
@@ -11,7 +11,7 @@ const { Paragraph, Text } = Typography
 
 interface RecentActivitiesProps {
     deployments: Deployment[]
-    approvals: Approval[]
+    reviews: Review[]
 }
 
 export default function RecentActivities(props: RecentActivitiesProps): JSX.Element {
@@ -19,8 +19,8 @@ export default function RecentActivities(props: RecentActivitiesProps): JSX.Elem
         <TabPane tab="Deployments" key={1}>
             <DeploymentList deployments={props.deployments}/>
         </TabPane>
-        <TabPane tab="Approvals" key={2}>
-            <ApprovalList approvals={props.approvals} />
+        <TabPane tab="Reviews" key={2}>
+            <ReviewList reviews={props.reviews} />
         </TabPane>
     </Tabs>
 }
@@ -48,26 +48,26 @@ function DeploymentList(props: DeploymentListProps): JSX.Element {
     />
 }
 
-interface ApprovalListProps {
-    approvals: Approval[]
+interface ReviewListProps {
+    reviews: Review[]
 }
 
-function ApprovalList(props: ApprovalListProps): JSX.Element {
+function ReviewList(props: ReviewListProps): JSX.Element {
     return <List
-        dataSource={props.approvals}
-        renderItem={(a) => {
-            if (a.deployment === null) {
-                throw new ReferenceError("The deployment of the approval is not found.")
+        dataSource={props.reviews}
+        renderItem={(review) => {
+            if (!review.deployment) {
+                throw new ReferenceError("The deployment of the review is not found.")
             }
-            const d = a.deployment
-            const title = (d.repo) ? `${d.repo.namespace}/${d.repo.name} #${d.number}` : `Deployment #${d.number}`
+            const d = review.deployment
+            const title = (d?.repo) ? `${d.repo.namespace}/${d.repo.name} #${d.number}` : `Deployment #${d.number}`
             const link = (d.repo) ? `/${d.repo.namespace}/${d.repo.name}/deployments/${d.number}` : `#`
 
             return <List.Item>
                 <List.Item.Meta
                     title={<a href={link}>{title}</a>}
                     description={<Paragraph>
-                        Requested the approval to deploy <DeploymentRefCode deployment={d}/> to the <Text className="gitploy-code" code>{d.env}</Text> environment {moment(d.createdAt).fromNow()}
+                        Requested the review to deploy <DeploymentRefCode deployment={d}/> to the <Text className="gitploy-code" code>{d.env}</Text> environment {moment(d.createdAt).fromNow()}
                     </Paragraph>}
                 />
             </List.Item>

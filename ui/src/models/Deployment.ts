@@ -11,8 +11,6 @@ export default interface Deployment {
     status: DeploymentStatusEnum
     uid: number
     isRollback: boolean 
-    isApprovalEanbled: boolean
-    requiredApprovalCount: number
     createdAt: Date
     updatedAt: Date
     deployer?: User

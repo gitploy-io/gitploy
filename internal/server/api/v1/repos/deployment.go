@@ -131,6 +131,7 @@ func (r *Repo) CreateDeployment(c *gin.Context) {
 		return
 	}
 
+	// TODO: Migrate the event logic into the interactor.
 	if _, err := r.i.CreateEvent(ctx, &ent.Event{
 		Kind:         event.KindDeployment,
 		Type:         event.TypeCreated,

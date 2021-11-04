@@ -5,7 +5,6 @@ import {
     getConfig, 
     listDeployments, 
     rollbackDeployment,
-    createApproval,
     listPerms,
     getMe
 } from "../apis"
@@ -33,14 +32,6 @@ interface RepoRollbackState {
     envs: Env[]
     deployment?: Deployment 
     deployments: Deployment[]
-    /**
-     * Approval selecter.
-     * approvalEnabled - The approvers field is displayed when it is enabled.
-     * approvers - selected approvers from candidates.
-    */
-    approvers: User[]
-    candidates: User[]
-    user?: User
     deployId: string
     deploying: RequestStatus
 }
@@ -51,8 +42,6 @@ const initialState: RepoRollbackState = {
     name: "",
     envs: [],
     deployments: [],
-    approvers: [],
-    candidates: [],
     deployId: "",
     deploying: RequestStatus.Idle
 }
@@ -117,7 +106,7 @@ export const fetchUser = createAsyncThunk<User, void, { state: {repoRollback: Re
 export const rollback = createAsyncThunk<void, void, { state: {repoRollback: RepoRollbackState}}> (
     "repoRollback/deploy",
     async (_ , { getState, rejectWithValue, requestId }) => {
-        const { namespace, name, deployment, env, approvers, deployId, deploying } = getState().repoRollback
+        const { namespace, name, deployment, env, deployId, deploying } = getState().repoRollback
         if (!deployment) {
             throw new Error("The deployment is undefined.")
         }
@@ -128,20 +117,16 @@ export const rollback = createAsyncThunk<void, void, { state: {repoRollback: Rep
         try {
             const rollback = await rollbackDeployment(namespace, name, deployment.number)
 
-            if (!env?.approval?.enabled) {
+            if (!env?.review?.enabled) {
                 const msg = <span>
-                    It starts to rollback. <a href={`/${namespace}/${name}/deployments/${rollback.number}`}>#{rollback.number}</a>
+                    Starts to rollback. <a href={`/${namespace}/${name}/deployments/${rollback.number}`}>#{rollback.number}</a>
                 </span>
                 message.success(msg, 3)
                 return
             }
 
-            approvers.forEach(async (approver) => {
-                await createApproval(namespace, name, rollback.number, approver.id)
-            })
-
             const msg = <span>
-                It is waiting approvals. <a href={`/${namespace}/${name}/deployments/${rollback.number}`}>#{rollback.number}</a>
+                Request a review to reviewers  <a href={`/${namespace}/${name}/deployments/${rollback.number}`}>#{rollback.number}</a>
             </span>
             message.success(msg, 3)
         } catch(e) {
@@ -178,23 +163,6 @@ export const repoRollbackSlice = createSlice({
         setDeployment: (state, action: PayloadAction<Deployment>) => {
             state.deployment = action.payload
         },
-        addApprover: (state, action: PayloadAction<User>) => {
-            const candidate = action.payload
-
-            // Check already exist or not.
-            const approver = state.approvers.find(approver => approver.id === candidate.id)
-            if (approver !== undefined) {
-                return
-            }
-
-            state.approvers.push(candidate)
-        },
-        deleteApprover: (state, action: PayloadAction<User>) => {
-            const candidate = action.payload
-
-            const approvers = state.approvers.filter(approver => approver.id !== candidate.id)
-            state.approvers = approvers
-        },
     },
     extraReducers: builder => {
         builder
@@ -205,15 +173,6 @@ export const repoRollbackSlice = createSlice({
             })
             .addCase(fetchDeployments.fulfilled, (state, action) => {
                 state.deployments = action.payload
-            })
-            .addCase(searchCandidates.pending, (state) => {
-                state.candidates = []
-            })
-            .addCase(searchCandidates.fulfilled, (state, action) => {
-                state.candidates = action.payload.filter(candidate => (candidate.id !== state.user?.id))
-            })
-            .addCase(fetchUser.fulfilled, (state, action) => {
-                state.user = action.payload
             })
             .addCase(rollback.pending, (state, action) => {
                 if (state.deploying === RequestStatus.Idle) {

@@ -11,168 +11,168 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/gitploy-io/gitploy/ent/approval"
 	"github.com/gitploy-io/gitploy/ent/deployment"
 	"github.com/gitploy-io/gitploy/ent/event"
 	"github.com/gitploy-io/gitploy/ent/predicate"
+	"github.com/gitploy-io/gitploy/ent/review"
 	"github.com/gitploy-io/gitploy/ent/user"
 )
 
-// ApprovalUpdate is the builder for updating Approval entities.
-type ApprovalUpdate struct {
+// ReviewUpdate is the builder for updating Review entities.
+type ReviewUpdate struct {
 	config
 	hooks    []Hook
-	mutation *ApprovalMutation
+	mutation *ReviewMutation
 }
 
-// Where appends a list predicates to the ApprovalUpdate builder.
-func (au *ApprovalUpdate) Where(ps ...predicate.Approval) *ApprovalUpdate {
-	au.mutation.Where(ps...)
-	return au
+// Where appends a list predicates to the ReviewUpdate builder.
+func (ru *ReviewUpdate) Where(ps ...predicate.Review) *ReviewUpdate {
+	ru.mutation.Where(ps...)
+	return ru
 }
 
 // SetStatus sets the "status" field.
-func (au *ApprovalUpdate) SetStatus(a approval.Status) *ApprovalUpdate {
-	au.mutation.SetStatus(a)
-	return au
+func (ru *ReviewUpdate) SetStatus(r review.Status) *ReviewUpdate {
+	ru.mutation.SetStatus(r)
+	return ru
 }
 
 // SetNillableStatus sets the "status" field if the given value is not nil.
-func (au *ApprovalUpdate) SetNillableStatus(a *approval.Status) *ApprovalUpdate {
-	if a != nil {
-		au.SetStatus(*a)
+func (ru *ReviewUpdate) SetNillableStatus(r *review.Status) *ReviewUpdate {
+	if r != nil {
+		ru.SetStatus(*r)
 	}
-	return au
+	return ru
 }
 
 // SetCreatedAt sets the "created_at" field.
-func (au *ApprovalUpdate) SetCreatedAt(t time.Time) *ApprovalUpdate {
-	au.mutation.SetCreatedAt(t)
-	return au
+func (ru *ReviewUpdate) SetCreatedAt(t time.Time) *ReviewUpdate {
+	ru.mutation.SetCreatedAt(t)
+	return ru
 }
 
 // SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
-func (au *ApprovalUpdate) SetNillableCreatedAt(t *time.Time) *ApprovalUpdate {
+func (ru *ReviewUpdate) SetNillableCreatedAt(t *time.Time) *ReviewUpdate {
 	if t != nil {
-		au.SetCreatedAt(*t)
+		ru.SetCreatedAt(*t)
 	}
-	return au
+	return ru
 }
 
 // SetUpdatedAt sets the "updated_at" field.
-func (au *ApprovalUpdate) SetUpdatedAt(t time.Time) *ApprovalUpdate {
-	au.mutation.SetUpdatedAt(t)
-	return au
+func (ru *ReviewUpdate) SetUpdatedAt(t time.Time) *ReviewUpdate {
+	ru.mutation.SetUpdatedAt(t)
+	return ru
 }
 
 // SetUserID sets the "user_id" field.
-func (au *ApprovalUpdate) SetUserID(i int64) *ApprovalUpdate {
-	au.mutation.SetUserID(i)
-	return au
+func (ru *ReviewUpdate) SetUserID(i int64) *ReviewUpdate {
+	ru.mutation.SetUserID(i)
+	return ru
 }
 
 // SetDeploymentID sets the "deployment_id" field.
-func (au *ApprovalUpdate) SetDeploymentID(i int) *ApprovalUpdate {
-	au.mutation.SetDeploymentID(i)
-	return au
+func (ru *ReviewUpdate) SetDeploymentID(i int) *ReviewUpdate {
+	ru.mutation.SetDeploymentID(i)
+	return ru
 }
 
 // SetUser sets the "user" edge to the User entity.
-func (au *ApprovalUpdate) SetUser(u *User) *ApprovalUpdate {
-	return au.SetUserID(u.ID)
+func (ru *ReviewUpdate) SetUser(u *User) *ReviewUpdate {
+	return ru.SetUserID(u.ID)
 }
 
 // SetDeployment sets the "deployment" edge to the Deployment entity.
-func (au *ApprovalUpdate) SetDeployment(d *Deployment) *ApprovalUpdate {
-	return au.SetDeploymentID(d.ID)
+func (ru *ReviewUpdate) SetDeployment(d *Deployment) *ReviewUpdate {
+	return ru.SetDeploymentID(d.ID)
 }
 
 // AddEventIDs adds the "event" edge to the Event entity by IDs.
-func (au *ApprovalUpdate) AddEventIDs(ids ...int) *ApprovalUpdate {
-	au.mutation.AddEventIDs(ids...)
-	return au
+func (ru *ReviewUpdate) AddEventIDs(ids ...int) *ReviewUpdate {
+	ru.mutation.AddEventIDs(ids...)
+	return ru
 }
 
 // AddEvent adds the "event" edges to the Event entity.
-func (au *ApprovalUpdate) AddEvent(e ...*Event) *ApprovalUpdate {
+func (ru *ReviewUpdate) AddEvent(e ...*Event) *ReviewUpdate {
 	ids := make([]int, len(e))
 	for i := range e {
 		ids[i] = e[i].ID
 	}
-	return au.AddEventIDs(ids...)
+	return ru.AddEventIDs(ids...)
 }
 
-// Mutation returns the ApprovalMutation object of the builder.
-func (au *ApprovalUpdate) Mutation() *ApprovalMutation {
-	return au.mutation
+// Mutation returns the ReviewMutation object of the builder.
+func (ru *ReviewUpdate) Mutation() *ReviewMutation {
+	return ru.mutation
 }
 
 // ClearUser clears the "user" edge to the User entity.
-func (au *ApprovalUpdate) ClearUser() *ApprovalUpdate {
-	au.mutation.ClearUser()
-	return au
+func (ru *ReviewUpdate) ClearUser() *ReviewUpdate {
+	ru.mutation.ClearUser()
+	return ru
 }
 
 // ClearDeployment clears the "deployment" edge to the Deployment entity.
-func (au *ApprovalUpdate) ClearDeployment() *ApprovalUpdate {
-	au.mutation.ClearDeployment()
-	return au
+func (ru *ReviewUpdate) ClearDeployment() *ReviewUpdate {
+	ru.mutation.ClearDeployment()
+	return ru
 }
 
 // ClearEvent clears all "event" edges to the Event entity.
-func (au *ApprovalUpdate) ClearEvent() *ApprovalUpdate {
-	au.mutation.ClearEvent()
-	return au
+func (ru *ReviewUpdate) ClearEvent() *ReviewUpdate {
+	ru.mutation.ClearEvent()
+	return ru
 }
 
 // RemoveEventIDs removes the "event" edge to Event entities by IDs.
-func (au *ApprovalUpdate) RemoveEventIDs(ids ...int) *ApprovalUpdate {
-	au.mutation.RemoveEventIDs(ids...)
-	return au
+func (ru *ReviewUpdate) RemoveEventIDs(ids ...int) *ReviewUpdate {
+	ru.mutation.RemoveEventIDs(ids...)
+	return ru
 }
 
 // RemoveEvent removes "event" edges to Event entities.
-func (au *ApprovalUpdate) RemoveEvent(e ...*Event) *ApprovalUpdate {
+func (ru *ReviewUpdate) RemoveEvent(e ...*Event) *ReviewUpdate {
 	ids := make([]int, len(e))
 	for i := range e {
 		ids[i] = e[i].ID
 	}
-	return au.RemoveEventIDs(ids...)
+	return ru.RemoveEventIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
-func (au *ApprovalUpdate) Save(ctx context.Context) (int, error) {
+func (ru *ReviewUpdate) Save(ctx context.Context) (int, error) {
 	var (
 		err      error
 		affected int
 	)
-	au.defaults()
-	if len(au.hooks) == 0 {
-		if err = au.check(); err != nil {
+	ru.defaults()
+	if len(ru.hooks) == 0 {
+		if err = ru.check(); err != nil {
 			return 0, err
 		}
-		affected, err = au.sqlSave(ctx)
+		affected, err = ru.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*ApprovalMutation)
+			mutation, ok := m.(*ReviewMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
 			}
-			if err = au.check(); err != nil {
+			if err = ru.check(); err != nil {
 				return 0, err
 			}
-			au.mutation = mutation
-			affected, err = au.sqlSave(ctx)
+			ru.mutation = mutation
+			affected, err = ru.sqlSave(ctx)
 			mutation.done = true
 			return affected, err
 		})
-		for i := len(au.hooks) - 1; i >= 0; i-- {
-			if au.hooks[i] == nil {
+		for i := len(ru.hooks) - 1; i >= 0; i-- {
+			if ru.hooks[i] == nil {
 				return 0, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
 			}
-			mut = au.hooks[i](mut)
+			mut = ru.hooks[i](mut)
 		}
-		if _, err := mut.Mutate(ctx, au.mutation); err != nil {
+		if _, err := mut.Mutate(ctx, ru.mutation); err != nil {
 			return 0, err
 		}
 	}
@@ -180,8 +180,8 @@ func (au *ApprovalUpdate) Save(ctx context.Context) (int, error) {
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (au *ApprovalUpdate) SaveX(ctx context.Context) int {
-	affected, err := au.Save(ctx)
+func (ru *ReviewUpdate) SaveX(ctx context.Context) int {
+	affected, err := ru.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -189,87 +189,87 @@ func (au *ApprovalUpdate) SaveX(ctx context.Context) int {
 }
 
 // Exec executes the query.
-func (au *ApprovalUpdate) Exec(ctx context.Context) error {
-	_, err := au.Save(ctx)
+func (ru *ReviewUpdate) Exec(ctx context.Context) error {
+	_, err := ru.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (au *ApprovalUpdate) ExecX(ctx context.Context) {
-	if err := au.Exec(ctx); err != nil {
+func (ru *ReviewUpdate) ExecX(ctx context.Context) {
+	if err := ru.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // defaults sets the default values of the builder before save.
-func (au *ApprovalUpdate) defaults() {
-	if _, ok := au.mutation.UpdatedAt(); !ok {
-		v := approval.UpdateDefaultUpdatedAt()
-		au.mutation.SetUpdatedAt(v)
+func (ru *ReviewUpdate) defaults() {
+	if _, ok := ru.mutation.UpdatedAt(); !ok {
+		v := review.UpdateDefaultUpdatedAt()
+		ru.mutation.SetUpdatedAt(v)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (au *ApprovalUpdate) check() error {
-	if v, ok := au.mutation.Status(); ok {
-		if err := approval.StatusValidator(v); err != nil {
+func (ru *ReviewUpdate) check() error {
+	if v, ok := ru.mutation.Status(); ok {
+		if err := review.StatusValidator(v); err != nil {
 			return &ValidationError{Name: "status", err: fmt.Errorf("ent: validator failed for field \"status\": %w", err)}
 		}
 	}
-	if _, ok := au.mutation.UserID(); au.mutation.UserCleared() && !ok {
+	if _, ok := ru.mutation.UserID(); ru.mutation.UserCleared() && !ok {
 		return errors.New("ent: clearing a required unique edge \"user\"")
 	}
-	if _, ok := au.mutation.DeploymentID(); au.mutation.DeploymentCleared() && !ok {
+	if _, ok := ru.mutation.DeploymentID(); ru.mutation.DeploymentCleared() && !ok {
 		return errors.New("ent: clearing a required unique edge \"deployment\"")
 	}
 	return nil
 }
 
-func (au *ApprovalUpdate) sqlSave(ctx context.Context) (n int, err error) {
+func (ru *ReviewUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
-			Table:   approval.Table,
-			Columns: approval.Columns,
+			Table:   review.Table,
+			Columns: review.Columns,
 			ID: &sqlgraph.FieldSpec{
 				Type:   field.TypeInt,
-				Column: approval.FieldID,
+				Column: review.FieldID,
 			},
 		},
 	}
-	if ps := au.mutation.predicates; len(ps) > 0 {
+	if ps := ru.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	if value, ok := au.mutation.Status(); ok {
+	if value, ok := ru.mutation.Status(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeEnum,
 			Value:  value,
-			Column: approval.FieldStatus,
+			Column: review.FieldStatus,
 		})
 	}
-	if value, ok := au.mutation.CreatedAt(); ok {
+	if value, ok := ru.mutation.CreatedAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  value,
-			Column: approval.FieldCreatedAt,
+			Column: review.FieldCreatedAt,
 		})
 	}
-	if value, ok := au.mutation.UpdatedAt(); ok {
+	if value, ok := ru.mutation.UpdatedAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  value,
-			Column: approval.FieldUpdatedAt,
+			Column: review.FieldUpdatedAt,
 		})
 	}
-	if au.mutation.UserCleared() {
+	if ru.mutation.UserCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   approval.UserTable,
-			Columns: []string{approval.UserColumn},
+			Table:   review.UserTable,
+			Columns: []string{review.UserColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -280,12 +280,12 @@ func (au *ApprovalUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := au.mutation.UserIDs(); len(nodes) > 0 {
+	if nodes := ru.mutation.UserIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   approval.UserTable,
-			Columns: []string{approval.UserColumn},
+			Table:   review.UserTable,
+			Columns: []string{review.UserColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -299,12 +299,12 @@ func (au *ApprovalUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if au.mutation.DeploymentCleared() {
+	if ru.mutation.DeploymentCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   approval.DeploymentTable,
-			Columns: []string{approval.DeploymentColumn},
+			Table:   review.DeploymentTable,
+			Columns: []string{review.DeploymentColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -315,12 +315,12 @@ func (au *ApprovalUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := au.mutation.DeploymentIDs(); len(nodes) > 0 {
+	if nodes := ru.mutation.DeploymentIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   approval.DeploymentTable,
-			Columns: []string{approval.DeploymentColumn},
+			Table:   review.DeploymentTable,
+			Columns: []string{review.DeploymentColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -334,12 +334,12 @@ func (au *ApprovalUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if au.mutation.EventCleared() {
+	if ru.mutation.EventCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   approval.EventTable,
-			Columns: []string{approval.EventColumn},
+			Table:   review.EventTable,
+			Columns: []string{review.EventColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -350,12 +350,12 @@ func (au *ApprovalUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := au.mutation.RemovedEventIDs(); len(nodes) > 0 && !au.mutation.EventCleared() {
+	if nodes := ru.mutation.RemovedEventIDs(); len(nodes) > 0 && !ru.mutation.EventCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   approval.EventTable,
-			Columns: []string{approval.EventColumn},
+			Table:   review.EventTable,
+			Columns: []string{review.EventColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -369,12 +369,12 @@ func (au *ApprovalUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := au.mutation.EventIDs(); len(nodes) > 0 {
+	if nodes := ru.mutation.EventIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   approval.EventTable,
-			Columns: []string{approval.EventColumn},
+			Table:   review.EventTable,
+			Columns: []string{review.EventColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -388,9 +388,9 @@ func (au *ApprovalUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if n, err = sqlgraph.UpdateNodes(ctx, au.driver, _spec); err != nil {
+	if n, err = sqlgraph.UpdateNodes(ctx, ru.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
-			err = &NotFoundError{approval.Label}
+			err = &NotFoundError{review.Label}
 		} else if sqlgraph.IsConstraintError(err) {
 			err = &ConstraintError{err.Error(), err}
 		}
@@ -399,163 +399,163 @@ func (au *ApprovalUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	return n, nil
 }
 
-// ApprovalUpdateOne is the builder for updating a single Approval entity.
-type ApprovalUpdateOne struct {
+// ReviewUpdateOne is the builder for updating a single Review entity.
+type ReviewUpdateOne struct {
 	config
 	fields   []string
 	hooks    []Hook
-	mutation *ApprovalMutation
+	mutation *ReviewMutation
 }
 
 // SetStatus sets the "status" field.
-func (auo *ApprovalUpdateOne) SetStatus(a approval.Status) *ApprovalUpdateOne {
-	auo.mutation.SetStatus(a)
-	return auo
+func (ruo *ReviewUpdateOne) SetStatus(r review.Status) *ReviewUpdateOne {
+	ruo.mutation.SetStatus(r)
+	return ruo
 }
 
 // SetNillableStatus sets the "status" field if the given value is not nil.
-func (auo *ApprovalUpdateOne) SetNillableStatus(a *approval.Status) *ApprovalUpdateOne {
-	if a != nil {
-		auo.SetStatus(*a)
+func (ruo *ReviewUpdateOne) SetNillableStatus(r *review.Status) *ReviewUpdateOne {
+	if r != nil {
+		ruo.SetStatus(*r)
 	}
-	return auo
+	return ruo
 }
 
 // SetCreatedAt sets the "created_at" field.
-func (auo *ApprovalUpdateOne) SetCreatedAt(t time.Time) *ApprovalUpdateOne {
-	auo.mutation.SetCreatedAt(t)
-	return auo
+func (ruo *ReviewUpdateOne) SetCreatedAt(t time.Time) *ReviewUpdateOne {
+	ruo.mutation.SetCreatedAt(t)
+	return ruo
 }
 
 // SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
-func (auo *ApprovalUpdateOne) SetNillableCreatedAt(t *time.Time) *ApprovalUpdateOne {
+func (ruo *ReviewUpdateOne) SetNillableCreatedAt(t *time.Time) *ReviewUpdateOne {
 	if t != nil {
-		auo.SetCreatedAt(*t)
+		ruo.SetCreatedAt(*t)
 	}
-	return auo
+	return ruo
 }
 
 // SetUpdatedAt sets the "updated_at" field.
-func (auo *ApprovalUpdateOne) SetUpdatedAt(t time.Time) *ApprovalUpdateOne {
-	auo.mutation.SetUpdatedAt(t)
-	return auo
+func (ruo *ReviewUpdateOne) SetUpdatedAt(t time.Time) *ReviewUpdateOne {
+	ruo.mutation.SetUpdatedAt(t)
+	return ruo
 }
 
 // SetUserID sets the "user_id" field.
-func (auo *ApprovalUpdateOne) SetUserID(i int64) *ApprovalUpdateOne {
-	auo.mutation.SetUserID(i)
-	return auo
+func (ruo *ReviewUpdateOne) SetUserID(i int64) *ReviewUpdateOne {
+	ruo.mutation.SetUserID(i)
+	return ruo
 }
 
 // SetDeploymentID sets the "deployment_id" field.
-func (auo *ApprovalUpdateOne) SetDeploymentID(i int) *ApprovalUpdateOne {
-	auo.mutation.SetDeploymentID(i)
-	return auo
+func (ruo *ReviewUpdateOne) SetDeploymentID(i int) *ReviewUpdateOne {
+	ruo.mutation.SetDeploymentID(i)
+	return ruo
 }
 
 // SetUser sets the "user" edge to the User entity.
-func (auo *ApprovalUpdateOne) SetUser(u *User) *ApprovalUpdateOne {
-	return auo.SetUserID(u.ID)
+func (ruo *ReviewUpdateOne) SetUser(u *User) *ReviewUpdateOne {
+	return ruo.SetUserID(u.ID)
 }
 
 // SetDeployment sets the "deployment" edge to the Deployment entity.
-func (auo *ApprovalUpdateOne) SetDeployment(d *Deployment) *ApprovalUpdateOne {
-	return auo.SetDeploymentID(d.ID)
+func (ruo *ReviewUpdateOne) SetDeployment(d *Deployment) *ReviewUpdateOne {
+	return ruo.SetDeploymentID(d.ID)
 }
 
 // AddEventIDs adds the "event" edge to the Event entity by IDs.
-func (auo *ApprovalUpdateOne) AddEventIDs(ids ...int) *ApprovalUpdateOne {
-	auo.mutation.AddEventIDs(ids...)
-	return auo
+func (ruo *ReviewUpdateOne) AddEventIDs(ids ...int) *ReviewUpdateOne {
+	ruo.mutation.AddEventIDs(ids...)
+	return ruo
 }
 
 // AddEvent adds the "event" edges to the Event entity.
-func (auo *ApprovalUpdateOne) AddEvent(e ...*Event) *ApprovalUpdateOne {
+func (ruo *ReviewUpdateOne) AddEvent(e ...*Event) *ReviewUpdateOne {
 	ids := make([]int, len(e))
 	for i := range e {
 		ids[i] = e[i].ID
 	}
-	return auo.AddEventIDs(ids...)
+	return ruo.AddEventIDs(ids...)
 }
 
-// Mutation returns the ApprovalMutation object of the builder.
-func (auo *ApprovalUpdateOne) Mutation() *ApprovalMutation {
-	return auo.mutation
+// Mutation returns the ReviewMutation object of the builder.
+func (ruo *ReviewUpdateOne) Mutation() *ReviewMutation {
+	return ruo.mutation
 }
 
 // ClearUser clears the "user" edge to the User entity.
-func (auo *ApprovalUpdateOne) ClearUser() *ApprovalUpdateOne {
-	auo.mutation.ClearUser()
-	return auo
+func (ruo *ReviewUpdateOne) ClearUser() *ReviewUpdateOne {
+	ruo.mutation.ClearUser()
+	return ruo
 }
 
 // ClearDeployment clears the "deployment" edge to the Deployment entity.
-func (auo *ApprovalUpdateOne) ClearDeployment() *ApprovalUpdateOne {
-	auo.mutation.ClearDeployment()
-	return auo
+func (ruo *ReviewUpdateOne) ClearDeployment() *ReviewUpdateOne {
+	ruo.mutation.ClearDeployment()
+	return ruo
 }
 
 // ClearEvent clears all "event" edges to the Event entity.
-func (auo *ApprovalUpdateOne) ClearEvent() *ApprovalUpdateOne {
-	auo.mutation.ClearEvent()
-	return auo
+func (ruo *ReviewUpdateOne) ClearEvent() *ReviewUpdateOne {
+	ruo.mutation.ClearEvent()
+	return ruo
 }
 
 // RemoveEventIDs removes the "event" edge to Event entities by IDs.
-func (auo *ApprovalUpdateOne) RemoveEventIDs(ids ...int) *ApprovalUpdateOne {
-	auo.mutation.RemoveEventIDs(ids...)
-	return auo
+func (ruo *ReviewUpdateOne) RemoveEventIDs(ids ...int) *ReviewUpdateOne {
+	ruo.mutation.RemoveEventIDs(ids...)
+	return ruo
 }
 
 // RemoveEvent removes "event" edges to Event entities.
-func (auo *ApprovalUpdateOne) RemoveEvent(e ...*Event) *ApprovalUpdateOne {
+func (ruo *ReviewUpdateOne) RemoveEvent(e ...*Event) *ReviewUpdateOne {
 	ids := make([]int, len(e))
 	for i := range e {
 		ids[i] = e[i].ID
 	}
-	return auo.RemoveEventIDs(ids...)
+	return ruo.RemoveEventIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
-func (auo *ApprovalUpdateOne) Select(field string, fields ...string) *ApprovalUpdateOne {
-	auo.fields = append([]string{field}, fields...)
-	return auo
+func (ruo *ReviewUpdateOne) Select(field string, fields ...string) *ReviewUpdateOne {
+	ruo.fields = append([]string{field}, fields...)
+	return ruo
 }
 
-// Save executes the query and returns the updated Approval entity.
-func (auo *ApprovalUpdateOne) Save(ctx context.Context) (*Approval, error) {
+// Save executes the query and returns the updated Review entity.
+func (ruo *ReviewUpdateOne) Save(ctx context.Context) (*Review, error) {
 	var (
 		err  error
-		node *Approval
+		node *Review
 	)
-	auo.defaults()
-	if len(auo.hooks) == 0 {
-		if err = auo.check(); err != nil {
+	ruo.defaults()
+	if len(ruo.hooks) == 0 {
+		if err = ruo.check(); err != nil {
 			return nil, err
 		}
-		node, err = auo.sqlSave(ctx)
+		node, err = ruo.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*ApprovalMutation)
+			mutation, ok := m.(*ReviewMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
 			}
-			if err = auo.check(); err != nil {
+			if err = ruo.check(); err != nil {
 				return nil, err
 			}
-			auo.mutation = mutation
-			node, err = auo.sqlSave(ctx)
+			ruo.mutation = mutation
+			node, err = ruo.sqlSave(ctx)
 			mutation.done = true
 			return node, err
 		})
-		for i := len(auo.hooks) - 1; i >= 0; i-- {
-			if auo.hooks[i] == nil {
+		for i := len(ruo.hooks) - 1; i >= 0; i-- {
+			if ruo.hooks[i] == nil {
 				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
 			}
-			mut = auo.hooks[i](mut)
+			mut = ruo.hooks[i](mut)
 		}
-		if _, err := mut.Mutate(ctx, auo.mutation); err != nil {
+		if _, err := mut.Mutate(ctx, ruo.mutation); err != nil {
 			return nil, err
 		}
 	}
@@ -563,8 +563,8 @@ func (auo *ApprovalUpdateOne) Save(ctx context.Context) (*Approval, error) {
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (auo *ApprovalUpdateOne) SaveX(ctx context.Context) *Approval {
-	node, err := auo.Save(ctx)
+func (ruo *ReviewUpdateOne) SaveX(ctx context.Context) *Review {
+	node, err := ruo.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -572,104 +572,104 @@ func (auo *ApprovalUpdateOne) SaveX(ctx context.Context) *Approval {
 }
 
 // Exec executes the query on the entity.
-func (auo *ApprovalUpdateOne) Exec(ctx context.Context) error {
-	_, err := auo.Save(ctx)
+func (ruo *ReviewUpdateOne) Exec(ctx context.Context) error {
+	_, err := ruo.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (auo *ApprovalUpdateOne) ExecX(ctx context.Context) {
-	if err := auo.Exec(ctx); err != nil {
+func (ruo *ReviewUpdateOne) ExecX(ctx context.Context) {
+	if err := ruo.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // defaults sets the default values of the builder before save.
-func (auo *ApprovalUpdateOne) defaults() {
-	if _, ok := auo.mutation.UpdatedAt(); !ok {
-		v := approval.UpdateDefaultUpdatedAt()
-		auo.mutation.SetUpdatedAt(v)
+func (ruo *ReviewUpdateOne) defaults() {
+	if _, ok := ruo.mutation.UpdatedAt(); !ok {
+		v := review.UpdateDefaultUpdatedAt()
+		ruo.mutation.SetUpdatedAt(v)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (auo *ApprovalUpdateOne) check() error {
-	if v, ok := auo.mutation.Status(); ok {
-		if err := approval.StatusValidator(v); err != nil {
+func (ruo *ReviewUpdateOne) check() error {
+	if v, ok := ruo.mutation.Status(); ok {
+		if err := review.StatusValidator(v); err != nil {
 			return &ValidationError{Name: "status", err: fmt.Errorf("ent: validator failed for field \"status\": %w", err)}
 		}
 	}
-	if _, ok := auo.mutation.UserID(); auo.mutation.UserCleared() && !ok {
+	if _, ok := ruo.mutation.UserID(); ruo.mutation.UserCleared() && !ok {
 		return errors.New("ent: clearing a required unique edge \"user\"")
 	}
-	if _, ok := auo.mutation.DeploymentID(); auo.mutation.DeploymentCleared() && !ok {
+	if _, ok := ruo.mutation.DeploymentID(); ruo.mutation.DeploymentCleared() && !ok {
 		return errors.New("ent: clearing a required unique edge \"deployment\"")
 	}
 	return nil
 }
 
-func (auo *ApprovalUpdateOne) sqlSave(ctx context.Context) (_node *Approval, err error) {
+func (ruo *ReviewUpdateOne) sqlSave(ctx context.Context) (_node *Review, err error) {
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
-			Table:   approval.Table,
-			Columns: approval.Columns,
+			Table:   review.Table,
+			Columns: review.Columns,
 			ID: &sqlgraph.FieldSpec{
 				Type:   field.TypeInt,
-				Column: approval.FieldID,
+				Column: review.FieldID,
 			},
 		},
 	}
-	id, ok := auo.mutation.ID()
+	id, ok := ruo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "ID", err: fmt.Errorf("missing Approval.ID for update")}
+		return nil, &ValidationError{Name: "ID", err: fmt.Errorf("missing Review.ID for update")}
 	}
 	_spec.Node.ID.Value = id
-	if fields := auo.fields; len(fields) > 0 {
+	if fields := ruo.fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
-		_spec.Node.Columns = append(_spec.Node.Columns, approval.FieldID)
+		_spec.Node.Columns = append(_spec.Node.Columns, review.FieldID)
 		for _, f := range fields {
-			if !approval.ValidColumn(f) {
+			if !review.ValidColumn(f) {
 				return nil, &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
 			}
-			if f != approval.FieldID {
+			if f != review.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, f)
 			}
 		}
 	}
-	if ps := auo.mutation.predicates; len(ps) > 0 {
+	if ps := ruo.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	if value, ok := auo.mutation.Status(); ok {
+	if value, ok := ruo.mutation.Status(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeEnum,
 			Value:  value,
-			Column: approval.FieldStatus,
+			Column: review.FieldStatus,
 		})
 	}
-	if value, ok := auo.mutation.CreatedAt(); ok {
+	if value, ok := ruo.mutation.CreatedAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  value,
-			Column: approval.FieldCreatedAt,
+			Column: review.FieldCreatedAt,
 		})
 	}
-	if value, ok := auo.mutation.UpdatedAt(); ok {
+	if value, ok := ruo.mutation.UpdatedAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  value,
-			Column: approval.FieldUpdatedAt,
+			Column: review.FieldUpdatedAt,
 		})
 	}
-	if auo.mutation.UserCleared() {
+	if ruo.mutation.UserCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   approval.UserTable,
-			Columns: []string{approval.UserColumn},
+			Table:   review.UserTable,
+			Columns: []string{review.UserColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -680,12 +680,12 @@ func (auo *ApprovalUpdateOne) sqlSave(ctx context.Context) (_node *Approval, err
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := auo.mutation.UserIDs(); len(nodes) > 0 {
+	if nodes := ruo.mutation.UserIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   approval.UserTable,
-			Columns: []string{approval.UserColumn},
+			Table:   review.UserTable,
+			Columns: []string{review.UserColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -699,12 +699,12 @@ func (auo *ApprovalUpdateOne) sqlSave(ctx context.Context) (_node *Approval, err
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if auo.mutation.DeploymentCleared() {
+	if ruo.mutation.DeploymentCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   approval.DeploymentTable,
-			Columns: []string{approval.DeploymentColumn},
+			Table:   review.DeploymentTable,
+			Columns: []string{review.DeploymentColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -715,12 +715,12 @@ func (auo *ApprovalUpdateOne) sqlSave(ctx context.Context) (_node *Approval, err
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := auo.mutation.DeploymentIDs(); len(nodes) > 0 {
+	if nodes := ruo.mutation.DeploymentIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   approval.DeploymentTable,
-			Columns: []string{approval.DeploymentColumn},
+			Table:   review.DeploymentTable,
+			Columns: []string{review.DeploymentColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -734,12 +734,12 @@ func (auo *ApprovalUpdateOne) sqlSave(ctx context.Context) (_node *Approval, err
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if auo.mutation.EventCleared() {
+	if ruo.mutation.EventCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   approval.EventTable,
-			Columns: []string{approval.EventColumn},
+			Table:   review.EventTable,
+			Columns: []string{review.EventColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -750,12 +750,12 @@ func (auo *ApprovalUpdateOne) sqlSave(ctx context.Context) (_node *Approval, err
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := auo.mutation.RemovedEventIDs(); len(nodes) > 0 && !auo.mutation.EventCleared() {
+	if nodes := ruo.mutation.RemovedEventIDs(); len(nodes) > 0 && !ruo.mutation.EventCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   approval.EventTable,
-			Columns: []string{approval.EventColumn},
+			Table:   review.EventTable,
+			Columns: []string{review.EventColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -769,12 +769,12 @@ func (auo *ApprovalUpdateOne) sqlSave(ctx context.Context) (_node *Approval, err
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := auo.mutation.EventIDs(); len(nodes) > 0 {
+	if nodes := ruo.mutation.EventIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   approval.EventTable,
-			Columns: []string{approval.EventColumn},
+			Table:   review.EventTable,
+			Columns: []string{review.EventColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -788,12 +788,12 @@ func (auo *ApprovalUpdateOne) sqlSave(ctx context.Context) (_node *Approval, err
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_node = &Approval{config: auo.config}
+	_node = &Review{config: ruo.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues
-	if err = sqlgraph.UpdateNode(ctx, auo.driver, _spec); err != nil {
+	if err = sqlgraph.UpdateNode(ctx, ruo.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
-			err = &NotFoundError{approval.Label}
+			err = &NotFoundError{review.Label}
 		} else if sqlgraph.IsConstraintError(err) {
 			err = &ConstraintError{err.Error(), err}
 		}

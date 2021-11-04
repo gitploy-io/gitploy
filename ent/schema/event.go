@@ -19,6 +19,7 @@ func (Event) Fields() []ent.Field {
 			Values(
 				"deployment",
 				"approval",
+				"review",
 			),
 		field.Enum("type").
 			Values(
@@ -31,6 +32,8 @@ func (Event) Fields() []ent.Field {
 		field.Int("deployment_id").
 			Optional(),
 		field.Int("approval_id").
+			Optional(),
+		field.Int("review_id").
 			Optional(),
 		// This field is filled when the type is 'deleted'.
 		field.Int("deleted_id").
@@ -45,9 +48,9 @@ func (Event) Edges() []ent.Edge {
 			Ref("event").
 			Field("deployment_id").
 			Unique(),
-		edge.From("approval", Approval.Type).
+		edge.From("review", Review.Type).
 			Ref("event").
-			Field("approval_id").
+			Field("review_id").
 			Unique(),
 		edge.To("notification_record", NotificationRecord.Type).
 			Unique(),

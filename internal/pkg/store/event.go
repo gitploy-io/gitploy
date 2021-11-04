@@ -10,10 +10,10 @@ import (
 	"github.com/gitploy-io/gitploy/ent/notificationrecord"
 )
 
-// ListEventsGreaterThanTime returns all events for deployment and approval
+// ListEventsGreaterThanTime returns all events for deployment and review
 // that are greater than the time.
 //
-// It processes eager loading, especially, Approval loads a repository of deployment.
+// It processes eager loading, especially, review loads a repository of deployment.
 func (s *Store) ListEventsGreaterThanTime(ctx context.Context, t time.Time) ([]*ent.Event, error) {
 	const limit = 100
 
@@ -22,20 +22,20 @@ func (s *Store) ListEventsGreaterThanTime(ctx context.Context, t time.Time) ([]*
 		Where(
 			event.CreatedAtGT(t),
 		).
-		WithApproval(func(aq *ent.ApprovalQuery) {
-			aq.
+		WithDeployment(func(dq *ent.DeploymentQuery) {
+			dq.
+				WithUser().
+				WithRepo().
+				WithDeploymentStatuses()
+		}).
+		WithReview(func(rq *ent.ReviewQuery) {
+			rq.
 				WithUser().
 				WithDeployment(func(dq *ent.DeploymentQuery) {
 					dq.
 						WithUser().
 						WithRepo()
 				})
-		}).
-		WithDeployment(func(dq *ent.DeploymentQuery) {
-			dq.
-				WithUser().
-				WithRepo().
-				WithDeploymentStatuses()
 		}).
 		Limit(limit).
 		All(ctx)
@@ -51,8 +51,8 @@ func (s *Store) CreateEvent(ctx context.Context, e *ent.Event) (*ent.Event, erro
 		qry = qry.SetDeletedID(e.DeletedID)
 	} else if e.Kind == event.KindDeployment {
 		qry = qry.SetDeploymentID(e.DeploymentID)
-	} else if e.Kind == event.KindApproval {
-		qry = qry.SetApprovalID(e.ApprovalID)
+	} else if e.Kind == event.KindReview {
+		qry = qry.SetReviewID(e.ReviewID)
 	}
 
 	return qry.Save(ctx)

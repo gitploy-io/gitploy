@@ -5,7 +5,6 @@ package ent
 import (
 	"time"
 
-	"github.com/gitploy-io/gitploy/ent/approval"
 	"github.com/gitploy-io/gitploy/ent/callback"
 	"github.com/gitploy-io/gitploy/ent/chatuser"
 	"github.com/gitploy-io/gitploy/ent/deployment"
@@ -15,6 +14,7 @@ import (
 	"github.com/gitploy-io/gitploy/ent/lock"
 	"github.com/gitploy-io/gitploy/ent/perm"
 	"github.com/gitploy-io/gitploy/ent/repo"
+	"github.com/gitploy-io/gitploy/ent/review"
 	"github.com/gitploy-io/gitploy/ent/schema"
 	"github.com/gitploy-io/gitploy/ent/user"
 )
@@ -23,18 +23,6 @@ import (
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
-	approvalFields := schema.Approval{}.Fields()
-	_ = approvalFields
-	// approvalDescCreatedAt is the schema descriptor for created_at field.
-	approvalDescCreatedAt := approvalFields[1].Descriptor()
-	// approval.DefaultCreatedAt holds the default value on creation for the created_at field.
-	approval.DefaultCreatedAt = approvalDescCreatedAt.Default.(func() time.Time)
-	// approvalDescUpdatedAt is the schema descriptor for updated_at field.
-	approvalDescUpdatedAt := approvalFields[2].Descriptor()
-	// approval.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	approval.DefaultUpdatedAt = approvalDescUpdatedAt.Default.(func() time.Time)
-	// approval.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
-	approval.UpdateDefaultUpdatedAt = approvalDescUpdatedAt.UpdateDefault.(func() time.Time)
 	callbackFields := schema.Callback{}.Fields()
 	_ = callbackFields
 	// callbackDescHash is the schema descriptor for hash field.
@@ -77,20 +65,12 @@ func init() {
 	deploymentDescIsRollback := deploymentFields[9].Descriptor()
 	// deployment.DefaultIsRollback holds the default value on creation for the is_rollback field.
 	deployment.DefaultIsRollback = deploymentDescIsRollback.Default.(bool)
-	// deploymentDescIsApprovalEnabled is the schema descriptor for is_approval_enabled field.
-	deploymentDescIsApprovalEnabled := deploymentFields[10].Descriptor()
-	// deployment.DefaultIsApprovalEnabled holds the default value on creation for the is_approval_enabled field.
-	deployment.DefaultIsApprovalEnabled = deploymentDescIsApprovalEnabled.Default.(bool)
-	// deploymentDescRequiredApprovalCount is the schema descriptor for required_approval_count field.
-	deploymentDescRequiredApprovalCount := deploymentFields[11].Descriptor()
-	// deployment.DefaultRequiredApprovalCount holds the default value on creation for the required_approval_count field.
-	deployment.DefaultRequiredApprovalCount = deploymentDescRequiredApprovalCount.Default.(int)
 	// deploymentDescCreatedAt is the schema descriptor for created_at field.
-	deploymentDescCreatedAt := deploymentFields[12].Descriptor()
+	deploymentDescCreatedAt := deploymentFields[10].Descriptor()
 	// deployment.DefaultCreatedAt holds the default value on creation for the created_at field.
 	deployment.DefaultCreatedAt = deploymentDescCreatedAt.Default.(func() time.Time)
 	// deploymentDescUpdatedAt is the schema descriptor for updated_at field.
-	deploymentDescUpdatedAt := deploymentFields[13].Descriptor()
+	deploymentDescUpdatedAt := deploymentFields[11].Descriptor()
 	// deployment.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	deployment.DefaultUpdatedAt = deploymentDescUpdatedAt.Default.(func() time.Time)
 	// deployment.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
@@ -191,6 +171,18 @@ func init() {
 	repo.DefaultUpdatedAt = repoDescUpdatedAt.Default.(func() time.Time)
 	// repo.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	repo.UpdateDefaultUpdatedAt = repoDescUpdatedAt.UpdateDefault.(func() time.Time)
+	reviewFields := schema.Review{}.Fields()
+	_ = reviewFields
+	// reviewDescCreatedAt is the schema descriptor for created_at field.
+	reviewDescCreatedAt := reviewFields[1].Descriptor()
+	// review.DefaultCreatedAt holds the default value on creation for the created_at field.
+	review.DefaultCreatedAt = reviewDescCreatedAt.Default.(func() time.Time)
+	// reviewDescUpdatedAt is the schema descriptor for updated_at field.
+	reviewDescUpdatedAt := reviewFields[2].Descriptor()
+	// review.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	review.DefaultUpdatedAt = reviewDescUpdatedAt.Default.(func() time.Time)
+	// review.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	review.UpdateDefaultUpdatedAt = reviewDescUpdatedAt.UpdateDefault.(func() time.Time)
 	userFields := schema.User{}.Fields()
 	_ = userFields
 	// userDescAdmin is the schema descriptor for admin field.

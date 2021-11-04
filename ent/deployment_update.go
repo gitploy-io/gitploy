@@ -11,12 +11,12 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/gitploy-io/gitploy/ent/approval"
 	"github.com/gitploy-io/gitploy/ent/deployment"
 	"github.com/gitploy-io/gitploy/ent/deploymentstatus"
 	"github.com/gitploy-io/gitploy/ent/event"
 	"github.com/gitploy-io/gitploy/ent/predicate"
 	"github.com/gitploy-io/gitploy/ent/repo"
+	"github.com/gitploy-io/gitploy/ent/review"
 	"github.com/gitploy-io/gitploy/ent/user"
 )
 
@@ -181,41 +181,6 @@ func (du *DeploymentUpdate) SetNillableIsRollback(b *bool) *DeploymentUpdate {
 	return du
 }
 
-// SetIsApprovalEnabled sets the "is_approval_enabled" field.
-func (du *DeploymentUpdate) SetIsApprovalEnabled(b bool) *DeploymentUpdate {
-	du.mutation.SetIsApprovalEnabled(b)
-	return du
-}
-
-// SetNillableIsApprovalEnabled sets the "is_approval_enabled" field if the given value is not nil.
-func (du *DeploymentUpdate) SetNillableIsApprovalEnabled(b *bool) *DeploymentUpdate {
-	if b != nil {
-		du.SetIsApprovalEnabled(*b)
-	}
-	return du
-}
-
-// SetRequiredApprovalCount sets the "required_approval_count" field.
-func (du *DeploymentUpdate) SetRequiredApprovalCount(i int) *DeploymentUpdate {
-	du.mutation.ResetRequiredApprovalCount()
-	du.mutation.SetRequiredApprovalCount(i)
-	return du
-}
-
-// SetNillableRequiredApprovalCount sets the "required_approval_count" field if the given value is not nil.
-func (du *DeploymentUpdate) SetNillableRequiredApprovalCount(i *int) *DeploymentUpdate {
-	if i != nil {
-		du.SetRequiredApprovalCount(*i)
-	}
-	return du
-}
-
-// AddRequiredApprovalCount adds i to the "required_approval_count" field.
-func (du *DeploymentUpdate) AddRequiredApprovalCount(i int) *DeploymentUpdate {
-	du.mutation.AddRequiredApprovalCount(i)
-	return du
-}
-
 // SetCreatedAt sets the "created_at" field.
 func (du *DeploymentUpdate) SetCreatedAt(t time.Time) *DeploymentUpdate {
 	du.mutation.SetCreatedAt(t)
@@ -248,6 +213,53 @@ func (du *DeploymentUpdate) SetRepoID(i int64) *DeploymentUpdate {
 	return du
 }
 
+// SetIsApprovalEnabled sets the "is_approval_enabled" field.
+func (du *DeploymentUpdate) SetIsApprovalEnabled(b bool) *DeploymentUpdate {
+	du.mutation.SetIsApprovalEnabled(b)
+	return du
+}
+
+// SetNillableIsApprovalEnabled sets the "is_approval_enabled" field if the given value is not nil.
+func (du *DeploymentUpdate) SetNillableIsApprovalEnabled(b *bool) *DeploymentUpdate {
+	if b != nil {
+		du.SetIsApprovalEnabled(*b)
+	}
+	return du
+}
+
+// ClearIsApprovalEnabled clears the value of the "is_approval_enabled" field.
+func (du *DeploymentUpdate) ClearIsApprovalEnabled() *DeploymentUpdate {
+	du.mutation.ClearIsApprovalEnabled()
+	return du
+}
+
+// SetRequiredApprovalCount sets the "required_approval_count" field.
+func (du *DeploymentUpdate) SetRequiredApprovalCount(i int) *DeploymentUpdate {
+	du.mutation.ResetRequiredApprovalCount()
+	du.mutation.SetRequiredApprovalCount(i)
+	return du
+}
+
+// SetNillableRequiredApprovalCount sets the "required_approval_count" field if the given value is not nil.
+func (du *DeploymentUpdate) SetNillableRequiredApprovalCount(i *int) *DeploymentUpdate {
+	if i != nil {
+		du.SetRequiredApprovalCount(*i)
+	}
+	return du
+}
+
+// AddRequiredApprovalCount adds i to the "required_approval_count" field.
+func (du *DeploymentUpdate) AddRequiredApprovalCount(i int) *DeploymentUpdate {
+	du.mutation.AddRequiredApprovalCount(i)
+	return du
+}
+
+// ClearRequiredApprovalCount clears the value of the "required_approval_count" field.
+func (du *DeploymentUpdate) ClearRequiredApprovalCount() *DeploymentUpdate {
+	du.mutation.ClearRequiredApprovalCount()
+	return du
+}
+
 // SetUser sets the "user" edge to the User entity.
 func (du *DeploymentUpdate) SetUser(u *User) *DeploymentUpdate {
 	return du.SetUserID(u.ID)
@@ -258,19 +270,19 @@ func (du *DeploymentUpdate) SetRepo(r *Repo) *DeploymentUpdate {
 	return du.SetRepoID(r.ID)
 }
 
-// AddApprovalIDs adds the "approvals" edge to the Approval entity by IDs.
-func (du *DeploymentUpdate) AddApprovalIDs(ids ...int) *DeploymentUpdate {
-	du.mutation.AddApprovalIDs(ids...)
+// AddReviewIDs adds the "reviews" edge to the Review entity by IDs.
+func (du *DeploymentUpdate) AddReviewIDs(ids ...int) *DeploymentUpdate {
+	du.mutation.AddReviewIDs(ids...)
 	return du
 }
 
-// AddApprovals adds the "approvals" edges to the Approval entity.
-func (du *DeploymentUpdate) AddApprovals(a ...*Approval) *DeploymentUpdate {
-	ids := make([]int, len(a))
-	for i := range a {
-		ids[i] = a[i].ID
+// AddReviews adds the "reviews" edges to the Review entity.
+func (du *DeploymentUpdate) AddReviews(r ...*Review) *DeploymentUpdate {
+	ids := make([]int, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
 	}
-	return du.AddApprovalIDs(ids...)
+	return du.AddReviewIDs(ids...)
 }
 
 // AddDeploymentStatusIDs adds the "deployment_statuses" edge to the DeploymentStatus entity by IDs.
@@ -320,25 +332,25 @@ func (du *DeploymentUpdate) ClearRepo() *DeploymentUpdate {
 	return du
 }
 
-// ClearApprovals clears all "approvals" edges to the Approval entity.
-func (du *DeploymentUpdate) ClearApprovals() *DeploymentUpdate {
-	du.mutation.ClearApprovals()
+// ClearReviews clears all "reviews" edges to the Review entity.
+func (du *DeploymentUpdate) ClearReviews() *DeploymentUpdate {
+	du.mutation.ClearReviews()
 	return du
 }
 
-// RemoveApprovalIDs removes the "approvals" edge to Approval entities by IDs.
-func (du *DeploymentUpdate) RemoveApprovalIDs(ids ...int) *DeploymentUpdate {
-	du.mutation.RemoveApprovalIDs(ids...)
+// RemoveReviewIDs removes the "reviews" edge to Review entities by IDs.
+func (du *DeploymentUpdate) RemoveReviewIDs(ids ...int) *DeploymentUpdate {
+	du.mutation.RemoveReviewIDs(ids...)
 	return du
 }
 
-// RemoveApprovals removes "approvals" edges to Approval entities.
-func (du *DeploymentUpdate) RemoveApprovals(a ...*Approval) *DeploymentUpdate {
-	ids := make([]int, len(a))
-	for i := range a {
-		ids[i] = a[i].ID
+// RemoveReviews removes "reviews" edges to Review entities.
+func (du *DeploymentUpdate) RemoveReviews(r ...*Review) *DeploymentUpdate {
+	ids := make([]int, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
 	}
-	return du.RemoveApprovalIDs(ids...)
+	return du.RemoveReviewIDs(ids...)
 }
 
 // ClearDeploymentStatuses clears all "deployment_statuses" edges to the DeploymentStatus entity.
@@ -598,10 +610,30 @@ func (du *DeploymentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: deployment.FieldIsRollback,
 		})
 	}
+	if value, ok := du.mutation.CreatedAt(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: deployment.FieldCreatedAt,
+		})
+	}
+	if value, ok := du.mutation.UpdatedAt(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: deployment.FieldUpdatedAt,
+		})
+	}
 	if value, ok := du.mutation.IsApprovalEnabled(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeBool,
 			Value:  value,
+			Column: deployment.FieldIsApprovalEnabled,
+		})
+	}
+	if du.mutation.IsApprovalEnabledCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
 			Column: deployment.FieldIsApprovalEnabled,
 		})
 	}
@@ -619,18 +651,10 @@ func (du *DeploymentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: deployment.FieldRequiredApprovalCount,
 		})
 	}
-	if value, ok := du.mutation.CreatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: deployment.FieldCreatedAt,
-		})
-	}
-	if value, ok := du.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: deployment.FieldUpdatedAt,
+	if du.mutation.RequiredApprovalCountCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Column: deployment.FieldRequiredApprovalCount,
 		})
 	}
 	if du.mutation.UserCleared() {
@@ -703,33 +727,33 @@ func (du *DeploymentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if du.mutation.ApprovalsCleared() {
+	if du.mutation.ReviewsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   deployment.ApprovalsTable,
-			Columns: []string{deployment.ApprovalsColumn},
+			Table:   deployment.ReviewsTable,
+			Columns: []string{deployment.ReviewsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: approval.FieldID,
+					Column: review.FieldID,
 				},
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := du.mutation.RemovedApprovalsIDs(); len(nodes) > 0 && !du.mutation.ApprovalsCleared() {
+	if nodes := du.mutation.RemovedReviewsIDs(); len(nodes) > 0 && !du.mutation.ReviewsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   deployment.ApprovalsTable,
-			Columns: []string{deployment.ApprovalsColumn},
+			Table:   deployment.ReviewsTable,
+			Columns: []string{deployment.ReviewsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: approval.FieldID,
+					Column: review.FieldID,
 				},
 			},
 		}
@@ -738,17 +762,17 @@ func (du *DeploymentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := du.mutation.ApprovalsIDs(); len(nodes) > 0 {
+	if nodes := du.mutation.ReviewsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   deployment.ApprovalsTable,
-			Columns: []string{deployment.ApprovalsColumn},
+			Table:   deployment.ReviewsTable,
+			Columns: []string{deployment.ReviewsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: approval.FieldID,
+					Column: review.FieldID,
 				},
 			},
 		}
@@ -1032,41 +1056,6 @@ func (duo *DeploymentUpdateOne) SetNillableIsRollback(b *bool) *DeploymentUpdate
 	return duo
 }
 
-// SetIsApprovalEnabled sets the "is_approval_enabled" field.
-func (duo *DeploymentUpdateOne) SetIsApprovalEnabled(b bool) *DeploymentUpdateOne {
-	duo.mutation.SetIsApprovalEnabled(b)
-	return duo
-}
-
-// SetNillableIsApprovalEnabled sets the "is_approval_enabled" field if the given value is not nil.
-func (duo *DeploymentUpdateOne) SetNillableIsApprovalEnabled(b *bool) *DeploymentUpdateOne {
-	if b != nil {
-		duo.SetIsApprovalEnabled(*b)
-	}
-	return duo
-}
-
-// SetRequiredApprovalCount sets the "required_approval_count" field.
-func (duo *DeploymentUpdateOne) SetRequiredApprovalCount(i int) *DeploymentUpdateOne {
-	duo.mutation.ResetRequiredApprovalCount()
-	duo.mutation.SetRequiredApprovalCount(i)
-	return duo
-}
-
-// SetNillableRequiredApprovalCount sets the "required_approval_count" field if the given value is not nil.
-func (duo *DeploymentUpdateOne) SetNillableRequiredApprovalCount(i *int) *DeploymentUpdateOne {
-	if i != nil {
-		duo.SetRequiredApprovalCount(*i)
-	}
-	return duo
-}
-
-// AddRequiredApprovalCount adds i to the "required_approval_count" field.
-func (duo *DeploymentUpdateOne) AddRequiredApprovalCount(i int) *DeploymentUpdateOne {
-	duo.mutation.AddRequiredApprovalCount(i)
-	return duo
-}
-
 // SetCreatedAt sets the "created_at" field.
 func (duo *DeploymentUpdateOne) SetCreatedAt(t time.Time) *DeploymentUpdateOne {
 	duo.mutation.SetCreatedAt(t)
@@ -1099,6 +1088,53 @@ func (duo *DeploymentUpdateOne) SetRepoID(i int64) *DeploymentUpdateOne {
 	return duo
 }
 
+// SetIsApprovalEnabled sets the "is_approval_enabled" field.
+func (duo *DeploymentUpdateOne) SetIsApprovalEnabled(b bool) *DeploymentUpdateOne {
+	duo.mutation.SetIsApprovalEnabled(b)
+	return duo
+}
+
+// SetNillableIsApprovalEnabled sets the "is_approval_enabled" field if the given value is not nil.
+func (duo *DeploymentUpdateOne) SetNillableIsApprovalEnabled(b *bool) *DeploymentUpdateOne {
+	if b != nil {
+		duo.SetIsApprovalEnabled(*b)
+	}
+	return duo
+}
+
+// ClearIsApprovalEnabled clears the value of the "is_approval_enabled" field.
+func (duo *DeploymentUpdateOne) ClearIsApprovalEnabled() *DeploymentUpdateOne {
+	duo.mutation.ClearIsApprovalEnabled()
+	return duo
+}
+
+// SetRequiredApprovalCount sets the "required_approval_count" field.
+func (duo *DeploymentUpdateOne) SetRequiredApprovalCount(i int) *DeploymentUpdateOne {
+	duo.mutation.ResetRequiredApprovalCount()
+	duo.mutation.SetRequiredApprovalCount(i)
+	return duo
+}
+
+// SetNillableRequiredApprovalCount sets the "required_approval_count" field if the given value is not nil.
+func (duo *DeploymentUpdateOne) SetNillableRequiredApprovalCount(i *int) *DeploymentUpdateOne {
+	if i != nil {
+		duo.SetRequiredApprovalCount(*i)
+	}
+	return duo
+}
+
+// AddRequiredApprovalCount adds i to the "required_approval_count" field.
+func (duo *DeploymentUpdateOne) AddRequiredApprovalCount(i int) *DeploymentUpdateOne {
+	duo.mutation.AddRequiredApprovalCount(i)
+	return duo
+}
+
+// ClearRequiredApprovalCount clears the value of the "required_approval_count" field.
+func (duo *DeploymentUpdateOne) ClearRequiredApprovalCount() *DeploymentUpdateOne {
+	duo.mutation.ClearRequiredApprovalCount()
+	return duo
+}
+
 // SetUser sets the "user" edge to the User entity.
 func (duo *DeploymentUpdateOne) SetUser(u *User) *DeploymentUpdateOne {
 	return duo.SetUserID(u.ID)
@@ -1109,19 +1145,19 @@ func (duo *DeploymentUpdateOne) SetRepo(r *Repo) *DeploymentUpdateOne {
 	return duo.SetRepoID(r.ID)
 }
 
-// AddApprovalIDs adds the "approvals" edge to the Approval entity by IDs.
-func (duo *DeploymentUpdateOne) AddApprovalIDs(ids ...int) *DeploymentUpdateOne {
-	duo.mutation.AddApprovalIDs(ids...)
+// AddReviewIDs adds the "reviews" edge to the Review entity by IDs.
+func (duo *DeploymentUpdateOne) AddReviewIDs(ids ...int) *DeploymentUpdateOne {
+	duo.mutation.AddReviewIDs(ids...)
 	return duo
 }
 
-// AddApprovals adds the "approvals" edges to the Approval entity.
-func (duo *DeploymentUpdateOne) AddApprovals(a ...*Approval) *DeploymentUpdateOne {
-	ids := make([]int, len(a))
-	for i := range a {
-		ids[i] = a[i].ID
+// AddReviews adds the "reviews" edges to the Review entity.
+func (duo *DeploymentUpdateOne) AddReviews(r ...*Review) *DeploymentUpdateOne {
+	ids := make([]int, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
 	}
-	return duo.AddApprovalIDs(ids...)
+	return duo.AddReviewIDs(ids...)
 }
 
 // AddDeploymentStatusIDs adds the "deployment_statuses" edge to the DeploymentStatus entity by IDs.
@@ -1171,25 +1207,25 @@ func (duo *DeploymentUpdateOne) ClearRepo() *DeploymentUpdateOne {
 	return duo
 }
 
-// ClearApprovals clears all "approvals" edges to the Approval entity.
-func (duo *DeploymentUpdateOne) ClearApprovals() *DeploymentUpdateOne {
-	duo.mutation.ClearApprovals()
+// ClearReviews clears all "reviews" edges to the Review entity.
+func (duo *DeploymentUpdateOne) ClearReviews() *DeploymentUpdateOne {
+	duo.mutation.ClearReviews()
 	return duo
 }
 
-// RemoveApprovalIDs removes the "approvals" edge to Approval entities by IDs.
-func (duo *DeploymentUpdateOne) RemoveApprovalIDs(ids ...int) *DeploymentUpdateOne {
-	duo.mutation.RemoveApprovalIDs(ids...)
+// RemoveReviewIDs removes the "reviews" edge to Review entities by IDs.
+func (duo *DeploymentUpdateOne) RemoveReviewIDs(ids ...int) *DeploymentUpdateOne {
+	duo.mutation.RemoveReviewIDs(ids...)
 	return duo
 }
 
-// RemoveApprovals removes "approvals" edges to Approval entities.
-func (duo *DeploymentUpdateOne) RemoveApprovals(a ...*Approval) *DeploymentUpdateOne {
-	ids := make([]int, len(a))
-	for i := range a {
-		ids[i] = a[i].ID
+// RemoveReviews removes "reviews" edges to Review entities.
+func (duo *DeploymentUpdateOne) RemoveReviews(r ...*Review) *DeploymentUpdateOne {
+	ids := make([]int, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
 	}
-	return duo.RemoveApprovalIDs(ids...)
+	return duo.RemoveReviewIDs(ids...)
 }
 
 // ClearDeploymentStatuses clears all "deployment_statuses" edges to the DeploymentStatus entity.
@@ -1473,10 +1509,30 @@ func (duo *DeploymentUpdateOne) sqlSave(ctx context.Context) (_node *Deployment,
 			Column: deployment.FieldIsRollback,
 		})
 	}
+	if value, ok := duo.mutation.CreatedAt(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: deployment.FieldCreatedAt,
+		})
+	}
+	if value, ok := duo.mutation.UpdatedAt(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: deployment.FieldUpdatedAt,
+		})
+	}
 	if value, ok := duo.mutation.IsApprovalEnabled(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeBool,
 			Value:  value,
+			Column: deployment.FieldIsApprovalEnabled,
+		})
+	}
+	if duo.mutation.IsApprovalEnabledCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
 			Column: deployment.FieldIsApprovalEnabled,
 		})
 	}
@@ -1494,18 +1550,10 @@ func (duo *DeploymentUpdateOne) sqlSave(ctx context.Context) (_node *Deployment,
 			Column: deployment.FieldRequiredApprovalCount,
 		})
 	}
-	if value, ok := duo.mutation.CreatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: deployment.FieldCreatedAt,
-		})
-	}
-	if value, ok := duo.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: deployment.FieldUpdatedAt,
+	if duo.mutation.RequiredApprovalCountCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Column: deployment.FieldRequiredApprovalCount,
 		})
 	}
 	if duo.mutation.UserCleared() {
@@ -1578,33 +1626,33 @@ func (duo *DeploymentUpdateOne) sqlSave(ctx context.Context) (_node *Deployment,
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if duo.mutation.ApprovalsCleared() {
+	if duo.mutation.ReviewsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   deployment.ApprovalsTable,
-			Columns: []string{deployment.ApprovalsColumn},
+			Table:   deployment.ReviewsTable,
+			Columns: []string{deployment.ReviewsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: approval.FieldID,
+					Column: review.FieldID,
 				},
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := duo.mutation.RemovedApprovalsIDs(); len(nodes) > 0 && !duo.mutation.ApprovalsCleared() {
+	if nodes := duo.mutation.RemovedReviewsIDs(); len(nodes) > 0 && !duo.mutation.ReviewsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   deployment.ApprovalsTable,
-			Columns: []string{deployment.ApprovalsColumn},
+			Table:   deployment.ReviewsTable,
+			Columns: []string{deployment.ReviewsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: approval.FieldID,
+					Column: review.FieldID,
 				},
 			},
 		}
@@ -1613,17 +1661,17 @@ func (duo *DeploymentUpdateOne) sqlSave(ctx context.Context) (_node *Deployment,
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := duo.mutation.ApprovalsIDs(); len(nodes) > 0 {
+	if nodes := duo.mutation.ReviewsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   deployment.ApprovalsTable,
-			Columns: []string{deployment.ApprovalsColumn},
+			Table:   deployment.ReviewsTable,
+			Columns: []string{deployment.ReviewsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: approval.FieldID,
+					Column: review.FieldID,
 				},
 			},
 		}

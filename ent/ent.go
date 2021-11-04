@@ -8,7 +8,6 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-	"github.com/gitploy-io/gitploy/ent/approval"
 	"github.com/gitploy-io/gitploy/ent/callback"
 	"github.com/gitploy-io/gitploy/ent/chatuser"
 	"github.com/gitploy-io/gitploy/ent/deployment"
@@ -19,6 +18,7 @@ import (
 	"github.com/gitploy-io/gitploy/ent/notificationrecord"
 	"github.com/gitploy-io/gitploy/ent/perm"
 	"github.com/gitploy-io/gitploy/ent/repo"
+	"github.com/gitploy-io/gitploy/ent/review"
 	"github.com/gitploy-io/gitploy/ent/user"
 )
 
@@ -40,7 +40,6 @@ type OrderFunc func(*sql.Selector)
 // columnChecker returns a function indicates if the column exists in the given column.
 func columnChecker(table string) func(string) error {
 	checks := map[string]func(string) bool{
-		approval.Table:             approval.ValidColumn,
 		callback.Table:             callback.ValidColumn,
 		chatuser.Table:             chatuser.ValidColumn,
 		deployment.Table:           deployment.ValidColumn,
@@ -51,6 +50,7 @@ func columnChecker(table string) func(string) error {
 		notificationrecord.Table:   notificationrecord.ValidColumn,
 		perm.Table:                 perm.ValidColumn,
 		repo.Table:                 repo.ValidColumn,
+		review.Table:               review.ValidColumn,
 		user.Table:                 user.ValidColumn,
 	}
 	check, ok := checks[table]

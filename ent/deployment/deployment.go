@@ -32,10 +32,6 @@ const (
 	FieldProductionEnvironment = "production_environment"
 	// FieldIsRollback holds the string denoting the is_rollback field in the database.
 	FieldIsRollback = "is_rollback"
-	// FieldIsApprovalEnabled holds the string denoting the is_approval_enabled field in the database.
-	FieldIsApprovalEnabled = "is_approval_enabled"
-	// FieldRequiredApprovalCount holds the string denoting the required_approval_count field in the database.
-	FieldRequiredApprovalCount = "required_approval_count"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
@@ -44,12 +40,16 @@ const (
 	FieldUserID = "user_id"
 	// FieldRepoID holds the string denoting the repo_id field in the database.
 	FieldRepoID = "repo_id"
+	// FieldIsApprovalEnabled holds the string denoting the is_approval_enabled field in the database.
+	FieldIsApprovalEnabled = "is_approval_enabled"
+	// FieldRequiredApprovalCount holds the string denoting the required_approval_count field in the database.
+	FieldRequiredApprovalCount = "required_approval_count"
 	// EdgeUser holds the string denoting the user edge name in mutations.
 	EdgeUser = "user"
 	// EdgeRepo holds the string denoting the repo edge name in mutations.
 	EdgeRepo = "repo"
-	// EdgeApprovals holds the string denoting the approvals edge name in mutations.
-	EdgeApprovals = "approvals"
+	// EdgeReviews holds the string denoting the reviews edge name in mutations.
+	EdgeReviews = "reviews"
 	// EdgeDeploymentStatuses holds the string denoting the deployment_statuses edge name in mutations.
 	EdgeDeploymentStatuses = "deployment_statuses"
 	// EdgeEvent holds the string denoting the event edge name in mutations.
@@ -70,13 +70,13 @@ const (
 	RepoInverseTable = "repos"
 	// RepoColumn is the table column denoting the repo relation/edge.
 	RepoColumn = "repo_id"
-	// ApprovalsTable is the table that holds the approvals relation/edge.
-	ApprovalsTable = "approvals"
-	// ApprovalsInverseTable is the table name for the Approval entity.
-	// It exists in this package in order to avoid circular dependency with the "approval" package.
-	ApprovalsInverseTable = "approvals"
-	// ApprovalsColumn is the table column denoting the approvals relation/edge.
-	ApprovalsColumn = "deployment_id"
+	// ReviewsTable is the table that holds the reviews relation/edge.
+	ReviewsTable = "reviews"
+	// ReviewsInverseTable is the table name for the Review entity.
+	// It exists in this package in order to avoid circular dependency with the "review" package.
+	ReviewsInverseTable = "reviews"
+	// ReviewsColumn is the table column denoting the reviews relation/edge.
+	ReviewsColumn = "deployment_id"
 	// DeploymentStatusesTable is the table that holds the deployment_statuses relation/edge.
 	DeploymentStatusesTable = "deployment_status"
 	// DeploymentStatusesInverseTable is the table name for the DeploymentStatus entity.
@@ -106,12 +106,12 @@ var Columns = []string{
 	FieldHTMLURL,
 	FieldProductionEnvironment,
 	FieldIsRollback,
-	FieldIsApprovalEnabled,
-	FieldRequiredApprovalCount,
 	FieldCreatedAt,
 	FieldUpdatedAt,
 	FieldUserID,
 	FieldRepoID,
+	FieldIsApprovalEnabled,
+	FieldRequiredApprovalCount,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -131,10 +131,6 @@ var (
 	DefaultProductionEnvironment bool
 	// DefaultIsRollback holds the default value on creation for the "is_rollback" field.
 	DefaultIsRollback bool
-	// DefaultIsApprovalEnabled holds the default value on creation for the "is_approval_enabled" field.
-	DefaultIsApprovalEnabled bool
-	// DefaultRequiredApprovalCount holds the default value on creation for the "required_approval_count" field.
-	DefaultRequiredApprovalCount int
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
 	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.

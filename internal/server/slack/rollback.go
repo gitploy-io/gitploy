@@ -254,33 +254,6 @@ func (s *Slack) interactRollback(c *gin.Context) {
 		s.log.Error("It has failed to create the event.", zap.Error(err))
 	}
 
-	if env.IsApprovalEabled() {
-		for _, id := range sm.ApproverIDs {
-			i, err := strconv.ParseInt(id, 10, 64)
-			if err != nil {
-				s.log.Error("It has failed to parse the ID of approver.", zap.Error(err))
-				continue
-			}
-
-			a, err := s.i.CreateApproval(ctx, &ent.Approval{
-				UserID:       i,
-				DeploymentID: d.ID,
-			})
-			if err != nil {
-				s.log.Error("It has failed to create a new approval.", zap.Error(err))
-				continue
-			}
-
-			if _, err := s.i.CreateEvent(ctx, &ent.Event{
-				Kind:       event.KindDeployment,
-				Type:       event.TypeCreated,
-				ApprovalID: a.ID,
-			}); err != nil {
-				s.log.Error("It has failed to create the event.", zap.Error(err))
-			}
-		}
-	}
-
 	c.Status(http.StatusOK)
 }
 

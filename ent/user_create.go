@@ -10,11 +10,11 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/gitploy-io/gitploy/ent/approval"
 	"github.com/gitploy-io/gitploy/ent/chatuser"
 	"github.com/gitploy-io/gitploy/ent/deployment"
 	"github.com/gitploy-io/gitploy/ent/lock"
 	"github.com/gitploy-io/gitploy/ent/perm"
+	"github.com/gitploy-io/gitploy/ent/review"
 	"github.com/gitploy-io/gitploy/ent/user"
 )
 
@@ -166,19 +166,19 @@ func (uc *UserCreate) AddDeployments(d ...*Deployment) *UserCreate {
 	return uc.AddDeploymentIDs(ids...)
 }
 
-// AddApprovalIDs adds the "approvals" edge to the Approval entity by IDs.
-func (uc *UserCreate) AddApprovalIDs(ids ...int) *UserCreate {
-	uc.mutation.AddApprovalIDs(ids...)
+// AddReviewIDs adds the "reviews" edge to the Review entity by IDs.
+func (uc *UserCreate) AddReviewIDs(ids ...int) *UserCreate {
+	uc.mutation.AddReviewIDs(ids...)
 	return uc
 }
 
-// AddApprovals adds the "approvals" edges to the Approval entity.
-func (uc *UserCreate) AddApprovals(a ...*Approval) *UserCreate {
-	ids := make([]int, len(a))
-	for i := range a {
-		ids[i] = a[i].ID
+// AddReviews adds the "reviews" edges to the Review entity.
+func (uc *UserCreate) AddReviews(r ...*Review) *UserCreate {
+	ids := make([]int, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
 	}
-	return uc.AddApprovalIDs(ids...)
+	return uc.AddReviewIDs(ids...)
 }
 
 // AddLockIDs adds the "locks" edge to the Lock entity by IDs.
@@ -476,17 +476,17 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := uc.mutation.ApprovalsIDs(); len(nodes) > 0 {
+	if nodes := uc.mutation.ReviewsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   user.ApprovalsTable,
-			Columns: []string{user.ApprovalsColumn},
+			Table:   user.ReviewsTable,
+			Columns: []string{user.ReviewsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: approval.FieldID,
+					Column: review.FieldID,
 				},
 			},
 		}

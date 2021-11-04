@@ -6,9 +6,6 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
-// Approval is the predicate function for approval builders.
-type Approval func(*sql.Selector)
-
 // Callback is the predicate function for callback builders.
 type Callback func(*sql.Selector)
 
@@ -38,6 +35,9 @@ type Perm func(*sql.Selector)
 
 // Repo is the predicate function for repo builders.
 type Repo func(*sql.Selector)
+
+// Review is the predicate function for review builders.
+type Review func(*sql.Selector)
 
 // User is the predicate function for user builders.
 type User func(*sql.Selector)

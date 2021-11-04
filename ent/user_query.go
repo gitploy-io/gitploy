@@ -13,12 +13,12 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/gitploy-io/gitploy/ent/approval"
 	"github.com/gitploy-io/gitploy/ent/chatuser"
 	"github.com/gitploy-io/gitploy/ent/deployment"
 	"github.com/gitploy-io/gitploy/ent/lock"
 	"github.com/gitploy-io/gitploy/ent/perm"
 	"github.com/gitploy-io/gitploy/ent/predicate"
+	"github.com/gitploy-io/gitploy/ent/review"
 	"github.com/gitploy-io/gitploy/ent/user"
 )
 
@@ -35,7 +35,7 @@ type UserQuery struct {
 	withChatUser    *ChatUserQuery
 	withPerms       *PermQuery
 	withDeployments *DeploymentQuery
-	withApprovals   *ApprovalQuery
+	withReviews     *ReviewQuery
 	withLocks       *LockQuery
 	modifiers       []func(s *sql.Selector)
 	// intermediate query (i.e. traversal path).
@@ -140,9 +140,9 @@ func (uq *UserQuery) QueryDeployments() *DeploymentQuery {
 	return query
 }
 
-// QueryApprovals chains the current query on the "approvals" edge.
-func (uq *UserQuery) QueryApprovals() *ApprovalQuery {
-	query := &ApprovalQuery{config: uq.config}
+// QueryReviews chains the current query on the "reviews" edge.
+func (uq *UserQuery) QueryReviews() *ReviewQuery {
+	query := &ReviewQuery{config: uq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := uq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -153,8 +153,8 @@ func (uq *UserQuery) QueryApprovals() *ApprovalQuery {
 		}
 		step := sqlgraph.NewStep(
 			sqlgraph.From(user.Table, user.FieldID, selector),
-			sqlgraph.To(approval.Table, approval.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, user.ApprovalsTable, user.ApprovalsColumn),
+			sqlgraph.To(review.Table, review.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.ReviewsTable, user.ReviewsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(uq.driver.Dialect(), step)
 		return fromU, nil
@@ -368,7 +368,7 @@ func (uq *UserQuery) Clone() *UserQuery {
 		withChatUser:    uq.withChatUser.Clone(),
 		withPerms:       uq.withPerms.Clone(),
 		withDeployments: uq.withDeployments.Clone(),
-		withApprovals:   uq.withApprovals.Clone(),
+		withReviews:     uq.withReviews.Clone(),
 		withLocks:       uq.withLocks.Clone(),
 		// clone intermediate query.
 		sql:  uq.sql.Clone(),
@@ -409,14 +409,14 @@ func (uq *UserQuery) WithDeployments(opts ...func(*DeploymentQuery)) *UserQuery 
 	return uq
 }
 
-// WithApprovals tells the query-builder to eager-load the nodes that are connected to
-// the "approvals" edge. The optional arguments are used to configure the query builder of the edge.
-func (uq *UserQuery) WithApprovals(opts ...func(*ApprovalQuery)) *UserQuery {
-	query := &ApprovalQuery{config: uq.config}
+// WithReviews tells the query-builder to eager-load the nodes that are connected to
+// the "reviews" edge. The optional arguments are used to configure the query builder of the edge.
+func (uq *UserQuery) WithReviews(opts ...func(*ReviewQuery)) *UserQuery {
+	query := &ReviewQuery{config: uq.config}
 	for _, opt := range opts {
 		opt(query)
 	}
-	uq.withApprovals = query
+	uq.withReviews = query
 	return uq
 }
 
@@ -500,7 +500,7 @@ func (uq *UserQuery) sqlAll(ctx context.Context) ([]*User, error) {
 			uq.withChatUser != nil,
 			uq.withPerms != nil,
 			uq.withDeployments != nil,
-			uq.withApprovals != nil,
+			uq.withReviews != nil,
 			uq.withLocks != nil,
 		}
 	)
@@ -601,16 +601,16 @@ func (uq *UserQuery) sqlAll(ctx context.Context) ([]*User, error) {
 		}
 	}
 
-	if query := uq.withApprovals; query != nil {
+	if query := uq.withReviews; query != nil {
 		fks := make([]driver.Value, 0, len(nodes))
 		nodeids := make(map[int64]*User)
 		for i := range nodes {
 			fks = append(fks, nodes[i].ID)
 			nodeids[nodes[i].ID] = nodes[i]
-			nodes[i].Edges.Approvals = []*Approval{}
+			nodes[i].Edges.Reviews = []*Review{}
 		}
-		query.Where(predicate.Approval(func(s *sql.Selector) {
-			s.Where(sql.InValues(user.ApprovalsColumn, fks...))
+		query.Where(predicate.Review(func(s *sql.Selector) {
+			s.Where(sql.InValues(user.ReviewsColumn, fks...))
 		}))
 		neighbors, err := query.All(ctx)
 		if err != nil {
@@ -622,7 +622,7 @@ func (uq *UserQuery) sqlAll(ctx context.Context) ([]*User, error) {
 			if !ok {
 				return nil, fmt.Errorf(`unexpected foreign-key "user_id" returned %v for node %v`, fk, n.ID)
 			}
-			node.Edges.Approvals = append(node.Edges.Approvals, n)
+			node.Edges.Reviews = append(node.Edges.Reviews, n)
 		}
 	}
 

@@ -5,21 +5,20 @@ import (
 	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
-	"entgo.io/ent/schema/index"
 )
 
-// Approval holds the schema definition for the Approval entity.
-type Approval struct {
+// Review holds the schema definition for the Review entity.
+type Review struct {
 	ent.Schema
 }
 
-// Fields of the Approval.
-func (Approval) Fields() []ent.Field {
+// Fields of the Review.
+func (Review) Fields() []ent.Field {
 	return []ent.Field{
 		field.Enum("status").
 			Values(
 				"pending",
-				"declined",
+				"rejected",
 				"approved",
 			).
 			Default("pending"),
@@ -34,16 +33,16 @@ func (Approval) Fields() []ent.Field {
 	}
 }
 
-// Edges of the Approval.
-func (Approval) Edges() []ent.Edge {
+// Edges of the Review.
+func (Review) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("user", User.Type).
-			Ref("approvals").
+			Ref("reviews").
 			Field("user_id").
 			Unique().
 			Required(),
 		edge.From("deployment", Deployment.Type).
-			Ref("approvals").
+			Ref("reviews").
 			Field("deployment_id").
 			Unique().
 			Required(),
@@ -51,12 +50,5 @@ func (Approval) Edges() []ent.Edge {
 			Annotations(entsql.Annotation{
 				OnDelete: entsql.Cascade,
 			}),
-	}
-}
-
-func (Approval) Index() []ent.Index {
-	return []ent.Index{
-		index.Fields("deployment_id", "user_id").
-			Unique(),
 	}
 }

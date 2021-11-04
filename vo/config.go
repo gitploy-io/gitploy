@@ -26,14 +26,14 @@ type (
 		Payload               interface{} `json:"payload" yaml:"payload"`
 		ProductionEnvironment *bool       `json:"production_environment" yaml:"production_environment"`
 
-		// Approval is the configuration of Approval,
+		// Review is the configuration of Review,
 		// It is disabled when it is empty.
-		Approval *Approval `json:"approval,omitempty" yaml:"approval"`
+		Review *Review `json:"review,omitempty" yaml:"review"`
 	}
 
-	Approval struct {
-		Enabled       bool `json:"enabled" yaml:"enabled"`
-		RequiredCount int  `json:"required_count" yaml:"required_count"`
+	Review struct {
+		Enabled   bool     `json:"enabled" yaml:"enabled"`
+		Reviewers []string `json:"reviewers" yaml:"reviewers"`
 	}
 
 	EvalValues struct {
@@ -84,12 +84,8 @@ func (e *Env) IsProductionEnvironment() bool {
 	return e.ProductionEnvironment != nil && *e.ProductionEnvironment
 }
 
-func (e *Env) IsApprovalEabled() bool {
-	if e.Approval == nil {
-		return false
-	}
-
-	return e.Approval.Enabled
+func (e *Env) HasReview() bool {
+	return e.Review != nil && e.Review.Enabled
 }
 
 func (e *Env) Eval(v *EvalValues) error {

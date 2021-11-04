@@ -12,8 +12,6 @@ import (
 // Tx is a transactional client that is created by calling Client.Tx().
 type Tx struct {
 	config
-	// Approval is the client for interacting with the Approval builders.
-	Approval *ApprovalClient
 	// Callback is the client for interacting with the Callback builders.
 	Callback *CallbackClient
 	// ChatUser is the client for interacting with the ChatUser builders.
@@ -34,6 +32,8 @@ type Tx struct {
 	Perm *PermClient
 	// Repo is the client for interacting with the Repo builders.
 	Repo *RepoClient
+	// Review is the client for interacting with the Review builders.
+	Review *ReviewClient
 	// User is the client for interacting with the User builders.
 	User *UserClient
 
@@ -171,7 +171,6 @@ func (tx *Tx) Client() *Client {
 }
 
 func (tx *Tx) init() {
-	tx.Approval = NewApprovalClient(tx.config)
 	tx.Callback = NewCallbackClient(tx.config)
 	tx.ChatUser = NewChatUserClient(tx.config)
 	tx.Deployment = NewDeploymentClient(tx.config)
@@ -182,6 +181,7 @@ func (tx *Tx) init() {
 	tx.NotificationRecord = NewNotificationRecordClient(tx.config)
 	tx.Perm = NewPermClient(tx.config)
 	tx.Repo = NewRepoClient(tx.config)
+	tx.Review = NewReviewClient(tx.config)
 	tx.User = NewUserClient(tx.config)
 }
 
@@ -192,7 +192,7 @@ func (tx *Tx) init() {
 // of them in order to commit or rollback the transaction.
 //
 // If a closed transaction is embedded in one of the generated entities, and the entity
-// applies a query, for example: Approval.QueryXXX(), the query will be executed
+// applies a query, for example: Callback.QueryXXX(), the query will be executed
 // through the driver which created this transaction.
 //
 // Note that txDriver is not goroutine safe.

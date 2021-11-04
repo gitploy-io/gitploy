@@ -1,17 +1,17 @@
 import User from "./User"
 import Deployment from "./Deployment"
 
-export default interface Approval {
+export interface Review {
     id: number
-    status: ApprovalStatus
+    status: ReviewStatusEnum
     createdAt: Date
     updatedAt: Date
-    user: User | null
-    deployment: Deployment | null
+    user?: User 
+    deployment?: Deployment 
 }
 
-export enum ApprovalStatus {
+export enum ReviewStatusEnum {
     Pending = "pending",
     Approved = "approved",
-    Declined = "declined"
+    Rejected = "rejected"
 }

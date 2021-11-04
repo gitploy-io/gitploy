@@ -10,7 +10,6 @@ import (
 	time "time"
 
 	ent "github.com/gitploy-io/gitploy/ent"
-	approval "github.com/gitploy-io/gitploy/ent/approval"
 	deployment "github.com/gitploy-io/gitploy/ent/deployment"
 	vo "github.com/gitploy-io/gitploy/vo"
 	gomock "github.com/golang/mock/gomock"
@@ -126,21 +125,6 @@ func (m *MockStore) CountUsers(arg0 context.Context) (int, error) {
 func (mr *MockStoreMockRecorder) CountUsers(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CountUsers", reflect.TypeOf((*MockStore)(nil).CountUsers), arg0)
-}
-
-// CreateApproval mocks base method.
-func (m *MockStore) CreateApproval(ctx context.Context, a *ent.Approval) (*ent.Approval, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateApproval", ctx, a)
-	ret0, _ := ret[0].(*ent.Approval)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// CreateApproval indicates an expected call of CreateApproval.
-func (mr *MockStoreMockRecorder) CreateApproval(ctx, a interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateApproval", reflect.TypeOf((*MockStore)(nil).CreateApproval), ctx, a)
 }
 
 // CreateCallback mocks base method.
@@ -263,6 +247,21 @@ func (mr *MockStoreMockRecorder) CreatePerm(ctx, p interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreatePerm", reflect.TypeOf((*MockStore)(nil).CreatePerm), ctx, p)
 }
 
+// CreateReview mocks base method.
+func (m *MockStore) CreateReview(ctx context.Context, rv *ent.Review) (*ent.Review, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateReview", ctx, rv)
+	ret0, _ := ret[0].(*ent.Review)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreateReview indicates an expected call of CreateReview.
+func (mr *MockStoreMockRecorder) CreateReview(ctx, rv interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateReview", reflect.TypeOf((*MockStore)(nil).CreateReview), ctx, rv)
+}
+
 // CreateUser mocks base method.
 func (m *MockStore) CreateUser(ctx context.Context, u *ent.User) (*ent.User, error) {
 	m.ctrl.T.Helper()
@@ -291,20 +290,6 @@ func (m *MockStore) Deactivate(ctx context.Context, r *ent.Repo) (*ent.Repo, err
 func (mr *MockStoreMockRecorder) Deactivate(ctx, r interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Deactivate", reflect.TypeOf((*MockStore)(nil).Deactivate), ctx, r)
-}
-
-// DeleteApproval mocks base method.
-func (m *MockStore) DeleteApproval(ctx context.Context, a *ent.Approval) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "DeleteApproval", ctx, a)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// DeleteApproval indicates an expected call of DeleteApproval.
-func (mr *MockStoreMockRecorder) DeleteApproval(ctx, a interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteApproval", reflect.TypeOf((*MockStore)(nil).DeleteApproval), ctx, a)
 }
 
 // DeleteChatUser mocks base method.
@@ -362,36 +347,6 @@ func (m *MockStore) DeleteUser(ctx context.Context, u *ent.User) error {
 func (mr *MockStoreMockRecorder) DeleteUser(ctx, u interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteUser", reflect.TypeOf((*MockStore)(nil).DeleteUser), ctx, u)
-}
-
-// FindApprovalByID mocks base method.
-func (m *MockStore) FindApprovalByID(ctx context.Context, id int) (*ent.Approval, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FindApprovalByID", ctx, id)
-	ret0, _ := ret[0].(*ent.Approval)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// FindApprovalByID indicates an expected call of FindApprovalByID.
-func (mr *MockStoreMockRecorder) FindApprovalByID(ctx, id interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindApprovalByID", reflect.TypeOf((*MockStore)(nil).FindApprovalByID), ctx, id)
-}
-
-// FindApprovalOfUser mocks base method.
-func (m *MockStore) FindApprovalOfUser(ctx context.Context, d *ent.Deployment, u *ent.User) (*ent.Approval, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FindApprovalOfUser", ctx, d, u)
-	ret0, _ := ret[0].(*ent.Approval)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// FindApprovalOfUser indicates an expected call of FindApprovalOfUser.
-func (mr *MockStoreMockRecorder) FindApprovalOfUser(ctx, d, u interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindApprovalOfUser", reflect.TypeOf((*MockStore)(nil).FindApprovalOfUser), ctx, d, u)
 }
 
 // FindCallbackByHash mocks base method.
@@ -589,6 +544,36 @@ func (mr *MockStoreMockRecorder) FindRepoOfUserByNamespaceName(ctx, u, namespace
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindRepoOfUserByNamespaceName", reflect.TypeOf((*MockStore)(nil).FindRepoOfUserByNamespaceName), ctx, u, namespace, name)
 }
 
+// FindReviewByID mocks base method.
+func (m *MockStore) FindReviewByID(ctx context.Context, id int) (*ent.Review, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindReviewByID", ctx, id)
+	ret0, _ := ret[0].(*ent.Review)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindReviewByID indicates an expected call of FindReviewByID.
+func (mr *MockStoreMockRecorder) FindReviewByID(ctx, id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindReviewByID", reflect.TypeOf((*MockStore)(nil).FindReviewByID), ctx, id)
+}
+
+// FindReviewOfUser mocks base method.
+func (m *MockStore) FindReviewOfUser(ctx context.Context, u *ent.User, d *ent.Deployment) (*ent.Review, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindReviewOfUser", ctx, u, d)
+	ret0, _ := ret[0].(*ent.Review)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindReviewOfUser indicates an expected call of FindReviewOfUser.
+func (mr *MockStoreMockRecorder) FindReviewOfUser(ctx, u, d interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindReviewOfUser", reflect.TypeOf((*MockStore)(nil).FindReviewOfUser), ctx, u, d)
+}
+
 // FindUserByHash mocks base method.
 func (m *MockStore) FindUserByHash(ctx context.Context, hash string) (*ent.User, error) {
 	m.ctrl.T.Helper()
@@ -677,21 +662,6 @@ func (m *MockStore) ListAllDeploymentStatistics(ctx context.Context) ([]*ent.Dep
 func (mr *MockStoreMockRecorder) ListAllDeploymentStatistics(ctx interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListAllDeploymentStatistics", reflect.TypeOf((*MockStore)(nil).ListAllDeploymentStatistics), ctx)
-}
-
-// ListApprovals mocks base method.
-func (m *MockStore) ListApprovals(ctx context.Context, d *ent.Deployment) ([]*ent.Approval, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListApprovals", ctx, d)
-	ret0, _ := ret[0].([]*ent.Approval)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// ListApprovals indicates an expected call of ListApprovals.
-func (mr *MockStoreMockRecorder) ListApprovals(ctx, d interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListApprovals", reflect.TypeOf((*MockStore)(nil).ListApprovals), ctx, d)
 }
 
 // ListDeploymentStatisticsGreaterThanTime mocks base method.
@@ -814,6 +784,21 @@ func (mr *MockStoreMockRecorder) ListReposOfUser(ctx, u, q, namespace, name, sor
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListReposOfUser", reflect.TypeOf((*MockStore)(nil).ListReposOfUser), ctx, u, q, namespace, name, sorted, page, perPage)
 }
 
+// ListReviews mocks base method.
+func (m *MockStore) ListReviews(ctx context.Context, d *ent.Deployment) ([]*ent.Review, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListReviews", ctx, d)
+	ret0, _ := ret[0].([]*ent.Review)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListReviews indicates an expected call of ListReviews.
+func (mr *MockStoreMockRecorder) ListReviews(ctx, d interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListReviews", reflect.TypeOf((*MockStore)(nil).ListReviews), ctx, d)
+}
+
 // ListUsers mocks base method.
 func (m *MockStore) ListUsers(ctx context.Context, login string, page, perPage int) ([]*ent.User, error) {
 	m.ctrl.T.Helper()
@@ -829,21 +814,6 @@ func (mr *MockStoreMockRecorder) ListUsers(ctx, login, page, perPage interface{}
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListUsers", reflect.TypeOf((*MockStore)(nil).ListUsers), ctx, login, page, perPage)
 }
 
-// SearchApprovals mocks base method.
-func (m *MockStore) SearchApprovals(ctx context.Context, u *ent.User, s []approval.Status, from, to time.Time, page, perPage int) ([]*ent.Approval, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SearchApprovals", ctx, u, s, from, to, page, perPage)
-	ret0, _ := ret[0].([]*ent.Approval)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// SearchApprovals indicates an expected call of SearchApprovals.
-func (mr *MockStoreMockRecorder) SearchApprovals(ctx, u, s, from, to, page, perPage interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SearchApprovals", reflect.TypeOf((*MockStore)(nil).SearchApprovals), ctx, u, s, from, to, page, perPage)
-}
-
 // SearchDeployments mocks base method.
 func (m *MockStore) SearchDeployments(ctx context.Context, u *ent.User, s []deployment.Status, owned bool, from, to time.Time, page, perPage int) ([]*ent.Deployment, error) {
 	m.ctrl.T.Helper()
@@ -857,6 +827,21 @@ func (m *MockStore) SearchDeployments(ctx context.Context, u *ent.User, s []depl
 func (mr *MockStoreMockRecorder) SearchDeployments(ctx, u, s, owned, from, to, page, perPage interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SearchDeployments", reflect.TypeOf((*MockStore)(nil).SearchDeployments), ctx, u, s, owned, from, to, page, perPage)
+}
+
+// SearchReviews mocks base method.
+func (m *MockStore) SearchReviews(ctx context.Context, u *ent.User) ([]*ent.Review, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SearchReviews", ctx, u)
+	ret0, _ := ret[0].([]*ent.Review)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// SearchReviews indicates an expected call of SearchReviews.
+func (mr *MockStoreMockRecorder) SearchReviews(ctx, u interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SearchReviews", reflect.TypeOf((*MockStore)(nil).SearchReviews), ctx, u)
 }
 
 // SyncDeploymentStatus mocks base method.
@@ -887,21 +872,6 @@ func (m *MockStore) SyncRepo(ctx context.Context, r *vo.RemoteRepo) (*ent.Repo, 
 func (mr *MockStoreMockRecorder) SyncRepo(ctx, r interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SyncRepo", reflect.TypeOf((*MockStore)(nil).SyncRepo), ctx, r)
-}
-
-// UpdateApproval mocks base method.
-func (m *MockStore) UpdateApproval(ctx context.Context, a *ent.Approval) (*ent.Approval, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UpdateApproval", ctx, a)
-	ret0, _ := ret[0].(*ent.Approval)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// UpdateApproval indicates an expected call of UpdateApproval.
-func (mr *MockStoreMockRecorder) UpdateApproval(ctx, a interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateApproval", reflect.TypeOf((*MockStore)(nil).UpdateApproval), ctx, a)
 }
 
 // UpdateChatUser mocks base method.
@@ -992,6 +962,21 @@ func (m *MockStore) UpdateRepo(ctx context.Context, r *ent.Repo) (*ent.Repo, err
 func (mr *MockStoreMockRecorder) UpdateRepo(ctx, r interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateRepo", reflect.TypeOf((*MockStore)(nil).UpdateRepo), ctx, r)
+}
+
+// UpdateReview mocks base method.
+func (m *MockStore) UpdateReview(ctx context.Context, rv *ent.Review) (*ent.Review, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateReview", ctx, rv)
+	ret0, _ := ret[0].(*ent.Review)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdateReview indicates an expected call of UpdateReview.
+func (mr *MockStoreMockRecorder) UpdateReview(ctx, rv interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateReview", reflect.TypeOf((*MockStore)(nil).UpdateReview), ctx, rv)
 }
 
 // UpdateUser mocks base method.

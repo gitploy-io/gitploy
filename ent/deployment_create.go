@@ -10,11 +10,11 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/gitploy-io/gitploy/ent/approval"
 	"github.com/gitploy-io/gitploy/ent/deployment"
 	"github.com/gitploy-io/gitploy/ent/deploymentstatus"
 	"github.com/gitploy-io/gitploy/ent/event"
 	"github.com/gitploy-io/gitploy/ent/repo"
+	"github.com/gitploy-io/gitploy/ent/review"
 	"github.com/gitploy-io/gitploy/ent/user"
 )
 
@@ -141,34 +141,6 @@ func (dc *DeploymentCreate) SetNillableIsRollback(b *bool) *DeploymentCreate {
 	return dc
 }
 
-// SetIsApprovalEnabled sets the "is_approval_enabled" field.
-func (dc *DeploymentCreate) SetIsApprovalEnabled(b bool) *DeploymentCreate {
-	dc.mutation.SetIsApprovalEnabled(b)
-	return dc
-}
-
-// SetNillableIsApprovalEnabled sets the "is_approval_enabled" field if the given value is not nil.
-func (dc *DeploymentCreate) SetNillableIsApprovalEnabled(b *bool) *DeploymentCreate {
-	if b != nil {
-		dc.SetIsApprovalEnabled(*b)
-	}
-	return dc
-}
-
-// SetRequiredApprovalCount sets the "required_approval_count" field.
-func (dc *DeploymentCreate) SetRequiredApprovalCount(i int) *DeploymentCreate {
-	dc.mutation.SetRequiredApprovalCount(i)
-	return dc
-}
-
-// SetNillableRequiredApprovalCount sets the "required_approval_count" field if the given value is not nil.
-func (dc *DeploymentCreate) SetNillableRequiredApprovalCount(i *int) *DeploymentCreate {
-	if i != nil {
-		dc.SetRequiredApprovalCount(*i)
-	}
-	return dc
-}
-
 // SetCreatedAt sets the "created_at" field.
 func (dc *DeploymentCreate) SetCreatedAt(t time.Time) *DeploymentCreate {
 	dc.mutation.SetCreatedAt(t)
@@ -209,6 +181,34 @@ func (dc *DeploymentCreate) SetRepoID(i int64) *DeploymentCreate {
 	return dc
 }
 
+// SetIsApprovalEnabled sets the "is_approval_enabled" field.
+func (dc *DeploymentCreate) SetIsApprovalEnabled(b bool) *DeploymentCreate {
+	dc.mutation.SetIsApprovalEnabled(b)
+	return dc
+}
+
+// SetNillableIsApprovalEnabled sets the "is_approval_enabled" field if the given value is not nil.
+func (dc *DeploymentCreate) SetNillableIsApprovalEnabled(b *bool) *DeploymentCreate {
+	if b != nil {
+		dc.SetIsApprovalEnabled(*b)
+	}
+	return dc
+}
+
+// SetRequiredApprovalCount sets the "required_approval_count" field.
+func (dc *DeploymentCreate) SetRequiredApprovalCount(i int) *DeploymentCreate {
+	dc.mutation.SetRequiredApprovalCount(i)
+	return dc
+}
+
+// SetNillableRequiredApprovalCount sets the "required_approval_count" field if the given value is not nil.
+func (dc *DeploymentCreate) SetNillableRequiredApprovalCount(i *int) *DeploymentCreate {
+	if i != nil {
+		dc.SetRequiredApprovalCount(*i)
+	}
+	return dc
+}
+
 // SetUser sets the "user" edge to the User entity.
 func (dc *DeploymentCreate) SetUser(u *User) *DeploymentCreate {
 	return dc.SetUserID(u.ID)
@@ -219,19 +219,19 @@ func (dc *DeploymentCreate) SetRepo(r *Repo) *DeploymentCreate {
 	return dc.SetRepoID(r.ID)
 }
 
-// AddApprovalIDs adds the "approvals" edge to the Approval entity by IDs.
-func (dc *DeploymentCreate) AddApprovalIDs(ids ...int) *DeploymentCreate {
-	dc.mutation.AddApprovalIDs(ids...)
+// AddReviewIDs adds the "reviews" edge to the Review entity by IDs.
+func (dc *DeploymentCreate) AddReviewIDs(ids ...int) *DeploymentCreate {
+	dc.mutation.AddReviewIDs(ids...)
 	return dc
 }
 
-// AddApprovals adds the "approvals" edges to the Approval entity.
-func (dc *DeploymentCreate) AddApprovals(a ...*Approval) *DeploymentCreate {
-	ids := make([]int, len(a))
-	for i := range a {
-		ids[i] = a[i].ID
+// AddReviews adds the "reviews" edges to the Review entity.
+func (dc *DeploymentCreate) AddReviews(r ...*Review) *DeploymentCreate {
+	ids := make([]int, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
 	}
-	return dc.AddApprovalIDs(ids...)
+	return dc.AddReviewIDs(ids...)
 }
 
 // AddDeploymentStatusIDs adds the "deployment_statuses" edge to the DeploymentStatus entity by IDs.
@@ -351,14 +351,6 @@ func (dc *DeploymentCreate) defaults() {
 		v := deployment.DefaultIsRollback
 		dc.mutation.SetIsRollback(v)
 	}
-	if _, ok := dc.mutation.IsApprovalEnabled(); !ok {
-		v := deployment.DefaultIsApprovalEnabled
-		dc.mutation.SetIsApprovalEnabled(v)
-	}
-	if _, ok := dc.mutation.RequiredApprovalCount(); !ok {
-		v := deployment.DefaultRequiredApprovalCount
-		dc.mutation.SetRequiredApprovalCount(v)
-	}
 	if _, ok := dc.mutation.CreatedAt(); !ok {
 		v := deployment.DefaultCreatedAt()
 		dc.mutation.SetCreatedAt(v)
@@ -406,12 +398,6 @@ func (dc *DeploymentCreate) check() error {
 	}
 	if _, ok := dc.mutation.IsRollback(); !ok {
 		return &ValidationError{Name: "is_rollback", err: errors.New(`ent: missing required field "is_rollback"`)}
-	}
-	if _, ok := dc.mutation.IsApprovalEnabled(); !ok {
-		return &ValidationError{Name: "is_approval_enabled", err: errors.New(`ent: missing required field "is_approval_enabled"`)}
-	}
-	if _, ok := dc.mutation.RequiredApprovalCount(); !ok {
-		return &ValidationError{Name: "required_approval_count", err: errors.New(`ent: missing required field "required_approval_count"`)}
 	}
 	if _, ok := dc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "created_at"`)}
@@ -538,22 +524,6 @@ func (dc *DeploymentCreate) createSpec() (*Deployment, *sqlgraph.CreateSpec) {
 		})
 		_node.IsRollback = value
 	}
-	if value, ok := dc.mutation.IsApprovalEnabled(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: deployment.FieldIsApprovalEnabled,
-		})
-		_node.IsApprovalEnabled = value
-	}
-	if value, ok := dc.mutation.RequiredApprovalCount(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: deployment.FieldRequiredApprovalCount,
-		})
-		_node.RequiredApprovalCount = value
-	}
 	if value, ok := dc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
@@ -569,6 +539,22 @@ func (dc *DeploymentCreate) createSpec() (*Deployment, *sqlgraph.CreateSpec) {
 			Column: deployment.FieldUpdatedAt,
 		})
 		_node.UpdatedAt = value
+	}
+	if value, ok := dc.mutation.IsApprovalEnabled(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: deployment.FieldIsApprovalEnabled,
+		})
+		_node.IsApprovalEnabled = &value
+	}
+	if value, ok := dc.mutation.RequiredApprovalCount(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: deployment.FieldRequiredApprovalCount,
+		})
+		_node.RequiredApprovalCount = &value
 	}
 	if nodes := dc.mutation.UserIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -610,17 +596,17 @@ func (dc *DeploymentCreate) createSpec() (*Deployment, *sqlgraph.CreateSpec) {
 		_node.RepoID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := dc.mutation.ApprovalsIDs(); len(nodes) > 0 {
+	if nodes := dc.mutation.ReviewsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   deployment.ApprovalsTable,
-			Columns: []string{deployment.ApprovalsColumn},
+			Table:   deployment.ReviewsTable,
+			Columns: []string{deployment.ReviewsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: approval.FieldID,
+					Column: review.FieldID,
 				},
 			},
 		}

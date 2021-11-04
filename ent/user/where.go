@@ -1037,25 +1037,25 @@ func HasDeploymentsWith(preds ...predicate.Deployment) predicate.User {
 	})
 }
 
-// HasApprovals applies the HasEdge predicate on the "approvals" edge.
-func HasApprovals() predicate.User {
+// HasReviews applies the HasEdge predicate on the "reviews" edge.
+func HasReviews() predicate.User {
 	return predicate.User(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(ApprovalsTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, ApprovalsTable, ApprovalsColumn),
+			sqlgraph.To(ReviewsTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ReviewsTable, ReviewsColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasApprovalsWith applies the HasEdge predicate on the "approvals" edge with a given conditions (other predicates).
-func HasApprovalsWith(preds ...predicate.Approval) predicate.User {
+// HasReviewsWith applies the HasEdge predicate on the "reviews" edge with a given conditions (other predicates).
+func HasReviewsWith(preds ...predicate.Review) predicate.User {
 	return predicate.User(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(ApprovalsInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, ApprovalsTable, ApprovalsColumn),
+			sqlgraph.To(ReviewsInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ReviewsTable, ReviewsColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

@@ -5,12 +5,12 @@ import Deployment, {
     DeploymentType,
     DeploymentStatus,
 } from "./Deployment"
-import Config, { Env, EnvApproval } from "./Config"
+import Config, { Env } from "./Config"
 import Commit, { Author, Status, StatusState } from "./Commit"
 import Branch from "./Branch"
 import Tag from "./Tag"
 import User, { ChatUser, RateLimit } from "./User"
-import Approval, { ApprovalStatus } from "./Approval"
+import { Review, ReviewStatusEnum } from "./Review"
 import Lock from "./Lock"
 import License from "./License"
 import Event, {EventKindEnum, EventTypeEnum} from "./Event"
@@ -32,7 +32,6 @@ export type {
     DeploymentStatus,
     Config,
     Env,
-    EnvApproval,
     Commit,
     Author,
     Status,
@@ -41,7 +40,7 @@ export type {
     User,
     ChatUser,
     RateLimit,
-    Approval,
+    Review,
     Lock,
     License,
     Event
@@ -59,7 +58,7 @@ export {
     DeploymentType,
     StatusState,
     RequestStatus,
-    ApprovalStatus,
+    ReviewStatusEnum,
     EventKindEnum, 
     EventTypeEnum
 }
