@@ -18,7 +18,6 @@ func (Event) Fields() []ent.Field {
 		field.Enum("kind").
 			Values(
 				"deployment",
-				"approval",
 				"review",
 			),
 		field.Enum("type").
@@ -30,8 +29,6 @@ func (Event) Fields() []ent.Field {
 		field.Time("created_at").
 			Default(nowUTC),
 		field.Int("deployment_id").
-			Optional(),
-		field.Int("approval_id").
 			Optional(),
 		field.Int("review_id").
 			Optional(),
