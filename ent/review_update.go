@@ -45,6 +45,26 @@ func (ru *ReviewUpdate) SetNillableStatus(r *review.Status) *ReviewUpdate {
 	return ru
 }
 
+// SetComment sets the "comment" field.
+func (ru *ReviewUpdate) SetComment(s string) *ReviewUpdate {
+	ru.mutation.SetComment(s)
+	return ru
+}
+
+// SetNillableComment sets the "comment" field if the given value is not nil.
+func (ru *ReviewUpdate) SetNillableComment(s *string) *ReviewUpdate {
+	if s != nil {
+		ru.SetComment(*s)
+	}
+	return ru
+}
+
+// ClearComment clears the value of the "comment" field.
+func (ru *ReviewUpdate) ClearComment() *ReviewUpdate {
+	ru.mutation.ClearComment()
+	return ru
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (ru *ReviewUpdate) SetCreatedAt(t time.Time) *ReviewUpdate {
 	ru.mutation.SetCreatedAt(t)
@@ -250,6 +270,19 @@ func (ru *ReviewUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: review.FieldStatus,
 		})
 	}
+	if value, ok := ru.mutation.Comment(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: review.FieldComment,
+		})
+	}
+	if ru.mutation.CommentCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: review.FieldComment,
+		})
+	}
 	if value, ok := ru.mutation.CreatedAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
@@ -418,6 +451,26 @@ func (ruo *ReviewUpdateOne) SetNillableStatus(r *review.Status) *ReviewUpdateOne
 	if r != nil {
 		ruo.SetStatus(*r)
 	}
+	return ruo
+}
+
+// SetComment sets the "comment" field.
+func (ruo *ReviewUpdateOne) SetComment(s string) *ReviewUpdateOne {
+	ruo.mutation.SetComment(s)
+	return ruo
+}
+
+// SetNillableComment sets the "comment" field if the given value is not nil.
+func (ruo *ReviewUpdateOne) SetNillableComment(s *string) *ReviewUpdateOne {
+	if s != nil {
+		ruo.SetComment(*s)
+	}
+	return ruo
+}
+
+// ClearComment clears the value of the "comment" field.
+func (ruo *ReviewUpdateOne) ClearComment() *ReviewUpdateOne {
+	ruo.mutation.ClearComment()
 	return ruo
 }
 
@@ -648,6 +701,19 @@ func (ruo *ReviewUpdateOne) sqlSave(ctx context.Context) (_node *Review, err err
 			Type:   field.TypeEnum,
 			Value:  value,
 			Column: review.FieldStatus,
+		})
+	}
+	if value, ok := ruo.mutation.Comment(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: review.FieldComment,
+		})
+	}
+	if ruo.mutation.CommentCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: review.FieldComment,
 		})
 	}
 	if value, ok := ruo.mutation.CreatedAt(); ok {
