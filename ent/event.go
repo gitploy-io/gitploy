@@ -27,8 +27,6 @@ type Event struct {
 	CreatedAt time.Time `json:"created_at"`
 	// DeploymentID holds the value of the "deployment_id" field.
 	DeploymentID int `json:"deployment_id,omitemtpy"`
-	// ApprovalID holds the value of the "approval_id" field.
-	ApprovalID int `json:"approval_id,omitemtpy"`
 	// ReviewID holds the value of the "review_id" field.
 	ReviewID int `json:"review_id,omitemtpy"`
 	// DeletedID holds the value of the "deleted_id" field.
@@ -98,7 +96,7 @@ func (*Event) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case event.FieldID, event.FieldDeploymentID, event.FieldApprovalID, event.FieldReviewID, event.FieldDeletedID:
+		case event.FieldID, event.FieldDeploymentID, event.FieldReviewID, event.FieldDeletedID:
 			values[i] = new(sql.NullInt64)
 		case event.FieldKind, event.FieldType:
 			values[i] = new(sql.NullString)
@@ -148,12 +146,6 @@ func (e *Event) assignValues(columns []string, values []interface{}) error {
 				return fmt.Errorf("unexpected type %T for field deployment_id", values[i])
 			} else if value.Valid {
 				e.DeploymentID = int(value.Int64)
-			}
-		case event.FieldApprovalID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field approval_id", values[i])
-			} else if value.Valid {
-				e.ApprovalID = int(value.Int64)
 			}
 		case event.FieldReviewID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -218,8 +210,6 @@ func (e *Event) String() string {
 	builder.WriteString(e.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", deployment_id=")
 	builder.WriteString(fmt.Sprintf("%v", e.DeploymentID))
-	builder.WriteString(", approval_id=")
-	builder.WriteString(fmt.Sprintf("%v", e.ApprovalID))
 	builder.WriteString(", review_id=")
 	builder.WriteString(fmt.Sprintf("%v", e.ReviewID))
 	builder.WriteString(", deleted_id=")

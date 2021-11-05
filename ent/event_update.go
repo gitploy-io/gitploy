@@ -76,33 +76,6 @@ func (eu *EventUpdate) ClearDeploymentID() *EventUpdate {
 	return eu
 }
 
-// SetApprovalID sets the "approval_id" field.
-func (eu *EventUpdate) SetApprovalID(i int) *EventUpdate {
-	eu.mutation.ResetApprovalID()
-	eu.mutation.SetApprovalID(i)
-	return eu
-}
-
-// SetNillableApprovalID sets the "approval_id" field if the given value is not nil.
-func (eu *EventUpdate) SetNillableApprovalID(i *int) *EventUpdate {
-	if i != nil {
-		eu.SetApprovalID(*i)
-	}
-	return eu
-}
-
-// AddApprovalID adds i to the "approval_id" field.
-func (eu *EventUpdate) AddApprovalID(i int) *EventUpdate {
-	eu.mutation.AddApprovalID(i)
-	return eu
-}
-
-// ClearApprovalID clears the value of the "approval_id" field.
-func (eu *EventUpdate) ClearApprovalID() *EventUpdate {
-	eu.mutation.ClearApprovalID()
-	return eu
-}
-
 // SetReviewID sets the "review_id" field.
 func (eu *EventUpdate) SetReviewID(i int) *EventUpdate {
 	eu.mutation.SetReviewID(i)
@@ -316,26 +289,6 @@ func (eu *EventUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: event.FieldCreatedAt,
 		})
 	}
-	if value, ok := eu.mutation.ApprovalID(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: event.FieldApprovalID,
-		})
-	}
-	if value, ok := eu.mutation.AddedApprovalID(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: event.FieldApprovalID,
-		})
-	}
-	if eu.mutation.ApprovalIDCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Column: event.FieldApprovalID,
-		})
-	}
 	if value, ok := eu.mutation.DeletedID(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeInt,
@@ -523,33 +476,6 @@ func (euo *EventUpdateOne) SetNillableDeploymentID(i *int) *EventUpdateOne {
 // ClearDeploymentID clears the value of the "deployment_id" field.
 func (euo *EventUpdateOne) ClearDeploymentID() *EventUpdateOne {
 	euo.mutation.ClearDeploymentID()
-	return euo
-}
-
-// SetApprovalID sets the "approval_id" field.
-func (euo *EventUpdateOne) SetApprovalID(i int) *EventUpdateOne {
-	euo.mutation.ResetApprovalID()
-	euo.mutation.SetApprovalID(i)
-	return euo
-}
-
-// SetNillableApprovalID sets the "approval_id" field if the given value is not nil.
-func (euo *EventUpdateOne) SetNillableApprovalID(i *int) *EventUpdateOne {
-	if i != nil {
-		euo.SetApprovalID(*i)
-	}
-	return euo
-}
-
-// AddApprovalID adds i to the "approval_id" field.
-func (euo *EventUpdateOne) AddApprovalID(i int) *EventUpdateOne {
-	euo.mutation.AddApprovalID(i)
-	return euo
-}
-
-// ClearApprovalID clears the value of the "approval_id" field.
-func (euo *EventUpdateOne) ClearApprovalID() *EventUpdateOne {
-	euo.mutation.ClearApprovalID()
 	return euo
 }
 
@@ -788,26 +714,6 @@ func (euo *EventUpdateOne) sqlSave(ctx context.Context) (_node *Event, err error
 			Type:   field.TypeTime,
 			Value:  value,
 			Column: event.FieldCreatedAt,
-		})
-	}
-	if value, ok := euo.mutation.ApprovalID(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: event.FieldApprovalID,
-		})
-	}
-	if value, ok := euo.mutation.AddedApprovalID(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: event.FieldApprovalID,
-		})
-	}
-	if euo.mutation.ApprovalIDCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Column: event.FieldApprovalID,
 		})
 	}
 	if value, ok := euo.mutation.DeletedID(); ok {

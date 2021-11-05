@@ -4738,8 +4738,6 @@ type EventMutation struct {
 	kind                       *event.Kind
 	_type                      *event.Type
 	created_at                 *time.Time
-	approval_id                *int
-	addapproval_id             *int
 	deleted_id                 *int
 	adddeleted_id              *int
 	clearedFields              map[string]struct{}
@@ -4990,76 +4988,6 @@ func (m *EventMutation) ResetDeploymentID() {
 	delete(m.clearedFields, event.FieldDeploymentID)
 }
 
-// SetApprovalID sets the "approval_id" field.
-func (m *EventMutation) SetApprovalID(i int) {
-	m.approval_id = &i
-	m.addapproval_id = nil
-}
-
-// ApprovalID returns the value of the "approval_id" field in the mutation.
-func (m *EventMutation) ApprovalID() (r int, exists bool) {
-	v := m.approval_id
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldApprovalID returns the old "approval_id" field's value of the Event entity.
-// If the Event object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EventMutation) OldApprovalID(ctx context.Context) (v int, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, fmt.Errorf("OldApprovalID is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, fmt.Errorf("OldApprovalID requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldApprovalID: %w", err)
-	}
-	return oldValue.ApprovalID, nil
-}
-
-// AddApprovalID adds i to the "approval_id" field.
-func (m *EventMutation) AddApprovalID(i int) {
-	if m.addapproval_id != nil {
-		*m.addapproval_id += i
-	} else {
-		m.addapproval_id = &i
-	}
-}
-
-// AddedApprovalID returns the value that was added to the "approval_id" field in this mutation.
-func (m *EventMutation) AddedApprovalID() (r int, exists bool) {
-	v := m.addapproval_id
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// ClearApprovalID clears the value of the "approval_id" field.
-func (m *EventMutation) ClearApprovalID() {
-	m.approval_id = nil
-	m.addapproval_id = nil
-	m.clearedFields[event.FieldApprovalID] = struct{}{}
-}
-
-// ApprovalIDCleared returns if the "approval_id" field was cleared in this mutation.
-func (m *EventMutation) ApprovalIDCleared() bool {
-	_, ok := m.clearedFields[event.FieldApprovalID]
-	return ok
-}
-
-// ResetApprovalID resets all changes to the "approval_id" field.
-func (m *EventMutation) ResetApprovalID() {
-	m.approval_id = nil
-	m.addapproval_id = nil
-	delete(m.clearedFields, event.FieldApprovalID)
-}
-
 // SetReviewID sets the "review_id" field.
 func (m *EventMutation) SetReviewID(i int) {
 	m.review = &i
@@ -5289,7 +5217,7 @@ func (m *EventMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *EventMutation) Fields() []string {
-	fields := make([]string, 0, 7)
+	fields := make([]string, 0, 6)
 	if m.kind != nil {
 		fields = append(fields, event.FieldKind)
 	}
@@ -5301,9 +5229,6 @@ func (m *EventMutation) Fields() []string {
 	}
 	if m.deployment != nil {
 		fields = append(fields, event.FieldDeploymentID)
-	}
-	if m.approval_id != nil {
-		fields = append(fields, event.FieldApprovalID)
 	}
 	if m.review != nil {
 		fields = append(fields, event.FieldReviewID)
@@ -5327,8 +5252,6 @@ func (m *EventMutation) Field(name string) (ent.Value, bool) {
 		return m.CreatedAt()
 	case event.FieldDeploymentID:
 		return m.DeploymentID()
-	case event.FieldApprovalID:
-		return m.ApprovalID()
 	case event.FieldReviewID:
 		return m.ReviewID()
 	case event.FieldDeletedID:
@@ -5350,8 +5273,6 @@ func (m *EventMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldCreatedAt(ctx)
 	case event.FieldDeploymentID:
 		return m.OldDeploymentID(ctx)
-	case event.FieldApprovalID:
-		return m.OldApprovalID(ctx)
 	case event.FieldReviewID:
 		return m.OldReviewID(ctx)
 	case event.FieldDeletedID:
@@ -5393,13 +5314,6 @@ func (m *EventMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetDeploymentID(v)
 		return nil
-	case event.FieldApprovalID:
-		v, ok := value.(int)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetApprovalID(v)
-		return nil
 	case event.FieldReviewID:
 		v, ok := value.(int)
 		if !ok {
@@ -5422,9 +5336,6 @@ func (m *EventMutation) SetField(name string, value ent.Value) error {
 // this mutation.
 func (m *EventMutation) AddedFields() []string {
 	var fields []string
-	if m.addapproval_id != nil {
-		fields = append(fields, event.FieldApprovalID)
-	}
 	if m.adddeleted_id != nil {
 		fields = append(fields, event.FieldDeletedID)
 	}
@@ -5436,8 +5347,6 @@ func (m *EventMutation) AddedFields() []string {
 // was not set, or was not defined in the schema.
 func (m *EventMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
-	case event.FieldApprovalID:
-		return m.AddedApprovalID()
 	case event.FieldDeletedID:
 		return m.AddedDeletedID()
 	}
@@ -5449,13 +5358,6 @@ func (m *EventMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *EventMutation) AddField(name string, value ent.Value) error {
 	switch name {
-	case event.FieldApprovalID:
-		v, ok := value.(int)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddApprovalID(v)
-		return nil
 	case event.FieldDeletedID:
 		v, ok := value.(int)
 		if !ok {
@@ -5473,9 +5375,6 @@ func (m *EventMutation) ClearedFields() []string {
 	var fields []string
 	if m.FieldCleared(event.FieldDeploymentID) {
 		fields = append(fields, event.FieldDeploymentID)
-	}
-	if m.FieldCleared(event.FieldApprovalID) {
-		fields = append(fields, event.FieldApprovalID)
 	}
 	if m.FieldCleared(event.FieldReviewID) {
 		fields = append(fields, event.FieldReviewID)
@@ -5499,9 +5398,6 @@ func (m *EventMutation) ClearField(name string) error {
 	switch name {
 	case event.FieldDeploymentID:
 		m.ClearDeploymentID()
-		return nil
-	case event.FieldApprovalID:
-		m.ClearApprovalID()
 		return nil
 	case event.FieldReviewID:
 		m.ClearReviewID()
@@ -5528,9 +5424,6 @@ func (m *EventMutation) ResetField(name string) error {
 		return nil
 	case event.FieldDeploymentID:
 		m.ResetDeploymentID()
-		return nil
-	case event.FieldApprovalID:
-		m.ResetApprovalID()
 		return nil
 	case event.FieldReviewID:
 		m.ResetReviewID()

@@ -20,8 +20,6 @@ const (
 	FieldCreatedAt = "created_at"
 	// FieldDeploymentID holds the string denoting the deployment_id field in the database.
 	FieldDeploymentID = "deployment_id"
-	// FieldApprovalID holds the string denoting the approval_id field in the database.
-	FieldApprovalID = "approval_id"
 	// FieldReviewID holds the string denoting the review_id field in the database.
 	FieldReviewID = "review_id"
 	// FieldDeletedID holds the string denoting the deleted_id field in the database.
@@ -64,7 +62,6 @@ var Columns = []string{
 	FieldType,
 	FieldCreatedAt,
 	FieldDeploymentID,
-	FieldApprovalID,
 	FieldReviewID,
 	FieldDeletedID,
 }
@@ -90,7 +87,6 @@ type Kind string
 // Kind values.
 const (
 	KindDeployment Kind = "deployment"
-	KindApproval   Kind = "approval"
 	KindReview     Kind = "review"
 )
 
@@ -101,7 +97,7 @@ func (k Kind) String() string {
 // KindValidator is a validator for the "kind" field enum values. It is called by the builders before save.
 func KindValidator(k Kind) error {
 	switch k {
-	case KindDeployment, KindApproval, KindReview:
+	case KindDeployment, KindReview:
 		return nil
 	default:
 		return fmt.Errorf("event: invalid enum value for kind field: %q", k)

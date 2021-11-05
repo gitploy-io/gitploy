@@ -107,13 +107,6 @@ func DeploymentID(v int) predicate.Event {
 	})
 }
 
-// ApprovalID applies equality check predicate on the "approval_id" field. It's identical to ApprovalIDEQ.
-func ApprovalID(v int) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldApprovalID), v))
-	})
-}
-
 // ReviewID applies equality check predicate on the "review_id" field. It's identical to ReviewIDEQ.
 func ReviewID(v int) predicate.Event {
 	return predicate.Event(func(s *sql.Selector) {
@@ -359,96 +352,6 @@ func DeploymentIDIsNil() predicate.Event {
 func DeploymentIDNotNil() predicate.Event {
 	return predicate.Event(func(s *sql.Selector) {
 		s.Where(sql.NotNull(s.C(FieldDeploymentID)))
-	})
-}
-
-// ApprovalIDEQ applies the EQ predicate on the "approval_id" field.
-func ApprovalIDEQ(v int) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldApprovalID), v))
-	})
-}
-
-// ApprovalIDNEQ applies the NEQ predicate on the "approval_id" field.
-func ApprovalIDNEQ(v int) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldApprovalID), v))
-	})
-}
-
-// ApprovalIDIn applies the In predicate on the "approval_id" field.
-func ApprovalIDIn(vs ...int) predicate.Event {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Event(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.In(s.C(FieldApprovalID), v...))
-	})
-}
-
-// ApprovalIDNotIn applies the NotIn predicate on the "approval_id" field.
-func ApprovalIDNotIn(vs ...int) predicate.Event {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Event(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.NotIn(s.C(FieldApprovalID), v...))
-	})
-}
-
-// ApprovalIDGT applies the GT predicate on the "approval_id" field.
-func ApprovalIDGT(v int) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldApprovalID), v))
-	})
-}
-
-// ApprovalIDGTE applies the GTE predicate on the "approval_id" field.
-func ApprovalIDGTE(v int) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldApprovalID), v))
-	})
-}
-
-// ApprovalIDLT applies the LT predicate on the "approval_id" field.
-func ApprovalIDLT(v int) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldApprovalID), v))
-	})
-}
-
-// ApprovalIDLTE applies the LTE predicate on the "approval_id" field.
-func ApprovalIDLTE(v int) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldApprovalID), v))
-	})
-}
-
-// ApprovalIDIsNil applies the IsNil predicate on the "approval_id" field.
-func ApprovalIDIsNil() predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldApprovalID)))
-	})
-}
-
-// ApprovalIDNotNil applies the NotNil predicate on the "approval_id" field.
-func ApprovalIDNotNil() predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldApprovalID)))
 	})
 }
 

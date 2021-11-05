@@ -63,20 +63,6 @@ func (ec *EventCreate) SetNillableDeploymentID(i *int) *EventCreate {
 	return ec
 }
 
-// SetApprovalID sets the "approval_id" field.
-func (ec *EventCreate) SetApprovalID(i int) *EventCreate {
-	ec.mutation.SetApprovalID(i)
-	return ec
-}
-
-// SetNillableApprovalID sets the "approval_id" field if the given value is not nil.
-func (ec *EventCreate) SetNillableApprovalID(i *int) *EventCreate {
-	if i != nil {
-		ec.SetApprovalID(*i)
-	}
-	return ec
-}
-
 // SetReviewID sets the "review_id" field.
 func (ec *EventCreate) SetReviewID(i int) *EventCreate {
 	ec.mutation.SetReviewID(i)
@@ -282,14 +268,6 @@ func (ec *EventCreate) createSpec() (*Event, *sqlgraph.CreateSpec) {
 			Column: event.FieldCreatedAt,
 		})
 		_node.CreatedAt = value
-	}
-	if value, ok := ec.mutation.ApprovalID(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: event.FieldApprovalID,
-		})
-		_node.ApprovalID = value
 	}
 	if value, ok := ec.mutation.DeletedID(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
