@@ -844,6 +844,9 @@ paths:
                   enum:
                     - approved
                     - rejected
+                comment:
+                  type: string
+                  description: Leave the comment with the review.
               required:
                 - status
       responses:
@@ -1769,6 +1772,8 @@ components:
             - pending
             - rejected
             - approved
+        comment:
+          type: string
         created_at:
           type: string
         updated_at:
@@ -1783,6 +1788,7 @@ components:
       required:
         - id
         - status
+        - comment
         - created_at
         - updated_at
     RateLimit:
