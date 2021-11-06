@@ -121,6 +121,14 @@ func (i *Interactor) IsApproved(ctx context.Context, d *ent.Deployment) bool {
 
 // DeployToRemote create a new remote deployment after the deployment was approved.
 func (i *Interactor) DeployToRemote(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, env *vo.Env) (*ent.Deployment, error) {
+	if d.Status != deployment.StatusWaiting {
+		return nil, e.NewErrorWithMessage(
+			e.ErrorCodeDeploymentStatusInvalid,
+			"The deployment status is not waiting.",
+			nil,
+		)
+	}
+
 	if locked, err := i.Store.HasLockOfRepoForEnv(ctx, r, d.Env); locked {
 		return nil, e.NewError(
 			e.ErrorCodeDeploymentLocked,

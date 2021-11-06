@@ -216,15 +216,11 @@ export const createDeployment = async (namespace: string, name: string, type: De
     return deployment
 }
 
-export const updateDeploymentStatusCreated = async (namespace: string, name: string, number: number): Promise<Deployment> => {
-    const body = JSON.stringify({
-        status: "created"
-    })
+export const createRemoteDeployment = async (namespace: string, name: string, number: number): Promise<Deployment> => {
     const response = await _fetch(`${instance}/api/v1/repos/${namespace}/${name}/deployments/${number}`, {
         headers,
         credentials: 'same-origin',
         method: "PATCH",
-        body: body,
     })
     if (response.status === StatusCodes.FORBIDDEN) {
         const message = await response.json().then(data => data.message)

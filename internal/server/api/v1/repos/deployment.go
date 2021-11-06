@@ -207,20 +207,18 @@ func (r *Repo) UpdateDeployment(c *gin.Context) {
 		return
 	}
 
-	if p.Status == string(deployment.StatusCreated) && d.Status == deployment.StatusWaiting {
-		if d, err = r.i.DeployToRemote(ctx, u, re, d, env); err != nil {
-			r.log.Check(gb.GetZapLogLevel(err), "It has failed to deploy to the remote.").Write(zap.Error(err))
-			gb.ResponseWithError(c, err)
-			return
-		}
+	if d, err = r.i.DeployToRemote(ctx, u, re, d, env); err != nil {
+		r.log.Check(gb.GetZapLogLevel(err), "It has failed to deploy to the remote.").Write(zap.Error(err))
+		gb.ResponseWithError(c, err)
+		return
+	}
 
-		if _, err := r.i.CreateEvent(ctx, &ent.Event{
-			Kind:         event.KindDeployment,
-			Type:         event.TypeUpdated,
-			DeploymentID: d.ID,
-		}); err != nil {
-			r.log.Error("It has failed to create an event.", zap.Error(err))
-		}
+	if _, err := r.i.CreateEvent(ctx, &ent.Event{
+		Kind:         event.KindDeployment,
+		Type:         event.TypeUpdated,
+		DeploymentID: d.ID,
+	}); err != nil {
+		r.log.Error("It has failed to create an event.", zap.Error(err))
 	}
 
 	// Get the deployment with edges.

@@ -17,6 +17,8 @@ const (
 	ErrorCodeDeploymentLocked ErrorCode = "deployment_locked"
 	// ErrorCodeDeploymentUnapproved is when the deployment is not approved.
 	ErrorCodeDeploymentNotApproved ErrorCode = "deployment_not_approved"
+	// ErrorCodeDeploymentStatusNotWaiting is the status must be 'waiting' to create a remote deployment.
+	ErrorCodeDeploymentStatusInvalid ErrorCode = "deployment_status_invalid"
 	// ErrorCodeDeploymentUndeployable is that the merge conflict occurs or a commit status has failed.
 	ErrorCodeDeploymentUndeployable ErrorCode = "deployment_undeployable"
 

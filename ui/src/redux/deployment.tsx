@@ -13,7 +13,7 @@ import {
 } from "../models"
 import { 
     getDeployment, 
-    updateDeploymentStatusCreated, 
+    createRemoteDeployment, 
     listReviews,
     getUserReview,
     approveReview,
@@ -83,7 +83,7 @@ export const deployToSCM = createAsyncThunk<Deployment, void, { state: {deployme
         }
 
         try {
-            const deployment = await updateDeploymentStatusCreated(namespace, name, number)
+            const deployment = await createRemoteDeployment(namespace, name, number)
             message.info("It starts to deploy.", 3)
 
             return deployment
