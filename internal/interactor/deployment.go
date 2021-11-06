@@ -124,7 +124,7 @@ func (i *Interactor) DeployToRemote(ctx context.Context, u *ent.User, r *ent.Rep
 	if d.Status != deployment.StatusWaiting {
 		return nil, e.NewErrorWithMessage(
 			e.ErrorCodeDeploymentStatusInvalid,
-			fmt.Sprintf("The deployment status is not waiting."),
+			"The deployment status is not waiting.",
 			nil,
 		)
 	}
