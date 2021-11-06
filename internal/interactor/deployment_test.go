@@ -5,13 +5,15 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/golang/mock/gomock"
+	"go.uber.org/zap"
+
 	"github.com/gitploy-io/gitploy/ent"
 	"github.com/gitploy-io/gitploy/ent/deployment"
 	"github.com/gitploy-io/gitploy/ent/review"
 	"github.com/gitploy-io/gitploy/internal/interactor/mock"
+	"github.com/gitploy-io/gitploy/pkg/e"
 	"github.com/gitploy-io/gitploy/vo"
-	"github.com/golang/mock/gomock"
-	"go.uber.org/zap"
 )
 
 func newMockInteractor(store Store, scm SCM) *Interactor {
@@ -193,12 +195,35 @@ func TestInteractor_Deploy(t *testing.T) {
 func TestInteractor_DeployToRemote(t *testing.T) {
 	ctx := gomock.Any()
 
-	t.Run("create a new remote deployment and update the deployment.", func(t *testing.T) {
+	t.Run("Return an error when the deployment status is not waiting.", func(t *testing.T) {
 		input := struct {
 			d *ent.Deployment
 			e *vo.Env
 		}{
 			d: &ent.Deployment{},
+			e: &vo.Env{},
+		}
+
+		ctrl := gomock.NewController(t)
+		store := mock.NewMockStore(ctrl)
+		scm := mock.NewMockSCM(ctrl)
+
+		i := newMockInteractor(store, scm)
+
+		_, err := i.DeployToRemote(context.Background(), &ent.User{}, &ent.Repo{}, input.d, input.e)
+		if !e.HasErrorCode(err, e.ErrorCodeDeploymentStatusInvalid) {
+			t.Fatalf("CreateRemoteDeployment error = %v, wanted ErrorCodeDeploymentStatusInvalid", err)
+		}
+	})
+
+	t.Run("create a new remote deployment and update the deployment.", func(t *testing.T) {
+		input := struct {
+			d *ent.Deployment
+			e *vo.Env
+		}{
+			d: &ent.Deployment{
+				Status: deployment.StatusWaiting,
+			},
 			e: &vo.Env{},
 		}
 
