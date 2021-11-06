@@ -129,15 +129,20 @@ export default function Main(props: any) {
                         {/* Avatar */}
                         {(authorized) ? 
                             <Dropdown overlay={
-                                <Menu style={{width: "150px"}}>
+                                <Menu>
                                     <Menu.Item key="0">
-                                        <a href="/settings">Settings</a>
+                                        <a href="/settings">
+                                            Settings
+                                        </a>
                                     </Menu.Item>
                                     <Menu.Divider />
                                     <Menu.Item key="1">
-                                        <a href="/signout">Sign out</a>
+                                        <a href="/signout">
+                                            Sign out
+                                        </a>
                                     </Menu.Item>
-                                </Menu> }>
+                                </Menu> 
+                            }>
                                 <Avatar  src={user?.avatar}/>
                             </ Dropdown>
                             : <a href="/" style={{color: "white"}}>Sign in</a>}
