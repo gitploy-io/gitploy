@@ -27,3 +27,7 @@ envs:
       reviewers: 
         - hanjunlee
         - noah-qa
+
+  - name: docs
+    auto_merge: false
+    description: Publish the documentation of Gitploy.

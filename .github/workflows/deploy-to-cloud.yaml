@@ -136,24 +136,3 @@ jobs:
           state: "failure"
           token: "${{ github.token }}"
     
-  # Publish docs when it deploys to the production environment.
-  publish-docs:
-    runs-on: ubuntu-latest
-    if: ${{ github.event.deployment.environment == 'production' }}
-    steps:
-      - 
-        uses: actions/checkout@v2
-      - 
-        name: Create requirements.txt
-        uses: "finnp/create-file-action@master"
-        env:
-          FILE_NAME: requirements.txt
-          FILE_DATA: |
-            pymdown-extensions==8.2
-      - 
-        name: Publish docs
-        uses: mhausenblas/mkdocs-deploy-gh-pages@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
-          CUSTOM_DOMAIN: docs.gitploy.io
-          REQUIREMENTS: requirements.txt
