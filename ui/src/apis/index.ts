@@ -14,7 +14,7 @@ import {
     listDeployments, 
     getDeployment,
     createDeployment, 
-    updateDeploymentStatusCreated, 
+    createRemoteDeployment, 
     rollbackDeployment, 
     listDeploymentChanges 
 } from './deployment'
@@ -54,7 +54,7 @@ export {
     listDeployments,
     getDeployment,
     createDeployment,
-    updateDeploymentStatusCreated,
+    createRemoteDeployment,
     rollbackDeployment,
     listDeploymentChanges,
     getConfig,
