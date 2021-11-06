@@ -53,9 +53,9 @@ export default function ReviewModal(props: ReviewModalProps): JSX.Element {
             >
                 <TextArea rows={3} onChange={onChangeComment} value={comment}/>
             </Modal>
-                <Button type="primary" onClick={showModal}>
-                    Review
-                </Button>
+            <Button type="primary" onClick={showModal}>
+                Review
+            </Button>
         </>
     )
 
