@@ -41,7 +41,7 @@ Required string value configures the GitHub OAuth client secret. This is used to
 The server is distributed as a Docker image. The image is self-contained and does not have any external dependencies. We recommend to use the last version.
 
 ```
-docker pull gitployio/gitploy:0.2
+docker pull gitployio/gitploy:0.3
 ```
 
 The server container can be started with the below command. The container is configured through environment variables.
@@ -58,7 +58,7 @@ docker run \
   --restart=always \
   --detach=true \
   --name=gitploy \
-  gitployio/gitploy:0.2
+  gitployio/gitploy:0.3
 ```
 
 ### Kubernetes
@@ -105,7 +105,7 @@ spec:
     spec:
       containers:
         - name: gitploy-server
-          image: "gitployio/gitploy:0.2"
+          image: "gitployio/gitploy:0.3"
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
