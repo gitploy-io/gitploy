@@ -14,6 +14,8 @@ const (
 	FieldID = "id"
 	// FieldStatus holds the string denoting the status field in the database.
 	FieldStatus = "status"
+	// FieldComment holds the string denoting the comment field in the database.
+	FieldComment = "comment"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
@@ -57,6 +59,7 @@ const (
 var Columns = []string{
 	FieldID,
 	FieldStatus,
+	FieldComment,
 	FieldCreatedAt,
 	FieldUpdatedAt,
 	FieldUserID,

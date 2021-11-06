@@ -91,6 +91,7 @@ func (s *Store) FindReviewOfUser(ctx context.Context, u *ent.User, d *ent.Deploy
 func (s *Store) CreateReview(ctx context.Context, rv *ent.Review) (*ent.Review, error) {
 	rv, err := s.c.Review.
 		Create().
+		SetComment(rv.Comment).
 		SetDeploymentID(rv.DeploymentID).
 		SetUserID(rv.UserID).
 		Save(ctx)
@@ -111,6 +112,7 @@ func (s *Store) UpdateReview(ctx context.Context, rv *ent.Review) (*ent.Review, 
 	rv, err := s.c.Review.
 		UpdateOne(rv).
 		SetStatus(rv.Status).
+		SetComment(rv.Comment).
 		Save(ctx)
 	if ent.IsValidationError(err) {
 		return nil, e.NewErrorWithMessage(

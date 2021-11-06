@@ -4,6 +4,7 @@ import Deployment from "./Deployment"
 export interface Review {
     id: number
     status: ReviewStatusEnum
+    comment: string
     createdAt: Date
     updatedAt: Date
     user?: User 

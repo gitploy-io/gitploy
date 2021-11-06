@@ -22,6 +22,8 @@ func (Review) Fields() []ent.Field {
 				"approved",
 			).
 			Default("pending"),
+		field.Text("comment").
+			Optional(),
 		field.Time("created_at").
 			Default(nowUTC),
 		field.Time("updated_at").

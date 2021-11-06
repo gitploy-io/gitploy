@@ -44,7 +44,7 @@ function mapStateToIcon(state: StatusState): JSX.Element {
 			return <span></span>
 		case StatusState.Pending:
 			return <span>
-				<span className="gitploy-pending-icon"></span>&nbsp;&nbsp;
+				<span className="gitploy-pending-icon" />&nbsp;&nbsp;
 			</span>
 		case StatusState.Success:
 			return <CheckOutlined style={{color: colorSuccess}}/>
@@ -52,7 +52,7 @@ function mapStateToIcon(state: StatusState): JSX.Element {
 			return <CloseOutlined style={{color: colorFailure}}/>
 		default:
 			return <span>
-				<span className="gitploy-pending-icon"></span>&nbsp;&nbsp;
+				<span className="gitploy-pending-icon" />&nbsp;&nbsp;
 			</span>
 	}
 }

@@ -23,7 +23,8 @@ import (
 
 type (
 	reviewPatchPayload struct {
-		Status string `json:"status"`
+		Status  string  `json:"status"`
+		Comment *string `json:"comment"`
 	}
 )
 
@@ -130,6 +131,14 @@ func (r *Repo) UpdateUserReview(c *gin.Context) {
 		)
 		return
 	}
+	if err := review.StatusValidator(review.Status(p.Status)); err != nil {
+		r.log.Warn("The status is invalid.", zap.Error(err))
+		gb.ResponseWithError(
+			c,
+			e.NewErrorWithMessage(e.ErrorCodeInvalidRequest, "The status is invalid.", nil),
+		)
+		return
+	}
 
 	vu, _ := c.Get(gb.KeyUser)
 	u := vu.(*ent.User)
@@ -151,21 +160,24 @@ func (r *Repo) UpdateUserReview(c *gin.Context) {
 		return
 	}
 
-	if p.Status != string(rv.Status) {
-		rv.Status = review.Status(p.Status)
-		if rv, err = r.i.UpdateReview(ctx, rv); err != nil {
-			r.log.Check(gb.GetZapLogLevel(err), "Failed to update the review.").Write(zap.Error(err))
-			gb.ResponseWithError(c, err)
-			return
-		}
+	rv.Status = review.Status(p.Status)
 
-		if _, err := r.i.CreateEvent(ctx, &ent.Event{
-			Kind:     event.KindReview,
-			Type:     event.TypeUpdated,
-			ReviewID: rv.ID,
-		}); err != nil {
-			r.log.Error("Failed to create the event.", zap.Error(err))
-		}
+	if p.Comment != nil {
+		rv.Comment = *p.Comment
+	}
+
+	if rv, err = r.i.UpdateReview(ctx, rv); err != nil {
+		r.log.Check(gb.GetZapLogLevel(err), "Failed to update the review.").Write(zap.Error(err))
+		gb.ResponseWithError(c, err)
+		return
+	}
+
+	if _, err := r.i.CreateEvent(ctx, &ent.Event{
+		Kind:     event.KindReview,
+		Type:     event.TypeUpdated,
+		ReviewID: rv.ID,
+	}); err != nil {
+		r.log.Error("Failed to create the event.", zap.Error(err))
 	}
 
 	gb.Response(c, http.StatusOK, rv)

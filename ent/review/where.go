@@ -93,6 +93,13 @@ func IDLTE(id int) predicate.Review {
 	})
 }
 
+// Comment applies equality check predicate on the "comment" field. It's identical to CommentEQ.
+func Comment(v string) predicate.Review {
+	return predicate.Review(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldComment), v))
+	})
+}
+
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.Review {
 	return predicate.Review(func(s *sql.Selector) {
@@ -166,6 +173,131 @@ func StatusNotIn(vs ...Status) predicate.Review {
 			return
 		}
 		s.Where(sql.NotIn(s.C(FieldStatus), v...))
+	})
+}
+
+// CommentEQ applies the EQ predicate on the "comment" field.
+func CommentEQ(v string) predicate.Review {
+	return predicate.Review(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldComment), v))
+	})
+}
+
+// CommentNEQ applies the NEQ predicate on the "comment" field.
+func CommentNEQ(v string) predicate.Review {
+	return predicate.Review(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldComment), v))
+	})
+}
+
+// CommentIn applies the In predicate on the "comment" field.
+func CommentIn(vs ...string) predicate.Review {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Review(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldComment), v...))
+	})
+}
+
+// CommentNotIn applies the NotIn predicate on the "comment" field.
+func CommentNotIn(vs ...string) predicate.Review {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Review(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldComment), v...))
+	})
+}
+
+// CommentGT applies the GT predicate on the "comment" field.
+func CommentGT(v string) predicate.Review {
+	return predicate.Review(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldComment), v))
+	})
+}
+
+// CommentGTE applies the GTE predicate on the "comment" field.
+func CommentGTE(v string) predicate.Review {
+	return predicate.Review(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldComment), v))
+	})
+}
+
+// CommentLT applies the LT predicate on the "comment" field.
+func CommentLT(v string) predicate.Review {
+	return predicate.Review(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldComment), v))
+	})
+}
+
+// CommentLTE applies the LTE predicate on the "comment" field.
+func CommentLTE(v string) predicate.Review {
+	return predicate.Review(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldComment), v))
+	})
+}
+
+// CommentContains applies the Contains predicate on the "comment" field.
+func CommentContains(v string) predicate.Review {
+	return predicate.Review(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldComment), v))
+	})
+}
+
+// CommentHasPrefix applies the HasPrefix predicate on the "comment" field.
+func CommentHasPrefix(v string) predicate.Review {
+	return predicate.Review(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldComment), v))
+	})
+}
+
+// CommentHasSuffix applies the HasSuffix predicate on the "comment" field.
+func CommentHasSuffix(v string) predicate.Review {
+	return predicate.Review(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldComment), v))
+	})
+}
+
+// CommentIsNil applies the IsNil predicate on the "comment" field.
+func CommentIsNil() predicate.Review {
+	return predicate.Review(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldComment)))
+	})
+}
+
+// CommentNotNil applies the NotNil predicate on the "comment" field.
+func CommentNotNil() predicate.Review {
+	return predicate.Review(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldComment)))
+	})
+}
+
+// CommentEqualFold applies the EqualFold predicate on the "comment" field.
+func CommentEqualFold(v string) predicate.Review {
+	return predicate.Review(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldComment), v))
+	})
+}
+
+// CommentContainsFold applies the ContainsFold predicate on the "comment" field.
+func CommentContainsFold(v string) predicate.Review {
+	return predicate.Review(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldComment), v))
 	})
 }
 

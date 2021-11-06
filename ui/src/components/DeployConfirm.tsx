@@ -2,10 +2,11 @@ import { Form, Typography, Avatar, Button, Collapse, Timeline } from "antd"
 import moment from "moment"
 import { useState } from "react"
 
-import { Deployment, Commit } from "../models"
+import { Deployment, Commit, Review } from "../models"
 import DeploymentRefCode from "./DeploymentRefCode"
 import DeploymentStatusBadge from "./DeploymentStatusBadge"
 import DeploymentStatusSteps from "./DeploymentStatusSteps"
+import ReviewerList, { ReviewStatus } from "./ReviewerList"
 
 const { Paragraph, Text } = Typography
 const { Panel } = Collapse
@@ -15,12 +16,13 @@ interface DeployConfirmProps {
     deploying: boolean
     deployment: Deployment
     changes: Commit[]
+    reviews: Review[]
     onClickDeploy(): void
 }
 
 export default function DeployConfirm(props: DeployConfirmProps): JSX.Element {
     const layout = {
-      labelCol: { span: 6},
+      labelCol: { span: 5},
       wrapperCol: { span: 16 },
       style: {marginBottom: 12}
     };
@@ -48,6 +50,7 @@ export default function DeployConfirm(props: DeployConfirmProps): JSX.Element {
             <Form.Item
                 {...layout}
                 label="Status"
+                style={(props.deployment.statuses && props.deployment.statuses.length > 0)? {marginBottom: 0} : {}}
             >
                 {(props.deployment.statuses && props.deployment.statuses.length > 0)? 
                     <Collapse ghost>
@@ -79,6 +82,23 @@ export default function DeployConfirm(props: DeployConfirmProps): JSX.Element {
                 label="Deployed At"
             >
                 <Text>{moment(props.deployment.createdAt).format("YYYY-MM-DD HH:mm:ss")}</Text>
+            </Form.Item>
+            <Form.Item
+                {...layout}
+                label="Reviewers"
+                style={(props.reviews.length > 0)? {marginBottom: 0} : {}}
+            >
+                {(props.reviews.length > 0)?
+                    <Collapse ghost>
+                        <Panel
+                            key={1}
+                            header={<ReviewStatus reviews={props.reviews}/>}
+                            style={{position: "relative", top: "-5px", left: "-15px"}}
+                        >
+                            <ReviewerList reviews={props.reviews}/>
+                        </Panel>
+                    </Collapse> :
+                    <Text>No Reviewers</Text>}
             </Form.Item>
             <Form.Item
                 {...layout}

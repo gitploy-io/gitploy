@@ -8457,6 +8457,7 @@ type ReviewMutation struct {
 	typ               string
 	id                *int
 	status            *review.Status
+	comment           *string
 	created_at        *time.Time
 	updated_at        *time.Time
 	clearedFields     map[string]struct{}
@@ -8585,6 +8586,55 @@ func (m *ReviewMutation) OldStatus(ctx context.Context) (v review.Status, err er
 // ResetStatus resets all changes to the "status" field.
 func (m *ReviewMutation) ResetStatus() {
 	m.status = nil
+}
+
+// SetComment sets the "comment" field.
+func (m *ReviewMutation) SetComment(s string) {
+	m.comment = &s
+}
+
+// Comment returns the value of the "comment" field in the mutation.
+func (m *ReviewMutation) Comment() (r string, exists bool) {
+	v := m.comment
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldComment returns the old "comment" field's value of the Review entity.
+// If the Review object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ReviewMutation) OldComment(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldComment is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldComment requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldComment: %w", err)
+	}
+	return oldValue.Comment, nil
+}
+
+// ClearComment clears the value of the "comment" field.
+func (m *ReviewMutation) ClearComment() {
+	m.comment = nil
+	m.clearedFields[review.FieldComment] = struct{}{}
+}
+
+// CommentCleared returns if the "comment" field was cleared in this mutation.
+func (m *ReviewMutation) CommentCleared() bool {
+	_, ok := m.clearedFields[review.FieldComment]
+	return ok
+}
+
+// ResetComment resets all changes to the "comment" field.
+func (m *ReviewMutation) ResetComment() {
+	m.comment = nil
+	delete(m.clearedFields, review.FieldComment)
 }
 
 // SetCreatedAt sets the "created_at" field.
@@ -8856,9 +8906,12 @@ func (m *ReviewMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ReviewMutation) Fields() []string {
-	fields := make([]string, 0, 5)
+	fields := make([]string, 0, 6)
 	if m.status != nil {
 		fields = append(fields, review.FieldStatus)
+	}
+	if m.comment != nil {
+		fields = append(fields, review.FieldComment)
 	}
 	if m.created_at != nil {
 		fields = append(fields, review.FieldCreatedAt)
@@ -8882,6 +8935,8 @@ func (m *ReviewMutation) Field(name string) (ent.Value, bool) {
 	switch name {
 	case review.FieldStatus:
 		return m.Status()
+	case review.FieldComment:
+		return m.Comment()
 	case review.FieldCreatedAt:
 		return m.CreatedAt()
 	case review.FieldUpdatedAt:
@@ -8901,6 +8956,8 @@ func (m *ReviewMutation) OldField(ctx context.Context, name string) (ent.Value, 
 	switch name {
 	case review.FieldStatus:
 		return m.OldStatus(ctx)
+	case review.FieldComment:
+		return m.OldComment(ctx)
 	case review.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case review.FieldUpdatedAt:
@@ -8924,6 +8981,13 @@ func (m *ReviewMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetStatus(v)
+		return nil
+	case review.FieldComment:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetComment(v)
 		return nil
 	case review.FieldCreatedAt:
 		v, ok := value.(time.Time)
@@ -8985,7 +9049,11 @@ func (m *ReviewMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *ReviewMutation) ClearedFields() []string {
-	return nil
+	var fields []string
+	if m.FieldCleared(review.FieldComment) {
+		fields = append(fields, review.FieldComment)
+	}
+	return fields
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -8998,6 +9066,11 @@ func (m *ReviewMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *ReviewMutation) ClearField(name string) error {
+	switch name {
+	case review.FieldComment:
+		m.ClearComment()
+		return nil
+	}
 	return fmt.Errorf("unknown Review nullable field %s", name)
 }
 
@@ -9007,6 +9080,9 @@ func (m *ReviewMutation) ResetField(name string) error {
 	switch name {
 	case review.FieldStatus:
 		m.ResetStatus()
+		return nil
+	case review.FieldComment:
+		m.ResetComment()
 		return nil
 	case review.FieldCreatedAt:
 		m.ResetCreatedAt()

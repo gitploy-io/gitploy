@@ -37,6 +37,20 @@ func (rc *ReviewCreate) SetNillableStatus(r *review.Status) *ReviewCreate {
 	return rc
 }
 
+// SetComment sets the "comment" field.
+func (rc *ReviewCreate) SetComment(s string) *ReviewCreate {
+	rc.mutation.SetComment(s)
+	return rc
+}
+
+// SetNillableComment sets the "comment" field if the given value is not nil.
+func (rc *ReviewCreate) SetNillableComment(s *string) *ReviewCreate {
+	if s != nil {
+		rc.SetComment(*s)
+	}
+	return rc
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (rc *ReviewCreate) SetCreatedAt(t time.Time) *ReviewCreate {
 	rc.mutation.SetCreatedAt(t)
@@ -249,6 +263,14 @@ func (rc *ReviewCreate) createSpec() (*Review, *sqlgraph.CreateSpec) {
 			Column: review.FieldStatus,
 		})
 		_node.Status = value
+	}
+	if value, ok := rc.mutation.Comment(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: review.FieldComment,
+		})
+		_node.Comment = value
 	}
 	if value, ok := rc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
