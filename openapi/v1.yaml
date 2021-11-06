@@ -591,7 +591,7 @@ paths:
     patch: 
       tags:
         - Repo
-      summary: Deploy to SCM if a status of the deployment is waiting.
+      summary: Create a remote deployment when the status of the deployment is 'waiting'.
       parameters:
         - in: path
           name: namespace
@@ -609,17 +609,6 @@ paths:
           schema:
             type: integer
             description: The deployment number.
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                status: 
-                  type: string
-                  default: created
-              required:
-                - status
       responses:
         '200':
           description: Deployment 
