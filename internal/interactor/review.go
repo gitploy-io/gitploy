@@ -1,11 +1,18 @@
+// Copyright 2021 Gitploy.IO Inc. All rights reserved.
+// Use of this source code is governed by the Gitploy Non-Commercial License
+// that can be found in the LICENSE file.
+
+// +build !oss
+
 package interactor
 
 import (
 	"context"
 
+	"go.uber.org/zap"
+
 	"github.com/gitploy-io/gitploy/ent"
 	"github.com/gitploy-io/gitploy/ent/event"
-	"go.uber.org/zap"
 )
 
 func (i *Interactor) requestReviewByLogin(ctx context.Context, d *ent.Deployment, login string) (*ent.Review, error) {
