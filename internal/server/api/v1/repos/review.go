@@ -23,7 +23,7 @@ import (
 type (
 	reviewPatchPayload struct {
 		Status  string  `json:"status"`
-		Comment *string `json:"comment,omitemtpy"`
+		Comment *string `json:"comment"`
 	}
 )
 

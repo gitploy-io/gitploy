@@ -51,7 +51,7 @@ func TestStore_UpdateReview(t *testing.T) {
 		s := NewStore(client)
 
 		r.Status = review.StatusApproved
-		r, err := s.UpdateReview(ctx, r)
+		_, err := s.UpdateReview(ctx, r)
 		if err != nil {
 			t.Fatalf("UpdateReview returns an error: %v", err)
 		}
