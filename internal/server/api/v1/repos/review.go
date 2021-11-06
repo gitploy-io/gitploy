@@ -15,6 +15,7 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/gitploy-io/gitploy/ent"
+	"github.com/gitploy-io/gitploy/ent/event"
 	"github.com/gitploy-io/gitploy/ent/review"
 	gb "github.com/gitploy-io/gitploy/internal/server/global"
 	"github.com/gitploy-io/gitploy/pkg/e"
@@ -169,6 +170,14 @@ func (r *Repo) UpdateUserReview(c *gin.Context) {
 		r.log.Check(gb.GetZapLogLevel(err), "Failed to update the review.").Write(zap.Error(err))
 		gb.ResponseWithError(c, err)
 		return
+	}
+
+	if _, err := r.i.CreateEvent(ctx, &ent.Event{
+		Kind:     event.KindReview,
+		Type:     event.TypeUpdated,
+		ReviewID: rv.ID,
+	}); err != nil {
+		r.log.Error("Failed to create the event.", zap.Error(err))
 	}
 
 	gb.Response(c, http.StatusOK, rv)
