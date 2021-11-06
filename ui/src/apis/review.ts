@@ -13,12 +13,13 @@ import {
  } from '../models'
 
 export interface ReviewData {
-    id: number,
+    id: number
     status: string
+    comment: string
     created_at: string
     updated_at: string
     edges: {
-        user: UserData,
+        user: UserData
         deployment: DeploymentData
     }
 }
@@ -39,6 +40,7 @@ export const mapDataToReview = (data: ReviewData): Review => {
     return  {
         id: data.id,
         status: mapDataToReviewStatus(data.status),
+        comment: data.comment,
         createdAt: new Date(data.created_at),
         updatedAt: new Date(data.updated_at),
         user,
@@ -98,9 +100,10 @@ export const getUserReview = async (namespace: string, name: string, number: num
     return review
 }
 
-export const approveReview = async (namespace: string, name: string, number: number): Promise<Review> => {
+export const approveReview = async (namespace: string, name: string, number: number, comment?: string): Promise<Review> => {
     const body = {
         status: "approved",
+        comment,
     }
     const res = await _fetch(`${instance}/api/v1/repos/${namespace}/${name}/deployments/${number}/review`, {
         credentials: "same-origin",
@@ -119,9 +122,10 @@ export const approveReview = async (namespace: string, name: string, number: num
     return review
 }
 
-export const rejectReview = async (namespace: string, name: string, number: number): Promise<Review> => {
+export const rejectReview = async (namespace: string, name: string, number: number, comment?: string): Promise<Review> => {
     const body = {
         status: "rejected",
+        comment,
     }
     const res = await _fetch(`${instance}/api/v1/repos/${namespace}/${name}/deployments/${number}/review`, {
         credentials: "same-origin",

@@ -117,13 +117,13 @@ export const fetchReviews = createAsyncThunk<Review[], void, { state: {deploymen
     },
 )
 
-export const approve = createAsyncThunk<Review, void, { state: {deployment: DeploymentState }}>(
+export const approve = createAsyncThunk<Review, string, { state: {deployment: DeploymentState }}>(
     "deployment/approve",
-    async (_, { getState, rejectWithValue }) => {
+    async (comment, { getState, rejectWithValue }) => {
         const { namespace, name, number } = getState().deployment
 
         try {
-            const review = await approveReview(namespace, name, number)
+            const review = await approveReview(namespace, name, number, comment)
             message.info("Approve to deploy.")
             return review
         } catch(e) {
@@ -133,13 +133,13 @@ export const approve = createAsyncThunk<Review, void, { state: {deployment: Depl
 )
 
 
-export const reject = createAsyncThunk<Review, void, { state: {deployment: DeploymentState }}>(
+export const reject = createAsyncThunk<Review, string, { state: {deployment: DeploymentState }}>(
     "deployment/reject",
-    async (_, { getState, rejectWithValue }) => {
+    async (comment, { getState, rejectWithValue }) => {
         const { namespace, name, number } = getState().deployment
 
         try {
-            const review = await rejectReview(namespace, name, number)
+            const review = await rejectReview(namespace, name, number, comment)
             message.info("Reject to deploy.")
             return review
         } catch(e) {

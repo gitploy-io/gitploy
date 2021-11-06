@@ -1,5 +1,5 @@
 import { useEffect } from "react"
-import { Breadcrumb, PageHeader, Row, Col, Divider, Result } from "antd"
+import { Breadcrumb, PageHeader, Result } from "antd"
 import { shallowEqual } from 'react-redux'
 import { useParams } from "react-router-dom"
 
@@ -24,10 +24,9 @@ import {
 import { subscribeEvents } from "../apis"
 
 import Main from "./Main"
-import ReviewDropdown from "../components/ReviewDropdown"
+import ReviewModal from "../components/ReviewModal"
 import Spin from "../components/Spin"
 import DeployConfirm from "../components/DeployConfirm"
-import ReviewList from "../components/ReviewList"
 
 interface Params {
     namespace: string
@@ -68,18 +67,19 @@ export default function DeploymentView(): JSX.Element {
         // eslint-disable-next-line 
     }, [dispatch])
 
-    const hasReview = reviews.length > 0
-
     const onClickDeploy = () => {
         dispatch(deployToSCM())
     }
 
-    const onClickApprove = () => {
-        dispatch(approve())
+    const onClickApprove = (comment: string) => {
+        const f = async () => {
+            await dispatch(approve(comment))
+        }
+        f()
     }
 
-    const onClickReject = () => {
-        dispatch(reject())
+    const onClickReject = (comment: string) => {
+        dispatch(reject(comment))
     }
 
     const onBack = () => {
@@ -107,13 +107,14 @@ export default function DeploymentView(): JSX.Element {
         )
     }
 
-    // buttons
-    const reviewDropdown = (userReview)?
-        <ReviewDropdown 
-            key="review" 
+    const reviewBtn = (userReview)?
+        <ReviewModal 
+            key={0}
+            review={userReview}
             onClickApprove={onClickApprove}
-            onClickReject={onClickReject}/>:
-        null
+            onClickReject={onClickReject}
+        />:
+        <></>
 
     return (
         <Main>
@@ -133,40 +134,20 @@ export default function DeploymentView(): JSX.Element {
                             <Breadcrumb.Item>{number}</Breadcrumb.Item>
                         </Breadcrumb>}
                     extra={[
-                        reviewDropdown,
+                        reviewBtn,
                     ]}
                     onBack={onBack} 
                 />
             </div>
             <div style={{marginTop: "20px", marginBottom: "30px"}}>
-                <Row>
-                    <Col xs={{span: 24}} md={{span: 0}}>
-                        {/* Mobile view */}
-                        {(hasReview) ? 
-                            <ReviewList 
-                                reviews={reviews}
-                            /> :
-                            null}
-                        <Divider />
-                    </Col>
-                    <Col xs={{span: 24}} md={(hasReview)? {span: 18} : {span: 21}}>
-                        <DeployConfirm 
-                            isDeployable={isDeployable(deployment, reviews)}
-                            deploying={RequestStatus.Pending === deploying}
-                            deployment={deployment}
-                            changes={changes}
-                            onClickDeploy={onClickDeploy}
-                        />
-                    </Col>
-                    <Col xs={{span: 0}} md={{span: 6}}>
-                        {/* Desktop view */}
-                        {(hasReview) ? 
-                            <ReviewList 
-                                reviews={reviews}
-                            /> :
-                            null}
-                    </Col>
-                </Row>
+                <DeployConfirm 
+                    isDeployable={isDeployable(deployment, reviews)}
+                    deploying={RequestStatus.Pending === deploying}
+                    deployment={deployment}
+                    changes={changes}
+                    reviews={reviews}
+                    onClickDeploy={onClickDeploy}
+                />
             </div>
         </Main>
     )
