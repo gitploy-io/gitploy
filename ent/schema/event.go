@@ -19,6 +19,8 @@ func (Event) Fields() []ent.Field {
 			Values(
 				"deployment",
 				"review",
+				// Deprecated values:
+				"approval",
 			),
 		field.Enum("type").
 			Values(
