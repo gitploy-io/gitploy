@@ -11,6 +11,14 @@ jobs:
       - 
         uses: actions/checkout@v2
       - 
+        name: Start to publish
+        uses: chrnorm/deployment-status@releases/v1
+        with:
+          deployment_id: ${{ github.event.deployment.id }}
+          description: Start to publish docs.
+          state: "in_progress"
+          token: "${{ github.token }}"
+      - 
         name: Create requirements.txt
         uses: "finnp/create-file-action@master"
         env:
@@ -24,3 +32,21 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
           CUSTOM_DOMAIN: docs.gitploy.io
           REQUIREMENTS: requirements.txt
+      - 
+        name: Publish successfully
+        if: success()
+        uses: chrnorm/deployment-status@releases/v1
+        with:
+          deployment_id: ${{ github.event.deployment.id }}
+          description: Succeed to publish.
+          state: "success"
+          token: "${{ github.token }}"
+      - 
+        name: Publish failed
+        if: failure()
+        uses: chrnorm/deployment-status@releases/v1
+        with:
+          deployment_id: ${{ github.event.deployment.id }}
+          description: Failed to publish.
+          state: "failure"
+          token: "${{ github.token }}"
