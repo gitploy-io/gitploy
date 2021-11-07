@@ -23,10 +23,6 @@ type (
 		Ref  string `json:"ref"`
 		Env  string `json:"env"`
 	}
-
-	deploymentPatchPayload struct {
-		Status string `json:"status"`
-	}
 )
 
 func (r *Repo) ListDeployments(c *gin.Context) {
@@ -156,15 +152,6 @@ func (r *Repo) UpdateDeployment(c *gin.Context) {
 	var (
 		number = c.Param("number")
 	)
-
-	p := &deploymentPatchPayload{}
-	if err := c.ShouldBindBodyWith(p, binding.JSON); err != nil {
-		gb.ResponseWithError(
-			c,
-			e.NewErrorWithMessage(e.ErrorCodeInvalidRequest, "It has failed to bind the payload.", nil),
-		)
-		return
-	}
 
 	vu, _ := c.Get(gb.KeyUser)
 	u := vu.(*ent.User)
