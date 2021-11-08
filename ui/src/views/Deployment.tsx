@@ -72,11 +72,18 @@ export default function DeploymentView(): JSX.Element {
         dispatch(deployToSCM())
     }
 
-    const onClickApprove = (comment: string) => {
+    const onClickApproveAndDeploy = (comment: string) => {
         const f = async () => {
             await dispatch(approve(comment))
+            if (deployment?.status === DeploymentStatusEnum.Waiting) {
+                await dispatch(deployToSCM())
+            }
         }
         f()
+    }
+
+    const onClickApprove = (comment: string) => {
+       dispatch(approve(comment))
     }
 
     const onClickReject = (comment: string) => {
@@ -112,6 +119,7 @@ export default function DeploymentView(): JSX.Element {
         <ReviewModal 
             key={0}
             review={userReview}
+            onClickApproveAndDeploy={onClickApproveAndDeploy}
             onClickApprove={onClickApprove}
             onClickReject={onClickReject}
         />:

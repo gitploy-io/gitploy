@@ -1,13 +1,14 @@
 import { useState } from "react"
 import { Button, Modal, Space, Input } from "antd"
 
-import { Review } from "../models"
+import { Review, ReviewStatusEnum } from "../models"
 
 const { TextArea } = Input
 
 interface ReviewModalProps {
     review: Review
     onClickApprove(comment: string): void
+    onClickApproveAndDeploy(comment: string): void
     onClickReject(comment: string): void
 }
 
@@ -29,6 +30,11 @@ export default function ReviewModal(props: ReviewModalProps): JSX.Element {
         setIsModalVisible(false)
     }
 
+    const onClickApproveAndDeploy = () => {
+        props.onClickApproveAndDeploy(comment)
+        setIsModalVisible(false)
+    }
+
     const onClickReject = () => {
         props.onClickReject(comment)
         setIsModalVisible(false)
@@ -46,16 +52,22 @@ export default function ReviewModal(props: ReviewModalProps): JSX.Element {
                 onCancel={onClickCancel}
                 footer={
                     <Space>
-                        <Button onClick={onClickReject}>Reject</Button>
+                        <Button type="primary" danger onClick={onClickReject}>Reject</Button>
+                        <Button type="primary" onClick={onClickApproveAndDeploy}>Approve and Deploy</Button>
                         <Button type="primary" onClick={onClickApprove}>Approve</Button>
                     </Space>
                 }
             >
                 <TextArea rows={3} onChange={onChangeComment} value={comment}/>
             </Modal>
-            <Button type="primary" onClick={showModal}>
-                Review
-            </Button>
+            {(props.review.status === ReviewStatusEnum.Pending)? 
+                <Button type="primary" onClick={showModal}>
+                    Review
+                </Button> :
+                <Button onClick={showModal}>
+                    Reviewed
+                </Button> 
+            }
         </>
     )
 
