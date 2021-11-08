@@ -10,5 +10,5 @@ Try to build the deployment system with Gitploy ([doc](./tasks/installation.md))
 
 ---
 
-![Gitploy](./images/gitploy.png)
+![Gitploy](./images/gitploy.gif)
 

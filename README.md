@@ -2,8 +2,7 @@
 
 ![test](https://github.com/gitploy-io/gitploy/actions/workflows/test.yaml/badge.svg)
 
-![Gitploy](docs/images/gitploy.png)
-
+![Gitploy](docs/images/gitploy.gif)
 
 ## What is Gitploy?
 
