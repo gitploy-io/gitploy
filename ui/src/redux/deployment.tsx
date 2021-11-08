@@ -187,6 +187,11 @@ export const deploymentSlice = createSlice({
             }
 
             state.deployment = event.deployment
+        },
+        handleReviewEvent: (state, action: PayloadAction<Event>) => {
+            state.reviews = state.reviews.map((review) => {
+                return (review.id === action.payload.review?.id)? action.payload.review : review
+            })
         }
     },
     extraReducers: builder => {

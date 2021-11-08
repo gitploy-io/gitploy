@@ -59,6 +59,7 @@ export default function DeploymentView(): JSX.Element {
 
         const sub = subscribeEvents((event) => {
             dispatch(slice.actions.handleDeploymentEvent(event))
+            dispatch(slice.actions.handleReviewEvent(event))
         })
 
         return () => {

@@ -50,7 +50,7 @@ export default function DeployConfirm(props: DeployConfirmProps): JSX.Element {
             <Form.Item
                 {...layout}
                 label="Status"
-                style={(props.deployment.statuses && props.deployment.statuses.length > 0)? {marginBottom: 0} : {}}
+                style={(props.deployment.statuses && props.deployment.statuses.length > 0)? {marginBottom: 0} : {marginBottom: 12}}
             >
                 {(props.deployment.statuses && props.deployment.statuses.length > 0)? 
                     <Collapse ghost>
