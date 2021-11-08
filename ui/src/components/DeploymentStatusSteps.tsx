@@ -11,13 +11,7 @@ interface DeploymentStatusStepsProps {
 
 export default function DeploymentStatusSteps(props: DeploymentStatusStepsProps): JSX.Element {
     return  (
-        <Timeline
-            style={{
-                position: "relative",
-                top: 15,
-                paddingBottom: 0
-            }}
-        >
+        <Timeline>
             {props.statuses.map((status, idx) => {
                 return (
                     <Timeline.Item 
