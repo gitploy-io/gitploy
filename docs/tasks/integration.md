@@ -1,5 +1,38 @@
 # Integration
 
+## GitHub Action
+
+GitHub Actions help you automate tasks to run an actual deployment. GitHub Actions are event-driven, meaning that you can run a series of commands after a deployment event has occurred. 
+
+To listening the deployment event, you must specify `deployment` for the `on` field. And you can use the `if` conditional to run a job for the specific environment. Here is the example below.
+
+```yaml
+# Listening the deployment event
+on:
+  deployment
+
+jobs:
+  deploy-dev:
+    runs-on: ubuntu-latest
+    # Run a job when the environment is 'production.
+    if: ${{ github.event.deployment.environment == 'production' }}
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v2
+      - 
+        name: Start to deploy
+        uses: chrnorm/deployment-status@releases/v1
+        with:
+          deployment_id: ${{ github.event.deployment.id }}
+          description: Start to deploy ...
+          state: "in_progress"
+          token: "${{ github.token }}"
+    # Run your deployment commands.
+```
+
+### Step 2:
+
 ## Slack
 
 Slack integration provides Chatops (i.e. deploy, rollback) and notification alert for events.
