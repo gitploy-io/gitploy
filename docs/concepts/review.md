@@ -4,7 +4,7 @@ Gitploy has the review to require at least one approval for the deployment. You 
 
 ## Review process
 
-1\. First, to enable review, you must configure like the below:
+1\. To enable review, you must configure like the below:
 
 ```yaml
 envs:
@@ -15,4 +15,6 @@ envs:
       reviewers: ["USER_LOGIN"]
 ```
 
-2\. When the user deploys, Gitploy request a review to reviewers. And the deployment is waiting until one of reviews is approved.
+2\. When the user deploys in the 'deploy' tab, Gitploy request a review to reviewers. And the deployment is waiting until one of reviews is approved.
+
+![review](../images/review.png)
