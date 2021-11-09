@@ -1,6 +1,6 @@
 # Gitploy
 
-If your team or organization develops with GitHub, you can build the deployment system around Gitploy in minutes. Gitploy provides these features:
+Gitploy helps your team or organization builds the system around GitHub in minutes. Gitploy provides these features:
 
 * Deploy a specific ref (branch, commit, tag)
 * Build an event-driven deployment system around GitHub [deployment API](https://docs.github.com/en/rest/reference/repos#deployments)
