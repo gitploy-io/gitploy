@@ -13,7 +13,7 @@ GITPLOY_PROMETHEUS_AUTH_SECRET=YOUR_SECRET
 
 2\. Configure the prometheus scraper:
 
-```
+```yaml
 global:
   scrape_interval: 60s
 
