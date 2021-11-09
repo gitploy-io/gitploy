@@ -19,15 +19,6 @@ const (
 )
 
 type (
-	Metric struct {
-		prometheusAuthSecret string
-	}
-
-	MetricConfig struct {
-		Interactor
-		PrometheusAuthSecret string
-	}
-
 	collector struct {
 		i Interactor
 
