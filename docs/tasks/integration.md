@@ -31,8 +31,6 @@ jobs:
     # Run your deployment commands.
 ```
 
-### Step 2:
-
 ## Slack
 
 Slack integration provides Chatops (i.e. deploy, rollback) and notification alert for events.
