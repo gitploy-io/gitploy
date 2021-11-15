@@ -38,7 +38,7 @@ Rollback                   | ✅ | ❌
 Lock environment           | ✅ | ❌
 Commit statuses validation | ✅ | ❌
 Display changed commmits   | ✅ | ❌
-Private repositories for teams plan | ✅ | ❌ (Enterprise Only)
+Private repositories for teams plan | ✅ | ❌ 
 
 ## Getting Started
 
