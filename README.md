@@ -24,7 +24,7 @@ Gitploy makes your team or organization **build the deployment system around Git
 * Provides the intuitive UI to deploy a specific ref (branch, SHA, tag).
 * Build an event-driven deployment system around GitHub. See GitHub [deployment event](https://docs.github.com/en/developers/webhooks-and-events/webhooks/webhook-events-and-payloads#deployment).
 * Integrate with GitHub [Action](https://github.com/features/actions) in minutes.
-* Provides deployment features: Rollback, Review, Lock.
+* Provides advanced deployment features: Rollback, Review, Lock.
 * Provides various validations for the deployment.
 * Provides DevOps metrics.
 
