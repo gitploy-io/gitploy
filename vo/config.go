@@ -48,7 +48,9 @@ const (
 )
 
 const (
-	defaultDeployTask   = "deploy"
+	// defaultDeployTask is the value of the 'GITPLOY_DEPLOY_TASK' variable.
+	defaultDeployTask = "deploy"
+	// defaultRollbackTask is the value of the 'GITPLOY_ROLLBACK_TASK' variable.
 	defaultRollbackTask = "rollback"
 )
 
@@ -80,10 +82,12 @@ func (c *Config) GetEnv(name string) *Env {
 	return nil
 }
 
+// IsProductionEnvironment check whether the environment is production or not.
 func (e *Env) IsProductionEnvironment() bool {
 	return e.ProductionEnvironment != nil && *e.ProductionEnvironment
 }
 
+// HasReview check whether the review is enabled or not.
 func (e *Env) HasReview() bool {
 	return e.Review != nil && e.Review.Enabled
 }
