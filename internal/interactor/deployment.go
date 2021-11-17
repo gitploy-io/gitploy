@@ -14,13 +14,26 @@ import (
 	"go.uber.org/zap"
 )
 
+func (i *Interactor) IsApproved(ctx context.Context, d *ent.Deployment) bool {
+	rvs, _ := i.Store.ListReviews(ctx, d)
+
+	for _, r := range rvs {
+		if r.Status == review.StatusRejected {
+			return false
+		}
+	}
+
+	for _, r := range rvs {
+		if r.Status == review.StatusApproved {
+			return true
+		}
+	}
+
+	return false
+}
+
 func (i *Interactor) Deploy(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, env *vo.Env) (*ent.Deployment, error) {
-	if locked, err := i.Store.HasLockOfRepoForEnv(ctx, r, d.Env); locked {
-		return nil, e.NewError(
-			e.ErrorCodeDeploymentLocked,
-			err,
-		)
-	} else if err != nil {
+	if ok, err := i.isDeployable(ctx, u, r, d); !ok {
 		return nil, err
 	}
 
@@ -101,24 +114,6 @@ func (i *Interactor) Deploy(ctx context.Context, u *ent.User, r *ent.Repo, d *en
 	return d, nil
 }
 
-func (i *Interactor) IsApproved(ctx context.Context, d *ent.Deployment) bool {
-	rvs, _ := i.ListReviews(ctx, d)
-
-	for _, r := range rvs {
-		if r.Status == review.StatusRejected {
-			return false
-		}
-	}
-
-	for _, r := range rvs {
-		if r.Status == review.StatusApproved {
-			return true
-		}
-	}
-
-	return false
-}
-
 // DeployToRemote create a new remote deployment after the deployment was approved.
 func (i *Interactor) DeployToRemote(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, env *vo.Env) (*ent.Deployment, error) {
 	if d.Status != deployment.StatusWaiting {
@@ -129,12 +124,7 @@ func (i *Interactor) DeployToRemote(ctx context.Context, u *ent.User, r *ent.Rep
 		)
 	}
 
-	if locked, err := i.Store.HasLockOfRepoForEnv(ctx, r, d.Env); locked {
-		return nil, e.NewError(
-			e.ErrorCodeDeploymentLocked,
-			err,
-		)
-	} else if err != nil {
+	if ok, err := i.isDeployable(ctx, u, r, d); !ok {
 		return nil, err
 	}
 
@@ -179,6 +169,16 @@ func (i *Interactor) createRemoteDeployment(ctx context.Context, u *ent.User, r 
 	}
 
 	return i.SCM.CreateRemoteDeployment(ctx, u, r, d, env)
+}
+
+func (i *Interactor) isDeployable(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment) (bool, error) {
+	if locked, err := i.Store.HasLockOfRepoForEnv(ctx, r, d.Env); locked {
+		return false, e.NewError(e.ErrorCodeDeploymentLocked, err)
+	} else if err != nil {
+		return false, e.NewError(e.ErrorCodeInternalError, err)
+	}
+
+	return true, nil
 }
 
 func (i *Interactor) runClosingInactiveDeployment(stop <-chan struct{}) {

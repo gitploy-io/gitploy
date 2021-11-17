@@ -24,6 +24,34 @@ func newMockInteractor(store Store, scm SCM) *Interactor {
 	}
 }
 
+func TestInteractor_IsApproved(t *testing.T) {
+	t.Run("Return false when a review is rejected.", func(t *testing.T) {
+		ctrl := gomock.NewController(t)
+		store := mock.NewMockStore(ctrl)
+		scm := mock.NewMockSCM(ctrl)
+
+		t.Log("Return various status reviews")
+		store.
+			EXPECT().
+			ListReviews(gomock.Any(), gomock.AssignableToTypeOf(&ent.Deployment{})).
+			Return([]*ent.Review{
+				{
+					Status: review.StatusPending,
+				},
+				{
+					Status: review.StatusRejected,
+				},
+			}, nil)
+
+		i := newMockInteractor(store, scm)
+
+		expected := false
+		if ret := i.IsApproved(context.Background(), &ent.Deployment{}); ret != expected {
+			t.Fatalf("IsApproved = %v, wanted %v", ret, expected)
+		}
+	})
+}
+
 func TestInteractor_Deploy(t *testing.T) {
 	ctx := gomock.Any()
 
