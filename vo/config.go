@@ -2,6 +2,7 @@ package vo
 
 import (
 	"encoding/json"
+	"regexp"
 	"strconv"
 
 	"github.com/drone/envsubst"
@@ -18,13 +19,16 @@ type (
 	Env struct {
 		Name string `json:"name" yaml:"name"`
 
-		// Github parameters of deployment.
+		// GitHub parameters of deployment.
 		Task                  *string     `json:"task" yaml:"task"`
 		Description           *string     `json:"description" yaml:"description"`
 		AutoMerge             *bool       `json:"auto_merge" yaml:"auto_merge"`
 		RequiredContexts      *[]string   `json:"required_contexts,omitempty" yaml:"required_contexts"`
 		Payload               interface{} `json:"payload" yaml:"payload"`
 		ProductionEnvironment *bool       `json:"production_environment" yaml:"production_environment"`
+
+		// DeployableRef validates the ref is deployable or not.
+		DeployableRef *string `json:"deployable_ref" yaml:"deployable_ref"`
 
 		// Review is the configuration of Review,
 		// It is disabled when it is empty.
@@ -85,6 +89,20 @@ func (c *Config) GetEnv(name string) *Env {
 // IsProductionEnvironment check whether the environment is production or not.
 func (e *Env) IsProductionEnvironment() bool {
 	return e.ProductionEnvironment != nil && *e.ProductionEnvironment
+}
+
+// IsDeployableRef validate the ref is deployable.
+func (e *Env) IsDeployableRef(ref string) (bool, error) {
+	if e.DeployableRef == nil {
+		return true, nil
+	}
+
+	matched, err := regexp.MatchString(*e.DeployableRef, ref)
+	if err != nil {
+		return false, eutil.NewError(eutil.ErrorCodeConfigRegexpError, err)
+	}
+
+	return matched, nil
 }
 
 // HasReview check whether the review is enabled or not.

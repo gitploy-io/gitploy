@@ -8,6 +8,8 @@ import (
 const (
 	// ErrorCodeConfigParseError is that an error occurs when it parse the file.
 	ErrorCodeConfigParseError ErrorCode = "config_parse_error"
+	// ErrorCodeConfigRegexpError is the regexp(re2) is invalid.
+	ErrorCodeConfigRegexpError ErrorCode = "config_regexp_error"
 
 	// ErrorCodeDeploymentConflict is the deployment number is conflicted.
 	ErrorCodeDeploymentConflict ErrorCode = "deployment_conflict"
