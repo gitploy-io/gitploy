@@ -17,7 +17,8 @@ Field                    |Type                     |Required  |Description
 `required_contexts`      |*[]string*               |`false`   |This field allows you to specify a subset of contexts that must be success. 
 `payload`                |*object* or *string*     |`false`   |This field is JSON payload with extra information about the deployment. 
 `production_environment` |*boolean*                |`false`   |This field specifies whether this runtime environment is production or not.
-`review`               |*[Review](#review)*  |`false`   |This field configures review.
+`deployable_ref`         |*string*                 |`false`   |This field specifies which the ref(branch, SHA, tag) is deployable or not. It supports the regular expression, [re2](https://github.com/google/re2/wiki/Syntax) by Google, to match the ref. 
+`review`                 |*[Review](#review)*      |`false`   |This field configures review.
 
 ## Review
 
