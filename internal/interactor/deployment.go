@@ -33,7 +33,7 @@ func (i *Interactor) IsApproved(ctx context.Context, d *ent.Deployment) bool {
 }
 
 func (i *Interactor) Deploy(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, env *vo.Env) (*ent.Deployment, error) {
-	if ok, err := i.isDeployable(ctx, u, r, d); !ok {
+	if ok, err := i.isDeployable(ctx, u, r, d, env); !ok {
 		return nil, err
 	}
 
@@ -124,7 +124,7 @@ func (i *Interactor) DeployToRemote(ctx context.Context, u *ent.User, r *ent.Rep
 		)
 	}
 
-	if ok, err := i.isDeployable(ctx, u, r, d); !ok {
+	if ok, err := i.isDeployable(ctx, u, r, d, env); !ok {
 		return nil, err
 	}
 
@@ -171,7 +171,14 @@ func (i *Interactor) createRemoteDeployment(ctx context.Context, u *ent.User, r 
 	return i.SCM.CreateRemoteDeployment(ctx, u, r, d, env)
 }
 
-func (i *Interactor) isDeployable(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment) (bool, error) {
+func (i *Interactor) isDeployable(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, env *vo.Env) (bool, error) {
+	if ok, err := env.IsDeployableRef(d.Ref); err != nil {
+		return false, err
+	} else if !ok {
+		return false, e.NewErrorWithMessage(e.ErrorCodeUnprocessableEntity, "The ref is not matched with 'deployable_ref'.", nil)
+	}
+
+	// Check that the environment is locked.
 	if locked, err := i.Store.HasLockOfRepoForEnv(ctx, r, d.Env); locked {
 		return false, e.NewError(e.ErrorCodeDeploymentLocked, err)
 	} else if err != nil {

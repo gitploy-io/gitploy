@@ -5,6 +5,7 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/AlekSi/pointer"
 	"github.com/golang/mock/gomock"
 	"go.uber.org/zap"
 
@@ -54,6 +55,51 @@ func TestInteractor_IsApproved(t *testing.T) {
 
 func TestInteractor_Deploy(t *testing.T) {
 	ctx := gomock.Any()
+
+	t.Run("Return an error when the ref is not deployable", func(t *testing.T) {
+		input := struct {
+			d *ent.Deployment
+			e *vo.Env
+		}{
+			d: &ent.Deployment{
+				Type: deployment.TypeBranch,
+				Ref:  "main",
+				Env:  "production",
+			},
+			e: &vo.Env{
+				DeployableRef: pointer.ToString("releast-.*"),
+			},
+		}
+
+		ctrl := gomock.NewController(t)
+		store := mock.NewMockStore(ctrl)
+		scm := mock.NewMockSCM(ctrl)
+
+		i := newMockInteractor(store, scm)
+
+		_, err := i.Deploy(context.Background(), &ent.User{}, &ent.Repo{}, input.d, input.e)
+		if !e.HasErrorCode(err, e.ErrorCodeUnprocessableEntity) {
+			t.Fatalf("Deploy' error = %v, wanted ErrorCodeDeploymentLocked", err)
+		}
+	})
+
+	t.Run("Return an error when the environment is locked", func(t *testing.T) {
+		ctrl := gomock.NewController(t)
+		store := mock.NewMockStore(ctrl)
+		scm := mock.NewMockSCM(ctrl)
+
+		store.
+			EXPECT().
+			HasLockOfRepoForEnv(ctx, gomock.AssignableToTypeOf(&ent.Repo{}), "").
+			Return(true, nil)
+
+		i := newMockInteractor(store, scm)
+
+		_, err := i.Deploy(context.Background(), &ent.User{}, &ent.Repo{}, &ent.Deployment{}, &vo.Env{})
+		if !e.HasErrorCode(err, e.ErrorCodeDeploymentLocked) {
+			t.Fatalf("Deploy' error = %v, wanted ErrorCodeDeploymentLocked", err)
+		}
+	})
 
 	t.Run("Return a new deployment.", func(t *testing.T) {
 		input := struct {
@@ -117,8 +163,7 @@ func TestInteractor_Deploy(t *testing.T) {
 
 		d, err := i.Deploy(context.Background(), &ent.User{}, &ent.Repo{}, input.d, input.e)
 		if err != nil {
-			t.Errorf("Deploy returns a error: %s", err)
-			t.FailNow()
+			t.Fatalf("Deploy returns a error: %s", err)
 		}
 
 		expected := &ent.Deployment{
