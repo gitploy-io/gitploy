@@ -131,15 +131,14 @@ export default function Main(props: any) {
                             <Dropdown overlay={
                                 <Menu>
                                     <Menu.Item key="0">
-                                        <a href="/settings">
-                                            Settings
-                                        </a>
+                                        <a href="/settings">Settings</a>
                                     </Menu.Item>
                                     <Menu.Divider />
                                     <Menu.Item key="1">
-                                        <a href="/signout">
-                                            Sign out
-                                        </a>
+                                        <a href="https://docs.gitploy.io/" target="_blank">Read Doc</a>
+                                    </Menu.Item>
+                                    <Menu.Item key="2">
+                                        <a href="/signout">Sign out</a>
                                     </Menu.Item>
                                 </Menu> 
                             }>
