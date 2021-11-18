@@ -5,6 +5,7 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/AlekSi/pointer"
 	"github.com/golang/mock/gomock"
 	"go.uber.org/zap"
 
@@ -24,8 +25,81 @@ func newMockInteractor(store Store, scm SCM) *Interactor {
 	}
 }
 
+func TestInteractor_IsApproved(t *testing.T) {
+	t.Run("Return false when a review is rejected.", func(t *testing.T) {
+		ctrl := gomock.NewController(t)
+		store := mock.NewMockStore(ctrl)
+		scm := mock.NewMockSCM(ctrl)
+
+		t.Log("Return various status reviews")
+		store.
+			EXPECT().
+			ListReviews(gomock.Any(), gomock.AssignableToTypeOf(&ent.Deployment{})).
+			Return([]*ent.Review{
+				{
+					Status: review.StatusPending,
+				},
+				{
+					Status: review.StatusRejected,
+				},
+			}, nil)
+
+		i := newMockInteractor(store, scm)
+
+		expected := false
+		if ret := i.IsApproved(context.Background(), &ent.Deployment{}); ret != expected {
+			t.Fatalf("IsApproved = %v, wanted %v", ret, expected)
+		}
+	})
+}
+
 func TestInteractor_Deploy(t *testing.T) {
 	ctx := gomock.Any()
+
+	t.Run("Return an error when the ref is not deployable", func(t *testing.T) {
+		input := struct {
+			d *ent.Deployment
+			e *vo.Env
+		}{
+			d: &ent.Deployment{
+				Type: deployment.TypeBranch,
+				Ref:  "main",
+				Env:  "production",
+			},
+			e: &vo.Env{
+				DeployableRef: pointer.ToString("releast-.*"),
+			},
+		}
+
+		ctrl := gomock.NewController(t)
+		store := mock.NewMockStore(ctrl)
+		scm := mock.NewMockSCM(ctrl)
+
+		i := newMockInteractor(store, scm)
+
+		_, err := i.Deploy(context.Background(), &ent.User{}, &ent.Repo{}, input.d, input.e)
+		if !e.HasErrorCode(err, e.ErrorCodeUnprocessableEntity) {
+			t.Fatalf("Deploy' error = %v, wanted ErrorCodeDeploymentLocked", err)
+		}
+	})
+
+	t.Run("Return an error when the environment is locked", func(t *testing.T) {
+		ctrl := gomock.NewController(t)
+		store := mock.NewMockStore(ctrl)
+		scm := mock.NewMockSCM(ctrl)
+
+		store.
+			EXPECT().
+			HasLockOfRepoForEnv(ctx, gomock.AssignableToTypeOf(&ent.Repo{}), "").
+			Return(true, nil)
+
+		i := newMockInteractor(store, scm)
+
+		_, err := i.Deploy(context.Background(), &ent.User{}, &ent.Repo{}, &ent.Deployment{}, &vo.Env{})
+		if !e.HasErrorCode(err, e.ErrorCodeDeploymentLocked) {
+			t.Fatalf("Deploy' error = %v, wanted ErrorCodeDeploymentLocked", err)
+		}
+	})
 
 	t.Run("Return a new deployment.", func(t *testing.T) {
 		input := struct {
@@ -89,8 +163,7 @@ func TestInteractor_Deploy(t *testing.T) {
 
 		d, err := i.Deploy(context.Background(), &ent.User{}, &ent.Repo{}, input.d, input.e)
 		if err != nil {
-			t.Errorf("Deploy returns a error: %s", err)
-			t.FailNow()
+			t.Fatalf("Deploy returns a error: %s", err)
 		}
 
 		expected := &ent.Deployment{

@@ -8,10 +8,12 @@ import (
 const (
 	// ErrorCodeConfigParseError is that an error occurs when it parse the file.
 	ErrorCodeConfigParseError ErrorCode = "config_parse_error"
+	// ErrorCodeConfigRegexpError is the regexp(re2) is invalid.
+	ErrorCodeConfigRegexpError ErrorCode = "config_regexp_error"
 
 	// ErrorCodeDeploymentConflict is the deployment number is conflicted.
 	ErrorCodeDeploymentConflict ErrorCode = "deployment_conflict"
-	// ErrorCodeDeploymentInvalid is the payload is invalid.
+	// ErrorCodeDeploymentInvalid is the payload is invalid when it posts a remote deployment.
 	ErrorCodeDeploymentInvalid ErrorCode = "deployment_invalid"
 	// ErrorCodeDeploymentLocked is when the environment is locked.
 	ErrorCodeDeploymentLocked ErrorCode = "deployment_locked"

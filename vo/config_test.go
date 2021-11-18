@@ -112,6 +112,54 @@ func TestEnv_IsProductionEnvironment(t *testing.T) {
 	})
 }
 
+func TestEnv_IsDeployableRef(t *testing.T) {
+	t.Run("Return true when 'deployable_ref' is not defined.", func(t *testing.T) {
+		e := &Env{}
+
+		ret, err := e.IsDeployableRef("")
+		if err != nil {
+			t.Fatalf("IsDeployableRef returns an error: %s", err)
+		}
+
+		expected := true
+		if ret != expected {
+			t.Fatalf("IsDeployableRef = %v, wanted %v", ret, expected)
+		}
+	})
+
+	t.Run("Return true when 'deployable_ref' is matched.", func(t *testing.T) {
+		e := &Env{
+			DeployableRef: pointer.ToString("main"),
+		}
+
+		ret, err := e.IsDeployableRef("main")
+		if err != nil {
+			t.Fatalf("IsDeployableRef returns an error: %s", err)
+		}
+
+		expected := true
+		if ret != expected {
+			t.Fatalf("IsDeployableRef = %v, wanted %v", ret, expected)
+		}
+	})
+
+	t.Run("Return false when 'deployable_ref' is not matched.", func(t *testing.T) {
+		e := &Env{
+			DeployableRef: pointer.ToString("main"),
+		}
+
+		ret, err := e.IsDeployableRef("branch")
+		if err != nil {
+			t.Fatalf("IsDeployableRef returns an error: %s", err)
+		}
+
+		expected := false
+		if ret != expected {
+			t.Fatalf("IsDeployableRef = %v, wanted %v", ret, expected)
+		}
+	})
+}
+
 func TestEnv_Eval(t *testing.T) {
 	t.Run("eval the task.", func(t *testing.T) {
 		cs := []struct {
