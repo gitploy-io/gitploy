@@ -7249,6 +7249,8 @@ type RepoMutation struct {
 	deployment_statistics        map[int]struct{}
 	removeddeployment_statistics map[int]struct{}
 	cleareddeployment_statistics bool
+	owner                        *int64
+	clearedowner                 bool
 	done                         bool
 	oldValue                     func(context.Context) (*Repo, error)
 	predicates                   []predicate.Repo
@@ -7710,6 +7712,55 @@ func (m *RepoMutation) ResetLatestDeployedAt() {
 	delete(m.clearedFields, repo.FieldLatestDeployedAt)
 }
 
+// SetOwnerID sets the "owner_id" field.
+func (m *RepoMutation) SetOwnerID(i int64) {
+	m.owner = &i
+}
+
+// OwnerID returns the value of the "owner_id" field in the mutation.
+func (m *RepoMutation) OwnerID() (r int64, exists bool) {
+	v := m.owner
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldOwnerID returns the old "owner_id" field's value of the Repo entity.
+// If the Repo object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RepoMutation) OldOwnerID(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldOwnerID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldOwnerID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldOwnerID: %w", err)
+	}
+	return oldValue.OwnerID, nil
+}
+
+// ClearOwnerID clears the value of the "owner_id" field.
+func (m *RepoMutation) ClearOwnerID() {
+	m.owner = nil
+	m.clearedFields[repo.FieldOwnerID] = struct{}{}
+}
+
+// OwnerIDCleared returns if the "owner_id" field was cleared in this mutation.
+func (m *RepoMutation) OwnerIDCleared() bool {
+	_, ok := m.clearedFields[repo.FieldOwnerID]
+	return ok
+}
+
+// ResetOwnerID resets all changes to the "owner_id" field.
+func (m *RepoMutation) ResetOwnerID() {
+	m.owner = nil
+	delete(m.clearedFields, repo.FieldOwnerID)
+}
+
 // AddPermIDs adds the "perms" edge to the Perm entity by ids.
 func (m *RepoMutation) AddPermIDs(ids ...int) {
 	if m.perms == nil {
@@ -7980,6 +8031,32 @@ func (m *RepoMutation) ResetDeploymentStatistics() {
 	m.removeddeployment_statistics = nil
 }
 
+// ClearOwner clears the "owner" edge to the User entity.
+func (m *RepoMutation) ClearOwner() {
+	m.clearedowner = true
+}
+
+// OwnerCleared reports if the "owner" edge to the User entity was cleared.
+func (m *RepoMutation) OwnerCleared() bool {
+	return m.OwnerIDCleared() || m.clearedowner
+}
+
+// OwnerIDs returns the "owner" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// OwnerID instead. It exists only for internal usage by the builders.
+func (m *RepoMutation) OwnerIDs() (ids []int64) {
+	if id := m.owner; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetOwner resets all changes to the "owner" edge.
+func (m *RepoMutation) ResetOwner() {
+	m.owner = nil
+	m.clearedowner = false
+}
+
 // Where appends a list predicates to the RepoMutation builder.
 func (m *RepoMutation) Where(ps ...predicate.Repo) {
 	m.predicates = append(m.predicates, ps...)
@@ -7999,7 +8076,7 @@ func (m *RepoMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *RepoMutation) Fields() []string {
-	fields := make([]string, 0, 9)
+	fields := make([]string, 0, 10)
 	if m.namespace != nil {
 		fields = append(fields, repo.FieldNamespace)
 	}
@@ -8027,6 +8104,9 @@ func (m *RepoMutation) Fields() []string {
 	if m.latest_deployed_at != nil {
 		fields = append(fields, repo.FieldLatestDeployedAt)
 	}
+	if m.owner != nil {
+		fields = append(fields, repo.FieldOwnerID)
+	}
 	return fields
 }
 
@@ -8053,6 +8133,8 @@ func (m *RepoMutation) Field(name string) (ent.Value, bool) {
 		return m.UpdatedAt()
 	case repo.FieldLatestDeployedAt:
 		return m.LatestDeployedAt()
+	case repo.FieldOwnerID:
+		return m.OwnerID()
 	}
 	return nil, false
 }
@@ -8080,6 +8162,8 @@ func (m *RepoMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldUpdatedAt(ctx)
 	case repo.FieldLatestDeployedAt:
 		return m.OldLatestDeployedAt(ctx)
+	case repo.FieldOwnerID:
+		return m.OldOwnerID(ctx)
 	}
 	return nil, fmt.Errorf("unknown Repo field %s", name)
 }
@@ -8152,6 +8236,13 @@ func (m *RepoMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetLatestDeployedAt(v)
 		return nil
+	case repo.FieldOwnerID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetOwnerID(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Repo field %s", name)
 }
@@ -8203,6 +8294,9 @@ func (m *RepoMutation) ClearedFields() []string {
 	if m.FieldCleared(repo.FieldLatestDeployedAt) {
 		fields = append(fields, repo.FieldLatestDeployedAt)
 	}
+	if m.FieldCleared(repo.FieldOwnerID) {
+		fields = append(fields, repo.FieldOwnerID)
+	}
 	return fields
 }
 
@@ -8222,6 +8316,9 @@ func (m *RepoMutation) ClearField(name string) error {
 		return nil
 	case repo.FieldLatestDeployedAt:
 		m.ClearLatestDeployedAt()
+		return nil
+	case repo.FieldOwnerID:
+		m.ClearOwnerID()
 		return nil
 	}
 	return fmt.Errorf("unknown Repo nullable field %s", name)
@@ -8258,13 +8355,16 @@ func (m *RepoMutation) ResetField(name string) error {
 	case repo.FieldLatestDeployedAt:
 		m.ResetLatestDeployedAt()
 		return nil
+	case repo.FieldOwnerID:
+		m.ResetOwnerID()
+		return nil
 	}
 	return fmt.Errorf("unknown Repo field %s", name)
 }
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *RepoMutation) AddedEdges() []string {
-	edges := make([]string, 0, 5)
+	edges := make([]string, 0, 6)
 	if m.perms != nil {
 		edges = append(edges, repo.EdgePerms)
 	}
@@ -8279,6 +8379,9 @@ func (m *RepoMutation) AddedEdges() []string {
 	}
 	if m.deployment_statistics != nil {
 		edges = append(edges, repo.EdgeDeploymentStatistics)
+	}
+	if m.owner != nil {
+		edges = append(edges, repo.EdgeOwner)
 	}
 	return edges
 }
@@ -8317,13 +8420,17 @@ func (m *RepoMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case repo.EdgeOwner:
+		if id := m.owner; id != nil {
+			return []ent.Value{*id}
+		}
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *RepoMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 5)
+	edges := make([]string, 0, 6)
 	if m.removedperms != nil {
 		edges = append(edges, repo.EdgePerms)
 	}
@@ -8382,7 +8489,7 @@ func (m *RepoMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *RepoMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 5)
+	edges := make([]string, 0, 6)
 	if m.clearedperms {
 		edges = append(edges, repo.EdgePerms)
 	}
@@ -8397,6 +8504,9 @@ func (m *RepoMutation) ClearedEdges() []string {
 	}
 	if m.cleareddeployment_statistics {
 		edges = append(edges, repo.EdgeDeploymentStatistics)
+	}
+	if m.clearedowner {
+		edges = append(edges, repo.EdgeOwner)
 	}
 	return edges
 }
@@ -8415,6 +8525,8 @@ func (m *RepoMutation) EdgeCleared(name string) bool {
 		return m.clearedlocks
 	case repo.EdgeDeploymentStatistics:
 		return m.cleareddeployment_statistics
+	case repo.EdgeOwner:
+		return m.clearedowner
 	}
 	return false
 }
@@ -8423,6 +8535,9 @@ func (m *RepoMutation) EdgeCleared(name string) bool {
 // if that edge is not defined in the schema.
 func (m *RepoMutation) ClearEdge(name string) error {
 	switch name {
+	case repo.EdgeOwner:
+		m.ClearOwner()
+		return nil
 	}
 	return fmt.Errorf("unknown Repo unique edge %s", name)
 }
@@ -8445,6 +8560,9 @@ func (m *RepoMutation) ResetEdge(name string) error {
 		return nil
 	case repo.EdgeDeploymentStatistics:
 		m.ResetDeploymentStatistics()
+		return nil
+	case repo.EdgeOwner:
+		m.ResetOwner()
 		return nil
 	}
 	return fmt.Errorf("unknown Repo edge %s", name)
@@ -9250,6 +9368,9 @@ type UserMutation struct {
 	locks              map[int]struct{}
 	removedlocks       map[int]struct{}
 	clearedlocks       bool
+	repo               map[int64]struct{}
+	removedrepo        map[int64]struct{}
+	clearedrepo        bool
 	done               bool
 	oldValue           func(context.Context) (*User, error)
 	predicates         []predicate.User
@@ -9919,6 +10040,60 @@ func (m *UserMutation) ResetLocks() {
 	m.removedlocks = nil
 }
 
+// AddRepoIDs adds the "repo" edge to the Repo entity by ids.
+func (m *UserMutation) AddRepoIDs(ids ...int64) {
+	if m.repo == nil {
+		m.repo = make(map[int64]struct{})
+	}
+	for i := range ids {
+		m.repo[ids[i]] = struct{}{}
+	}
+}
+
+// ClearRepo clears the "repo" edge to the Repo entity.
+func (m *UserMutation) ClearRepo() {
+	m.clearedrepo = true
+}
+
+// RepoCleared reports if the "repo" edge to the Repo entity was cleared.
+func (m *UserMutation) RepoCleared() bool {
+	return m.clearedrepo
+}
+
+// RemoveRepoIDs removes the "repo" edge to the Repo entity by IDs.
+func (m *UserMutation) RemoveRepoIDs(ids ...int64) {
+	if m.removedrepo == nil {
+		m.removedrepo = make(map[int64]struct{})
+	}
+	for i := range ids {
+		delete(m.repo, ids[i])
+		m.removedrepo[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedRepo returns the removed IDs of the "repo" edge to the Repo entity.
+func (m *UserMutation) RemovedRepoIDs() (ids []int64) {
+	for id := range m.removedrepo {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// RepoIDs returns the "repo" edge IDs in the mutation.
+func (m *UserMutation) RepoIDs() (ids []int64) {
+	for id := range m.repo {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetRepo resets all changes to the "repo" edge.
+func (m *UserMutation) ResetRepo() {
+	m.repo = nil
+	m.clearedrepo = false
+	m.removedrepo = nil
+}
+
 // Where appends a list predicates to the UserMutation builder.
 func (m *UserMutation) Where(ps ...predicate.User) {
 	m.predicates = append(m.predicates, ps...)
@@ -10173,7 +10348,7 @@ func (m *UserMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *UserMutation) AddedEdges() []string {
-	edges := make([]string, 0, 5)
+	edges := make([]string, 0, 6)
 	if m.chat_user != nil {
 		edges = append(edges, user.EdgeChatUser)
 	}
@@ -10188,6 +10363,9 @@ func (m *UserMutation) AddedEdges() []string {
 	}
 	if m.locks != nil {
 		edges = append(edges, user.EdgeLocks)
+	}
+	if m.repo != nil {
+		edges = append(edges, user.EdgeRepo)
 	}
 	return edges
 }
@@ -10224,13 +10402,19 @@ func (m *UserMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case user.EdgeRepo:
+		ids := make([]ent.Value, 0, len(m.repo))
+		for id := range m.repo {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *UserMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 5)
+	edges := make([]string, 0, 6)
 	if m.removedperms != nil {
 		edges = append(edges, user.EdgePerms)
 	}
@@ -10242,6 +10426,9 @@ func (m *UserMutation) RemovedEdges() []string {
 	}
 	if m.removedlocks != nil {
 		edges = append(edges, user.EdgeLocks)
+	}
+	if m.removedrepo != nil {
+		edges = append(edges, user.EdgeRepo)
 	}
 	return edges
 }
@@ -10274,13 +10461,19 @@ func (m *UserMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case user.EdgeRepo:
+		ids := make([]ent.Value, 0, len(m.removedrepo))
+		for id := range m.removedrepo {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *UserMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 5)
+	edges := make([]string, 0, 6)
 	if m.clearedchat_user {
 		edges = append(edges, user.EdgeChatUser)
 	}
@@ -10295,6 +10488,9 @@ func (m *UserMutation) ClearedEdges() []string {
 	}
 	if m.clearedlocks {
 		edges = append(edges, user.EdgeLocks)
+	}
+	if m.clearedrepo {
+		edges = append(edges, user.EdgeRepo)
 	}
 	return edges
 }
@@ -10313,6 +10509,8 @@ func (m *UserMutation) EdgeCleared(name string) bool {
 		return m.clearedreviews
 	case user.EdgeLocks:
 		return m.clearedlocks
+	case user.EdgeRepo:
+		return m.clearedrepo
 	}
 	return false
 }
@@ -10346,6 +10544,9 @@ func (m *UserMutation) ResetEdge(name string) error {
 		return nil
 	case user.EdgeLocks:
 		m.ResetLocks()
+		return nil
+	case user.EdgeRepo:
+		m.ResetRepo()
 		return nil
 	}
 	return fmt.Errorf("unknown User edge %s", name)

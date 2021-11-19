@@ -35,6 +35,9 @@ func (Repo) Fields() []ent.Field {
 		// Denormalization to sort with deployment.
 		field.Time("latest_deployed_at").
 			Optional(),
+		// The 'owner_id' field is the ID who activated the repository.
+		field.Int64("owner_id").
+			Optional(),
 	}
 }
 
@@ -61,6 +64,10 @@ func (Repo) Edges() []ent.Edge {
 			Annotations(entsql.Annotation{
 				OnDelete: entsql.Cascade,
 			}),
+		edge.From("owner", User.Type).
+			Ref("repo").
+			Field("owner_id").
+			Unique(),
 	}
 }
 

@@ -1093,6 +1093,34 @@ func HasLocksWith(preds ...predicate.Lock) predicate.User {
 	})
 }
 
+// HasRepo applies the HasEdge predicate on the "repo" edge.
+func HasRepo() predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(RepoTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, RepoTable, RepoColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasRepoWith applies the HasEdge predicate on the "repo" edge with a given conditions (other predicates).
+func HasRepoWith(preds ...predicate.Repo) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(RepoInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, RepoTable, RepoColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.User) predicate.User {
 	return predicate.User(func(s *sql.Selector) {

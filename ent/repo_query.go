@@ -20,6 +20,7 @@ import (
 	"github.com/gitploy-io/gitploy/ent/perm"
 	"github.com/gitploy-io/gitploy/ent/predicate"
 	"github.com/gitploy-io/gitploy/ent/repo"
+	"github.com/gitploy-io/gitploy/ent/user"
 )
 
 // RepoQuery is the builder for querying Repo entities.
@@ -37,6 +38,7 @@ type RepoQuery struct {
 	withCallback             *CallbackQuery
 	withLocks                *LockQuery
 	withDeploymentStatistics *DeploymentStatisticsQuery
+	withOwner                *UserQuery
 	modifiers                []func(s *sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -177,6 +179,28 @@ func (rq *RepoQuery) QueryDeploymentStatistics() *DeploymentStatisticsQuery {
 			sqlgraph.From(repo.Table, repo.FieldID, selector),
 			sqlgraph.To(deploymentstatistics.Table, deploymentstatistics.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, repo.DeploymentStatisticsTable, repo.DeploymentStatisticsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(rq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryOwner chains the current query on the "owner" edge.
+func (rq *RepoQuery) QueryOwner() *UserQuery {
+	query := &UserQuery{config: rq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := rq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := rq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(repo.Table, repo.FieldID, selector),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, repo.OwnerTable, repo.OwnerColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(rq.driver.Dialect(), step)
 		return fromU, nil
@@ -370,6 +394,7 @@ func (rq *RepoQuery) Clone() *RepoQuery {
 		withCallback:             rq.withCallback.Clone(),
 		withLocks:                rq.withLocks.Clone(),
 		withDeploymentStatistics: rq.withDeploymentStatistics.Clone(),
+		withOwner:                rq.withOwner.Clone(),
 		// clone intermediate query.
 		sql:  rq.sql.Clone(),
 		path: rq.path,
@@ -428,6 +453,17 @@ func (rq *RepoQuery) WithDeploymentStatistics(opts ...func(*DeploymentStatistics
 		opt(query)
 	}
 	rq.withDeploymentStatistics = query
+	return rq
+}
+
+// WithOwner tells the query-builder to eager-load the nodes that are connected to
+// the "owner" edge. The optional arguments are used to configure the query builder of the edge.
+func (rq *RepoQuery) WithOwner(opts ...func(*UserQuery)) *RepoQuery {
+	query := &UserQuery{config: rq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	rq.withOwner = query
 	return rq
 }
 
@@ -496,12 +532,13 @@ func (rq *RepoQuery) sqlAll(ctx context.Context) ([]*Repo, error) {
 	var (
 		nodes       = []*Repo{}
 		_spec       = rq.querySpec()
-		loadedTypes = [5]bool{
+		loadedTypes = [6]bool{
 			rq.withPerms != nil,
 			rq.withDeployments != nil,
 			rq.withCallback != nil,
 			rq.withLocks != nil,
 			rq.withDeploymentStatistics != nil,
+			rq.withOwner != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -649,6 +686,32 @@ func (rq *RepoQuery) sqlAll(ctx context.Context) ([]*Repo, error) {
 				return nil, fmt.Errorf(`unexpected foreign-key "repo_id" returned %v for node %v`, fk, n.ID)
 			}
 			node.Edges.DeploymentStatistics = append(node.Edges.DeploymentStatistics, n)
+		}
+	}
+
+	if query := rq.withOwner; query != nil {
+		ids := make([]int64, 0, len(nodes))
+		nodeids := make(map[int64][]*Repo)
+		for i := range nodes {
+			fk := nodes[i].OwnerID
+			if _, ok := nodeids[fk]; !ok {
+				ids = append(ids, fk)
+			}
+			nodeids[fk] = append(nodeids[fk], nodes[i])
+		}
+		query.Where(user.IDIn(ids...))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			nodes, ok := nodeids[n.ID]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "owner_id" returned %v`, n.ID)
+			}
+			for i := range nodes {
+				nodes[i].Edges.Owner = n
+			}
 		}
 	}
 

@@ -16,6 +16,7 @@ import (
 	"github.com/gitploy-io/gitploy/ent/lock"
 	"github.com/gitploy-io/gitploy/ent/perm"
 	"github.com/gitploy-io/gitploy/ent/repo"
+	"github.com/gitploy-io/gitploy/ent/user"
 )
 
 // RepoCreate is the builder for creating a Repo entity.
@@ -127,6 +128,20 @@ func (rc *RepoCreate) SetNillableLatestDeployedAt(t *time.Time) *RepoCreate {
 	return rc
 }
 
+// SetOwnerID sets the "owner_id" field.
+func (rc *RepoCreate) SetOwnerID(i int64) *RepoCreate {
+	rc.mutation.SetOwnerID(i)
+	return rc
+}
+
+// SetNillableOwnerID sets the "owner_id" field if the given value is not nil.
+func (rc *RepoCreate) SetNillableOwnerID(i *int64) *RepoCreate {
+	if i != nil {
+		rc.SetOwnerID(*i)
+	}
+	return rc
+}
+
 // SetID sets the "id" field.
 func (rc *RepoCreate) SetID(i int64) *RepoCreate {
 	rc.mutation.SetID(i)
@@ -206,6 +221,11 @@ func (rc *RepoCreate) AddDeploymentStatistics(d ...*DeploymentStatistics) *RepoC
 		ids[i] = d[i].ID
 	}
 	return rc.AddDeploymentStatisticIDs(ids...)
+}
+
+// SetOwner sets the "owner" edge to the User entity.
+func (rc *RepoCreate) SetOwner(u *User) *RepoCreate {
+	return rc.SetOwnerID(u.ID)
 }
 
 // Mutation returns the RepoMutation object of the builder.
@@ -518,6 +538,26 @@ func (rc *RepoCreate) createSpec() (*Repo, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := rc.mutation.OwnerIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   repo.OwnerTable,
+			Columns: []string{repo.OwnerColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt64,
+					Column: user.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.OwnerID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
