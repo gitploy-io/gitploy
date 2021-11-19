@@ -18,6 +18,7 @@ Field                    |Type                     |Required  |Description
 `payload`                |*object* or *string*     |`false`   |This field is JSON payload with extra information about the deployment. 
 `production_environment` |*boolean*                |`false`   |This field specifies whether this runtime environment is production or not.
 `deployable_ref`         |*string*                 |`false`   |This field specifies which the ref(branch, SHA, tag) is deployable or not. It supports the regular expression, [re2](https://github.com/google/re2/wiki/Syntax) by Google, to match the ref. 
+`auto_deploy_on`         |*string*                 |`false`   |This field controls auto-deployment behaviour given a ref(branch, SHA, tag). It supports the regular expression, [re2](https://github.com/google/re2/wiki/Syntax) by Google, to match the ref. 
 `review`                 |*[Review](#review)*      |`false`   |This field configures review.
 
 ## Review
