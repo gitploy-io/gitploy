@@ -24,7 +24,7 @@ func init() {
 func TestHook_HandleHook(t *testing.T) {
 	t.Run("Listen the deployment event.", func(t *testing.T) {
 		e := &github.DeploymentStatusEvent{}
-		bytes, _ := ioutil.ReadFile("./testdata/github.hook.json")
+		bytes, _ := ioutil.ReadFile("./testdata/github.deployment_status.json")
 		if err := json.Unmarshal(bytes, &e); err != nil {
 			t.Fatalf("It has failed to unmarshal: %s", err)
 		}
