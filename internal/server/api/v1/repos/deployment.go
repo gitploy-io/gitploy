@@ -107,6 +107,7 @@ func (r *Repo) CreateDeployment(c *gin.Context) {
 		return
 	}
 
+	// Migrate the evaluation into the interactor.
 	if err := env.Eval(&vo.EvalValues{}); err != nil {
 		r.log.Check(gb.GetZapLogLevel(err), "Failed to evaluate variables in the configuration.").Write(zap.Error(err))
 		gb.ResponseWithError(c, err)

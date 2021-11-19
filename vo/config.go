@@ -29,6 +29,8 @@ type (
 
 		// DeployableRef validates the ref is deployable or not.
 		DeployableRef *string `json:"deployable_ref" yaml:"deployable_ref"`
+		// AutoDeployOn deploys automatically when the pattern is matched.
+		AutoDeployOn *string `json:"auto_deploy_on" yaml:"auto_deploy_on"`
 
 		// Review is the configuration of Review,
 		// It is disabled when it is empty.
@@ -98,6 +100,20 @@ func (e *Env) IsDeployableRef(ref string) (bool, error) {
 	}
 
 	matched, err := regexp.MatchString(*e.DeployableRef, ref)
+	if err != nil {
+		return false, eutil.NewError(eutil.ErrorCodeConfigRegexpError, err)
+	}
+
+	return matched, nil
+}
+
+// IsAutoDeployOn validate the ref is matched with 'auto_deploy_on'.
+func (e *Env) IsAutoDeployOn(ref string) (bool, error) {
+	if e.AutoDeployOn == nil {
+		return false, nil
+	}
+
+	matched, err := regexp.MatchString(*e.AutoDeployOn, ref)
 	if err != nil {
 		return false, eutil.NewError(eutil.ErrorCodeConfigRegexpError, err)
 	}
