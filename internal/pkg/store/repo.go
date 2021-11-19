@@ -196,6 +196,7 @@ func (s *Store) Activate(ctx context.Context, r *ent.Repo) (*ent.Repo, error) {
 		UpdateOne(r).
 		SetActive(true).
 		SetWebhookID(r.WebhookID).
+		SetOwnerID(r.OwnerID).
 		Save(ctx)
 	if ent.IsValidationError(err) {
 		return nil, e.NewErrorWithMessage(
@@ -214,6 +215,7 @@ func (s *Store) Deactivate(ctx context.Context, r *ent.Repo) (*ent.Repo, error) 
 		UpdateOne(r).
 		SetActive(false).
 		SetWebhookID(0).
+		SetOwnerID(0).
 		Save(ctx)
 	if ent.IsValidationError(err) {
 		return nil, e.NewErrorWithMessage(
