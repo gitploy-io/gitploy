@@ -17,6 +17,7 @@ import (
 	"github.com/gitploy-io/gitploy/ent/perm"
 	"github.com/gitploy-io/gitploy/ent/predicate"
 	"github.com/gitploy-io/gitploy/ent/repo"
+	"github.com/gitploy-io/gitploy/ent/user"
 )
 
 // RepoUpdate is the builder for updating Repo entities.
@@ -145,6 +146,26 @@ func (ru *RepoUpdate) ClearLatestDeployedAt() *RepoUpdate {
 	return ru
 }
 
+// SetOwnerID sets the "owner_id" field.
+func (ru *RepoUpdate) SetOwnerID(i int64) *RepoUpdate {
+	ru.mutation.SetOwnerID(i)
+	return ru
+}
+
+// SetNillableOwnerID sets the "owner_id" field if the given value is not nil.
+func (ru *RepoUpdate) SetNillableOwnerID(i *int64) *RepoUpdate {
+	if i != nil {
+		ru.SetOwnerID(*i)
+	}
+	return ru
+}
+
+// ClearOwnerID clears the value of the "owner_id" field.
+func (ru *RepoUpdate) ClearOwnerID() *RepoUpdate {
+	ru.mutation.ClearOwnerID()
+	return ru
+}
+
 // AddPermIDs adds the "perms" edge to the Perm entity by IDs.
 func (ru *RepoUpdate) AddPermIDs(ids ...int) *RepoUpdate {
 	ru.mutation.AddPermIDs(ids...)
@@ -218,6 +239,11 @@ func (ru *RepoUpdate) AddDeploymentStatistics(d ...*DeploymentStatistics) *RepoU
 		ids[i] = d[i].ID
 	}
 	return ru.AddDeploymentStatisticIDs(ids...)
+}
+
+// SetOwner sets the "owner" edge to the User entity.
+func (ru *RepoUpdate) SetOwner(u *User) *RepoUpdate {
+	return ru.SetOwnerID(u.ID)
 }
 
 // Mutation returns the RepoMutation object of the builder.
@@ -328,6 +354,12 @@ func (ru *RepoUpdate) RemoveDeploymentStatistics(d ...*DeploymentStatistics) *Re
 		ids[i] = d[i].ID
 	}
 	return ru.RemoveDeploymentStatisticIDs(ids...)
+}
+
+// ClearOwner clears the "owner" edge to the User entity.
+func (ru *RepoUpdate) ClearOwner() *RepoUpdate {
+	ru.mutation.ClearOwner()
+	return ru
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -763,6 +795,41 @@ func (ru *RepoUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if ru.mutation.OwnerCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   repo.OwnerTable,
+			Columns: []string{repo.OwnerColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt64,
+					Column: user.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ru.mutation.OwnerIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   repo.OwnerTable,
+			Columns: []string{repo.OwnerColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt64,
+					Column: user.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, ru.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{repo.Label}
@@ -895,6 +962,26 @@ func (ruo *RepoUpdateOne) ClearLatestDeployedAt() *RepoUpdateOne {
 	return ruo
 }
 
+// SetOwnerID sets the "owner_id" field.
+func (ruo *RepoUpdateOne) SetOwnerID(i int64) *RepoUpdateOne {
+	ruo.mutation.SetOwnerID(i)
+	return ruo
+}
+
+// SetNillableOwnerID sets the "owner_id" field if the given value is not nil.
+func (ruo *RepoUpdateOne) SetNillableOwnerID(i *int64) *RepoUpdateOne {
+	if i != nil {
+		ruo.SetOwnerID(*i)
+	}
+	return ruo
+}
+
+// ClearOwnerID clears the value of the "owner_id" field.
+func (ruo *RepoUpdateOne) ClearOwnerID() *RepoUpdateOne {
+	ruo.mutation.ClearOwnerID()
+	return ruo
+}
+
 // AddPermIDs adds the "perms" edge to the Perm entity by IDs.
 func (ruo *RepoUpdateOne) AddPermIDs(ids ...int) *RepoUpdateOne {
 	ruo.mutation.AddPermIDs(ids...)
@@ -968,6 +1055,11 @@ func (ruo *RepoUpdateOne) AddDeploymentStatistics(d ...*DeploymentStatistics) *R
 		ids[i] = d[i].ID
 	}
 	return ruo.AddDeploymentStatisticIDs(ids...)
+}
+
+// SetOwner sets the "owner" edge to the User entity.
+func (ruo *RepoUpdateOne) SetOwner(u *User) *RepoUpdateOne {
+	return ruo.SetOwnerID(u.ID)
 }
 
 // Mutation returns the RepoMutation object of the builder.
@@ -1078,6 +1170,12 @@ func (ruo *RepoUpdateOne) RemoveDeploymentStatistics(d ...*DeploymentStatistics)
 		ids[i] = d[i].ID
 	}
 	return ruo.RemoveDeploymentStatisticIDs(ids...)
+}
+
+// ClearOwner clears the "owner" edge to the User entity.
+func (ruo *RepoUpdateOne) ClearOwner() *RepoUpdateOne {
+	ruo.mutation.ClearOwner()
+	return ruo
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -1529,6 +1627,41 @@ func (ruo *RepoUpdateOne) sqlSave(ctx context.Context) (_node *Repo, err error) 
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
 					Column: deploymentstatistics.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if ruo.mutation.OwnerCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   repo.OwnerTable,
+			Columns: []string{repo.OwnerColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt64,
+					Column: user.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ruo.mutation.OwnerIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   repo.OwnerTable,
+			Columns: []string{repo.OwnerColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt64,
+					Column: user.FieldID,
 				},
 			},
 		}

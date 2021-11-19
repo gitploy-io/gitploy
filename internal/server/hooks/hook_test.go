@@ -8,6 +8,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/AlekSi/pointer"
 	"github.com/gin-gonic/gin"
 	"github.com/golang/mock/gomock"
 	"github.com/google/go-github/v32/github"
@@ -15,6 +16,7 @@ import (
 	"github.com/gitploy-io/gitploy/ent"
 	"github.com/gitploy-io/gitploy/ent/deployment"
 	"github.com/gitploy-io/gitploy/internal/server/hooks/mock"
+	"github.com/gitploy-io/gitploy/vo"
 )
 
 func init() {
@@ -24,7 +26,7 @@ func init() {
 func TestHook_HandleHook(t *testing.T) {
 	t.Run("Listen the deployment event.", func(t *testing.T) {
 		e := &github.DeploymentStatusEvent{}
-		bytes, _ := ioutil.ReadFile("./testdata/github.hook.json")
+		bytes, _ := ioutil.ReadFile("./testdata/github.deployment_status.json")
 		if err := json.Unmarshal(bytes, &e); err != nil {
 			t.Fatalf("It has failed to unmarshal: %s", err)
 		}
@@ -83,7 +85,7 @@ func TestHook_HandleHook(t *testing.T) {
 		r.POST("/hooks", h.HandleHook)
 
 		// Build the Github webhook.
-		json, err := os.Open("./testdata/github.hook.json")
+		json, err := os.Open("./testdata/github.deployment_status.json")
 		if err != nil {
 			t.Errorf("It has failed to open the JSON file: %s", err)
 			t.FailNow()
@@ -98,6 +100,82 @@ func TestHook_HandleHook(t *testing.T) {
 		// Validate the result.
 		if w.Code != http.StatusCreated {
 			t.Errorf("w.Code = %d, wanted %d", w.Code, http.StatusCreated)
+			t.Logf("w.Body = %v", w.Body)
+			t.FailNow()
+		}
+	})
+
+	t.Run("Listen the push event.", func(t *testing.T) {
+		ctrl := gomock.NewController(t)
+		defer ctrl.Finish()
+
+		m := mock.NewMockInteractor(ctrl)
+
+		m.
+			EXPECT().
+			FindRepoByID(gomock.Any(), gomock.Any()).
+			Return(&ent.Repo{
+				Edges: ent.RepoEdges{
+					Owner: &ent.User{},
+				},
+			}, nil)
+
+		t.Log("Return the auto-deployment environment.")
+		m.
+			EXPECT().
+			GetConfig(gomock.Any(), gomock.AssignableToTypeOf(&ent.User{}), gomock.AssignableToTypeOf(&ent.Repo{})).
+			Return(&vo.Config{
+				Envs: []*vo.Env{
+					{
+						Name: "dev",
+					},
+					{
+						Name:         "production",
+						AutoDeployOn: pointer.ToString("refs/tags/.*"),
+					},
+				},
+			}, nil)
+
+		m.
+			EXPECT().
+			Deploy(
+				gomock.Any(),
+				gomock.AssignableToTypeOf(&ent.User{}),
+				gomock.AssignableToTypeOf(&ent.Repo{}),
+				gomock.Eq(&ent.Deployment{
+					Type: deployment.TypeTag,
+					Ref:  "simple-tag",
+					Env:  "production",
+				}),
+				gomock.AssignableToTypeOf(&vo.Env{}),
+			).
+			Return(&ent.Deployment{}, nil)
+
+		m.
+			EXPECT().
+			CreateEvent(gomock.Any(), gomock.AssignableToTypeOf(&ent.Event{})).
+			Return(&ent.Event{}, nil)
+
+		h := NewHooks(&ConfigHooks{}, m)
+		r := gin.New()
+		r.POST("/hooks", h.HandleHook)
+
+		// Build the Github webhook.
+		json, err := os.Open("./testdata/github.push.json")
+		if err != nil {
+			t.Errorf("It has failed to open the JSON file: %s", err)
+			t.FailNow()
+		}
+		req, _ := http.NewRequest("POST", "/hooks", json)
+		req.Header.Set(headerGithubDelivery, "72d3162e")
+		req.Header.Set(headerGtihubEvent, "push")
+
+		w := httptest.NewRecorder()
+		r.ServeHTTP(w, req)
+
+		// Validate the result.
+		if w.Code != http.StatusOK {
+			t.Errorf("w.Code = %d, wanted %d", w.Code, http.StatusOK)
 			t.Logf("w.Body = %v", w.Body)
 			t.FailNow()
 		}

@@ -107,12 +107,6 @@ func (r *Repo) CreateDeployment(c *gin.Context) {
 		return
 	}
 
-	if err := env.Eval(&vo.EvalValues{}); err != nil {
-		r.log.Check(gb.GetZapLogLevel(err), "Failed to evaluate variables in the configuration.").Write(zap.Error(err))
-		gb.ResponseWithError(c, err)
-		return
-	}
-
 	d, err := r.i.Deploy(ctx, u, re,
 		&ent.Deployment{
 			Type: deployment.Type(p.Type),
@@ -188,12 +182,6 @@ func (r *Repo) UpdateDeployment(c *gin.Context) {
 		return
 	}
 
-	if err := env.Eval(&vo.EvalValues{IsRollback: d.IsRollback}); err != nil {
-		r.log.Check(gb.GetZapLogLevel(err), "Failed to evaluate variables in the configuration.").Write(zap.Error(err))
-		gb.ResponseWithError(c, err)
-		return
-	}
-
 	if d, err = r.i.DeployToRemote(ctx, u, re, d, env); err != nil {
 		r.log.Check(gb.GetZapLogLevel(err), "It has failed to deploy to the remote.").Write(zap.Error(err))
 		gb.ResponseWithError(c, err)
@@ -255,12 +243,6 @@ func (r *Repo) RollbackDeployment(c *gin.Context) {
 			c,
 			e.NewErrorWithMessage(e.ErrorCodeConfigParseError, "The environment is not defiend in the configuration.", nil),
 		)
-		return
-	}
-
-	if err := env.Eval(&vo.EvalValues{IsRollback: true}); err != nil {
-		r.log.Check(gb.GetZapLogLevel(err), "Failed to evaluate variables in the configuration.").Write(zap.Error(err))
-		gb.ResponseWithError(c, err)
 		return
 	}
 

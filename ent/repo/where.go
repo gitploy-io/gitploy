@@ -156,6 +156,13 @@ func LatestDeployedAt(v time.Time) predicate.Repo {
 	})
 }
 
+// OwnerID applies equality check predicate on the "owner_id" field. It's identical to OwnerIDEQ.
+func OwnerID(v int64) predicate.Repo {
+	return predicate.Repo(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldOwnerID), v))
+	})
+}
+
 // NamespaceEQ applies the EQ predicate on the "namespace" field.
 func NamespaceEQ(v string) predicate.Repo {
 	return predicate.Repo(func(s *sql.Selector) {
@@ -946,6 +953,68 @@ func LatestDeployedAtNotNil() predicate.Repo {
 	})
 }
 
+// OwnerIDEQ applies the EQ predicate on the "owner_id" field.
+func OwnerIDEQ(v int64) predicate.Repo {
+	return predicate.Repo(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldOwnerID), v))
+	})
+}
+
+// OwnerIDNEQ applies the NEQ predicate on the "owner_id" field.
+func OwnerIDNEQ(v int64) predicate.Repo {
+	return predicate.Repo(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldOwnerID), v))
+	})
+}
+
+// OwnerIDIn applies the In predicate on the "owner_id" field.
+func OwnerIDIn(vs ...int64) predicate.Repo {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Repo(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldOwnerID), v...))
+	})
+}
+
+// OwnerIDNotIn applies the NotIn predicate on the "owner_id" field.
+func OwnerIDNotIn(vs ...int64) predicate.Repo {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Repo(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldOwnerID), v...))
+	})
+}
+
+// OwnerIDIsNil applies the IsNil predicate on the "owner_id" field.
+func OwnerIDIsNil() predicate.Repo {
+	return predicate.Repo(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldOwnerID)))
+	})
+}
+
+// OwnerIDNotNil applies the NotNil predicate on the "owner_id" field.
+func OwnerIDNotNil() predicate.Repo {
+	return predicate.Repo(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldOwnerID)))
+	})
+}
+
 // HasPerms applies the HasEdge predicate on the "perms" edge.
 func HasPerms() predicate.Repo {
 	return predicate.Repo(func(s *sql.Selector) {
@@ -1077,6 +1146,34 @@ func HasDeploymentStatisticsWith(preds ...predicate.DeploymentStatistics) predic
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(DeploymentStatisticsInverseTable, FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, DeploymentStatisticsTable, DeploymentStatisticsColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasOwner applies the HasEdge predicate on the "owner" edge.
+func HasOwner() predicate.Repo {
+	return predicate.Repo(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(OwnerTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, OwnerTable, OwnerColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasOwnerWith applies the HasEdge predicate on the "owner" edge with a given conditions (other predicates).
+func HasOwnerWith(preds ...predicate.User) predicate.Repo {
+	return predicate.Repo(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(OwnerInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, OwnerTable, OwnerColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

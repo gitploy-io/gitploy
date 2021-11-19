@@ -339,12 +339,21 @@ var (
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "latest_deployed_at", Type: field.TypeTime, Nullable: true},
+		{Name: "owner_id", Type: field.TypeInt64, Nullable: true},
 	}
 	// ReposTable holds the schema information for the "repos" table.
 	ReposTable = &schema.Table{
 		Name:       "repos",
 		Columns:    ReposColumns,
 		PrimaryKey: []*schema.Column{ReposColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "repos_users_repo",
+				Columns:    []*schema.Column{ReposColumns[10]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
 		Indexes: []*schema.Index{
 			{
 				Name:    "repo_namespace_name",
@@ -443,6 +452,7 @@ func init() {
 	NotificationRecordsTable.ForeignKeys[0].RefTable = EventsTable
 	PermsTable.ForeignKeys[0].RefTable = ReposTable
 	PermsTable.ForeignKeys[1].RefTable = UsersTable
+	ReposTable.ForeignKeys[0].RefTable = UsersTable
 	ReviewsTable.ForeignKeys[0].RefTable = DeploymentsTable
 	ReviewsTable.ForeignKeys[1].RefTable = UsersTable
 }

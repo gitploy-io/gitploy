@@ -29,6 +29,8 @@ const (
 	FieldUpdatedAt = "updated_at"
 	// FieldLatestDeployedAt holds the string denoting the latest_deployed_at field in the database.
 	FieldLatestDeployedAt = "latest_deployed_at"
+	// FieldOwnerID holds the string denoting the owner_id field in the database.
+	FieldOwnerID = "owner_id"
 	// EdgePerms holds the string denoting the perms edge name in mutations.
 	EdgePerms = "perms"
 	// EdgeDeployments holds the string denoting the deployments edge name in mutations.
@@ -39,6 +41,8 @@ const (
 	EdgeLocks = "locks"
 	// EdgeDeploymentStatistics holds the string denoting the deployment_statistics edge name in mutations.
 	EdgeDeploymentStatistics = "deployment_statistics"
+	// EdgeOwner holds the string denoting the owner edge name in mutations.
+	EdgeOwner = "owner"
 	// Table holds the table name of the repo in the database.
 	Table = "repos"
 	// PermsTable is the table that holds the perms relation/edge.
@@ -76,6 +80,13 @@ const (
 	DeploymentStatisticsInverseTable = "deployment_statistics"
 	// DeploymentStatisticsColumn is the table column denoting the deployment_statistics relation/edge.
 	DeploymentStatisticsColumn = "repo_id"
+	// OwnerTable is the table that holds the owner relation/edge.
+	OwnerTable = "repos"
+	// OwnerInverseTable is the table name for the User entity.
+	// It exists in this package in order to avoid circular dependency with the "user" package.
+	OwnerInverseTable = "users"
+	// OwnerColumn is the table column denoting the owner relation/edge.
+	OwnerColumn = "owner_id"
 )
 
 // Columns holds all SQL columns for repo fields.
@@ -90,6 +101,7 @@ var Columns = []string{
 	FieldCreatedAt,
 	FieldUpdatedAt,
 	FieldLatestDeployedAt,
+	FieldOwnerID,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).

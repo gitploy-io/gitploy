@@ -215,3 +215,35 @@ func TestStore_SyncRepo(t *testing.T) {
 		}
 	})
 }
+
+func TestStore_Activate(t *testing.T) {
+	t.Run("Update webhook ID and owner ID.", func(t *testing.T) {
+		client := enttest.Open(t, "sqlite3", "file:ent?mode=memory&cache=shared&_fk=1",
+			enttest.WithMigrateOptions(migrate.WithForeignKeys(false)),
+		)
+		defer client.Close()
+
+		ctx := context.Background()
+
+		r := client.Repo.
+			Create().
+			SetID(1).
+			SetNamespace("octocat").
+			SetName("Hello").
+			SetDescription("").
+			SaveX(ctx)
+
+		r.WebhookID = 1
+		r.OwnerID = 1
+
+		s := NewStore(client)
+		r, err := s.Activate(ctx, r)
+		if err != nil {
+			t.Fatalf("Activate returns an error: %s", err)
+		}
+
+		if !r.Active {
+			t.Fatalf("Activate failed: %v", r)
+		}
+	})
+}

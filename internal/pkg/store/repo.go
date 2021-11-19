@@ -47,6 +47,7 @@ func (s *Store) ListReposOfUser(ctx context.Context, u *ent.User, q, namespace, 
 				On(t.C(perm.FieldRepoID), s.C(repo.FieldID)).
 				Where(sql.EQ(t.C(perm.FieldUserID), u.ID))
 		}).
+		WithOwner().
 		Limit(perPage).
 		Offset(offset(page, perPage))
 
@@ -95,7 +96,13 @@ func (s *Store) ListReposOfUser(ctx context.Context, u *ent.User, q, namespace, 
 }
 
 func (s *Store) FindRepoByID(ctx context.Context, id int64) (*ent.Repo, error) {
-	r, err := s.c.Repo.Get(ctx, id)
+	r, err := s.c.Repo.
+		Query().
+		Where(
+			repo.IDEQ(id),
+		).
+		WithOwner().
+		Only(ctx)
 	if ent.IsNotFound(err) {
 		return nil, e.NewErrorWithMessage(e.ErrorCodeNotFound, "The repository is not found.", err)
 	} else if err != nil {
@@ -118,6 +125,7 @@ func (s *Store) FindRepoOfUserByID(ctx context.Context, u *ent.User, id int64) (
 		Where(
 			repo.IDEQ(id),
 		).
+		WithOwner().
 		Only(ctx)
 	if ent.IsNotFound(err) {
 		return nil, e.NewErrorWithMessage(e.ErrorCodeNotFound, "The repository is not found.", err)
@@ -144,6 +152,7 @@ func (s *Store) FindRepoOfUserByNamespaceName(ctx context.Context, u *ent.User, 
 				repo.NameEQ(name),
 			),
 		).
+		WithOwner().
 		Only(ctx)
 	if ent.IsNotFound(err) {
 		return nil, e.NewErrorWithMessage(e.ErrorCodeNotFound, "The repository is not found.", err)
@@ -196,6 +205,7 @@ func (s *Store) Activate(ctx context.Context, r *ent.Repo) (*ent.Repo, error) {
 		UpdateOne(r).
 		SetActive(true).
 		SetWebhookID(r.WebhookID).
+		SetOwnerID(r.OwnerID).
 		Save(ctx)
 	if ent.IsValidationError(err) {
 		return nil, e.NewErrorWithMessage(
@@ -214,6 +224,7 @@ func (s *Store) Deactivate(ctx context.Context, r *ent.Repo) (*ent.Repo, error) 
 		UpdateOne(r).
 		SetActive(false).
 		SetWebhookID(0).
+		SetOwnerID(0).
 		Save(ctx)
 	if ent.IsValidationError(err) {
 		return nil, e.NewErrorWithMessage(

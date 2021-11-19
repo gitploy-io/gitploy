@@ -1446,6 +1446,22 @@ func (c *RepoClient) QueryDeploymentStatistics(r *Repo) *DeploymentStatisticsQue
 	return query
 }
 
+// QueryOwner queries the owner edge of a Repo.
+func (c *RepoClient) QueryOwner(r *Repo) *UserQuery {
+	query := &UserQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := r.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(repo.Table, repo.FieldID, id),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, repo.OwnerTable, repo.OwnerColumn),
+		)
+		fromV = sqlgraph.Neighbors(r.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *RepoClient) Hooks() []Hook {
 	return c.hooks.Repo
@@ -1747,6 +1763,22 @@ func (c *UserClient) QueryLocks(u *User) *LockQuery {
 			sqlgraph.From(user.Table, user.FieldID, id),
 			sqlgraph.To(lock.Table, lock.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, user.LocksTable, user.LocksColumn),
+		)
+		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryRepo queries the repo edge of a User.
+func (c *UserClient) QueryRepo(u *User) *RepoQuery {
+	query := &RepoQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := u.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, id),
+			sqlgraph.To(repo.Table, repo.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.RepoTable, user.RepoColumn),
 		)
 		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
 		return fromV, nil

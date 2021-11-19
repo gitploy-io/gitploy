@@ -9,6 +9,7 @@ import (
 	reflect "reflect"
 
 	ent "github.com/gitploy-io/gitploy/ent"
+	vo "github.com/gitploy-io/gitploy/vo"
 	gomock "github.com/golang/mock/gomock"
 )
 
@@ -50,6 +51,21 @@ func (mr *MockInteractorMockRecorder) CreateEvent(ctx, e interface{}) *gomock.Ca
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateEvent", reflect.TypeOf((*MockInteractor)(nil).CreateEvent), ctx, e)
 }
 
+// Deploy mocks base method.
+func (m *MockInteractor) Deploy(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, env *vo.Env) (*ent.Deployment, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Deploy", ctx, u, r, d, env)
+	ret0, _ := ret[0].(*ent.Deployment)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Deploy indicates an expected call of Deploy.
+func (mr *MockInteractorMockRecorder) Deploy(ctx, u, r, d, env interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Deploy", reflect.TypeOf((*MockInteractor)(nil).Deploy), ctx, u, r, d, env)
+}
+
 // FindDeploymentByUID mocks base method.
 func (m *MockInteractor) FindDeploymentByUID(ctx context.Context, uid int64) (*ent.Deployment, error) {
 	m.ctrl.T.Helper()
@@ -63,6 +79,36 @@ func (m *MockInteractor) FindDeploymentByUID(ctx context.Context, uid int64) (*e
 func (mr *MockInteractorMockRecorder) FindDeploymentByUID(ctx, uid interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindDeploymentByUID", reflect.TypeOf((*MockInteractor)(nil).FindDeploymentByUID), ctx, uid)
+}
+
+// FindRepoByID mocks base method.
+func (m *MockInteractor) FindRepoByID(ctx context.Context, id int64) (*ent.Repo, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindRepoByID", ctx, id)
+	ret0, _ := ret[0].(*ent.Repo)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindRepoByID indicates an expected call of FindRepoByID.
+func (mr *MockInteractorMockRecorder) FindRepoByID(ctx, id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindRepoByID", reflect.TypeOf((*MockInteractor)(nil).FindRepoByID), ctx, id)
+}
+
+// GetConfig mocks base method.
+func (m *MockInteractor) GetConfig(ctx context.Context, u *ent.User, r *ent.Repo) (*vo.Config, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetConfig", ctx, u, r)
+	ret0, _ := ret[0].(*vo.Config)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetConfig indicates an expected call of GetConfig.
+func (mr *MockInteractorMockRecorder) GetConfig(ctx, u, r interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetConfig", reflect.TypeOf((*MockInteractor)(nil).GetConfig), ctx, u, r)
 }
 
 // ProduceDeploymentStatisticsOfRepo mocks base method.

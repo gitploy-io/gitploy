@@ -39,6 +39,8 @@ const (
 	EdgeReviews = "reviews"
 	// EdgeLocks holds the string denoting the locks edge name in mutations.
 	EdgeLocks = "locks"
+	// EdgeRepo holds the string denoting the repo edge name in mutations.
+	EdgeRepo = "repo"
 	// Table holds the table name of the user in the database.
 	Table = "users"
 	// ChatUserTable is the table that holds the chat_user relation/edge.
@@ -76,6 +78,13 @@ const (
 	LocksInverseTable = "locks"
 	// LocksColumn is the table column denoting the locks relation/edge.
 	LocksColumn = "user_id"
+	// RepoTable is the table that holds the repo relation/edge.
+	RepoTable = "repos"
+	// RepoInverseTable is the table name for the Repo entity.
+	// It exists in this package in order to avoid circular dependency with the "repo" package.
+	RepoInverseTable = "repos"
+	// RepoColumn is the table column denoting the repo relation/edge.
+	RepoColumn = "owner_id"
 )
 
 // Columns holds all SQL columns for user fields.

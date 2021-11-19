@@ -9,6 +9,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/gitploy-io/gitploy/ent/repo"
+	"github.com/gitploy-io/gitploy/ent/user"
 )
 
 // Repo is the model entity for the Repo schema.
@@ -34,6 +35,8 @@ type Repo struct {
 	UpdatedAt time.Time `json:"updated_at"`
 	// LatestDeployedAt holds the value of the "latest_deployed_at" field.
 	LatestDeployedAt time.Time `json:"latest_deployed_at,omitemtpy"`
+	// OwnerID holds the value of the "owner_id" field.
+	OwnerID int64 `json:"owner_id,omitemtpy"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the RepoQuery when eager-loading is set.
 	Edges RepoEdges `json:"edges"`
@@ -51,9 +54,11 @@ type RepoEdges struct {
 	Locks []*Lock `json:"locks,omitempty"`
 	// DeploymentStatistics holds the value of the deployment_statistics edge.
 	DeploymentStatistics []*DeploymentStatistics `json:"deployment_statistics,omitempty"`
+	// Owner holds the value of the owner edge.
+	Owner *User `json:"owner,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [5]bool
+	loadedTypes [6]bool
 }
 
 // PermsOrErr returns the Perms value or an error if the edge
@@ -101,6 +106,20 @@ func (e RepoEdges) DeploymentStatisticsOrErr() ([]*DeploymentStatistics, error) 
 	return nil, &NotLoadedError{edge: "deployment_statistics"}
 }
 
+// OwnerOrErr returns the Owner value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e RepoEdges) OwnerOrErr() (*User, error) {
+	if e.loadedTypes[5] {
+		if e.Owner == nil {
+			// The edge owner was loaded in eager-loading,
+			// but was not found.
+			return nil, &NotFoundError{label: user.Label}
+		}
+		return e.Owner, nil
+	}
+	return nil, &NotLoadedError{edge: "owner"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*Repo) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
@@ -108,7 +127,7 @@ func (*Repo) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case repo.FieldActive:
 			values[i] = new(sql.NullBool)
-		case repo.FieldID, repo.FieldWebhookID:
+		case repo.FieldID, repo.FieldWebhookID, repo.FieldOwnerID:
 			values[i] = new(sql.NullInt64)
 		case repo.FieldNamespace, repo.FieldName, repo.FieldDescription, repo.FieldConfigPath:
 			values[i] = new(sql.NullString)
@@ -189,6 +208,12 @@ func (r *Repo) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				r.LatestDeployedAt = value.Time
 			}
+		case repo.FieldOwnerID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field owner_id", values[i])
+			} else if value.Valid {
+				r.OwnerID = value.Int64
+			}
 		}
 	}
 	return nil
@@ -217,6 +242,11 @@ func (r *Repo) QueryLocks() *LockQuery {
 // QueryDeploymentStatistics queries the "deployment_statistics" edge of the Repo entity.
 func (r *Repo) QueryDeploymentStatistics() *DeploymentStatisticsQuery {
 	return (&RepoClient{config: r.config}).QueryDeploymentStatistics(r)
+}
+
+// QueryOwner queries the "owner" edge of the Repo entity.
+func (r *Repo) QueryOwner() *UserQuery {
+	return (&RepoClient{config: r.config}).QueryOwner(r)
 }
 
 // Update returns a builder for updating this Repo.
@@ -260,6 +290,8 @@ func (r *Repo) String() string {
 	builder.WriteString(r.UpdatedAt.Format(time.ANSIC))
 	builder.WriteString(", latest_deployed_at=")
 	builder.WriteString(r.LatestDeployedAt.Format(time.ANSIC))
+	builder.WriteString(", owner_id=")
+	builder.WriteString(fmt.Sprintf("%v", r.OwnerID))
 	builder.WriteByte(')')
 	return builder.String()
 }
