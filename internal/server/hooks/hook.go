@@ -221,15 +221,10 @@ func (h *Hooks) handleGithubPushEvent(c *gin.Context) {
 	}
 
 	c.Status(http.StatusOK)
-	return
 }
 
 func isFromGithub(c *gin.Context) bool {
 	return c.GetHeader(headerGithubDelivery) != ""
-}
-
-func isGithubDeploymentStatusEvent(c *gin.Context) bool {
-	return c.GetHeader(headerGtihubEvent) == "deployment_status"
 }
 
 func mapGithubDeploymentStatus(e *github.DeploymentStatusEvent) *ent.DeploymentStatus {
@@ -278,11 +273,11 @@ func parseGithubRef(ref string) (deployment.Type, string, error) {
 	)
 
 	if strings.HasPrefix(ref, prefixBranchRef) {
-		return deployment.TypeBranch, strings.TrimLeft(ref, prefixBranchRef), nil
+		return deployment.TypeBranch, strings.TrimPrefix(ref, prefixBranchRef), nil
 	}
 
 	if strings.HasPrefix(ref, prefixTagRef) {
-		return deployment.TypeTag, strings.TrimLeft(ref, prefixTagRef), nil
+		return deployment.TypeTag, strings.TrimPrefix(ref, prefixTagRef), nil
 	}
 
 	return "", "", e.NewErrorWithMessage(e.ErrorCodeInternalError, "The ref must be one of branch or tag.", nil)
