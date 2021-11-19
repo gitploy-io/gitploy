@@ -287,12 +287,6 @@ func (s *Slack) interactDeploy(c *gin.Context) {
 		return
 	}
 
-	if err := env.Eval(&vo.EvalValues{}); err != nil {
-		postBotMessage(cu, "It has failed to eval variables in the config.")
-		c.Status(http.StatusOK)
-		return
-	}
-
 	d, err := s.i.Deploy(ctx, cu.Edges.User, cb.Edges.Repo,
 		&ent.Deployment{
 			Type: deployment.Type(sm.Type),

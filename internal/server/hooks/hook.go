@@ -285,5 +285,5 @@ func parseGithubRef(ref string) (deployment.Type, string, error) {
 		return deployment.TypeTag, strings.TrimLeft(ref, prefixTagRef), nil
 	}
 
-	return "", "", e.NewErrorWithMessage(e.ErrorCodeInternalError, "The ref is out of candidates.", nil)
+	return "", "", e.NewErrorWithMessage(e.ErrorCodeInternalError, "The ref must be one of branch or tag.", nil)
 }

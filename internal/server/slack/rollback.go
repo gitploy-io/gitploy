@@ -226,12 +226,6 @@ func (s *Slack) interactRollback(c *gin.Context) {
 		return
 	}
 
-	if err := env.Eval(&vo.EvalValues{IsRollback: true}); err != nil {
-		postBotMessage(cu, "It has failed to eval variables in the config.")
-		c.Status(http.StatusOK)
-		return
-	}
-
 	d, err = s.i.Deploy(ctx, cu.Edges.User, cb.Edges.Repo, &ent.Deployment{
 		Type:       deployment.Type(d.Type),
 		Ref:        d.Ref,
