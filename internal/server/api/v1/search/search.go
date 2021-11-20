@@ -65,7 +65,7 @@ func (s *Search) SearchDeployments(c *gin.Context) {
 	if o, err = strconv.ParseBool(owned); err != nil {
 		gb.ResponseWithError(
 			c,
-			e.NewErrorWithMessage(e.ErrorCodeInvalidRequest, "The owned must be boolean.", err),
+			e.NewErrorWithMessage(e.ErrorCodeParameterInvalid, "The owned must be boolean.", err),
 		)
 		return
 	}
@@ -73,7 +73,7 @@ func (s *Search) SearchDeployments(c *gin.Context) {
 	if f, err = time.Parse(time.RFC3339, from); err != nil {
 		gb.ResponseWithError(
 			c,
-			e.NewErrorWithMessage(e.ErrorCodeInvalidRequest, "Invalid format of \"from\" parameter, RFC3339 format only.", err),
+			e.NewErrorWithMessage(e.ErrorCodeParameterInvalid, "Invalid format of \"from\" parameter, RFC3339 format only.", err),
 		)
 		return
 	}
@@ -81,7 +81,7 @@ func (s *Search) SearchDeployments(c *gin.Context) {
 	if t, err = time.Parse(time.RFC3339, to); err != nil {
 		gb.ResponseWithError(
 			c,
-			e.NewErrorWithMessage(e.ErrorCodeInvalidRequest, "Invalid format of \"to\" parameter, RFC3339 format only.", err),
+			e.NewErrorWithMessage(e.ErrorCodeParameterInvalid, "Invalid format of \"to\" parameter, RFC3339 format only.", err),
 		)
 		return
 	}
@@ -89,7 +89,7 @@ func (s *Search) SearchDeployments(c *gin.Context) {
 	if p, err = strconv.Atoi(page); err != nil {
 		gb.ResponseWithError(
 			c,
-			e.NewErrorWithMessage(e.ErrorCodeInvalidRequest, "Invalid format of \"page\" parameter.", err),
+			e.NewErrorWithMessage(e.ErrorCodeParameterInvalid, "Invalid format of \"page\" parameter.", err),
 		)
 		return
 	}
@@ -97,7 +97,7 @@ func (s *Search) SearchDeployments(c *gin.Context) {
 	if pp, err = strconv.Atoi(perPage); err != nil {
 		gb.ResponseWithError(
 			c,
-			e.NewErrorWithMessage(e.ErrorCodeInvalidRequest, "Invalid format of \"per_page\" parameter.", err),
+			e.NewErrorWithMessage(e.ErrorCodeParameterInvalid, "Invalid format of \"per_page\" parameter.", err),
 		)
 		return
 	}

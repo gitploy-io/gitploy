@@ -146,7 +146,7 @@ func (s *Store) FindDeploymentByID(ctx context.Context, id int) (*ent.Deployment
 		WithDeploymentStatuses().
 		Only(ctx)
 	if ent.IsNotFound(err) {
-		return nil, e.NewErrorWithMessage(e.ErrorCodeNotFound, "The deployment is not found.", err)
+		return nil, e.NewErrorWithMessage(e.ErrorCodeEntityNotFound, "The deployment is not found.", err)
 	} else if err != nil {
 		return nil, e.NewError(e.ErrorCodeInternalError, err)
 	}
@@ -168,7 +168,7 @@ func (s *Store) FindDeploymentOfRepoByNumber(ctx context.Context, r *ent.Repo, n
 		WithDeploymentStatuses().
 		Only(ctx)
 	if ent.IsNotFound(err) {
-		return nil, e.NewErrorWithMessage(e.ErrorCodeNotFound, "The deployment is not found.", err)
+		return nil, e.NewErrorWithMessage(e.ErrorCodeEntityNotFound, "The deployment is not found.", err)
 	} else if err != nil {
 		return nil, e.NewError(e.ErrorCodeInternalError, err)
 	}
@@ -187,7 +187,7 @@ func (s *Store) FindDeploymentByUID(ctx context.Context, uid int64) (*ent.Deploy
 		WithDeploymentStatuses().
 		Only(ctx)
 	if ent.IsNotFound(err) {
-		return nil, e.NewErrorWithMessage(e.ErrorCodeNotFound, "The deployment is not found.", err)
+		return nil, e.NewErrorWithMessage(e.ErrorCodeEntityNotFound, "The deployment is not found.", err)
 	} else if err != nil {
 		return nil, e.NewError(e.ErrorCodeInternalError, err)
 	}
@@ -222,7 +222,7 @@ func (s *Store) FindPrevSuccessDeployment(ctx context.Context, d *ent.Deployment
 		Order(ent.Desc(deployment.FieldCreatedAt)).
 		First(ctx)
 	if ent.IsNotFound(err) {
-		return nil, e.NewErrorWithMessage(e.ErrorCodeNotFound, "The deployment is not found.", err)
+		return nil, e.NewErrorWithMessage(e.ErrorCodeEntityNotFound, "The deployment is not found.", err)
 	} else if err != nil {
 		return nil, e.NewError(e.ErrorCodeInternalError, err)
 	}
@@ -252,7 +252,7 @@ func (s *Store) CreateDeployment(ctx context.Context, d *ent.Deployment) (*ent.D
 		return nil, e.NewError(e.ErrorCodeDeploymentConflict, err)
 	} else if ent.IsValidationError(err) {
 		return nil, e.NewErrorWithMessage(
-			e.ErrorCodeUnprocessableEntity,
+			e.ErrorCodeEntityUnprocessable,
 			fmt.Sprintf("Failed to create a deployment. The value of \"%s\" field is invalid.", err.(*ent.ValidationError).Name),
 			err)
 	} else if err != nil {
@@ -281,7 +281,7 @@ func (s *Store) UpdateDeployment(ctx context.Context, d *ent.Deployment) (*ent.D
 		Save(ctx)
 	if ent.IsValidationError(err) {
 		return nil, e.NewErrorWithMessage(
-			e.ErrorCodeUnprocessableEntity,
+			e.ErrorCodeEntityUnprocessable,
 			fmt.Sprintf("Failed to update a deployment. The value of \"%s\" field is invalid.", err.(*ent.ValidationError).Name),
 			err)
 	} else if err != nil {

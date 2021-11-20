@@ -183,7 +183,7 @@ func (i *Interactor) isDeployable(ctx context.Context, u *ent.User, r *ent.Repo,
 	if ok, err := env.IsDeployableRef(d.Ref); err != nil {
 		return false, err
 	} else if !ok {
-		return false, e.NewErrorWithMessage(e.ErrorCodeUnprocessableEntity, "The ref is not matched with 'deployable_ref'.", nil)
+		return false, e.NewErrorWithMessage(e.ErrorCodeEntityUnprocessable, "The ref is not matched with 'deployable_ref'.", nil)
 	}
 
 	// Check that the environment is locked.

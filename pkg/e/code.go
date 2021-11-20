@@ -21,20 +21,25 @@ const (
 	ErrorCodeDeploymentNotApproved ErrorCode = "deployment_not_approved"
 	// ErrorCodeDeploymentStatusNotWaiting is the status must be 'waiting' to create a remote deployment.
 	ErrorCodeDeploymentStatusInvalid ErrorCode = "deployment_status_invalid"
-	// ErrorCodeDeploymentUndeployable is that the merge conflict occurs or a commit status has failed.
-	ErrorCodeDeploymentUndeployable ErrorCode = "deployment_undeployable"
 
 	// ErrorCodeLicenseDecode is the error when the license is decoded.
 	ErrorCodeLicenseDecode ErrorCode = "license_decode"
 	// ErrorCodeLicenseRequired is that the license is required.
 	ErrorCodeLicenseRequired ErrorCode = "license_required"
 
-	// General purpose error codes.
-	ErrorCodeInvalidRequest      ErrorCode = "invalid_request"
-	ErrorPermissionRequired      ErrorCode = "permission_required"
-	ErrorCodeNotFound            ErrorCode = "not_found"
-	ErrorCodeUnprocessableEntity ErrorCode = "unprocessable_entity"
-	ErrorCodeInternalError       ErrorCode = "internal_error"
+	// ErrorCodeEntityNotFound is the entity is not found.
+	ErrorCodeEntityNotFound ErrorCode = "entity_not_found"
+	// ErrorCodeEntityUnprocessable is the entity is unprocessable.
+	ErrorCodeEntityUnprocessable ErrorCode = "entity_unprocessable"
+
+	// ErrorCodeParameterInvalid is a parameter of a request is invalid.
+	ErrorCodeParameterInvalid ErrorCode = "parameter_invalid"
+
+	// ErrorPermissionRequired is the permission is required to access.
+	ErrorPermissionRequired ErrorCode = "permission_required"
+
+	// ErrorCodeInternalError is the internal error couldn't be handled.
+	ErrorCodeInternalError ErrorCode = "internal_error"
 )
 
 type (

@@ -10,13 +10,12 @@ var messages = map[ErrorCode]string{
 	ErrorCodeDeploymentLocked:        "The environment is locked.",
 	ErrorCodeDeploymentNotApproved:   "The deployment is not approved",
 	ErrorCodeDeploymentStatusInvalid: "The deployment status is invalid",
-	ErrorCodeDeploymentUndeployable:  "There is merge conflict or a commit status check failed.",
 	ErrorCodeLicenseDecode:           "Decoding the license is failed.",
 	ErrorCodeLicenseRequired:         "The license is required.",
-	ErrorCodeInvalidRequest:          "Invalid request parameter.",
+	ErrorCodeEntityNotFound:          "It is not found.",
+	ErrorCodeEntityUnprocessable:     "Invalid request payload.",
+	ErrorCodeParameterInvalid:        "Invalid request parameter.",
 	ErrorPermissionRequired:          "The permission is required",
-	ErrorCodeNotFound:                "It is not found.",
-	ErrorCodeUnprocessableEntity:     "Invalid request payload.",
 	ErrorCodeInternalError:           "Server internal error.",
 }
 
@@ -37,13 +36,12 @@ var httpCodes = map[ErrorCode]int{
 	ErrorCodeDeploymentLocked:        http.StatusUnprocessableEntity,
 	ErrorCodeDeploymentNotApproved:   http.StatusUnprocessableEntity,
 	ErrorCodeDeploymentStatusInvalid: http.StatusUnprocessableEntity,
-	ErrorCodeDeploymentUndeployable:  http.StatusUnprocessableEntity,
 	ErrorCodeLicenseDecode:           http.StatusUnprocessableEntity,
 	ErrorCodeLicenseRequired:         http.StatusPaymentRequired,
-	ErrorCodeInvalidRequest:          http.StatusBadRequest,
-	ErrorCodeNotFound:                http.StatusNotFound,
+	ErrorCodeEntityNotFound:          http.StatusNotFound,
+	ErrorCodeEntityUnprocessable:     http.StatusUnprocessableEntity,
+	ErrorCodeParameterInvalid:        http.StatusBadRequest,
 	ErrorPermissionRequired:          http.StatusForbidden,
-	ErrorCodeUnprocessableEntity:     http.StatusUnprocessableEntity,
 	ErrorCodeInternalError:           http.StatusInternalServerError,
 }
 

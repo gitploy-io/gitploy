@@ -104,7 +104,7 @@ func (s *Store) FindRepoByID(ctx context.Context, id int64) (*ent.Repo, error) {
 		WithOwner().
 		Only(ctx)
 	if ent.IsNotFound(err) {
-		return nil, e.NewErrorWithMessage(e.ErrorCodeNotFound, "The repository is not found.", err)
+		return nil, e.NewErrorWithMessage(e.ErrorCodeEntityNotFound, "The repository is not found.", err)
 	} else if err != nil {
 		return nil, e.NewError(e.ErrorCodeInternalError, err)
 	}
@@ -128,7 +128,7 @@ func (s *Store) FindRepoOfUserByID(ctx context.Context, u *ent.User, id int64) (
 		WithOwner().
 		Only(ctx)
 	if ent.IsNotFound(err) {
-		return nil, e.NewErrorWithMessage(e.ErrorCodeNotFound, "The repository is not found.", err)
+		return nil, e.NewErrorWithMessage(e.ErrorCodeEntityNotFound, "The repository is not found.", err)
 	} else if err != nil {
 		return nil, e.NewError(e.ErrorCodeInternalError, err)
 	}
@@ -155,7 +155,7 @@ func (s *Store) FindRepoOfUserByNamespaceName(ctx context.Context, u *ent.User, 
 		WithOwner().
 		Only(ctx)
 	if ent.IsNotFound(err) {
-		return nil, e.NewErrorWithMessage(e.ErrorCodeNotFound, "The repository is not found.", err)
+		return nil, e.NewErrorWithMessage(e.ErrorCodeEntityNotFound, "The repository is not found.", err)
 	} else if err != nil {
 		return nil, e.NewError(e.ErrorCodeInternalError, err)
 	}
@@ -173,7 +173,7 @@ func (s *Store) SyncRepo(ctx context.Context, r *vo.RemoteRepo) (*ent.Repo, erro
 		Save(ctx)
 	if ent.IsValidationError(err) {
 		return nil, e.NewErrorWithMessage(
-			e.ErrorCodeUnprocessableEntity,
+			e.ErrorCodeEntityUnprocessable,
 			fmt.Sprintf("The value of \"%s\" field is invalid.", err.(*ent.ValidationError).Name),
 			err)
 	} else if err != nil {
@@ -190,7 +190,7 @@ func (s *Store) UpdateRepo(ctx context.Context, r *ent.Repo) (*ent.Repo, error) 
 		Save(ctx)
 	if ent.IsValidationError(err) {
 		return nil, e.NewErrorWithMessage(
-			e.ErrorCodeUnprocessableEntity,
+			e.ErrorCodeEntityUnprocessable,
 			fmt.Sprintf("The value of \"%s\" field is invalid.", err.(*ent.ValidationError).Name),
 			err)
 	} else if err != nil {
@@ -209,7 +209,7 @@ func (s *Store) Activate(ctx context.Context, r *ent.Repo) (*ent.Repo, error) {
 		Save(ctx)
 	if ent.IsValidationError(err) {
 		return nil, e.NewErrorWithMessage(
-			e.ErrorCodeUnprocessableEntity,
+			e.ErrorCodeEntityUnprocessable,
 			fmt.Sprintf("The value of \"%s\" field is invalid.", err.(*ent.ValidationError).Name),
 			err)
 	} else if err != nil {
@@ -228,7 +228,7 @@ func (s *Store) Deactivate(ctx context.Context, r *ent.Repo) (*ent.Repo, error) 
 		Save(ctx)
 	if ent.IsValidationError(err) {
 		return nil, e.NewErrorWithMessage(
-			e.ErrorCodeUnprocessableEntity,
+			e.ErrorCodeEntityUnprocessable,
 			fmt.Sprintf("The value of \"%s\" field is invalid.", err.(*ent.ValidationError).Name),
 			err)
 	} else if err != nil {

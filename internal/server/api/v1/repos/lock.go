@@ -57,7 +57,7 @@ func (r *Repo) CreateLock(c *gin.Context) {
 		r.log.Error("It has failed to bind the payload.", zap.Error(err))
 		gb.ResponseWithError(
 			c,
-			e.NewErrorWithMessage(e.ErrorCodeInvalidRequest, "It has failed to bind the payload.", err),
+			e.NewErrorWithMessage(e.ErrorCodeParameterInvalid, "It has failed to bind the payload.", err),
 		)
 		return
 	}
@@ -70,7 +70,7 @@ func (r *Repo) CreateLock(c *gin.Context) {
 		if err != nil {
 			gb.ResponseWithError(
 				c,
-				e.NewErrorWithMessage(e.ErrorCodeInvalidRequest, "Invalid format of \"expired_at\" parameter, RFC3339 format only.", err),
+				e.NewErrorWithMessage(e.ErrorCodeParameterInvalid, "Invalid format of \"expired_at\" parameter, RFC3339 format only.", err),
 			)
 			return
 		}
@@ -85,7 +85,7 @@ func (r *Repo) CreateLock(c *gin.Context) {
 	u := vu.(*ent.User)
 
 	cfg, err := r.i.GetConfig(ctx, u, re)
-	if e.HasErrorCode(err, e.ErrorCodeNotFound) {
+	if e.HasErrorCode(err, e.ErrorCodeEntityNotFound) {
 		r.log.Check(gb.GetZapLogLevel(err), "The configuration file is not found.").Write(zap.Error(err))
 		// To override the HTTP status 422.
 		gb.ResponseWithStatusAndError(c, http.StatusUnprocessableEntity, err)
@@ -110,7 +110,7 @@ func (r *Repo) CreateLock(c *gin.Context) {
 		r.log.Warn("The lock already exist.", zap.String("env", p.Env))
 		gb.ResponseWithError(
 			c,
-			e.NewErrorWithMessage(e.ErrorCodeUnprocessableEntity, "The lock already exist.", err),
+			e.NewErrorWithMessage(e.ErrorCodeEntityUnprocessable, "The lock already exist.", err),
 		)
 		return
 	} else if err != nil {
@@ -151,7 +151,7 @@ func (r *Repo) UpdateLock(c *gin.Context) {
 	if id, err = strconv.Atoi(c.Param("lockID")); err != nil {
 		gb.ResponseWithError(
 			c,
-			e.NewErrorWithMessage(e.ErrorCodeInvalidRequest, "The ID must be number.", nil),
+			e.NewErrorWithMessage(e.ErrorCodeParameterInvalid, "The ID must be number.", nil),
 		)
 		return
 	}
@@ -160,7 +160,7 @@ func (r *Repo) UpdateLock(c *gin.Context) {
 	if err := c.ShouldBindBodyWith(p, binding.JSON); err != nil {
 		gb.ResponseWithError(
 			c,
-			e.NewErrorWithMessage(e.ErrorCodeInvalidRequest, "It has failed to bind the payload.", nil),
+			e.NewErrorWithMessage(e.ErrorCodeParameterInvalid, "It has failed to bind the payload.", nil),
 		)
 		return
 	}
@@ -171,7 +171,7 @@ func (r *Repo) UpdateLock(c *gin.Context) {
 		if err != nil {
 			gb.ResponseWithError(
 				c,
-				e.NewErrorWithMessage(e.ErrorCodeInvalidRequest, "Invalid format of \"expired_at\" parameter, RFC3339 format only.", err),
+				e.NewErrorWithMessage(e.ErrorCodeParameterInvalid, "Invalid format of \"expired_at\" parameter, RFC3339 format only.", err),
 			)
 			return
 		}
@@ -215,7 +215,7 @@ func (r *Repo) DeleteLock(c *gin.Context) {
 	if id, err = strconv.Atoi(c.Param("lockID")); err != nil {
 		gb.ResponseWithError(
 			c,
-			e.NewErrorWithMessage(e.ErrorCodeInvalidRequest, "The ID must be number.", nil),
+			e.NewErrorWithMessage(e.ErrorCodeParameterInvalid, "The ID must be number.", nil),
 		)
 		return
 	}

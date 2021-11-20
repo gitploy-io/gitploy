@@ -61,7 +61,7 @@ func (s *Store) FindReviewByID(ctx context.Context, id int) (*ent.Review, error)
 		WithDeployment().
 		Only(ctx)
 	if ent.IsNotFound(err) {
-		return nil, e.NewErrorWithMessage(e.ErrorCodeNotFound, "The review is not found.", err)
+		return nil, e.NewErrorWithMessage(e.ErrorCodeEntityNotFound, "The review is not found.", err)
 	} else if err != nil {
 		return nil, e.NewError(e.ErrorCodeInternalError, err)
 	}
@@ -80,7 +80,7 @@ func (s *Store) FindReviewOfUser(ctx context.Context, u *ent.User, d *ent.Deploy
 		WithDeployment().
 		Only(ctx)
 	if ent.IsNotFound(err) {
-		return nil, e.NewErrorWithMessage(e.ErrorCodeNotFound, "The review is not found.", err)
+		return nil, e.NewErrorWithMessage(e.ErrorCodeEntityNotFound, "The review is not found.", err)
 	} else if err != nil {
 		return nil, e.NewError(e.ErrorCodeInternalError, err)
 	}
@@ -97,7 +97,7 @@ func (s *Store) CreateReview(ctx context.Context, rv *ent.Review) (*ent.Review, 
 		Save(ctx)
 	if ent.IsValidationError(err) {
 		return nil, e.NewErrorWithMessage(
-			e.ErrorCodeUnprocessableEntity,
+			e.ErrorCodeEntityUnprocessable,
 			fmt.Sprintf("Failed to create a review. The value of \"%s\" field is invalid.", err.(*ent.ValidationError).Name),
 			err,
 		)
@@ -116,7 +116,7 @@ func (s *Store) UpdateReview(ctx context.Context, rv *ent.Review) (*ent.Review, 
 		Save(ctx)
 	if ent.IsValidationError(err) {
 		return nil, e.NewErrorWithMessage(
-			e.ErrorCodeUnprocessableEntity,
+			e.ErrorCodeEntityUnprocessable,
 			fmt.Sprintf("Failed to update the review. The value of \"%s\" field is invalid.", err.(*ent.ValidationError).Name),
 			err,
 		)

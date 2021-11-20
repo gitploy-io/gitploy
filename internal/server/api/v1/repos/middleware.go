@@ -49,7 +49,7 @@ func (rm *RepoMiddleware) RepoReadPerm() gin.HandlerFunc {
 		}
 
 		_, err = rm.i.FindPermOfRepo(ctx, r, u)
-		if e.HasErrorCode(err, e.ErrorCodeNotFound) {
+		if e.HasErrorCode(err, e.ErrorCodeEntityNotFound) {
 			rm.log.Check(gb.GetZapLogLevel(err), "It is denied to acess the repository.").Write(zap.Error(err))
 			gb.AbortWithStatusAndError(c, http.StatusForbidden, err)
 			return
@@ -83,7 +83,7 @@ func (rm *RepoMiddleware) RepoWritePerm() gin.HandlerFunc {
 		}
 
 		p, err := rm.i.FindPermOfRepo(ctx, r, u)
-		if e.HasErrorCode(err, e.ErrorCodeNotFound) {
+		if e.HasErrorCode(err, e.ErrorCodeEntityNotFound) {
 			rm.log.Check(gb.GetZapLogLevel(err), "It is denied to acess the repository.").Write(zap.Error(err))
 			gb.AbortWithStatusAndError(c, http.StatusForbidden, err)
 			return
@@ -127,7 +127,7 @@ func (rm *RepoMiddleware) RepoAdminPerm() gin.HandlerFunc {
 		}
 
 		p, err := rm.i.FindPermOfRepo(ctx, r, u)
-		if e.HasErrorCode(err, e.ErrorCodeNotFound) {
+		if e.HasErrorCode(err, e.ErrorCodeEntityNotFound) {
 			rm.log.Check(gb.GetZapLogLevel(err), "It is denied to acess the repository.").Write(zap.Error(err))
 			gb.AbortWithStatusAndError(c, http.StatusForbidden, err)
 			return

@@ -45,7 +45,7 @@ func (s *Store) FindUserByID(ctx context.Context, id int64) (*ent.User, error) {
 		WithChatUser().
 		First(ctx)
 	if ent.IsNotFound(err) {
-		return nil, e.NewErrorWithMessage(e.ErrorCodeNotFound, "The user is not found.", err)
+		return nil, e.NewErrorWithMessage(e.ErrorCodeEntityNotFound, "The user is not found.", err)
 	} else if err != nil {
 		return nil, e.NewError(e.ErrorCodeInternalError, err)
 	}
@@ -62,7 +62,7 @@ func (s *Store) FindUserByHash(ctx context.Context, hash string) (*ent.User, err
 		WithChatUser().
 		Only(ctx)
 	if ent.IsNotFound(err) {
-		return nil, e.NewErrorWithMessage(e.ErrorCodeNotFound, "The user is not found.", err)
+		return nil, e.NewErrorWithMessage(e.ErrorCodeEntityNotFound, "The user is not found.", err)
 	} else if err != nil {
 		return nil, e.NewError(e.ErrorCodeInternalError, err)
 	}
@@ -79,7 +79,7 @@ func (s *Store) FindUserByLogin(ctx context.Context, login string) (*ent.User, e
 		WithChatUser().
 		Only(ctx)
 	if ent.IsNotFound(err) {
-		return nil, e.NewErrorWithMessage(e.ErrorCodeNotFound, "The user is not found.", err)
+		return nil, e.NewErrorWithMessage(e.ErrorCodeEntityNotFound, "The user is not found.", err)
 	} else if err != nil {
 		return nil, e.NewError(e.ErrorCodeInternalError, err)
 	}
