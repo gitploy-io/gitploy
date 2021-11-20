@@ -27,7 +27,7 @@ func (g *Github) CreateRemoteDeployment(ctx context.Context, u *ent.User, r *ent
 		})
 	if res.StatusCode == http.StatusConflict {
 		return nil, e.NewErrorWithMessage(
-			e.ErrorCodeUnprocessableEntity,
+			e.ErrorCodeEntityUnprocessable,
 			"There is merge conflict or a commit status check failed.",
 			err,
 		)
@@ -77,7 +77,7 @@ func (g *Github) GetConfig(ctx context.Context, u *ent.User, r *ent.Repo) (*vo.C
 		GetContents(ctx, r.Namespace, r.Name, r.ConfigPath, &github.RepositoryContentGetOptions{})
 	if res.StatusCode == http.StatusNotFound {
 		return nil, e.NewErrorWithMessage(
-			e.ErrorCodeNotFound,
+			e.ErrorCodeEntityNotFound,
 			"The configuration file is not found.",
 			err,
 		)

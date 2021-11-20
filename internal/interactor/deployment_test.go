@@ -78,7 +78,7 @@ func TestInteractor_Deploy(t *testing.T) {
 		i := newMockInteractor(store, scm)
 
 		_, err := i.Deploy(context.Background(), &ent.User{}, &ent.Repo{}, input.d, input.e)
-		if !e.HasErrorCode(err, e.ErrorCodeUnprocessableEntity) {
+		if !e.HasErrorCode(err, e.ErrorCodeEntityUnprocessable) {
 			t.Fatalf("Deploy' error = %v, wanted ErrorCodeDeploymentLocked", err)
 		}
 	})

@@ -49,7 +49,7 @@ func NewHooks(c *ConfigHooks, i Interactor) *Hooks {
 // it creates a new deployment status for the deployment.
 func (h *Hooks) HandleHook(c *gin.Context) {
 	if !isFromGithub(c) {
-		gb.ResponseWithError(c, e.NewError(e.ErrorCodeInvalidRequest, nil))
+		gb.ResponseWithError(c, e.NewError(e.ErrorCodeParameterInvalid, nil))
 		return
 	}
 
@@ -58,7 +58,7 @@ func (h *Hooks) HandleHook(c *gin.Context) {
 			h.log.Warn("Failed to validate the signature.", zap.Error(err))
 			gb.ResponseWithError(
 				c,
-				e.NewErrorWithMessage(e.ErrorCodeInvalidRequest, "It has failed to validate the signature.", err),
+				e.NewErrorWithMessage(e.ErrorCodeParameterInvalid, "It has failed to validate the signature.", err),
 			)
 			return
 		}
@@ -72,7 +72,7 @@ func (h *Hooks) HandleHook(c *gin.Context) {
 		h.handleGithubPushEvent(c)
 		return
 	default:
-		gb.ResponseWithError(c, e.NewError(e.ErrorCodeInvalidRequest, nil))
+		gb.ResponseWithError(c, e.NewError(e.ErrorCodeParameterInvalid, nil))
 		return
 	}
 }
@@ -100,7 +100,7 @@ func (h *Hooks) handleGithubDeploymentEvent(c *gin.Context) {
 		h.log.Warn("Failed to bind the payload.", zap.Error(err))
 		gb.ResponseWithError(
 			c,
-			e.NewErrorWithMessage(e.ErrorCodeInvalidRequest, "It has failed to bind the payload.", err),
+			e.NewErrorWithMessage(e.ErrorCodeParameterInvalid, "It has failed to bind the payload.", err),
 		)
 		return
 	}
@@ -158,7 +158,7 @@ func (h *Hooks) handleGithubPushEvent(c *gin.Context) {
 		h.log.Warn("Failed to bind the payload.", zap.Error(err))
 		gb.ResponseWithError(
 			c,
-			e.NewErrorWithMessage(e.ErrorCodeInvalidRequest, "It has failed to bind the payload.", err),
+			e.NewErrorWithMessage(e.ErrorCodeParameterInvalid, "It has failed to bind the payload.", err),
 		)
 		return
 	}

@@ -12,10 +12,10 @@ var messages = map[ErrorCode]string{
 	ErrorCodeDeploymentStatusInvalid: "The deployment status is invalid",
 	ErrorCodeLicenseDecode:           "Decoding the license is failed.",
 	ErrorCodeLicenseRequired:         "The license is required.",
-	ErrorCodeInvalidRequest:          "Invalid request parameter.",
+	ErrorCodeParameterInvalid:        "Invalid request parameter.",
 	ErrorPermissionRequired:          "The permission is required",
-	ErrorCodeNotFound:                "It is not found.",
-	ErrorCodeUnprocessableEntity:     "Invalid request payload.",
+	ErrorCodeEntityNotFound:          "It is not found.",
+	ErrorCodeEntityUnprocessable:     "Invalid request payload.",
 	ErrorCodeInternalError:           "Server internal error.",
 }
 
@@ -38,10 +38,10 @@ var httpCodes = map[ErrorCode]int{
 	ErrorCodeDeploymentStatusInvalid: http.StatusUnprocessableEntity,
 	ErrorCodeLicenseDecode:           http.StatusUnprocessableEntity,
 	ErrorCodeLicenseRequired:         http.StatusPaymentRequired,
-	ErrorCodeInvalidRequest:          http.StatusBadRequest,
-	ErrorCodeNotFound:                http.StatusNotFound,
+	ErrorCodeParameterInvalid:        http.StatusBadRequest,
+	ErrorCodeEntityNotFound:          http.StatusNotFound,
 	ErrorPermissionRequired:          http.StatusForbidden,
-	ErrorCodeUnprocessableEntity:     http.StatusUnprocessableEntity,
+	ErrorCodeEntityUnprocessable:     http.StatusUnprocessableEntity,
 	ErrorCodeInternalError:           http.StatusInternalServerError,
 }
 

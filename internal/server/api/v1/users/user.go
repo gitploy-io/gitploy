@@ -45,14 +45,14 @@ func (u *User) ListUsers(c *gin.Context) {
 	if p, err = strconv.Atoi(c.DefaultQuery("page", "1")); err != nil {
 		gb.ResponseWithError(
 			c,
-			e.NewErrorWithMessage(e.ErrorCodeInvalidRequest, "The page must be number.", err),
+			e.NewErrorWithMessage(e.ErrorCodeParameterInvalid, "The page must be number.", err),
 		)
 	}
 
 	if pp, err = strconv.Atoi(c.DefaultQuery("per_page", "30")); err != nil {
 		gb.ResponseWithError(
 			c,
-			e.NewErrorWithMessage(e.ErrorCodeInvalidRequest, "The per_page must be number.", err),
+			e.NewErrorWithMessage(e.ErrorCodeParameterInvalid, "The per_page must be number.", err),
 		)
 	}
 
@@ -78,7 +78,7 @@ func (u *User) UpdateUser(c *gin.Context) {
 		u.log.Warn("The id must be number.", zap.Error(err))
 		gb.ResponseWithError(
 			c,
-			e.NewErrorWithMessage(e.ErrorCodeInvalidRequest, "The id must be number.", err),
+			e.NewErrorWithMessage(e.ErrorCodeParameterInvalid, "The id must be number.", err),
 		)
 		return
 	}
@@ -88,7 +88,7 @@ func (u *User) UpdateUser(c *gin.Context) {
 		u.log.Warn("It has failed to binding the payload.", zap.Error(err))
 		gb.ResponseWithError(
 			c,
-			e.NewErrorWithMessage(e.ErrorCodeInvalidRequest, "It has failed to binding the payload.", err),
+			e.NewErrorWithMessage(e.ErrorCodeParameterInvalid, "It has failed to binding the payload.", err),
 		)
 		return
 	}
@@ -124,7 +124,7 @@ func (u *User) DeleteUser(c *gin.Context) {
 		u.log.Warn("The id must be number.", zap.Error(err))
 		gb.ResponseWithError(
 			c,
-			e.NewErrorWithMessage(e.ErrorCodeInvalidRequest, "The id must be number.", err),
+			e.NewErrorWithMessage(e.ErrorCodeParameterInvalid, "The id must be number.", err),
 		)
 		return
 	}

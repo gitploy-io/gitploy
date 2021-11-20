@@ -59,7 +59,7 @@ func (r *Repo) ListRepos(c *gin.Context) {
 	if err != nil {
 		gb.ResponseWithError(
 			c,
-			e.NewErrorWithMessage(e.ErrorCodeInvalidRequest, "The \"sort\" field must be boolean.", err),
+			e.NewErrorWithMessage(e.ErrorCodeParameterInvalid, "The \"sort\" field must be boolean.", err),
 		)
 		return
 	}
@@ -88,7 +88,7 @@ func (r *Repo) UpdateRepo(c *gin.Context) {
 	if err := c.ShouldBindBodyWith(p, binding.JSON); err != nil {
 		gb.ResponseWithError(
 			c,
-			e.NewErrorWithMessage(e.ErrorCodeInvalidRequest, "It has failed to bind the body.", err),
+			e.NewErrorWithMessage(e.ErrorCodeParameterInvalid, "It has failed to bind the body.", err),
 		)
 		return
 	}

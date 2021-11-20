@@ -29,7 +29,7 @@ func TestStore_UpdateReview(t *testing.T) {
 
 		r.Status = review.Status("UNPROCESSIBLE")
 		_, err := s.UpdateReview(ctx, r)
-		if !e.HasErrorCode(err, e.ErrorCodeUnprocessableEntity) {
+		if !e.HasErrorCode(err, e.ErrorCodeEntityUnprocessable) {
 			t.Fatalf("UpdateReview error code = %v, wanted unprocessable_entity", err)
 		}
 	})

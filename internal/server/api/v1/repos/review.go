@@ -40,7 +40,7 @@ func (r *Repo) ListReviews(c *gin.Context) {
 		r.log.Warn("The number of deployment must be number.")
 		gb.ResponseWithError(
 			c,
-			e.NewErrorWithMessage(e.ErrorCodeInvalidRequest, "The number of deployment must be number.", err),
+			e.NewErrorWithMessage(e.ErrorCodeParameterInvalid, "The number of deployment must be number.", err),
 		)
 		return
 	}
@@ -77,7 +77,7 @@ func (r *Repo) GetUserReview(c *gin.Context) {
 		r.log.Warn("The number of deployment must be number.")
 		gb.ResponseWithError(
 			c,
-			e.NewErrorWithMessage(e.ErrorCodeInvalidRequest, "The number of deployemnt must be number.", err),
+			e.NewErrorWithMessage(e.ErrorCodeParameterInvalid, "The number of deployemnt must be number.", err),
 		)
 		return
 	}
@@ -117,7 +117,7 @@ func (r *Repo) UpdateUserReview(c *gin.Context) {
 		r.log.Warn("The number of deployment must be number.")
 		gb.ResponseWithError(
 			c,
-			e.NewErrorWithMessage(e.ErrorCodeInvalidRequest, "The number of deployment must be number.", err),
+			e.NewErrorWithMessage(e.ErrorCodeParameterInvalid, "The number of deployment must be number.", err),
 		)
 		return
 	}
@@ -127,7 +127,7 @@ func (r *Repo) UpdateUserReview(c *gin.Context) {
 		r.log.Warn("Failed to bind the payload.", zap.Error(err))
 		gb.ResponseWithError(
 			c,
-			e.NewErrorWithMessage(e.ErrorCodeInvalidRequest, "It has failed to bind the payload.", nil),
+			e.NewErrorWithMessage(e.ErrorCodeParameterInvalid, "It has failed to bind the payload.", nil),
 		)
 		return
 	}
@@ -135,7 +135,7 @@ func (r *Repo) UpdateUserReview(c *gin.Context) {
 		r.log.Warn("The status is invalid.", zap.Error(err))
 		gb.ResponseWithError(
 			c,
-			e.NewErrorWithMessage(e.ErrorCodeInvalidRequest, "The status is invalid.", nil),
+			e.NewErrorWithMessage(e.ErrorCodeParameterInvalid, "The status is invalid.", nil),
 		)
 		return
 	}

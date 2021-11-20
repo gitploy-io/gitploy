@@ -46,7 +46,7 @@ func (s *Store) FindPermOfRepo(ctx context.Context, r *ent.Repo, u *ent.User) (*
 		WithUser().
 		Only(ctx)
 	if ent.IsNotFound(err) {
-		return nil, e.NewErrorWithMessage(e.ErrorCodeNotFound, "The user has no permission for the repository.", err)
+		return nil, e.NewErrorWithMessage(e.ErrorCodeEntityNotFound, "The user has no permission for the repository.", err)
 	} else if err != nil {
 		return nil, e.NewError(e.ErrorCodeInternalError, err)
 	}
@@ -64,7 +64,7 @@ func (s *Store) CreatePerm(ctx context.Context, p *ent.Perm) (*ent.Perm, error) 
 		Save(ctx)
 	if ent.IsValidationError(err) {
 		return nil, e.NewErrorWithMessage(
-			e.ErrorCodeUnprocessableEntity,
+			e.ErrorCodeEntityUnprocessable,
 			fmt.Sprintf("The value of \"%s\" field is invalid.", err.(*ent.ValidationError).Name),
 			err)
 	} else if err != nil {
@@ -82,7 +82,7 @@ func (s *Store) UpdatePerm(ctx context.Context, p *ent.Perm) (*ent.Perm, error) 
 		Save(ctx)
 	if ent.IsValidationError(err) {
 		return nil, e.NewErrorWithMessage(
-			e.ErrorCodeUnprocessableEntity,
+			e.ErrorCodeEntityUnprocessable,
 			fmt.Sprintf("The value of \"%s\" field is invalid.", err.(*ent.ValidationError).Name),
 			err)
 	} else if err != nil {

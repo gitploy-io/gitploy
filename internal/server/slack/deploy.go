@@ -262,7 +262,7 @@ func (s *Slack) interactDeploy(c *gin.Context) {
 
 	// Validate the entity is processible.
 	_, err := s.getCommitSha(ctx, cu.Edges.User, cb.Edges.Repo, sm.Type, sm.Ref)
-	if e.HasErrorCode(err, e.ErrorCodeNotFound) {
+	if e.HasErrorCode(err, e.ErrorCodeEntityNotFound) {
 		c.JSON(http.StatusOK, buildErrorsPayload(map[string]string{
 			blockRef: "The reference is not found.",
 		}))

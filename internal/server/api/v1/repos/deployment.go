@@ -74,7 +74,7 @@ func (r *Repo) CreateDeployment(c *gin.Context) {
 	if err := c.ShouldBindBodyWith(p, binding.JSON); err != nil {
 		gb.ResponseWithError(
 			c,
-			e.NewErrorWithMessage(e.ErrorCodeInvalidRequest, "It has failed to bind the payload.", nil),
+			e.NewErrorWithMessage(e.ErrorCodeParameterInvalid, "It has failed to bind the payload.", nil),
 		)
 		return
 	}
@@ -86,7 +86,7 @@ func (r *Repo) CreateDeployment(c *gin.Context) {
 	re := vr.(*ent.Repo)
 
 	cf, err := r.i.GetConfig(ctx, u, re)
-	if e.HasErrorCode(err, e.ErrorCodeNotFound) {
+	if e.HasErrorCode(err, e.ErrorCodeEntityNotFound) {
 		r.log.Check(gb.GetZapLogLevel(err), "The configuration file is not found.").Write(zap.Error(err))
 		// To override the HTTP status 422.
 		gb.ResponseWithStatusAndError(c, http.StatusUnprocessableEntity, err)
@@ -161,7 +161,7 @@ func (r *Repo) UpdateDeployment(c *gin.Context) {
 	}
 
 	cf, err := r.i.GetConfig(ctx, u, re)
-	if e.HasErrorCode(err, e.ErrorCodeNotFound) {
+	if e.HasErrorCode(err, e.ErrorCodeEntityNotFound) {
 		r.log.Check(gb.GetZapLogLevel(err), "The configuration file is not found.").Write(zap.Error(err))
 		// To override the HTTP status 422.
 		gb.ResponseWithStatusAndError(c, http.StatusUnprocessableEntity, err)
@@ -225,7 +225,7 @@ func (r *Repo) RollbackDeployment(c *gin.Context) {
 	}
 
 	cf, err := r.i.GetConfig(ctx, u, re)
-	if e.HasErrorCode(err, e.ErrorCodeNotFound) {
+	if e.HasErrorCode(err, e.ErrorCodeEntityNotFound) {
 		r.log.Check(gb.GetZapLogLevel(err), "The configuration file is not found.").Write(zap.Error(err))
 		// To override the HTTP status 422.
 		gb.ResponseWithStatusAndError(c, http.StatusUnprocessableEntity, err)
@@ -300,7 +300,7 @@ func (r *Repo) ListDeploymentChanges(c *gin.Context) {
 	}
 
 	ld, err := r.i.FindPrevSuccessDeployment(ctx, d)
-	if e.HasErrorCode(err, e.ErrorCodeNotFound) {
+	if e.HasErrorCode(err, e.ErrorCodeEntityNotFound) {
 		r.log.Debug("The previous deployment is not found.")
 		gb.Response(c, http.StatusOK, []*vo.Commit{})
 		return
