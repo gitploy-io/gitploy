@@ -4,6 +4,7 @@ import "net/http"
 
 var messages = map[ErrorCode]string{
 	ErrorCodeConfigParseError:        "The configuration is invalid.",
+	ErrorCodeConfigUndefinedEnv:      "The environment is not defined in the configuration.",
 	ErrorCodeConfigRegexpError:       "The regexp is invalid.",
 	ErrorCodeDeploymentConflict:      "The conflict occurs, please retry.",
 	ErrorCodeDeploymentInvalid:       "The validation has failed.",
@@ -30,6 +31,7 @@ func GetMessage(code ErrorCode) string {
 
 var httpCodes = map[ErrorCode]int{
 	ErrorCodeConfigParseError:        http.StatusUnprocessableEntity,
+	ErrorCodeConfigUndefinedEnv:      http.StatusUnprocessableEntity,
 	ErrorCodeConfigRegexpError:       http.StatusUnprocessableEntity,
 	ErrorCodeDeploymentConflict:      http.StatusUnprocessableEntity,
 	ErrorCodeDeploymentInvalid:       http.StatusUnprocessableEntity,
