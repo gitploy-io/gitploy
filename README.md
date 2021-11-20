@@ -1,9 +1,11 @@
 # Gitploy 
 
-![test](https://github.com/gitploy-io/gitploy/actions/workflows/test.yaml/badge.svg) ![build](https://github.com/gitploy-io/gitploy/actions/workflows/publish.yaml/badge.svg)
-
 <p align="center">
   <img src="./docs/images/logo_400.png"><br/>
+  <img src="https://img.shields.io/github/v/release/gitploy-io/gitploy?display_name=release">
+  <img src="https://img.shields.io/github/v/release/gitploy-io/gitploy?include_prereleases&label=pre-release">
+  <img src="https://github.com/gitploy-io/gitploy/actions/workflows/test.yaml/badge.svg">
+  <img src="https://github.com/gitploy-io/gitploy/actions/workflows/publish.yaml/badge.svg"><br/>
   <b>Gitploy helps your team build the deployment system around GitHub in minutes.</b><br/>
   <a href="https://docs.gitploy.io/">Documentation</a> | <a href="https://github.com/gitploy-io/gitploy/discussions">Community</a> | <a href="https://docs.gitploy.io/tasks/installation/">Installation Guide</a>
 </p>
@@ -54,4 +56,6 @@ Documentation | Community | Installation Guide | Docker Image
 
 ## Contributors
 
-TBD
+Don't be afraid to contribute! We have many things you can do to help out. If you're trying to contribute but stuck, please tag @hanjunlee.
+
+You can check the [contributing](./docs/contributing.md) for exact details on how to contribute.
