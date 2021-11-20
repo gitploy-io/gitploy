@@ -21,8 +21,6 @@ const (
 	ErrorCodeDeploymentNotApproved ErrorCode = "deployment_not_approved"
 	// ErrorCodeDeploymentStatusNotWaiting is the status must be 'waiting' to create a remote deployment.
 	ErrorCodeDeploymentStatusInvalid ErrorCode = "deployment_status_invalid"
-	// ErrorCodeDeploymentUndeployable is that the merge conflict occurs or a commit status has failed.
-	ErrorCodeDeploymentUndeployable ErrorCode = "deployment_undeployable"
 
 	// ErrorCodeLicenseDecode is the error when the license is decoded.
 	ErrorCodeLicenseDecode ErrorCode = "license_decode"
