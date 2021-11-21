@@ -1,6 +1,7 @@
 import { useEffect } from "react"
 import { shallowEqual } from "react-redux"
 import { Input } from "antd"
+import { Helmet } from "react-helmet"
 
 import { useAppSelector, useAppDispatch } from "../redux/hooks"
 import { membersSlice as slice, fetchUsers, updateUser, deleteUser, perPage } from "../redux/members"
@@ -44,27 +45,32 @@ export default function Member(): JSX.Element {
         dispatch(fetchUsers())
     }
 
-    return <Main>
-        <div>
-            <h1>Members</h1>
-        </div>
-        <div style={{marginTop: "40px", paddingRight: "20px"}}>
-            <Search placeholder="Search user ..." onSearch={onSearch} enterButton />
-        </div>
-        <div style={{marginTop: "40px"}}>
-            <MemberList
-                users={users}
-                onChangeSwitch={onChangeSwitch}
-                onClickDelete={onClickDelete}
-            />
-        </div>
-        <div style={{marginTop: "40px", textAlign: "center"}}>
-            <Pagination 
-                page={page}
-                isLast={users.length !== perPage}
-                onClickPrev={onClickPrev}
-                onClickNext={onClickNext}
-            />    
-        </div>
-    </Main>
+    return (
+        <Main>
+            <Helmet>
+                <title>Members</title>
+            </Helmet>
+            <div>
+                <h1>Members</h1>
+            </div>
+            <div style={{marginTop: "40px", paddingRight: "20px"}}>
+                <Search placeholder="Search user ..." onSearch={onSearch} enterButton />
+            </div>
+            <div style={{marginTop: "40px"}}>
+                <MemberList
+                    users={users}
+                    onChangeSwitch={onChangeSwitch}
+                    onClickDelete={onClickDelete}
+                />
+            </div>
+            <div style={{marginTop: "40px", textAlign: "center"}}>
+                <Pagination 
+                    page={page}
+                    isLast={users.length !== perPage}
+                    onClickPrev={onClickPrev}
+                    onClickNext={onClickNext}
+                />    
+            </div>
+        </Main>
+    )
 }

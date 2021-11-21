@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { shallowEqual } from "react-redux"
 import { Layout, Menu, Row, Col, Result, Button, Drawer, Avatar, Dropdown, Badge} from "antd"
 import { SettingFilled } from "@ant-design/icons"
+import { Helmet } from "react-helmet"
 
 import { useAppSelector, useAppDispatch } from "../redux/hooks"
 import { init, searchDeployments, searchReviews, fetchLicense, mainSlice as slice } from "../redux/main"
@@ -92,6 +93,9 @@ export default function Main(props: any) {
 
     return (
         <Layout className="layout">
+            <Helmet>
+                <title>Gitploy</title>
+            </Helmet>
             <Header>
                 <Row>
                     <Col span="16">
@@ -135,7 +139,7 @@ export default function Main(props: any) {
                                     </Menu.Item>
                                     <Menu.Divider />
                                     <Menu.Item key="1">
-                                        <a href="https://docs.gitploy.io/" target="_blank">Read Doc</a>
+                                        <a href="https://docs.gitploy.io/" target="_blank">Read Docs</a>
                                     </Menu.Item>
                                     <Menu.Item key="2">
                                         <a href="/signout">Sign out</a>

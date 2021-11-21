@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { shallowEqual } from 'react-redux'
 import { Input, Breadcrumb } from 'antd'
+import { Helmet } from "react-helmet"
 
 import { useAppSelector, useAppDispatch } from '../redux/hooks'
 import { homeSlice, listRepos, perPage, sync, homeSlice as slice } from '../redux/home'
@@ -74,6 +75,9 @@ export default function Home(): JSX.Element {
 
     return (
         <Main>
+            <Helmet>
+                <title>Home</title>
+            </Helmet>
             <div >
                 <Breadcrumb>
                     <Breadcrumb.Item>

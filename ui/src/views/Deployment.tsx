@@ -2,6 +2,7 @@ import { useEffect } from "react"
 import { Breadcrumb, PageHeader, Result } from "antd"
 import { shallowEqual } from 'react-redux'
 import { useParams } from "react-router-dom"
+import { Helmet } from "react-helmet"
 
 import { useAppSelector, useAppDispatch } from "../redux/hooks"
 import { 
@@ -127,6 +128,9 @@ export default function DeploymentView(): JSX.Element {
 
     return (
         <Main>
+            <Helmet>
+                <title>Deployment #{number} - {namespace}/{name}</title>
+            </Helmet>
             <div>
                 <PageHeader
                     title={`Deployment #${number}`}
