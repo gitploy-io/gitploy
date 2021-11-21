@@ -95,6 +95,9 @@ export default function Main(props: any) {
         <Layout className="layout">
             <Helmet>
                 <title>Gitploy</title>
+                {(deployments.length + reviews.length > 0)?
+                    <link rel="icon" href="/favicon.ico" />:
+                    <link rel="icon" href="/favicon.ico" />}
             </Helmet>
             <Header>
                 <Row>
