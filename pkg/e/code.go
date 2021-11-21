@@ -24,6 +24,9 @@ const (
 	// ErrorCodeDeploymentStatusNotWaiting is the status must be 'waiting' to create a remote deployment.
 	ErrorCodeDeploymentStatusInvalid ErrorCode = "deployment_status_invalid"
 
+	// ErrorCodeLockAlreadyExist is that the environment is already locked.
+	ErrorCodeLockAlreadyExist ErrorCode = "lock_already_exist"
+
 	// ErrorCodeLicenseDecode is the error when the license is decoded.
 	ErrorCodeLicenseDecode ErrorCode = "license_decode"
 	// ErrorCodeLicenseRequired is that the license is required.

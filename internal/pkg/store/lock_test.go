@@ -83,7 +83,7 @@ func TestStore_CreateLock(t *testing.T) {
 			Env:    "production",
 			RepoID: 1,
 			UserID: 1,
-		}); !e.HasErrorCode(err, e.ErrorCodeEntityUnprocessable) {
+		}); !e.HasErrorCode(err, e.ErrorCodeLockAlreadyExist) {
 			t.Fatalf("Error = %v, wanted ErrorCodeEntityUnprocessable", err)
 		}
 	})
