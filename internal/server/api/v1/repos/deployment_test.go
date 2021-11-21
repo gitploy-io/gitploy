@@ -123,11 +123,9 @@ func TestRepo_CreateDeployment(t *testing.T) {
 		t.Log("Read the config file.")
 		m.
 			EXPECT().
-			GetConfig(gomock.Any(), gomock.AssignableToTypeOf(&ent.User{}), gomock.AssignableToTypeOf(&ent.Repo{})).
-			Return(&vo.Config{
-				Envs: []*vo.Env{
-					{Name: "prod"},
-				},
+			GetEnv(gomock.Any(), gomock.AssignableToTypeOf(&ent.User{}), gomock.AssignableToTypeOf(&ent.Repo{}), gomock.Any()).
+			Return(&vo.Env{
+				Name: "prod",
 			}, nil)
 
 		t.Log("Deploy with the payload successfully.")

@@ -85,7 +85,7 @@ func (r *Repo) CreateDeployment(c *gin.Context) {
 	vr, _ := c.Get(KeyRepo)
 	re := vr.(*ent.Repo)
 
-	cf, err := r.i.GetConfig(ctx, u, re)
+	env, err := r.i.GetEnv(ctx, u, re, p.Env)
 	if e.HasErrorCode(err, e.ErrorCodeEntityNotFound) {
 		r.log.Check(gb.GetZapLogLevel(err), "The configuration file is not found.").Write(zap.Error(err))
 		// To override the HTTP status 422.
@@ -97,24 +97,13 @@ func (r *Repo) CreateDeployment(c *gin.Context) {
 		return
 	}
 
-	var env *vo.Env
-	if env = cf.GetEnv(p.Env); env == nil {
-		r.log.Warn("The environment is not defined in the configuration.")
-		gb.ResponseWithError(
-			c,
-			e.NewErrorWithMessage(e.ErrorCodeConfigParseError, "The environment is not defiend in the configuration.", nil),
-		)
-		return
-	}
-
 	d, err := r.i.Deploy(ctx, u, re,
 		&ent.Deployment{
 			Type: deployment.Type(p.Type),
 			Env:  p.Env,
 			Ref:  p.Ref,
 		},
-		cf.GetEnv(p.Env),
-	)
+		env)
 	if err != nil {
 		r.log.Check(gb.GetZapLogLevel(err), "Failed to deploy.").Write(zap.Error(err))
 		gb.ResponseWithError(c, err)
@@ -160,7 +149,7 @@ func (r *Repo) UpdateDeployment(c *gin.Context) {
 		return
 	}
 
-	cf, err := r.i.GetConfig(ctx, u, re)
+	env, err := r.i.GetEnv(ctx, u, re, d.Env)
 	if e.HasErrorCode(err, e.ErrorCodeEntityNotFound) {
 		r.log.Check(gb.GetZapLogLevel(err), "The configuration file is not found.").Write(zap.Error(err))
 		// To override the HTTP status 422.
@@ -169,16 +158,6 @@ func (r *Repo) UpdateDeployment(c *gin.Context) {
 	} else if err != nil {
 		r.log.Check(gb.GetZapLogLevel(err), "It has failed to get the configuration.").Write(zap.Error(err))
 		gb.ResponseWithError(c, err)
-		return
-	}
-
-	var env *vo.Env
-	if env = cf.GetEnv(d.Env); env == nil {
-		r.log.Warn("The environment is not defined in the configuration.")
-		gb.ResponseWithError(
-			c,
-			e.NewErrorWithMessage(e.ErrorCodeConfigParseError, "The environment is not defiend in the configuration.", nil),
-		)
 		return
 	}
 
@@ -224,7 +203,7 @@ func (r *Repo) RollbackDeployment(c *gin.Context) {
 		return
 	}
 
-	cf, err := r.i.GetConfig(ctx, u, re)
+	env, err := r.i.GetEnv(ctx, u, re, d.Env)
 	if e.HasErrorCode(err, e.ErrorCodeEntityNotFound) {
 		r.log.Check(gb.GetZapLogLevel(err), "The configuration file is not found.").Write(zap.Error(err))
 		// To override the HTTP status 422.
@@ -236,16 +215,6 @@ func (r *Repo) RollbackDeployment(c *gin.Context) {
 		return
 	}
 
-	var env *vo.Env
-	if env = cf.GetEnv(d.Env); env == nil {
-		r.log.Warn("The environment is not defined in the configuration.")
-		gb.ResponseWithError(
-			c,
-			e.NewErrorWithMessage(e.ErrorCodeConfigParseError, "The environment is not defiend in the configuration.", nil),
-		)
-		return
-	}
-
 	d, err = r.i.Deploy(ctx, u, re,
 		&ent.Deployment{
 			Type:       d.Type,
@@ -253,8 +222,7 @@ func (r *Repo) RollbackDeployment(c *gin.Context) {
 			Ref:        d.Ref,
 			IsRollback: true,
 		},
-		cf.GetEnv(d.Env),
-	)
+		env)
 	if err != nil {
 		r.log.Check(gb.GetZapLogLevel(err), "Failed to deploy.").Write(zap.Error(err))
 		gb.ResponseWithError(c, err)
