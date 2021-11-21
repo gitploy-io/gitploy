@@ -106,6 +106,11 @@ func (s *Store) CreateLock(ctx context.Context, l *ent.Lock) (*ent.Lock, error) 
 			e.ErrorCodeEntityUnprocessable,
 			fmt.Sprintf("Failed to create a lock. The value of \"%s\" field is invalid.", err.(*ent.ValidationError).Name),
 			err)
+	} else if ent.IsConstraintError(err) {
+		return nil, e.NewErrorWithMessage(
+			e.ErrorCodeEntityUnprocessable,
+			"The lock already exist.",
+			err)
 	} else if err != nil {
 		return nil, e.NewError(e.ErrorCodeInternalError, err)
 	}
