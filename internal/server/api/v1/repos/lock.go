@@ -84,7 +84,7 @@ func (r *Repo) CreateLock(c *gin.Context) {
 	vu, _ := c.Get(global.KeyUser)
 	u := vu.(*ent.User)
 
-	cfg, err := r.i.GetConfig(ctx, u, re)
+	env, err := r.i.GetEnv(ctx, u, re, p.Env)
 	if e.HasErrorCode(err, e.ErrorCodeEntityNotFound) {
 		r.log.Check(gb.GetZapLogLevel(err), "The configuration file is not found.").Write(zap.Error(err))
 		// To override the HTTP status 422.
@@ -96,32 +96,8 @@ func (r *Repo) CreateLock(c *gin.Context) {
 		return
 	}
 
-	if !cfg.HasEnv(p.Env) {
-		r.log.Warn("The environment is not defined in the configuration.")
-		gb.ResponseWithError(
-			c,
-			e.NewErrorWithMessage(e.ErrorCodeConfigParseError, "The environment is not defiend in the configuration.", nil),
-		)
-		return
-	}
-
-	// TODO: migrate the business logic into the interactor.
-	if ok, err := r.i.HasLockOfRepoForEnv(ctx, re, p.Env); ok {
-		r.log.Warn("The lock already exist.", zap.String("env", p.Env))
-		gb.ResponseWithError(
-			c,
-			e.NewErrorWithMessage(e.ErrorCodeEntityUnprocessable, "The lock already exist.", err),
-		)
-		return
-	} else if err != nil {
-		r.log.Check(gb.GetZapLogLevel(err), "Failed to check the lock.").Write(zap.Error(err))
-		gb.ResponseWithError(c, err)
-		return
-	}
-
-	// Lock the environment.
 	l, err := r.i.CreateLock(ctx, &ent.Lock{
-		Env:       p.Env,
+		Env:       env.Name,
 		ExpiredAt: expiredAt,
 		UserID:    u.ID,
 		RepoID:    re.ID,
@@ -136,7 +112,7 @@ func (r *Repo) CreateLock(c *gin.Context) {
 		l = nl
 	}
 
-	r.log.Debug("Lock the env.", zap.String("env", p.Env))
+	r.log.Info("Lock the environment.", zap.String("repo", re.GetFullName()), zap.String("env", p.Env), zap.String("login", u.Login))
 	gb.Response(c, http.StatusCreated, l)
 }
 
@@ -201,6 +177,7 @@ func (r *Repo) UpdateLock(c *gin.Context) {
 		l = nl
 	}
 
+	r.log.Info("Patch the environment lock.", zap.Int("lock_id", l.ID))
 	gb.Response(c, http.StatusOK, l)
 }
 

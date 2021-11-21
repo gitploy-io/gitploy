@@ -17,11 +17,12 @@ import (
 	"github.com/gitploy-io/gitploy/ent"
 	"github.com/gitploy-io/gitploy/internal/server/api/v1/repos/mock"
 	"github.com/gitploy-io/gitploy/internal/server/global"
+	"github.com/gitploy-io/gitploy/pkg/e"
 	"github.com/gitploy-io/gitploy/vo"
 )
 
 func TestRepo_CreateLock(t *testing.T) {
-	t.Run("Return 422 when the env is not found", func(t *testing.T) {
+	t.Run("Return 422 when the environment is undefined.", func(t *testing.T) {
 		input := struct {
 			payload *lockPostPayload
 		}{
@@ -36,14 +37,8 @@ func TestRepo_CreateLock(t *testing.T) {
 		t.Log("Read deploy.yml and check the env.")
 		m.
 			EXPECT().
-			GetConfig(gomock.Any(), gomock.AssignableToTypeOf(&ent.User{}), gomock.AssignableToTypeOf(&ent.Repo{})).
-			Return(&vo.Config{
-				Envs: []*vo.Env{
-					{
-						Name: "dev",
-					},
-				},
-			}, nil)
+			GetEnv(gomock.Any(), gomock.AssignableToTypeOf(&ent.User{}), gomock.AssignableToTypeOf(&ent.Repo{}), gomock.Any()).
+			Return(nil, e.NewError(e.ErrorCodeConfigUndefinedEnv, nil))
 
 		r := NewRepo(RepoConfig{}, m)
 
@@ -61,7 +56,7 @@ func TestRepo_CreateLock(t *testing.T) {
 
 		router.ServeHTTP(w, req)
 		if w.Code != http.StatusUnprocessableEntity {
-			t.Fatalf("Code = %v, wanted %v. Body=%v", w.Code, http.StatusCreated, w.Body)
+			t.Fatalf("Code = %v, wanted %v. Body=%v", w.Code, http.StatusUnprocessableEntity, w.Body)
 		}
 	})
 
@@ -80,20 +75,10 @@ func TestRepo_CreateLock(t *testing.T) {
 		t.Log("Read deploy.yml and check the env.")
 		m.
 			EXPECT().
-			GetConfig(gomock.Any(), gomock.AssignableToTypeOf(&ent.User{}), gomock.AssignableToTypeOf(&ent.Repo{})).
-			Return(&vo.Config{
-				Envs: []*vo.Env{
-					{
-						Name: "production",
-					},
-				},
+			GetEnv(gomock.Any(), gomock.AssignableToTypeOf(&ent.User{}), gomock.AssignableToTypeOf(&ent.Repo{}), gomock.Any()).
+			Return(&vo.Env{
+				Name: "production",
 			}, nil)
-
-		t.Log("Check whether the env is locked or not.")
-		m.
-			EXPECT().
-			HasLockOfRepoForEnv(gomock.Any(), gomock.AssignableToTypeOf(&ent.Repo{}), input.payload.Env).
-			Return(false, nil)
 
 		t.Log("Lock the env.")
 		m.

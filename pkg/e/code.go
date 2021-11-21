@@ -8,6 +8,8 @@ import (
 const (
 	// ErrorCodeConfigParseError is that an error occurs when it parse the file.
 	ErrorCodeConfigParseError ErrorCode = "config_parse_error"
+	// ErrorCodeConfigUndefinedEnv is that the environment is not defined in the configuration file.
+	ErrorCodeConfigUndefinedEnv ErrorCode = "config_undefined_env"
 	// ErrorCodeConfigRegexpError is the regexp(re2) is invalid.
 	ErrorCodeConfigRegexpError ErrorCode = "config_regexp_error"
 
@@ -21,6 +23,9 @@ const (
 	ErrorCodeDeploymentNotApproved ErrorCode = "deployment_not_approved"
 	// ErrorCodeDeploymentStatusNotWaiting is the status must be 'waiting' to create a remote deployment.
 	ErrorCodeDeploymentStatusInvalid ErrorCode = "deployment_status_invalid"
+
+	// ErrorCodeLockAlreadyExist is that the environment is already locked.
+	ErrorCodeLockAlreadyExist ErrorCode = "lock_already_exist"
 
 	// ErrorCodeLicenseDecode is the error when the license is decoded.
 	ErrorCodeLicenseDecode ErrorCode = "license_decode"
