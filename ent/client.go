@@ -1770,15 +1770,15 @@ func (c *UserClient) QueryLocks(u *User) *LockQuery {
 	return query
 }
 
-// QueryRepo queries the repo edge of a User.
-func (c *UserClient) QueryRepo(u *User) *RepoQuery {
+// QueryRepos queries the repos edge of a User.
+func (c *UserClient) QueryRepos(u *User) *RepoQuery {
 	query := &RepoQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
 		id := u.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(user.Table, user.FieldID, id),
 			sqlgraph.To(repo.Table, repo.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, user.RepoTable, user.RepoColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.ReposTable, user.ReposColumn),
 		)
 		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
 		return fromV, nil

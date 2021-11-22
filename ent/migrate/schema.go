@@ -348,7 +348,7 @@ var (
 		PrimaryKey: []*schema.Column{ReposColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "repos_users_repo",
+				Symbol:     "repos_users_repos",
 				Columns:    []*schema.Column{ReposColumns[10]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,

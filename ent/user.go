@@ -52,8 +52,8 @@ type UserEdges struct {
 	Reviews []*Review `json:"reviews,omitempty"`
 	// Locks holds the value of the locks edge.
 	Locks []*Lock `json:"locks,omitempty"`
-	// Repo holds the value of the repo edge.
-	Repo []*Repo `json:"repo,omitempty"`
+	// Repos holds the value of the repos edge.
+	Repos []*Repo `json:"repos,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [6]bool
@@ -109,13 +109,13 @@ func (e UserEdges) LocksOrErr() ([]*Lock, error) {
 	return nil, &NotLoadedError{edge: "locks"}
 }
 
-// RepoOrErr returns the Repo value or an error if the edge
+// ReposOrErr returns the Repos value or an error if the edge
 // was not loaded in eager-loading.
-func (e UserEdges) RepoOrErr() ([]*Repo, error) {
+func (e UserEdges) ReposOrErr() ([]*Repo, error) {
 	if e.loadedTypes[5] {
-		return e.Repo, nil
+		return e.Repos, nil
 	}
-	return nil, &NotLoadedError{edge: "repo"}
+	return nil, &NotLoadedError{edge: "repos"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -236,9 +236,9 @@ func (u *User) QueryLocks() *LockQuery {
 	return (&UserClient{config: u.config}).QueryLocks(u)
 }
 
-// QueryRepo queries the "repo" edge of the User entity.
-func (u *User) QueryRepo() *RepoQuery {
-	return (&UserClient{config: u.config}).QueryRepo(u)
+// QueryRepos queries the "repos" edge of the User entity.
+func (u *User) QueryRepos() *RepoQuery {
+	return (&UserClient{config: u.config}).QueryRepos(u)
 }
 
 // Update returns a builder for updating this User.

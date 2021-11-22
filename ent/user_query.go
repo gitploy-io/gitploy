@@ -38,7 +38,7 @@ type UserQuery struct {
 	withDeployments *DeploymentQuery
 	withReviews     *ReviewQuery
 	withLocks       *LockQuery
-	withRepo        *RepoQuery
+	withRepos       *RepoQuery
 	modifiers       []func(s *sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -186,8 +186,8 @@ func (uq *UserQuery) QueryLocks() *LockQuery {
 	return query
 }
 
-// QueryRepo chains the current query on the "repo" edge.
-func (uq *UserQuery) QueryRepo() *RepoQuery {
+// QueryRepos chains the current query on the "repos" edge.
+func (uq *UserQuery) QueryRepos() *RepoQuery {
 	query := &RepoQuery{config: uq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := uq.prepareQuery(ctx); err != nil {
@@ -200,7 +200,7 @@ func (uq *UserQuery) QueryRepo() *RepoQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(user.Table, user.FieldID, selector),
 			sqlgraph.To(repo.Table, repo.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, user.RepoTable, user.RepoColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.ReposTable, user.ReposColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(uq.driver.Dialect(), step)
 		return fromU, nil
@@ -394,7 +394,7 @@ func (uq *UserQuery) Clone() *UserQuery {
 		withDeployments: uq.withDeployments.Clone(),
 		withReviews:     uq.withReviews.Clone(),
 		withLocks:       uq.withLocks.Clone(),
-		withRepo:        uq.withRepo.Clone(),
+		withRepos:       uq.withRepos.Clone(),
 		// clone intermediate query.
 		sql:  uq.sql.Clone(),
 		path: uq.path,
@@ -456,14 +456,14 @@ func (uq *UserQuery) WithLocks(opts ...func(*LockQuery)) *UserQuery {
 	return uq
 }
 
-// WithRepo tells the query-builder to eager-load the nodes that are connected to
-// the "repo" edge. The optional arguments are used to configure the query builder of the edge.
-func (uq *UserQuery) WithRepo(opts ...func(*RepoQuery)) *UserQuery {
+// WithRepos tells the query-builder to eager-load the nodes that are connected to
+// the "repos" edge. The optional arguments are used to configure the query builder of the edge.
+func (uq *UserQuery) WithRepos(opts ...func(*RepoQuery)) *UserQuery {
 	query := &RepoQuery{config: uq.config}
 	for _, opt := range opts {
 		opt(query)
 	}
-	uq.withRepo = query
+	uq.withRepos = query
 	return uq
 }
 
@@ -538,7 +538,7 @@ func (uq *UserQuery) sqlAll(ctx context.Context) ([]*User, error) {
 			uq.withDeployments != nil,
 			uq.withReviews != nil,
 			uq.withLocks != nil,
-			uq.withRepo != nil,
+			uq.withRepos != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -688,16 +688,16 @@ func (uq *UserQuery) sqlAll(ctx context.Context) ([]*User, error) {
 		}
 	}
 
-	if query := uq.withRepo; query != nil {
+	if query := uq.withRepos; query != nil {
 		fks := make([]driver.Value, 0, len(nodes))
 		nodeids := make(map[int64]*User)
 		for i := range nodes {
 			fks = append(fks, nodes[i].ID)
 			nodeids[nodes[i].ID] = nodes[i]
-			nodes[i].Edges.Repo = []*Repo{}
+			nodes[i].Edges.Repos = []*Repo{}
 		}
 		query.Where(predicate.Repo(func(s *sql.Selector) {
-			s.Where(sql.InValues(user.RepoColumn, fks...))
+			s.Where(sql.InValues(user.ReposColumn, fks...))
 		}))
 		neighbors, err := query.All(ctx)
 		if err != nil {
@@ -709,7 +709,7 @@ func (uq *UserQuery) sqlAll(ctx context.Context) ([]*User, error) {
 			if !ok {
 				return nil, fmt.Errorf(`unexpected foreign-key "owner_id" returned %v for node %v`, fk, n.ID)
 			}
-			node.Edges.Repo = append(node.Edges.Repo, n)
+			node.Edges.Repos = append(node.Edges.Repos, n)
 		}
 	}
 

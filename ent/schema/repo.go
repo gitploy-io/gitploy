@@ -65,7 +65,7 @@ func (Repo) Edges() []ent.Edge {
 				OnDelete: entsql.Cascade,
 			}),
 		edge.From("owner", User.Type).
-			Ref("repo").
+			Ref("repos").
 			Field("owner_id").
 			Unique(),
 	}
