@@ -6,12 +6,9 @@ import (
 	"github.com/gitploy-io/gitploy/pkg/e"
 )
 
+// GetZapLogLevel return the warning level if the error is managed in the system.
 func GetZapLogLevel(err error) zapcore.Level {
 	if !e.IsError(err) {
-		return zapcore.ErrorLevel
-	}
-
-	if err.(*e.Error).Code == e.ErrorCodeInternalError {
 		return zapcore.ErrorLevel
 	}
 
