@@ -220,11 +220,12 @@ func (s *Store) Activate(ctx context.Context, r *ent.Repo) (*ent.Repo, error) {
 }
 
 func (s *Store) Deactivate(ctx context.Context, r *ent.Repo) (*ent.Repo, error) {
+	// NOTE: Do not set the 'owner_id' zero value.
+	// It could make the constraint error.
 	ret, err := s.c.Repo.
 		UpdateOne(r).
 		SetActive(false).
 		SetWebhookID(0).
-		SetOwnerID(0).
 		Save(ctx)
 	if ent.IsValidationError(err) {
 		return nil, e.NewErrorWithMessage(
