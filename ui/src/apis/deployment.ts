@@ -220,7 +220,7 @@ export const createRemoteDeployment = async (namespace: string, name: string, nu
     const response = await _fetch(`${instance}/api/v1/repos/${namespace}/${name}/deployments/${number}`, {
         headers,
         credentials: 'same-origin',
-        method: "PATCH",
+        method: "PUT",
     })
     if (response.status === StatusCodes.FORBIDDEN) {
         const message = await response.json().then(data => data.message)

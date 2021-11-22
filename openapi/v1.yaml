@@ -588,7 +588,7 @@ paths:
           description: The deployment payload or the configuration is invalid.
         '500':
           $ref: '#/components/responses/500InternalError'
-    patch: 
+    put: 
       tags:
         - Repo
       summary: Create a remote deployment when the status of the deployment is 'waiting'.
