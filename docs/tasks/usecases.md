@@ -20,7 +20,7 @@ The versioning is the general way to specify the artifact or the commit, and Git
 envs:
   - name: production
     auto_merge: false
-    deployable_ref: "v.*\..*\..*"       # Semantic versioning
+    deployable_ref: 'v.*\..*\..*'       # Semantic versioning
     production_environment: true
 ```
 

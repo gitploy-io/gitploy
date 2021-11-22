@@ -9,6 +9,7 @@ envs:
       - "go-test"
       - "react-test"
       - "publish-image"
+    deployable_ref: 'v.*\..*\..*'
 
   - name: production
     task: ${GITPLOY_DEPLOY_TASK:=rollback}:kubernetes
@@ -23,8 +24,10 @@ envs:
       reviewers: 
         - hanjunlee
         - noah-qa
+    deployable_ref: 'v.*\..*\..*'
 
   - name: docs
+    task: ${GITPLOY_DEPLOY_TASK:=rollback}:docs
     auto_merge: false
     description: Publish the documentation of Gitploy.
     required_contexts: []
