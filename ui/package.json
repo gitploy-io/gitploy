@@ -8,11 +8,6 @@
     "@testing-library/jest-dom": "^5.12.0",
     "@testing-library/react": "^11.2.7",
     "@testing-library/user-event": "^12.8.3",
-    "@types/jest": "^26.0.23",
-    "@types/lodash.debounce": "^4.0.6",
-    "@types/node": "^12.20.13",
-    "@types/react": "^17.0.8",
-    "@types/react-dom": "^17.0.5",
     "antd": "^4.16.1",
     "craco-less": "^1.17.1",
     "http-status-codes": "^2.1.4",
@@ -52,6 +47,11 @@
     ]
   },
   "devDependencies": {
+    "@types/lodash.debounce": "^4.0.6",
+    "@types/node": "^12.20.13",
+    "@types/react": "^17.0.8",
+    "@types/react-dom": "^17.0.5",
+    "@types/jest": "^26.0.23",
     "@types/react-helmet": "^6.1.4",
     "@types/react-router-dom": "^5.1.7",
     "@typescript-eslint/eslint-plugin": "^4.28.4",
