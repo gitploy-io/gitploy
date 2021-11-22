@@ -27,7 +27,7 @@ require (
 	github.com/prometheus/client_golang v1.11.0
 	github.com/shurcooL/githubv4 v0.0.0-20201206200315-234843c633fa
 	github.com/shurcooL/graphql v0.0.0-20200928012149-18c5c3165e3a // indirect
-	github.com/slack-go/slack v0.9.1
+	github.com/slack-go/slack v0.10.0
 	github.com/ugorji/go v1.2.6 // indirect
 	go.uber.org/zap v1.19.1
 	golang.org/x/net v0.0.0-20210525063256-abc453219eb5 // indirect
