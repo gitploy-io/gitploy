@@ -29,8 +29,8 @@ require (
 	github.com/shurcooL/graphql v0.0.0-20200928012149-18c5c3165e3a // indirect
 	github.com/slack-go/slack v0.9.1
 	github.com/ugorji/go v1.2.6 // indirect
-	go.uber.org/zap v1.13.0
+	go.uber.org/zap v1.19.1
 	golang.org/x/net v0.0.0-20210525063256-abc453219eb5 // indirect
 	golang.org/x/oauth2 v0.0.0-20210514164344-f6687ab2804c
-	gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c
+	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b
 )
