@@ -197,14 +197,14 @@ func (uc *UserCreate) AddLocks(l ...*Lock) *UserCreate {
 	return uc.AddLockIDs(ids...)
 }
 
-// AddRepoIDs adds the "repo" edge to the Repo entity by IDs.
+// AddRepoIDs adds the "repos" edge to the Repo entity by IDs.
 func (uc *UserCreate) AddRepoIDs(ids ...int64) *UserCreate {
 	uc.mutation.AddRepoIDs(ids...)
 	return uc
 }
 
-// AddRepo adds the "repo" edges to the Repo entity.
-func (uc *UserCreate) AddRepo(r ...*Repo) *UserCreate {
+// AddRepos adds the "repos" edges to the Repo entity.
+func (uc *UserCreate) AddRepos(r ...*Repo) *UserCreate {
 	ids := make([]int64, len(r))
 	for i := range r {
 		ids[i] = r[i].ID
@@ -341,7 +341,7 @@ func (uc *UserCreate) sqlSave(ctx context.Context) (*User, error) {
 		}
 		return nil, err
 	}
-	if _node.ID == 0 {
+	if _spec.ID.Value != _node.ID {
 		id := _spec.ID.Value.(int64)
 		_node.ID = int64(id)
 	}
@@ -530,12 +530,12 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := uc.mutation.RepoIDs(); len(nodes) > 0 {
+	if nodes := uc.mutation.ReposIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   user.RepoTable,
-			Columns: []string{user.RepoColumn},
+			Table:   user.ReposTable,
+			Columns: []string{user.ReposColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{

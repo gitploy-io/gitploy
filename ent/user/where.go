@@ -1093,25 +1093,25 @@ func HasLocksWith(preds ...predicate.Lock) predicate.User {
 	})
 }
 
-// HasRepo applies the HasEdge predicate on the "repo" edge.
-func HasRepo() predicate.User {
+// HasRepos applies the HasEdge predicate on the "repos" edge.
+func HasRepos() predicate.User {
 	return predicate.User(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(RepoTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, RepoTable, RepoColumn),
+			sqlgraph.To(ReposTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ReposTable, ReposColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasRepoWith applies the HasEdge predicate on the "repo" edge with a given conditions (other predicates).
-func HasRepoWith(preds ...predicate.Repo) predicate.User {
+// HasReposWith applies the HasEdge predicate on the "repos" edge with a given conditions (other predicates).
+func HasReposWith(preds ...predicate.Repo) predicate.User {
 	return predicate.User(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(RepoInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, RepoTable, RepoColumn),
+			sqlgraph.To(ReposInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ReposTable, ReposColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

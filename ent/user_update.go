@@ -176,14 +176,14 @@ func (uu *UserUpdate) AddLocks(l ...*Lock) *UserUpdate {
 	return uu.AddLockIDs(ids...)
 }
 
-// AddRepoIDs adds the "repo" edge to the Repo entity by IDs.
+// AddRepoIDs adds the "repos" edge to the Repo entity by IDs.
 func (uu *UserUpdate) AddRepoIDs(ids ...int64) *UserUpdate {
 	uu.mutation.AddRepoIDs(ids...)
 	return uu
 }
 
-// AddRepo adds the "repo" edges to the Repo entity.
-func (uu *UserUpdate) AddRepo(r ...*Repo) *UserUpdate {
+// AddRepos adds the "repos" edges to the Repo entity.
+func (uu *UserUpdate) AddRepos(r ...*Repo) *UserUpdate {
 	ids := make([]int64, len(r))
 	for i := range r {
 		ids[i] = r[i].ID
@@ -286,20 +286,20 @@ func (uu *UserUpdate) RemoveLocks(l ...*Lock) *UserUpdate {
 	return uu.RemoveLockIDs(ids...)
 }
 
-// ClearRepo clears all "repo" edges to the Repo entity.
-func (uu *UserUpdate) ClearRepo() *UserUpdate {
-	uu.mutation.ClearRepo()
+// ClearRepos clears all "repos" edges to the Repo entity.
+func (uu *UserUpdate) ClearRepos() *UserUpdate {
+	uu.mutation.ClearRepos()
 	return uu
 }
 
-// RemoveRepoIDs removes the "repo" edge to Repo entities by IDs.
+// RemoveRepoIDs removes the "repos" edge to Repo entities by IDs.
 func (uu *UserUpdate) RemoveRepoIDs(ids ...int64) *UserUpdate {
 	uu.mutation.RemoveRepoIDs(ids...)
 	return uu
 }
 
-// RemoveRepo removes "repo" edges to Repo entities.
-func (uu *UserUpdate) RemoveRepo(r ...*Repo) *UserUpdate {
+// RemoveRepos removes "repos" edges to Repo entities.
+func (uu *UserUpdate) RemoveRepos(r ...*Repo) *UserUpdate {
 	ids := make([]int64, len(r))
 	for i := range r {
 		ids[i] = r[i].ID
@@ -695,12 +695,12 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if uu.mutation.RepoCleared() {
+	if uu.mutation.ReposCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   user.RepoTable,
-			Columns: []string{user.RepoColumn},
+			Table:   user.ReposTable,
+			Columns: []string{user.ReposColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -711,12 +711,12 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := uu.mutation.RemovedRepoIDs(); len(nodes) > 0 && !uu.mutation.RepoCleared() {
+	if nodes := uu.mutation.RemovedReposIDs(); len(nodes) > 0 && !uu.mutation.ReposCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   user.RepoTable,
-			Columns: []string{user.RepoColumn},
+			Table:   user.ReposTable,
+			Columns: []string{user.ReposColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -730,12 +730,12 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := uu.mutation.RepoIDs(); len(nodes) > 0 {
+	if nodes := uu.mutation.ReposIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   user.RepoTable,
-			Columns: []string{user.RepoColumn},
+			Table:   user.ReposTable,
+			Columns: []string{user.ReposColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -911,14 +911,14 @@ func (uuo *UserUpdateOne) AddLocks(l ...*Lock) *UserUpdateOne {
 	return uuo.AddLockIDs(ids...)
 }
 
-// AddRepoIDs adds the "repo" edge to the Repo entity by IDs.
+// AddRepoIDs adds the "repos" edge to the Repo entity by IDs.
 func (uuo *UserUpdateOne) AddRepoIDs(ids ...int64) *UserUpdateOne {
 	uuo.mutation.AddRepoIDs(ids...)
 	return uuo
 }
 
-// AddRepo adds the "repo" edges to the Repo entity.
-func (uuo *UserUpdateOne) AddRepo(r ...*Repo) *UserUpdateOne {
+// AddRepos adds the "repos" edges to the Repo entity.
+func (uuo *UserUpdateOne) AddRepos(r ...*Repo) *UserUpdateOne {
 	ids := make([]int64, len(r))
 	for i := range r {
 		ids[i] = r[i].ID
@@ -1021,20 +1021,20 @@ func (uuo *UserUpdateOne) RemoveLocks(l ...*Lock) *UserUpdateOne {
 	return uuo.RemoveLockIDs(ids...)
 }
 
-// ClearRepo clears all "repo" edges to the Repo entity.
-func (uuo *UserUpdateOne) ClearRepo() *UserUpdateOne {
-	uuo.mutation.ClearRepo()
+// ClearRepos clears all "repos" edges to the Repo entity.
+func (uuo *UserUpdateOne) ClearRepos() *UserUpdateOne {
+	uuo.mutation.ClearRepos()
 	return uuo
 }
 
-// RemoveRepoIDs removes the "repo" edge to Repo entities by IDs.
+// RemoveRepoIDs removes the "repos" edge to Repo entities by IDs.
 func (uuo *UserUpdateOne) RemoveRepoIDs(ids ...int64) *UserUpdateOne {
 	uuo.mutation.RemoveRepoIDs(ids...)
 	return uuo
 }
 
-// RemoveRepo removes "repo" edges to Repo entities.
-func (uuo *UserUpdateOne) RemoveRepo(r ...*Repo) *UserUpdateOne {
+// RemoveRepos removes "repos" edges to Repo entities.
+func (uuo *UserUpdateOne) RemoveRepos(r ...*Repo) *UserUpdateOne {
 	ids := make([]int64, len(r))
 	for i := range r {
 		ids[i] = r[i].ID
@@ -1454,12 +1454,12 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if uuo.mutation.RepoCleared() {
+	if uuo.mutation.ReposCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   user.RepoTable,
-			Columns: []string{user.RepoColumn},
+			Table:   user.ReposTable,
+			Columns: []string{user.ReposColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -1470,12 +1470,12 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := uuo.mutation.RemovedRepoIDs(); len(nodes) > 0 && !uuo.mutation.RepoCleared() {
+	if nodes := uuo.mutation.RemovedReposIDs(); len(nodes) > 0 && !uuo.mutation.ReposCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   user.RepoTable,
-			Columns: []string{user.RepoColumn},
+			Table:   user.ReposTable,
+			Columns: []string{user.ReposColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -1489,12 +1489,12 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := uuo.mutation.RepoIDs(); len(nodes) > 0 {
+	if nodes := uuo.mutation.ReposIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   user.RepoTable,
-			Columns: []string{user.RepoColumn},
+			Table:   user.ReposTable,
+			Columns: []string{user.ReposColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
