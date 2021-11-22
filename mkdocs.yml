@@ -25,7 +25,7 @@ nav:
   - Tasks:
     - Installation: tasks/installation.md
     - Database: tasks/database.md
-    - "First Deployment": tasks/first-deployment.md
+    - "Use Cases": tasks/usecases.md
     - Integration: tasks/integration.md
   - References: 
     - Configurations: references/configurations.md
