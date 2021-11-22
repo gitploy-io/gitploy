@@ -3,7 +3,7 @@ module github.com/gitploy-io/gitploy
 go 1.15
 
 require (
-	entgo.io/ent v0.9.0
+	entgo.io/ent v0.9.1
 	github.com/AlekSi/pointer v1.1.0
 	github.com/asaskevich/EventBus v0.0.0-20200907212545-49d423059eef
 	github.com/davecgh/go-spew v1.1.1
