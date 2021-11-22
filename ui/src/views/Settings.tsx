@@ -2,6 +2,7 @@ import { Avatar, Button, Tag } from "antd"
 import moment from "moment"
 import { useEffect } from "react"
 import { shallowEqual } from "react-redux"
+import { Helmet } from "react-helmet"
 
 import { useAppSelector, useAppDispatch } from "../redux/hooks"
 import { fetchMe, fetchRateLimit,checkSlack } from "../redux/settings"
@@ -23,6 +24,9 @@ export default function Settings(): JSX.Element {
 
     return (
         <Main>
+            <Helmet>
+                <title>Settings</title>
+            </Helmet>
             <div >
                 <h1>Settings</h1>
             </div>

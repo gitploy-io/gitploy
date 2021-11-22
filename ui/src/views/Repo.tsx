@@ -2,6 +2,7 @@ import { useParams } from "react-router-dom";
 import { Menu, Breadcrumb, Result, } from 'antd'
 import { shallowEqual } from "react-redux";
 import { useEffect } from "react";
+import { Helmet } from "react-helmet"
 
 import { useAppSelector, useAppDispatch } from '../redux/hooks'
 import { init, activate, repoSlice as slice } from '../redux/repo'
@@ -68,6 +69,9 @@ export default function Repo(): JSX.Element {
 
     return (
         <Main>
+            <Helmet>
+                <title>{namespace}/{name}</title>
+            </Helmet>
             <div >
                 <Breadcrumb>
                     <Breadcrumb.Item>
