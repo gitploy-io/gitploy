@@ -1,7 +1,6 @@
 package vo
 
 import (
-	"encoding/json"
 	"regexp"
 	"strconv"
 
@@ -168,47 +167,4 @@ func (e *Env) IsAutoDeployOn(ref string) (bool, error) {
 // HasReview check whether the review is enabled or not.
 func (e *Env) HasReview() bool {
 	return e.Review != nil && e.Review.Enabled
-}
-
-func (e *Env) Eval(v *EvalValues) error {
-	byts, err := json.Marshal(e)
-	if err != nil {
-		return eutil.NewError(eutil.ErrorCodeConfigParseError, err)
-	}
-
-	// Evaluates variables
-	mapper := func(vn string) string {
-		if vn == VarnameDeployTask {
-			if !v.IsRollback {
-				return DefaultDeployTask
-			} else {
-				return ""
-			}
-		}
-
-		if vn == VarnameRollbackTask {
-			if v.IsRollback {
-				return DefaultRollbackTask
-			} else {
-				return ""
-			}
-		}
-
-		if vn == VarnameIsRollback {
-			return strconv.FormatBool(v.IsRollback)
-		}
-
-		return "ERR_NOT_IMPLEMENTED"
-	}
-
-	evalued, err := envsubst.Eval(string(byts), mapper)
-	if err != nil {
-		return eutil.NewError(eutil.ErrorCodeConfigParseError, err)
-	}
-
-	if err := json.Unmarshal([]byte(evalued), e); err != nil {
-		return eutil.NewError(eutil.ErrorCodeConfigParseError, err)
-	}
-
-	return nil
 }

@@ -1,7 +1,6 @@
 package vo
 
 import (
-	"fmt"
 	"reflect"
 	"testing"
 
@@ -222,82 +221,6 @@ func TestEnv_IsDeployableRef(t *testing.T) {
 		expected := false
 		if ret != expected {
 			t.Fatalf("IsDeployableRef = %v, wanted %v", ret, expected)
-		}
-	})
-}
-
-func TestEnv_Eval(t *testing.T) {
-	t.Run("eval the task.", func(t *testing.T) {
-		cs := []struct {
-			env  *Env
-			want *Env
-		}{
-			{
-				env: &Env{
-					Task: pointer.ToString("${GITPLOY_DEPLOY_TASK}"),
-				},
-				want: &Env{
-					Task: pointer.ToString(DefaultDeployTask),
-				},
-			},
-			{
-				env: &Env{
-					Task: pointer.ToString("${GITPLOY_DEPLOY_TASK}:kubernetes"),
-				},
-				want: &Env{
-					Task: pointer.ToString(fmt.Sprintf("%s:kubernetes", DefaultDeployTask)),
-				},
-			},
-			{
-				env: &Env{
-					Task: pointer.ToString("${GITPLOY_DEPLOY_TASK}${GITPLOY_ROLLBACK_TASK}"),
-				},
-				want: &Env{
-					Task: pointer.ToString(DefaultDeployTask),
-				},
-			},
-		}
-
-		for _, c := range cs {
-			err := c.env.Eval(&EvalValues{})
-			if err != nil {
-				t.Fatalf("Eval returns an error: %s", err)
-			}
-			if !reflect.DeepEqual(c.env, c.want) {
-				t.Fatalf("Eval = %v, wanted %v", *c.env.Task, *c.want.Task)
-			}
-		}
-	})
-
-	t.Run("eval the is_rollback.", func(t *testing.T) {
-		const (
-			isRollback = true
-		)
-
-		cs := []struct {
-			env  *Env
-			want *Env
-		}{
-			{
-				env: &Env{
-					Payload: pointer.ToString("{\"is_rollback\": ${GITPLOY_IS_ROLLBACK}}"),
-				},
-				want: &Env{
-					Payload: pointer.ToString("{\"is_rollback\": true}"),
-				},
-			},
-		}
-
-		for _, c := range cs {
-			err := c.env.Eval(&EvalValues{
-				IsRollback: isRollback,
-			})
-			if err != nil {
-				t.Fatalf("Eval returns an error: %s", err)
-			}
-			if !reflect.DeepEqual(c.env, c.want) {
-				t.Fatalf("Eval = %v, wanted %v", c.env, c.want)
-			}
 		}
 	})
 }

@@ -131,10 +131,6 @@ func (i *Interactor) DeployToRemote(ctx context.Context, u *ent.User, r *ent.Rep
 		)
 	}
 
-	if err := env.Eval(&vo.EvalValues{IsRollback: d.IsRollback}); err != nil {
-		return nil, err
-	}
-
 	rd, err := i.createRemoteDeployment(ctx, u, r, d, env)
 	if err != nil {
 		return nil, err
