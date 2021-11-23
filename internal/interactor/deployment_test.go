@@ -289,7 +289,7 @@ func TestInteractor_DeployToRemote(t *testing.T) {
 		}
 	})
 
-	t.Run("create a new remote deployment and update the deployment.", func(t *testing.T) {
+	t.Run("Create a new remote deployment and update the deployment.", func(t *testing.T) {
 		input := struct {
 			d *ent.Deployment
 			e *vo.Env

@@ -17,7 +17,6 @@ import (
 	"github.com/gitploy-io/gitploy/ent"
 	"github.com/gitploy-io/gitploy/internal/server/api/v1/repos/mock"
 	"github.com/gitploy-io/gitploy/internal/server/global"
-	"github.com/gitploy-io/gitploy/pkg/e"
 	"github.com/gitploy-io/gitploy/vo"
 )
 
@@ -37,7 +36,12 @@ func TestRepo_CreateLock(t *testing.T) {
 		m.
 			EXPECT().
 			GetConfig(gomock.Any(), gomock.AssignableToTypeOf(&ent.User{}), gomock.AssignableToTypeOf(&ent.Repo{})).
-			Return(nil, e.NewError(e.ErrorCodeConfigUndefinedEnv, nil))
+			Return(&vo.Config{
+				Envs: []*vo.Env{
+					{
+						Name: "dev",
+					},
+				}}, nil)
 
 		r := NewRepo(RepoConfig{}, m)
 

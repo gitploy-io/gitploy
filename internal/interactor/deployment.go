@@ -124,6 +124,10 @@ func (i *Interactor) DeployToRemote(ctx context.Context, u *ent.User, r *ent.Rep
 		)
 	}
 
+	if ok, err := i.isDeployable(ctx, u, r, d, env); !ok {
+		return nil, err
+	}
+
 	if !i.IsApproved(ctx, d) {
 		return nil, e.NewError(
 			e.ErrorCodeDeploymentNotApproved,
