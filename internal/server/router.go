@@ -257,6 +257,7 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 
 		// Static files located at the 'ui/public' directory.
 		r.StaticFile("/favicon.ico", "./favicon.ico")
+		r.StaticFile("/spinner.ico", "./spinner.ico")
 		r.StaticFile("/manifest.json", "./manifest.json")
 		r.StaticFile("/robots.txt", "./robots.txt")
 		r.StaticFile("/logo192.png", "./logo192.png")
