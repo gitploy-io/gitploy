@@ -42,11 +42,11 @@ func (s *Stream) GetEvents(c *gin.Context) {
 			return
 		}
 
-		if ok, err := s.hasPermForEvent(ctx, u, e); !ok {
-			s.log.Debug("Skip the event. The user has not the perm.")
-			return
-		} else if err != nil {
+		if ok, err := s.hasPermForEvent(ctx, u, e); err != nil {
 			s.log.Error("It has failed to check the perm.", zap.Error(err))
+			return
+		} else if !ok {
+			s.log.Debug("Skip the event. The user has not the perm.")
 			return
 		}
 
