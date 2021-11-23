@@ -19,6 +19,7 @@ import (
 	"github.com/gitploy-io/gitploy/ent"
 	"github.com/gitploy-io/gitploy/ent/event"
 	gb "github.com/gitploy-io/gitploy/internal/server/global"
+	"github.com/gitploy-io/gitploy/pkg/e"
 )
 
 // GetEvents streams events of deployment, or review.
@@ -42,11 +43,11 @@ func (s *Stream) GetEvents(c *gin.Context) {
 			return
 		}
 
-		if ok, err := s.hasPermForEvent(ctx, u, e); !ok {
-			s.log.Debug("Skip the event. The user has not the perm.")
-			return
-		} else if err != nil {
+		if ok, err := s.hasPermForEvent(ctx, u, e); err != nil {
 			s.log.Error("It has failed to check the perm.", zap.Error(err))
+			return
+		} else if !ok {
+			s.log.Debug("Skip the event. The user has not the perm.")
 			return
 		}
 
@@ -93,14 +94,14 @@ L:
 }
 
 // hasPermForEvent checks the user has permission for the event.
-func (s *Stream) hasPermForEvent(ctx context.Context, u *ent.User, e *ent.Event) (bool, error) {
-	if e.Kind == event.KindDeployment {
-		d, err := s.i.FindDeploymentByID(ctx, e.DeploymentID)
+func (s *Stream) hasPermForEvent(ctx context.Context, u *ent.User, evt *ent.Event) (bool, error) {
+	if evt.Kind == event.KindDeployment {
+		d, err := s.i.FindDeploymentByID(ctx, evt.DeploymentID)
 		if err != nil {
 			return false, err
 		}
 
-		if _, err = s.i.FindPermOfRepo(ctx, d.Edges.Repo, u); ent.IsNotFound(err) {
+		if _, err = s.i.FindPermOfRepo(ctx, d.Edges.Repo, u); e.HasErrorCode(err, e.ErrorCodeEntityNotFound) {
 			return false, nil
 		} else if err != nil {
 			return false, err
@@ -109,8 +110,8 @@ func (s *Stream) hasPermForEvent(ctx context.Context, u *ent.User, e *ent.Event)
 		return true, nil
 	}
 
-	if e.Kind == event.KindReview {
-		rv, err := s.i.FindReviewByID(ctx, e.ReviewID)
+	if evt.Kind == event.KindReview {
+		rv, err := s.i.FindReviewByID(ctx, evt.ReviewID)
 		if err != nil {
 			return false, err
 		}
@@ -120,7 +121,7 @@ func (s *Stream) hasPermForEvent(ctx context.Context, u *ent.User, e *ent.Event)
 			return false, err
 		}
 
-		if _, err = s.i.FindPermOfRepo(ctx, d.Edges.Repo, u); ent.IsNotFound(err) {
+		if _, err = s.i.FindPermOfRepo(ctx, d.Edges.Repo, u); e.HasErrorCode(err, e.ErrorCodeEntityNotFound) {
 			return false, nil
 		} else if err != nil {
 			return false, err
