@@ -14,6 +14,10 @@ import (
 type (
 	Config struct {
 		Envs []*Env `json:"envs" yaml:"envs"`
+
+		// save the content of the configuration file
+		// when it is unmarshalled.
+		source []byte
 	}
 
 	Env struct {
@@ -48,21 +52,61 @@ type (
 )
 
 const (
-	varnameDeployTask   = "GITPLOY_DEPLOY_TASK"
-	varnameRollbackTask = "GITPLOY_ROLLBACK_TASK"
-	varnameIsRollback   = "GITPLOY_IS_ROLLBACK"
+	VarnameDeployTask   = "GITPLOY_DEPLOY_TASK"
+	VarnameRollbackTask = "GITPLOY_ROLLBACK_TASK"
+	VarnameIsRollback   = "GITPLOY_IS_ROLLBACK"
 )
 
 const (
-	// defaultDeployTask is the value of the 'GITPLOY_DEPLOY_TASK' variable.
-	defaultDeployTask = "deploy"
-	// defaultRollbackTask is the value of the 'GITPLOY_ROLLBACK_TASK' variable.
-	defaultRollbackTask = "rollback"
+	// DefaultDeployTask is the value of the 'GITPLOY_DEPLOY_TASK' variable.
+	DefaultDeployTask = "deploy"
+	// DefaultRollbackTask is the value of the 'GITPLOY_ROLLBACK_TASK' variable.
+	DefaultRollbackTask = "rollback"
 )
 
 func UnmarshalYAML(content []byte, c *Config) error {
 	if err := yaml.Unmarshal([]byte(content), c); err != nil {
-		return err
+		return eutil.NewError(eutil.ErrorCodeConfigParseError, err)
+	}
+
+	c.source = content
+
+	return nil
+}
+
+func (c *Config) Eval(v *EvalValues) error {
+	// Evaluates variables
+	mapper := func(vn string) string {
+		if vn == VarnameDeployTask {
+			if !v.IsRollback {
+				return DefaultDeployTask
+			} else {
+				return ""
+			}
+		}
+
+		if vn == VarnameRollbackTask {
+			if v.IsRollback {
+				return DefaultRollbackTask
+			} else {
+				return ""
+			}
+		}
+
+		if vn == VarnameIsRollback {
+			return strconv.FormatBool(v.IsRollback)
+		}
+
+		return "ERR_NOT_IMPLEMENTED"
+	}
+
+	evalued, err := envsubst.Eval(string(c.source), mapper)
+	if err != nil {
+		return eutil.NewError(eutil.ErrorCodeConfigParseError, err)
+	}
+
+	if err := yaml.Unmarshal([]byte(evalued), c); err != nil {
+		return eutil.NewError(eutil.ErrorCodeConfigParseError, err)
 	}
 
 	return nil
@@ -134,23 +178,23 @@ func (e *Env) Eval(v *EvalValues) error {
 
 	// Evaluates variables
 	mapper := func(vn string) string {
-		if vn == varnameDeployTask {
+		if vn == VarnameDeployTask {
 			if !v.IsRollback {
-				return defaultDeployTask
+				return DefaultDeployTask
 			} else {
 				return ""
 			}
 		}
 
-		if vn == varnameRollbackTask {
+		if vn == VarnameRollbackTask {
 			if v.IsRollback {
-				return defaultRollbackTask
+				return DefaultRollbackTask
 			} else {
 				return ""
 			}
 		}
 
-		if vn == varnameIsRollback {
+		if vn == VarnameIsRollback {
 			return strconv.FormatBool(v.IsRollback)
 		}
 

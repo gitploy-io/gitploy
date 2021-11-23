@@ -31,6 +31,7 @@ envs:
 					RequiredContexts: &[]string{"github-action"},
 				},
 			},
+			source: []byte(s),
 		}
 		if !reflect.DeepEqual(c, e) {
 			tt.Errorf("Config = %s, expected %s", spew.Sdump(c), spew.Sdump(e))
@@ -57,6 +58,7 @@ envs:
 					AutoMerge: pointer.ToBool(false),
 				},
 			},
+			source: []byte(s),
 		}
 		if !reflect.DeepEqual(c, e) {
 			tt.Errorf("Config = %s, expected %s", spew.Sdump(c), spew.Sdump(e))
@@ -72,8 +74,7 @@ envs:
 
 		err := UnmarshalYAML([]byte(s), c)
 		if err != nil {
-			tt.Errorf("failed to parse: %s", err)
-			tt.FailNow()
+			tt.Fatalf("failed to parse: %s", err)
 		}
 
 		e := &Config{
@@ -83,9 +84,74 @@ envs:
 					AutoMerge: pointer.ToBool(true),
 				},
 			},
+			source: []byte(s),
 		}
 		if !reflect.DeepEqual(c, e) {
 			tt.Errorf("Config = %s, expected %s", spew.Sdump(c), spew.Sdump(e))
+		}
+	})
+}
+
+func TestConfig_Eval(t *testing.T) {
+	t.Run("Evaluate the configuration.", func(t *testing.T) {
+		s := `
+envs:
+  - name: dev
+    task: ${GITPLOY_DEPLOY_TASK}:kubernetes`
+
+		c := &Config{}
+		if err := UnmarshalYAML([]byte(s), c); err != nil {
+			t.Fatalf("Failed to parse the configuration file: %v", err)
+		}
+
+		err := c.Eval(&EvalValues{})
+		if err != nil {
+			t.Fatalf("Eval returns an error: %v", err)
+		}
+
+		e := &Config{
+			Envs: []*Env{
+				{
+					Name: "dev",
+					Task: pointer.ToString("deploy:kubernetes"),
+				},
+			},
+			source: []byte(s),
+		}
+		if !reflect.DeepEqual(c, e) {
+			t.Errorf("Config = %v expected %v", spew.Sdump(c), spew.Sdump(e))
+		}
+	})
+
+	t.Run("Evaluate the configuration with the regexp.", func(t *testing.T) {
+		s := `
+envs:
+  - name: dev
+    task: ${GITPLOY_DEPLOY_TASK}:kubernetes
+    deployable_ref: 'v.*\..*\..*'`
+
+		c := &Config{}
+		if err := UnmarshalYAML([]byte(s), c); err != nil {
+			t.Fatalf("Failed to parse the configuration file: %v", err)
+		}
+
+		err := c.Eval(&EvalValues{})
+		if err != nil {
+			t.Fatalf("Eval returns an error: %v", err)
+		}
+
+		e := &Config{
+			Envs: []*Env{
+				{
+					Name:          "dev",
+					Task:          pointer.ToString("deploy:kubernetes"),
+					DeployableRef: pointer.ToString(`v.*\..*\..*`),
+				},
+			},
+			source: []byte(s),
+		}
+		if !reflect.DeepEqual(c, e) {
+			t.Errorf("Config = %v expected %v", spew.Sdump(c), spew.Sdump(e))
 		}
 	})
 }
@@ -171,7 +237,7 @@ func TestEnv_Eval(t *testing.T) {
 					Task: pointer.ToString("${GITPLOY_DEPLOY_TASK}"),
 				},
 				want: &Env{
-					Task: pointer.ToString(defaultDeployTask),
+					Task: pointer.ToString(DefaultDeployTask),
 				},
 			},
 			{
@@ -179,7 +245,7 @@ func TestEnv_Eval(t *testing.T) {
 					Task: pointer.ToString("${GITPLOY_DEPLOY_TASK}:kubernetes"),
 				},
 				want: &Env{
-					Task: pointer.ToString(fmt.Sprintf("%s:kubernetes", defaultDeployTask)),
+					Task: pointer.ToString(fmt.Sprintf("%s:kubernetes", DefaultDeployTask)),
 				},
 			},
 			{
@@ -187,7 +253,7 @@ func TestEnv_Eval(t *testing.T) {
 					Task: pointer.ToString("${GITPLOY_DEPLOY_TASK}${GITPLOY_ROLLBACK_TASK}"),
 				},
 				want: &Env{
-					Task: pointer.ToString(defaultDeployTask),
+					Task: pointer.ToString(DefaultDeployTask),
 				},
 			},
 		}
