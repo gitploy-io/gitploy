@@ -34,10 +34,9 @@ func TestRepo_CreateLock(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		m := mock.NewMockInteractor(ctrl)
 
-		t.Log("Read deploy.yml and check the env.")
 		m.
 			EXPECT().
-			GetEnv(gomock.Any(), gomock.AssignableToTypeOf(&ent.User{}), gomock.AssignableToTypeOf(&ent.Repo{}), gomock.Any()).
+			GetConfig(gomock.Any(), gomock.AssignableToTypeOf(&ent.User{}), gomock.AssignableToTypeOf(&ent.Repo{})).
 			Return(nil, e.NewError(e.ErrorCodeConfigUndefinedEnv, nil))
 
 		r := NewRepo(RepoConfig{}, m)
@@ -72,13 +71,15 @@ func TestRepo_CreateLock(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		m := mock.NewMockInteractor(ctrl)
 
-		t.Log("Read deploy.yml and check the env.")
 		m.
 			EXPECT().
-			GetEnv(gomock.Any(), gomock.AssignableToTypeOf(&ent.User{}), gomock.AssignableToTypeOf(&ent.Repo{}), gomock.Any()).
-			Return(&vo.Env{
-				Name: "production",
-			}, nil)
+			GetConfig(gomock.Any(), gomock.AssignableToTypeOf(&ent.User{}), gomock.AssignableToTypeOf(&ent.Repo{})).
+			Return(&vo.Config{
+				Envs: []*vo.Env{
+					{
+						Name: "production",
+					},
+				}}, nil)
 
 		t.Log("Lock the env.")
 		m.

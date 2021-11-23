@@ -31,7 +31,6 @@ type (
 		Deploy(ctx context.Context, u *ent.User, re *ent.Repo, d *ent.Deployment, env *vo.Env) (*ent.Deployment, error)
 		DeployToRemote(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, env *vo.Env) (*ent.Deployment, error)
 		GetConfig(ctx context.Context, u *ent.User, r *ent.Repo) (*vo.Config, error)
-		GetEnv(ctx context.Context, u *ent.User, r *ent.Repo, env string) (*vo.Env, error)
 
 		ListReviews(ctx context.Context, d *ent.Deployment) ([]*ent.Review, error)
 		FindReviewOfUser(ctx context.Context, u *ent.User, d *ent.Deployment) (*ent.Review, error)

@@ -212,15 +212,21 @@ func (s *Slack) interactRollback(c *gin.Context) {
 		return
 	}
 
-	cfg, err := s.i.GetConfig(ctx, cu.Edges.User, cb.Edges.Repo)
+	config, err := s.i.GetConfig(ctx, cu.Edges.User, cb.Edges.Repo)
 	if err != nil {
 		postMessageWithError(cu, err)
 		c.Status(http.StatusOK)
 		return
 	}
 
+	if err := config.Eval(&vo.EvalValues{}); err != nil {
+		postMessageWithError(cu, err)
+		c.Status(http.StatusOK)
+		return
+	}
+
 	var env *vo.Env
-	if env = cfg.GetEnv(d.Env); env == nil {
+	if env = config.GetEnv(d.Env); env == nil {
 		postBotMessage(cu, "The env is not defined in the config.")
 		c.Status(http.StatusOK)
 		return

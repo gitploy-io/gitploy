@@ -336,21 +336,6 @@ func (mr *MockInteractorMockRecorder) GetConfig(ctx, u, r interface{}) *gomock.C
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetConfig", reflect.TypeOf((*MockInteractor)(nil).GetConfig), ctx, u, r)
 }
 
-// GetEnv mocks base method.
-func (m *MockInteractor) GetEnv(ctx context.Context, u *ent.User, r *ent.Repo, env string) (*vo.Env, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetEnv", ctx, u, r, env)
-	ret0, _ := ret[0].(*vo.Env)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetEnv indicates an expected call of GetEnv.
-func (mr *MockInteractorMockRecorder) GetEnv(ctx, u, r, env interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetEnv", reflect.TypeOf((*MockInteractor)(nil).GetEnv), ctx, u, r, env)
-}
-
 // GetTag mocks base method.
 func (m *MockInteractor) GetTag(ctx context.Context, u *ent.User, r *ent.Repo, tag string) (*vo.Tag, error) {
 	m.ctrl.T.Helper()
