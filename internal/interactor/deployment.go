@@ -37,10 +37,6 @@ func (i *Interactor) Deploy(ctx context.Context, u *ent.User, r *ent.Repo, d *en
 		return nil, err
 	}
 
-	if err := env.Eval(&vo.EvalValues{IsRollback: d.IsRollback}); err != nil {
-		return nil, err
-	}
-
 	number, err := i.Store.GetNextDeploymentNumberOfRepo(ctx, r)
 	if err != nil {
 		return nil, e.NewError(
@@ -137,10 +133,6 @@ func (i *Interactor) DeployToRemote(ctx context.Context, u *ent.User, r *ent.Rep
 			e.ErrorCodeDeploymentNotApproved,
 			nil,
 		)
-	}
-
-	if err := env.Eval(&vo.EvalValues{IsRollback: d.IsRollback}); err != nil {
-		return nil, err
 	}
 
 	rd, err := i.createRemoteDeployment(ctx, u, r, d, env)

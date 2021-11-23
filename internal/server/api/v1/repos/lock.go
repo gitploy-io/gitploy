@@ -20,6 +20,7 @@ import (
 	"github.com/gitploy-io/gitploy/internal/server/global"
 	gb "github.com/gitploy-io/gitploy/internal/server/global"
 	"github.com/gitploy-io/gitploy/pkg/e"
+	"github.com/gitploy-io/gitploy/vo"
 )
 
 type (
@@ -84,15 +85,17 @@ func (r *Repo) CreateLock(c *gin.Context) {
 	vu, _ := c.Get(global.KeyUser)
 	u := vu.(*ent.User)
 
-	env, err := r.i.GetEnv(ctx, u, re, p.Env)
+	config, err := r.i.GetConfig(ctx, u, re)
 	if e.HasErrorCode(err, e.ErrorCodeEntityNotFound) {
-		r.log.Check(gb.GetZapLogLevel(err), "The configuration file is not found.").Write(zap.Error(err))
-		// To override the HTTP status 422.
+		r.log.Check(gb.GetZapLogLevel(err), "Failed to get the configuration.").Write(zap.Error(err))
 		gb.ResponseWithStatusAndError(c, http.StatusUnprocessableEntity, err)
 		return
-	} else if err != nil {
-		r.log.Check(gb.GetZapLogLevel(err), "It has failed to get the configuration.").Write(zap.Error(err))
-		gb.ResponseWithError(c, err)
+	}
+
+	var env *vo.Env
+	if env = config.GetEnv(p.Env); env == nil {
+		r.log.Warn("The environment is not found.", zap.String("env", p.Env))
+		gb.ResponseWithStatusAndError(c, http.StatusUnprocessableEntity, e.NewError(e.ErrorCodeConfigUndefinedEnv, nil))
 		return
 	}
 

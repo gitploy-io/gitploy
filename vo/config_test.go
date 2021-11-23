@@ -1,7 +1,6 @@
 package vo
 
 import (
-	"fmt"
 	"reflect"
 	"testing"
 
@@ -31,6 +30,7 @@ envs:
 					RequiredContexts: &[]string{"github-action"},
 				},
 			},
+			source: []byte(s),
 		}
 		if !reflect.DeepEqual(c, e) {
 			tt.Errorf("Config = %s, expected %s", spew.Sdump(c), spew.Sdump(e))
@@ -57,6 +57,7 @@ envs:
 					AutoMerge: pointer.ToBool(false),
 				},
 			},
+			source: []byte(s),
 		}
 		if !reflect.DeepEqual(c, e) {
 			tt.Errorf("Config = %s, expected %s", spew.Sdump(c), spew.Sdump(e))
@@ -72,8 +73,7 @@ envs:
 
 		err := UnmarshalYAML([]byte(s), c)
 		if err != nil {
-			tt.Errorf("failed to parse: %s", err)
-			tt.FailNow()
+			tt.Fatalf("failed to parse: %s", err)
 		}
 
 		e := &Config{
@@ -83,9 +83,74 @@ envs:
 					AutoMerge: pointer.ToBool(true),
 				},
 			},
+			source: []byte(s),
 		}
 		if !reflect.DeepEqual(c, e) {
 			tt.Errorf("Config = %s, expected %s", spew.Sdump(c), spew.Sdump(e))
+		}
+	})
+}
+
+func TestConfig_Eval(t *testing.T) {
+	t.Run("Evaluate the configuration.", func(t *testing.T) {
+		s := `
+envs:
+  - name: dev
+    task: ${GITPLOY_DEPLOY_TASK}:kubernetes`
+
+		c := &Config{}
+		if err := UnmarshalYAML([]byte(s), c); err != nil {
+			t.Fatalf("Failed to parse the configuration file: %v", err)
+		}
+
+		err := c.Eval(&EvalValues{})
+		if err != nil {
+			t.Fatalf("Eval returns an error: %v", err)
+		}
+
+		e := &Config{
+			Envs: []*Env{
+				{
+					Name: "dev",
+					Task: pointer.ToString("deploy:kubernetes"),
+				},
+			},
+			source: []byte(s),
+		}
+		if !reflect.DeepEqual(c, e) {
+			t.Errorf("Config = %v expected %v", spew.Sdump(c), spew.Sdump(e))
+		}
+	})
+
+	t.Run("Evaluate the configuration with the regexp.", func(t *testing.T) {
+		s := `
+envs:
+  - name: dev
+    task: ${GITPLOY_DEPLOY_TASK}:kubernetes
+    deployable_ref: 'v.*\..*\..*'`
+
+		c := &Config{}
+		if err := UnmarshalYAML([]byte(s), c); err != nil {
+			t.Fatalf("Failed to parse the configuration file: %v", err)
+		}
+
+		err := c.Eval(&EvalValues{})
+		if err != nil {
+			t.Fatalf("Eval returns an error: %v", err)
+		}
+
+		e := &Config{
+			Envs: []*Env{
+				{
+					Name:          "dev",
+					Task:          pointer.ToString("deploy:kubernetes"),
+					DeployableRef: pointer.ToString(`v.*\..*\..*`),
+				},
+			},
+			source: []byte(s),
+		}
+		if !reflect.DeepEqual(c, e) {
+			t.Errorf("Config = %v expected %v", spew.Sdump(c), spew.Sdump(e))
 		}
 	})
 }
@@ -156,82 +221,6 @@ func TestEnv_IsDeployableRef(t *testing.T) {
 		expected := false
 		if ret != expected {
 			t.Fatalf("IsDeployableRef = %v, wanted %v", ret, expected)
-		}
-	})
-}
-
-func TestEnv_Eval(t *testing.T) {
-	t.Run("eval the task.", func(t *testing.T) {
-		cs := []struct {
-			env  *Env
-			want *Env
-		}{
-			{
-				env: &Env{
-					Task: pointer.ToString("${GITPLOY_DEPLOY_TASK}"),
-				},
-				want: &Env{
-					Task: pointer.ToString(defaultDeployTask),
-				},
-			},
-			{
-				env: &Env{
-					Task: pointer.ToString("${GITPLOY_DEPLOY_TASK}:kubernetes"),
-				},
-				want: &Env{
-					Task: pointer.ToString(fmt.Sprintf("%s:kubernetes", defaultDeployTask)),
-				},
-			},
-			{
-				env: &Env{
-					Task: pointer.ToString("${GITPLOY_DEPLOY_TASK}${GITPLOY_ROLLBACK_TASK}"),
-				},
-				want: &Env{
-					Task: pointer.ToString(defaultDeployTask),
-				},
-			},
-		}
-
-		for _, c := range cs {
-			err := c.env.Eval(&EvalValues{})
-			if err != nil {
-				t.Fatalf("Eval returns an error: %s", err)
-			}
-			if !reflect.DeepEqual(c.env, c.want) {
-				t.Fatalf("Eval = %v, wanted %v", *c.env.Task, *c.want.Task)
-			}
-		}
-	})
-
-	t.Run("eval the is_rollback.", func(t *testing.T) {
-		const (
-			isRollback = true
-		)
-
-		cs := []struct {
-			env  *Env
-			want *Env
-		}{
-			{
-				env: &Env{
-					Payload: pointer.ToString("{\"is_rollback\": ${GITPLOY_IS_ROLLBACK}}"),
-				},
-				want: &Env{
-					Payload: pointer.ToString("{\"is_rollback\": true}"),
-				},
-			},
-		}
-
-		for _, c := range cs {
-			err := c.env.Eval(&EvalValues{
-				IsRollback: isRollback,
-			})
-			if err != nil {
-				t.Fatalf("Eval returns an error: %s", err)
-			}
-			if !reflect.DeepEqual(c.env, c.want) {
-				t.Fatalf("Eval = %v, wanted %v", c.env, c.want)
-			}
 		}
 	})
 }

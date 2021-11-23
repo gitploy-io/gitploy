@@ -17,7 +17,6 @@ import (
 	"github.com/gitploy-io/gitploy/ent"
 	"github.com/gitploy-io/gitploy/internal/server/api/v1/repos/mock"
 	"github.com/gitploy-io/gitploy/internal/server/global"
-	"github.com/gitploy-io/gitploy/pkg/e"
 	"github.com/gitploy-io/gitploy/vo"
 )
 
@@ -34,11 +33,15 @@ func TestRepo_CreateLock(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		m := mock.NewMockInteractor(ctrl)
 
-		t.Log("Read deploy.yml and check the env.")
 		m.
 			EXPECT().
-			GetEnv(gomock.Any(), gomock.AssignableToTypeOf(&ent.User{}), gomock.AssignableToTypeOf(&ent.Repo{}), gomock.Any()).
-			Return(nil, e.NewError(e.ErrorCodeConfigUndefinedEnv, nil))
+			GetConfig(gomock.Any(), gomock.AssignableToTypeOf(&ent.User{}), gomock.AssignableToTypeOf(&ent.Repo{})).
+			Return(&vo.Config{
+				Envs: []*vo.Env{
+					{
+						Name: "dev",
+					},
+				}}, nil)
 
 		r := NewRepo(RepoConfig{}, m)
 
@@ -72,13 +75,15 @@ func TestRepo_CreateLock(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		m := mock.NewMockInteractor(ctrl)
 
-		t.Log("Read deploy.yml and check the env.")
 		m.
 			EXPECT().
-			GetEnv(gomock.Any(), gomock.AssignableToTypeOf(&ent.User{}), gomock.AssignableToTypeOf(&ent.Repo{}), gomock.Any()).
-			Return(&vo.Env{
-				Name: "production",
-			}, nil)
+			GetConfig(gomock.Any(), gomock.AssignableToTypeOf(&ent.User{}), gomock.AssignableToTypeOf(&ent.Repo{})).
+			Return(&vo.Config{
+				Envs: []*vo.Env{
+					{
+						Name: "production",
+					},
+				}}, nil)
 
 		t.Log("Lock the env.")
 		m.
