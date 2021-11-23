@@ -37,6 +37,20 @@ envs:
     production_environment: true
 ```
 
+## Auto deployment
+
+If you want to enable the auto-deployment when the pull request is merged into the main branch, you should configure the `auto_deploy_on` field like the below.
+
+```yaml
+envs:
+  - name: production
+    auto_merge: true
+    required_contexts: []
+    auto_deploy_on: refs/heads/main
+    deployable_ref: main
+    production_environment: true
+```
+
 ## Questions?
 
 We are always happy to help with questions you might have. You can post questions or comments to our [community](https://github.com/gitploy-io/gitploy/discussions). 
