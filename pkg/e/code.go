@@ -25,6 +25,7 @@ const (
 	ErrorCodeDeploymentStatusInvalid ErrorCode = "deployment_status_invalid"
 
 	// ErrorCodeEntityNotFound is the entity is not found.
+	// Entity is a resource of store or scm.
 	ErrorCodeEntityNotFound ErrorCode = "entity_not_found"
 	// ErrorCodeEntityUnprocessable is the entity is unprocessable.
 	ErrorCodeEntityUnprocessable ErrorCode = "entity_unprocessable"
