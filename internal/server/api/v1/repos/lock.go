@@ -86,7 +86,7 @@ func (r *Repo) CreateLock(c *gin.Context) {
 	u := vu.(*ent.User)
 
 	config, err := r.i.GetConfig(ctx, u, re)
-	if e.HasErrorCode(err, e.ErrorCodeEntityNotFound) {
+	if err != nil {
 		r.log.Check(gb.GetZapLogLevel(err), "Failed to get the configuration.").Write(zap.Error(err))
 		gb.ResponseWithStatusAndError(c, http.StatusUnprocessableEntity, err)
 		return

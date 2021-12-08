@@ -86,7 +86,7 @@ func (r *Repo) CreateDeployment(c *gin.Context) {
 	re := vr.(*ent.Repo)
 
 	config, err := r.i.GetConfig(ctx, u, re)
-	if e.HasErrorCode(err, e.ErrorCodeEntityNotFound) {
+	if err != nil {
 		r.log.Check(gb.GetZapLogLevel(err), "Failed to get the configuration.").Write(zap.Error(err))
 		gb.ResponseWithStatusAndError(c, http.StatusUnprocessableEntity, err)
 		return
@@ -158,7 +158,7 @@ func (r *Repo) UpdateDeployment(c *gin.Context) {
 	}
 
 	config, err := r.i.GetConfig(ctx, u, re)
-	if e.HasErrorCode(err, e.ErrorCodeEntityNotFound) {
+	if err != nil {
 		r.log.Check(gb.GetZapLogLevel(err), "Failed to get the configuration.").Write(zap.Error(err))
 		gb.ResponseWithStatusAndError(c, http.StatusUnprocessableEntity, err)
 		return
@@ -221,7 +221,7 @@ func (r *Repo) RollbackDeployment(c *gin.Context) {
 	}
 
 	config, err := r.i.GetConfig(ctx, u, re)
-	if e.HasErrorCode(err, e.ErrorCodeEntityNotFound) {
+	if err != nil {
 		r.log.Check(gb.GetZapLogLevel(err), "Failed to get the configuration.").Write(zap.Error(err))
 		gb.ResponseWithStatusAndError(c, http.StatusUnprocessableEntity, err)
 		return
