@@ -24,6 +24,15 @@ const (
 	// ErrorCodeDeploymentStatusNotWaiting is the status must be 'waiting' to create a remote deployment.
 	ErrorCodeDeploymentStatusInvalid ErrorCode = "deployment_status_invalid"
 
+	// ErrorCodeEntityNotFound is the entity is not found.
+	// Entity is a resource of store or scm.
+	ErrorCodeEntityNotFound ErrorCode = "entity_not_found"
+	// ErrorCodeEntityUnprocessable is the entity is unprocessable.
+	ErrorCodeEntityUnprocessable ErrorCode = "entity_unprocessable"
+
+	// ErrorCodeInternalError is the internal error couldn't be handled.
+	ErrorCodeInternalError ErrorCode = "internal_error"
+
 	// ErrorCodeLockAlreadyExist is that the environment is already locked.
 	ErrorCodeLockAlreadyExist ErrorCode = "lock_already_exist"
 
@@ -32,19 +41,11 @@ const (
 	// ErrorCodeLicenseRequired is that the license is required.
 	ErrorCodeLicenseRequired ErrorCode = "license_required"
 
-	// ErrorCodeEntityNotFound is the entity is not found.
-	ErrorCodeEntityNotFound ErrorCode = "entity_not_found"
-	// ErrorCodeEntityUnprocessable is the entity is unprocessable.
-	ErrorCodeEntityUnprocessable ErrorCode = "entity_unprocessable"
-
 	// ErrorCodeParameterInvalid is a parameter of a request is invalid.
 	ErrorCodeParameterInvalid ErrorCode = "parameter_invalid"
 
 	// ErrorPermissionRequired is the permission is required to access.
 	ErrorPermissionRequired ErrorCode = "permission_required"
-
-	// ErrorCodeInternalError is the internal error couldn't be handled.
-	ErrorCodeInternalError ErrorCode = "internal_error"
 )
 
 type (

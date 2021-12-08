@@ -11,14 +11,14 @@ var messages = map[ErrorCode]string{
 	ErrorCodeDeploymentLocked:        "The environment is locked.",
 	ErrorCodeDeploymentNotApproved:   "The deployment is not approved",
 	ErrorCodeDeploymentStatusInvalid: "The deployment status is invalid",
+	ErrorCodeEntityNotFound:          "It is not found.",
+	ErrorCodeEntityUnprocessable:     "Invalid request payload.",
+	ErrorCodeInternalError:           "Server internal error.",
 	ErrorCodeLockAlreadyExist:        "The environment is already locked",
 	ErrorCodeLicenseDecode:           "Decoding the license is failed.",
 	ErrorCodeLicenseRequired:         "The license is required.",
-	ErrorCodeEntityNotFound:          "It is not found.",
-	ErrorCodeEntityUnprocessable:     "Invalid request payload.",
 	ErrorCodeParameterInvalid:        "Invalid request parameter.",
 	ErrorPermissionRequired:          "The permission is required",
-	ErrorCodeInternalError:           "Server internal error.",
 }
 
 func GetMessage(code ErrorCode) string {
@@ -39,14 +39,14 @@ var httpCodes = map[ErrorCode]int{
 	ErrorCodeDeploymentLocked:        http.StatusUnprocessableEntity,
 	ErrorCodeDeploymentNotApproved:   http.StatusUnprocessableEntity,
 	ErrorCodeDeploymentStatusInvalid: http.StatusUnprocessableEntity,
+	ErrorCodeEntityNotFound:          http.StatusNotFound,
+	ErrorCodeEntityUnprocessable:     http.StatusUnprocessableEntity,
+	ErrorCodeInternalError:           http.StatusInternalServerError,
 	ErrorCodeLockAlreadyExist:        http.StatusUnprocessableEntity,
 	ErrorCodeLicenseDecode:           http.StatusUnprocessableEntity,
 	ErrorCodeLicenseRequired:         http.StatusPaymentRequired,
-	ErrorCodeEntityNotFound:          http.StatusNotFound,
-	ErrorCodeEntityUnprocessable:     http.StatusUnprocessableEntity,
 	ErrorCodeParameterInvalid:        http.StatusBadRequest,
 	ErrorPermissionRequired:          http.StatusForbidden,
-	ErrorCodeInternalError:           http.StatusInternalServerError,
 }
 
 func GetHttpCode(code ErrorCode) int {

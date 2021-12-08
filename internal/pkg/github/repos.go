@@ -261,8 +261,13 @@ func (g *Github) CreateWebhook(ctx context.Context, u *ent.User, r *ent.Repo, c 
 }
 
 func (g *Github) DeleteWebhook(ctx context.Context, u *ent.User, r *ent.Repo, id int64) error {
-	_, err := g.Client(ctx, u.Token).
+	res, err := g.Client(ctx, u.Token).
 		Repositories.
 		DeleteHook(ctx, r.Namespace, r.Name, id)
+	// https://docs.github.com/en/rest/reference/repos#delete-a-repository-webhook
+	if res.StatusCode == http.StatusNotFound {
+		return e.NewErrorWithMessage(e.ErrorCodeEntityNotFound, "The webhook is not found.", err)
+	}
+
 	return err
 }
