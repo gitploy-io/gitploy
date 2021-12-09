@@ -15,6 +15,6 @@ envs:
       reviewers: ["USER_LOGIN"]
 ```
 
-2\. When the user deploys in the 'deploy' tab, Gitploy request a review to reviewers. And the deployment is waiting until one of reviews is approved.
+2\. When the user deploys in the 'deploy' tab, Gitploy requests a review to reviewers. And the deployment is waiting until one of the reviews is approved.
 
 ![review](../images/review.png)
