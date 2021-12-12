@@ -1,4 +1,4 @@
-package vo
+package extent
 
 const (
 	RemoteRepoPermRead  RemoteRepoPerm = "read"

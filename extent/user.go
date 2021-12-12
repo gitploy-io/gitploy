@@ -1,4 +1,4 @@
-package vo
+package extent
 
 type (
 	RemoteUser struct {
