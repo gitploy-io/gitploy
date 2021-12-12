@@ -3,7 +3,7 @@ package stream
 import (
 	"context"
 
-	"github.com/gitploy-io/gitploy/ent"
+	"github.com/gitploy-io/gitploy/model/ent"
 )
 
 type (

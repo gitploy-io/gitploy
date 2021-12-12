@@ -5,11 +5,11 @@ import (
 	"fmt"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/gitploy-io/gitploy/ent"
-	"github.com/gitploy-io/gitploy/ent/deployment"
-	"github.com/gitploy-io/gitploy/ent/perm"
-	"github.com/gitploy-io/gitploy/ent/repo"
-	"github.com/gitploy-io/gitploy/extent"
+	"github.com/gitploy-io/gitploy/model/ent"
+	"github.com/gitploy-io/gitploy/model/ent/deployment"
+	"github.com/gitploy-io/gitploy/model/ent/perm"
+	"github.com/gitploy-io/gitploy/model/ent/repo"
+	"github.com/gitploy-io/gitploy/model/extent"
 	"github.com/gitploy-io/gitploy/pkg/e"
 )
 

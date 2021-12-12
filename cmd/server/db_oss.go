@@ -6,7 +6,7 @@ import (
 	"fmt"
 
 	"entgo.io/ent/dialect"
-	"github.com/gitploy-io/gitploy/ent"
+	"github.com/gitploy-io/gitploy/model/ent"
 )
 
 func OpenDB(driver string, dsn string) (*ent.Client, error) {

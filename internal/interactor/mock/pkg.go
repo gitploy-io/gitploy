@@ -9,9 +9,9 @@ import (
 	reflect "reflect"
 	time "time"
 
-	ent "github.com/gitploy-io/gitploy/ent"
-	deployment "github.com/gitploy-io/gitploy/ent/deployment"
-	vo "github.com/gitploy-io/gitploy/extent"
+	ent "github.com/gitploy-io/gitploy/model/ent"
+	deployment "github.com/gitploy-io/gitploy/model/ent/deployment"
+	vo "github.com/gitploy-io/gitploy/model/extent"
 	gomock "github.com/golang/mock/gomock"
 )
 

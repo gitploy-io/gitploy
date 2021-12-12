@@ -5,8 +5,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gitploy-io/gitploy/ent/enttest"
-	"github.com/gitploy-io/gitploy/ent/migrate"
+	"github.com/gitploy-io/gitploy/model/ent/enttest"
+	"github.com/gitploy-io/gitploy/model/ent/migrate"
 )
 
 func TestStore_ListDeploymentStatisticsGreaterThanTime(t *testing.T) {

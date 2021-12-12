@@ -3,8 +3,8 @@ package store
 import (
 	"context"
 
-	"github.com/gitploy-io/gitploy/ent"
-	"github.com/gitploy-io/gitploy/ent/chatuser"
+	"github.com/gitploy-io/gitploy/model/ent"
+	"github.com/gitploy-io/gitploy/model/ent/chatuser"
 )
 
 func (s *Store) FindChatUserByID(ctx context.Context, id string) (*ent.ChatUser, error) {

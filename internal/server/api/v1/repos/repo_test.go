@@ -11,10 +11,10 @@ import (
 
 	"github.com/AlekSi/pointer"
 	"github.com/gin-gonic/gin"
-	"github.com/gitploy-io/gitploy/ent"
-	"github.com/gitploy-io/gitploy/extent"
 	"github.com/gitploy-io/gitploy/internal/server/api/v1/repos/mock"
 	"github.com/gitploy-io/gitploy/internal/server/global"
+	"github.com/gitploy-io/gitploy/model/ent"
+	"github.com/gitploy-io/gitploy/model/extent"
 	"github.com/golang/mock/gomock"
 )
 

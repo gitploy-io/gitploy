@@ -3,7 +3,7 @@ package github
 import (
 	"context"
 
-	"github.com/gitploy-io/gitploy/extent"
+	"github.com/gitploy-io/gitploy/model/extent"
 	"github.com/google/go-github/v32/github"
 )
 

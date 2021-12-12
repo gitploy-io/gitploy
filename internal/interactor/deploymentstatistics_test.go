@@ -4,9 +4,9 @@ import (
 	"context"
 	"testing"
 
-	"github.com/gitploy-io/gitploy/ent"
-	"github.com/gitploy-io/gitploy/extent"
 	"github.com/gitploy-io/gitploy/internal/interactor/mock"
+	"github.com/gitploy-io/gitploy/model/ent"
+	"github.com/gitploy-io/gitploy/model/extent"
 	"github.com/golang/mock/gomock"
 )
 

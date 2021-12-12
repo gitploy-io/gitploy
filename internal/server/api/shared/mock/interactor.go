@@ -8,7 +8,7 @@ import (
 	context "context"
 	reflect "reflect"
 
-	vo "github.com/gitploy-io/gitploy/extent"
+	vo "github.com/gitploy-io/gitploy/model/extent"
 	gomock "github.com/golang/mock/gomock"
 )
 

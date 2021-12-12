@@ -9,7 +9,7 @@ package interactor
 import (
 	"context"
 
-	"github.com/gitploy-io/gitploy/extent"
+	"github.com/gitploy-io/gitploy/model/extent"
 	"github.com/gitploy-io/gitploy/pkg/e"
 	"github.com/gitploy-io/gitploy/pkg/license"
 )

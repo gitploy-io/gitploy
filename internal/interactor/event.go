@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/gitploy-io/gitploy/ent"
+	"github.com/gitploy-io/gitploy/model/ent"
 	"go.uber.org/zap"
 )
 

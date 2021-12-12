@@ -3,7 +3,7 @@ package global
 import (
 	"context"
 
-	"github.com/gitploy-io/gitploy/ent"
+	"github.com/gitploy-io/gitploy/model/ent"
 )
 
 type (

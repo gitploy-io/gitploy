@@ -4,10 +4,10 @@ import (
 	"context"
 	"testing"
 
-	"github.com/gitploy-io/gitploy/ent"
-	"github.com/gitploy-io/gitploy/ent/enttest"
-	"github.com/gitploy-io/gitploy/ent/migrate"
-	"github.com/gitploy-io/gitploy/extent"
+	"github.com/gitploy-io/gitploy/model/ent"
+	"github.com/gitploy-io/gitploy/model/ent/enttest"
+	"github.com/gitploy-io/gitploy/model/ent/migrate"
+	"github.com/gitploy-io/gitploy/model/extent"
 )
 
 func TestStore_ListReposOfUser(t *testing.T) {

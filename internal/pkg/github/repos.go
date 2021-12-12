@@ -7,8 +7,8 @@ import (
 	"github.com/google/go-github/v32/github"
 	graphql "github.com/shurcooL/githubv4"
 
-	"github.com/gitploy-io/gitploy/ent"
-	"github.com/gitploy-io/gitploy/extent"
+	"github.com/gitploy-io/gitploy/model/ent"
+	"github.com/gitploy-io/gitploy/model/extent"
 	"github.com/gitploy-io/gitploy/pkg/e"
 )
 

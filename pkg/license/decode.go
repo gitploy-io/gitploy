@@ -11,7 +11,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/gitploy-io/gitploy/extent"
+	"github.com/gitploy-io/gitploy/model/extent"
 )
 
 const (
