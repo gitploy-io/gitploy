@@ -35,6 +35,7 @@ Gitploy makes your team or organization **build the deployment system around Git
 Name        | Gitploy | GitHub environment
 ---         |---      |---
 Manual deploy              | ✅ | ✅
+Auto deploy                | ✅ | ✅
 Review                     | ✅ | ✅
 Rollback                   | ✅ | ❌
 Lock environment           | ✅ | ❌
