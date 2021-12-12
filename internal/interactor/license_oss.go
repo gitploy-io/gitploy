@@ -5,9 +5,9 @@ package interactor
 import (
 	"context"
 
-	"github.com/gitploy-io/gitploy/vo"
+	"github.com/gitploy-io/gitploy/extent"
 )
 
-func (i *Interactor) GetLicense(ctx context.Context) (*vo.License, error) {
-	return vo.NewOSSLicense(), nil
+func (i *Interactor) GetLicense(ctx context.Context) (*extent.License, error) {
+	return extent.NewOSSLicense(), nil
 }

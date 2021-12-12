@@ -11,7 +11,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/gitploy-io/gitploy/vo"
+	"github.com/gitploy-io/gitploy/extent"
 )
 
 const (
@@ -28,7 +28,7 @@ Xl+6e0hW2ZWSf1abjkzDjM3loSgB2rmRbKTIbAovBCG7nwuMmlBk+Mjqftr0Sjvc
 
 // Decode verifies the key and
 // returns the signing data if it is verified.
-func Decode(key string) (*vo.SigningData, error) {
+func Decode(key string) (*extent.SigningData, error) {
 	_, encodedSigning, encodedSignature, err := parseKey(key)
 	if err != nil {
 		return nil, err
@@ -86,13 +86,13 @@ func parseKey(key string) (string, string, string, error) {
 	return prefixKey[0], prefixKey[1], signingSignature[1], nil
 }
 
-func decodeSigningData(encodedSigning string) (*vo.SigningData, error) {
+func decodeSigningData(encodedSigning string) (*extent.SigningData, error) {
 	decoded, err := base64.URLEncoding.DecodeString(encodedSigning)
 	if err != nil {
 		return nil, fmt.Errorf("failed to decode the signing data: %s", err)
 	}
 
-	signing := &vo.SigningData{}
+	signing := &extent.SigningData{}
 	if err := json.Unmarshal(decoded, signing); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal the signing data: %s", err)
 	}

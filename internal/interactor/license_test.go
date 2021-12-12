@@ -4,8 +4,8 @@ import (
 	"context"
 	"testing"
 
+	"github.com/gitploy-io/gitploy/extent"
 	"github.com/gitploy-io/gitploy/internal/interactor/mock"
-	"github.com/gitploy-io/gitploy/vo"
 	"github.com/golang/mock/gomock"
 )
 
@@ -18,12 +18,12 @@ func TestStore_GetLicense(t *testing.T) {
 		store.
 			EXPECT().
 			CountUsers(gomock.AssignableToTypeOf(context.Background())).
-			Return(vo.TrialMemberLimit, nil)
+			Return(extent.TrialMemberLimit, nil)
 
 		store.
 			EXPECT().
 			CountDeployments(gomock.AssignableToTypeOf(context.Background())).
-			Return(vo.TrialDeploymentLimit, nil)
+			Return(extent.TrialDeploymentLimit, nil)
 
 		i := &Interactor{Store: store}
 
@@ -33,7 +33,7 @@ func TestStore_GetLicense(t *testing.T) {
 		}
 
 		if !lic.IsTrial() {
-			t.Fatalf("GetLicense = %v, wanted %v", lic.Kind, vo.LicenseKindTrial)
+			t.Fatalf("GetLicense = %v, wanted %v", lic.Kind, extent.LicenseKindTrial)
 		}
 	})
 }

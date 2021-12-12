@@ -9,9 +9,9 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/gitploy-io/gitploy/ent"
+	"github.com/gitploy-io/gitploy/extent"
 	gb "github.com/gitploy-io/gitploy/internal/server/global"
 	"github.com/gitploy-io/gitploy/pkg/e"
-	"github.com/gitploy-io/gitploy/vo"
 )
 
 type (
@@ -168,7 +168,7 @@ func (u *User) GetRateLimit(c *gin.Context) {
 	uv, _ := v.(*ent.User)
 
 	var (
-		rl  *vo.RateLimit
+		rl  *extent.RateLimit
 		err error
 	)
 

@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/gitploy-io/gitploy/ent"
-	"github.com/gitploy-io/gitploy/vo"
+	"github.com/gitploy-io/gitploy/extent"
 )
 
 type (
@@ -17,9 +17,9 @@ type (
 		UpdateUser(ctx context.Context, u *ent.User) (*ent.User, error)
 		// Fetch the user information from SCM.
 		// It has the id, login, avatar and so on.
-		GetRemoteUserByToken(ctx context.Context, token string) (*vo.RemoteUser, error)
+		GetRemoteUserByToken(ctx context.Context, token string) (*extent.RemoteUser, error)
 		ListRemoteOrgsByToken(ctx context.Context, token string) ([]string, error)
 		FindUserByHash(ctx context.Context, hash string) (*ent.User, error)
-		GetLicense(ctx context.Context) (*vo.License, error)
+		GetLicense(ctx context.Context) (*extent.License, error)
 	}
 )

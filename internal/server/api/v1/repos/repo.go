@@ -7,9 +7,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/gitploy-io/gitploy/ent"
+	"github.com/gitploy-io/gitploy/extent"
 	gb "github.com/gitploy-io/gitploy/internal/server/global"
 	"github.com/gitploy-io/gitploy/pkg/e"
-	"github.com/gitploy-io/gitploy/vo"
 	"go.uber.org/zap"
 )
 
@@ -98,7 +98,7 @@ func (r *Repo) UpdateRepo(c *gin.Context) {
 	// in contrast it remove the webhook when it deactivates.
 	if p.Active != nil {
 		if *p.Active && !re.Active {
-			if re, err = r.i.ActivateRepo(ctx, u, re, &vo.WebhookConfig{
+			if re, err = r.i.ActivateRepo(ctx, u, re, &extent.WebhookConfig{
 				URL:         r.WebhookURL,
 				Secret:      r.WebhookSecret,
 				InsecureSSL: r.WebhookSSL,

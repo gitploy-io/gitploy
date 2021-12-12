@@ -9,7 +9,7 @@ import (
 	reflect "reflect"
 
 	ent "github.com/gitploy-io/gitploy/ent"
-	vo "github.com/gitploy-io/gitploy/vo"
+	vo "github.com/gitploy-io/gitploy/extent"
 	gomock "github.com/golang/mock/gomock"
 )
 
@@ -52,7 +52,7 @@ func (mr *MockInteractorMockRecorder) CreateEvent(ctx, e interface{}) *gomock.Ca
 }
 
 // Deploy mocks base method.
-func (m *MockInteractor) Deploy(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, env *vo.Env) (*ent.Deployment, error) {
+func (m *MockInteractor) Deploy(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, env *extent.Env) (*ent.Deployment, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Deploy", ctx, u, r, d, env)
 	ret0, _ := ret[0].(*ent.Deployment)
@@ -97,10 +97,10 @@ func (mr *MockInteractorMockRecorder) FindRepoByID(ctx, id interface{}) *gomock.
 }
 
 // GetConfig mocks base method.
-func (m *MockInteractor) GetConfig(ctx context.Context, u *ent.User, r *ent.Repo) (*vo.Config, error) {
+func (m *MockInteractor) GetConfig(ctx context.Context, u *ent.User, r *ent.Repo) (*extent.Config, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetConfig", ctx, u, r)
-	ret0, _ := ret[0].(*vo.Config)
+	ret0, _ := ret[0].(*extent.Config)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

@@ -15,9 +15,9 @@ import (
 	"github.com/golang/mock/gomock"
 
 	"github.com/gitploy-io/gitploy/ent"
+	"github.com/gitploy-io/gitploy/extent"
 	"github.com/gitploy-io/gitploy/internal/server/api/v1/repos/mock"
 	"github.com/gitploy-io/gitploy/internal/server/global"
-	"github.com/gitploy-io/gitploy/vo"
 )
 
 func TestRepo_CreateLock(t *testing.T) {
@@ -36,8 +36,8 @@ func TestRepo_CreateLock(t *testing.T) {
 		m.
 			EXPECT().
 			GetConfig(gomock.Any(), gomock.AssignableToTypeOf(&ent.User{}), gomock.AssignableToTypeOf(&ent.Repo{})).
-			Return(&vo.Config{
-				Envs: []*vo.Env{
+			Return(&extent.Config{
+				Envs: []*extent.Env{
 					{
 						Name: "dev",
 					},
@@ -78,8 +78,8 @@ func TestRepo_CreateLock(t *testing.T) {
 		m.
 			EXPECT().
 			GetConfig(gomock.Any(), gomock.AssignableToTypeOf(&ent.User{}), gomock.AssignableToTypeOf(&ent.Repo{})).
-			Return(&vo.Config{
-				Envs: []*vo.Env{
+			Return(&extent.Config{
+				Envs: []*extent.Env{
 					{
 						Name: "production",
 					},

@@ -9,8 +9,8 @@ import (
 	"github.com/gitploy-io/gitploy/ent/deployment"
 	"github.com/gitploy-io/gitploy/ent/perm"
 	"github.com/gitploy-io/gitploy/ent/repo"
+	"github.com/gitploy-io/gitploy/extent"
 	"github.com/gitploy-io/gitploy/pkg/e"
-	"github.com/gitploy-io/gitploy/vo"
 )
 
 func (s *Store) CountActiveRepos(ctx context.Context) (int, error) {
@@ -163,7 +163,7 @@ func (s *Store) FindRepoOfUserByNamespaceName(ctx context.Context, u *ent.User, 
 	return r, nil
 }
 
-func (s *Store) SyncRepo(ctx context.Context, r *vo.RemoteRepo) (*ent.Repo, error) {
+func (s *Store) SyncRepo(ctx context.Context, r *extent.RemoteRepo) (*ent.Repo, error) {
 	ret, err := s.c.Repo.
 		Create().
 		SetID(r.ID).

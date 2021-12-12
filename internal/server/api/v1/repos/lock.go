@@ -17,10 +17,10 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/gitploy-io/gitploy/ent"
+	"github.com/gitploy-io/gitploy/extent"
 	"github.com/gitploy-io/gitploy/internal/server/global"
 	gb "github.com/gitploy-io/gitploy/internal/server/global"
 	"github.com/gitploy-io/gitploy/pkg/e"
-	"github.com/gitploy-io/gitploy/vo"
 )
 
 type (
@@ -92,7 +92,7 @@ func (r *Repo) CreateLock(c *gin.Context) {
 		return
 	}
 
-	var env *vo.Env
+	var env *extent.Env
 	if env = config.GetEnv(p.Env); env == nil {
 		r.log.Warn("The environment is not found.", zap.String("env", p.Env))
 		gb.ResponseWithStatusAndError(c, http.StatusUnprocessableEntity, e.NewError(e.ErrorCodeConfigUndefinedEnv, nil))

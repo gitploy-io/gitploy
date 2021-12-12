@@ -7,8 +7,8 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/gitploy-io/gitploy/extent"
 	"github.com/gitploy-io/gitploy/internal/server/api/shared/mock"
-	"github.com/gitploy-io/gitploy/vo"
 	"github.com/golang/mock/gomock"
 )
 
@@ -22,7 +22,7 @@ func TestMiddleware_IsLicenseExpired(t *testing.T) {
 		m.
 			EXPECT().
 			GetLicense(gomock.Any()).
-			Return(vo.NewOSSLicense(), nil)
+			Return(extent.NewOSSLicense(), nil)
 
 		gin.SetMode(gin.ReleaseMode)
 		router := gin.New()
@@ -49,7 +49,7 @@ func TestMiddleware_IsLicenseExpired(t *testing.T) {
 		m.
 			EXPECT().
 			GetLicense(gomock.Any()).
-			Return(vo.NewTrialLicense(vo.TrialMemberLimit+1, vo.TrialDeploymentLimit), nil)
+			Return(extent.NewTrialLicense(extent.TrialMemberLimit+1, extent.TrialDeploymentLimit), nil)
 
 		gin.SetMode(gin.ReleaseMode)
 		router := gin.New()
@@ -76,7 +76,7 @@ func TestMiddleware_IsLicenseExpired(t *testing.T) {
 		m.
 			EXPECT().
 			GetLicense(gomock.Any()).
-			Return(vo.NewTrialLicense(vo.TrialMemberLimit, vo.TrialDeploymentLimit), nil)
+			Return(extent.NewTrialLicense(extent.TrialMemberLimit, extent.TrialDeploymentLimit), nil)
 
 		gin.SetMode(gin.ReleaseMode)
 		router := gin.New()
@@ -103,7 +103,7 @@ func TestMiddleware_IsLicenseExpired(t *testing.T) {
 		m.
 			EXPECT().
 			GetLicense(gomock.Any()).
-			Return(vo.NewStandardLicense(10, &vo.SigningData{
+			Return(extent.NewStandardLicense(10, &extent.SigningData{
 				MemberLimit: 20,
 				ExpiredAt:   time.Now().Add(-2 * month),
 			}), nil)
@@ -134,7 +134,7 @@ func TestMiddleware_IsLicenseExpired(t *testing.T) {
 		m.
 			EXPECT().
 			GetLicense(gomock.Any()).
-			Return(vo.NewStandardLicense(10, &vo.SigningData{
+			Return(extent.NewStandardLicense(10, &extent.SigningData{
 				MemberLimit: 20,
 				ExpiredAt:   time.Now().Add(-24 * time.Hour),
 			}), nil)

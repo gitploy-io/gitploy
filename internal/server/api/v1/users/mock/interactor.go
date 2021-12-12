@@ -9,7 +9,7 @@ import (
 	reflect "reflect"
 
 	ent "github.com/gitploy-io/gitploy/ent"
-	vo "github.com/gitploy-io/gitploy/vo"
+	vo "github.com/gitploy-io/gitploy/extent"
 	gomock "github.com/golang/mock/gomock"
 )
 
@@ -66,10 +66,10 @@ func (mr *MockInteractorMockRecorder) FindUserByID(ctx, id interface{}) *gomock.
 }
 
 // GetRateLimit mocks base method.
-func (m *MockInteractor) GetRateLimit(ctx context.Context, u *ent.User) (*vo.RateLimit, error) {
+func (m *MockInteractor) GetRateLimit(ctx context.Context, u *ent.User) (*extent.RateLimit, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetRateLimit", ctx, u)
-	ret0, _ := ret[0].(*vo.RateLimit)
+	ret0, _ := ret[0].(*extent.RateLimit)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

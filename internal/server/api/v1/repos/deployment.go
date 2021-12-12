@@ -12,9 +12,9 @@ import (
 	"github.com/gitploy-io/gitploy/ent"
 	"github.com/gitploy-io/gitploy/ent/deployment"
 	"github.com/gitploy-io/gitploy/ent/event"
+	"github.com/gitploy-io/gitploy/extent"
 	gb "github.com/gitploy-io/gitploy/internal/server/global"
 	"github.com/gitploy-io/gitploy/pkg/e"
-	"github.com/gitploy-io/gitploy/vo"
 )
 
 type (
@@ -92,13 +92,13 @@ func (r *Repo) CreateDeployment(c *gin.Context) {
 		return
 	}
 
-	if err := config.Eval(&vo.EvalValues{}); err != nil {
+	if err := config.Eval(&extent.EvalValues{}); err != nil {
 		r.log.Check(gb.GetZapLogLevel(err), "Failed to evaluate the configuration.").Write(zap.Error(err))
 		gb.ResponseWithStatusAndError(c, http.StatusUnprocessableEntity, err)
 		return
 	}
 
-	var env *vo.Env
+	var env *extent.Env
 	if env = config.GetEnv(p.Env); env == nil {
 		r.log.Warn("The environment is not found.", zap.String("env", p.Env))
 		gb.ResponseWithStatusAndError(c, http.StatusUnprocessableEntity, e.NewError(e.ErrorCodeConfigUndefinedEnv, nil))
@@ -164,13 +164,13 @@ func (r *Repo) UpdateDeployment(c *gin.Context) {
 		return
 	}
 
-	if err := config.Eval(&vo.EvalValues{IsRollback: d.IsRollback}); err != nil {
+	if err := config.Eval(&extent.EvalValues{IsRollback: d.IsRollback}); err != nil {
 		r.log.Check(gb.GetZapLogLevel(err), "Failed to evaludate the configuration.").Write(zap.Error(err))
 		gb.ResponseWithStatusAndError(c, http.StatusUnprocessableEntity, err)
 		return
 	}
 
-	var env *vo.Env
+	var env *extent.Env
 	if env = config.GetEnv(d.Env); env == nil {
 		r.log.Warn("The environment is not found.", zap.String("env", d.Env))
 		gb.ResponseWithStatusAndError(c, http.StatusUnprocessableEntity, e.NewError(e.ErrorCodeConfigUndefinedEnv, nil))
@@ -227,13 +227,13 @@ func (r *Repo) RollbackDeployment(c *gin.Context) {
 		return
 	}
 
-	if err := config.Eval(&vo.EvalValues{IsRollback: true}); err != nil {
+	if err := config.Eval(&extent.EvalValues{IsRollback: true}); err != nil {
 		r.log.Check(gb.GetZapLogLevel(err), "Failed to evaludate the configuration.").Write(zap.Error(err))
 		gb.ResponseWithStatusAndError(c, http.StatusUnprocessableEntity, err)
 		return
 	}
 
-	var env *vo.Env
+	var env *extent.Env
 	if env = config.GetEnv(d.Env); env == nil {
 		r.log.Warn("The environment is not found.", zap.String("env", d.Env))
 		gb.ResponseWithStatusAndError(c, http.StatusUnprocessableEntity, e.NewError(e.ErrorCodeConfigUndefinedEnv, nil))
@@ -296,7 +296,7 @@ func (r *Repo) ListDeploymentChanges(c *gin.Context) {
 	ld, err := r.i.FindPrevSuccessDeployment(ctx, d)
 	if e.HasErrorCode(err, e.ErrorCodeEntityNotFound) {
 		r.log.Debug("The previous deployment is not found.")
-		gb.Response(c, http.StatusOK, []*vo.Commit{})
+		gb.Response(c, http.StatusOK, []*extent.Commit{})
 		return
 	} else if err != nil {
 		r.log.Check(gb.GetZapLogLevel(err), "Failed to find the deployments.").Write(zap.Error(err))

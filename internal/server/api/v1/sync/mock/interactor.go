@@ -10,7 +10,7 @@ import (
 	time "time"
 
 	ent "github.com/gitploy-io/gitploy/ent"
-	vo "github.com/gitploy-io/gitploy/vo"
+	vo "github.com/gitploy-io/gitploy/extent"
 	gomock "github.com/golang/mock/gomock"
 )
 
@@ -67,10 +67,10 @@ func (mr *MockInteractorMockRecorder) IsEntryOrg(ctx, namespace interface{}) *go
 }
 
 // ListRemoteRepos mocks base method.
-func (m *MockInteractor) ListRemoteRepos(ctx context.Context, u *ent.User) ([]*vo.RemoteRepo, error) {
+func (m *MockInteractor) ListRemoteRepos(ctx context.Context, u *ent.User) ([]*extent.RemoteRepo, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListRemoteRepos", ctx, u)
-	ret0, _ := ret[0].([]*vo.RemoteRepo)
+	ret0, _ := ret[0].([]*extent.RemoteRepo)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -82,7 +82,7 @@ func (mr *MockInteractorMockRecorder) ListRemoteRepos(ctx, u interface{}) *gomoc
 }
 
 // SyncRemoteRepo mocks base method.
-func (m *MockInteractor) SyncRemoteRepo(ctx context.Context, u *ent.User, re *vo.RemoteRepo, t time.Time) error {
+func (m *MockInteractor) SyncRemoteRepo(ctx context.Context, u *ent.User, re *extent.RemoteRepo, t time.Time) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "SyncRemoteRepo", ctx, u, re, t)
 	ret0, _ := ret[0].(error)

@@ -13,9 +13,9 @@ import (
 
 	"github.com/gitploy-io/gitploy/ent"
 	"github.com/gitploy-io/gitploy/ent/deployment"
+	"github.com/gitploy-io/gitploy/extent"
 	"github.com/gitploy-io/gitploy/internal/server/api/v1/repos/mock"
 	"github.com/gitploy-io/gitploy/internal/server/global"
-	"github.com/gitploy-io/gitploy/vo"
 )
 
 func TestRepo_ListDeploymentChanges(t *testing.T) {
@@ -65,11 +65,11 @@ func TestRepo_ListDeploymentChanges(t *testing.T) {
 		m.
 			EXPECT().
 			CompareCommits(ctx, any, any, base, head, gomock.Eq(input.page), gomock.Eq(input.perPage)).
-			Return([]*vo.Commit{
+			Return([]*extent.Commit{
 				{
 					SHA: head,
 				},
-			}, []*vo.CommitFile{}, nil)
+			}, []*extent.CommitFile{}, nil)
 
 		// Ready the router to handle it.
 		gin.SetMode(gin.ReleaseMode)
@@ -92,7 +92,7 @@ func TestRepo_ListDeploymentChanges(t *testing.T) {
 			t.FailNow()
 		}
 
-		expected := []*vo.Commit{
+		expected := []*extent.Commit{
 			{
 				SHA: head,
 			},
@@ -123,8 +123,8 @@ func TestRepo_CreateDeployment(t *testing.T) {
 		m.
 			EXPECT().
 			GetConfig(gomock.Any(), gomock.AssignableToTypeOf(&ent.User{}), gomock.AssignableToTypeOf(&ent.Repo{})).
-			Return(&vo.Config{
-				Envs: []*vo.Env{
+			Return(&extent.Config{
+				Envs: []*extent.Env{
 					{
 						Name: "prod",
 					},
@@ -137,7 +137,7 @@ func TestRepo_CreateDeployment(t *testing.T) {
 				Type: deployment.Type(input.payload.Type),
 				Env:  input.payload.Env,
 				Ref:  input.payload.Ref,
-			}), gomock.AssignableToTypeOf(&vo.Env{})).
+			}), gomock.AssignableToTypeOf(&extent.Env{})).
 			Return(&ent.Deployment{}, nil)
 
 		t.Log("Dispatch the event.")

@@ -4,18 +4,18 @@ import (
 	"context"
 
 	"github.com/gitploy-io/gitploy/ent"
+	"github.com/gitploy-io/gitploy/extent"
 	"github.com/gitploy-io/gitploy/pkg/e"
-	"github.com/gitploy-io/gitploy/vo"
 	"github.com/google/go-github/v32/github"
 )
 
-func (g *Github) ListRemoteRepos(ctx context.Context, u *ent.User) ([]*vo.RemoteRepo, error) {
+func (g *Github) ListRemoteRepos(ctx context.Context, u *ent.User) ([]*extent.RemoteRepo, error) {
 	grs, err := g.listRemoteRepos(ctx, u)
 	if err != nil {
 		return nil, e.NewError(e.ErrorCodeInternalError, err)
 	}
 
-	remotes := make([]*vo.RemoteRepo, 0)
+	remotes := make([]*extent.RemoteRepo, 0)
 	for _, r := range grs {
 		remotes = append(remotes, mapGithubRepoToRemotePerm(r))
 	}

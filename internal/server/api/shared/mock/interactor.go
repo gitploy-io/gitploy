@@ -8,7 +8,7 @@ import (
 	context "context"
 	reflect "reflect"
 
-	vo "github.com/gitploy-io/gitploy/vo"
+	vo "github.com/gitploy-io/gitploy/extent"
 	gomock "github.com/golang/mock/gomock"
 )
 
@@ -36,10 +36,10 @@ func (m *MockInteractor) EXPECT() *MockInteractorMockRecorder {
 }
 
 // GetLicense mocks base method.
-func (m *MockInteractor) GetLicense(ctx context.Context) (*vo.License, error) {
+func (m *MockInteractor) GetLicense(ctx context.Context) (*extent.License, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetLicense", ctx)
-	ret0, _ := ret[0].(*vo.License)
+	ret0, _ := ret[0].(*extent.License)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

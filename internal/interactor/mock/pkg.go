@@ -11,7 +11,7 @@ import (
 
 	ent "github.com/gitploy-io/gitploy/ent"
 	deployment "github.com/gitploy-io/gitploy/ent/deployment"
-	vo "github.com/gitploy-io/gitploy/vo"
+	vo "github.com/gitploy-io/gitploy/extent"
 	gomock "github.com/golang/mock/gomock"
 )
 
@@ -860,7 +860,7 @@ func (mr *MockStoreMockRecorder) SyncDeploymentStatus(ctx, ds interface{}) *gomo
 }
 
 // SyncRepo mocks base method.
-func (m *MockStore) SyncRepo(ctx context.Context, r *vo.RemoteRepo) (*ent.Repo, error) {
+func (m *MockStore) SyncRepo(ctx context.Context, r *extent.RemoteRepo) (*ent.Repo, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "SyncRepo", ctx, r)
 	ret0, _ := ret[0].(*ent.Repo)
@@ -1032,11 +1032,11 @@ func (mr *MockSCMMockRecorder) CancelDeployment(ctx, u, r, d, s interface{}) *go
 }
 
 // CompareCommits mocks base method.
-func (m *MockSCM) CompareCommits(ctx context.Context, u *ent.User, r *ent.Repo, base, head string, page, perPage int) ([]*vo.Commit, []*vo.CommitFile, error) {
+func (m *MockSCM) CompareCommits(ctx context.Context, u *ent.User, r *ent.Repo, base, head string, page, perPage int) ([]*extent.Commit, []*extent.CommitFile, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CompareCommits", ctx, u, r, base, head, page, perPage)
-	ret0, _ := ret[0].([]*vo.Commit)
-	ret1, _ := ret[1].([]*vo.CommitFile)
+	ret0, _ := ret[0].([]*extent.Commit)
+	ret1, _ := ret[1].([]*extent.CommitFile)
 	ret2, _ := ret[2].(error)
 	return ret0, ret1, ret2
 }
@@ -1048,10 +1048,10 @@ func (mr *MockSCMMockRecorder) CompareCommits(ctx, u, r, base, head, page, perPa
 }
 
 // CreateRemoteDeployment mocks base method.
-func (m *MockSCM) CreateRemoteDeployment(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, e *vo.Env) (*vo.RemoteDeployment, error) {
+func (m *MockSCM) CreateRemoteDeployment(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, e *extent.Env) (*extent.RemoteDeployment, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateRemoteDeployment", ctx, u, r, d, e)
-	ret0, _ := ret[0].(*vo.RemoteDeployment)
+	ret0, _ := ret[0].(*extent.RemoteDeployment)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -1063,7 +1063,7 @@ func (mr *MockSCMMockRecorder) CreateRemoteDeployment(ctx, u, r, d, e interface{
 }
 
 // CreateWebhook mocks base method.
-func (m *MockSCM) CreateWebhook(ctx context.Context, u *ent.User, r *ent.Repo, c *vo.WebhookConfig) (int64, error) {
+func (m *MockSCM) CreateWebhook(ctx context.Context, u *ent.User, r *ent.Repo, c *extent.WebhookConfig) (int64, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateWebhook", ctx, u, r, c)
 	ret0, _ := ret[0].(int64)
@@ -1092,10 +1092,10 @@ func (mr *MockSCMMockRecorder) DeleteWebhook(ctx, u, r, id interface{}) *gomock.
 }
 
 // GetBranch mocks base method.
-func (m *MockSCM) GetBranch(ctx context.Context, u *ent.User, r *ent.Repo, branch string) (*vo.Branch, error) {
+func (m *MockSCM) GetBranch(ctx context.Context, u *ent.User, r *ent.Repo, branch string) (*extent.Branch, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetBranch", ctx, u, r, branch)
-	ret0, _ := ret[0].(*vo.Branch)
+	ret0, _ := ret[0].(*extent.Branch)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -1107,10 +1107,10 @@ func (mr *MockSCMMockRecorder) GetBranch(ctx, u, r, branch interface{}) *gomock.
 }
 
 // GetCommit mocks base method.
-func (m *MockSCM) GetCommit(ctx context.Context, u *ent.User, r *ent.Repo, sha string) (*vo.Commit, error) {
+func (m *MockSCM) GetCommit(ctx context.Context, u *ent.User, r *ent.Repo, sha string) (*extent.Commit, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetCommit", ctx, u, r, sha)
-	ret0, _ := ret[0].(*vo.Commit)
+	ret0, _ := ret[0].(*extent.Commit)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -1122,10 +1122,10 @@ func (mr *MockSCMMockRecorder) GetCommit(ctx, u, r, sha interface{}) *gomock.Cal
 }
 
 // GetConfig mocks base method.
-func (m *MockSCM) GetConfig(ctx context.Context, u *ent.User, r *ent.Repo) (*vo.Config, error) {
+func (m *MockSCM) GetConfig(ctx context.Context, u *ent.User, r *ent.Repo) (*extent.Config, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetConfig", ctx, u, r)
-	ret0, _ := ret[0].(*vo.Config)
+	ret0, _ := ret[0].(*extent.Config)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -1137,10 +1137,10 @@ func (mr *MockSCMMockRecorder) GetConfig(ctx, u, r interface{}) *gomock.Call {
 }
 
 // GetRateLimit mocks base method.
-func (m *MockSCM) GetRateLimit(ctx context.Context, u *ent.User) (*vo.RateLimit, error) {
+func (m *MockSCM) GetRateLimit(ctx context.Context, u *ent.User) (*extent.RateLimit, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetRateLimit", ctx, u)
-	ret0, _ := ret[0].(*vo.RateLimit)
+	ret0, _ := ret[0].(*extent.RateLimit)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -1152,10 +1152,10 @@ func (mr *MockSCMMockRecorder) GetRateLimit(ctx, u interface{}) *gomock.Call {
 }
 
 // GetRemoteUserByToken mocks base method.
-func (m *MockSCM) GetRemoteUserByToken(ctx context.Context, token string) (*vo.RemoteUser, error) {
+func (m *MockSCM) GetRemoteUserByToken(ctx context.Context, token string) (*extent.RemoteUser, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetRemoteUserByToken", ctx, token)
-	ret0, _ := ret[0].(*vo.RemoteUser)
+	ret0, _ := ret[0].(*extent.RemoteUser)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -1167,10 +1167,10 @@ func (mr *MockSCMMockRecorder) GetRemoteUserByToken(ctx, token interface{}) *gom
 }
 
 // GetTag mocks base method.
-func (m *MockSCM) GetTag(ctx context.Context, u *ent.User, r *ent.Repo, tag string) (*vo.Tag, error) {
+func (m *MockSCM) GetTag(ctx context.Context, u *ent.User, r *ent.Repo, tag string) (*extent.Tag, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetTag", ctx, u, r, tag)
-	ret0, _ := ret[0].(*vo.Tag)
+	ret0, _ := ret[0].(*extent.Tag)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -1182,10 +1182,10 @@ func (mr *MockSCMMockRecorder) GetTag(ctx, u, r, tag interface{}) *gomock.Call {
 }
 
 // ListBranches mocks base method.
-func (m *MockSCM) ListBranches(ctx context.Context, u *ent.User, r *ent.Repo, page, perPage int) ([]*vo.Branch, error) {
+func (m *MockSCM) ListBranches(ctx context.Context, u *ent.User, r *ent.Repo, page, perPage int) ([]*extent.Branch, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListBranches", ctx, u, r, page, perPage)
-	ret0, _ := ret[0].([]*vo.Branch)
+	ret0, _ := ret[0].([]*extent.Branch)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -1197,10 +1197,10 @@ func (mr *MockSCMMockRecorder) ListBranches(ctx, u, r, page, perPage interface{}
 }
 
 // ListCommitStatuses mocks base method.
-func (m *MockSCM) ListCommitStatuses(ctx context.Context, u *ent.User, r *ent.Repo, sha string) ([]*vo.Status, error) {
+func (m *MockSCM) ListCommitStatuses(ctx context.Context, u *ent.User, r *ent.Repo, sha string) ([]*extent.Status, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListCommitStatuses", ctx, u, r, sha)
-	ret0, _ := ret[0].([]*vo.Status)
+	ret0, _ := ret[0].([]*extent.Status)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -1212,10 +1212,10 @@ func (mr *MockSCMMockRecorder) ListCommitStatuses(ctx, u, r, sha interface{}) *g
 }
 
 // ListCommits mocks base method.
-func (m *MockSCM) ListCommits(ctx context.Context, u *ent.User, r *ent.Repo, branch string, page, perPage int) ([]*vo.Commit, error) {
+func (m *MockSCM) ListCommits(ctx context.Context, u *ent.User, r *ent.Repo, branch string, page, perPage int) ([]*extent.Commit, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListCommits", ctx, u, r, branch, page, perPage)
-	ret0, _ := ret[0].([]*vo.Commit)
+	ret0, _ := ret[0].([]*extent.Commit)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -1242,10 +1242,10 @@ func (mr *MockSCMMockRecorder) ListRemoteOrgsByToken(ctx, token interface{}) *go
 }
 
 // ListRemoteRepos mocks base method.
-func (m *MockSCM) ListRemoteRepos(ctx context.Context, u *ent.User) ([]*vo.RemoteRepo, error) {
+func (m *MockSCM) ListRemoteRepos(ctx context.Context, u *ent.User) ([]*extent.RemoteRepo, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListRemoteRepos", ctx, u)
-	ret0, _ := ret[0].([]*vo.RemoteRepo)
+	ret0, _ := ret[0].([]*extent.RemoteRepo)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -1257,10 +1257,10 @@ func (mr *MockSCMMockRecorder) ListRemoteRepos(ctx, u interface{}) *gomock.Call 
 }
 
 // ListTags mocks base method.
-func (m *MockSCM) ListTags(ctx context.Context, u *ent.User, r *ent.Repo, page, perPage int) ([]*vo.Tag, error) {
+func (m *MockSCM) ListTags(ctx context.Context, u *ent.User, r *ent.Repo, page, perPage int) ([]*extent.Tag, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListTags", ctx, u, r, page, perPage)
-	ret0, _ := ret[0].([]*vo.Tag)
+	ret0, _ := ret[0].([]*extent.Tag)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

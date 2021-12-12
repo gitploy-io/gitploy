@@ -14,8 +14,8 @@ import (
 
 	"github.com/gitploy-io/gitploy/ent"
 	"github.com/gitploy-io/gitploy/ent/deployment"
+	"github.com/gitploy-io/gitploy/extent"
 	"github.com/gitploy-io/gitploy/internal/server/slack/mock"
-	"github.com/gitploy-io/gitploy/vo"
 )
 
 func TestSlack_interactRollback(t *testing.T) {
@@ -55,8 +55,8 @@ func TestSlack_interactRollback(t *testing.T) {
 		m.
 			EXPECT().
 			GetConfig(gomock.Any(), gomock.AssignableToTypeOf(&ent.User{}), gomock.AssignableToTypeOf(&ent.Repo{})).
-			Return(&vo.Config{
-				Envs: []*vo.Env{
+			Return(&extent.Config{
+				Envs: []*extent.Env{
 					{Name: "prod"},
 				},
 			}, nil)
@@ -70,8 +70,8 @@ func TestSlack_interactRollback(t *testing.T) {
 				Sha:        "ee411aa",
 				Env:        "prod",
 				IsRollback: true,
-			}, gomock.AssignableToTypeOf(&vo.Env{})).
-			DoAndReturn(func(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, e *vo.Env) (*ent.Deployment, error) {
+			}, gomock.AssignableToTypeOf(&extent.Env{})).
+			DoAndReturn(func(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, e *extent.Env) (*ent.Deployment, error) {
 				d.ID = deploymentID + 1
 				return d, nil
 			})

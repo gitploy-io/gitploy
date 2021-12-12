@@ -9,7 +9,7 @@ import (
 	reflect "reflect"
 
 	ent "github.com/gitploy-io/gitploy/ent"
-	vo "github.com/gitploy-io/gitploy/vo"
+	vo "github.com/gitploy-io/gitploy/extent"
 	gomock "github.com/golang/mock/gomock"
 )
 
@@ -139,7 +139,7 @@ func (mr *MockInteractorMockRecorder) DeleteLock(ctx, l interface{}) *gomock.Cal
 }
 
 // Deploy mocks base method.
-func (m *MockInteractor) Deploy(ctx context.Context, u *ent.User, re *ent.Repo, d *ent.Deployment, env *vo.Env) (*ent.Deployment, error) {
+func (m *MockInteractor) Deploy(ctx context.Context, u *ent.User, re *ent.Repo, d *ent.Deployment, env *extent.Env) (*ent.Deployment, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Deploy", ctx, u, re, d, env)
 	ret0, _ := ret[0].(*ent.Deployment)
@@ -274,10 +274,10 @@ func (mr *MockInteractorMockRecorder) FindUserByID(ctx, id interface{}) *gomock.
 }
 
 // GetBranch mocks base method.
-func (m *MockInteractor) GetBranch(ctx context.Context, u *ent.User, r *ent.Repo, branch string) (*vo.Branch, error) {
+func (m *MockInteractor) GetBranch(ctx context.Context, u *ent.User, r *ent.Repo, branch string) (*extent.Branch, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetBranch", ctx, u, r, branch)
-	ret0, _ := ret[0].(*vo.Branch)
+	ret0, _ := ret[0].(*extent.Branch)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -289,10 +289,10 @@ func (mr *MockInteractorMockRecorder) GetBranch(ctx, u, r, branch interface{}) *
 }
 
 // GetCommit mocks base method.
-func (m *MockInteractor) GetCommit(ctx context.Context, u *ent.User, r *ent.Repo, sha string) (*vo.Commit, error) {
+func (m *MockInteractor) GetCommit(ctx context.Context, u *ent.User, r *ent.Repo, sha string) (*extent.Commit, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetCommit", ctx, u, r, sha)
-	ret0, _ := ret[0].(*vo.Commit)
+	ret0, _ := ret[0].(*extent.Commit)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -304,10 +304,10 @@ func (mr *MockInteractorMockRecorder) GetCommit(ctx, u, r, sha interface{}) *gom
 }
 
 // GetConfig mocks base method.
-func (m *MockInteractor) GetConfig(ctx context.Context, u *ent.User, r *ent.Repo) (*vo.Config, error) {
+func (m *MockInteractor) GetConfig(ctx context.Context, u *ent.User, r *ent.Repo) (*extent.Config, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetConfig", ctx, u, r)
-	ret0, _ := ret[0].(*vo.Config)
+	ret0, _ := ret[0].(*extent.Config)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -319,10 +319,10 @@ func (mr *MockInteractorMockRecorder) GetConfig(ctx, u, r interface{}) *gomock.C
 }
 
 // GetTag mocks base method.
-func (m *MockInteractor) GetTag(ctx context.Context, u *ent.User, r *ent.Repo, tag string) (*vo.Tag, error) {
+func (m *MockInteractor) GetTag(ctx context.Context, u *ent.User, r *ent.Repo, tag string) (*extent.Tag, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetTag", ctx, u, r, tag)
-	ret0, _ := ret[0].(*vo.Tag)
+	ret0, _ := ret[0].(*extent.Tag)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
