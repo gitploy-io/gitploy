@@ -4,13 +4,17 @@ Gitploy provides two types of deployment: Deploy and Rollback.
 
 ## Deploy
 
-Deploying is the primary feature of Gitploy. When you deploy, you have to select the environment and the reference. The environment is one of the environments defined in the configuration file (i.e., deploy.yml). And for reference, you can choose one of commit, branch, and tag.
+Deploying is the primary feature of Gitploy. When you deploy, you have to select the environment and the reference. You can choose one of the environments defined in the configuration file (i.e. `deploy.yml`). You can select a commit, branch, or tag for reference.
 
 When you deploy the ref, Gitploy post the deployment to GitHub, and Github dispatch the event to external services.
 
 Figure) Deploy
 
 ![deploy](../images/deploy.png)
+
+## Auto Deploy
+
+Gitploy provides not only manual deployment but also auto-deployment. Gitploy is listening for the push event dispatched from GitHub and trigger to deploy automatically when the ref is matched with the `auto_deploy_on` of the configuration file. 
 
 ## Rollback
 
