@@ -4,9 +4,9 @@ import (
 	"context"
 	"time"
 
-	"github.com/gitploy-io/gitploy/ent"
-	"github.com/gitploy-io/gitploy/ent/perm"
-	"github.com/gitploy-io/gitploy/vo"
+	"github.com/gitploy-io/gitploy/model/ent"
+	"github.com/gitploy-io/gitploy/model/ent/perm"
+	"github.com/gitploy-io/gitploy/model/extent"
 )
 
 func (i *Interactor) IsEntryOrg(ctx context.Context, namespace string) bool {
@@ -23,7 +23,7 @@ func (i *Interactor) IsEntryOrg(ctx context.Context, namespace string) bool {
 	return false
 }
 
-func (i *Interactor) SyncRemoteRepo(ctx context.Context, u *ent.User, re *vo.RemoteRepo, t time.Time) error {
+func (i *Interactor) SyncRemoteRepo(ctx context.Context, u *ent.User, re *extent.RemoteRepo, t time.Time) error {
 	var (
 		r   *ent.Repo
 		p   *ent.Perm

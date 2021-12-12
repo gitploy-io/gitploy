@@ -6,15 +6,15 @@ import (
 	"context"
 	"time"
 
-	"github.com/gitploy-io/gitploy/ent"
-	"github.com/gitploy-io/gitploy/vo"
+	"github.com/gitploy-io/gitploy/model/ent"
+	"github.com/gitploy-io/gitploy/model/extent"
 )
 
 type (
 	Interactor interface {
-		ListRemoteRepos(ctx context.Context, u *ent.User) ([]*vo.RemoteRepo, error)
+		ListRemoteRepos(ctx context.Context, u *ent.User) ([]*extent.RemoteRepo, error)
 		IsEntryOrg(ctx context.Context, namespace string) bool
-		SyncRemoteRepo(ctx context.Context, u *ent.User, re *vo.RemoteRepo, t time.Time) error
+		SyncRemoteRepo(ctx context.Context, u *ent.User, re *extent.RemoteRepo, t time.Time) error
 		DeletePermsOfUserLessThanSyncedAt(ctx context.Context, u *ent.User, t time.Time) (int, error)
 	}
 )

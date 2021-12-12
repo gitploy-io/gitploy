@@ -9,10 +9,10 @@ import (
 	"github.com/slack-go/slack"
 	"go.uber.org/zap"
 
-	"github.com/gitploy-io/gitploy/ent"
-	"github.com/gitploy-io/gitploy/ent/callback"
-	"github.com/gitploy-io/gitploy/ent/perm"
-	"github.com/gitploy-io/gitploy/vo"
+	"github.com/gitploy-io/gitploy/model/ent"
+	"github.com/gitploy-io/gitploy/model/ent/callback"
+	"github.com/gitploy-io/gitploy/model/ent/perm"
+	"github.com/gitploy-io/gitploy/model/extent"
 )
 
 type (
@@ -91,7 +91,7 @@ func (s *Slack) handleLockCmd(c *gin.Context) {
 	c.Status(http.StatusOK)
 }
 
-func buildLockView(callbackID string, c *vo.Config, locks []*ent.Lock) slack.ModalViewRequest {
+func buildLockView(callbackID string, c *extent.Config, locks []*ent.Lock) slack.ModalViewRequest {
 	hasLocked := func(env string) bool {
 		for _, lock := range locks {
 			if lock.Env == env {

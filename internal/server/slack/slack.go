@@ -12,8 +12,8 @@ import (
 	"regexp"
 
 	"github.com/gin-gonic/gin"
-	"github.com/gitploy-io/gitploy/ent"
-	"github.com/gitploy-io/gitploy/ent/callback"
+	"github.com/gitploy-io/gitploy/model/ent"
+	"github.com/gitploy-io/gitploy/model/ent/callback"
 	"github.com/slack-go/slack"
 	"go.uber.org/zap"
 )

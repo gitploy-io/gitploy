@@ -3,7 +3,7 @@ package slack
 import (
 	"strconv"
 
-	"github.com/gitploy-io/gitploy/ent"
+	"github.com/gitploy-io/gitploy/model/ent"
 	"github.com/gitploy-io/gitploy/pkg/e"
 	"github.com/slack-go/slack"
 )

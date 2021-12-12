@@ -7,9 +7,9 @@ import (
 	"github.com/google/go-github/v32/github"
 	graphql "github.com/shurcooL/githubv4"
 
-	"github.com/gitploy-io/gitploy/ent"
+	"github.com/gitploy-io/gitploy/model/ent"
+	"github.com/gitploy-io/gitploy/model/extent"
 	"github.com/gitploy-io/gitploy/pkg/e"
-	"github.com/gitploy-io/gitploy/vo"
 )
 
 type (
@@ -23,7 +23,7 @@ type (
 	}
 )
 
-func (g *Github) ListCommits(ctx context.Context, u *ent.User, r *ent.Repo, branch string, page, perPage int) ([]*vo.Commit, error) {
+func (g *Github) ListCommits(ctx context.Context, u *ent.User, r *ent.Repo, branch string, page, perPage int) ([]*extent.Commit, error) {
 	cms, _, err := g.Client(ctx, u.Token).
 		Repositories.
 		ListCommits(ctx, r.Namespace, r.Name, &github.CommitsListOptions{
@@ -37,7 +37,7 @@ func (g *Github) ListCommits(ctx context.Context, u *ent.User, r *ent.Repo, bran
 		return nil, err
 	}
 
-	ret := make([]*vo.Commit, 0)
+	ret := make([]*extent.Commit, 0)
 	for _, cm := range cms {
 		ret = append(ret, mapGithubCommitToCommit(cm))
 	}
@@ -45,7 +45,7 @@ func (g *Github) ListCommits(ctx context.Context, u *ent.User, r *ent.Repo, bran
 	return ret, nil
 }
 
-func (g *Github) CompareCommits(ctx context.Context, u *ent.User, r *ent.Repo, base, head string, page, perPage int) ([]*vo.Commit, []*vo.CommitFile, error) {
+func (g *Github) CompareCommits(ctx context.Context, u *ent.User, r *ent.Repo, base, head string, page, perPage int) ([]*extent.Commit, []*extent.CommitFile, error) {
 	// TODO: Support pagination.
 	res, _, err := g.Client(ctx, u.Token).
 		Repositories.
@@ -54,12 +54,12 @@ func (g *Github) CompareCommits(ctx context.Context, u *ent.User, r *ent.Repo, b
 		return nil, nil, err
 	}
 
-	cms := make([]*vo.Commit, 0)
+	cms := make([]*extent.Commit, 0)
 	for _, cm := range res.Commits {
 		cms = append(cms, mapGithubCommitToCommit(cm))
 	}
 
-	cfs := make([]*vo.CommitFile, 0)
+	cfs := make([]*extent.CommitFile, 0)
 	for _, cf := range res.Files {
 		cfs = append(cfs, mapGithubCommitFileToCommitFile(cf))
 	}
@@ -67,7 +67,7 @@ func (g *Github) CompareCommits(ctx context.Context, u *ent.User, r *ent.Repo, b
 	return cms, cfs, nil
 }
 
-func (g *Github) GetCommit(ctx context.Context, u *ent.User, r *ent.Repo, sha string) (*vo.Commit, error) {
+func (g *Github) GetCommit(ctx context.Context, u *ent.User, r *ent.Repo, sha string) (*extent.Commit, error) {
 	cm, res, err := g.Client(ctx, u.Token).
 		Repositories.
 		GetCommit(ctx, r.Namespace, r.Name, sha)
@@ -81,8 +81,8 @@ func (g *Github) GetCommit(ctx context.Context, u *ent.User, r *ent.Repo, sha st
 	return mapGithubCommitToCommit(cm), nil
 }
 
-func (g *Github) ListCommitStatuses(ctx context.Context, u *ent.User, r *ent.Repo, sha string) ([]*vo.Status, error) {
-	ss := []*vo.Status{}
+func (g *Github) ListCommitStatuses(ctx context.Context, u *ent.User, r *ent.Repo, sha string) ([]*extent.Status, error) {
+	ss := []*extent.Status{}
 
 	client := g.Client(ctx, u.Token)
 
@@ -121,7 +121,7 @@ func (g *Github) ListCommitStatuses(ctx context.Context, u *ent.User, r *ent.Rep
 	return ss, nil
 }
 
-func (g *Github) ListBranches(ctx context.Context, u *ent.User, r *ent.Repo, page, perPage int) ([]*vo.Branch, error) {
+func (g *Github) ListBranches(ctx context.Context, u *ent.User, r *ent.Repo, page, perPage int) ([]*extent.Branch, error) {
 	bs, _, err := g.Client(ctx, u.Token).
 		Repositories.
 		ListBranches(ctx, r.Namespace, r.Name, &github.BranchListOptions{
@@ -134,7 +134,7 @@ func (g *Github) ListBranches(ctx context.Context, u *ent.User, r *ent.Repo, pag
 		return nil, e.NewError(e.ErrorCodeInternalError, err)
 	}
 
-	branches := []*vo.Branch{}
+	branches := []*extent.Branch{}
 	for _, b := range bs {
 		branches = append(branches, mapGithubBranchToBranch(b))
 	}
@@ -142,7 +142,7 @@ func (g *Github) ListBranches(ctx context.Context, u *ent.User, r *ent.Repo, pag
 	return branches, nil
 }
 
-func (g *Github) GetBranch(ctx context.Context, u *ent.User, r *ent.Repo, branch string) (*vo.Branch, error) {
+func (g *Github) GetBranch(ctx context.Context, u *ent.User, r *ent.Repo, branch string) (*extent.Branch, error) {
 	b, res, err := g.Client(ctx, u.Token).
 		Repositories.
 		GetBranch(ctx, r.Namespace, r.Name, branch)
@@ -157,7 +157,7 @@ func (g *Github) GetBranch(ctx context.Context, u *ent.User, r *ent.Repo, branch
 
 // ListTags list up tags as ordered by commit date.
 // Github GraphQL explore - https://docs.github.com/en/graphql/overview/explorer
-func (g *Github) ListTags(ctx context.Context, u *ent.User, r *ent.Repo, page, perPage int) ([]*vo.Tag, error) {
+func (g *Github) ListTags(ctx context.Context, u *ent.User, r *ent.Repo, page, perPage int) ([]*extent.Tag, error) {
 	var q struct {
 		Repository struct {
 			Refs struct {
@@ -193,9 +193,9 @@ func (g *Github) ListTags(ctx context.Context, u *ent.User, r *ent.Repo, page, p
 		v["cursor"] = graphql.NewString(q.Repository.Refs.PageInfo.EndCursor)
 	}
 
-	tags := []*vo.Tag{}
+	tags := []*extent.Tag{}
 	for _, n := range q.Repository.Refs.Nodes {
-		tags = append(tags, &vo.Tag{
+		tags = append(tags, &extent.Tag{
 			Name:      n.Name,
 			CommitSHA: n.Target.Oid,
 		})
@@ -204,7 +204,7 @@ func (g *Github) ListTags(ctx context.Context, u *ent.User, r *ent.Repo, page, p
 	return tags, nil
 }
 
-func (g *Github) GetTag(ctx context.Context, u *ent.User, r *ent.Repo, tag string) (*vo.Tag, error) {
+func (g *Github) GetTag(ctx context.Context, u *ent.User, r *ent.Repo, tag string) (*extent.Tag, error) {
 	var q struct {
 		Repository struct {
 			Refs struct {
@@ -232,7 +232,7 @@ func (g *Github) GetTag(ctx context.Context, u *ent.User, r *ent.Repo, tag strin
 	}
 
 	n := q.Repository.Refs.Nodes[0]
-	t := &vo.Tag{
+	t := &extent.Tag{
 		Name:      n.Name,
 		CommitSHA: n.Target.Oid,
 	}
@@ -240,7 +240,7 @@ func (g *Github) GetTag(ctx context.Context, u *ent.User, r *ent.Repo, tag strin
 	return t, nil
 }
 
-func (g *Github) CreateWebhook(ctx context.Context, u *ent.User, r *ent.Repo, c *vo.WebhookConfig) (int64, error) {
+func (g *Github) CreateWebhook(ctx context.Context, u *ent.User, r *ent.Repo, c *extent.WebhookConfig) (int64, error) {
 	h, _, err := g.Client(ctx, u.Token).
 		Repositories.
 		CreateHook(ctx, r.Namespace, r.Name, &github.Hook{

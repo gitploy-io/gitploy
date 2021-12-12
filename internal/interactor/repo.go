@@ -4,13 +4,13 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/gitploy-io/gitploy/ent"
+	"github.com/gitploy-io/gitploy/model/ent"
+	"github.com/gitploy-io/gitploy/model/extent"
 	"github.com/gitploy-io/gitploy/pkg/e"
-	"github.com/gitploy-io/gitploy/vo"
 	"go.uber.org/zap"
 )
 
-func (i *Interactor) ActivateRepo(ctx context.Context, u *ent.User, r *ent.Repo, c *vo.WebhookConfig) (*ent.Repo, error) {
+func (i *Interactor) ActivateRepo(ctx context.Context, u *ent.User, r *ent.Repo, c *extent.WebhookConfig) (*ent.Repo, error) {
 	hid, err := i.SCM.CreateWebhook(ctx, u, r, c)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create a webhook: %s", err)

@@ -5,7 +5,7 @@ package interactor
 import (
 	"context"
 
-	"github.com/gitploy-io/gitploy/ent"
+	"github.com/gitploy-io/gitploy/model/ent"
 	"github.com/gitploy-io/gitploy/pkg/e"
 )
 

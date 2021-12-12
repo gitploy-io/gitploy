@@ -4,10 +4,10 @@ import (
 	"context"
 	"testing"
 
-	"github.com/gitploy-io/gitploy/ent"
-	"github.com/gitploy-io/gitploy/ent/enttest"
-	"github.com/gitploy-io/gitploy/ent/migrate"
-	"github.com/gitploy-io/gitploy/vo"
+	"github.com/gitploy-io/gitploy/model/ent"
+	"github.com/gitploy-io/gitploy/model/ent/enttest"
+	"github.com/gitploy-io/gitploy/model/ent/migrate"
+	"github.com/gitploy-io/gitploy/model/extent"
 )
 
 func TestStore_ListReposOfUser(t *testing.T) {
@@ -204,12 +204,12 @@ func TestStore_SyncRepo(t *testing.T) {
 		defer client.Close()
 
 		s := NewStore(client)
-		if _, err := s.SyncRepo(context.Background(), &vo.RemoteRepo{
+		if _, err := s.SyncRepo(context.Background(), &extent.RemoteRepo{
 			ID:          1,
 			Namespace:   "octocat",
 			Name:        "HelloWorld",
 			Description: "nothing",
-			Perm:        vo.RemoteRepoPermAdmin,
+			Perm:        extent.RemoteRepoPermAdmin,
 		}); err != nil {
 			t.Fatalf("SyncRepo return an error: %s", err)
 		}

@@ -5,10 +5,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gitploy-io/gitploy/ent"
-	"github.com/gitploy-io/gitploy/ent/deployment"
-	"github.com/gitploy-io/gitploy/ent/enttest"
-	"github.com/gitploy-io/gitploy/ent/migrate"
+	"github.com/gitploy-io/gitploy/model/ent"
+	"github.com/gitploy-io/gitploy/model/ent/deployment"
+	"github.com/gitploy-io/gitploy/model/ent/enttest"
+	"github.com/gitploy-io/gitploy/model/ent/migrate"
 
 	_ "github.com/mattn/go-sqlite3"
 )

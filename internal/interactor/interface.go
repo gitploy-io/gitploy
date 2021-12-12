@@ -6,9 +6,9 @@ import (
 	"context"
 	"time"
 
-	"github.com/gitploy-io/gitploy/ent"
-	"github.com/gitploy-io/gitploy/ent/deployment"
-	"github.com/gitploy-io/gitploy/vo"
+	"github.com/gitploy-io/gitploy/model/ent"
+	"github.com/gitploy-io/gitploy/model/ent/deployment"
+	"github.com/gitploy-io/gitploy/model/extent"
 )
 
 type (
@@ -33,7 +33,7 @@ type (
 		FindRepoOfUserByID(ctx context.Context, u *ent.User, id int64) (*ent.Repo, error)
 		FindRepoOfUserByNamespaceName(ctx context.Context, u *ent.User, namespace, name string) (*ent.Repo, error)
 		FindRepoByID(ctx context.Context, id int64) (*ent.Repo, error)
-		SyncRepo(ctx context.Context, r *vo.RemoteRepo) (*ent.Repo, error)
+		SyncRepo(ctx context.Context, r *extent.RemoteRepo) (*ent.Repo, error)
 		UpdateRepo(ctx context.Context, r *ent.Repo) (*ent.Repo, error)
 		Activate(ctx context.Context, r *ent.Repo) (*ent.Repo, error)
 		Deactivate(ctx context.Context, r *ent.Repo) (*ent.Repo, error)
@@ -91,30 +91,30 @@ type (
 	}
 
 	SCM interface {
-		GetRemoteUserByToken(ctx context.Context, token string) (*vo.RemoteUser, error)
+		GetRemoteUserByToken(ctx context.Context, token string) (*extent.RemoteUser, error)
 		ListRemoteOrgsByToken(ctx context.Context, token string) ([]string, error)
 
-		ListRemoteRepos(ctx context.Context, u *ent.User) ([]*vo.RemoteRepo, error)
+		ListRemoteRepos(ctx context.Context, u *ent.User) ([]*extent.RemoteRepo, error)
 
 		// SCM returns the deployment with UID and SHA.
-		CreateRemoteDeployment(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, e *vo.Env) (*vo.RemoteDeployment, error)
+		CreateRemoteDeployment(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, e *extent.Env) (*extent.RemoteDeployment, error)
 		CancelDeployment(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, s *ent.DeploymentStatus) error
-		GetConfig(ctx context.Context, u *ent.User, r *ent.Repo) (*vo.Config, error)
+		GetConfig(ctx context.Context, u *ent.User, r *ent.Repo) (*extent.Config, error)
 
-		CreateWebhook(ctx context.Context, u *ent.User, r *ent.Repo, c *vo.WebhookConfig) (int64, error)
+		CreateWebhook(ctx context.Context, u *ent.User, r *ent.Repo, c *extent.WebhookConfig) (int64, error)
 		DeleteWebhook(ctx context.Context, u *ent.User, r *ent.Repo, id int64) error
 
-		ListCommits(ctx context.Context, u *ent.User, r *ent.Repo, branch string, page, perPage int) ([]*vo.Commit, error)
-		CompareCommits(ctx context.Context, u *ent.User, r *ent.Repo, base, head string, page, perPage int) ([]*vo.Commit, []*vo.CommitFile, error)
-		GetCommit(ctx context.Context, u *ent.User, r *ent.Repo, sha string) (*vo.Commit, error)
-		ListCommitStatuses(ctx context.Context, u *ent.User, r *ent.Repo, sha string) ([]*vo.Status, error)
+		ListCommits(ctx context.Context, u *ent.User, r *ent.Repo, branch string, page, perPage int) ([]*extent.Commit, error)
+		CompareCommits(ctx context.Context, u *ent.User, r *ent.Repo, base, head string, page, perPage int) ([]*extent.Commit, []*extent.CommitFile, error)
+		GetCommit(ctx context.Context, u *ent.User, r *ent.Repo, sha string) (*extent.Commit, error)
+		ListCommitStatuses(ctx context.Context, u *ent.User, r *ent.Repo, sha string) ([]*extent.Status, error)
 
-		ListBranches(ctx context.Context, u *ent.User, r *ent.Repo, page, perPage int) ([]*vo.Branch, error)
-		GetBranch(ctx context.Context, u *ent.User, r *ent.Repo, branch string) (*vo.Branch, error)
+		ListBranches(ctx context.Context, u *ent.User, r *ent.Repo, page, perPage int) ([]*extent.Branch, error)
+		GetBranch(ctx context.Context, u *ent.User, r *ent.Repo, branch string) (*extent.Branch, error)
 
-		ListTags(ctx context.Context, u *ent.User, r *ent.Repo, page, perPage int) ([]*vo.Tag, error)
-		GetTag(ctx context.Context, u *ent.User, r *ent.Repo, tag string) (*vo.Tag, error)
+		ListTags(ctx context.Context, u *ent.User, r *ent.Repo, page, perPage int) ([]*extent.Tag, error)
+		GetTag(ctx context.Context, u *ent.User, r *ent.Repo, tag string) (*extent.Tag, error)
 
-		GetRateLimit(ctx context.Context, u *ent.User) (*vo.RateLimit, error)
+		GetRateLimit(ctx context.Context, u *ent.User) (*extent.RateLimit, error)
 	}
 )

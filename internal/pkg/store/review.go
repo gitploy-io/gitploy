@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/gitploy-io/gitploy/ent"
-	"github.com/gitploy-io/gitploy/ent/deployment"
-	"github.com/gitploy-io/gitploy/ent/review"
+	"github.com/gitploy-io/gitploy/model/ent"
+	"github.com/gitploy-io/gitploy/model/ent/deployment"
+	"github.com/gitploy-io/gitploy/model/ent/review"
 	"github.com/gitploy-io/gitploy/pkg/e"
 )
 

@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/gitploy-io/gitploy/ent"
-	"github.com/gitploy-io/gitploy/ent/perm"
-	"github.com/gitploy-io/gitploy/ent/repo"
-	"github.com/gitploy-io/gitploy/ent/user"
+	"github.com/gitploy-io/gitploy/model/ent"
+	"github.com/gitploy-io/gitploy/model/ent/perm"
+	"github.com/gitploy-io/gitploy/model/ent/repo"
+	"github.com/gitploy-io/gitploy/model/ent/user"
 	"github.com/gitploy-io/gitploy/pkg/e"
 )
 

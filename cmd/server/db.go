@@ -13,7 +13,7 @@ import (
 	"entgo.io/ent/dialect"
 	entsql "entgo.io/ent/dialect/sql"
 
-	"github.com/gitploy-io/gitploy/ent"
+	"github.com/gitploy-io/gitploy/model/ent"
 )
 
 func OpenDB(driver string, dsn string) (*ent.Client, error) {

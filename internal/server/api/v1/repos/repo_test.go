@@ -11,10 +11,10 @@ import (
 
 	"github.com/AlekSi/pointer"
 	"github.com/gin-gonic/gin"
-	"github.com/gitploy-io/gitploy/ent"
 	"github.com/gitploy-io/gitploy/internal/server/api/v1/repos/mock"
 	"github.com/gitploy-io/gitploy/internal/server/global"
-	"github.com/gitploy-io/gitploy/vo"
+	"github.com/gitploy-io/gitploy/model/ent"
+	"github.com/gitploy-io/gitploy/model/extent"
 	"github.com/golang/mock/gomock"
 )
 
@@ -88,8 +88,8 @@ func TestRepo_UpdateRepo(t *testing.T) {
 			EXPECT().
 			ActivateRepo(gomock.Any(), gomock.AssignableToTypeOf(&ent.User{}), gomock.Eq(&ent.Repo{
 				ID: r1,
-			}), gomock.AssignableToTypeOf(&vo.WebhookConfig{})).
-			DoAndReturn(func(ctx context.Context, u *ent.User, r *ent.Repo, c *vo.WebhookConfig) (*ent.Repo, error) {
+			}), gomock.AssignableToTypeOf(&extent.WebhookConfig{})).
+			DoAndReturn(func(ctx context.Context, u *ent.User, r *ent.Repo, c *extent.WebhookConfig) (*ent.Repo, error) {
 				return r, nil
 			})
 

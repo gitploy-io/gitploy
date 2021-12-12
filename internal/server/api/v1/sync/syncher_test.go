@@ -8,10 +8,10 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/gitploy-io/gitploy/ent"
 	"github.com/gitploy-io/gitploy/internal/server/api/v1/sync/mock"
 	"github.com/gitploy-io/gitploy/internal/server/global"
-	"github.com/gitploy-io/gitploy/vo"
+	"github.com/gitploy-io/gitploy/model/ent"
+	"github.com/gitploy-io/gitploy/model/extent"
 	"github.com/golang/mock/gomock"
 )
 
@@ -26,7 +26,7 @@ func TestSyncher_Sync(t *testing.T) {
 		m.
 			EXPECT().
 			ListRemoteRepos(ctx, gomock.AssignableToTypeOf(&ent.User{})).
-			Return([]*vo.RemoteRepo{
+			Return([]*extent.RemoteRepo{
 				{
 					ID:        1,
 					Namespace: "octocat",
@@ -51,7 +51,7 @@ func TestSyncher_Sync(t *testing.T) {
 		t.Log("Sync with HelloWorld only.")
 		m.
 			EXPECT().
-			SyncRemoteRepo(ctx, gomock.Any(), gomock.Eq(&vo.RemoteRepo{
+			SyncRemoteRepo(ctx, gomock.Any(), gomock.Eq(&extent.RemoteRepo{
 				ID:        1,
 				Namespace: "octocat",
 				Name:      "HelloWorld",

@@ -4,9 +4,9 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/gitploy-io/gitploy/ent"
 	gb "github.com/gitploy-io/gitploy/internal/server/global"
-	"github.com/gitploy-io/gitploy/vo"
+	"github.com/gitploy-io/gitploy/model/ent"
+	"github.com/gitploy-io/gitploy/model/extent"
 	"go.uber.org/zap"
 )
 
@@ -84,19 +84,19 @@ func (r *Repo) ListStatuses(c *gin.Context) {
 	})
 }
 
-func mergeState(ss []*vo.Status) string {
+func mergeState(ss []*extent.Status) string {
 	// The state is failure if one of them is failure.
 	for _, s := range ss {
-		if s.State == vo.StatusStateFailure {
-			return string(vo.StatusStateFailure)
+		if s.State == extent.StatusStateFailure {
+			return string(extent.StatusStateFailure)
 		}
 	}
 
 	for _, s := range ss {
-		if s.State == vo.StatusStatePending {
-			return string(vo.StatusStatePending)
+		if s.State == extent.StatusStatePending {
+			return string(extent.StatusStatePending)
 		}
 	}
 
-	return string(vo.StatusStateSuccess)
+	return string(extent.StatusStateSuccess)
 }

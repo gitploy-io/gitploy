@@ -6,10 +6,10 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/gitploy-io/gitploy/ent"
-	"github.com/gitploy-io/gitploy/ent/deployment"
-	"github.com/gitploy-io/gitploy/ent/perm"
-	"github.com/gitploy-io/gitploy/ent/predicate"
+	"github.com/gitploy-io/gitploy/model/ent"
+	"github.com/gitploy-io/gitploy/model/ent/deployment"
+	"github.com/gitploy-io/gitploy/model/ent/perm"
+	"github.com/gitploy-io/gitploy/model/ent/predicate"
 	"github.com/gitploy-io/gitploy/pkg/e"
 )
 

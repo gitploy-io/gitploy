@@ -6,13 +6,13 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/gitploy-io/gitploy/ent"
+	"github.com/gitploy-io/gitploy/model/ent"
+	"github.com/gitploy-io/gitploy/model/extent"
 	"github.com/gitploy-io/gitploy/pkg/e"
-	"github.com/gitploy-io/gitploy/vo"
 	"github.com/google/go-github/v32/github"
 )
 
-func (g *Github) CreateRemoteDeployment(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, env *vo.Env) (*vo.RemoteDeployment, error) {
+func (g *Github) CreateRemoteDeployment(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, env *extent.Env) (*extent.RemoteDeployment, error) {
 	gd, res, err := g.Client(ctx, u.Token).
 		Repositories.
 		CreateDeployment(ctx, r.Namespace, r.Name, &github.DeploymentRequest{
@@ -52,7 +52,7 @@ func (g *Github) CreateRemoteDeployment(ctx context.Context, u *ent.User, r *ent
 		url = *commit.HTMLURL
 	}
 
-	return &vo.RemoteDeployment{
+	return &extent.RemoteDeployment{
 		UID:     *gd.ID,
 		SHA:     *gd.SHA,
 		HTLMURL: url,
@@ -71,7 +71,7 @@ func (g *Github) CancelDeployment(ctx context.Context, u *ent.User, r *ent.Repo,
 	return err
 }
 
-func (g *Github) GetConfig(ctx context.Context, u *ent.User, r *ent.Repo) (*vo.Config, error) {
+func (g *Github) GetConfig(ctx context.Context, u *ent.User, r *ent.Repo) (*extent.Config, error) {
 	file, _, res, err := g.Client(ctx, u.Token).
 		Repositories.
 		GetContents(ctx, r.Namespace, r.Name, r.ConfigPath, &github.RepositoryContentGetOptions{})
@@ -90,8 +90,8 @@ func (g *Github) GetConfig(ctx context.Context, u *ent.User, r *ent.Repo) (*vo.C
 		return nil, fmt.Errorf("failed to decode the config file: %w", err)
 	}
 
-	c := &vo.Config{}
-	if err := vo.UnmarshalYAML([]byte(content), c); err != nil {
+	c := &extent.Config{}
+	if err := extent.UnmarshalYAML([]byte(content), c); err != nil {
 		return nil, e.NewError(
 			e.ErrorCodeConfigParseError,
 			err,

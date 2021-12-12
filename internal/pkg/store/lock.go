@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/gitploy-io/gitploy/ent"
-	"github.com/gitploy-io/gitploy/ent/lock"
+	"github.com/gitploy-io/gitploy/model/ent"
+	"github.com/gitploy-io/gitploy/model/ent/lock"
 	"github.com/gitploy-io/gitploy/pkg/e"
 )
 

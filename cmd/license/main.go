@@ -7,7 +7,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/gitploy-io/gitploy/vo"
+	"github.com/gitploy-io/gitploy/model/extent"
 )
 
 const (
@@ -25,7 +25,7 @@ func main() {
 		log.Fatal("Set the limit.")
 	}
 
-	d := &vo.SigningData{
+	d := &extent.SigningData{
 		MemberLimit: *limit,
 		ExpiredAt:   time.Now().Add(year),
 	}

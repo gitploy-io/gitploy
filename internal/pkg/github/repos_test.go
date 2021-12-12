@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/gitploy-io/gitploy/ent"
+	"github.com/gitploy-io/gitploy/model/ent"
 	"github.com/gitploy-io/gitploy/pkg/e"
 	"gopkg.in/h2non/gock.v1"
 )

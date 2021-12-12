@@ -5,15 +5,15 @@ package users
 import (
 	"context"
 
-	"github.com/gitploy-io/gitploy/ent"
-	"github.com/gitploy-io/gitploy/vo"
+	"github.com/gitploy-io/gitploy/model/ent"
+	"github.com/gitploy-io/gitploy/model/extent"
 )
 
 type (
 	Interactor interface {
 		ListUsers(ctx context.Context, login string, page, perPage int) ([]*ent.User, error)
 		FindUserByID(ctx context.Context, id int64) (*ent.User, error)
-		GetRateLimit(ctx context.Context, u *ent.User) (*vo.RateLimit, error)
+		GetRateLimit(ctx context.Context, u *ent.User) (*extent.RateLimit, error)
 		UpdateUser(ctx context.Context, u *ent.User) (*ent.User, error)
 		DeleteUser(ctx context.Context, u *ent.User) error
 	}

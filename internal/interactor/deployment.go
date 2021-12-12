@@ -6,11 +6,11 @@ import (
 	"time"
 
 	"github.com/AlekSi/pointer"
-	"github.com/gitploy-io/gitploy/ent"
-	"github.com/gitploy-io/gitploy/ent/deployment"
-	"github.com/gitploy-io/gitploy/ent/review"
+	"github.com/gitploy-io/gitploy/model/ent"
+	"github.com/gitploy-io/gitploy/model/ent/deployment"
+	"github.com/gitploy-io/gitploy/model/ent/review"
+	"github.com/gitploy-io/gitploy/model/extent"
 	"github.com/gitploy-io/gitploy/pkg/e"
-	"github.com/gitploy-io/gitploy/vo"
 	"go.uber.org/zap"
 )
 
@@ -32,7 +32,7 @@ func (i *Interactor) IsApproved(ctx context.Context, d *ent.Deployment) bool {
 	return false
 }
 
-func (i *Interactor) Deploy(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, env *vo.Env) (*ent.Deployment, error) {
+func (i *Interactor) Deploy(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, env *extent.Env) (*ent.Deployment, error) {
 	if ok, err := i.isDeployable(ctx, u, r, d, env); !ok {
 		return nil, err
 	}
@@ -115,7 +115,7 @@ func (i *Interactor) Deploy(ctx context.Context, u *ent.User, r *ent.Repo, d *en
 }
 
 // DeployToRemote create a new remote deployment after the deployment was approved.
-func (i *Interactor) DeployToRemote(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, env *vo.Env) (*ent.Deployment, error) {
+func (i *Interactor) DeployToRemote(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, env *extent.Env) (*ent.Deployment, error) {
 	if d.Status != deployment.StatusWaiting {
 		return nil, e.NewErrorWithMessage(
 			e.ErrorCodeDeploymentStatusInvalid,
@@ -159,7 +159,7 @@ func (i *Interactor) DeployToRemote(ctx context.Context, u *ent.User, r *ent.Rep
 	return d, nil
 }
 
-func (i *Interactor) createRemoteDeployment(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, env *vo.Env) (*vo.RemoteDeployment, error) {
+func (i *Interactor) createRemoteDeployment(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, env *extent.Env) (*extent.RemoteDeployment, error) {
 	// Rollback configures it can deploy the ref without any constraints.
 	// 1) Set auto_merge false to avoid the merge conflict.
 	// 2) Set required_contexts empty to skip the verfication.
@@ -171,7 +171,7 @@ func (i *Interactor) createRemoteDeployment(ctx context.Context, u *ent.User, r 
 	return i.SCM.CreateRemoteDeployment(ctx, u, r, d, env)
 }
 
-func (i *Interactor) isDeployable(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, env *vo.Env) (bool, error) {
+func (i *Interactor) isDeployable(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, env *extent.Env) (bool, error) {
 	if ok, err := env.IsDeployableRef(d.Ref); err != nil {
 		return false, err
 	} else if !ok {

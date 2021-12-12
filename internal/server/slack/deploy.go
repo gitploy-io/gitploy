@@ -11,12 +11,12 @@ import (
 	"github.com/slack-go/slack"
 	"go.uber.org/zap"
 
-	"github.com/gitploy-io/gitploy/ent"
-	"github.com/gitploy-io/gitploy/ent/callback"
-	"github.com/gitploy-io/gitploy/ent/deployment"
-	"github.com/gitploy-io/gitploy/ent/event"
+	"github.com/gitploy-io/gitploy/model/ent"
+	"github.com/gitploy-io/gitploy/model/ent/callback"
+	"github.com/gitploy-io/gitploy/model/ent/deployment"
+	"github.com/gitploy-io/gitploy/model/ent/event"
+	"github.com/gitploy-io/gitploy/model/extent"
 	"github.com/gitploy-io/gitploy/pkg/e"
-	"github.com/gitploy-io/gitploy/vo"
 )
 
 const (
@@ -144,7 +144,7 @@ func (s *Slack) filterPerms(perms []*ent.Perm, cu *ent.ChatUser) []*ent.Perm {
 	return ret
 }
 
-func buildDeployView(callbackID string, c *vo.Config, perms []*ent.Perm) slack.ModalViewRequest {
+func buildDeployView(callbackID string, c *extent.Config, perms []*ent.Perm) slack.ModalViewRequest {
 	envs := []*slack.OptionBlockObject{}
 	for _, env := range c.Envs {
 		envs = append(envs, &slack.OptionBlockObject{
@@ -280,13 +280,13 @@ func (s *Slack) interactDeploy(c *gin.Context) {
 		return
 	}
 
-	if err := config.Eval(&vo.EvalValues{}); err != nil {
+	if err := config.Eval(&extent.EvalValues{}); err != nil {
 		postMessageWithError(cu, err)
 		c.Status(http.StatusOK)
 		return
 	}
 
-	var env *vo.Env
+	var env *extent.Env
 	if env = config.GetEnv(sm.Env); env == nil {
 		postBotMessage(cu, "The env is not defined in the config.")
 		c.Status(http.StatusOK)

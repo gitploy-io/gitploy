@@ -11,8 +11,8 @@ import (
 
 	"github.com/AlekSi/pointer"
 	"github.com/gin-gonic/gin"
-	"github.com/gitploy-io/gitploy/ent"
 	"github.com/gitploy-io/gitploy/internal/server/api/v1/users/mock"
+	"github.com/gitploy-io/gitploy/model/ent"
 	"github.com/golang/mock/gomock"
 )
 

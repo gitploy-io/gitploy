@@ -3,12 +3,12 @@ package github
 import (
 	"strings"
 
-	"github.com/gitploy-io/gitploy/vo"
+	"github.com/gitploy-io/gitploy/model/extent"
 	"github.com/google/go-github/v32/github"
 )
 
-func mapGithubUserToUser(u *github.User) *vo.RemoteUser {
-	return &vo.RemoteUser{
+func mapGithubUserToUser(u *github.User) *extent.RemoteUser {
+	return &extent.RemoteUser{
 		ID:        *u.ID,
 		Login:     *u.Login,
 		AvatarURL: *u.AvatarURL,
@@ -20,14 +20,14 @@ func splitNamespaceName(fullName string) (string, string) {
 	return ss[0], ss[1]
 }
 
-func mapGithubRepoToRemotePerm(r *github.Repository) *vo.RemoteRepo {
+func mapGithubRepoToRemotePerm(r *github.Repository) *extent.RemoteRepo {
 	namespace, name := splitNamespaceName(*r.FullName)
 
 	if r.Description == nil {
 		r.Description = github.String("")
 	}
 
-	return &vo.RemoteRepo{
+	return &extent.RemoteRepo{
 		ID:          *r.ID,
 		Namespace:   namespace,
 		Name:        name,
@@ -36,36 +36,36 @@ func mapGithubRepoToRemotePerm(r *github.Repository) *vo.RemoteRepo {
 	}
 }
 
-func mapGithubPermToRepoPerm(perms map[string]bool) vo.RemoteRepoPerm {
-	var p vo.RemoteRepoPerm
+func mapGithubPermToRepoPerm(perms map[string]bool) extent.RemoteRepoPerm {
+	var p extent.RemoteRepoPerm
 
 	// Github represent the permission of the repository with these enums:
 	// "admin", "push", and "pull".
 	// https://docs.github.com/en/rest/reference/repos#list-repositories-for-the-authenticated-user
 	if admin, ok := perms["admin"]; ok && admin {
-		p = vo.RemoteRepoPermAdmin
+		p = extent.RemoteRepoPermAdmin
 	} else if push, ok := perms["push"]; ok && push {
-		p = vo.RemoteRepoPermWrite
+		p = extent.RemoteRepoPermWrite
 	} else if pull, ok := perms["pull"]; ok && pull {
-		p = vo.RemoteRepoPermRead
+		p = extent.RemoteRepoPermRead
 	} else {
-		p = vo.RemoteRepoPermRead
+		p = extent.RemoteRepoPermRead
 	}
 
 	return p
 }
 
-func mapGithubCommitToCommit(cm *github.RepositoryCommit) *vo.Commit {
-	var author *vo.Author
+func mapGithubCommitToCommit(cm *github.RepositoryCommit) *extent.Commit {
+	var author *extent.Author
 	if cm.Author != nil && cm.Commit.Author != nil {
-		author = &vo.Author{
+		author = &extent.Author{
 			Login:     *cm.Author.Login,
 			AvatarURL: *cm.Author.AvatarURL,
 			Date:      *cm.Commit.Author.Date,
 		}
 	}
 
-	return &vo.Commit{
+	return &extent.Commit{
 		SHA:     *cm.SHA,
 		Message: *cm.Commit.Message,
 		HTMLURL: *cm.HTMLURL,
@@ -73,8 +73,8 @@ func mapGithubCommitToCommit(cm *github.RepositoryCommit) *vo.Commit {
 	}
 }
 
-func mapGithubCommitFileToCommitFile(cf *github.CommitFile) *vo.CommitFile {
-	return &vo.CommitFile{
+func mapGithubCommitFileToCommitFile(cf *github.CommitFile) *extent.CommitFile {
+	return &extent.CommitFile{
 		FileName:  *cf.Filename,
 		Additions: *cf.Additions,
 		Deletions: *cf.Deletions,
@@ -82,24 +82,24 @@ func mapGithubCommitFileToCommitFile(cf *github.CommitFile) *vo.CommitFile {
 	}
 }
 
-func mapGithubStatusToStatus(s *github.RepoStatus) *vo.Status {
+func mapGithubStatusToStatus(s *github.RepoStatus) *extent.Status {
 	var (
-		state vo.StatusState
+		state extent.StatusState
 	)
 	switch *s.State {
 	case "pending":
-		state = vo.StatusStatePending
+		state = extent.StatusStatePending
 	case "failure":
-		state = vo.StatusStateFailure
+		state = extent.StatusStateFailure
 	case "error":
-		state = vo.StatusStateFailure
+		state = extent.StatusStateFailure
 	case "success":
-		state = vo.StatusStateSuccess
+		state = extent.StatusStateSuccess
 	default:
-		state = vo.StatusStatePending
+		state = extent.StatusStatePending
 	}
 
-	return &vo.Status{
+	return &extent.Status{
 		Context: *s.Context,
 		// TODO: fix
 		AvatarURL: "",
@@ -108,30 +108,30 @@ func mapGithubStatusToStatus(s *github.RepoStatus) *vo.Status {
 	}
 }
 
-func mapGithubCheckRunToStatus(c *github.CheckRun) *vo.Status {
+func mapGithubCheckRunToStatus(c *github.CheckRun) *extent.Status {
 	var (
-		state vo.StatusState
+		state extent.StatusState
 	)
 
 	// Conclusion exist when the status is 'completed', only.
 	if c.Conclusion == nil {
-		return &vo.Status{
+		return &extent.Status{
 			Context:   *c.Name,
 			AvatarURL: *c.App.Owner.AvatarURL,
 			TargetURL: *c.HTMLURL,
-			State:     vo.StatusStatePending,
+			State:     extent.StatusStatePending,
 		}
 	}
 
 	if *c.Conclusion == "success" {
-		state = vo.StatusStateSuccess
+		state = extent.StatusStateSuccess
 	} else if *c.Conclusion == "failure" {
-		state = vo.StatusStateFailure
+		state = extent.StatusStateFailure
 	} else {
-		state = vo.StatusStatePending
+		state = extent.StatusStatePending
 	}
 
-	return &vo.Status{
+	return &extent.Status{
 		Context:   *c.Name,
 		AvatarURL: *c.App.Owner.AvatarURL,
 		TargetURL: *c.HTMLURL,
@@ -139,8 +139,8 @@ func mapGithubCheckRunToStatus(c *github.CheckRun) *vo.Status {
 	}
 }
 
-func mapGithubBranchToBranch(b *github.Branch) *vo.Branch {
-	return &vo.Branch{
+func mapGithubBranchToBranch(b *github.Branch) *extent.Branch {
+	return &extent.Branch{
 		Name:      *b.Name,
 		CommitSHA: *b.Commit.SHA,
 	}

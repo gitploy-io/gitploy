@@ -9,16 +9,16 @@ package interactor
 import (
 	"context"
 
+	"github.com/gitploy-io/gitploy/model/extent"
 	"github.com/gitploy-io/gitploy/pkg/e"
 	"github.com/gitploy-io/gitploy/pkg/license"
-	"github.com/gitploy-io/gitploy/vo"
 )
 
-func (i *Interactor) GetLicense(ctx context.Context) (*vo.License, error) {
+func (i *Interactor) GetLicense(ctx context.Context) (*extent.License, error) {
 	var (
 		memberCnt     int
 		deploymentCnt int
-		d             *vo.SigningData
+		d             *extent.SigningData
 		err           error
 	)
 
@@ -31,7 +31,7 @@ func (i *Interactor) GetLicense(ctx context.Context) (*vo.License, error) {
 	}
 
 	if i.licenseKey == "" {
-		lic := vo.NewTrialLicense(memberCnt, deploymentCnt)
+		lic := extent.NewTrialLicense(memberCnt, deploymentCnt)
 		return lic, nil
 	}
 
@@ -42,6 +42,6 @@ func (i *Interactor) GetLicense(ctx context.Context) (*vo.License, error) {
 		)
 	}
 
-	lic := vo.NewStandardLicense(memberCnt, d)
+	lic := extent.NewStandardLicense(memberCnt, d)
 	return lic, nil
 }

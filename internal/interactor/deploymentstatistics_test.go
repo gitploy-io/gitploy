@@ -4,9 +4,9 @@ import (
 	"context"
 	"testing"
 
-	"github.com/gitploy-io/gitploy/ent"
 	"github.com/gitploy-io/gitploy/internal/interactor/mock"
-	"github.com/gitploy-io/gitploy/vo"
+	"github.com/gitploy-io/gitploy/model/ent"
+	"github.com/gitploy-io/gitploy/model/extent"
 	"github.com/golang/mock/gomock"
 )
 
@@ -101,7 +101,7 @@ func TestInteractor_ProduceDeploymentStatisticsOfRepo(t *testing.T) {
 		scm.
 			EXPECT().
 			CompareCommits(gomock.Any(), gomock.AssignableToTypeOf(&ent.User{}), gomock.AssignableToTypeOf(&ent.Repo{}), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
-			Return([]*vo.Commit{}, []*vo.CommitFile{
+			Return([]*extent.Commit{}, []*extent.CommitFile{
 				{Additions: 1, Deletions: 1, Changes: 2},
 			}, nil)
 

@@ -5,10 +5,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gitploy-io/gitploy/ent"
-	"github.com/gitploy-io/gitploy/ent/perm"
 	"github.com/gitploy-io/gitploy/internal/interactor/mock"
-	"github.com/gitploy-io/gitploy/vo"
+	"github.com/gitploy-io/gitploy/model/ent"
+	"github.com/gitploy-io/gitploy/model/ent/perm"
+	"github.com/gitploy-io/gitploy/model/extent"
 	"github.com/golang/mock/gomock"
 )
 
@@ -18,15 +18,15 @@ func TestInteractor_SyncRemoteRepo(t *testing.T) {
 	t.Run("Synchronization creates a new repository and a new perm when it is first.", func(t *testing.T) {
 		input := struct {
 			user   *ent.User
-			remote *vo.RemoteRepo
+			remote *extent.RemoteRepo
 			time   time.Time
 		}{
 			user: &ent.User{
 				ID: 2214,
 			},
-			remote: &vo.RemoteRepo{
+			remote: &extent.RemoteRepo{
 				ID:   2214,
-				Perm: vo.RemoteRepoPermRead,
+				Perm: extent.RemoteRepoPermRead,
 			},
 			time: time.Now(),
 		}
@@ -76,15 +76,15 @@ func TestInteractor_SyncRemoteRepo(t *testing.T) {
 	t.Run("Synchronization updates the perm if it exist.", func(t *testing.T) {
 		input := struct {
 			user   *ent.User
-			remote *vo.RemoteRepo
+			remote *extent.RemoteRepo
 			time   time.Time
 		}{
 			user: &ent.User{
 				ID: 1,
 			},
-			remote: &vo.RemoteRepo{
+			remote: &extent.RemoteRepo{
 				ID:   1,
-				Perm: vo.RemoteRepoPermWrite,
+				Perm: extent.RemoteRepoPermWrite,
 			},
 			time: time.Now(),
 		}

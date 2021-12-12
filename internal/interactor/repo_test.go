@@ -6,8 +6,8 @@ import (
 
 	"github.com/golang/mock/gomock"
 
-	"github.com/gitploy-io/gitploy/ent"
 	"github.com/gitploy-io/gitploy/internal/interactor/mock"
+	"github.com/gitploy-io/gitploy/model/ent"
 	"github.com/gitploy-io/gitploy/pkg/e"
 )
 

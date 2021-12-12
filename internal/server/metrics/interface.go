@@ -4,8 +4,8 @@ import (
 	"context"
 	"time"
 
-	"github.com/gitploy-io/gitploy/ent"
-	"github.com/gitploy-io/gitploy/vo"
+	"github.com/gitploy-io/gitploy/model/ent"
+	"github.com/gitploy-io/gitploy/model/extent"
 )
 
 type (
@@ -14,6 +14,6 @@ type (
 		CountRepos(ctx context.Context) (int, error)
 		ListAllDeploymentStatistics(ctx context.Context) ([]*ent.DeploymentStatistics, error)
 		ListDeploymentStatisticsGreaterThanTime(ctx context.Context, updated time.Time) ([]*ent.DeploymentStatistics, error)
-		GetLicense(ctx context.Context) (*vo.License, error)
+		GetLicense(ctx context.Context) (*extent.License, error)
 	}
 )

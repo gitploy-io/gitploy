@@ -5,8 +5,8 @@ package slack
 import (
 	"context"
 
-	"github.com/gitploy-io/gitploy/ent"
-	"github.com/gitploy-io/gitploy/vo"
+	"github.com/gitploy-io/gitploy/model/ent"
+	"github.com/gitploy-io/gitploy/model/extent"
 )
 
 type (
@@ -29,8 +29,8 @@ type (
 
 		ListDeploymentsOfRepo(ctx context.Context, r *ent.Repo, env string, status string, page, perPage int) ([]*ent.Deployment, error)
 		FindDeploymentByID(ctx context.Context, id int) (*ent.Deployment, error)
-		Deploy(ctx context.Context, u *ent.User, re *ent.Repo, d *ent.Deployment, env *vo.Env) (*ent.Deployment, error)
-		GetConfig(ctx context.Context, u *ent.User, r *ent.Repo) (*vo.Config, error)
+		Deploy(ctx context.Context, u *ent.User, re *ent.Repo, d *ent.Deployment, env *extent.Env) (*ent.Deployment, error)
+		GetConfig(ctx context.Context, u *ent.User, r *ent.Repo) (*extent.Config, error)
 
 		ListLocksOfRepo(ctx context.Context, r *ent.Repo) ([]*ent.Lock, error)
 		FindLockOfRepoByEnv(ctx context.Context, r *ent.Repo, env string) (*ent.Lock, error)
@@ -45,8 +45,8 @@ type (
 		CheckNotificationRecordOfEvent(ctx context.Context, e *ent.Event) bool
 		CreateEvent(ctx context.Context, e *ent.Event) (*ent.Event, error)
 
-		GetCommit(ctx context.Context, u *ent.User, r *ent.Repo, sha string) (*vo.Commit, error)
-		GetBranch(ctx context.Context, u *ent.User, r *ent.Repo, branch string) (*vo.Branch, error)
-		GetTag(ctx context.Context, u *ent.User, r *ent.Repo, tag string) (*vo.Tag, error)
+		GetCommit(ctx context.Context, u *ent.User, r *ent.Repo, sha string) (*extent.Commit, error)
+		GetBranch(ctx context.Context, u *ent.User, r *ent.Repo, branch string) (*extent.Branch, error)
+		GetTag(ctx context.Context, u *ent.User, r *ent.Repo, tag string) (*extent.Tag, error)
 	}
 )

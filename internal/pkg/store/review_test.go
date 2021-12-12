@@ -4,9 +4,9 @@ import (
 	"context"
 	"testing"
 
-	"github.com/gitploy-io/gitploy/ent/enttest"
-	"github.com/gitploy-io/gitploy/ent/migrate"
-	"github.com/gitploy-io/gitploy/ent/review"
+	"github.com/gitploy-io/gitploy/model/ent/enttest"
+	"github.com/gitploy-io/gitploy/model/ent/migrate"
+	"github.com/gitploy-io/gitploy/model/ent/review"
 	"github.com/gitploy-io/gitploy/pkg/e"
 )
 

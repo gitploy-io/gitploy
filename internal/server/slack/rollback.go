@@ -11,11 +11,11 @@ import (
 	"github.com/slack-go/slack"
 	"go.uber.org/zap"
 
-	"github.com/gitploy-io/gitploy/ent"
-	"github.com/gitploy-io/gitploy/ent/callback"
-	"github.com/gitploy-io/gitploy/ent/deployment"
-	"github.com/gitploy-io/gitploy/ent/event"
-	"github.com/gitploy-io/gitploy/vo"
+	"github.com/gitploy-io/gitploy/model/ent"
+	"github.com/gitploy-io/gitploy/model/ent/callback"
+	"github.com/gitploy-io/gitploy/model/ent/deployment"
+	"github.com/gitploy-io/gitploy/model/ent/event"
+	"github.com/gitploy-io/gitploy/model/extent"
 )
 
 const (
@@ -174,7 +174,7 @@ func buildRollbackView(callbackID string, as []*deploymentAggregation, perms []*
 	}
 }
 
-func (s *Slack) getSuccessfulDeploymentAggregation(ctx context.Context, r *ent.Repo, cf *vo.Config) []*deploymentAggregation {
+func (s *Slack) getSuccessfulDeploymentAggregation(ctx context.Context, r *ent.Repo, cf *extent.Config) []*deploymentAggregation {
 	a := []*deploymentAggregation{}
 
 	for _, env := range cf.Envs {
@@ -219,13 +219,13 @@ func (s *Slack) interactRollback(c *gin.Context) {
 		return
 	}
 
-	if err := config.Eval(&vo.EvalValues{}); err != nil {
+	if err := config.Eval(&extent.EvalValues{}); err != nil {
 		postMessageWithError(cu, err)
 		c.Status(http.StatusOK)
 		return
 	}
 
-	var env *vo.Env
+	var env *extent.Env
 	if env = config.GetEnv(d.Env); env == nil {
 		postBotMessage(cu, "The env is not defined in the config.")
 		c.Status(http.StatusOK)

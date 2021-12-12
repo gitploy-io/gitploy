@@ -3,11 +3,11 @@ package github
 import (
 	"context"
 
-	"github.com/gitploy-io/gitploy/vo"
+	"github.com/gitploy-io/gitploy/model/extent"
 	"github.com/google/go-github/v32/github"
 )
 
-func (g *Github) GetRemoteUserByToken(ctx context.Context, token string) (*vo.RemoteUser, error) {
+func (g *Github) GetRemoteUserByToken(ctx context.Context, token string) (*extent.RemoteUser, error) {
 	c := g.Client(ctx, token)
 
 	u, _, err := c.Users.Get(ctx, "")

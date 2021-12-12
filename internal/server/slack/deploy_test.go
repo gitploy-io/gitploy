@@ -12,10 +12,10 @@ import (
 	"github.com/slack-go/slack"
 	"go.uber.org/zap"
 
-	"github.com/gitploy-io/gitploy/ent"
-	"github.com/gitploy-io/gitploy/ent/deployment"
 	"github.com/gitploy-io/gitploy/internal/server/slack/mock"
-	"github.com/gitploy-io/gitploy/vo"
+	"github.com/gitploy-io/gitploy/model/ent"
+	"github.com/gitploy-io/gitploy/model/ent/deployment"
+	"github.com/gitploy-io/gitploy/model/extent"
 )
 
 func TestSlack_interactDeploy(t *testing.T) {
@@ -43,7 +43,7 @@ func TestSlack_interactDeploy(t *testing.T) {
 		m.
 			EXPECT().
 			GetBranch(gomock.Any(), gomock.AssignableToTypeOf(&ent.User{}), gomock.AssignableToTypeOf(&ent.Repo{}), branch).
-			Return(&vo.Branch{
+			Return(&extent.Branch{
 				Name: branch,
 			}, nil)
 
@@ -51,8 +51,8 @@ func TestSlack_interactDeploy(t *testing.T) {
 		m.
 			EXPECT().
 			GetConfig(gomock.Any(), gomock.AssignableToTypeOf(&ent.User{}), gomock.AssignableToTypeOf(&ent.Repo{})).
-			Return(&vo.Config{
-				Envs: []*vo.Env{
+			Return(&extent.Config{
+				Envs: []*extent.Env{
 					{Name: env},
 				},
 			}, nil)
@@ -64,8 +64,8 @@ func TestSlack_interactDeploy(t *testing.T) {
 				Type: deployment.TypeBranch,
 				Ref:  branch,
 				Env:  env,
-			}, gomock.AssignableToTypeOf(&vo.Env{})).
-			DoAndReturn(func(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, e *vo.Env) (*ent.Deployment, error) {
+			}, gomock.AssignableToTypeOf(&extent.Env{})).
+			DoAndReturn(func(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, e *extent.Env) (*ent.Deployment, error) {
 				return d, nil
 			})
 

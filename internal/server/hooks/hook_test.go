@@ -13,10 +13,10 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/google/go-github/v32/github"
 
-	"github.com/gitploy-io/gitploy/ent"
-	"github.com/gitploy-io/gitploy/ent/deployment"
 	"github.com/gitploy-io/gitploy/internal/server/hooks/mock"
-	"github.com/gitploy-io/gitploy/vo"
+	"github.com/gitploy-io/gitploy/model/ent"
+	"github.com/gitploy-io/gitploy/model/ent/deployment"
+	"github.com/gitploy-io/gitploy/model/extent"
 )
 
 func init() {
@@ -124,8 +124,8 @@ func TestHook_HandleHook(t *testing.T) {
 		m.
 			EXPECT().
 			GetConfig(gomock.Any(), gomock.AssignableToTypeOf(&ent.User{}), gomock.AssignableToTypeOf(&ent.Repo{})).
-			Return(&vo.Config{
-				Envs: []*vo.Env{
+			Return(&extent.Config{
+				Envs: []*extent.Env{
 					{
 						Name: "dev",
 					},
@@ -147,7 +147,7 @@ func TestHook_HandleHook(t *testing.T) {
 					Ref:  "simple-tag",
 					Env:  "production",
 				}),
-				gomock.AssignableToTypeOf(&vo.Env{}),
+				gomock.AssignableToTypeOf(&extent.Env{}),
 			).
 			Return(&ent.Deployment{}, nil)
 

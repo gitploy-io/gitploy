@@ -9,12 +9,12 @@ import (
 	"github.com/golang/mock/gomock"
 	"go.uber.org/zap"
 
-	"github.com/gitploy-io/gitploy/ent"
-	"github.com/gitploy-io/gitploy/ent/deployment"
-	"github.com/gitploy-io/gitploy/ent/review"
 	"github.com/gitploy-io/gitploy/internal/interactor/mock"
+	"github.com/gitploy-io/gitploy/model/ent"
+	"github.com/gitploy-io/gitploy/model/ent/deployment"
+	"github.com/gitploy-io/gitploy/model/ent/review"
+	"github.com/gitploy-io/gitploy/model/extent"
 	"github.com/gitploy-io/gitploy/pkg/e"
-	"github.com/gitploy-io/gitploy/vo"
 )
 
 func newMockInteractor(store Store, scm SCM) *Interactor {
@@ -59,14 +59,14 @@ func TestInteractor_Deploy(t *testing.T) {
 	t.Run("Return an error when the ref is not deployable", func(t *testing.T) {
 		input := struct {
 			d *ent.Deployment
-			e *vo.Env
+			e *extent.Env
 		}{
 			d: &ent.Deployment{
 				Type: deployment.TypeBranch,
 				Ref:  "main",
 				Env:  "production",
 			},
-			e: &vo.Env{
+			e: &extent.Env{
 				DeployableRef: pointer.ToString("releast-.*"),
 			},
 		}
@@ -95,7 +95,7 @@ func TestInteractor_Deploy(t *testing.T) {
 
 		i := newMockInteractor(store, scm)
 
-		_, err := i.Deploy(context.Background(), &ent.User{}, &ent.Repo{}, &ent.Deployment{}, &vo.Env{})
+		_, err := i.Deploy(context.Background(), &ent.User{}, &ent.Repo{}, &ent.Deployment{}, &extent.Env{})
 		if !e.HasErrorCode(err, e.ErrorCodeDeploymentLocked) {
 			t.Fatalf("Deploy' error = %v, wanted ErrorCodeDeploymentLocked", err)
 		}
@@ -104,14 +104,14 @@ func TestInteractor_Deploy(t *testing.T) {
 	t.Run("Return a new deployment.", func(t *testing.T) {
 		input := struct {
 			d *ent.Deployment
-			e *vo.Env
+			e *extent.Env
 		}{
 			d: &ent.Deployment{
 				Type: deployment.TypeBranch,
 				Ref:  "main",
 				Env:  "production",
 			},
-			e: &vo.Env{},
+			e: &extent.Env{},
 		}
 
 		ctrl := gomock.NewController(t)
@@ -134,8 +134,8 @@ func TestInteractor_Deploy(t *testing.T) {
 
 		scm.
 			EXPECT().
-			CreateRemoteDeployment(ctx, gomock.Eq(&ent.User{}), gomock.Eq(&ent.Repo{}), gomock.AssignableToTypeOf(&ent.Deployment{}), gomock.Eq(&vo.Env{})).
-			Return(&vo.RemoteDeployment{
+			CreateRemoteDeployment(ctx, gomock.Eq(&ent.User{}), gomock.Eq(&ent.Repo{}), gomock.AssignableToTypeOf(&ent.Deployment{}), gomock.Eq(&extent.Env{})).
+			Return(&extent.RemoteDeployment{
 				UID: UID,
 			}, nil)
 
@@ -183,7 +183,7 @@ func TestInteractor_Deploy(t *testing.T) {
 	t.Run("Return the waiting deployment and reviews.", func(t *testing.T) {
 		input := struct {
 			d *ent.Deployment
-			e *vo.Env
+			e *extent.Env
 		}{
 			d: &ent.Deployment{
 				Number: 3,
@@ -191,8 +191,8 @@ func TestInteractor_Deploy(t *testing.T) {
 				Ref:    "main",
 				Env:    "production",
 			},
-			e: &vo.Env{
-				Review: &vo.Review{
+			e: &extent.Env{
+				Review: &extent.Review{
 					Enabled:   true,
 					Reviewers: []string{"octocat"},
 				},
@@ -271,10 +271,10 @@ func TestInteractor_DeployToRemote(t *testing.T) {
 	t.Run("Return an error when the deployment status is not waiting.", func(t *testing.T) {
 		input := struct {
 			d *ent.Deployment
-			e *vo.Env
+			e *extent.Env
 		}{
 			d: &ent.Deployment{},
-			e: &vo.Env{},
+			e: &extent.Env{},
 		}
 
 		ctrl := gomock.NewController(t)
@@ -292,12 +292,12 @@ func TestInteractor_DeployToRemote(t *testing.T) {
 	t.Run("Create a new remote deployment and update the deployment.", func(t *testing.T) {
 		input := struct {
 			d *ent.Deployment
-			e *vo.Env
+			e *extent.Env
 		}{
 			d: &ent.Deployment{
 				Status: deployment.StatusWaiting,
 			},
-			e: &vo.Env{},
+			e: &extent.Env{},
 		}
 
 		ctrl := gomock.NewController(t)
@@ -325,8 +325,8 @@ func TestInteractor_DeployToRemote(t *testing.T) {
 
 		scm.
 			EXPECT().
-			CreateRemoteDeployment(ctx, gomock.AssignableToTypeOf(&ent.User{}), gomock.AssignableToTypeOf(&ent.Repo{}), gomock.AssignableToTypeOf(&ent.Deployment{}), gomock.AssignableToTypeOf(&vo.Env{})).
-			Return(&vo.RemoteDeployment{
+			CreateRemoteDeployment(ctx, gomock.AssignableToTypeOf(&ent.User{}), gomock.AssignableToTypeOf(&ent.Repo{}), gomock.AssignableToTypeOf(&ent.Deployment{}), gomock.AssignableToTypeOf(&extent.Env{})).
+			Return(&extent.RemoteDeployment{
 				UID: UID,
 			}, nil)
 
