@@ -11,7 +11,7 @@ import (
 
 	ent "github.com/gitploy-io/gitploy/model/ent"
 	deployment "github.com/gitploy-io/gitploy/model/ent/deployment"
-	vo "github.com/gitploy-io/gitploy/model/extent"
+	extent "github.com/gitploy-io/gitploy/model/extent"
 	gomock "github.com/golang/mock/gomock"
 )
 

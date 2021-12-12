@@ -9,7 +9,7 @@ import (
 	reflect "reflect"
 
 	ent "github.com/gitploy-io/gitploy/model/ent"
-	vo "github.com/gitploy-io/gitploy/model/extent"
+	extent "github.com/gitploy-io/gitploy/model/extent"
 	gomock "github.com/golang/mock/gomock"
 )
 
