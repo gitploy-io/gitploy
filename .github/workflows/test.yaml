@@ -23,7 +23,7 @@ jobs:
         with:
           go-version: '1.15'
       - 
-        run: go test -cpu 4 ./...
+        run: go test -cpu 4 -coverprofile .testCoverage.txt $(go list ./... | grep -v model/ent | grep -v mock)
         env:
           GIN_MODE: release
 
@@ -36,9 +36,11 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: '14.17.0'
+          cache: 'npm'
+          cache-dependency-path: ui/package-lock.json
       - 
         run: npm install
-        working-directory: ./ui
+        working-directory: ui
       - 
         run: npm run lint
-        working-directory: ./ui
+        working-directory: ui
