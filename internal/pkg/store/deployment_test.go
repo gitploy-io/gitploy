@@ -75,8 +75,8 @@ func TestStore_SearchDeployments(t *testing.T) {
 			&ent.User{ID: u1},
 			[]deployment.Status{},
 			owned,
-			time.Now().Add(-time.Minute),
-			time.Now(),
+			time.Now().UTC().Add(-time.Minute),
+			time.Now().UTC(),
 			page,
 			perPage)
 		if err != nil {
@@ -104,8 +104,8 @@ func TestStore_SearchDeployments(t *testing.T) {
 				deployment.StatusWaiting,
 			},
 			owned,
-			time.Now().Add(-time.Minute),
-			time.Now(),
+			time.Now().UTC().Add(-time.Minute),
+			time.Now().UTC(),
 			page,
 			perPage)
 		if err != nil {
@@ -131,8 +131,8 @@ func TestStore_SearchDeployments(t *testing.T) {
 			&ent.User{ID: u1},
 			[]deployment.Status{},
 			owned,
-			time.Now().Add(-time.Minute),
-			time.Now(),
+			time.Now().UTC().Add(-time.Minute),
+			time.Now().UTC(),
 			page,
 			perPage)
 		if err != nil {
