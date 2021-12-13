@@ -47,7 +47,7 @@ Private repositories for teams plan | ✅ | ❌
 
 To install Gitploy on your hosting, read this [documentation](https://docs.gitploy.io/tasks/installation/). 
 
-For public repositories, we're providing the [free cloud](https://github.com/marketplace/gtiploy).
+For public repositories, we're providing the [free cloud](https://cloud.gitploy.io/).
 
 ### Important Links
 
