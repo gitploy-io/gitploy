@@ -11,7 +11,8 @@ If you want to get started quickly, you should copy the `deploy.yml` file and pu
 envs:
   - name: production
     auto_merge: false
-    required_context: []
+    # To avoid the context verification.
+    # required_context: []
 ```
 
 ## Features
