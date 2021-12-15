@@ -4,7 +4,7 @@ Gitploy configures a pipeline with a simple, easy‑to‑read file that you comm
 
 ## Quick Start
 
-If you want to get started quickly, you should copy the `deploy.yml` file and push it into your git repository. Then you find the environment in the Gitploy.
+If you want to get started quickly, you should copy the `deploy.yml` file and push it into your git repository. Then you can find the environment in the Gitploy.
 
 ```yaml
 # deploy.yml

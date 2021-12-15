@@ -1,6 +1,6 @@
 # FAQ
 
-**I tried to deploy, and the deployment status has been pending as `created` for a while.** What should I do?
+**Q. I tried to deploy, and the deployment status has been pending as `created` for a while. How could I update it?**
 
 Don't worry. Gitploy transit the deployment status into `canceled` if pending (i.e. `created` or `waiting`) for thirty minutes.
 
