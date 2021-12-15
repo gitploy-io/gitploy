@@ -12,10 +12,6 @@ Figure) Deploy
 
 ![deploy](../images/deploy.png)
 
-## Auto Deploy
-
-Gitploy provides not only manual deployment but also auto-deployment. Gitploy is listening for the push event dispatched from GitHub and trigger to deploy automatically when the ref is matched with the `auto_deploy_on` of the configuration file. 
-
 ## Rollback
 
 Rollback is the best way to recover while you fix the problems, and Gitploy supports the rollback. You can choose one of the deployed references for the environment to roll back. 

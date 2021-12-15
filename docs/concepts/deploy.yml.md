@@ -50,6 +50,18 @@ envs:
       - integration-test
     production_environment: true
 ```
+
+### Auto Deploy
+
+Gitploy provides not only manual deployment but also auto-deployment. Gitploy is listening for the push event dispatched from GitHub and triggers to deploy automatically when the ref is matched with the `auto_deploy_on` of the configuration file. 
+
+```yaml
+envs:
+  - name: production
+    auto_deploy_on: refs/heads/main
+    production_environment: true
+```
+
 ### Review
 
 Gitploy provides the review process. You can list up to users on the configuration file. You can check the [document](./review.md) for the detail.
