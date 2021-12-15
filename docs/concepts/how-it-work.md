@@ -1,6 +1,6 @@
 # How it works
 
-Gitploy builds the system around GitHub [deployment API](https://docs.github.com/en/rest/reference/repos#deployments). **It's an event-driven decoupled way to deploy your code.** Internally, Gitploy creates a new Github deployment resource, and Github dispatches a deployment event that external services can listen for and act. It enables developers and organizations to build loosely coupled tooling. 
+Gitploy builds the system around GitHub [deployment API](https://docs.github.com/en/rest/reference/deployments#deployments). **It's an event-driven decoupled way to deploy your code.** Internally, Gitploy creates a new Github deployment resource, and Github dispatches a deployment event that external services can listen for and act. It enables developers and organizations to build loosely coupled tooling. 
 
 This approach has several pros:
 

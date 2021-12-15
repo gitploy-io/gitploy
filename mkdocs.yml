@@ -30,6 +30,7 @@ nav:
   - References: 
     - Configurations: references/configurations.md
     - "deploy.yml": references/deploy.yml.md
+  - FAQ: faq.md
   - Contributing: contributing.md
 extra:
   social:

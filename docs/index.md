@@ -2,7 +2,7 @@
 
 ## What is Gitploy?
 
-GitHub provides the [deployment API](https://docs.github.com/en/rest/reference/repos#deployments) to deploy a specific ref(branch, SHA, tag). It offers strong features to make your team (or organization) can deploy fast and safety. But it takes a lot of resources to build the deployment system around GitHub deployment API. 
+GitHub provides the [deployment API](https://docs.github.com/en/rest/reference/deployments#deployments) to deploy a specific ref(branch, SHA, tag). It offers strong features to make your team (or organization) can deploy fast and safety. But it takes a lot of resources to build the deployment system around GitHub deployment API. 
 
 Gitploy makes your team or organization build the deployment system around GitHub in minutes. Now, do not waste the time to build the deployment system.
 
