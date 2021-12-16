@@ -40,7 +40,7 @@ extra:
     provider: mike
   analytics:
     provider: google
-    property: G-36C8L8S7C9
+    property: G-7T0YFTQSFV
 copyright: Copyright &copy; 2021 Gitploy.IO
 repo_name: gitploy-io/gitploy
 repo_url: https://github.com/gitploy-io/gitploy
