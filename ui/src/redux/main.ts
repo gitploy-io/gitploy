@@ -39,12 +39,6 @@ const initialState: MainState = {
     reviews: [],
 }
 
-const runningDeploymentStatus: DeploymentStatusEnum[] = [
-    DeploymentStatusEnum.Waiting,
-    DeploymentStatusEnum.Created,
-    DeploymentStatusEnum.Running,
-]
-
 export const apiMiddleware: Middleware = (api: MiddlewareAPI) => (
     next
 ) => (action) => {
@@ -81,11 +75,18 @@ export const init = createAsyncThunk<User, void, { state: { main: MainState } }>
     }
 )
 
+/**
+ * Search all processing deployments that the user can access.
+ */
 export const searchDeployments = createAsyncThunk<Deployment[], void, { state: { main: MainState } }>(
     "main/searchDeployments",
     async (_, { rejectWithValue }) => {
         try {
-            const deployments = await _searchDeployments(runningDeploymentStatus, false)
+            const deployments = await _searchDeployments([
+                DeploymentStatusEnum.Waiting, 
+                DeploymentStatusEnum.Created, 
+                DeploymentStatusEnum.Running,
+            ], false)
             return deployments
         } catch (e) {
             return rejectWithValue(e)
@@ -93,6 +94,9 @@ export const searchDeployments = createAsyncThunk<Deployment[], void, { state: {
     }
 )
 
+/**
+ * Search all reviews has requested.
+ */
 export const searchReviews = createAsyncThunk<Review[], void, { state: { main: MainState } }>(
     "main/searchReviews",
     async (_, { rejectWithValue }) => {
@@ -117,6 +121,87 @@ export const fetchLicense = createAsyncThunk<License, void, { state: { main: Mai
     }
 )
 
+const notify = (title: string, options?: NotificationOptions) => {
+    if (!("Notification" in window)) {
+        console.log("This browser doesn't support the notification.")
+        return
+    }
+
+    if (Notification.permission === "default") {
+        Notification.requestPermission()
+    }
+
+    new Notification(title, options)
+}
+
+/**
+ * The browser notifies only the user who triggers the deployment.
+ */
+export const notifyDeploymentEvent = createAsyncThunk<void, Event, { state: { main: MainState } }>(
+    "main/notifyDeploymentEvent",
+    async (event, { getState }) => {
+        const { user } = getState().main
+
+        if (event.kind !== EventKindEnum.Deployment) {
+            return
+        }
+
+        if (event.deployment?.deployer?.id !== user?.id) {
+            return
+        }
+
+        if (event.type === EventTypeEnum.Created) {
+            notify(`New Deployment #${event.deployment?.number}`, {
+                icon: "/logo192.png",
+                body: `Start to deploy ${event.deployment?.ref.substring(0, 7)} to the ${event.deployment?.env} environment of ${event.deployment?.repo?.namespace}/${event.deployment?.repo?.name}.`,
+                tag: String(event.id),
+            })
+            return
+        }
+
+        notify(`Deployment Updated #${event.deployment?.number}`, {
+            icon: "/logo192.png",
+            body: `The deployment ${event.deployment?.number} of ${event.deployment?.repo?.namespace}/${event.deployment?.repo?.name} is updated ${event.deployment?.status}.`,
+            tag: String(event.id),
+        })
+    }
+)
+
+/**
+ * The browser notifies the requester when the review is responded to, 
+ * but it should notify the reviewer when the review is requested.
+ */
+export const notifyReviewmentEvent = createAsyncThunk<void, Event, { state: { main: MainState } }>(
+    "main/notifyReviewmentEvent",
+    async (event, { getState }) => {
+        const { user } = getState().main
+        if (event.kind !== EventKindEnum.Review) {
+            return
+        }
+
+        if (event.type === EventTypeEnum.Created
+            && event.review?.user?.id === user?.id) {
+            notify(`Review Requested`, {
+                icon: "/logo192.png",
+                body: `${event.review?.deployment?.deployer?.login} requested the review for the deployment ${event.review?.deployment?.number} of ${event.review?.deployment?.repo?.namespace}/${event.review?.deployment?.repo?.name}`,
+                tag: String(event.id),
+            })
+            return
+        }
+
+        if (event.type === EventTypeEnum.Updated
+            && event.review?.deployment?.deployer?.id === user?.id) {
+            notify(`Review Responded`, {
+                icon: "/logo192.png",
+                body: `${event.review?.user?.login} ${event.review?.status} the deployment ${event.review?.deployment?.number} of ${event.review?.deployment?.repo?.namespace}/${event.review?.deployment?.repo?.name}`,
+                tag: String(event.id),
+            })
+            return
+        }
+    }
+)
+
+
 export const mainSlice = createSlice({
     name: "main",
     initialState,
@@ -130,26 +215,31 @@ export const mainSlice = createSlice({
         setExpired: (state, action: PayloadAction<boolean>) => {
             state.expired = action.payload
         },
+        /**
+         * Handle all deployment events that the user can access.
+         * Note that some deployments are triggered by others.
+         */
         handleDeploymentEvent: (state, action: PayloadAction<Event>) => {
-            const user = state.user
-            if (!user) {
-                throw new Error("Unauthorized user.")
-            }
-
             const event = action.payload
+            if (event.kind !== EventKindEnum.Deployment) {
+                return
+            } 
 
-            // Handling the event when the owner is same.
-            if (event.deployment?.deployer?.id !== user.id) {
+            if (event.type === EventTypeEnum.Created 
+                && event.deployment) {
+                state.deployments.unshift(event.deployment)
                 return
             }
 
+            // Update the deployment if it exist.
             const idx = state.deployments.findIndex((deployment) => {
                 return event.deployment?.id === deployment.id
             })
 
             if (idx !== -1 ) {
-                // Remove from the list when the status is not one of 'waiting', 'created', and 'running'.
-                if (!runningDeploymentStatus.includes(event.deployment.status)) {
+                if (!(event.deployment?.status === DeploymentStatusEnum.Waiting 
+                    || event.deployment?.status === DeploymentStatusEnum.Created
+                    || event.deployment?.status === DeploymentStatusEnum.Running)) {
                     state.deployments.splice(idx, 1)
                     return
                 } 
@@ -157,27 +247,16 @@ export const mainSlice = createSlice({
                 state.deployments[idx] = event.deployment
                 return
             } 
-            
-            state.deployments.unshift(event.deployment)
         },
         handleReviewEvent: (state, action: PayloadAction<Event>) => {
             const event = action.payload
-
             if (action.payload.kind !== EventKindEnum.Review) {
                 return
-            }
+            } 
             
-            const user = state.user
-            if (!user) {
-                throw new Error("Unauthorized user.")
-            }
-
-            // Handling the event when the user own the event.
-            if (event.review?.user?.id !== user.id) {
-                return
-            }
-
-            if (event.type === EventTypeEnum.Created) {
+            if (event.type === EventTypeEnum.Created
+                && event.review
+                && event.review?.user?.id === state.user?.id) {
                 state.reviews.unshift(event.review)
                 return
             }
