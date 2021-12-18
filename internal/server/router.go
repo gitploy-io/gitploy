@@ -63,7 +63,6 @@ type (
 		Type         ChatType
 		ClientID     string
 		ClientSecret string
-		Secret       string
 		BotScopes    []string
 		UserScopes   []string
 	}
