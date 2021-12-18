@@ -6,7 +6,6 @@ import (
 	"context"
 
 	"github.com/gitploy-io/gitploy/model/ent"
-	"github.com/gitploy-io/gitploy/model/extent"
 )
 
 type (
@@ -18,35 +17,7 @@ type (
 		UpdateChatUser(ctx context.Context, cu *ent.ChatUser) (*ent.ChatUser, error)
 		DeleteChatUser(ctx context.Context, cu *ent.ChatUser) error
 
-		ListPermsOfRepo(ctx context.Context, r *ent.Repo, q string, page, perPage int) ([]*ent.Perm, error)
-		FindPermOfRepo(ctx context.Context, r *ent.Repo, u *ent.User) (*ent.Perm, error)
-
-		FindRepoOfUserByNamespaceName(ctx context.Context, u *ent.User, namespace, name string) (*ent.Repo, error)
-		UpdateRepo(ctx context.Context, r *ent.Repo) (*ent.Repo, error)
-
-		CreateCallback(ctx context.Context, cb *ent.Callback) (*ent.Callback, error)
-		FindCallbackByHash(ctx context.Context, hash string) (*ent.Callback, error)
-
-		ListDeploymentsOfRepo(ctx context.Context, r *ent.Repo, env string, status string, page, perPage int) ([]*ent.Deployment, error)
-		FindDeploymentByID(ctx context.Context, id int) (*ent.Deployment, error)
-		Deploy(ctx context.Context, u *ent.User, re *ent.Repo, d *ent.Deployment, env *extent.Env) (*ent.Deployment, error)
-		GetConfig(ctx context.Context, u *ent.User, r *ent.Repo) (*extent.Config, error)
-
-		ListLocksOfRepo(ctx context.Context, r *ent.Repo) ([]*ent.Lock, error)
-		FindLockOfRepoByEnv(ctx context.Context, r *ent.Repo, env string) (*ent.Lock, error)
-		HasLockOfRepoForEnv(ctx context.Context, r *ent.Repo, env string) (bool, error)
-		FindLockByID(ctx context.Context, id int) (*ent.Lock, error)
-		CreateLock(ctx context.Context, l *ent.Lock) (*ent.Lock, error)
-		DeleteLock(ctx context.Context, l *ent.Lock) error
-
 		SubscribeEvent(fn func(e *ent.Event)) error
 		UnsubscribeEvent(fn func(e *ent.Event)) error
-
-		CheckNotificationRecordOfEvent(ctx context.Context, e *ent.Event) bool
-		CreateEvent(ctx context.Context, e *ent.Event) (*ent.Event, error)
-
-		GetCommit(ctx context.Context, u *ent.User, r *ent.Repo, sha string) (*extent.Commit, error)
-		GetBranch(ctx context.Context, u *ent.User, r *ent.Repo, branch string) (*extent.Branch, error)
-		GetTag(ctx context.Context, u *ent.User, r *ent.Repo, tag string) (*extent.Tag, error)
 	}
 )
