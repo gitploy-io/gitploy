@@ -39,12 +39,6 @@ const initialState: MainState = {
     reviews: [],
 }
 
-const runningDeploymentStatus: DeploymentStatusEnum[] = [
-    DeploymentStatusEnum.Waiting,
-    DeploymentStatusEnum.Created,
-    DeploymentStatusEnum.Running,
-]
-
 export const apiMiddleware: Middleware = (api: MiddlewareAPI) => (
     next
 ) => (action) => {
@@ -81,11 +75,18 @@ export const init = createAsyncThunk<User, void, { state: { main: MainState } }>
     }
 )
 
+/**
+ * Search all processing deployments that the user can access.
+ */
 export const searchDeployments = createAsyncThunk<Deployment[], void, { state: { main: MainState } }>(
     "main/searchDeployments",
     async (_, { rejectWithValue }) => {
         try {
-            const deployments = await _searchDeployments(runningDeploymentStatus, false)
+            const deployments = await _searchDeployments([
+                DeploymentStatusEnum.Waiting, 
+                DeploymentStatusEnum.Created, 
+                DeploymentStatusEnum.Running,
+            ], false)
             return deployments
         } catch (e) {
             return rejectWithValue(e)
@@ -93,6 +94,9 @@ export const searchDeployments = createAsyncThunk<Deployment[], void, { state: {
     }
 )
 
+/**
+ * Search all reviews has requested.
+ */
 export const searchReviews = createAsyncThunk<Review[], void, { state: { main: MainState } }>(
     "main/searchReviews",
     async (_, { rejectWithValue }) => {
@@ -130,26 +134,31 @@ export const mainSlice = createSlice({
         setExpired: (state, action: PayloadAction<boolean>) => {
             state.expired = action.payload
         },
+        /**
+         * Handle all deployment events that the user can access.
+         * Note that some deployments are triggered by others.
+         */
         handleDeploymentEvent: (state, action: PayloadAction<Event>) => {
-            const user = state.user
-            if (!user) {
-                throw new Error("Unauthorized user.")
-            }
-
             const event = action.payload
+            if (event.kind !== EventKindEnum.Deployment) {
+                return
+            } 
 
-            // Handling the event when the owner is same.
-            if (event.deployment?.deployer?.id !== user.id) {
+            if (event.type === EventTypeEnum.Created 
+                && event.deployment) {
+                state.deployments.unshift(event.deployment)
                 return
             }
 
+            // Update the deployment if it exist.
             const idx = state.deployments.findIndex((deployment) => {
                 return event.deployment?.id === deployment.id
             })
 
             if (idx !== -1 ) {
-                // Remove from the list when the status is not one of 'waiting', 'created', and 'running'.
-                if (!runningDeploymentStatus.includes(event.deployment.status)) {
+                if (!(event.deployment?.status === DeploymentStatusEnum.Waiting 
+                    || event.deployment?.status === DeploymentStatusEnum.Created
+                    || event.deployment?.status === DeploymentStatusEnum.Running)) {
                     state.deployments.splice(idx, 1)
                     return
                 } 
@@ -157,27 +166,16 @@ export const mainSlice = createSlice({
                 state.deployments[idx] = event.deployment
                 return
             } 
-            
-            state.deployments.unshift(event.deployment)
         },
         handleReviewEvent: (state, action: PayloadAction<Event>) => {
             const event = action.payload
-
             if (action.payload.kind !== EventKindEnum.Review) {
                 return
-            }
+            } 
             
-            const user = state.user
-            if (!user) {
-                throw new Error("Unauthorized user.")
-            }
-
-            // Handling the event when the user own the event.
-            if (event.review?.user?.id !== user.id) {
-                return
-            }
-
-            if (event.type === EventTypeEnum.Created) {
+            if (event.type === EventTypeEnum.Created
+                && event.review
+                && event.review?.user?.id === state.user?.id) {
                 state.reviews.unshift(event.review)
                 return
             }
