@@ -63,7 +63,6 @@ type (
 		Type         ChatType
 		ClientID     string
 		ClientSecret string
-		Secret       string
 		BotScopes    []string
 		UserScopes   []string
 	}
@@ -219,10 +218,6 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 	if isSlackEnabled(c) {
 		slackapi := r.Group("/slack")
 		{
-			m := s.NewSlackMiddleware(&s.SlackMiddlewareConfig{
-				Interactor: c.Interactor,
-				Secret:     c.ChatConfig.Secret,
-			})
 			slack := s.NewSlack(&s.SlackConfig{
 				ServerHost:  c.Host,
 				ServerProto: c.Proto,
@@ -232,8 +227,6 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 			slackapi.GET("", slack.Index)
 			slackapi.GET("/signin", slack.Signin)
 			slackapi.GET("/signout", slack.Signout)
-			slackapi.POST("/interact", m.Verify(), m.ParseIntr(), m.SetChatUser(), slack.Interact)
-			slackapi.POST("/command", m.Verify(), m.ParseCmd(), m.SetChatUser(), slack.Cmd)
 		}
 	}
 

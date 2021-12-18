@@ -123,7 +123,6 @@ func newChatConfig(c *Config) *server.ChatConfig {
 			Type:         server.ChatTypeSlack,
 			ClientID:     c.SlackClientID,
 			ClientSecret: c.SlackClientSecret,
-			Secret:       c.SlackSigningSecret,
 			BotScopes:    c.SlackBotScopes,
 			UserScopes:   c.SlackUserScopes,
 		}

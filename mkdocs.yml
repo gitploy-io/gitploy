@@ -18,7 +18,7 @@ nav:
     - Review: concepts/review.md
     - Lock: concepts/lock.md
     - Permission: concepts/permission.md
-    - Chatops: concepts/chatops.md
+    - Notification: concepts/notification.md
     - Metrics: concepts/metrics.md
     - License: concepts/license.md
     - "Self-hosted Server": concepts/self-hosted-server.md
