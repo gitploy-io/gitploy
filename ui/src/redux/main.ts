@@ -121,6 +121,87 @@ export const fetchLicense = createAsyncThunk<License, void, { state: { main: Mai
     }
 )
 
+const notify = (title: string, options?: NotificationOptions) => {
+    if (!("Notification" in window)) {
+        console.log("This browser doesn't support the notification.")
+        return
+    }
+
+    if (Notification.permission === "default") {
+        Notification.requestPermission()
+    }
+
+    new Notification(title, options)
+}
+
+/**
+ * The browser notifies only the user who triggers the deployment.
+ */
+export const notifyDeploymentEvent = createAsyncThunk<void, Event, { state: { main: MainState } }>(
+    "main/notifyDeploymentEvent",
+    async (event, { getState }) => {
+        const { user } = getState().main
+
+        if (event.kind !== EventKindEnum.Deployment) {
+            return
+        }
+
+        if (event.deployment?.deployer?.id !== user?.id) {
+            return
+        }
+
+        if (event.type === EventTypeEnum.Created) {
+            notify(`New Deployment #${event.deployment?.number}`, {
+                icon: "/logo192.png",
+                body: `Start to deploy ${event.deployment?.ref.substring(0, 7)} to the ${event.deployment?.env} environment of ${event.deployment?.repo?.namespace}/${event.deployment?.repo?.name}.`,
+                tag: String(event.id),
+            })
+            return
+        }
+
+        notify(`Deployment Updated #${event.deployment?.number}`, {
+            icon: "/logo192.png",
+            body: `The deployment ${event.deployment?.number} of ${event.deployment?.repo?.namespace}/${event.deployment?.repo?.name} is updated ${event.deployment?.status}.`,
+            tag: String(event.id),
+        })
+    }
+)
+
+/**
+ * The browser notifies the requester when the review is responded to, 
+ * but it should notify the reviewer when the review is requested.
+ */
+export const notifyReviewmentEvent = createAsyncThunk<void, Event, { state: { main: MainState } }>(
+    "main/notifyReviewmentEvent",
+    async (event, { getState }) => {
+        const { user } = getState().main
+        if (event.kind !== EventKindEnum.Review) {
+            return
+        }
+
+        if (event.type === EventTypeEnum.Created
+            && event.review?.user?.id === user?.id) {
+            notify(`Review Requested`, {
+                icon: "/logo192.png",
+                body: `${event.review?.deployment?.deployer?.login} requested the review for the deployment ${event.review?.deployment?.number} of ${event.review?.deployment?.repo?.namespace}/${event.review?.deployment?.repo?.name}`,
+                tag: String(event.id),
+            })
+            return
+        }
+
+        if (event.type === EventTypeEnum.Updated
+            && event.review?.deployment?.deployer?.id === user?.id) {
+            notify(`Review Responded`, {
+                icon: "/logo192.png",
+                body: `${event.review?.user?.login} ${event.review?.status} the deployment ${event.review?.deployment?.number} of ${event.review?.deployment?.repo?.namespace}/${event.review?.deployment?.repo?.name}`,
+                tag: String(event.id),
+            })
+            return
+        }
+    }
+)
+
+
 export const mainSlice = createSlice({
     name: "main",
     initialState,

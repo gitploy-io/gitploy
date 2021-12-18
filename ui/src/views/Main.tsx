@@ -5,7 +5,7 @@ import { SettingFilled } from "@ant-design/icons"
 import { Helmet } from "react-helmet"
 
 import { useAppSelector, useAppDispatch } from "../redux/hooks"
-import { init, searchDeployments, searchReviews, fetchLicense, mainSlice as slice } from "../redux/main"
+import { init, searchDeployments, searchReviews, fetchLicense, notifyDeploymentEvent, notifyReviewmentEvent, mainSlice as slice } from "../redux/main"
 import { subscribeEvents } from "../apis"
 
 import RecentActivities from "../components/RecentActivities"
@@ -37,6 +37,8 @@ export default function Main(props: any) {
         const sub = subscribeEvents((event) => {
             dispatch(slice.actions.handleDeploymentEvent(event))
             dispatch(slice.actions.handleReviewEvent(event))
+            dispatch(notifyDeploymentEvent(event))
+            dispatch(notifyReviewmentEvent(event))
         })
 
         return () => {
