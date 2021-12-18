@@ -1,5 +1,5 @@
 # Build the server binary file.
-FROM golang:1.15 AS server
+FROM golang:1.17 AS server
 ARG OSS=false
 
 WORKDIR /server
@@ -32,7 +32,7 @@ ENV REACT_APP_GITPLOY_OSS="${OSS}"
 RUN npm run build
 
 # Copy to the final image.
-FROM golang:1.15-buster AS gitploy
+FROM golang:1.17-buster AS gitploy
 
 WORKDIR /app
 

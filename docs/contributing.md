@@ -26,7 +26,7 @@ Please check the checklist to increase the likelihood of your pull request being
 
 1\. Install prerequsites:
 
-* [golang](https://golang.org/dl/)+1.15
+* [golang](https://golang.org/dl/)+1.17
 * [mockgen](https://github.com/golang/mock)@v1.6.0
 
 2\. Set up the `.env` file at the root directory: 
