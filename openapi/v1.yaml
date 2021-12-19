@@ -1616,6 +1616,7 @@ components:
           enum:
             - waiting
             - created
+            - queued
             - running
             - success
             - failure
