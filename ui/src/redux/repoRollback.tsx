@@ -69,8 +69,9 @@ export const fetchDeployments = createAsyncThunk<Deployment[], void, { state: {r
             throw new Error("The env is not selected.")
         } 
 
+        // Return the deployment history except the latest one.
         const deployments = await listDeployments(namespace, name, env.name, DeploymentStatusEnum.Success, page, perPage)
-        return deployments
+        return deployments.slice(1)
     }
 )
 
