@@ -30,6 +30,7 @@ func (Deployment) Fields() []ent.Field {
 			Values(
 				"waiting",
 				"created",
+				"queued",
 				"running",
 				"success",
 				"failure",

@@ -102,6 +102,8 @@ function mapDeploymentStatusEnum(s: string) {
             return DeploymentStatusEnum.Waiting
         case "created":
             return DeploymentStatusEnum.Created
+        case "queued":
+            return DeploymentStatusEnum.Queued
         case "running":
             return DeploymentStatusEnum.Running
         case "success":
@@ -132,6 +134,8 @@ function mapDeploymentStatusToString(status: DeploymentStatusEnum): string {
             return "waiting"
         case DeploymentStatusEnum.Created:
             return "created"
+        case DeploymentStatusEnum.Queued:
+            return "queued"
         case DeploymentStatusEnum.Running:
             return "running"
         case DeploymentStatusEnum.Success:
