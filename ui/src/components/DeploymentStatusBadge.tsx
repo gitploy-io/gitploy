@@ -20,6 +20,8 @@ const getStatusColor = (status: DeploymentStatusEnum) => {
             return "gray"
         case DeploymentStatusEnum.Created:
             return "purple"
+        case DeploymentStatusEnum.Queued:
+            return "purple"
         case DeploymentStatusEnum.Running:
             return "purple"
         case DeploymentStatusEnum.Success:

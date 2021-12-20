@@ -257,9 +257,13 @@ func mapGithubDeploymentStatus(e *github.DeploymentStatusEvent) *ent.DeploymentS
 // "success" to "success", and "failure" to "failure".
 func mapGithubState(state string) deployment.Status {
 	switch state {
+	case "queued":
+		return deployment.StatusQueued
 	case "success":
 		return deployment.StatusSuccess
 	case "failure":
+		return deployment.StatusFailure
+	case "error":
 		return deployment.StatusFailure
 	default:
 		return deployment.StatusRunning

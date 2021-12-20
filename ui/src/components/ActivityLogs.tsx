@@ -14,23 +14,27 @@ interface ActivityLogsProps {
 }
 
 export default function ActivityLogs(props: ActivityLogsProps): JSX.Element {
-    return <Timeline>
-        {props.deployments.map((d, idx) => {
-            const dot = (d.status === DeploymentStatusEnum.Running)? 
-                <SyncOutlined style={{color: "purple"}} spin />: 
-                null
-            const avatar = <UserAvatar user={d.deployer} />
+    return (
+        <Timeline>
+            {props.deployments.map((d, idx) => {
+                const dot = (d.status === DeploymentStatusEnum.Running)? 
+                    <SyncOutlined style={{color: "purple"}} spin />: 
+                    null
+                const avatar = <UserAvatar user={d.deployer} />
 
-            return <Timeline.Item key={idx} color={getStatusColor(d.status)} dot={dot}>
-                <p>
-                    <Text strong>{d.env}</Text> <DeploymentRefCode deployment={d}/> <a href={`/${d.repo?.namespace}/${d.repo?.name}/deployments/${d.number}`}>• View detail #{d.number}</a>
-                </p>
-                <p>
-                    Deployed by {avatar} {moment(d.createdAt).fromNow()} <DeploymentStatusBadge deployment={d}/>
-                </p>
-            </Timeline.Item>
-        })}
-    </Timeline>
+                return (
+                    <Timeline.Item key={idx} color={getStatusColor(d.status)} dot={dot}>
+                        <p>
+                            <Text strong>{d.env}</Text> <DeploymentRefCode deployment={d}/> <a href={`/${d.repo?.namespace}/${d.repo?.name}/deployments/${d.number}`}>• View detail #{d.number}</a>
+                        </p>
+                        <p>
+                            Deployed by {avatar} {moment(d.createdAt).fromNow()} <DeploymentStatusBadge deployment={d}/>
+                        </p>
+                    </Timeline.Item>
+                )
+            })}
+        </Timeline>
+    )
 }
 
 // https://ant.design/components/timeline/#Timeline.Item
@@ -39,6 +43,8 @@ const getStatusColor = (status: DeploymentStatusEnum) => {
         case DeploymentStatusEnum.Waiting:
             return "gray"
         case DeploymentStatusEnum.Created:
+            return "purple"
+        case DeploymentStatusEnum.Queued:
             return "purple"
         case DeploymentStatusEnum.Running:
             return "purple"

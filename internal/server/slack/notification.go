@@ -157,6 +157,8 @@ func mapDeploymentStatusToColor(status deployment.Status) string {
 		return colorGray
 	case deployment.StatusCreated:
 		return colorPurple
+	case deployment.StatusQueued:
+		return colorPurple
 	case deployment.StatusRunning:
 		return colorPurple
 	case deployment.StatusSuccess:

@@ -85,6 +85,7 @@ export const searchDeployments = createAsyncThunk<Deployment[], void, { state: {
             const deployments = await _searchDeployments([
                 DeploymentStatusEnum.Waiting, 
                 DeploymentStatusEnum.Created, 
+                DeploymentStatusEnum.Queued,
                 DeploymentStatusEnum.Running,
             ], false)
             return deployments
@@ -239,6 +240,7 @@ export const mainSlice = createSlice({
             if (idx !== -1 ) {
                 if (!(event.deployment?.status === DeploymentStatusEnum.Waiting 
                     || event.deployment?.status === DeploymentStatusEnum.Created
+                    || event.deployment?.status === DeploymentStatusEnum.Queued
                     || event.deployment?.status === DeploymentStatusEnum.Running)) {
                     state.deployments.splice(idx, 1)
                     return

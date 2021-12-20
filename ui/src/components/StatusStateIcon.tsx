@@ -1,4 +1,4 @@
-import { Popover, Avatar, Typography, Row, Col, Divider } from "antd"
+import { Popover, Avatar, Typography, Row, Col, Divider, Space } from "antd"
 import { CheckOutlined, CloseOutlined, StopOutlined, ExclamationCircleOutlined } from "@ant-design/icons"
 
 import { Status, StatusState } from "../models"
@@ -14,25 +14,48 @@ interface StatusStateIconProps {
 
 export default function StatusStateIcon(props: StatusStateIconProps): JSX.Element {
 	const states = props.statuses.map((status) => status.state)
-	const content: JSX.Element = <div style={{width: "350px"}}>
-		{props.statuses.map((status, idx) => {
-			return <Row key={idx}>
-				<Col span="12">
-					{mapStateToIcon(status.state)}&nbsp;&nbsp;
-					<Avatar size="small" src={status.avatarUrl} shape="square"/>&nbsp;&nbsp;
-					<Text strong>{status.context}</Text>
-				</Col>
-				<Col span="11" style={{textAlign: "right"}}>
-					<Link href={status.targetUrl} target="_blank">Details</Link>
-				</Col>
-				{(idx !== props.statuses.length - 1)? 
-					<Divider style={{margin: "5px 0px"}}/> : null}
-			</Row>
-		})}
-	</div>
+	const content: JSX.Element = (
+		<div style={{
+				width: "350px",
+				height: "200px",
+				overflow: "scroll"
+			}}
+		>
+			{props.statuses.map((status, idx) => {
+				return (
+					<Row key={idx}>
+						<Col span="12">
+							<Space>
+								{mapStateToIcon(status.state)}
+								<Avatar size="small" src={status.avatarUrl} shape="square"/>
+								<Text 
+									strong 
+									ellipsis
+									style={{
+										width: 100,
+									}}
+								>
+									{status.context}
+								</Text>
+							</Space>
+						</Col>
+						<Col span="11" style={{textAlign: "right"}}>
+							<Link href={status.targetUrl} target="_blank">Details</Link>
+						</Col>
+						{(idx !== props.statuses.length - 1)? 
+							<Divider style={{margin: "5px 0px"}}/> : null}
+					</Row>
+				)
+			})}
+		</div>
+	)
 
 	return (
-		<Popover title="Statuses" content={content}>
+		<Popover 
+			title="Statuses" 
+			trigger="click"
+			content={content} 
+		>
 			{mapStateToIcon(mergeStatusStates(states))}
 		</Popover>
 	)

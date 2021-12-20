@@ -27,6 +27,7 @@ export enum DeploymentType {
 export enum DeploymentStatusEnum {
     Waiting = "waiting",
     Created = "created",
+    Queued = "queued",
     Running = "running",
     Success = "success",
     Failure = "failure",

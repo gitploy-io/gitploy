@@ -63,7 +63,7 @@ var (
 		{Name: "type", Type: field.TypeEnum, Enums: []string{"commit", "branch", "tag"}, Default: "commit"},
 		{Name: "env", Type: field.TypeString},
 		{Name: "ref", Type: field.TypeString},
-		{Name: "status", Type: field.TypeEnum, Enums: []string{"waiting", "created", "running", "success", "failure", "canceled"}, Default: "waiting"},
+		{Name: "status", Type: field.TypeEnum, Enums: []string{"waiting", "created", "queued", "running", "success", "failure", "canceled"}, Default: "waiting"},
 		{Name: "uid", Type: field.TypeInt64, Nullable: true},
 		{Name: "sha", Type: field.TypeString, Nullable: true},
 		{Name: "html_url", Type: field.TypeString, Nullable: true, Size: 2000},
