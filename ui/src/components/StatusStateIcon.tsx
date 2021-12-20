@@ -1,5 +1,5 @@
 import { Popover, Avatar, Typography, Row, Col, Divider } from "antd"
-import { CheckOutlined, CloseOutlined } from "@ant-design/icons"
+import { CheckOutlined, CloseOutlined, StopOutlined, ExclamationCircleOutlined } from "@ant-design/icons"
 
 import { Status, StatusState } from "../models"
 
@@ -41,19 +41,27 @@ export default function StatusStateIcon(props: StatusStateIconProps): JSX.Elemen
 function mapStateToIcon(state: StatusState): JSX.Element {
 	switch (state) {
 		case StatusState.Null:
-			return <span></span>
+			return <></>
 		case StatusState.Pending:
-			return <span>
-				<span className="gitploy-pending-icon" />&nbsp;&nbsp;
-			</span>
+			return (
+				<span>
+					<span className="gitploy-pending-icon" />&nbsp;&nbsp;
+				</span>
+			)
 		case StatusState.Success:
 			return <CheckOutlined style={{color: colorSuccess}}/>
 		case StatusState.Failure:
 			return <CloseOutlined style={{color: colorFailure}}/>
+		case StatusState.Cancelled:
+			return <ExclamationCircleOutlined />
+		case StatusState.Skipped:
+			return <StopOutlined />
 		default:
-			return <span>
-				<span className="gitploy-pending-icon" />&nbsp;&nbsp;
-			</span>
+			return (
+				<span>
+					<span className="gitploy-pending-icon" />&nbsp;&nbsp;
+				</span>
+			)
 	}
 }
 
@@ -64,7 +72,8 @@ function mergeStatusStates(states: StatusState[]): StatusState {
 
 	// The state is failure if one of them is failure.
 	for (let idx = 0; idx < states.length; idx++) {
-		if (states[idx] === StatusState.Failure) {
+		if (states[idx] === StatusState.Failure 
+			|| states[idx] === StatusState.Cancelled) {
 			return StatusState.Failure
 		}
 	}

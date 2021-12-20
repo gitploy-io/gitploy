@@ -87,7 +87,7 @@ func (r *Repo) ListStatuses(c *gin.Context) {
 func mergeState(ss []*extent.Status) string {
 	// The state is failure if one of them is failure.
 	for _, s := range ss {
-		if s.State == extent.StatusStateFailure {
+		if s.State == extent.StatusStateFailure || s.State == extent.StatusStateCancelled {
 			return string(extent.StatusStateFailure)
 		}
 	}
