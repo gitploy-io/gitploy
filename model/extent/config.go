@@ -65,7 +65,7 @@ const (
 
 func UnmarshalYAML(content []byte, c *Config) error {
 	if err := yaml.Unmarshal([]byte(content), c); err != nil {
-		return eutil.NewError(eutil.ErrorCodeConfigParseError, err)
+		return eutil.NewError(eutil.ErrorCodeConfigInvalid, err)
 	}
 
 	c.source = content
@@ -101,11 +101,11 @@ func (c *Config) Eval(v *EvalValues) error {
 
 	evalued, err := envsubst.Eval(string(c.source), mapper)
 	if err != nil {
-		return eutil.NewError(eutil.ErrorCodeConfigParseError, err)
+		return eutil.NewError(eutil.ErrorCodeConfigInvalid, err)
 	}
 
 	if err := yaml.Unmarshal([]byte(evalued), c); err != nil {
-		return eutil.NewError(eutil.ErrorCodeConfigParseError, err)
+		return eutil.NewError(eutil.ErrorCodeConfigInvalid, err)
 	}
 
 	return nil
