@@ -60,6 +60,6 @@ Documentation | Community | Installation Guide | Docker Image
 
 ## Contributors
 
-Don't be afraid to contribute! We have many things you can do to help out. If you're trying to contribute but stuck, please tag @hanjunlee.
+Don't be afraid to contribute! We have many things you can do to help out. If you're trying to contribute but stuck, please tag [@hanjunlee](https://github.com/hanjunlee).
 
 You can check the [contributing](./docs/contributing.md) for exact details on how to contribute.
