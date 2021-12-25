@@ -93,7 +93,7 @@ func (g *Github) GetConfig(ctx context.Context, u *ent.User, r *ent.Repo) (*exte
 	c := &extent.Config{}
 	if err := extent.UnmarshalYAML([]byte(content), c); err != nil {
 		return nil, e.NewError(
-			e.ErrorCodeConfigParseError,
+			e.ErrorCodeConfigInvalid,
 			err,
 		)
 	}

@@ -6,12 +6,10 @@ import (
 )
 
 const (
-	// ErrorCodeConfigParseError is that an error occurs when it parse the file.
-	ErrorCodeConfigParseError ErrorCode = "config_parse_error"
+	// ErrorCodeConfigInvalid is that an error occurs when it parse the file.
+	ErrorCodeConfigInvalid ErrorCode = "config_parse_error"
 	// ErrorCodeConfigUndefinedEnv is that the environment is not defined in the configuration file.
 	ErrorCodeConfigUndefinedEnv ErrorCode = "config_undefined_env"
-	// ErrorCodeConfigRegexpError is the regexp(re2) is invalid.
-	ErrorCodeConfigRegexpError ErrorCode = "config_regexp_error"
 
 	// ErrorCodeDeploymentConflict is the deployment number is conflicted.
 	ErrorCodeDeploymentConflict ErrorCode = "deployment_conflict"

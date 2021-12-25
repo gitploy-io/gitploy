@@ -65,7 +65,7 @@ const (
 
 func UnmarshalYAML(content []byte, c *Config) error {
 	if err := yaml.Unmarshal([]byte(content), c); err != nil {
-		return eutil.NewError(eutil.ErrorCodeConfigParseError, err)
+		return eutil.NewError(eutil.ErrorCodeConfigInvalid, err)
 	}
 
 	c.source = content
@@ -101,11 +101,11 @@ func (c *Config) Eval(v *EvalValues) error {
 
 	evalued, err := envsubst.Eval(string(c.source), mapper)
 	if err != nil {
-		return eutil.NewError(eutil.ErrorCodeConfigParseError, err)
+		return eutil.NewError(eutil.ErrorCodeConfigInvalid, err)
 	}
 
 	if err := yaml.Unmarshal([]byte(evalued), c); err != nil {
-		return eutil.NewError(eutil.ErrorCodeConfigParseError, err)
+		return eutil.NewError(eutil.ErrorCodeConfigInvalid, err)
 	}
 
 	return nil
@@ -144,7 +144,7 @@ func (e *Env) IsDeployableRef(ref string) (bool, error) {
 
 	matched, err := regexp.MatchString(*e.DeployableRef, ref)
 	if err != nil {
-		return false, eutil.NewError(eutil.ErrorCodeConfigRegexpError, err)
+		return false, eutil.NewError(eutil.ErrorCodeConfigInvalid, err)
 	}
 
 	return matched, nil
@@ -158,7 +158,7 @@ func (e *Env) IsAutoDeployOn(ref string) (bool, error) {
 
 	matched, err := regexp.MatchString(*e.AutoDeployOn, ref)
 	if err != nil {
-		return false, eutil.NewError(eutil.ErrorCodeConfigRegexpError, err)
+		return false, eutil.NewError(eutil.ErrorCodeConfigInvalid, err)
 	}
 
 	return matched, nil
