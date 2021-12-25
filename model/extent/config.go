@@ -144,7 +144,7 @@ func (e *Env) IsDeployableRef(ref string) (bool, error) {
 
 	matched, err := regexp.MatchString(*e.DeployableRef, ref)
 	if err != nil {
-		return false, eutil.NewError(eutil.ErrorCodeConfigRegexpError, err)
+		return false, eutil.NewError(eutil.ErrorCodeConfigInvalid, err)
 	}
 
 	return matched, nil
@@ -158,7 +158,7 @@ func (e *Env) IsAutoDeployOn(ref string) (bool, error) {
 
 	matched, err := regexp.MatchString(*e.AutoDeployOn, ref)
 	if err != nil {
-		return false, eutil.NewError(eutil.ErrorCodeConfigRegexpError, err)
+		return false, eutil.NewError(eutil.ErrorCodeConfigInvalid, err)
 	}
 
 	return matched, nil
