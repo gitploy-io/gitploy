@@ -198,7 +198,7 @@ func (i *Interactor) isDeployable(ctx context.Context, u *ent.User, r *ent.Repo,
 	}
 
 	if freezed, err := env.IsFreezed(time.Now().UTC()); freezed {
-		return e.NewError(e.ErrorCodeDeploymentFreezed, err)
+		return e.NewError(e.ErrorCodeDeploymentFrozen, err)
 	} else if err != nil {
 		return err
 	}

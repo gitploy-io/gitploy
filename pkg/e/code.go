@@ -17,8 +17,8 @@ const (
 	ErrorCodeDeploymentInvalid ErrorCode = "deployment_invalid"
 	// ErrorCodeDeploymentLocked is when the environment is locked.
 	ErrorCodeDeploymentLocked ErrorCode = "deployment_locked"
-	// ErrorCodeDeploymentFreezed is when the time in in the freeze window.
-	ErrorCodeDeploymentFreezed ErrorCode = "deployment_freezed"
+	// ErrorCodeDeploymentFrozen is when the time in in the freeze window.
+	ErrorCodeDeploymentFrozen ErrorCode = "deployment_frozen"
 	// ErrorCodeDeploymentUnapproved is when the deployment is not approved.
 	ErrorCodeDeploymentNotApproved ErrorCode = "deployment_not_approved"
 	// ErrorCodeDeploymentStatusNotWaiting is the status must be 'waiting' to create a remote deployment.
