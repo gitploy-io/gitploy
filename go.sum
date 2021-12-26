@@ -108,6 +108,8 @@ github.com/gitploy-io/cronexpr v0.2.0 h1:BmYX3+QNB11Bevp2z98taCOiNDhMo/E1pBeO6Oz
 github.com/gitploy-io/cronexpr v0.2.0/go.mod h1:Uep5sbzUSocMZvJ1s0lNI9zi37s5iUI1llkw3vRGK9M=
 github.com/gitploy-io/cronexpr v0.2.1 h1:usx6GTAQh2q3E4S8jx5RWGGkr4LSxLH0mBcebGZGv+c=
 github.com/gitploy-io/cronexpr v0.2.1/go.mod h1:Uep5sbzUSocMZvJ1s0lNI9zi37s5iUI1llkw3vRGK9M=
+github.com/gitploy-io/cronexpr v0.2.2 h1:Au+wK6FqmOLAF7AkW6q4gnrNXTe3rEW97XFZ4chy0xs=
+github.com/gitploy-io/cronexpr v0.2.2/go.mod h1:Uep5sbzUSocMZvJ1s0lNI9zi37s5iUI1llkw3vRGK9M=
 github.com/go-bindata/go-bindata v1.0.1-0.20190711162640-ee3c2418e368/go.mod h1:7xCgX1lzlrXPHkfvn3EhumqHkmSlzt8at9q7v0ax19c=
 github.com/go-gl/glfw v0.0.0-20190409004039-e6da0acd62b1/go.mod h1:vR7hzQXu2zJy9AVAgeJqvqgH9Q5CA+iKCZ2gyEVpxRU=
 github.com/go-gl/glfw/v3.3/glfw v0.0.0-20191125211704-12ad95a8df72/go.mod h1:tQ2UAYgL5IevRw8kRxooKSPJfGvJ9fJQFa0TUsXzTg8=

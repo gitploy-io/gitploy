@@ -8,7 +8,7 @@ var messages = map[ErrorCode]string{
 	ErrorCodeDeploymentConflict:      "The conflict occurs, please retry.",
 	ErrorCodeDeploymentInvalid:       "The validation has failed.",
 	ErrorCodeDeploymentLocked:        "The environment is locked.",
-	ErrorCodeDeploymentFreezed:       "It is in the deploy frozen window.",
+	ErrorCodeDeploymentFreezed:       "It is in the deploy freeze window.",
 	ErrorCodeDeploymentNotApproved:   "The deployment is not approved",
 	ErrorCodeDeploymentStatusInvalid: "The deployment status is invalid",
 	ErrorCodeEntityNotFound:          "It is not found.",
