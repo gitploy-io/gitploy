@@ -14,6 +14,9 @@ import (
 	"go.uber.org/zap"
 )
 
+// IsApproved verifies that the request is approved or not.
+// It is approved if there is an approval of reviews at least, but
+// it is rejected if there is a reject of reviews.
 func (i *Interactor) IsApproved(ctx context.Context, d *ent.Deployment) bool {
 	rvs, _ := i.Store.ListReviews(ctx, d)
 
@@ -32,6 +35,10 @@ func (i *Interactor) IsApproved(ctx context.Context, d *ent.Deployment) bool {
 	return false
 }
 
+// Deploy posts a new deployment to SCM with the payload.
+// But if it requires a review, it saves the payload on the DB
+// and waits until reviewed.
+// It returns an error for a undeployable payload.
 func (i *Interactor) Deploy(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, env *extent.Env) (*ent.Deployment, error) {
 	if err := i.isDeployable(ctx, u, r, d, env); err != nil {
 		return nil, err
@@ -114,7 +121,9 @@ func (i *Interactor) Deploy(ctx context.Context, u *ent.User, r *ent.Repo, d *en
 	return d, nil
 }
 
-// DeployToRemote create a new remote deployment after the deployment was approved.
+// DeployToRemote posts a new deployment to SCM with the saved payload
+// after review has finished.
+// It returns an error for a undeployable payload.
 func (i *Interactor) DeployToRemote(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, env *extent.Env) (*ent.Deployment, error) {
 	if d.Status != deployment.StatusWaiting {
 		return nil, e.NewErrorWithMessage(
