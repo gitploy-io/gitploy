@@ -1136,6 +1136,36 @@ func (mr *MockSCMMockRecorder) GetConfig(ctx, u, r interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetConfig", reflect.TypeOf((*MockSCM)(nil).GetConfig), ctx, u, r)
 }
 
+// GetConfigRedirectURL mocks base method.
+func (m *MockSCM) GetConfigRedirectURL(ctx context.Context, u *ent.User, r *ent.Repo) (string, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetConfigRedirectURL", ctx, u, r)
+	ret0, _ := ret[0].(string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetConfigRedirectURL indicates an expected call of GetConfigRedirectURL.
+func (mr *MockSCMMockRecorder) GetConfigRedirectURL(ctx, u, r interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetConfigRedirectURL", reflect.TypeOf((*MockSCM)(nil).GetConfigRedirectURL), ctx, u, r)
+}
+
+// GetNewFileRedirectURL mocks base method.
+func (m *MockSCM) GetNewFileRedirectURL(ctx context.Context, u *ent.User, r *ent.Repo) (string, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetNewFileRedirectURL", ctx, u, r)
+	ret0, _ := ret[0].(string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetNewFileRedirectURL indicates an expected call of GetNewFileRedirectURL.
+func (mr *MockSCMMockRecorder) GetNewFileRedirectURL(ctx, u, r interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetNewFileRedirectURL", reflect.TypeOf((*MockSCM)(nil).GetNewFileRedirectURL), ctx, u, r)
+}
+
 // GetRateLimit mocks base method.
 func (m *MockSCM) GetRateLimit(ctx context.Context, u *ent.User) (*extent.RateLimit, error) {
 	m.ctrl.T.Helper()
