@@ -155,11 +155,11 @@ envs:
 		}
 	})
 
-	t.Run("Unmarshal the freeze_windows field", func(t *testing.T) {
+	t.Run("Unmarshal the frozen_windows field", func(t *testing.T) {
 		s := `
 envs:
   - name: dev
-    freeze_windows:
+    frozen_windows:
       - start: "55 23 * * *"
         duration: "10m"`
 
