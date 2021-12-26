@@ -2,8 +2,8 @@ package github
 
 import (
 	"context"
+	"fmt"
 	"net/http"
-	"path"
 
 	"github.com/gitploy-io/gitploy/model/ent"
 	"github.com/gitploy-io/gitploy/pkg/e"
@@ -23,7 +23,7 @@ func (g *Github) GetConfigRedirectURL(ctx context.Context, u *ent.User, r *ent.R
 
 	// The latest version file on the main branch.
 	// https://docs.github.com/en/repositories/working-with-files/using-files/getting-permanent-links-to-files
-	url := path.Join(*remote.HTMLURL, "blob", *remote.DefaultBranch, r.ConfigPath)
+	url := fmt.Sprintf("%s/blob/%s/%s", *remote.HTMLURL, *remote.DefaultBranch, r.ConfigPath)
 	return url, nil
 }
 
@@ -41,6 +41,6 @@ func (g *Github) GetNewFileRedirectURL(ctx context.Context, u *ent.User, r *ent.
 
 	// Redirect to the URL to create a configuration file.
 	// https://docs.github.com/en/enterprise-server@3.0/repositories/working-with-files/managing-files/creating-new-files
-	url := path.Join(*remote.HTMLURL, "new", *remote.DefaultBranch, r.ConfigPath)
+	url := fmt.Sprintf("%s/new/%s/%s", *remote.HTMLURL, *remote.DefaultBranch, r.ConfigPath)
 	return url, nil
 }

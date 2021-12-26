@@ -25,17 +25,18 @@ func (w *Web) RedirectToConfig(c *gin.Context) {
 	r, err := w.i.FindRepoOfUserByNamespaceName(ctx, u, namespace, name)
 	if err != nil {
 		w.log.Check(gb.GetZapLogLevel(err), "Failed to get the repository.").Write(zap.Error(err))
-		gb.AbortWithError(c, err)
+		c.String(http.StatusForbidden, "It has failed to get the repository.")
 		return
 	}
 
 	url, err := w.i.GetConfigRedirectURL(ctx, u, r)
 	if err != nil {
 		w.log.Check(gb.GetZapLogLevel(err), "Failed to get the redirect URL for the configuration file.").Write(zap.Error(err))
-		gb.AbortWithError(c, err)
+		c.String(http.StatusInternalServerError, "It has failed to get the redirect URL for the configuration file.")
 		return
 	}
 
+	w.log.Debug("Redirect to the URL.", zap.String("URL", url))
 	c.Redirect(http.StatusMovedPermanently, url)
 }
 
@@ -54,16 +55,17 @@ func (w *Web) RedirectToNewConfig(c *gin.Context) {
 	r, err := w.i.FindRepoOfUserByNamespaceName(ctx, u, namespace, name)
 	if err != nil {
 		w.log.Check(gb.GetZapLogLevel(err), "Failed to get the repository.").Write(zap.Error(err))
-		gb.AbortWithError(c, err)
+		c.String(http.StatusForbidden, "It has failed to get the repository.")
 		return
 	}
 
 	url, err := w.i.GetNewFileRedirectURL(ctx, u, r)
 	if err != nil {
 		w.log.Check(gb.GetZapLogLevel(err), "Failed to get the redirect URL to create a new file.").Write(zap.Error(err))
-		gb.AbortWithError(c, err)
+		c.String(http.StatusInternalServerError, "It has failed to get the redirect URL for the configuration file.")
 		return
 	}
 
-	c.Redirect(http.StatusMovedPermanently, url)
+	w.log.Debug("Redirect to the URL.", zap.String("URL", url))
+	c.Redirect(http.StatusFound, url)
 }
