@@ -52,15 +52,21 @@ const mapDataToStatus = (data: StatusData): Status => {
     }
 }
 
-const mapStatusState = (state: string) => {
-    if (state === "pending") {
-        return StatusState.Pending
-    } else if (state === "success") {
-        return StatusState.Success
-    } else if (state === "failure") {
-        return StatusState.Failure
+const mapStatusState = (state: string): StatusState => {
+    switch (state) {
+        case "pending":
+            return StatusState.Pending
+        case "success":
+            return StatusState.Success
+        case "failure":
+            return StatusState.Failure
+        case "cancelled":
+            return StatusState.Cancelled
+        case "skipped":
+            return StatusState.Skipped
+        default:
+            return StatusState.Pending
     }
-    return StatusState.Pending
 }
 
 export const listCommits = async (namespace: string, name: string, branch: string, page = 1, perPage = 30): Promise<Commit[]> => {

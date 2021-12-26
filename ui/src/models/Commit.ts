@@ -24,4 +24,6 @@ export enum StatusState {
     Pending = "pending",
     Success = "success",
     Failure = "failure",
+    Cancelled = "cancelled",
+    Skipped = "skipped"
 }

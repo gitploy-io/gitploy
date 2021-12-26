@@ -115,18 +115,15 @@ func mapGithubCheckRunToStatus(c *github.CheckRun) *extent.Status {
 
 	// Conclusion exist when the status is 'completed', only.
 	if c.Conclusion == nil {
-		return &extent.Status{
-			Context:   *c.Name,
-			AvatarURL: *c.App.Owner.AvatarURL,
-			TargetURL: *c.HTMLURL,
-			State:     extent.StatusStatePending,
-		}
-	}
-
-	if *c.Conclusion == "success" {
+		state = extent.StatusStatePending
+	} else if *c.Conclusion == "success" {
 		state = extent.StatusStateSuccess
 	} else if *c.Conclusion == "failure" {
 		state = extent.StatusStateFailure
+	} else if *c.Conclusion == "cancelled" {
+		state = extent.StatusStateCancelled
+	} else if *c.Conclusion == "skipped" {
+		state = extent.StatusStateSkipped
 	} else {
 		state = extent.StatusStatePending
 	}

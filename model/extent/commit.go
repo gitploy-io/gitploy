@@ -35,7 +35,9 @@ type (
 )
 
 const (
-	StatusStateSuccess StatusState = "success"
-	StatusStateFailure StatusState = "failure"
-	StatusStatePending StatusState = "pending"
+	StatusStateSuccess   StatusState = "success"
+	StatusStateFailure   StatusState = "failure"
+	StatusStatePending   StatusState = "pending"
+	StatusStateCancelled StatusState = "cancelled"
+	StatusStateSkipped   StatusState = "skipped"
 )
