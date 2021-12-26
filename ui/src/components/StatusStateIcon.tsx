@@ -17,7 +17,7 @@ export default function StatusStateIcon(props: StatusStateIconProps): JSX.Elemen
 	const content: JSX.Element = (
 		<div style={{
 				width: "350px",
-				height: "200px",
+				maxHeight: "200px",
 				overflow: "scroll"
 			}}
 		>
