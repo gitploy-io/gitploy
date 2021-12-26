@@ -1,7 +1,6 @@
 package extent
 
 import (
-	"fmt"
 	"regexp"
 	"strconv"
 	"strings"
@@ -43,7 +42,8 @@ type (
 		// It is disabled when it is empty.
 		Review *Review `json:"review,omitempty" yaml:"review"`
 
-		FreezeWindows []FreezeWindow `json:"freeze_windows" yaml:"freeze_windows"`
+		// FrozenWindows is the list of windows to freeze deployments.
+		FrozenWindows []FrozenWindow `json:"frozen_windows" yaml:"frozen_windows"`
 	}
 
 	Review struct {
@@ -51,7 +51,7 @@ type (
 		Reviewers []string `json:"reviewers" yaml:"reviewers"`
 	}
 
-	FreezeWindow struct {
+	FrozenWindow struct {
 		Start    string `json:"start" yaml:"start"`
 		Duration string `json:"duration" yaml:"duration"`
 		Location string `json:"location" yaml:"location"`
@@ -184,16 +184,16 @@ func (e *Env) HasReview() bool {
 // IsFreezed verifies whether the current time is in a freeze window.
 // It returns an error when parsing an expression is failed.
 func (e *Env) IsFreezed(t time.Time) (bool, error) {
-	if len(e.FreezeWindows) == 0 {
+	if len(e.FrozenWindows) == 0 {
 		return false, nil
 	}
 
-	for _, w := range e.FreezeWindows {
+	for _, w := range e.FrozenWindows {
 		s, err := cronexpr.ParseInLocation(strings.TrimSpace(w.Start), w.Location)
 		if err != nil {
 			return false, eutil.NewErrorWithMessage(
 				eutil.ErrorCodeConfigInvalid,
-				fmt.Sprintf("The crontab expression of the freeze window is invalid."),
+				"The crontab expression of the freeze window is invalid.",
 				err,
 			)
 		}
@@ -202,7 +202,7 @@ func (e *Env) IsFreezed(t time.Time) (bool, error) {
 		if err != nil {
 			return false, eutil.NewErrorWithMessage(
 				eutil.ErrorCodeConfigInvalid,
-				fmt.Sprintf("The duration of the freeze window is invalid."),
+				"The duration of the freeze window is invalid.",
 				err,
 			)
 		}

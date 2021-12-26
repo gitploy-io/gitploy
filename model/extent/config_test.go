@@ -172,7 +172,7 @@ envs:
 			Envs: []*Env{
 				{
 					Name: "dev",
-					FreezeWindows: []FreezeWindow{
+					FrozenWindows: []FrozenWindow{
 						{
 							Start:    "55 23 * * *",
 							Duration: "10m",
@@ -268,7 +268,7 @@ func TestEnv_IsFreezed(t *testing.T) {
 			{
 				t: time.Date(2012, 12, 1, 23, 55, 10, 0, time.UTC),
 				e: &Env{
-					FreezeWindows: []FreezeWindow{
+					FrozenWindows: []FrozenWindow{
 						{
 							Start:    "55 23 * Dec *",
 							Duration: "10m",
@@ -280,7 +280,7 @@ func TestEnv_IsFreezed(t *testing.T) {
 			{
 				t: time.Date(2012, 1, 1, 0, 3, 0, 0, time.UTC),
 				e: &Env{
-					FreezeWindows: []FreezeWindow{
+					FrozenWindows: []FrozenWindow{
 						{
 							Start:    "55 23 * Dec *",
 							Duration: "10m",
@@ -291,7 +291,7 @@ func TestEnv_IsFreezed(t *testing.T) {
 			},
 		}
 		e := &Env{
-			FreezeWindows: []FreezeWindow{
+			FrozenWindows: []FrozenWindow{
 				{
 					Start:    "55 23 * Dec *",
 					Duration: "10m",
@@ -313,7 +313,7 @@ func TestEnv_IsFreezed(t *testing.T) {
 
 	t.Run("Return false when the time is out of the window", func(t *testing.T) {
 		e := &Env{
-			FreezeWindows: []FreezeWindow{
+			FrozenWindows: []FrozenWindow{
 				{
 					Start:    "55 23 * Dec *",
 					Duration: "10m",
