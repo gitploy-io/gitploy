@@ -62,6 +62,24 @@ envs:
     production_environment: true
 ```
 
+### Deploy Freeze Window
+
+Gitploy support to add a window to prevent unintended deployment for the environment. You can freeze a window periodically by a cron expression.
+
+```yaml
+envs:
+  - name: production
+    frozen_windows:
+      # Freeze every midnights
+      - start: "50 23 * * *"
+        duration: 20m
+        location: America/New_York
+      # Freeze every weekends
+      - start: "0 * * * SAT,SUN"
+        duration: 1h
+        location: Asia/Seoul
+```
+
 ### Review
 
 Gitploy provides the review process. You can list up to users on the configuration file. You can check the [document](./review.md) for the detail.

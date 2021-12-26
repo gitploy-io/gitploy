@@ -3,13 +3,14 @@ package extent
 import (
 	"reflect"
 	"testing"
+	"time"
 
 	"github.com/AlekSi/pointer"
 	"github.com/davecgh/go-spew/spew"
 )
 
 func TestUnmarshalYAML(t *testing.T) {
-	t.Run("unmarhsal the required_context field", func(tt *testing.T) {
+	t.Run("Unmarhsal the required_context field", func(tt *testing.T) {
 		s := `
 envs:
   - name: dev
@@ -37,7 +38,7 @@ envs:
 		}
 	})
 
-	t.Run("unmarshal auto_merge: false ", func(tt *testing.T) {
+	t.Run("Unmarshal 'auto_merge: false'", func(tt *testing.T) {
 		s := `
 envs:
   - name: dev
@@ -64,7 +65,7 @@ envs:
 		}
 	})
 
-	t.Run("unmarshal auto_merge: true", func(tt *testing.T) {
+	t.Run("Unmarshal 'auto_merge: true'", func(tt *testing.T) {
 		s := `
 envs:
   - name: dev
@@ -92,7 +93,7 @@ envs:
 }
 
 func TestConfig_Eval(t *testing.T) {
-	t.Run("Evaluate the configuration.", func(t *testing.T) {
+	t.Run("Umarshal the task with the variable template.", func(t *testing.T) {
 		s := `
 envs:
   - name: dev
@@ -122,7 +123,7 @@ envs:
 		}
 	})
 
-	t.Run("Evaluate the configuration with the regexp.", func(t *testing.T) {
+	t.Run("Unmarshal the deployable_ref field with a regexp.", func(t *testing.T) {
 		s := `
 envs:
   - name: dev
@@ -145,6 +146,38 @@ envs:
 					Name:          "dev",
 					Task:          pointer.ToString("deploy:kubernetes"),
 					DeployableRef: pointer.ToString(`v.*\..*\..*`),
+				},
+			},
+			source: []byte(s),
+		}
+		if !reflect.DeepEqual(c, e) {
+			t.Errorf("Config = %v expected %v", spew.Sdump(c), spew.Sdump(e))
+		}
+	})
+
+	t.Run("Unmarshal the frozen_windows field", func(t *testing.T) {
+		s := `
+envs:
+  - name: dev
+    frozen_windows:
+      - start: "55 23 * * *"
+        duration: "10m"`
+
+		c := &Config{}
+		if err := UnmarshalYAML([]byte(s), c); err != nil {
+			t.Fatalf("Failed to parse the configuration file: %v", err)
+		}
+
+		e := &Config{
+			Envs: []*Env{
+				{
+					Name: "dev",
+					FrozenWindows: []FrozenWindow{
+						{
+							Start:    "55 23 * * *",
+							Duration: "10m",
+						},
+					},
 				},
 			},
 			source: []byte(s),
@@ -221,6 +254,80 @@ func TestEnv_IsDeployableRef(t *testing.T) {
 		expected := false
 		if ret != expected {
 			t.Fatalf("IsDeployableRef = %v, wanted %v", ret, expected)
+		}
+	})
+}
+
+func TestEnv_IsFreezed(t *testing.T) {
+	t.Run("Return true when the time is in the window", func(t *testing.T) {
+		runs := []struct {
+			t    time.Time
+			e    *Env
+			want bool
+		}{
+			{
+				t: time.Date(2012, 12, 1, 23, 55, 10, 0, time.UTC),
+				e: &Env{
+					FrozenWindows: []FrozenWindow{
+						{
+							Start:    "55 23 * Dec *",
+							Duration: "10m",
+						},
+					},
+				},
+				want: true,
+			},
+			{
+				t: time.Date(2012, 1, 1, 0, 3, 0, 0, time.UTC),
+				e: &Env{
+					FrozenWindows: []FrozenWindow{
+						{
+							Start:    "55 23 * Dec *",
+							Duration: "10m",
+						},
+					},
+				},
+				want: true,
+			},
+		}
+		e := &Env{
+			FrozenWindows: []FrozenWindow{
+				{
+					Start:    "55 23 * Dec *",
+					Duration: "10m",
+				},
+			},
+		}
+
+		for _, r := range runs {
+			freezed, err := e.IsFreezed(r.t)
+			if err != nil {
+				t.Fatalf("IsFreezed returns an error: %s", err)
+			}
+
+			if freezed != r.want {
+				t.Fatalf("IsFreezed = %v, wanted %v", freezed, r.want)
+			}
+		}
+	})
+
+	t.Run("Return false when the time is out of the window", func(t *testing.T) {
+		e := &Env{
+			FrozenWindows: []FrozenWindow{
+				{
+					Start:    "55 23 * Dec *",
+					Duration: "10m",
+				},
+			},
+		}
+
+		freezed, err := e.IsFreezed(time.Date(2012, 1, 1, 0, 10, 0, 0, time.UTC))
+		if err != nil {
+			t.Fatalf("IsFreezed returns an error: %s", err)
+		}
+
+		if freezed != false {
+			t.Fatalf("IsFreezed = %v, wanted %v", freezed, false)
 		}
 	})
 }

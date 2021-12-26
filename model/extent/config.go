@@ -3,8 +3,11 @@ package extent
 import (
 	"regexp"
 	"strconv"
+	"strings"
+	"time"
 
 	"github.com/drone/envsubst"
+	"github.com/gitploy-io/cronexpr"
 	"gopkg.in/yaml.v3"
 
 	eutil "github.com/gitploy-io/gitploy/pkg/e"
@@ -38,11 +41,20 @@ type (
 		// Review is the configuration of Review,
 		// It is disabled when it is empty.
 		Review *Review `json:"review,omitempty" yaml:"review"`
+
+		// FrozenWindows is the list of windows to freeze deployments.
+		FrozenWindows []FrozenWindow `json:"frozen_windows" yaml:"frozen_windows"`
 	}
 
 	Review struct {
 		Enabled   bool     `json:"enabled" yaml:"enabled"`
 		Reviewers []string `json:"reviewers" yaml:"reviewers"`
+	}
+
+	FrozenWindow struct {
+		Start    string `json:"start" yaml:"start"`
+		Duration string `json:"duration" yaml:"duration"`
+		Location string `json:"location" yaml:"location"`
 	}
 
 	EvalValues struct {
@@ -131,12 +143,12 @@ func (c *Config) GetEnv(name string) *Env {
 	return nil
 }
 
-// IsProductionEnvironment check whether the environment is production or not.
+// IsProductionEnvironment verifies whether the environment is production or not.
 func (e *Env) IsProductionEnvironment() bool {
 	return e.ProductionEnvironment != nil && *e.ProductionEnvironment
 }
 
-// IsDeployableRef validate the ref is deployable.
+// IsDeployableRef verifies the ref is deployable.
 func (e *Env) IsDeployableRef(ref string) (bool, error) {
 	if e.DeployableRef == nil {
 		return true, nil
@@ -150,7 +162,7 @@ func (e *Env) IsDeployableRef(ref string) (bool, error) {
 	return matched, nil
 }
 
-// IsAutoDeployOn validate the ref is matched with 'auto_deploy_on'.
+// IsAutoDeployOn verifies the ref is matched with 'auto_deploy_on'.
 func (e *Env) IsAutoDeployOn(ref string) (bool, error) {
 	if e.AutoDeployOn == nil {
 		return false, nil
@@ -167,4 +179,41 @@ func (e *Env) IsAutoDeployOn(ref string) (bool, error) {
 // HasReview check whether the review is enabled or not.
 func (e *Env) HasReview() bool {
 	return e.Review != nil && e.Review.Enabled
+}
+
+// IsFreezed verifies whether the current time is in a freeze window.
+// It returns an error when parsing an expression is failed.
+func (e *Env) IsFreezed(t time.Time) (bool, error) {
+	if len(e.FrozenWindows) == 0 {
+		return false, nil
+	}
+
+	for _, w := range e.FrozenWindows {
+		s, err := cronexpr.ParseInLocation(strings.TrimSpace(w.Start), w.Location)
+		if err != nil {
+			return false, eutil.NewErrorWithMessage(
+				eutil.ErrorCodeConfigInvalid,
+				"The crontab expression of the freeze window is invalid.",
+				err,
+			)
+		}
+
+		d, err := time.ParseDuration(w.Duration)
+		if err != nil {
+			return false, eutil.NewErrorWithMessage(
+				eutil.ErrorCodeConfigInvalid,
+				"The duration of the freeze window is invalid.",
+				err,
+			)
+		}
+
+		// Add one minute to include the starting time.
+		start := s.Prev(t.Add(time.Minute))
+		end := start.Add(d)
+		if t.After(start) && t.Before(end) {
+			return true, nil
+		}
+	}
+
+	return false, nil
 }
