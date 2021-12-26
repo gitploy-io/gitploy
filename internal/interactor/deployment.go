@@ -33,7 +33,7 @@ func (i *Interactor) IsApproved(ctx context.Context, d *ent.Deployment) bool {
 }
 
 func (i *Interactor) Deploy(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, env *extent.Env) (*ent.Deployment, error) {
-	if ok, err := i.isDeployable(ctx, u, r, d, env); !ok {
+	if err := i.isDeployable(ctx, u, r, d, env); err != nil {
 		return nil, err
 	}
 
@@ -124,7 +124,7 @@ func (i *Interactor) DeployToRemote(ctx context.Context, u *ent.User, r *ent.Rep
 		)
 	}
 
-	if ok, err := i.isDeployable(ctx, u, r, d, env); !ok {
+	if err := i.isDeployable(ctx, u, r, d, env); err != nil {
 		return nil, err
 	}
 
@@ -171,21 +171,30 @@ func (i *Interactor) createRemoteDeployment(ctx context.Context, u *ent.User, r 
 	return i.SCM.CreateRemoteDeployment(ctx, u, r, d, env)
 }
 
-func (i *Interactor) isDeployable(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, env *extent.Env) (bool, error) {
-	if ok, err := env.IsDeployableRef(d.Ref); err != nil {
-		return false, err
-	} else if !ok {
-		return false, e.NewErrorWithMessage(e.ErrorCodeEntityUnprocessable, "The ref is not matched with 'deployable_ref'.", nil)
+func (i *Interactor) isDeployable(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, env *extent.Env) error {
+	// Skip verifications for roll back.
+	if !d.IsRollback {
+		if ok, err := env.IsDeployableRef(d.Ref); !ok {
+			return e.NewErrorWithMessage(e.ErrorCodeEntityUnprocessable, "The ref is not matched with 'deployable_ref'.", nil)
+		} else if err != nil {
+			return err
+		}
 	}
 
 	// Check that the environment is locked.
 	if locked, err := i.Store.HasLockOfRepoForEnv(ctx, r, d.Env); locked {
-		return false, e.NewError(e.ErrorCodeDeploymentLocked, err)
+		return e.NewError(e.ErrorCodeDeploymentLocked, err)
 	} else if err != nil {
-		return false, e.NewError(e.ErrorCodeInternalError, err)
+		return err
 	}
 
-	return true, nil
+	if freezed, err := env.IsFreezed(time.Now().UTC()); freezed {
+		return e.NewError(e.ErrorCodeDeploymentFreezed, err)
+	} else if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (i *Interactor) runClosingInactiveDeployment(stop <-chan struct{}) {
