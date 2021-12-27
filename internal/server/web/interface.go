@@ -22,7 +22,7 @@ type (
 		FindUserByHash(ctx context.Context, hash string) (*ent.User, error)
 		FindRepoOfUserByNamespaceName(ctx context.Context, u *ent.User, namespace, name string) (*ent.Repo, error)
 		GetConfigRedirectURL(ctx context.Context, u *ent.User, r *ent.Repo) (string, error)
-		GetNewFileRedirectURL(ctx context.Context, u *ent.User, r *ent.Repo) (string, error)
+		GetNewConfigRedirectURL(ctx context.Context, u *ent.User, r *ent.Repo) (string, error)
 		GetLicense(ctx context.Context) (*extent.License, error)
 	}
 )

@@ -59,7 +59,7 @@ func (w *Web) RedirectToNewConfig(c *gin.Context) {
 		return
 	}
 
-	url, err := w.i.GetNewFileRedirectURL(ctx, u, r)
+	url, err := w.i.GetNewConfigRedirectURL(ctx, u, r)
 	if err != nil {
 		w.log.Check(gb.GetZapLogLevel(err), "Failed to get the redirect URL to create a new file.").Write(zap.Error(err))
 		c.String(http.StatusInternalServerError, "It has failed to get the redirect URL for the configuration file.")

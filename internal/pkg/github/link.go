@@ -27,7 +27,7 @@ func (g *Github) GetConfigRedirectURL(ctx context.Context, u *ent.User, r *ent.R
 	return url, nil
 }
 
-func (g *Github) GetNewFileRedirectURL(ctx context.Context, u *ent.User, r *ent.Repo) (string, error) {
+func (g *Github) GetNewConfigRedirectURL(ctx context.Context, u *ent.User, r *ent.Repo) (string, error) {
 	remote, res, err := g.Client(ctx, u.Token).
 		Repositories.
 		Get(ctx, r.Namespace, r.Name)
