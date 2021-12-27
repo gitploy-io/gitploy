@@ -1,10 +1,12 @@
 # deploy.yml
 
-Gitploy configures a pipeline with a simple, easy‑to‑read file that you commit to your git repository. *The configuration file must be at the head of the default branch.* The default path is `deploy.yml` at the root directory, but you can replace the file path in the settings tab of Gitploy. You can check the [documentation](../references/deploy.yml.md) for the specification of the configuration file and also references [Use Cases](../tasks/usecases.md).
+Gitploy configures a pipeline with a simple, easy‑to‑read file that you commit to your git repository. The default path is `deploy.yml` at the root directory, but you can replace the file path in the settings tab of Gitploy. You can check the [documentation](../references/deploy.yml.md) for the specification of the configuration file and also references [Use Cases](../tasks/usecases.md). 
+
+*⚠️ Note that the configuration file must be at the head of the default branch.* 
 
 ## Quick Start
 
-If you want to get started quickly, you should copy the `deploy.yml` file and push it into your git repository. Then you can find the environment in the Gitploy.
+If you want to get started quickly, you should click the *New Configuration* link, copy the `deploy.yml` file, and push it into your git repository. Then you can find the `production` environment in Gitploy.
 
 ```yaml
 # deploy.yml
@@ -14,6 +16,10 @@ envs:
     # To avoid the context verification.
     # required_context: []
 ```
+
+Figure) New Configuration Link
+
+![Quick Start](../images/quickstart.png)
 
 ## Features
 ### Multi Environment
