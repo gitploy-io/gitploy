@@ -32,7 +32,6 @@ Gitploy makes your team or organization **build the deployment system around Git
 * Integrate with GitHub [Action](https://github.com/features/actions) in minutes.
 * Provides both continuous delivery and continuous deployment.
 * Provides advanced deployment features: Rollback, Review, Lock.
-* Provides various verifications for the deployment.
 * Provides DevOps metrics.
 
 ## Gitploy vs GitHub environment
