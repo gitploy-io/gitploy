@@ -9,19 +9,6 @@ import (
 	"github.com/gitploy-io/gitploy/model/ent"
 )
 
-// The CallbackFunc type is an adapter to allow the use of ordinary
-// function as Callback mutator.
-type CallbackFunc func(context.Context, *ent.CallbackMutation) (ent.Value, error)
-
-// Mutate calls f(ctx, m).
-func (f CallbackFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	mv, ok := m.(*ent.CallbackMutation)
-	if !ok {
-		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CallbackMutation", m)
-	}
-	return f(ctx, mv)
-}
-
 // The ChatUserFunc type is an adapter to allow the use of ordinary
 // function as ChatUser mutator.
 type ChatUserFunc func(context.Context, *ent.ChatUserMutation) (ent.Value, error)

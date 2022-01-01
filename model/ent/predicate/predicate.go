@@ -6,9 +6,6 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
-// Callback is the predicate function for callback builders.
-type Callback func(*sql.Selector)
-
 // ChatUser is the predicate function for chatuser builders.
 type ChatUser func(*sql.Selector)
 

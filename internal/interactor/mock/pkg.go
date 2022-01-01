@@ -127,21 +127,6 @@ func (mr *MockStoreMockRecorder) CountUsers(arg0 interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CountUsers", reflect.TypeOf((*MockStore)(nil).CountUsers), arg0)
 }
 
-// CreateCallback mocks base method.
-func (m *MockStore) CreateCallback(ctx context.Context, cb *ent.Callback) (*ent.Callback, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateCallback", ctx, cb)
-	ret0, _ := ret[0].(*ent.Callback)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// CreateCallback indicates an expected call of CreateCallback.
-func (mr *MockStoreMockRecorder) CreateCallback(ctx, cb interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateCallback", reflect.TypeOf((*MockStore)(nil).CreateCallback), ctx, cb)
-}
-
 // CreateChatUser mocks base method.
 func (m *MockStore) CreateChatUser(ctx context.Context, cu *ent.ChatUser) (*ent.ChatUser, error) {
 	m.ctrl.T.Helper()
@@ -347,21 +332,6 @@ func (m *MockStore) DeleteUser(ctx context.Context, u *ent.User) error {
 func (mr *MockStoreMockRecorder) DeleteUser(ctx, u interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteUser", reflect.TypeOf((*MockStore)(nil).DeleteUser), ctx, u)
-}
-
-// FindCallbackByHash mocks base method.
-func (m *MockStore) FindCallbackByHash(ctx context.Context, hash string) (*ent.Callback, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FindCallbackByHash", ctx, hash)
-	ret0, _ := ret[0].(*ent.Callback)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// FindCallbackByHash indicates an expected call of FindCallbackByHash.
-func (mr *MockStoreMockRecorder) FindCallbackByHash(ctx, hash interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindCallbackByHash", reflect.TypeOf((*MockStore)(nil).FindCallbackByHash), ctx, hash)
 }
 
 // FindChatUserByID mocks base method.

@@ -8,7 +8,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/gitploy-io/gitploy/model/ent/callback"
 	"github.com/gitploy-io/gitploy/model/ent/chatuser"
 	"github.com/gitploy-io/gitploy/model/ent/deployment"
 	"github.com/gitploy-io/gitploy/model/ent/deploymentstatistics"
@@ -34,7 +33,6 @@ const (
 	OpUpdateOne = ent.OpUpdateOne
 
 	// Node types.
-	TypeCallback             = "Callback"
 	TypeChatUser             = "ChatUser"
 	TypeDeployment           = "Deployment"
 	TypeDeploymentStatistics = "DeploymentStatistics"
@@ -47,572 +45,6 @@ const (
 	TypeReview               = "Review"
 	TypeUser                 = "User"
 )
-
-// CallbackMutation represents an operation that mutates the Callback nodes in the graph.
-type CallbackMutation struct {
-	config
-	op            Op
-	typ           string
-	id            *int
-	hash          *string
-	_type         *callback.Type
-	created_at    *time.Time
-	updated_at    *time.Time
-	clearedFields map[string]struct{}
-	repo          *int64
-	clearedrepo   bool
-	done          bool
-	oldValue      func(context.Context) (*Callback, error)
-	predicates    []predicate.Callback
-}
-
-var _ ent.Mutation = (*CallbackMutation)(nil)
-
-// callbackOption allows management of the mutation configuration using functional options.
-type callbackOption func(*CallbackMutation)
-
-// newCallbackMutation creates new mutation for the Callback entity.
-func newCallbackMutation(c config, op Op, opts ...callbackOption) *CallbackMutation {
-	m := &CallbackMutation{
-		config:        c,
-		op:            op,
-		typ:           TypeCallback,
-		clearedFields: make(map[string]struct{}),
-	}
-	for _, opt := range opts {
-		opt(m)
-	}
-	return m
-}
-
-// withCallbackID sets the ID field of the mutation.
-func withCallbackID(id int) callbackOption {
-	return func(m *CallbackMutation) {
-		var (
-			err   error
-			once  sync.Once
-			value *Callback
-		)
-		m.oldValue = func(ctx context.Context) (*Callback, error) {
-			once.Do(func() {
-				if m.done {
-					err = fmt.Errorf("querying old values post mutation is not allowed")
-				} else {
-					value, err = m.Client().Callback.Get(ctx, id)
-				}
-			})
-			return value, err
-		}
-		m.id = &id
-	}
-}
-
-// withCallback sets the old Callback of the mutation.
-func withCallback(node *Callback) callbackOption {
-	return func(m *CallbackMutation) {
-		m.oldValue = func(context.Context) (*Callback, error) {
-			return node, nil
-		}
-		m.id = &node.ID
-	}
-}
-
-// Client returns a new `ent.Client` from the mutation. If the mutation was
-// executed in a transaction (ent.Tx), a transactional client is returned.
-func (m CallbackMutation) Client() *Client {
-	client := &Client{config: m.config}
-	client.init()
-	return client
-}
-
-// Tx returns an `ent.Tx` for mutations that were executed in transactions;
-// it returns an error otherwise.
-func (m CallbackMutation) Tx() (*Tx, error) {
-	if _, ok := m.driver.(*txDriver); !ok {
-		return nil, fmt.Errorf("ent: mutation is not running in a transaction")
-	}
-	tx := &Tx{config: m.config}
-	tx.init()
-	return tx, nil
-}
-
-// ID returns the ID value in the mutation. Note that the ID is only available
-// if it was provided to the builder or after it was returned from the database.
-func (m *CallbackMutation) ID() (id int, exists bool) {
-	if m.id == nil {
-		return
-	}
-	return *m.id, true
-}
-
-// SetHash sets the "hash" field.
-func (m *CallbackMutation) SetHash(s string) {
-	m.hash = &s
-}
-
-// Hash returns the value of the "hash" field in the mutation.
-func (m *CallbackMutation) Hash() (r string, exists bool) {
-	v := m.hash
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldHash returns the old "hash" field's value of the Callback entity.
-// If the Callback object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CallbackMutation) OldHash(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, fmt.Errorf("OldHash is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, fmt.Errorf("OldHash requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldHash: %w", err)
-	}
-	return oldValue.Hash, nil
-}
-
-// ResetHash resets all changes to the "hash" field.
-func (m *CallbackMutation) ResetHash() {
-	m.hash = nil
-}
-
-// SetType sets the "type" field.
-func (m *CallbackMutation) SetType(c callback.Type) {
-	m._type = &c
-}
-
-// GetType returns the value of the "type" field in the mutation.
-func (m *CallbackMutation) GetType() (r callback.Type, exists bool) {
-	v := m._type
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldType returns the old "type" field's value of the Callback entity.
-// If the Callback object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CallbackMutation) OldType(ctx context.Context) (v callback.Type, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, fmt.Errorf("OldType is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, fmt.Errorf("OldType requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldType: %w", err)
-	}
-	return oldValue.Type, nil
-}
-
-// ResetType resets all changes to the "type" field.
-func (m *CallbackMutation) ResetType() {
-	m._type = nil
-}
-
-// SetCreatedAt sets the "created_at" field.
-func (m *CallbackMutation) SetCreatedAt(t time.Time) {
-	m.created_at = &t
-}
-
-// CreatedAt returns the value of the "created_at" field in the mutation.
-func (m *CallbackMutation) CreatedAt() (r time.Time, exists bool) {
-	v := m.created_at
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldCreatedAt returns the old "created_at" field's value of the Callback entity.
-// If the Callback object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CallbackMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, fmt.Errorf("OldCreatedAt is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, fmt.Errorf("OldCreatedAt requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
-	}
-	return oldValue.CreatedAt, nil
-}
-
-// ResetCreatedAt resets all changes to the "created_at" field.
-func (m *CallbackMutation) ResetCreatedAt() {
-	m.created_at = nil
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (m *CallbackMutation) SetUpdatedAt(t time.Time) {
-	m.updated_at = &t
-}
-
-// UpdatedAt returns the value of the "updated_at" field in the mutation.
-func (m *CallbackMutation) UpdatedAt() (r time.Time, exists bool) {
-	v := m.updated_at
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldUpdatedAt returns the old "updated_at" field's value of the Callback entity.
-// If the Callback object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CallbackMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, fmt.Errorf("OldUpdatedAt is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, fmt.Errorf("OldUpdatedAt requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
-	}
-	return oldValue.UpdatedAt, nil
-}
-
-// ResetUpdatedAt resets all changes to the "updated_at" field.
-func (m *CallbackMutation) ResetUpdatedAt() {
-	m.updated_at = nil
-}
-
-// SetRepoID sets the "repo_id" field.
-func (m *CallbackMutation) SetRepoID(i int64) {
-	m.repo = &i
-}
-
-// RepoID returns the value of the "repo_id" field in the mutation.
-func (m *CallbackMutation) RepoID() (r int64, exists bool) {
-	v := m.repo
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldRepoID returns the old "repo_id" field's value of the Callback entity.
-// If the Callback object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CallbackMutation) OldRepoID(ctx context.Context) (v int64, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, fmt.Errorf("OldRepoID is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, fmt.Errorf("OldRepoID requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldRepoID: %w", err)
-	}
-	return oldValue.RepoID, nil
-}
-
-// ResetRepoID resets all changes to the "repo_id" field.
-func (m *CallbackMutation) ResetRepoID() {
-	m.repo = nil
-}
-
-// ClearRepo clears the "repo" edge to the Repo entity.
-func (m *CallbackMutation) ClearRepo() {
-	m.clearedrepo = true
-}
-
-// RepoCleared reports if the "repo" edge to the Repo entity was cleared.
-func (m *CallbackMutation) RepoCleared() bool {
-	return m.clearedrepo
-}
-
-// RepoIDs returns the "repo" edge IDs in the mutation.
-// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// RepoID instead. It exists only for internal usage by the builders.
-func (m *CallbackMutation) RepoIDs() (ids []int64) {
-	if id := m.repo; id != nil {
-		ids = append(ids, *id)
-	}
-	return
-}
-
-// ResetRepo resets all changes to the "repo" edge.
-func (m *CallbackMutation) ResetRepo() {
-	m.repo = nil
-	m.clearedrepo = false
-}
-
-// Where appends a list predicates to the CallbackMutation builder.
-func (m *CallbackMutation) Where(ps ...predicate.Callback) {
-	m.predicates = append(m.predicates, ps...)
-}
-
-// Op returns the operation name.
-func (m *CallbackMutation) Op() Op {
-	return m.op
-}
-
-// Type returns the node type of this mutation (Callback).
-func (m *CallbackMutation) Type() string {
-	return m.typ
-}
-
-// Fields returns all fields that were changed during this mutation. Note that in
-// order to get all numeric fields that were incremented/decremented, call
-// AddedFields().
-func (m *CallbackMutation) Fields() []string {
-	fields := make([]string, 0, 5)
-	if m.hash != nil {
-		fields = append(fields, callback.FieldHash)
-	}
-	if m._type != nil {
-		fields = append(fields, callback.FieldType)
-	}
-	if m.created_at != nil {
-		fields = append(fields, callback.FieldCreatedAt)
-	}
-	if m.updated_at != nil {
-		fields = append(fields, callback.FieldUpdatedAt)
-	}
-	if m.repo != nil {
-		fields = append(fields, callback.FieldRepoID)
-	}
-	return fields
-}
-
-// Field returns the value of a field with the given name. The second boolean
-// return value indicates that this field was not set, or was not defined in the
-// schema.
-func (m *CallbackMutation) Field(name string) (ent.Value, bool) {
-	switch name {
-	case callback.FieldHash:
-		return m.Hash()
-	case callback.FieldType:
-		return m.GetType()
-	case callback.FieldCreatedAt:
-		return m.CreatedAt()
-	case callback.FieldUpdatedAt:
-		return m.UpdatedAt()
-	case callback.FieldRepoID:
-		return m.RepoID()
-	}
-	return nil, false
-}
-
-// OldField returns the old value of the field from the database. An error is
-// returned if the mutation operation is not UpdateOne, or the query to the
-// database failed.
-func (m *CallbackMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
-	switch name {
-	case callback.FieldHash:
-		return m.OldHash(ctx)
-	case callback.FieldType:
-		return m.OldType(ctx)
-	case callback.FieldCreatedAt:
-		return m.OldCreatedAt(ctx)
-	case callback.FieldUpdatedAt:
-		return m.OldUpdatedAt(ctx)
-	case callback.FieldRepoID:
-		return m.OldRepoID(ctx)
-	}
-	return nil, fmt.Errorf("unknown Callback field %s", name)
-}
-
-// SetField sets the value of a field with the given name. It returns an error if
-// the field is not defined in the schema, or if the type mismatched the field
-// type.
-func (m *CallbackMutation) SetField(name string, value ent.Value) error {
-	switch name {
-	case callback.FieldHash:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetHash(v)
-		return nil
-	case callback.FieldType:
-		v, ok := value.(callback.Type)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetType(v)
-		return nil
-	case callback.FieldCreatedAt:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetCreatedAt(v)
-		return nil
-	case callback.FieldUpdatedAt:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetUpdatedAt(v)
-		return nil
-	case callback.FieldRepoID:
-		v, ok := value.(int64)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetRepoID(v)
-		return nil
-	}
-	return fmt.Errorf("unknown Callback field %s", name)
-}
-
-// AddedFields returns all numeric fields that were incremented/decremented during
-// this mutation.
-func (m *CallbackMutation) AddedFields() []string {
-	var fields []string
-	return fields
-}
-
-// AddedField returns the numeric value that was incremented/decremented on a field
-// with the given name. The second boolean return value indicates that this field
-// was not set, or was not defined in the schema.
-func (m *CallbackMutation) AddedField(name string) (ent.Value, bool) {
-	switch name {
-	}
-	return nil, false
-}
-
-// AddField adds the value to the field with the given name. It returns an error if
-// the field is not defined in the schema, or if the type mismatched the field
-// type.
-func (m *CallbackMutation) AddField(name string, value ent.Value) error {
-	switch name {
-	}
-	return fmt.Errorf("unknown Callback numeric field %s", name)
-}
-
-// ClearedFields returns all nullable fields that were cleared during this
-// mutation.
-func (m *CallbackMutation) ClearedFields() []string {
-	return nil
-}
-
-// FieldCleared returns a boolean indicating if a field with the given name was
-// cleared in this mutation.
-func (m *CallbackMutation) FieldCleared(name string) bool {
-	_, ok := m.clearedFields[name]
-	return ok
-}
-
-// ClearField clears the value of the field with the given name. It returns an
-// error if the field is not defined in the schema.
-func (m *CallbackMutation) ClearField(name string) error {
-	return fmt.Errorf("unknown Callback nullable field %s", name)
-}
-
-// ResetField resets all changes in the mutation for the field with the given name.
-// It returns an error if the field is not defined in the schema.
-func (m *CallbackMutation) ResetField(name string) error {
-	switch name {
-	case callback.FieldHash:
-		m.ResetHash()
-		return nil
-	case callback.FieldType:
-		m.ResetType()
-		return nil
-	case callback.FieldCreatedAt:
-		m.ResetCreatedAt()
-		return nil
-	case callback.FieldUpdatedAt:
-		m.ResetUpdatedAt()
-		return nil
-	case callback.FieldRepoID:
-		m.ResetRepoID()
-		return nil
-	}
-	return fmt.Errorf("unknown Callback field %s", name)
-}
-
-// AddedEdges returns all edge names that were set/added in this mutation.
-func (m *CallbackMutation) AddedEdges() []string {
-	edges := make([]string, 0, 1)
-	if m.repo != nil {
-		edges = append(edges, callback.EdgeRepo)
-	}
-	return edges
-}
-
-// AddedIDs returns all IDs (to other nodes) that were added for the given edge
-// name in this mutation.
-func (m *CallbackMutation) AddedIDs(name string) []ent.Value {
-	switch name {
-	case callback.EdgeRepo:
-		if id := m.repo; id != nil {
-			return []ent.Value{*id}
-		}
-	}
-	return nil
-}
-
-// RemovedEdges returns all edge names that were removed in this mutation.
-func (m *CallbackMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 1)
-	return edges
-}
-
-// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
-// the given name in this mutation.
-func (m *CallbackMutation) RemovedIDs(name string) []ent.Value {
-	switch name {
-	}
-	return nil
-}
-
-// ClearedEdges returns all edge names that were cleared in this mutation.
-func (m *CallbackMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 1)
-	if m.clearedrepo {
-		edges = append(edges, callback.EdgeRepo)
-	}
-	return edges
-}
-
-// EdgeCleared returns a boolean which indicates if the edge with the given name
-// was cleared in this mutation.
-func (m *CallbackMutation) EdgeCleared(name string) bool {
-	switch name {
-	case callback.EdgeRepo:
-		return m.clearedrepo
-	}
-	return false
-}
-
-// ClearEdge clears the value of the edge with the given name. It returns an error
-// if that edge is not defined in the schema.
-func (m *CallbackMutation) ClearEdge(name string) error {
-	switch name {
-	case callback.EdgeRepo:
-		m.ClearRepo()
-		return nil
-	}
-	return fmt.Errorf("unknown Callback unique edge %s", name)
-}
-
-// ResetEdge resets all changes to the edge with the given name in this mutation.
-// It returns an error if the edge is not defined in the schema.
-func (m *CallbackMutation) ResetEdge(name string) error {
-	switch name {
-	case callback.EdgeRepo:
-		m.ResetRepo()
-		return nil
-	}
-	return fmt.Errorf("unknown Callback edge %s", name)
-}
 
 // ChatUserMutation represents an operation that mutates the ChatUser nodes in the graph.
 type ChatUserMutation struct {
@@ -7240,9 +6672,6 @@ type RepoMutation struct {
 	deployments                  map[int]struct{}
 	removeddeployments           map[int]struct{}
 	cleareddeployments           bool
-	callback                     map[int]struct{}
-	removedcallback              map[int]struct{}
-	clearedcallback              bool
 	locks                        map[int]struct{}
 	removedlocks                 map[int]struct{}
 	clearedlocks                 bool
@@ -7869,60 +7298,6 @@ func (m *RepoMutation) ResetDeployments() {
 	m.removeddeployments = nil
 }
 
-// AddCallbackIDs adds the "callback" edge to the Callback entity by ids.
-func (m *RepoMutation) AddCallbackIDs(ids ...int) {
-	if m.callback == nil {
-		m.callback = make(map[int]struct{})
-	}
-	for i := range ids {
-		m.callback[ids[i]] = struct{}{}
-	}
-}
-
-// ClearCallback clears the "callback" edge to the Callback entity.
-func (m *RepoMutation) ClearCallback() {
-	m.clearedcallback = true
-}
-
-// CallbackCleared reports if the "callback" edge to the Callback entity was cleared.
-func (m *RepoMutation) CallbackCleared() bool {
-	return m.clearedcallback
-}
-
-// RemoveCallbackIDs removes the "callback" edge to the Callback entity by IDs.
-func (m *RepoMutation) RemoveCallbackIDs(ids ...int) {
-	if m.removedcallback == nil {
-		m.removedcallback = make(map[int]struct{})
-	}
-	for i := range ids {
-		delete(m.callback, ids[i])
-		m.removedcallback[ids[i]] = struct{}{}
-	}
-}
-
-// RemovedCallback returns the removed IDs of the "callback" edge to the Callback entity.
-func (m *RepoMutation) RemovedCallbackIDs() (ids []int) {
-	for id := range m.removedcallback {
-		ids = append(ids, id)
-	}
-	return
-}
-
-// CallbackIDs returns the "callback" edge IDs in the mutation.
-func (m *RepoMutation) CallbackIDs() (ids []int) {
-	for id := range m.callback {
-		ids = append(ids, id)
-	}
-	return
-}
-
-// ResetCallback resets all changes to the "callback" edge.
-func (m *RepoMutation) ResetCallback() {
-	m.callback = nil
-	m.clearedcallback = false
-	m.removedcallback = nil
-}
-
 // AddLockIDs adds the "locks" edge to the Lock entity by ids.
 func (m *RepoMutation) AddLockIDs(ids ...int) {
 	if m.locks == nil {
@@ -8364,15 +7739,12 @@ func (m *RepoMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *RepoMutation) AddedEdges() []string {
-	edges := make([]string, 0, 6)
+	edges := make([]string, 0, 5)
 	if m.perms != nil {
 		edges = append(edges, repo.EdgePerms)
 	}
 	if m.deployments != nil {
 		edges = append(edges, repo.EdgeDeployments)
-	}
-	if m.callback != nil {
-		edges = append(edges, repo.EdgeCallback)
 	}
 	if m.locks != nil {
 		edges = append(edges, repo.EdgeLocks)
@@ -8402,12 +7774,6 @@ func (m *RepoMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
-	case repo.EdgeCallback:
-		ids := make([]ent.Value, 0, len(m.callback))
-		for id := range m.callback {
-			ids = append(ids, id)
-		}
-		return ids
 	case repo.EdgeLocks:
 		ids := make([]ent.Value, 0, len(m.locks))
 		for id := range m.locks {
@@ -8430,15 +7796,12 @@ func (m *RepoMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *RepoMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 6)
+	edges := make([]string, 0, 5)
 	if m.removedperms != nil {
 		edges = append(edges, repo.EdgePerms)
 	}
 	if m.removeddeployments != nil {
 		edges = append(edges, repo.EdgeDeployments)
-	}
-	if m.removedcallback != nil {
-		edges = append(edges, repo.EdgeCallback)
 	}
 	if m.removedlocks != nil {
 		edges = append(edges, repo.EdgeLocks)
@@ -8465,12 +7828,6 @@ func (m *RepoMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
-	case repo.EdgeCallback:
-		ids := make([]ent.Value, 0, len(m.removedcallback))
-		for id := range m.removedcallback {
-			ids = append(ids, id)
-		}
-		return ids
 	case repo.EdgeLocks:
 		ids := make([]ent.Value, 0, len(m.removedlocks))
 		for id := range m.removedlocks {
@@ -8489,15 +7846,12 @@ func (m *RepoMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *RepoMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 6)
+	edges := make([]string, 0, 5)
 	if m.clearedperms {
 		edges = append(edges, repo.EdgePerms)
 	}
 	if m.cleareddeployments {
 		edges = append(edges, repo.EdgeDeployments)
-	}
-	if m.clearedcallback {
-		edges = append(edges, repo.EdgeCallback)
 	}
 	if m.clearedlocks {
 		edges = append(edges, repo.EdgeLocks)
@@ -8519,8 +7873,6 @@ func (m *RepoMutation) EdgeCleared(name string) bool {
 		return m.clearedperms
 	case repo.EdgeDeployments:
 		return m.cleareddeployments
-	case repo.EdgeCallback:
-		return m.clearedcallback
 	case repo.EdgeLocks:
 		return m.clearedlocks
 	case repo.EdgeDeploymentStatistics:
@@ -8551,9 +7903,6 @@ func (m *RepoMutation) ResetEdge(name string) error {
 		return nil
 	case repo.EdgeDeployments:
 		m.ResetDeployments()
-		return nil
-	case repo.EdgeCallback:
-		m.ResetCallback()
 		return nil
 	case repo.EdgeLocks:
 		m.ResetLocks()
