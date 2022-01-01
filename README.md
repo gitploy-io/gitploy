@@ -27,11 +27,10 @@ Gitploy makes your team or organization **build the deployment system around Git
 ## Features
 
 * Manage all deployments in one place.
-* Provides the intuitive UI to deploy a specific ref (branch, SHA, tag).
-* Build an event-driven deployment system around GitHub. See GitHub [deployment event](https://docs.github.com/en/developers/webhooks-and-events/webhooks/webhook-events-and-payloads#deployment).
-* Integrate with GitHub [Action](https://github.com/features/actions) in minutes.
+* Provides the intuitive UI to deploy a specific `ref` (branch, SHA, tag).
+* Build an event-driven deployment system for loosely coupled tooling.
 * Provides both continuous delivery and continuous deployment.
-* Provides advanced deployment features: Rollback, Review, Lock.
+* Provides advanced deployment features: Rollback, Review, Lock, Freeze Window.
 * Provides DevOps metrics.
 
 ## Gitploy vs GitHub environment
@@ -42,9 +41,8 @@ Manual deploy                | ✅ | ✅
 Auto deploy                  | ✅ | ✅
 Review                       | ✅ | ✅
 Rollback                     | ✅ | ❌
-Lock environment             | ✅ | ❌
-Commit statuses verification | ✅ | ❌
-Display changed commmits     | ✅ | ❌
+Deployment Safety            | ✅ | ❌
+DevOps Metrics               | ✅ | ❌
 Private repositories for teams plan | ✅ | ❌ 
 
 ## Getting Started
