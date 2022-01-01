@@ -247,6 +247,8 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 		}
 
 		root.GET("/signin", w.Signin)
+		root.GET("/link/:namespace/:name/config", w.RedirectToConfig)
+		root.GET("/link/:namespace/:name/config/new", w.RedirectToNewConfig)
 
 		// Static files located at the 'ui/public' directory.
 		r.StaticFile("/favicon.ico", "./favicon.ico")

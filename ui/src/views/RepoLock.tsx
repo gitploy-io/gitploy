@@ -38,11 +38,14 @@ export default function RepoLock(): JSX.Element {
             <Result
                 status="warning"
                 title="There is no configuration file."
-                extra={
-                    <Button type="primary" key="console" href="https://docs.gitploy.io/concepts/deploy.yml">
+                extra={[
+                    <Button type="primary" key="console" target="_blank" href="https://docs.gitploy.io/concepts/deploy.yml">
                       Read Document
+                    </Button>,
+                    <Button type="link" key="link" target="_blank" href={`/link/${namespace}/${name}/config/new`}>
+                      New Configuration
                     </Button>
-                }
+                ]}
             />
         )
     }

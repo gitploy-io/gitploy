@@ -1,4 +1,4 @@
-import { Form, Input, Button, Space } from "antd"
+import { Form, Input, Button, Space, Typography } from "antd"
 import { Repo } from "../models"
 
 export interface RepoSettingsFormProps {
@@ -37,10 +37,20 @@ export default function RepoSettingForm(props: RepoSettingsFormProps): JSX.Eleme
         >
             <Form.Item
                 label="Config"
-                name="config"
-                rules={[{required: true}]}
-                {...layout}>
-                <Input />
+                {...layout}
+            >
+                <Space>
+                    <Form.Item
+                        name="config"
+                        rules={[{required: true}]}
+                        noStyle
+                    >
+                        <Input />
+                    </Form.Item>
+                    <Typography.Link target="_blank" href={`/link/${props.repo.namespace}/${props.repo.name}/config`}>
+                        Link
+                    </Typography.Link>
+                </Space>
             </Form.Item>
             <Form.Item {...submitLayout}>
                 <Form.Item noStyle>
