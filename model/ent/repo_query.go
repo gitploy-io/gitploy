@@ -13,7 +13,6 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/gitploy-io/gitploy/model/ent/callback"
 	"github.com/gitploy-io/gitploy/model/ent/deployment"
 	"github.com/gitploy-io/gitploy/model/ent/deploymentstatistics"
 	"github.com/gitploy-io/gitploy/model/ent/lock"
@@ -35,7 +34,6 @@ type RepoQuery struct {
 	// eager-loading edges.
 	withPerms                *PermQuery
 	withDeployments          *DeploymentQuery
-	withCallback             *CallbackQuery
 	withLocks                *LockQuery
 	withDeploymentStatistics *DeploymentStatisticsQuery
 	withOwner                *UserQuery
@@ -113,28 +111,6 @@ func (rq *RepoQuery) QueryDeployments() *DeploymentQuery {
 			sqlgraph.From(repo.Table, repo.FieldID, selector),
 			sqlgraph.To(deployment.Table, deployment.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, repo.DeploymentsTable, repo.DeploymentsColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(rq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
-// QueryCallback chains the current query on the "callback" edge.
-func (rq *RepoQuery) QueryCallback() *CallbackQuery {
-	query := &CallbackQuery{config: rq.config}
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := rq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := rq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(repo.Table, repo.FieldID, selector),
-			sqlgraph.To(callback.Table, callback.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, repo.CallbackTable, repo.CallbackColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(rq.driver.Dialect(), step)
 		return fromU, nil
@@ -391,7 +367,6 @@ func (rq *RepoQuery) Clone() *RepoQuery {
 		predicates:               append([]predicate.Repo{}, rq.predicates...),
 		withPerms:                rq.withPerms.Clone(),
 		withDeployments:          rq.withDeployments.Clone(),
-		withCallback:             rq.withCallback.Clone(),
 		withLocks:                rq.withLocks.Clone(),
 		withDeploymentStatistics: rq.withDeploymentStatistics.Clone(),
 		withOwner:                rq.withOwner.Clone(),
@@ -420,17 +395,6 @@ func (rq *RepoQuery) WithDeployments(opts ...func(*DeploymentQuery)) *RepoQuery 
 		opt(query)
 	}
 	rq.withDeployments = query
-	return rq
-}
-
-// WithCallback tells the query-builder to eager-load the nodes that are connected to
-// the "callback" edge. The optional arguments are used to configure the query builder of the edge.
-func (rq *RepoQuery) WithCallback(opts ...func(*CallbackQuery)) *RepoQuery {
-	query := &CallbackQuery{config: rq.config}
-	for _, opt := range opts {
-		opt(query)
-	}
-	rq.withCallback = query
 	return rq
 }
 
@@ -532,10 +496,9 @@ func (rq *RepoQuery) sqlAll(ctx context.Context) ([]*Repo, error) {
 	var (
 		nodes       = []*Repo{}
 		_spec       = rq.querySpec()
-		loadedTypes = [6]bool{
+		loadedTypes = [5]bool{
 			rq.withPerms != nil,
 			rq.withDeployments != nil,
-			rq.withCallback != nil,
 			rq.withLocks != nil,
 			rq.withDeploymentStatistics != nil,
 			rq.withOwner != nil,
@@ -611,31 +574,6 @@ func (rq *RepoQuery) sqlAll(ctx context.Context) ([]*Repo, error) {
 				return nil, fmt.Errorf(`unexpected foreign-key "repo_id" returned %v for node %v`, fk, n.ID)
 			}
 			node.Edges.Deployments = append(node.Edges.Deployments, n)
-		}
-	}
-
-	if query := rq.withCallback; query != nil {
-		fks := make([]driver.Value, 0, len(nodes))
-		nodeids := make(map[int64]*Repo)
-		for i := range nodes {
-			fks = append(fks, nodes[i].ID)
-			nodeids[nodes[i].ID] = nodes[i]
-			nodes[i].Edges.Callback = []*Callback{}
-		}
-		query.Where(predicate.Callback(func(s *sql.Selector) {
-			s.Where(sql.InValues(repo.CallbackColumn, fks...))
-		}))
-		neighbors, err := query.All(ctx)
-		if err != nil {
-			return nil, err
-		}
-		for _, n := range neighbors {
-			fk := n.RepoID
-			node, ok := nodeids[fk]
-			if !ok {
-				return nil, fmt.Errorf(`unexpected foreign-key "repo_id" returned %v for node %v`, fk, n.ID)
-			}
-			node.Edges.Callback = append(node.Edges.Callback, n)
 		}
 	}
 

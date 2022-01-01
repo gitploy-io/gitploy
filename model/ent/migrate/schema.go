@@ -8,29 +8,6 @@ import (
 )
 
 var (
-	// CallbacksColumns holds the columns for the "callbacks" table.
-	CallbacksColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "hash", Type: field.TypeString, Unique: true},
-		{Name: "type", Type: field.TypeEnum, Enums: []string{"deploy", "rollback", "lock", "unlock"}},
-		{Name: "created_at", Type: field.TypeTime},
-		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "repo_id", Type: field.TypeInt64, Nullable: true},
-	}
-	// CallbacksTable holds the schema information for the "callbacks" table.
-	CallbacksTable = &schema.Table{
-		Name:       "callbacks",
-		Columns:    CallbacksColumns,
-		PrimaryKey: []*schema.Column{CallbacksColumns[0]},
-		ForeignKeys: []*schema.ForeignKey{
-			{
-				Symbol:     "callbacks_repos_callback",
-				Columns:    []*schema.Column{CallbacksColumns[5]},
-				RefColumns: []*schema.Column{ReposColumns[0]},
-				OnDelete:   schema.Cascade,
-			},
-		},
-	}
 	// ChatUsersColumns holds the columns for the "chat_users" table.
 	ChatUsersColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString},
@@ -423,7 +400,6 @@ var (
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
-		CallbacksTable,
 		ChatUsersTable,
 		DeploymentsTable,
 		DeploymentStatisticsTable,
@@ -439,7 +415,6 @@ var (
 )
 
 func init() {
-	CallbacksTable.ForeignKeys[0].RefTable = ReposTable
 	ChatUsersTable.ForeignKeys[0].RefTable = UsersTable
 	DeploymentsTable.ForeignKeys[0].RefTable = ReposTable
 	DeploymentsTable.ForeignKeys[1].RefTable = UsersTable

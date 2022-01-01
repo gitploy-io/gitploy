@@ -10,7 +10,6 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/gitploy-io/gitploy/model/ent/callback"
 	"github.com/gitploy-io/gitploy/model/ent/deployment"
 	"github.com/gitploy-io/gitploy/model/ent/deploymentstatistics"
 	"github.com/gitploy-io/gitploy/model/ent/lock"
@@ -176,21 +175,6 @@ func (rc *RepoCreate) AddDeployments(d ...*Deployment) *RepoCreate {
 		ids[i] = d[i].ID
 	}
 	return rc.AddDeploymentIDs(ids...)
-}
-
-// AddCallbackIDs adds the "callback" edge to the Callback entity by IDs.
-func (rc *RepoCreate) AddCallbackIDs(ids ...int) *RepoCreate {
-	rc.mutation.AddCallbackIDs(ids...)
-	return rc
-}
-
-// AddCallback adds the "callback" edges to the Callback entity.
-func (rc *RepoCreate) AddCallback(c ...*Callback) *RepoCreate {
-	ids := make([]int, len(c))
-	for i := range c {
-		ids[i] = c[i].ID
-	}
-	return rc.AddCallbackIDs(ids...)
 }
 
 // AddLockIDs adds the "locks" edge to the Lock entity by IDs.
@@ -475,25 +459,6 @@ func (rc *RepoCreate) createSpec() (*Repo, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
 					Column: deployment.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := rc.mutation.CallbackIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   repo.CallbackTable,
-			Columns: []string{repo.CallbackColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: callback.FieldID,
 				},
 			},
 		}

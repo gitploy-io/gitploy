@@ -48,8 +48,6 @@ type RepoEdges struct {
 	Perms []*Perm `json:"perms,omitempty"`
 	// Deployments holds the value of the deployments edge.
 	Deployments []*Deployment `json:"deployments,omitempty"`
-	// Callback holds the value of the callback edge.
-	Callback []*Callback `json:"callback,omitempty"`
 	// Locks holds the value of the locks edge.
 	Locks []*Lock `json:"locks,omitempty"`
 	// DeploymentStatistics holds the value of the deployment_statistics edge.
@@ -58,7 +56,7 @@ type RepoEdges struct {
 	Owner *User `json:"owner,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [6]bool
+	loadedTypes [5]bool
 }
 
 // PermsOrErr returns the Perms value or an error if the edge
@@ -79,19 +77,10 @@ func (e RepoEdges) DeploymentsOrErr() ([]*Deployment, error) {
 	return nil, &NotLoadedError{edge: "deployments"}
 }
 
-// CallbackOrErr returns the Callback value or an error if the edge
-// was not loaded in eager-loading.
-func (e RepoEdges) CallbackOrErr() ([]*Callback, error) {
-	if e.loadedTypes[2] {
-		return e.Callback, nil
-	}
-	return nil, &NotLoadedError{edge: "callback"}
-}
-
 // LocksOrErr returns the Locks value or an error if the edge
 // was not loaded in eager-loading.
 func (e RepoEdges) LocksOrErr() ([]*Lock, error) {
-	if e.loadedTypes[3] {
+	if e.loadedTypes[2] {
 		return e.Locks, nil
 	}
 	return nil, &NotLoadedError{edge: "locks"}
@@ -100,7 +89,7 @@ func (e RepoEdges) LocksOrErr() ([]*Lock, error) {
 // DeploymentStatisticsOrErr returns the DeploymentStatistics value or an error if the edge
 // was not loaded in eager-loading.
 func (e RepoEdges) DeploymentStatisticsOrErr() ([]*DeploymentStatistics, error) {
-	if e.loadedTypes[4] {
+	if e.loadedTypes[3] {
 		return e.DeploymentStatistics, nil
 	}
 	return nil, &NotLoadedError{edge: "deployment_statistics"}
@@ -109,7 +98,7 @@ func (e RepoEdges) DeploymentStatisticsOrErr() ([]*DeploymentStatistics, error) 
 // OwnerOrErr returns the Owner value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e RepoEdges) OwnerOrErr() (*User, error) {
-	if e.loadedTypes[5] {
+	if e.loadedTypes[4] {
 		if e.Owner == nil {
 			// The edge owner was loaded in eager-loading,
 			// but was not found.
@@ -227,11 +216,6 @@ func (r *Repo) QueryPerms() *PermQuery {
 // QueryDeployments queries the "deployments" edge of the Repo entity.
 func (r *Repo) QueryDeployments() *DeploymentQuery {
 	return (&RepoClient{config: r.config}).QueryDeployments(r)
-}
-
-// QueryCallback queries the "callback" edge of the Repo entity.
-func (r *Repo) QueryCallback() *CallbackQuery {
-	return (&RepoClient{config: r.config}).QueryCallback(r)
 }
 
 // QueryLocks queries the "locks" edge of the Repo entity.

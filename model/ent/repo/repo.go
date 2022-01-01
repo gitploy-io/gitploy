@@ -35,8 +35,6 @@ const (
 	EdgePerms = "perms"
 	// EdgeDeployments holds the string denoting the deployments edge name in mutations.
 	EdgeDeployments = "deployments"
-	// EdgeCallback holds the string denoting the callback edge name in mutations.
-	EdgeCallback = "callback"
 	// EdgeLocks holds the string denoting the locks edge name in mutations.
 	EdgeLocks = "locks"
 	// EdgeDeploymentStatistics holds the string denoting the deployment_statistics edge name in mutations.
@@ -59,13 +57,6 @@ const (
 	DeploymentsInverseTable = "deployments"
 	// DeploymentsColumn is the table column denoting the deployments relation/edge.
 	DeploymentsColumn = "repo_id"
-	// CallbackTable is the table that holds the callback relation/edge.
-	CallbackTable = "callbacks"
-	// CallbackInverseTable is the table name for the Callback entity.
-	// It exists in this package in order to avoid circular dependency with the "callback" package.
-	CallbackInverseTable = "callbacks"
-	// CallbackColumn is the table column denoting the callback relation/edge.
-	CallbackColumn = "repo_id"
 	// LocksTable is the table that holds the locks relation/edge.
 	LocksTable = "locks"
 	// LocksInverseTable is the table name for the Lock entity.

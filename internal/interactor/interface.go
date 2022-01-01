@@ -66,9 +66,6 @@ type (
 		ListAllDeploymentStatistics(ctx context.Context) ([]*ent.DeploymentStatistics, error)
 		ListDeploymentStatisticsGreaterThanTime(ctx context.Context, updated time.Time) ([]*ent.DeploymentStatistics, error)
 
-		CreateCallback(ctx context.Context, cb *ent.Callback) (*ent.Callback, error)
-		FindCallbackByHash(ctx context.Context, hash string) (*ent.Callback, error)
-
 		SearchReviews(ctx context.Context, u *ent.User) ([]*ent.Review, error)
 		ListReviews(ctx context.Context, d *ent.Deployment) ([]*ent.Review, error)
 		FindReviewOfUser(ctx context.Context, u *ent.User, d *ent.Deployment) (*ent.Review, error)

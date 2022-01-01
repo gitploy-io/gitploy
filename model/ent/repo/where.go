@@ -1071,34 +1071,6 @@ func HasDeploymentsWith(preds ...predicate.Deployment) predicate.Repo {
 	})
 }
 
-// HasCallback applies the HasEdge predicate on the "callback" edge.
-func HasCallback() predicate.Repo {
-	return predicate.Repo(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(CallbackTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, CallbackTable, CallbackColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasCallbackWith applies the HasEdge predicate on the "callback" edge with a given conditions (other predicates).
-func HasCallbackWith(preds ...predicate.Callback) predicate.Repo {
-	return predicate.Repo(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(CallbackInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, CallbackTable, CallbackColumn),
-		)
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
 // HasLocks applies the HasEdge predicate on the "locks" edge.
 func HasLocks() predicate.Repo {
 	return predicate.Repo(func(s *sql.Selector) {
