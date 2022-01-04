@@ -57,6 +57,10 @@ Documentation | Community | Installation Guide | Docker Image
 --- |--- |--- |---
 📚 [Documentation](https://docs.gitploy.io/) |💬 [Community](https://github.com/gitploy-io/gitploy/discussions) |📖 [Installation Guide](https://docs.gitploy.io/tasks/installation/) |🐋 [Docker Image](https://hub.docker.com/repository/docker/gitployio/gitploy)
 
+### Articles
+
+* [Enterprise-level deployment system for Kubernetes](https://dev.to/hanjunlee/enterprise-level-deployment-system-for-kubernetes-6eg)
+
 ## Contributors
 
 Don't be afraid to contribute! We have many things you can do to help out. If you're trying to contribute but stuck, please tag [@hanjunlee](https://github.com/hanjunlee).
