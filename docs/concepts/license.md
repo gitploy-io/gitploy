@@ -1,8 +1,8 @@
 # License
 
-## OSS Edition
+## Community Edition
 
-Gitploy is an open source-based project so that anyone uses software free. You can check the [LICENSE](https://github.com/gitploy-io/gitploy/blob/main/LICENSE) for the detail.
+Gitploy is an open source-based project so that anyone uses software under the OSS license free. You can check the [LICENSE](https://github.com/gitploy-io/gitploy/blob/main/LICENSE) for the detail.
 
 ## Enterprise Edition
 
