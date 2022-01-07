@@ -23,9 +23,3 @@ Index of server configuration settings:
 * [GITPLOY_TLS_CERT](./GITPLOY_TLS_CERT.md)
 * [GITPLOY_TLS_KEY](./GITPLOY_TLS_KEY.md)
 * [GITPLOY_WEBHOOK_SECRET](./GITPLOY_WEBHOOK_SECRET.md)
-
----
-
-## Questions?
-
-We are always happy to help with questions you might have. Search our documentation or check out answers to common questions. You can also post questions or comments to our [community](https://github.com/gitploy-io/gitploy/discussions).

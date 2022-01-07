@@ -50,9 +50,3 @@ envs:
     deployable_ref: main
     production_environment: true
 ```
-
-## Questions?
-
-We are always happy to help with questions you might have. You can post questions or comments to our [community](https://github.com/gitploy-io/gitploy/discussions). 
-
-And we are very welcome to share your deployment pipeline at our [community](https://github.com/gitploy-io/gitploy/discussions).
