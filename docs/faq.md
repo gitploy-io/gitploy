@@ -6,4 +6,4 @@ Don't worry. Gitploy transit the deployment status into `canceled` if pending (i
 
 ## Questions?
 
-We are always happy to help with questions you might have. Search our documentation or check out answers to common questions. You can also post questions or comments to our [community](https://github.com/gitploy-io/gitploy/discussions).
+We are always happy to help with questions you might have. Search our documentation or check out answers to common questions. You can also post questions or comments to our [community](https://github.com/gitploy-io/gitploy/discussions) or [Slack](https://join.slack.com/t/gitploy/shared_invite/zt-112wz7qtz-HuZXMM_DaEEo1VDdsCUSRg). 

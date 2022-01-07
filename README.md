@@ -55,7 +55,7 @@ For public repositories, we're providing the [free cloud](https://cloud.gitploy.
 
 Documentation | Community | Installation Guide | Docker Image
 --- |--- |--- |---
-📚 [Documentation](https://docs.gitploy.io/) |💬 [Community](https://github.com/gitploy-io/gitploy/discussions) |📖 [Installation Guide](https://docs.gitploy.io/tasks/installation/) |🐋 [Docker Image](https://hub.docker.com/repository/docker/gitployio/gitploy)
+📚 [Documentation](https://docs.gitploy.io/) |❓ [Community](https://github.com/gitploy-io/gitploy/discussions) / 💬 [Slack](https://join.slack.com/t/gitploy/shared_invite/zt-112wz7qtz-HuZXMM_DaEEo1VDdsCUSRg)|📖 [Installation Guide](https://docs.gitploy.io/tasks/installation/) |🐋 [Docker Image](https://hub.docker.com/repository/docker/gitployio/gitploy)
 
 ### Articles
 
