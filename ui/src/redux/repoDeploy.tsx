@@ -344,9 +344,7 @@ export const repoDeploySlice = createSlice({
                 state.config = config
             })
             .addCase(fetchCurrentDeploymentOfEnv.fulfilled, (state, action) => {
-                if (action.payload) {
-                    state.currentDeployment = action.payload
-                }
+                state.currentDeployment = action.payload? action.payload : undefined
             })
             .addCase(fetchCurrentDeploymentOfEnv.rejected, (state) => {
                 state.currentDeployment = undefined
