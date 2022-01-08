@@ -66,7 +66,7 @@ function mapStateToIcon(state: StatusState): JSX.Element {
 		case StatusState.Null:
 			return <></>
 		case StatusState.Pending:
-			return <SyncOutlined />
+			return <SyncOutlined spin/>
 		case StatusState.Success:
 			return <CheckOutlined style={{color: colorSuccess}}/>
 		case StatusState.Failure:
@@ -76,7 +76,7 @@ function mapStateToIcon(state: StatusState): JSX.Element {
 		case StatusState.Skipped:
 			return <StopOutlined />
 		default:
-			return <SyncOutlined />
+			return <SyncOutlined spin/>
 	}
 }
 
