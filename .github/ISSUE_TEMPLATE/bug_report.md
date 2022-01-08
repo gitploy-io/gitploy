@@ -10,14 +10,16 @@ assignees: ''
 **Describe the bug**
 A clear and concise description of what the bug is.
 
-**Logs**
+**Logs or Screenshots**
 
 ```
 Input your error logs
 ```
 
-**Screenshots**
-If applicable, add screenshots to help explain your problem.
+<details>
+<summary>Screenshots</summary>
+
+</details>
 
 **Additional context**
 Add any other context about the problem here.
