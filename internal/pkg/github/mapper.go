@@ -99,13 +99,16 @@ func mapGithubStatusToStatus(s *github.RepoStatus) *extent.Status {
 		state = extent.StatusStatePending
 	}
 
-	return &extent.Status{
-		Context: *s.Context,
-		// TODO: fix
+	status := &extent.Status{
+		Context:   *s.Context,
 		AvatarURL: "",
-		TargetURL: *s.TargetURL,
 		State:     state,
 	}
+	if s.TargetURL != nil {
+		status.TargetURL = *s.TargetURL
+	}
+
+	return status
 }
 
 func mapGithubCheckRunToStatus(c *github.CheckRun) *extent.Status {

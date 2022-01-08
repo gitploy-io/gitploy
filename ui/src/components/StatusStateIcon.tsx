@@ -1,5 +1,5 @@
 import { Popover, Avatar, Typography, Row, Col, Divider, Space } from "antd"
-import { CheckOutlined, CloseOutlined, StopOutlined, ExclamationCircleOutlined } from "@ant-design/icons"
+import { CheckOutlined, CloseOutlined, StopOutlined, SyncOutlined, ExclamationCircleOutlined } from "@ant-design/icons"
 
 import { Status, StatusState } from "../models"
 
@@ -66,11 +66,7 @@ function mapStateToIcon(state: StatusState): JSX.Element {
 		case StatusState.Null:
 			return <></>
 		case StatusState.Pending:
-			return (
-				<span>
-					<span className="gitploy-pending-icon" />&nbsp;&nbsp;
-				</span>
-			)
+			return <SyncOutlined spin/>
 		case StatusState.Success:
 			return <CheckOutlined style={{color: colorSuccess}}/>
 		case StatusState.Failure:
@@ -80,11 +76,7 @@ function mapStateToIcon(state: StatusState): JSX.Element {
 		case StatusState.Skipped:
 			return <StopOutlined />
 		default:
-			return (
-				<span>
-					<span className="gitploy-pending-icon" />&nbsp;&nbsp;
-				</span>
-			)
+			return <SyncOutlined spin/>
 	}
 }
 
