@@ -6,8 +6,6 @@ envs:
     auto_merge: false
     # Check test and publish is succeed.
     required_contexts:
-      - "go-test"
-      - "react-test"
       - "publish-image"
     deployable_ref: 'v.*\..*\..*'
 
@@ -15,8 +13,6 @@ envs:
     task: ${GITPLOY_DEPLOY_TASK:=rollback}:kubernetes
     auto_merge: false
     required_contexts:
-      - "go-test"
-      - "react-test"
       - "publish-image"
     production_environment: true
     review:
