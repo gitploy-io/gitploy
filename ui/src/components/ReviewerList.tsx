@@ -46,6 +46,7 @@ function ReviewItem(props: {review: Review}): JSX.Element {
         return comment !== ""? 
             <Popover
                 title="Comment"
+                trigger="click"
                 content={<div style={{whiteSpace: "pre"}}>{comment}</div>}
             >
                 <Button 
@@ -82,5 +83,5 @@ export function ReviewStatus(props: {reviews: Review[]}): JSX.Element {
         }
     }
 
-    return <span><SyncOutlined spin/>&nbsp;&nbsp;Pending</span>
+    return <span><SyncOutlined />&nbsp;&nbsp;Pending</span>
 }
