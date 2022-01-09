@@ -4,7 +4,7 @@
 
 GitHub Actions help you automate tasks to run an actual deployment. GitHub Actions are event-driven, meaning that you can run a series of commands after a deployment event has occurred. 
 
-To listening the deployment event, you must specify `deployment` for the `on` field. And you can use the `if` conditional to run a job for the specific environment. Here is the example below.
+You must specify `deployment` for the `on` field to listen for the deployment event. And you can use the `if` conditional to run a job for a specific environment. Here is the example below.
 
 ```yaml
 # Listening the deployment event
