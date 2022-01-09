@@ -26,13 +26,13 @@ function ReviewItem(props: {review: Review}): JSX.Element {
     const status = (status: ReviewStatusEnum) => {
         switch (status) {
             case ReviewStatusEnum.Pending:
-                return <SyncOutlined spin/>
+                return <SyncOutlined />
             case ReviewStatusEnum.Approved:
                 return <CheckOutlined style={{color: "green"}} />
             case ReviewStatusEnum.Rejected:
                 return <CloseOutlined style={{color: "red"}} />
             default:
-                return <SyncOutlined spin/>
+                return <SyncOutlined />
         }
     }
 
