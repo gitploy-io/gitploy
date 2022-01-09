@@ -1,5 +1,5 @@
 import { List, Avatar, Popover, Button } from "antd"
-import { CheckOutlined, CloseOutlined, CommentOutlined, SyncOutlined } from "@ant-design/icons"
+import { CheckOutlined, CloseOutlined, CommentOutlined, ClockCircleOutlined } from "@ant-design/icons"
 
 import { User, Review, ReviewStatusEnum } from "../models"
 
@@ -26,13 +26,13 @@ function ReviewItem(props: {review: Review}): JSX.Element {
     const status = (status: ReviewStatusEnum) => {
         switch (status) {
             case ReviewStatusEnum.Pending:
-                return <SyncOutlined />
+                return <ClockCircleOutlined />
             case ReviewStatusEnum.Approved:
                 return <CheckOutlined style={{color: "green"}} />
             case ReviewStatusEnum.Rejected:
                 return <CloseOutlined style={{color: "red"}} />
             default:
-                return <SyncOutlined />
+                return <ClockCircleOutlined />
         }
     }
 
@@ -83,5 +83,5 @@ export function ReviewStatus(props: {reviews: Review[]}): JSX.Element {
         }
     }
 
-    return <span><SyncOutlined />&nbsp;&nbsp;Pending</span>
+    return <span><ClockCircleOutlined />&nbsp;&nbsp;Pending</span>
 }
