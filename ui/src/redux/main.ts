@@ -11,6 +11,7 @@ import {
     EventTypeEnum,
     HttpInternalServerError, 
     HttpUnauthorizedError, 
+    HttpPaymentRequiredError,
     License,
 } from "../models"
 import { 
@@ -19,7 +20,7 @@ import {
     searchReviews as _searchReviews,
     getLicense 
 } from "../apis"
-import { HttpPaymentRequiredError } from "../models/errors"
+import { getShortRef } from "../libs"
 
 interface MainState {
     available: boolean
@@ -143,26 +144,26 @@ export const notifyDeploymentEvent = createAsyncThunk<void, Event, { state: { ma
     async (event, { getState }) => {
         const { user } = getState().main
 
-        if (event.kind !== EventKindEnum.Deployment) {
+        if (!(event.kind === EventKindEnum.Deployment && event.deployment)) {
             return
         }
 
-        if (event.deployment?.deployer?.id !== user?.id) {
+        if (event.deployment.deployer?.id !== user?.id) {
             return
         }
 
         if (event.type === EventTypeEnum.Created) {
-            notify(`New Deployment #${event.deployment?.number}`, {
+            notify(`New Deployment #${event.deployment.number}`, {
                 icon: "/logo192.png",
-                body: `Start to deploy ${event.deployment?.ref.substring(0, 7)} to the ${event.deployment?.env} environment of ${event.deployment?.repo?.namespace}/${event.deployment?.repo?.name}.`,
+                body: `Start to deploy ${getShortRef(event.deployment)} to the ${event.deployment.env} environment of ${event.deployment.repo?.namespace}/${event.deployment.repo?.name}.`,
                 tag: String(event.id),
             })
             return
         }
 
-        notify(`Deployment Updated #${event.deployment?.number}`, {
+        notify(`Deployment Updated #${event.deployment.number}`, {
             icon: "/logo192.png",
-            body: `The deployment ${event.deployment?.number} of ${event.deployment?.repo?.namespace}/${event.deployment?.repo?.name} is updated ${event.deployment?.status}.`,
+            body: `The deployment ${event.deployment.number} of ${event.deployment.repo?.namespace}/${event.deployment.repo?.name} is updated ${event.deployment.status}.`,
             tag: String(event.id),
         })
     }
