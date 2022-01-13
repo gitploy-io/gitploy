@@ -297,7 +297,7 @@ export const deploy = createAsyncThunk<void, void, { state: {repoDeploy: RepoDep
                 message.warn("Only write permission can deploy.", 3)
             } else if (e instanceof HttpUnprocessableEntityError)  {
                 const msg = <span> 
-                    <span>It is unprocesable entity. Discussions <a href="https://github.com/gitploy-io/gitploy/discussions/64">#64</a></span><br/>
+                    <span>It is unprocesable entity.</span><br/>
                     <span className="gitploy-quote">{e.message}</span>
                 </span>
                 message.error(msg, 3)
