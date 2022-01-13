@@ -144,7 +144,7 @@ export default function Main(props: any) {
                                     </Menu.Item>
                                     <Menu.Divider />
                                     <Menu.Item key="1">
-                                        <a href="https://docs.gitploy.io/" target="_blank">Read Docs</a>
+                                        <a href="https://www.gitploy.io/docs/" target="_blank">Read Docs</a>
                                     </Menu.Item>
                                     <Menu.Item key="2">
                                         <a href="/signout">Sign out</a>
