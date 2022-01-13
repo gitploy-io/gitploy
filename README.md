@@ -10,7 +10,7 @@
   <img src="https://github.com/gitploy-io/gitploy/actions/workflows/test.yaml/badge.svg">
   <img src="https://github.com/gitploy-io/gitploy/actions/workflows/publish.yaml/badge.svg"><br/>
   <b>Gitploy helps your team build the deployment system around GitHub in minutes.</b><br/>
-  <a href="https://docs.gitploy.io/">Documentation</a> | <a href="https://github.com/gitploy-io/gitploy/discussions">Community</a> | <a href="https://docs.gitploy.io/tasks/installation/">Installation Guide</a>
+  <a href="https://www.gitploy.io/docs/">Documentation</a> | <a href="https://github.com/gitploy-io/gitploy/discussions">Community</a> | <a href="https://www.gitploy.io/docs/tasks/installation/">Installation Guide</a>
 </p>
 
 ---
@@ -47,7 +47,7 @@ Private repositories for teams plan | ✅ | ❌
 
 ## Getting Started
 
-To install Gitploy on your hosting, read this [documentation](https://docs.gitploy.io/tasks/installation/). 
+To install Gitploy on your hosting, read this [documentation](https://www.gitploy.io/docs/tasks/installation/). 
 
 For public repositories, we're providing the [free cloud](https://cloud.gitploy.io/).
 
@@ -55,7 +55,7 @@ For public repositories, we're providing the [free cloud](https://cloud.gitploy.
 
 Documentation | Community | Installation Guide | Docker Image
 --- |--- |--- |---
-📚 [Documentation](https://docs.gitploy.io/) |💬 [Community](https://github.com/gitploy-io/gitploy/discussions) |📖 [Installation Guide](https://docs.gitploy.io/tasks/installation/) |🐋 [Docker Image](https://hub.docker.com/repository/docker/gitployio/gitploy)
+📚 [Documentation](https://www.gitploy.io/docs/) |❓ [Community](https://github.com/gitploy-io/gitploy/discussions) / 💬 [Slack](https://join.slack.com/t/gitploy/shared_invite/zt-112wz7qtz-HuZXMM_DaEEo1VDdsCUSRg)|📖 [Installation Guide](https://www.gitploy.io/docs/tasks/installation/) |🐋 [Docker Image](https://hub.docker.com/repository/docker/gitployio/gitploy)
 
 ## Contributors
 

@@ -71,7 +71,7 @@ export default function RepoHome(): JSX.Element {
                 status="warning"
                 title="There is no configuration file."
                 extra={[
-                    <Button type="primary" key="console" target="_blank" href="https://docs.gitploy.io/concepts/deploy.yml">
+                    <Button type="primary" key="console" target="_blank" href="https://www.gitploy.io/docs/concepts/deploy.yml">
                       Read Document
                     </Button>,
                     <Button type="link" key="link" target="_blank" href={`/link/${namespace}/${name}/config/new`}>
