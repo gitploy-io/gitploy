@@ -1,7 +1,6 @@
 # server
 .editorconfig
 .git
-docs/
 README.md
 .env
 sqlite3.db
