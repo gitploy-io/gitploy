@@ -1,7 +1,7 @@
 # Gitploy 
 
 <p align="center">
-  <img src="./docs/images/logo_400.png"><br/>
+  <img src="./images/logo.png"><br/>
   <a href="https://www.producthunt.com/posts/gitploy?utm_source=badge-featured&utm_medium=badge&utm_souce=badge-gitploy" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=322626&theme=light" alt="Gitploy - Build the deployment system around GitHub in minutes. | Product Hunt" style="width: 250px; height: 54px;" width="250" height="54" /></a>
   <a href="https://www.producthunt.com/posts/gitploy?utm_source=badge-top-post-badge&utm_medium=badge&utm_souce=badge-gitploy" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/top-post-badge.svg?post_id=322626&theme=light&period=daily" alt="Gitploy - Build the deployment system around GitHub in minutes. | Product Hunt" style="width: 250px; height: 54px;" width="250" height="54" /></a>
   <br/>  
@@ -21,7 +21,7 @@ GitHub provides the [deployment API](https://docs.github.com/en/rest/reference/d
 
 Gitploy enables your organization **to build the deployment system around deployment API in minutes**, and it provides the place to manage all deployment and deploying in the same manner. 
 
-![gitploy](./docs/images/gitploy.gif)
+![gitploy](./images/gitploy.gif)
 
 
 ## Features
@@ -57,12 +57,8 @@ Documentation | Community | Installation Guide | Docker Image
 --- |--- |--- |---
 📚 [Documentation](https://www.gitploy.io/docs/) |❓ [Community](https://github.com/gitploy-io/gitploy/discussions) / 💬 [Slack](https://join.slack.com/t/gitploy/shared_invite/zt-112wz7qtz-HuZXMM_DaEEo1VDdsCUSRg)|📖 [Installation Guide](https://www.gitploy.io/docs/tasks/installation/) |🐋 [Docker Image](https://hub.docker.com/repository/docker/gitployio/gitploy)
 
-### Articles
-
-* [Enterprise-level deployment system for Kubernetes](https://dev.to/hanjunlee/enterprise-level-deployment-system-for-kubernetes-6eg)
-
 ## Contributors
 
 Don't be afraid to contribute! We have many things you can do to help out. If you're trying to contribute but stuck, please tag [@hanjunlee](https://github.com/hanjunlee).
 
-You can check the [contributing](./docs/contributing.md) for exact details on how to contribute.
+You can check the [contributing](./CONTRIBUTING.md) for exact details on how to contribute.
