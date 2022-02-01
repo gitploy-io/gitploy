@@ -20,6 +20,7 @@ type (
 		common *client
 
 		// Services used for talking to different parts of the Gitploy API.
+		Repo *RepoService
 	}
 
 	client struct {
@@ -31,9 +32,9 @@ type (
 		BaseURL *url.URL
 	}
 
-	// service struct {
-	// 	client *client
-	// }
+	service struct {
+		client *client
+	}
 
 	ErrorResponse struct {
 		Code    string `json:"code"`
@@ -51,6 +52,8 @@ func NewClient(host string, httpClient *http.Client) *Client {
 	c := &Client{
 		common: &client{httpClient: httpClient, BaseURL: baseURL},
 	}
+
+	c.Repo = &RepoService{client: c.common}
 
 	return c
 }

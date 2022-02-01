@@ -27,7 +27,9 @@ func main() {
 				EnvVars:  []string{"GITPLOY_TOKEN"},
 			},
 		},
-		Commands: []*cli.Command{},
+		Commands: []*cli.Command{
+			repoCommand,
+		},
 	}
 
 	err := app.Run(os.Args)
