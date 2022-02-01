@@ -3,13 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@craco/craco": "^6.1.2",
+    "@craco/craco": "^7.0.0-alpha.0",
     "@reduxjs/toolkit": "^1.5.1",
     "@testing-library/jest-dom": "^5.12.0",
     "@testing-library/react": "^11.2.7",
     "@testing-library/user-event": "^12.8.3",
     "antd": "^4.16.1",
-    "craco-less": "^1.17.1",
+    "craco-less": "^2.0.0",
+    "follow-redirects": "^1.14.7",
     "http-status-codes": "^2.1.4",
     "lodash.debounce": "^4.0.8",
     "moment": "^2.29.1",
@@ -18,9 +19,8 @@
     "react-helmet": "^6.1.0",
     "react-redux": "^7.2.4",
     "react-router-dom": "^5.2.0",
-    "react-scripts": "4.0.3",
-    "web-vitals": "^1.1.2",
-    "follow-redirects": "^1.14.7"
+    "react-scripts": "^5.0.0",
+    "web-vitals": "^1.1.2"
   },
   "scripts": {
     "start": "craco start",
