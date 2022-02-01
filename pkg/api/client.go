@@ -31,9 +31,9 @@ type (
 		BaseURL *url.URL
 	}
 
-	service struct {
-		client *client
-	}
+	// service struct {
+	// 	client *client
+	// }
 
 	ErrorResponse struct {
 		Code    string `json:"code"`
