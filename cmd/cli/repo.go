@@ -10,5 +10,6 @@ var repoCommand *cli.Command = &cli.Command{
 	Subcommands: []*cli.Command{
 		repoListCommand,
 		repoGetCommand,
+		repoUpdateCommand,
 	},
 }

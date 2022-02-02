@@ -14,7 +14,7 @@ type (
 		ListOptions
 	}
 
-	RepoUpdateOptions struct {
+	RepoUpdateRequest struct {
 		ConfigPath *string `json:"config_path,omitemtpy"`
 		Active     *bool   `json:"active,omitemtpy"`
 	}
@@ -88,7 +88,7 @@ func (s *RepoService) Get(ctx context.Context, namespace, name string) (*ent.Rep
 	return repo, nil
 }
 
-func (s *RepoService) Update(ctx context.Context, namespace, name string, options RepoUpdateOptions) (*ent.Repo, error) {
+func (s *RepoService) Update(ctx context.Context, namespace, name string, options RepoUpdateRequest) (*ent.Repo, error) {
 	req, err := s.client.NewRequest(
 		"PATCH",
 		fmt.Sprintf("api/v1/repos/%s/%s", namespace, name),
