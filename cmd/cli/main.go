@@ -26,8 +26,14 @@ func main() {
 				Usage:    "The authorization token.",
 				EnvVars:  []string{"GITPLOY_TOKEN"},
 			},
+			&cli.StringFlag{
+				Name:  "query",
+				Usage: "A GJSON query to use in filtering the response data",
+			},
 		},
-		Commands: []*cli.Command{},
+		Commands: []*cli.Command{
+			repoCommand,
+		},
 	}
 
 	err := app.Run(os.Args)
