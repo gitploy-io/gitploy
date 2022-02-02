@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"strconv"
 
 	"github.com/AlekSi/pointer"
 	"github.com/gitploy-io/gitploy/pkg/api"
@@ -20,6 +21,11 @@ var repoUpdateCommand = &cli.Command{
 			Aliases: []string{"C"},
 			Usage:   "The path of configuration file.",
 		},
+		&cli.StringFlag{
+			Name:    "active",
+			Aliases: []string{"A"},
+			Usage:   "Activate or deactivate the repository. Ex 'true', 'false'",
+		},
 	},
 	Action: func(cli *cli.Context) error {
 		ns, n, err := splitFullName(cli.Args().First())
@@ -31,6 +37,15 @@ var repoUpdateCommand = &cli.Command{
 		req := api.RepoUpdateRequest{}
 		if config := cli.String("config"); config != "" {
 			req.ConfigPath = pointer.ToString(config)
+		}
+
+		if active := cli.String("active"); active != "" {
+			b, err := strconv.ParseBool(active)
+			if err != nil {
+				return fmt.Errorf("'%s' is invalid format: %w", active, err)
+			}
+
+			req.Active = pointer.ToBool(b)
 		}
 
 		c := buildClient(cli)
