@@ -15,8 +15,8 @@ type (
 	}
 
 	RepoUpdateRequest struct {
-		ConfigPath *string `json:"config_path,omitemtpy"`
-		Active     *bool   `json:"active,omitemtpy"`
+		ConfigPath *string `json:"config_path,omitempty"`
+		Active     *bool   `json:"active,omitempty"`
 	}
 )
 
@@ -28,7 +28,7 @@ func (s *RepoService) ListAll(ctx context.Context) ([]*ent.Repo, error) {
 	repos := make([]*ent.Repo, 0)
 	page := 1
 
-	for true {
+	for {
 		rs, err := s.List(ctx, RepoListOptions{
 			ListOptions{
 				Page:    page,

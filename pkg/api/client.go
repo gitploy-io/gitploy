@@ -33,7 +33,7 @@ type (
 	}
 
 	service struct {
-		client *client
+		*client
 	}
 
 	ErrorResponse struct {
