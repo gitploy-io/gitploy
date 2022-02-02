@@ -9,5 +9,6 @@ var repoCommand *cli.Command = &cli.Command{
 	Usage: "Manage repos.",
 	Subcommands: []*cli.Command{
 		repoListCommand,
+		repoGetCommand,
 	},
 }
