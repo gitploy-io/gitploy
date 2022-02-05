@@ -6,7 +6,7 @@ import (
 
 var repoCommand *cli.Command = &cli.Command{
 	Name:  "repo",
-	Usage: "Manage repos.",
+	Usage: "Manage repositories.",
 	Subcommands: []*cli.Command{
 		repoListCommand,
 		repoGetCommand,
