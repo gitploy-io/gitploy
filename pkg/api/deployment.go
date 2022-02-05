@@ -19,6 +19,12 @@ type (
 		Env    string
 		Status deployment.Status
 	}
+
+	DeploymentCreateRequest struct {
+		Type string `json:"type"`
+		Ref  string `json:"ref"`
+		Env  string `json:"env"`
+	}
 )
 
 // List returns the deployment list.
@@ -65,6 +71,46 @@ func (s *DeploymentService) List(ctx context.Context, namespace, name string, op
 func (s *DeploymentService) Get(ctx context.Context, namespace, name string, number int) (*ent.Deployment, error) {
 	req, err := s.client.NewRequest(
 		"GET",
+		fmt.Sprintf("api/v1/repos/%s/%s/deployments/%d", namespace, name, number),
+		nil,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	var d *ent.Deployment
+	err = s.client.Do(ctx, req, &d)
+	if err != nil {
+		return nil, err
+	}
+
+	return d, nil
+}
+
+// Create requests a server to deploy a specific ref(branch, SHA, tag).
+func (s *DeploymentService) Create(ctx context.Context, namespace, name string, body DeploymentCreateRequest) (*ent.Deployment, error) {
+	req, err := s.client.NewRequest(
+		"POST",
+		fmt.Sprintf("api/v1/repos/%s/%s/deployments", namespace, name),
+		body,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	var d *ent.Deployment
+	err = s.client.Do(ctx, req, &d)
+	if err != nil {
+		return nil, err
+	}
+
+	return d, nil
+}
+
+// Update requests to trigger the 'waiting' deployment.
+func (s *DeploymentService) Update(ctx context.Context, namespace, name string, number int) (*ent.Deployment, error) {
+	req, err := s.client.NewRequest(
+		"PUT",
 		fmt.Sprintf("api/v1/repos/%s/%s/deployments/%d", namespace, name, number),
 		nil,
 	)

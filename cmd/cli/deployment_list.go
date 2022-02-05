@@ -29,7 +29,7 @@ var deploymentListCommand = &cli.Command{
 		},
 		&cli.StringFlag{
 			Name:  "status",
-			Usage: "The deployment status: 'waiting', 'created', 'queued', 'running', 'success', and 'failure'. It only shows deployments the status is matched. ",
+			Usage: "The deployment status: 'waiting', 'created', 'queued', 'running', 'success', or 'failure'. It only shows deployments the status is matched. ",
 		},
 	},
 	Action: func(cli *cli.Context) error {

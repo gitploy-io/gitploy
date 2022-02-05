@@ -9,5 +9,7 @@ var deploymentCommand = &cli.Command{
 	Subcommands: []*cli.Command{
 		deploymentListCommand,
 		deploymentGetCommand,
+		deploymentDeployCommand,
+		deploymentUpdateCommand,
 	},
 }
