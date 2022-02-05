@@ -7,10 +7,13 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
+var Version = "latest"
+
 func main() {
 	app := &cli.App{
-		Name:  "gitploy",
-		Usage: "Command line utility.",
+		Name:    "gitploy",
+		Usage:   "Command line utility.",
+		Version: Version,
 		Flags: []cli.Flag{
 			&cli.StringFlag{
 				Name:     "host",
