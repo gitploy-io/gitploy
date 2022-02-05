@@ -1,9 +1,11 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 
+	"github.com/tidwall/gjson"
 	"github.com/urfave/cli/v2"
 	"golang.org/x/oauth2"
 
@@ -20,6 +22,7 @@ func buildClient(cli *cli.Context) *api.Client {
 	return api.NewClient(cli.String("host"), tc)
 }
 
+// splitFullName splits the full name into namespace, and name.
 func splitFullName(name string) (string, string, error) {
 	ss := strings.Split(name, "/")
 	if len(ss) != 2 {
@@ -27,4 +30,20 @@ func splitFullName(name string) (string, string, error) {
 	}
 
 	return ss[0], ss[1], nil
+}
+
+// printJson prints the object as JSON-format.
+func printJson(v interface{}, query string) error {
+	output, err := json.MarshalIndent(v, "", "  ")
+	if err != nil {
+		return fmt.Errorf("Failed to marshal: %w", err)
+	}
+
+	if query != "" {
+		fmt.Println(gjson.GetBytes(output, query))
+		return nil
+	}
+
+	fmt.Println(string(output))
+	return nil
 }

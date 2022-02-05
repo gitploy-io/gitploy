@@ -1,10 +1,6 @@
 package main
 
 import (
-	"encoding/json"
-	"fmt"
-
-	"github.com/tidwall/gjson"
 	"github.com/urfave/cli/v2"
 
 	"github.com/gitploy-io/gitploy/model/ent/deployment"
@@ -53,17 +49,6 @@ var deploymentListCommand = &cli.Command{
 			return err
 		}
 
-		output, err := json.MarshalIndent(ds, "", "  ")
-		if err != nil {
-			return fmt.Errorf("Failed to marshal: %w", err)
-		}
-
-		if q := cli.String("query"); q != "" {
-			fmt.Println(gjson.GetBytes(output, q))
-			return nil
-		}
-
-		fmt.Println(string(output))
-		return nil
+		return printJson(ds, cli.String("query"))
 	},
 }

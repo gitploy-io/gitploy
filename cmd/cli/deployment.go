@@ -8,5 +8,6 @@ var deploymentCommand = &cli.Command{
 	Usage:   "Manage deployments.",
 	Subcommands: []*cli.Command{
 		deploymentListCommand,
+		deploymentGetCommand,
 	},
 }
