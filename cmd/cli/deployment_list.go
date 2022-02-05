@@ -25,7 +25,7 @@ var deploymentListCommand = &cli.Command{
 		},
 		&cli.StringFlag{
 			Name:  "env",
-			Usage: "The name of environment. It only shows deployments for the environment.",
+			Usage: "The name of the environment. It only shows deployments for the environment.",
 		},
 		&cli.StringFlag{
 			Name:  "status",

@@ -23,7 +23,7 @@ var deploymentDeployCommand = &cli.Command{
 		},
 		&cli.StringFlag{
 			Name:     "ref",
-			Usage:    "The specific ref. It can be any any named branch, tag, or SHA.",
+			Usage:    "The specific ref. It can be any named branch, tag, or SHA.",
 			Required: true,
 		},
 	},
