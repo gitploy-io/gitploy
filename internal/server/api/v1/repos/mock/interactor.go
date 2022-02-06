@@ -97,6 +97,21 @@ func (mr *MockInteractorMockRecorder) CreateLock(ctx, l interface{}) *gomock.Cal
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateLock", reflect.TypeOf((*MockInteractor)(nil).CreateLock), ctx, l)
 }
 
+// CreateRemoteDeploymentStatus mocks base method.
+func (m *MockInteractor) CreateRemoteDeploymentStatus(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, ds *extent.RemoteDeploymentStatus) (*extent.RemoteDeploymentStatus, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateRemoteDeploymentStatus", ctx, u, r, d, ds)
+	ret0, _ := ret[0].(*extent.RemoteDeploymentStatus)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreateRemoteDeploymentStatus indicates an expected call of CreateRemoteDeploymentStatus.
+func (mr *MockInteractorMockRecorder) CreateRemoteDeploymentStatus(ctx, u, r, d, ds interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateRemoteDeploymentStatus", reflect.TypeOf((*MockInteractor)(nil).CreateRemoteDeploymentStatus), ctx, u, r, d, ds)
+}
+
 // DeactivateRepo mocks base method.
 func (m *MockInteractor) DeactivateRepo(ctx context.Context, u *ent.User, r *ent.Repo) (*ent.Repo, error) {
 	m.ctrl.T.Helper()
@@ -423,6 +438,21 @@ func (m *MockInteractor) ListCommits(ctx context.Context, u *ent.User, r *ent.Re
 func (mr *MockInteractorMockRecorder) ListCommits(ctx, u, r, branch, page, perPage interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListCommits", reflect.TypeOf((*MockInteractor)(nil).ListCommits), ctx, u, r, branch, page, perPage)
+}
+
+// ListDeploymentStatuses mocks base method.
+func (m *MockInteractor) ListDeploymentStatuses(ctx context.Context, d *ent.Deployment) ([]*ent.DeploymentStatus, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListDeploymentStatuses", ctx, d)
+	ret0, _ := ret[0].([]*ent.DeploymentStatus)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListDeploymentStatuses indicates an expected call of ListDeploymentStatuses.
+func (mr *MockInteractorMockRecorder) ListDeploymentStatuses(ctx, d interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListDeploymentStatuses", reflect.TypeOf((*MockInteractor)(nil).ListDeploymentStatuses), ctx, d)
 }
 
 // ListDeploymentsOfRepo mocks base method.

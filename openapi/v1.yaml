@@ -896,6 +896,7 @@ paths:
           $ref: '#/components/responses/422UnprocessableEntity'
         '500':
           $ref: '#/components/responses/500InternalError'
+  /repos/{namespace}/{name}/deployments/{number}/remote-statuses:
     post:
       tags:
         - Repo
@@ -917,13 +918,27 @@ paths:
           schema:
             type: integer
             description: The deployment number.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                description:
+                  type: string
+                log_url:
+                  type: string
+              required:
+                - status
       responses:
         '200':
           description: Return the deployment status.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DeploymentStatus'
+                $ref: '#/components/schemas/RemoteDeploymentStatus'
         '401': 
           $ref: '#/components/responses/401Unauthorized'
         '402':
@@ -1759,6 +1774,20 @@ components:
         - status
         - created_at
         - updated_at
+    RemoteDeploymentStatus:
+      type: object
+      properties:
+        id:
+          type: number
+        status:
+          type: string
+        description:
+          type: string
+        log_url:
+          type: string
+      required:
+        - id
+        - status
     Locks:
       type: array
       items:

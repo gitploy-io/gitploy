@@ -649,6 +649,21 @@ func (mr *MockStoreMockRecorder) ListDeploymentStatisticsGreaterThanTime(ctx, up
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListDeploymentStatisticsGreaterThanTime", reflect.TypeOf((*MockStore)(nil).ListDeploymentStatisticsGreaterThanTime), ctx, updated)
 }
 
+// ListDeploymentStatuses mocks base method.
+func (m *MockStore) ListDeploymentStatuses(ctx context.Context, d *ent.Deployment) ([]*ent.DeploymentStatus, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListDeploymentStatuses", ctx, d)
+	ret0, _ := ret[0].([]*ent.DeploymentStatus)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListDeploymentStatuses indicates an expected call of ListDeploymentStatuses.
+func (mr *MockStoreMockRecorder) ListDeploymentStatuses(ctx, d interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListDeploymentStatuses", reflect.TypeOf((*MockStore)(nil).ListDeploymentStatuses), ctx, d)
+}
+
 // ListDeploymentsOfRepo mocks base method.
 func (m *MockStore) ListDeploymentsOfRepo(ctx context.Context, r *ent.Repo, env, status string, page, perPage int) ([]*ent.Deployment, error) {
 	m.ctrl.T.Helper()
@@ -1030,6 +1045,21 @@ func (m *MockSCM) CreateRemoteDeployment(ctx context.Context, u *ent.User, r *en
 func (mr *MockSCMMockRecorder) CreateRemoteDeployment(ctx, u, r, d, e interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateRemoteDeployment", reflect.TypeOf((*MockSCM)(nil).CreateRemoteDeployment), ctx, u, r, d, e)
+}
+
+// CreateRemoteDeploymentStatus mocks base method.
+func (m *MockSCM) CreateRemoteDeploymentStatus(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, ds *extent.RemoteDeploymentStatus) (*extent.RemoteDeploymentStatus, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateRemoteDeploymentStatus", ctx, u, r, d, ds)
+	ret0, _ := ret[0].(*extent.RemoteDeploymentStatus)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreateRemoteDeploymentStatus indicates an expected call of CreateRemoteDeploymentStatus.
+func (mr *MockSCMMockRecorder) CreateRemoteDeploymentStatus(ctx, u, r, d, ds interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateRemoteDeploymentStatus", reflect.TypeOf((*MockSCM)(nil).CreateRemoteDeploymentStatus), ctx, u, r, d, ds)
 }
 
 // CreateWebhook mocks base method.
