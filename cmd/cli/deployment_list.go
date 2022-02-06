@@ -40,7 +40,7 @@ var deploymentListCommand = &cli.Command{
 			return err
 		}
 
-		ds, err := c.Deployment.List(cli.Context, ns, n, api.DeploymentListOptions{
+		ds, err := c.Deployments.List(cli.Context, ns, n, api.DeploymentListOptions{
 			ListOptions: api.ListOptions{Page: cli.Int("page"), PerPage: cli.Int("per-page")},
 			Env:         cli.String("env"),
 			Status:      deployment.Status(cli.String("status")),

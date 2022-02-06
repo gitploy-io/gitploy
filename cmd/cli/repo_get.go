@@ -19,7 +19,7 @@ var repoGetCommand = &cli.Command{
 		}
 
 		c := buildClient(cli)
-		repo, err := c.Repo.Get(cli.Context, ns, n)
+		repo, err := c.Repos.Get(cli.Context, ns, n)
 		if err != nil {
 			return err
 		}

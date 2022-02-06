@@ -22,7 +22,7 @@ var deploymentUpdateCommand = &cli.Command{
 		}
 
 		c := buildClient(cli)
-		d, err := c.Deployment.Update(cli.Context, ns, n, number)
+		d, err := c.Deployments.Update(cli.Context, ns, n, number)
 		if err != nil {
 			return err
 		}

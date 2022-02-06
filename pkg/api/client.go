@@ -20,9 +20,9 @@ type (
 		common *client
 
 		// Services used for talking to different parts of the Gitploy API.
-		Repo       *RepoService
-		Deployment *DeploymentService
-		Config     *ConfigService
+		Repos       *ReposService
+		Deployments *DeploymentsService
+		Config      *ConfigService
 	}
 
 	client struct {
@@ -55,8 +55,8 @@ func NewClient(host string, httpClient *http.Client) *Client {
 		common: &client{httpClient: httpClient, BaseURL: baseURL},
 	}
 
-	c.Repo = &RepoService{client: c.common}
-	c.Deployment = &DeploymentService{client: c.common}
+	c.Repos = &ReposService{client: c.common}
+	c.Deployments = &DeploymentsService{client: c.common}
 	c.Config = &ConfigService{client: c.common}
 
 	return c
