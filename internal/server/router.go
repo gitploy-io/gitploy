@@ -130,9 +130,15 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 			},
 			c.Interactor,
 		)
-		repov1.GET("", r.ListRepos)
-		repov1.GET("/:namespace/:name", rm.RepoReadPerm(), r.GetRepo)
-		repov1.PATCH("/:namespace/:name", rm.RepoAdminPerm(), r.UpdateRepo)
+		api := repos.NewAPI(repos.APIConfig{
+			Interactor:    c.Interactor,
+			WebhookURL:    fmt.Sprintf("%s://%s/hooks", c.ProxyProto, c.ProxyHost),
+			WebhookSSL:    c.ProxyProto == "https",
+			WebhookSecret: c.WebhookSecret,
+		})
+		repov1.GET("", api.Repos.List)
+		repov1.GET("/:namespace/:name", rm.RepoReadPerm(), api.Repos.Get)
+		repov1.PATCH("/:namespace/:name", rm.RepoAdminPerm(), api.Repos.Update)
 		repov1.GET("/:namespace/:name/commits", rm.RepoReadPerm(), r.ListCommits)
 		repov1.GET("/:namespace/:name/commits/:sha", rm.RepoReadPerm(), r.GetCommit)
 		repov1.GET("/:namespace/:name/commits/:sha/statuses", rm.RepoReadPerm(), r.ListStatuses)
