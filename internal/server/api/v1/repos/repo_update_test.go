@@ -19,7 +19,7 @@ import (
 	"go.uber.org/zap"
 )
 
-func TestRepo_UpdateRepo(t *testing.T) {
+func TestRepoService_UpdateRepo(t *testing.T) {
 	t.Run("Patch config_path field.", func(t *testing.T) {
 		input := struct {
 			payload *RepoPatchPayload

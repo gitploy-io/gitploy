@@ -2,12 +2,14 @@ package repos
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 
 	gb "github.com/gitploy-io/gitploy/internal/server/global"
 	"github.com/gitploy-io/gitploy/model/ent"
+	"github.com/gitploy-io/gitploy/pkg/e"
 )
 
 func (s *PermsAPI) List(c *gin.Context) {
@@ -15,9 +17,23 @@ func (s *PermsAPI) List(c *gin.Context) {
 
 	var (
 		q       = c.DefaultQuery("q", "")
-		page    = atoi(c.DefaultQuery("page", "1"))
-		perPage = atoi(c.DefaultQuery("per_page", "30"))
+		page    int
+		perPage int
+		err     error
 	)
+
+	// Validate quries
+	if page, err = strconv.Atoi(c.DefaultQuery("page", defaultQueryPage)); err != nil {
+		s.log.Warn("Invalid parameter: page is not integer.", zap.Error(err))
+		gb.ResponseWithError(c, e.NewError(e.ErrorCodeParameterInvalid, err))
+		return
+	}
+
+	if perPage, err = strconv.Atoi(c.DefaultQuery("per_page", defaultQueryPerPage)); err != nil {
+		s.log.Warn("Invalid parameter: per_page is not integer.", zap.Error(err))
+		gb.ResponseWithError(c, e.NewError(e.ErrorCodeParameterInvalid, err))
+		return
+	}
 
 	v, _ := c.Get(KeyRepo)
 	re := v.(*ent.Repo)

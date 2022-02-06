@@ -2,6 +2,7 @@ package repos
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
@@ -17,8 +18,15 @@ func (s *DeploymentsAPI) Rollback(c *gin.Context) {
 	ctx := c.Request.Context()
 
 	var (
-		number = c.Param("number")
+		number int
+		err    error
 	)
+
+	if number, err = strconv.Atoi(c.Param("number")); err != nil {
+		s.log.Warn("Invalid parameter: number must be integer.", zap.Error(err))
+		gb.ResponseWithError(c, e.NewError(e.ErrorCodeParameterInvalid, err))
+		return
+	}
 
 	vu, _ := c.Get(gb.KeyUser)
 	u := vu.(*ent.User)
@@ -26,7 +34,7 @@ func (s *DeploymentsAPI) Rollback(c *gin.Context) {
 	vr, _ := c.Get(KeyRepo)
 	re := vr.(*ent.Repo)
 
-	d, err := s.i.FindDeploymentOfRepoByNumber(ctx, re, atoi(number))
+	d, err := s.i.FindDeploymentOfRepoByNumber(ctx, re, number)
 	if err != nil {
 		s.log.Check(gb.GetZapLogLevel(err), "Failed to find the deployments.").Write(zap.Error(err))
 		gb.ResponseWithError(c, err)

@@ -29,7 +29,7 @@ func (s *DeploymentsAPI) List(c *gin.Context) {
 		return
 	}
 
-	if perPage, err = strconv.Atoi(c.DefaultQuery("per_page", defaultQueryPage)); err != nil {
+	if perPage, err = strconv.Atoi(c.DefaultQuery("per_page", defaultQueryPerPage)); err != nil {
 		s.log.Warn("Invalid parameter: per_page is not integer.", zap.Error(err))
 		gb.ResponseWithError(c, e.NewError(e.ErrorCodeParameterInvalid, err))
 		return

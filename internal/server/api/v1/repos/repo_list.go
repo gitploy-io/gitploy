@@ -20,8 +20,9 @@ func (s *ReposAPI) List(c *gin.Context) {
 		q         = c.Query("q")
 		namespace = c.Query("namespace")
 		name      = c.Query("name")
-		page      = c.DefaultQuery("page", "1")
-		perPage   = c.DefaultQuery("per_page", "30")
+		page      int
+		perPage   int
+		err       error
 	)
 
 	// Validate queries.
@@ -34,10 +35,22 @@ func (s *ReposAPI) List(c *gin.Context) {
 		return
 	}
 
+	if page, err = strconv.Atoi(c.DefaultQuery("page", defaultQueryPage)); err != nil {
+		s.log.Warn("Invalid parameter: page is not integer.", zap.Error(err))
+		gb.ResponseWithError(c, e.NewError(e.ErrorCodeParameterInvalid, err))
+		return
+	}
+
+	if perPage, err = strconv.Atoi(c.DefaultQuery("per_page", defaultQueryPerPage)); err != nil {
+		s.log.Warn("Invalid parameter: per_page is not integer.", zap.Error(err))
+		gb.ResponseWithError(c, e.NewError(e.ErrorCodeParameterInvalid, err))
+		return
+	}
+
 	v, _ := c.Get(gb.KeyUser)
 	u := v.(*ent.User)
 
-	repos, err := s.i.ListReposOfUser(ctx, u, q, namespace, name, sorted, atoi(page), atoi(perPage))
+	repos, err := s.i.ListReposOfUser(ctx, u, q, namespace, name, sorted, page, perPage)
 	if err != nil {
 		s.log.Check(gb.GetZapLogLevel(err), "Failed to list repositories.").Write(zap.Error(err))
 		gb.ResponseWithError(c, err)

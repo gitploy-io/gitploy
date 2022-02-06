@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
@@ -19,10 +20,29 @@ func (s *DeploymentsAPI) ListChanges(c *gin.Context) {
 	ctx := c.Request.Context()
 
 	var (
-		number  = c.Param("number")
-		page    = c.DefaultQuery("page", "1")
-		perPage = c.DefaultQuery("per_page", "30")
+		number  int
+		page    int
+		perPage int
+		err     error
 	)
+
+	if number, err = strconv.Atoi(c.Param("number")); err != nil {
+		s.log.Warn("Invalid parameter: number must be integer.", zap.Error(err))
+		gb.ResponseWithError(c, e.NewError(e.ErrorCodeParameterInvalid, err))
+		return
+	}
+
+	if page, err = strconv.Atoi(c.DefaultQuery("page", defaultQueryPage)); err != nil {
+		s.log.Warn("Invalid parameter: page is not integer.", zap.Error(err))
+		gb.ResponseWithError(c, e.NewError(e.ErrorCodeParameterInvalid, err))
+		return
+	}
+
+	if perPage, err = strconv.Atoi(c.DefaultQuery("per_page", defaultQueryPerPage)); err != nil {
+		s.log.Warn("Invalid parameter: per_page is not integer.", zap.Error(err))
+		gb.ResponseWithError(c, e.NewError(e.ErrorCodeParameterInvalid, err))
+		return
+	}
 
 	vu, _ := c.Get(gb.KeyUser)
 	u := vu.(*ent.User)
@@ -30,7 +50,7 @@ func (s *DeploymentsAPI) ListChanges(c *gin.Context) {
 	vr, _ := c.Get(KeyRepo)
 	re := vr.(*ent.Repo)
 
-	d, err := s.i.FindDeploymentOfRepoByNumber(ctx, re, atoi(number))
+	d, err := s.i.FindDeploymentOfRepoByNumber(ctx, re, number)
 	if err != nil {
 		s.log.Check(gb.GetZapLogLevel(err), "Failed to find the deployments.").Write(zap.Error(err))
 		gb.ResponseWithError(c, err)
@@ -59,7 +79,7 @@ func (s *DeploymentsAPI) ListChanges(c *gin.Context) {
 		}
 	}
 
-	commits, _, err := s.i.CompareCommits(ctx, u, re, ld.Sha, sha, atoi(page), atoi(perPage))
+	commits, _, err := s.i.CompareCommits(ctx, u, re, ld.Sha, sha, page, perPage)
 	if err != nil {
 		s.log.Check(gb.GetZapLogLevel(err), "Failed to compare two commits.").Write(zap.Error(err))
 		gb.ResponseWithError(c, err)

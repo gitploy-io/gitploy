@@ -23,13 +23,13 @@ func (s *CommitsAPI) List(c *gin.Context) {
 	)
 
 	// Validate quries
-	if page, err = strconv.Atoi(c.DefaultQuery("page", "1")); err != nil {
+	if page, err = strconv.Atoi(c.DefaultQuery("page", defaultQueryPage)); err != nil {
 		s.log.Warn("Invalid parameter: page is not integer.", zap.Error(err))
 		gb.ResponseWithError(c, e.NewError(e.ErrorCodeParameterInvalid, err))
 		return
 	}
 
-	if perPage, err = strconv.Atoi(c.DefaultQuery("per_page", "30")); err != nil {
+	if perPage, err = strconv.Atoi(c.DefaultQuery("per_page", defaultQueryPerPage)); err != nil {
 		s.log.Warn("Invalid parameter: per_page is not integer.", zap.Error(err))
 		gb.ResponseWithError(c, e.NewError(e.ErrorCodeParameterInvalid, err))
 		return
