@@ -5,8 +5,21 @@ import (
 	"fmt"
 
 	"github.com/gitploy-io/gitploy/model/ent"
+	"github.com/gitploy-io/gitploy/model/ent/deploymentstatus"
 	"github.com/gitploy-io/gitploy/pkg/e"
 )
+
+func (s *Store) ListDeploymentStatuses(ctx context.Context, d *ent.Deployment) ([]*ent.DeploymentStatus, error) {
+	dss, err := s.c.DeploymentStatus.
+		Query().
+		Where(deploymentstatus.DeploymentIDEQ(d.ID)).
+		All(ctx)
+	if err != nil {
+		return nil, e.NewErrorWithMessage(e.ErrorCodeInternalError, "Failed to list deployment statuses.", err)
+	}
+
+	return dss, nil
+}
 
 func (s *Store) CreateDeploymentStatus(ctx context.Context, ds *ent.DeploymentStatus) (*ent.DeploymentStatus, error) {
 	ret, err := s.c.DeploymentStatus.

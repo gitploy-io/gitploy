@@ -56,6 +56,7 @@ type (
 		CreateDeployment(ctx context.Context, d *ent.Deployment) (*ent.Deployment, error)
 		UpdateDeployment(ctx context.Context, d *ent.Deployment) (*ent.Deployment, error)
 
+		ListDeploymentStatuses(ctx context.Context, d *ent.Deployment) ([]*ent.DeploymentStatus, error)
 		CreateDeploymentStatus(ctx context.Context, s *ent.DeploymentStatus) (*ent.DeploymentStatus, error)
 		SyncDeploymentStatus(ctx context.Context, ds *ent.DeploymentStatus) (*ent.DeploymentStatus, error)
 
@@ -100,6 +101,8 @@ type (
 		CreateRemoteDeployment(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, e *extent.Env) (*extent.RemoteDeployment, error)
 		CancelDeployment(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, s *ent.DeploymentStatus) error
 		GetConfig(ctx context.Context, u *ent.User, r *ent.Repo) (*extent.Config, error)
+
+		CreateRemoteDeploymentStatus(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, ds *extent.RemoteDeploymentStatus) (*extent.RemoteDeploymentStatus, error)
 
 		CreateWebhook(ctx context.Context, u *ent.User, r *ent.Repo, c *extent.WebhookConfig) (int64, error)
 		DeleteWebhook(ctx context.Context, u *ent.User, r *ent.Repo, id int64) error
