@@ -8,6 +8,7 @@ type (
 		Repos    *RepoService
 		Commits  *CommitService
 		Branches *BranchService
+		Tags     *TagService
 	}
 
 	APIConfig struct {
@@ -37,6 +38,7 @@ func NewAPI(c APIConfig) *API {
 	}
 	api.Commits = &CommitService{i: i, log: log.Named("commits")}
 	api.Branches = &BranchService{i: i, log: log.Named("branches")}
+	api.Tags = &TagService{i: i, log: log.Named("tags")}
 
 	return api
 }
