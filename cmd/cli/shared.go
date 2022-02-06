@@ -33,13 +33,13 @@ func splitFullName(name string) (string, string, error) {
 }
 
 // printJson prints the object as JSON-format.
-func printJson(v interface{}, query string) error {
+func printJson(cli *cli.Context, v interface{}) error {
 	output, err := json.MarshalIndent(v, "", "  ")
 	if err != nil {
 		return fmt.Errorf("Failed to marshal: %w", err)
 	}
 
-	if query != "" {
+	if query := cli.String("query"); query != "" {
 		fmt.Println(gjson.GetBytes(output, query))
 		return nil
 	}
