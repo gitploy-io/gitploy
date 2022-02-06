@@ -104,5 +104,4 @@ func (r *Repo) CreateRemoteDeploymentStatus(c *gin.Context) {
 
 	r.log.Debug("Success to create a remote deployment status.")
 	gb.Response(c, http.StatusCreated, rds)
-	return
 }
