@@ -5,10 +5,13 @@ import "go.uber.org/zap"
 type (
 	API struct {
 		// Services used for talking to different parts of the entities.
-		Repos    *RepoService
-		Commits  *CommitService
-		Branches *BranchService
-		Tags     *TagService
+		Repos       *RepoService
+		Commits     *CommitService
+		Branches    *BranchService
+		Tags        *TagService
+		Deployments *DeploymentService
+		Config      *ConfigService
+		Reviews     *ReviewService
 	}
 
 	APIConfig struct {
@@ -39,6 +42,9 @@ func NewAPI(c APIConfig) *API {
 	api.Commits = &CommitService{i: i, log: log.Named("commits")}
 	api.Branches = &BranchService{i: i, log: log.Named("branches")}
 	api.Tags = &TagService{i: i, log: log.Named("tags")}
+	api.Deployments = &DeploymentService{i: i, log: log.Named("deployments")}
+	api.Config = &ConfigService{i: i, log: log.Named("config")}
+	api.Reviews = &ReviewService{i: i, log: log.Named("reviews")}
 
 	return api
 }

@@ -23,13 +23,13 @@ func (s *TagService) List(c *gin.Context) {
 
 	// Validate quries
 	if page, err = strconv.Atoi(c.DefaultQuery("page", defaultQueryPage)); err != nil {
-		s.log.Check(gb.GetZapLogLevel(err), "Invalid parameter: page is not integer.").Write(zap.Error(err))
+		s.log.Warn("Invalid parameter: page is not integer.", zap.Error(err))
 		gb.ResponseWithError(c, e.NewError(e.ErrorCodeParameterInvalid, err))
 		return
 	}
 
 	if perPage, err = strconv.Atoi(c.DefaultQuery("per_page", defaultQueryPage)); err != nil {
-		s.log.Check(gb.GetZapLogLevel(err), "Invalid parameter: per_page is not integer.").Write(zap.Error(err))
+		s.log.Warn("Invalid parameter: per_page is not integer.", zap.Error(err))
 		gb.ResponseWithError(c, e.NewError(e.ErrorCodeParameterInvalid, err))
 		return
 	}

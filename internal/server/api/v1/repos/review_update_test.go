@@ -16,7 +16,7 @@ func init() {
 	gin.SetMode(gin.ReleaseMode)
 }
 
-func TestRepo_UpdateUserReview(t *testing.T) {
+func TestReviewService_UpdateMine(t *testing.T) {
 	t.Run("Return 400 code when the status is invalid", func(t *testing.T) {
 		input := struct {
 			payload *reviewPatchPayload

@@ -12,15 +12,16 @@ import (
 	"github.com/gitploy-io/gitploy/pkg/e"
 )
 
-func (s *BranchService) List(c *gin.Context) {
+func (s *DeploymentService) List(c *gin.Context) {
 	ctx := c.Request.Context()
 
 	var (
+		env     = c.Query("env")
+		status  = c.Query("status")
 		page    int
 		perPage int
 		err     error
 	)
-
 	// Validate quries
 	if page, err = strconv.Atoi(c.DefaultQuery("page", defaultQueryPage)); err != nil {
 		s.log.Warn("Invalid parameter: page is not integer.", zap.Error(err))
@@ -34,18 +35,16 @@ func (s *BranchService) List(c *gin.Context) {
 		return
 	}
 
-	uv, _ := c.Get(gb.KeyUser)
-	u := uv.(*ent.User)
+	vr, _ := c.Get(KeyRepo)
+	re := vr.(*ent.Repo)
 
-	rv, _ := c.Get(KeyRepo)
-	repo := rv.(*ent.Repo)
-
-	branches, err := s.i.ListBranches(ctx, u, repo, page, perPage)
+	ds, err := s.i.ListDeploymentsOfRepo(ctx, re, env, status, page, perPage)
 	if err != nil {
-		s.log.Check(gb.GetZapLogLevel(err), "Failed to list branches.").Write(zap.Error(err))
+		s.log.Check(gb.GetZapLogLevel(err), "Failed to list deployments.").Write(zap.Error(err))
 		gb.ResponseWithError(c, err)
 		return
 	}
 
-	gb.Response(c, http.StatusOK, branches)
+	s.log.Debug("Success to list deployments.")
+	gb.Response(c, http.StatusOK, ds)
 }
