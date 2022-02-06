@@ -13,6 +13,7 @@ type (
 		Config             *ConfigService
 		Reviews            *ReviewService
 		DeploymentStatuses *DeploymentStatusService
+		Locks              *LockService
 	}
 
 	APIConfig struct {
@@ -47,6 +48,7 @@ func NewAPI(c APIConfig) *API {
 	api.Config = &ConfigService{i: i, log: log.Named("config")}
 	api.Reviews = &ReviewService{i: i, log: log.Named("reviews")}
 	api.DeploymentStatuses = &DeploymentStatusService{i: i, log: log.Named("deployment_statuses")}
+	api.Locks = &LockService{i: i, log: log.Named("locks")}
 
 	return api
 }
