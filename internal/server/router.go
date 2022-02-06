@@ -122,41 +122,39 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 	repov1 := v1.Group("/repos")
 	{
 		rm := repos.NewRepoMiddleware(c.Interactor)
-		r := repos.NewRepo(
-			repos.RepoConfig{
-				WebhookURL:    fmt.Sprintf("%s://%s/hooks", c.ProxyProto, c.ProxyHost),
-				WebhookSSL:    c.ProxyProto == "https",
-				WebhookSecret: c.WebhookSecret,
-			},
-			c.Interactor,
-		)
-		repov1.GET("", r.ListRepos)
-		repov1.GET("/:namespace/:name", rm.RepoReadPerm(), r.GetRepo)
-		repov1.PATCH("/:namespace/:name", rm.RepoAdminPerm(), r.UpdateRepo)
-		repov1.GET("/:namespace/:name/commits", rm.RepoReadPerm(), r.ListCommits)
-		repov1.GET("/:namespace/:name/commits/:sha", rm.RepoReadPerm(), r.GetCommit)
-		repov1.GET("/:namespace/:name/commits/:sha/statuses", rm.RepoReadPerm(), r.ListStatuses)
-		repov1.GET("/:namespace/:name/branches", rm.RepoReadPerm(), r.ListBranches)
-		repov1.GET("/:namespace/:name/branches/:branch", rm.RepoReadPerm(), r.GetBranch)
-		repov1.GET("/:namespace/:name/tags", rm.RepoReadPerm(), r.ListTags)
-		repov1.GET("/:namespace/:name/tags/:tag", rm.RepoReadPerm(), r.GetTag)
-		repov1.GET("/:namespace/:name/deployments", rm.RepoReadPerm(), r.ListDeployments)
-		repov1.POST("/:namespace/:name/deployments", rm.RepoWritePerm(), r.CreateDeployment)
-		repov1.GET("/:namespace/:name/deployments/:number", rm.RepoReadPerm(), r.GetDeploymentByNumber)
-		repov1.PUT("/:namespace/:name/deployments/:number", rm.RepoWritePerm(), r.UpdateDeployment)
-		repov1.GET("/:namespace/:name/deployments/:number/changes", rm.RepoReadPerm(), r.ListDeploymentChanges)
-		repov1.POST("/:namespace/:name/deployments/:number/rollback", rm.RepoWritePerm(), r.RollbackDeployment)
-		repov1.GET("/:namespace/:name/deployments/:number/reviews", rm.RepoReadPerm(), r.ListReviews)
-		repov1.GET("/:namespace/:name/deployments/:number/review", rm.RepoReadPerm(), r.GetUserReview)
-		repov1.PATCH("/:namespace/:name/deployments/:number/review", rm.RepoReadPerm(), r.UpdateUserReview)
-		repov1.GET("/:namespace/:name/deployments/:number/statuses", rm.RepoReadPerm(), r.ListDeploymentStatuses)
-		repov1.POST("/:namespace/:name/deployments/:number/remote-statuses", rm.RepoReadPerm(), r.CreateRemoteDeploymentStatus)
-		repov1.GET("/:namespace/:name/locks", rm.RepoReadPerm(), r.ListLocks)
-		repov1.POST("/:namespace/:name/locks", rm.RepoWritePerm(), r.CreateLock)
-		repov1.PATCH("/:namespace/:name/locks/:lockID", rm.RepoWritePerm(), r.UpdateLock)
-		repov1.DELETE("/:namespace/:name/locks/:lockID", rm.RepoWritePerm(), r.DeleteLock)
-		repov1.GET("/:namespace/:name/perms", rm.RepoReadPerm(), r.ListPerms)
-		repov1.GET("/:namespace/:name/config", rm.RepoReadPerm(), r.GetConfig)
+		api := repos.NewAPI(repos.APIConfig{
+			Interactor:    c.Interactor,
+			WebhookURL:    fmt.Sprintf("%s://%s/hooks", c.ProxyProto, c.ProxyHost),
+			WebhookSSL:    c.ProxyProto == "https",
+			WebhookSecret: c.WebhookSecret,
+		})
+		repov1.GET("", api.Repos.List)
+		repov1.GET("/:namespace/:name", rm.RepoReadPerm(), api.Repos.Get)
+		repov1.PATCH("/:namespace/:name", rm.RepoAdminPerm(), api.Repos.Update)
+		repov1.GET("/:namespace/:name/commits", rm.RepoReadPerm(), api.Commits.List)
+		repov1.GET("/:namespace/:name/commits/:sha", rm.RepoReadPerm(), api.Commits.Get)
+		repov1.GET("/:namespace/:name/commits/:sha/statuses", rm.RepoReadPerm(), api.Commits.ListStatuses)
+		repov1.GET("/:namespace/:name/branches", rm.RepoReadPerm(), api.Branches.List)
+		repov1.GET("/:namespace/:name/branches/:branch", rm.RepoReadPerm(), api.Branches.Get)
+		repov1.GET("/:namespace/:name/tags", rm.RepoReadPerm(), api.Tags.List)
+		repov1.GET("/:namespace/:name/tags/:tag", rm.RepoReadPerm(), api.Tags.Get)
+		repov1.GET("/:namespace/:name/deployments", rm.RepoReadPerm(), api.Deployments.List)
+		repov1.POST("/:namespace/:name/deployments", rm.RepoWritePerm(), api.Deployments.Create)
+		repov1.GET("/:namespace/:name/deployments/:number", rm.RepoReadPerm(), api.Deployments.Get)
+		repov1.PUT("/:namespace/:name/deployments/:number", rm.RepoWritePerm(), api.Deployments.Update)
+		repov1.GET("/:namespace/:name/deployments/:number/changes", rm.RepoReadPerm(), api.Deployments.ListChanges)
+		repov1.POST("/:namespace/:name/deployments/:number/rollback", rm.RepoWritePerm(), api.Deployments.Rollback)
+		repov1.GET("/:namespace/:name/deployments/:number/reviews", rm.RepoReadPerm(), api.Reviews.List)
+		repov1.GET("/:namespace/:name/deployments/:number/review", rm.RepoReadPerm(), api.Reviews.GetMine)
+		repov1.PATCH("/:namespace/:name/deployments/:number/review", rm.RepoReadPerm(), api.Reviews.UpdateMine)
+		repov1.GET("/:namespace/:name/deployments/:number/statuses", rm.RepoReadPerm(), api.DeploymentStatuses.List)
+		repov1.POST("/:namespace/:name/deployments/:number/remote-statuses", rm.RepoReadPerm(), api.DeploymentStatuses.CreateRemote)
+		repov1.GET("/:namespace/:name/locks", rm.RepoReadPerm(), api.Locks.List)
+		repov1.POST("/:namespace/:name/locks", rm.RepoWritePerm(), api.Locks.Create)
+		repov1.PATCH("/:namespace/:name/locks/:lockID", rm.RepoWritePerm(), api.Locks.Update)
+		repov1.DELETE("/:namespace/:name/locks/:lockID", rm.RepoWritePerm(), api.Locks.Delete)
+		repov1.GET("/:namespace/:name/perms", rm.RepoReadPerm(), api.Perms.List)
+		repov1.GET("/:namespace/:name/config", rm.RepoReadPerm(), api.Config.Get)
 	}
 
 	usersv1 := v1.Group("/users")

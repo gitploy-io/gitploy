@@ -16,14 +16,15 @@ import (
 	"github.com/gitploy-io/gitploy/model/ent"
 	"github.com/gitploy-io/gitploy/model/extent"
 	"github.com/golang/mock/gomock"
+	"go.uber.org/zap"
 )
 
-func TestRepo_UpdateRepo(t *testing.T) {
+func TestRepoService_UpdateRepo(t *testing.T) {
 	t.Run("Patch config_path field.", func(t *testing.T) {
 		input := struct {
-			payload *repoPatchPayload
+			payload *RepoPatchPayload
 		}{
-			payload: &repoPatchPayload{
+			payload: &RepoPatchPayload{
 				ConfigPath: pointer.ToString("deploy.yml"),
 			},
 		}
@@ -49,12 +50,12 @@ func TestRepo_UpdateRepo(t *testing.T) {
 		gin.SetMode(gin.ReleaseMode)
 		router := gin.New()
 
-		r := NewRepo(RepoConfig{}, m)
+		s := ReposAPI{service: service{i: m, log: zap.L()}}
 		router.PATCH("/repos/:id", func(c *gin.Context) {
 			t.Log("Set up fake middleware")
 			c.Set(global.KeyUser, &ent.User{})
 			c.Set(KeyRepo, &ent.Repo{ID: r1})
-		}, r.UpdateRepo)
+		}, s.Update)
 
 		p, _ := json.Marshal(input.payload)
 		req, _ := http.NewRequest("PATCH", fmt.Sprintf("/repos/%d", r1), bytes.NewBuffer(p))
@@ -69,9 +70,9 @@ func TestRepo_UpdateRepo(t *testing.T) {
 
 	t.Run("Patch active field.", func(t *testing.T) {
 		input := struct {
-			payload *repoPatchPayload
+			payload *RepoPatchPayload
 		}{
-			payload: &repoPatchPayload{
+			payload: &RepoPatchPayload{
 				Active: pointer.ToBool(true),
 			},
 		}
@@ -96,12 +97,12 @@ func TestRepo_UpdateRepo(t *testing.T) {
 		gin.SetMode(gin.ReleaseMode)
 		router := gin.New()
 
-		r := NewRepo(RepoConfig{}, m)
+		s := ReposAPI{service: service{i: m, log: zap.L()}}
 		router.PATCH("/repos/:id", func(c *gin.Context) {
 			t.Log("Set up fake middleware")
 			c.Set(global.KeyUser, &ent.User{})
 			c.Set(KeyRepo, &ent.Repo{ID: r1})
-		}, r.UpdateRepo)
+		}, s.Update)
 
 		p, _ := json.Marshal(input.payload)
 		req, _ := http.NewRequest("PATCH", fmt.Sprintf("/repos/%d", r1), bytes.NewBuffer(p))

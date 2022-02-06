@@ -1,7 +1,6 @@
 package repos
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -10,6 +9,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang/mock/gomock"
+	"go.uber.org/zap"
 
 	"github.com/gitploy-io/gitploy/internal/server/api/v1/repos/mock"
 	"github.com/gitploy-io/gitploy/internal/server/global"
@@ -18,7 +18,7 @@ import (
 	"github.com/gitploy-io/gitploy/model/extent"
 )
 
-func TestRepo_ListDeploymentChanges(t *testing.T) {
+func TestDeploymentsAPI_ListChanges(t *testing.T) {
 	ctx := gomock.Any()
 	any := gomock.Any()
 
@@ -74,13 +74,14 @@ func TestRepo_ListDeploymentChanges(t *testing.T) {
 		// Ready the router to handle it.
 		gin.SetMode(gin.ReleaseMode)
 
-		repos := NewRepo(RepoConfig{}, m)
+		s := DeploymentsAPI{i: m, log: zap.L()}
+
 		router := gin.New()
 		router.GET("/deployments/:number/changes", func(c *gin.Context) {
 			// Mocking middlewares to return a user and a repository.
 			c.Set(global.KeyUser, &ent.User{})
 			c.Set(KeyRepo, &ent.Repo{})
-		}, repos.ListDeploymentChanges)
+		}, s.ListChanges)
 
 		req, _ := http.NewRequest("GET", fmt.Sprintf("/deployments/%d/changes?page=%d&per_page=%d", input.number, input.page, input.perPage), nil)
 
@@ -101,73 +102,6 @@ func TestRepo_ListDeploymentChanges(t *testing.T) {
 		if bytes := w.Body.Bytes(); string(bytes) != string(eb) {
 			t.Errorf("w.Body = %s, wanted %s", string(bytes), string(eb))
 			t.FailNow()
-		}
-	})
-}
-
-func TestRepo_CreateDeployment(t *testing.T) {
-	t.Run("a new deployment entity.", func(t *testing.T) {
-		input := struct {
-			payload *deploymentPostPayload
-		}{
-			payload: &deploymentPostPayload{
-				Type: "branch",
-				Ref:  "main",
-				Env:  "prod",
-			},
-		}
-
-		ctrl := gomock.NewController(t)
-		m := mock.NewMockInteractor(ctrl)
-
-		m.
-			EXPECT().
-			GetConfig(gomock.Any(), gomock.AssignableToTypeOf(&ent.User{}), gomock.AssignableToTypeOf(&ent.Repo{})).
-			Return(&extent.Config{
-				Envs: []*extent.Env{
-					{
-						Name: "prod",
-					},
-				}}, nil)
-
-		t.Log("Deploy with the payload successfully.")
-		m.
-			EXPECT().
-			Deploy(gomock.Any(), gomock.AssignableToTypeOf(&ent.User{}), gomock.AssignableToTypeOf(&ent.Repo{}), gomock.Eq(&ent.Deployment{
-				Type: deployment.Type(input.payload.Type),
-				Env:  input.payload.Env,
-				Ref:  input.payload.Ref,
-			}), gomock.AssignableToTypeOf(&extent.Env{})).
-			Return(&ent.Deployment{}, nil)
-
-		t.Log("Dispatch the event.")
-		m.
-			EXPECT().
-			CreateEvent(gomock.Any(), gomock.AssignableToTypeOf(&ent.Event{})).
-			Return(&ent.Event{}, nil)
-
-		t.Log("Read the deployment with edges.")
-		m.
-			EXPECT().
-			FindDeploymentByID(gomock.Any(), gomock.Any()).
-			Return(&ent.Deployment{}, nil)
-
-		r := NewRepo(RepoConfig{}, m)
-
-		gin.SetMode(gin.ReleaseMode)
-		router := gin.New()
-		router.POST("/repos/:id/deployments", func(c *gin.Context) {
-			c.Set(global.KeyUser, &ent.User{})
-			c.Set(KeyRepo, &ent.Repo{})
-		}, r.CreateDeployment)
-
-		body, _ := json.Marshal(input.payload)
-		req, _ := http.NewRequest("POST", "/repos/1/deployments", bytes.NewBuffer(body))
-		w := httptest.NewRecorder()
-
-		router.ServeHTTP(w, req)
-		if w.Code != http.StatusCreated {
-			t.Fatalf("Code = %v, wanted %v. Body=%v", w.Code, http.StatusCreated, w.Body)
 		}
 	})
 }

@@ -8,6 +8,8 @@ import (
 	"testing"
 
 	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
+
 	"github.com/gitploy-io/gitploy/internal/server/api/v1/repos/mock"
 	"github.com/golang/mock/gomock"
 )
@@ -16,12 +18,12 @@ func init() {
 	gin.SetMode(gin.ReleaseMode)
 }
 
-func TestRepo_UpdateUserReview(t *testing.T) {
+func TestReviewsAPI_UpdateMine(t *testing.T) {
 	t.Run("Return 400 code when the status is invalid", func(t *testing.T) {
 		input := struct {
-			payload *reviewPatchPayload
+			payload *ReviewPatchPayload
 		}{
-			payload: &reviewPatchPayload{
+			payload: &ReviewPatchPayload{
 				Status: "INVALID",
 			},
 		}
@@ -31,8 +33,8 @@ func TestRepo_UpdateUserReview(t *testing.T) {
 
 		router := gin.New()
 
-		r := NewRepo(RepoConfig{}, m)
-		router.PATCH("/deployments/:number/review", r.UpdateUserReview)
+		s := &ReviewsAPI{i: m, log: zap.L()}
+		router.PATCH("/deployments/:number/review", s.UpdateMine)
 
 		p, _ := json.Marshal(input.payload)
 		req, _ := http.NewRequest("PATCH", "/deployments/1/review", bytes.NewBuffer(p))
