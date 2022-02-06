@@ -122,14 +122,6 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 	repov1 := v1.Group("/repos")
 	{
 		rm := repos.NewRepoMiddleware(c.Interactor)
-		r := repos.NewRepo(
-			repos.RepoConfig{
-				WebhookURL:    fmt.Sprintf("%s://%s/hooks", c.ProxyProto, c.ProxyHost),
-				WebhookSSL:    c.ProxyProto == "https",
-				WebhookSecret: c.WebhookSecret,
-			},
-			c.Interactor,
-		)
 		api := repos.NewAPI(repos.APIConfig{
 			Interactor:    c.Interactor,
 			WebhookURL:    fmt.Sprintf("%s://%s/hooks", c.ProxyProto, c.ProxyHost),
@@ -161,7 +153,7 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 		repov1.POST("/:namespace/:name/locks", rm.RepoWritePerm(), api.Locks.Create)
 		repov1.PATCH("/:namespace/:name/locks/:lockID", rm.RepoWritePerm(), api.Locks.Update)
 		repov1.DELETE("/:namespace/:name/locks/:lockID", rm.RepoWritePerm(), api.Locks.Delete)
-		repov1.GET("/:namespace/:name/perms", rm.RepoReadPerm(), r.ListPerms)
+		repov1.GET("/:namespace/:name/perms", rm.RepoReadPerm(), api.Perms.List)
 		repov1.GET("/:namespace/:name/config", rm.RepoReadPerm(), api.Config.Get)
 	}
 

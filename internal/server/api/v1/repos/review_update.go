@@ -15,6 +15,13 @@ import (
 	"github.com/gitploy-io/gitploy/pkg/e"
 )
 
+type (
+	ReviewPatchPayload struct {
+		Status  string  `json:"status"`
+		Comment *string `json:"comment"`
+	}
+)
+
 func (s *ReviewService) UpdateMine(c *gin.Context) {
 	ctx := c.Request.Context()
 
@@ -29,7 +36,7 @@ func (s *ReviewService) UpdateMine(c *gin.Context) {
 		return
 	}
 
-	p := &reviewPatchPayload{}
+	p := &ReviewPatchPayload{}
 	if err := c.ShouldBindBodyWith(p, binding.JSON); err != nil {
 		s.log.Warn("Failed to bind the payload.", zap.Error(err))
 		gb.ResponseWithError(c, e.NewErrorWithMessage(e.ErrorCodeParameterInvalid, "It has failed to bind the payload.", nil))
