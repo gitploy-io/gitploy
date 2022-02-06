@@ -857,6 +857,83 @@ paths:
           $ref: '#/components/responses/422UnprocessableEntity'
         '500':
           $ref: '#/components/responses/500InternalError'
+  /repos/{namespace}/{name}/deployments/{number}/statuses:
+    get:
+      tags:
+        - Repo
+      summary: List deployment statuses.
+      parameters:
+        - in: path
+          name: namespace
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: name
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: number
+          required: true
+          schema:
+            type: integer
+            description: The deployment number.
+      responses:
+        '200':
+          description: Return the deployment statuses.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeploymentStatuses'
+        '401': 
+          $ref: '#/components/responses/401Unauthorized'
+        '402':
+          $ref: '#/components/responses/402PaymentRequired'
+        '403': 
+          $ref: '#/components/responses/403Forbidden'
+        '422':
+          $ref: '#/components/responses/422UnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+    post:
+      tags:
+        - Repo
+      summary: Create a new remote deployment status.
+      parameters:
+        - in: path
+          name: namespace
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: name
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: number
+          required: true
+          schema:
+            type: integer
+            description: The deployment number.
+      responses:
+        '200':
+          description: Return the deployment status.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeploymentStatus'
+        '401': 
+          $ref: '#/components/responses/401Unauthorized'
+        '402':
+          $ref: '#/components/responses/402PaymentRequired'
+        '403': 
+          $ref: '#/components/responses/403Forbidden'
+        '422':
+          $ref: '#/components/responses/422UnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/500InternalError'
   /repos/{namespace}/{name}/locks:
     get:
       tags:
@@ -1658,6 +1735,10 @@ components:
         - is_rollback
         - created_at
         - updated_at
+    DeploymentStatuses:
+      type: array
+      items:
+        $ref: '#/components/schemas/DeploymentStatus'
     DeploymentStatus:
       type: object
       properties:
