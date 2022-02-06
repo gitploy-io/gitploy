@@ -5,7 +5,8 @@ import "go.uber.org/zap"
 type (
 	API struct {
 		// Services used for talking to different parts of the entities.
-		Repos *RepoService
+		Repos   *RepoService
+		Commits *CommitService
 	}
 
 	APIConfig struct {
@@ -33,6 +34,7 @@ func NewAPI(c APIConfig) *API {
 		WebhookSSL:    c.WebhookSSL,
 		WebhookSecret: c.WebhookSecret,
 	}
+	api.Commits = &CommitService{i: i, log: log.Named("commits")}
 
 	return api
 }
