@@ -1,5 +1,5 @@
 package repos
 
 type (
-	BranchService service
+	BranchAPI service
 )

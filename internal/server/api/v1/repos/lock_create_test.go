@@ -17,7 +17,7 @@ import (
 	"github.com/gitploy-io/gitploy/model/extent"
 )
 
-func TestLockService_Create(t *testing.T) {
+func TestLockAPI_Create(t *testing.T) {
 	t.Run("Return 422 when the environment is undefined.", func(t *testing.T) {
 		input := struct {
 			payload *LockPostPayload
@@ -42,7 +42,7 @@ func TestLockService_Create(t *testing.T) {
 
 		gin.SetMode(gin.ReleaseMode)
 
-		s := LockService{i: m, log: zap.L()}
+		s := LockAPI{i: m, log: zap.L()}
 		router := gin.New()
 		router.POST("repos/:id/locks", func(c *gin.Context) {
 			c.Set(global.KeyUser, &ent.User{})
@@ -93,7 +93,7 @@ func TestLockService_Create(t *testing.T) {
 			FindLockByID(gomock.Any(), 1).
 			Return(&ent.Lock{ID: 1}, nil)
 
-		s := LockService{i: m, log: zap.L()}
+		s := LockAPI{i: m, log: zap.L()}
 		gin.SetMode(gin.ReleaseMode)
 		router := gin.New()
 		router.POST("repos/:id/locks", func(c *gin.Context) {

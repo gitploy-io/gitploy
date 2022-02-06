@@ -50,7 +50,7 @@ func TestRepo_UpdateRepo(t *testing.T) {
 		gin.SetMode(gin.ReleaseMode)
 		router := gin.New()
 
-		s := RepoService{service: service{i: m, log: zap.L()}}
+		s := RepoAPI{service: service{i: m, log: zap.L()}}
 		router.PATCH("/repos/:id", func(c *gin.Context) {
 			t.Log("Set up fake middleware")
 			c.Set(global.KeyUser, &ent.User{})
@@ -97,7 +97,7 @@ func TestRepo_UpdateRepo(t *testing.T) {
 		gin.SetMode(gin.ReleaseMode)
 		router := gin.New()
 
-		s := RepoService{service: service{i: m, log: zap.L()}}
+		s := RepoAPI{service: service{i: m, log: zap.L()}}
 		router.PATCH("/repos/:id", func(c *gin.Context) {
 			t.Log("Set up fake middleware")
 			c.Set(global.KeyUser, &ent.User{})

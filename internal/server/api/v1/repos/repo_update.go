@@ -20,7 +20,7 @@ type (
 	}
 )
 
-func (s *RepoService) Update(c *gin.Context) {
+func (s *RepoAPI) Update(c *gin.Context) {
 	ctx := c.Request.Context()
 
 	p := &RepoPatchPayload{}

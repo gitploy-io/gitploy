@@ -18,7 +18,7 @@ import (
 	"github.com/gitploy-io/gitploy/model/extent"
 )
 
-func TestDeploymentService_Create(t *testing.T) {
+func TestDeploymentAPI_Create(t *testing.T) {
 	t.Run("a new deployment entity.", func(t *testing.T) {
 		input := struct {
 			payload *DeploymentPostPayload
@@ -65,7 +65,7 @@ func TestDeploymentService_Create(t *testing.T) {
 			FindDeploymentByID(gomock.Any(), gomock.Any()).
 			Return(&ent.Deployment{}, nil)
 
-		s := DeploymentService{i: m, log: zap.L()}
+		s := DeploymentAPI{i: m, log: zap.L()}
 
 		gin.SetMode(gin.ReleaseMode)
 		router := gin.New()

@@ -1,5 +1,5 @@
 package repos
 
 type (
-	CommitService service
+	CommitAPI service
 )

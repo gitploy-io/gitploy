@@ -18,7 +18,7 @@ func init() {
 	gin.SetMode(gin.ReleaseMode)
 }
 
-func TestReviewService_UpdateMine(t *testing.T) {
+func TestReviewAPI_UpdateMine(t *testing.T) {
 	t.Run("Return 400 code when the status is invalid", func(t *testing.T) {
 		input := struct {
 			payload *ReviewPatchPayload
@@ -33,7 +33,7 @@ func TestReviewService_UpdateMine(t *testing.T) {
 
 		router := gin.New()
 
-		s := &ReviewService{i: m, log: zap.L()}
+		s := &ReviewAPI{i: m, log: zap.L()}
 		router.PATCH("/deployments/:number/review", s.UpdateMine)
 
 		p, _ := json.Marshal(input.payload)

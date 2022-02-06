@@ -10,7 +10,7 @@ import (
 	"github.com/gitploy-io/gitploy/model/ent"
 )
 
-func (s *PermsService) List(c *gin.Context) {
+func (s *PermsAPI) List(c *gin.Context) {
 	ctx := c.Request.Context()
 
 	var (

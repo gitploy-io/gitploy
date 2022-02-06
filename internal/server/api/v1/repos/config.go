@@ -1,5 +1,5 @@
 package repos
 
 type (
-	ConfigService service
+	ConfigAPI service
 )

@@ -9,7 +9,7 @@ import (
 	"go.uber.org/zap"
 )
 
-func (s *CommitService) Get(c *gin.Context) {
+func (s *CommitAPI) Get(c *gin.Context) {
 	ctx := c.Request.Context()
 
 	var (

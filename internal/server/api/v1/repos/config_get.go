@@ -10,7 +10,7 @@ import (
 	"github.com/gitploy-io/gitploy/model/ent"
 )
 
-func (s *ConfigService) Get(c *gin.Context) {
+func (s *ConfigAPI) Get(c *gin.Context) {
 	ctx := c.Request.Context()
 
 	vu, _ := c.Get(gb.KeyUser)

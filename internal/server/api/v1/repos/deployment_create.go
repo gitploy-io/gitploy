@@ -23,7 +23,7 @@ type (
 	}
 )
 
-func (s *DeploymentService) Create(c *gin.Context) {
+func (s *DeploymentAPI) Create(c *gin.Context) {
 	ctx := c.Request.Context()
 
 	p := &DeploymentPostPayload{}

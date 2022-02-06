@@ -15,7 +15,7 @@ import (
 	"github.com/gitploy-io/gitploy/pkg/e"
 )
 
-func (s *DeploymentService) ListChanges(c *gin.Context) {
+func (s *DeploymentAPI) ListChanges(c *gin.Context) {
 	ctx := c.Request.Context()
 
 	var (
@@ -69,7 +69,7 @@ func (s *DeploymentService) ListChanges(c *gin.Context) {
 	gb.Response(c, http.StatusOK, commits)
 }
 
-func (s *DeploymentService) getCommitSha(ctx context.Context, u *ent.User, re *ent.Repo, typ deployment.Type, ref string) (string, error) {
+func (s *DeploymentAPI) getCommitSha(ctx context.Context, u *ent.User, re *ent.Repo, typ deployment.Type, ref string) (string, error) {
 	switch typ {
 	case deployment.TypeCommit:
 		c, err := s.i.GetCommit(ctx, u, re, ref)

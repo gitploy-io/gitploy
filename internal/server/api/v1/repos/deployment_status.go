@@ -1,5 +1,5 @@
 package repos
 
 type (
-	DeploymentStatusService service
+	DeploymentStatusAPI service
 )

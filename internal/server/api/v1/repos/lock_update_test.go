@@ -19,7 +19,7 @@ import (
 	"github.com/gitploy-io/gitploy/model/ent"
 )
 
-func TestLockService_Update(t *testing.T) {
+func TestLockAPI_Update(t *testing.T) {
 	t.Run("Update the expired time.", func(t *testing.T) {
 		expiredAt := time.Date(2021, 10, 17, 0, 0, 0, 0, time.UTC)
 
@@ -55,7 +55,7 @@ func TestLockService_Update(t *testing.T) {
 				return l, nil
 			})
 
-		s := LockService{i: m, log: zap.L()}
+		s := LockAPI{i: m, log: zap.L()}
 		gin.SetMode(gin.ReleaseMode)
 		router := gin.New()
 		router.PATCH("repos/:id/locks/:lockID", s.Update)

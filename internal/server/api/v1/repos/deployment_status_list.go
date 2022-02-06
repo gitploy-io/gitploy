@@ -11,7 +11,7 @@ import (
 	"go.uber.org/zap"
 )
 
-func (s *DeploymentStatusService) List(c *gin.Context) {
+func (s *DeploymentStatusAPI) List(c *gin.Context) {
 	ctx := c.Request.Context()
 
 	var (

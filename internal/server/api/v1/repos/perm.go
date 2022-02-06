@@ -1,5 +1,5 @@
 package repos
 
 type (
-	PermsService service
+	PermsAPI service
 )
