@@ -23,7 +23,7 @@ var deploymentGetCommand = &cli.Command{
 		}
 
 		c := buildClient(cli)
-		d, err := c.Deployment.Get(cli.Context, ns, n, number)
+		d, err := c.Deployments.Get(cli.Context, ns, n, number)
 		if err != nil {
 			return err
 		}

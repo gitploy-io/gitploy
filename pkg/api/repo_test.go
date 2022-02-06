@@ -17,7 +17,7 @@ func EqualRepo(a, b *ent.Repo) bool {
 	return a.Namespace == b.Namespace && a.Name == b.Name
 }
 
-func TestRepoService_List(t *testing.T) {
+func TestReposService_List(t *testing.T) {
 	t.Run("Return repositories.", func(t *testing.T) {
 		repos := []*ent.Repo{
 			{
@@ -36,7 +36,7 @@ func TestRepoService_List(t *testing.T) {
 
 		c := NewClient("https://cloud.gitploy.io/", http.DefaultClient)
 
-		ret, err := c.Repo.List(context.Background(), RepoListOptions{
+		ret, err := c.Repos.List(context.Background(), RepoListOptions{
 			ListOptions: ListOptions{Page: 1, PerPage: 30},
 		})
 		if err != nil {
@@ -51,7 +51,7 @@ func TestRepoService_List(t *testing.T) {
 	})
 }
 
-func TestRepoService_Get(t *testing.T) {
+func TestReposService_Get(t *testing.T) {
 	t.Run("Return the repository.", func(t *testing.T) {
 		repo := &ent.Repo{
 			Namespace: "gitploy-io",
@@ -64,7 +64,7 @@ func TestRepoService_Get(t *testing.T) {
 
 		c := NewClient("https://cloud.gitploy.io/", http.DefaultClient)
 
-		ret, err := c.Repo.Get(context.Background(), "gitploy-io", "gitploy")
+		ret, err := c.Repos.Get(context.Background(), "gitploy-io", "gitploy")
 		if err != nil {
 			t.Fatalf("Get returns an error: %s", err)
 		}
@@ -75,7 +75,7 @@ func TestRepoService_Get(t *testing.T) {
 	})
 }
 
-func TestRepoService_Update(t *testing.T) {
+func TestReposService_Update(t *testing.T) {
 	t.Run("Update the 'config_path' field.", func(t *testing.T) {
 		gock.New("https://cloud.gitploy.io").
 			Patch("/api/v1/repos/gitploy-io/gitploy").
@@ -100,7 +100,7 @@ func TestRepoService_Update(t *testing.T) {
 
 		c := NewClient("https://cloud.gitploy.io/", http.DefaultClient)
 
-		_, err := c.Repo.Update(context.Background(), "gitploy-io", "gitploy", RepoUpdateRequest{
+		_, err := c.Repos.Update(context.Background(), "gitploy-io", "gitploy", RepoUpdateRequest{
 			ConfigPath: pointer.ToString("new_deploy.yml"),
 		})
 		if err != nil {
