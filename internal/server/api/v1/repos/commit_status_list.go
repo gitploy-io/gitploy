@@ -11,7 +11,7 @@ import (
 	"github.com/gitploy-io/gitploy/model/extent"
 )
 
-func (s *CommitAPI) ListStatuses(c *gin.Context) {
+func (s *CommitsAPI) ListStatuses(c *gin.Context) {
 	ctx := c.Request.Context()
 
 	var (

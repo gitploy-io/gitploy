@@ -12,7 +12,7 @@ import (
 	"github.com/gitploy-io/gitploy/pkg/e"
 )
 
-func (s *TagAPI) List(c *gin.Context) {
+func (s *TagsAPI) List(c *gin.Context) {
 	ctx := c.Request.Context()
 
 	var (

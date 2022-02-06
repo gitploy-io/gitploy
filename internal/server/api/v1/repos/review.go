@@ -8,5 +8,5 @@
 package repos
 
 type (
-	ReviewAPI service
+	ReviewsAPI service
 )

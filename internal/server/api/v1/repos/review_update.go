@@ -22,7 +22,7 @@ type (
 	}
 )
 
-func (s *ReviewAPI) UpdateMine(c *gin.Context) {
+func (s *ReviewsAPI) UpdateMine(c *gin.Context) {
 	ctx := c.Request.Context()
 
 	var (

@@ -11,7 +11,7 @@ import (
 	"go.uber.org/zap"
 )
 
-func (s *ReviewAPI) List(c *gin.Context) {
+func (s *ReviewsAPI) List(c *gin.Context) {
 	ctx := c.Request.Context()
 
 	var (

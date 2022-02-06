@@ -12,7 +12,7 @@ import (
 	"github.com/gitploy-io/gitploy/pkg/e"
 )
 
-func (s *DeploymentAPI) Get(c *gin.Context) {
+func (s *DeploymentsAPI) Get(c *gin.Context) {
 	var (
 		number int
 		err    error

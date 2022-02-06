@@ -1,7 +1,7 @@
 package repos
 
 type (
-	RepoAPI struct {
+	ReposAPI struct {
 		service
 
 		WebhookURL    string

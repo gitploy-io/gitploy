@@ -23,7 +23,7 @@ type (
 	}
 )
 
-func (s *LockAPI) Create(c *gin.Context) {
+func (s *LocksAPI) Create(c *gin.Context) {
 	ctx := c.Request.Context()
 
 	p := &LockPostPayload{}

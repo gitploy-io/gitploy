@@ -22,7 +22,7 @@ type (
 	}
 )
 
-func (s *DeploymentStatusAPI) CreateRemote(c *gin.Context) {
+func (s *DeploymentStatusesAPI) CreateRemote(c *gin.Context) {
 	ctx := c.Request.Context()
 
 	var (

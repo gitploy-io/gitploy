@@ -1,5 +1,5 @@
 package repos
 
 type (
-	DeploymentAPI service
+	DeploymentsAPI service
 )

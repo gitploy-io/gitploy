@@ -12,7 +12,7 @@ import (
 	"github.com/gitploy-io/gitploy/pkg/e"
 )
 
-func (s *ReviewAPI) GetMine(c *gin.Context) {
+func (s *ReviewsAPI) GetMine(c *gin.Context) {
 	ctx := c.Request.Context()
 
 	var (

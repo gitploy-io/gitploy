@@ -9,7 +9,7 @@ import (
 	"github.com/gitploy-io/gitploy/model/ent"
 )
 
-func (s *RepoAPI) Get(c *gin.Context) {
+func (s *ReposAPI) Get(c *gin.Context) {
 	rv, _ := c.Get(KeyRepo)
 	repo := rv.(*ent.Repo)
 

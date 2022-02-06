@@ -8,5 +8,5 @@
 package repos
 
 type (
-	LockAPI service
+	LocksAPI service
 )

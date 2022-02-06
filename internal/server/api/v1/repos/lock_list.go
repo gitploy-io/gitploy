@@ -10,7 +10,7 @@ import (
 	"github.com/gitploy-io/gitploy/model/ent"
 )
 
-func (s *LockAPI) List(c *gin.Context) {
+func (s *LocksAPI) List(c *gin.Context) {
 	ctx := c.Request.Context()
 
 	vr, _ := c.Get(KeyRepo)
