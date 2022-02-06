@@ -43,6 +43,6 @@ var deploymentDeployCommand = &cli.Command{
 			return err
 		}
 
-		return printJson(d, cli.String("query"))
+		return printJson(cli, d)
 	},
 }
