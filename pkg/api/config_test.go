@@ -19,7 +19,7 @@ func TestConfig_Get(t *testing.T) {
 		}
 
 		gock.New("https://cloud.gitploy.io").
-			Get("/api/v1/gitploy-io/gitploy/config").
+			Get("/api/v1/repos/gitploy-io/gitploy/config").
 			Reply(200).
 			JSON(config)
 
