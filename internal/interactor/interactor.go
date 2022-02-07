@@ -27,6 +27,7 @@ type (
 		*UsersInteractor
 		*DeploymentsInteractor
 		*DeploymentStatisticsInteractor
+		*EventsInteractor
 	}
 
 	InteractorConfig struct {
@@ -79,6 +80,10 @@ func NewInteractor(c *InteractorConfig) *Interactor {
 	}
 	i.DeploymentsInteractor = (*DeploymentsInteractor)(i.common)
 	i.DeploymentStatisticsInteractor = (*DeploymentStatisticsInteractor)(i.common)
+	i.EventsInteractor = &EventsInteractor{
+		service: i.common,
+		events:  evbus.New(),
+	}
 
 	go func() {
 		i.log.Info("Start the working publishing events.")
