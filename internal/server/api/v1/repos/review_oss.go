@@ -1,4 +1,4 @@
-// +build oss
+//go:build oss
 
 package repos
 
@@ -12,15 +12,15 @@ import (
 	"github.com/gitploy-io/gitploy/pkg/e"
 )
 
-func (r *Repo) ListReviews(c *gin.Context) {
+func (s *ReviewsAPI) List(c *gin.Context) {
 	gb.Response(c, http.StatusOK, make([]*ent.Review, 0))
 }
 
-func (r *Repo) GetUserReview(c *gin.Context) {
+func (s *ReviewsAPI) GetMine(c *gin.Context) {
 	gb.Response(c, http.StatusNotFound, nil)
 }
 
-func (r *Repo) UpdateUserReview(c *gin.Context) {
+func (s *ReviewsAPI) UpdateMine(c *gin.Context) {
 	gb.ResponseWithError(
 		c,
 		e.NewError(e.ErrorCodeLicenseRequired, nil),
