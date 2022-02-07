@@ -11,11 +11,6 @@ type (
 		ServerHost  string
 		ServerProto string
 
-		orgEntries    []string
-		memberEntries []string
-		// Admin Users
-		admins []string
-
 		Store
 		SCM
 
@@ -29,6 +24,7 @@ type (
 
 		// services used for talking to different parts of the entities.
 		*LicenseInteractor
+		*UsersInteractor
 	}
 
 	InteractorConfig struct {
@@ -54,16 +50,13 @@ type (
 
 func NewInteractor(c *InteractorConfig) *Interactor {
 	i := &Interactor{
-		ServerHost:    c.ServerHost,
-		ServerProto:   c.ServerProto,
-		orgEntries:    c.OrgEntries,
-		memberEntries: c.MemberEntries,
-		admins:        c.AdminUsers,
-		Store:         c.Store,
-		SCM:           c.SCM,
-		stopCh:        make(chan struct{}),
-		events:        evbus.New(),
-		log:           zap.L().Named("interactor"),
+		ServerHost:  c.ServerHost,
+		ServerProto: c.ServerProto,
+		Store:       c.Store,
+		SCM:         c.SCM,
+		stopCh:      make(chan struct{}),
+		events:      evbus.New(),
+		log:         zap.L().Named("interactor"),
 	}
 
 	i.common = &service{
@@ -75,6 +68,12 @@ func NewInteractor(c *InteractorConfig) *Interactor {
 	i.LicenseInteractor = &LicenseInteractor{
 		service:    i.common,
 		LicenseKey: c.LicenseKey,
+	}
+	i.UsersInteractor = &UsersInteractor{
+		service:       i.common,
+		admins:        c.AdminUsers,
+		orgEntries:    c.OrgEntries,
+		memberEntries: c.MemberEntries,
 	}
 
 	go func() {
