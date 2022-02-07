@@ -16,9 +16,6 @@ type (
 		// Admin Users
 		admins []string
 
-		// License
-		licenseKey string
-
 		Store
 		SCM
 
@@ -27,6 +24,11 @@ type (
 		events evbus.Bus
 
 		log *zap.Logger
+
+		common *service
+
+		// services used for talking to different parts of the entities.
+		*LicenseInteractor
 	}
 
 	InteractorConfig struct {
@@ -42,6 +44,12 @@ type (
 		Store
 		SCM
 	}
+
+	service struct {
+		store Store
+		scm   SCM
+		log   *zap.Logger
+	}
 )
 
 func NewInteractor(c *InteractorConfig) *Interactor {
@@ -51,12 +59,22 @@ func NewInteractor(c *InteractorConfig) *Interactor {
 		orgEntries:    c.OrgEntries,
 		memberEntries: c.MemberEntries,
 		admins:        c.AdminUsers,
-		licenseKey:    c.LicenseKey,
 		Store:         c.Store,
 		SCM:           c.SCM,
 		stopCh:        make(chan struct{}),
 		events:        evbus.New(),
 		log:           zap.L().Named("interactor"),
+	}
+
+	i.common = &service{
+		store: c.Store,
+		scm:   c.SCM,
+		log:   zap.L(),
+	}
+
+	i.LicenseInteractor = &LicenseInteractor{
+		service:    i.common,
+		LicenseKey: c.LicenseKey,
 	}
 
 	go func() {
