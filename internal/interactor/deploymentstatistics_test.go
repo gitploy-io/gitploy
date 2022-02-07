@@ -8,6 +8,7 @@ import (
 	"github.com/gitploy-io/gitploy/model/ent"
 	"github.com/gitploy-io/gitploy/model/extent"
 	"github.com/golang/mock/gomock"
+	"go.uber.org/zap"
 )
 
 func TestInteractor_ProduceDeploymentStatisticsOfRepo(t *testing.T) {
@@ -55,7 +56,11 @@ func TestInteractor_ProduceDeploymentStatisticsOfRepo(t *testing.T) {
 				return s, nil
 			})
 
-		i := newMockInteractor(store, scm)
+		i := &DeploymentStatisticsInteractor{
+			store: store,
+			scm:   scm,
+			log:   zap.L(),
+		}
 
 		_, err := i.ProduceDeploymentStatisticsOfRepo(context.Background(), input.repo, input.d)
 		if err != nil {
@@ -113,7 +118,11 @@ func TestInteractor_ProduceDeploymentStatisticsOfRepo(t *testing.T) {
 				return s, nil
 			})
 
-		i := newMockInteractor(store, scm)
+		i := &DeploymentStatisticsInteractor{
+			store: store,
+			scm:   scm,
+			log:   zap.L(),
+		}
 
 		_, err := i.ProduceDeploymentStatisticsOfRepo(context.Background(), input.repo, input.d)
 		if err != nil {

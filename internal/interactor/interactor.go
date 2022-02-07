@@ -26,6 +26,7 @@ type (
 		*LicenseInteractor
 		*UsersInteractor
 		*DeploymentsInteractor
+		*DeploymentStatisticsInteractor
 	}
 
 	InteractorConfig struct {
@@ -77,6 +78,7 @@ func NewInteractor(c *InteractorConfig) *Interactor {
 		memberEntries: c.MemberEntries,
 	}
 	i.DeploymentsInteractor = (*DeploymentsInteractor)(i.common)
+	i.DeploymentStatisticsInteractor = (*DeploymentStatisticsInteractor)(i.common)
 
 	go func() {
 		i.log.Info("Start the working publishing events.")
