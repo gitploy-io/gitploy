@@ -14,11 +14,15 @@ import (
 	"go.uber.org/zap"
 )
 
+type (
+	DeploymentsInteractor service
+)
+
 // IsApproved verifies that the request is approved or not.
 // It is approved if there is an approval of reviews at least, but
 // it is rejected if there is a reject of reviews.
-func (i *Interactor) IsApproved(ctx context.Context, d *ent.Deployment) bool {
-	rvs, _ := i.Store.ListReviews(ctx, d)
+func (i *DeploymentsInteractor) IsApproved(ctx context.Context, d *ent.Deployment) bool {
+	rvs, _ := i.store.ListReviews(ctx, d)
 
 	for _, r := range rvs {
 		if r.Status == review.StatusRejected {
@@ -39,12 +43,12 @@ func (i *Interactor) IsApproved(ctx context.Context, d *ent.Deployment) bool {
 // But if it requires a review, it saves the payload on the DB
 // and waits until reviewed.
 // It returns an error for a undeployable payload.
-func (i *Interactor) Deploy(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, env *extent.Env) (*ent.Deployment, error) {
+func (i *DeploymentsInteractor) Deploy(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, env *extent.Env) (*ent.Deployment, error) {
 	if err := i.isDeployable(ctx, u, r, d, env); err != nil {
 		return nil, err
 	}
 
-	number, err := i.Store.GetNextDeploymentNumberOfRepo(ctx, r)
+	number, err := i.store.GetNextDeploymentNumberOfRepo(ctx, r)
 	if err != nil {
 		return nil, e.NewError(
 			e.ErrorCodeInternalError,
@@ -66,7 +70,7 @@ func (i *Interactor) Deploy(ctx context.Context, u *ent.User, r *ent.Repo, d *en
 		}
 
 		i.log.Debug("Save the deployment to wait reviews.")
-		d, err = i.Store.CreateDeployment(ctx, d)
+		d, err = i.store.CreateDeployment(ctx, d)
 		if err != nil {
 			return nil, err
 		}
@@ -107,12 +111,12 @@ func (i *Interactor) Deploy(ctx context.Context, u *ent.User, r *ent.Repo, d *en
 	}
 
 	i.log.Debug("Create a new deployment with the payload.", zap.Any("deployment", d))
-	d, err = i.Store.CreateDeployment(ctx, d)
+	d, err = i.store.CreateDeployment(ctx, d)
 	if err != nil {
 		return nil, fmt.Errorf("It failed to save a new deployment.: %w", err)
 	}
 
-	i.CreateDeploymentStatus(ctx, &ent.DeploymentStatus{
+	i.store.CreateDeploymentStatus(ctx, &ent.DeploymentStatus{
 		Status:       string(deployment.StatusCreated),
 		Description:  "Gitploy starts to deploy.",
 		DeploymentID: d.ID,
@@ -124,7 +128,7 @@ func (i *Interactor) Deploy(ctx context.Context, u *ent.User, r *ent.Repo, d *en
 // DeployToRemote posts a new deployment to SCM with the saved payload
 // after review has finished.
 // It returns an error for a undeployable payload.
-func (i *Interactor) DeployToRemote(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, env *extent.Env) (*ent.Deployment, error) {
+func (i *DeploymentsInteractor) DeployToRemote(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, env *extent.Env) (*ent.Deployment, error) {
 	if d.Status != deployment.StatusWaiting {
 		return nil, e.NewErrorWithMessage(
 			e.ErrorCodeDeploymentStatusInvalid,
@@ -155,11 +159,11 @@ func (i *Interactor) DeployToRemote(ctx context.Context, u *ent.User, r *ent.Rep
 	d.HTMLURL = rd.HTLMURL
 	d.Status = deployment.StatusCreated
 
-	if d, err = i.UpdateDeployment(ctx, d); err != nil {
+	if d, err = i.store.UpdateDeployment(ctx, d); err != nil {
 		return nil, err
 	}
 
-	i.CreateDeploymentStatus(ctx, &ent.DeploymentStatus{
+	i.store.CreateDeploymentStatus(ctx, &ent.DeploymentStatus{
 		Status:       string(deployment.StatusCreated),
 		Description:  "Gitploy creates a new deployment.",
 		DeploymentID: d.ID,
@@ -168,7 +172,7 @@ func (i *Interactor) DeployToRemote(ctx context.Context, u *ent.User, r *ent.Rep
 	return d, nil
 }
 
-func (i *Interactor) createRemoteDeployment(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, env *extent.Env) (*extent.RemoteDeployment, error) {
+func (i *DeploymentsInteractor) createRemoteDeployment(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, env *extent.Env) (*extent.RemoteDeployment, error) {
 	// Rollback configures it can deploy the ref without any constraints.
 	// 1) Set auto_merge false to avoid the merge conflict.
 	// 2) Set required_contexts empty to skip the verfication.
@@ -177,10 +181,10 @@ func (i *Interactor) createRemoteDeployment(ctx context.Context, u *ent.User, r 
 		env.RequiredContexts = &[]string{}
 	}
 
-	return i.SCM.CreateRemoteDeployment(ctx, u, r, d, env)
+	return i.scm.CreateRemoteDeployment(ctx, u, r, d, env)
 }
 
-func (i *Interactor) isDeployable(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, env *extent.Env) error {
+func (i *DeploymentsInteractor) isDeployable(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, env *extent.Env) error {
 	// Skip verifications for roll back.
 	if !d.IsRollback {
 		if ok, err := env.IsDeployableRef(d.Ref); !ok {
@@ -191,7 +195,7 @@ func (i *Interactor) isDeployable(ctx context.Context, u *ent.User, r *ent.Repo,
 	}
 
 	// Check that the environment is locked.
-	if locked, err := i.Store.HasLockOfRepoForEnv(ctx, r, d.Env); locked {
+	if locked, err := i.store.HasLockOfRepoForEnv(ctx, r, d.Env); locked {
 		return e.NewError(e.ErrorCodeDeploymentLocked, err)
 	} else if err != nil {
 		return err
@@ -206,7 +210,7 @@ func (i *Interactor) isDeployable(ctx context.Context, u *ent.User, r *ent.Repo,
 	return nil
 }
 
-func (i *Interactor) runClosingInactiveDeployment(stop <-chan struct{}) {
+func (i *DeploymentsInteractor) runClosingInactiveDeployment(stop <-chan struct{}) {
 	ctx := context.Background()
 
 	ticker := time.NewTicker(time.Minute)
@@ -219,7 +223,7 @@ L:
 				break L
 			}
 		case t := <-ticker.C:
-			ds, err := i.ListInactiveDeploymentsLessThanTime(ctx, t.Add(-30*time.Minute).UTC(), 1, 30)
+			ds, err := i.store.ListInactiveDeploymentsLessThanTime(ctx, t.Add(-30*time.Minute).UTC(), 1, 30)
 			if err != nil {
 				i.log.Error("It has failed to read inactive deployments.", zap.Error(err))
 				continue
@@ -235,12 +239,12 @@ L:
 							Description:  "Gitploy cancels the inactive deployment.",
 							DeploymentID: d.ID,
 						}
-						if err := i.SCM.CancelDeployment(ctx, d.Edges.User, d.Edges.Repo, d, s); err != nil {
+						if err := i.scm.CancelDeployment(ctx, d.Edges.User, d.Edges.Repo, d, s); err != nil {
 							i.log.Error("It has failed to cancel the remote deployment.", zap.Error(err))
 							continue
 						}
 
-						if _, err := i.Store.CreateDeploymentStatus(ctx, s); err != nil {
+						if _, err := i.store.CreateDeploymentStatus(ctx, s); err != nil {
 							i.log.Error("It has failed to create a new deployment status.", zap.Error(err))
 							continue
 						}
@@ -248,7 +252,7 @@ L:
 				}
 
 				d.Status = deployment.StatusCanceled
-				if _, err := i.UpdateDeployment(ctx, d); err != nil {
+				if _, err := i.store.UpdateDeployment(ctx, d); err != nil {
 					i.log.Error("It has failed to update the deployment canceled.", zap.Error(err))
 				}
 

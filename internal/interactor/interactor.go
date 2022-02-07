@@ -25,6 +25,7 @@ type (
 		// services used for talking to different parts of the entities.
 		*LicenseInteractor
 		*UsersInteractor
+		*DeploymentsInteractor
 	}
 
 	InteractorConfig struct {
@@ -75,6 +76,7 @@ func NewInteractor(c *InteractorConfig) *Interactor {
 		orgEntries:    c.OrgEntries,
 		memberEntries: c.MemberEntries,
 	}
+	i.DeploymentsInteractor = (*DeploymentsInteractor)(i.common)
 
 	go func() {
 		i.log.Info("Start the working publishing events.")
