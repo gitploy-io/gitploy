@@ -25,7 +25,7 @@ func TestStore_GetLicense(t *testing.T) {
 			CountDeployments(gomock.AssignableToTypeOf(context.Background())).
 			Return(extent.TrialDeploymentLimit, nil)
 
-		i := &Interactor{Store: store}
+		i := &LicenseInteractor{service: &service{store: store}}
 
 		lic, err := i.GetLicense(context.Background())
 		if err != nil {

@@ -2,7 +2,7 @@
 // Use of this source code is governed by the Gitploy Non-Commercial License
 // that can be found in the LICENSE file.
 
-// +build !oss
+//go:build !oss
 
 package interactor
 
@@ -15,13 +15,13 @@ import (
 	"github.com/gitploy-io/gitploy/model/ent/event"
 )
 
-func (i *Interactor) requestReviewByLogin(ctx context.Context, d *ent.Deployment, login string) (*ent.Review, error) {
-	u, err := i.Store.FindUserByLogin(ctx, login)
+func (i *DeploymentsInteractor) requestReviewByLogin(ctx context.Context, d *ent.Deployment, login string) (*ent.Review, error) {
+	u, err := i.store.FindUserByLogin(ctx, login)
 	if err != nil {
 		return nil, err
 	}
 
-	rv, err := i.Store.CreateReview(ctx, &ent.Review{
+	rv, err := i.store.CreateReview(ctx, &ent.Review{
 		DeploymentID: d.ID,
 		UserID:       u.ID,
 	})
@@ -29,7 +29,7 @@ func (i *Interactor) requestReviewByLogin(ctx context.Context, d *ent.Deployment
 		return nil, err
 	}
 
-	if _, err := i.Store.CreateEvent(ctx, &ent.Event{
+	if _, err := i.store.CreateEvent(ctx, &ent.Event{
 		Kind:     event.KindReview,
 		Type:     event.TypeCreated,
 		ReviewID: rv.ID,

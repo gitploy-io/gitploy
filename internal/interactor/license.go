@@ -2,7 +2,7 @@
 // Use of this source code is governed by the Gitploy Non-Commercial License
 // that can be found in the LICENSE file.
 
-// +build !oss
+//go:build !oss
 
 package interactor
 
@@ -14,7 +14,7 @@ import (
 	"github.com/gitploy-io/gitploy/pkg/license"
 )
 
-func (i *Interactor) GetLicense(ctx context.Context) (*extent.License, error) {
+func (i *LicenseInteractor) GetLicense(ctx context.Context) (*extent.License, error) {
 	var (
 		memberCnt     int
 		deploymentCnt int
@@ -22,20 +22,20 @@ func (i *Interactor) GetLicense(ctx context.Context) (*extent.License, error) {
 		err           error
 	)
 
-	if memberCnt, err = i.Store.CountUsers(ctx); err != nil {
+	if memberCnt, err = i.store.CountUsers(ctx); err != nil {
 		return nil, err
 	}
 
-	if deploymentCnt, err = i.Store.CountDeployments(ctx); err != nil {
+	if deploymentCnt, err = i.store.CountDeployments(ctx); err != nil {
 		return nil, err
 	}
 
-	if i.licenseKey == "" {
+	if i.LicenseKey == "" {
 		lic := extent.NewTrialLicense(memberCnt, deploymentCnt)
 		return lic, nil
 	}
 
-	if d, err = license.Decode(i.licenseKey); err != nil {
+	if d, err = license.Decode(i.LicenseKey); err != nil {
 		return nil, e.NewError(
 			e.ErrorCodeLicenseDecode,
 			err,

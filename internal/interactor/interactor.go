@@ -7,26 +7,23 @@ import (
 
 type (
 	Interactor struct {
-		// Host and protocol of server for Log URL of deployment status.
-		ServerHost  string
-		ServerProto string
-
-		orgEntries    []string
-		memberEntries []string
-		// Admin Users
-		admins []string
-
-		// License
-		licenseKey string
-
 		Store
 		SCM
 
 		// The channel to stop background workers.
 		stopCh chan struct{}
-		events evbus.Bus
 
-		log *zap.Logger
+		common *service
+
+		// services used for talking to different parts of the entities.
+		*DeploymentsInteractor
+		*DeploymentStatisticsInteractor
+		*EventsInteractor
+		*LicenseInteractor
+		*LocksInteractor
+		*ReposInteractor
+		*SyncInteractor
+		*UsersInteractor
 	}
 
 	InteractorConfig struct {
@@ -42,35 +39,64 @@ type (
 		Store
 		SCM
 	}
+
+	service struct {
+		store Store
+		scm   SCM
+		log   *zap.Logger
+	}
 )
 
 func NewInteractor(c *InteractorConfig) *Interactor {
 	i := &Interactor{
-		ServerHost:    c.ServerHost,
-		ServerProto:   c.ServerProto,
+		Store:  c.Store,
+		SCM:    c.SCM,
+		stopCh: make(chan struct{}),
+	}
+
+	log := zap.L().Named("interactor")
+
+	i.common = &service{
+		store: c.Store,
+		scm:   c.SCM,
+		log:   log,
+	}
+
+	i.DeploymentsInteractor = (*DeploymentsInteractor)(i.common)
+	i.DeploymentStatisticsInteractor = (*DeploymentStatisticsInteractor)(i.common)
+	i.EventsInteractor = &EventsInteractor{
+		service: i.common,
+		events:  evbus.New(),
+	}
+	i.LicenseInteractor = &LicenseInteractor{
+		service:    i.common,
+		LicenseKey: c.LicenseKey,
+	}
+	i.LocksInteractor = (*LocksInteractor)(i.common)
+	i.ReposInteractor = (*ReposInteractor)(i.common)
+	i.SyncInteractor = &SyncInteractor{
+		service:    i.common,
+		orgEntries: c.OrgEntries,
+	}
+	i.UsersInteractor = &UsersInteractor{
+		service:       i.common,
+		admins:        c.AdminUsers,
 		orgEntries:    c.OrgEntries,
 		memberEntries: c.MemberEntries,
-		admins:        c.AdminUsers,
-		licenseKey:    c.LicenseKey,
-		Store:         c.Store,
-		SCM:           c.SCM,
-		stopCh:        make(chan struct{}),
-		events:        evbus.New(),
-		log:           zap.L().Named("interactor"),
 	}
 
 	go func() {
-		i.log.Info("Start the working publishing events.")
+		log.Info("Start the working publishing events.")
 		i.runPublishingEvents(i.stopCh)
 	}()
 
 	go func() {
-		i.log.Info("Start the worker canceling inactive deployments.")
+		log.Info("Start the worker canceling inactive deployments.")
 		i.runClosingInactiveDeployment(i.stopCh)
 	}()
 
 	go func() {
-		i.log.Info("Start the worker for the auto unlock.")
+		log.Info("Start the worker for the auto unlock.")
 		i.runAutoUnlock(i.stopCh)
 	}()
 

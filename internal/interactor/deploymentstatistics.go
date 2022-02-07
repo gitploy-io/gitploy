@@ -7,11 +7,15 @@ import (
 	"github.com/gitploy-io/gitploy/model/ent"
 )
 
-func (i *Interactor) ProduceDeploymentStatisticsOfRepo(ctx context.Context, r *ent.Repo, d *ent.Deployment) (*ent.DeploymentStatistics, error) {
-	s, err := i.Store.FindDeploymentStatisticsOfRepoByEnv(ctx, r, d.Env)
+type (
+	DeploymentStatisticsInteractor service
+)
+
+func (i *DeploymentStatisticsInteractor) ProduceDeploymentStatisticsOfRepo(ctx context.Context, r *ent.Repo, d *ent.Deployment) (*ent.DeploymentStatistics, error) {
+	s, err := i.store.FindDeploymentStatisticsOfRepoByEnv(ctx, r, d.Env)
 
 	if ent.IsNotFound(err) {
-		if s, err = i.Store.CreateDeploymentStatistics(ctx, &ent.DeploymentStatistics{
+		if s, err = i.store.CreateDeploymentStatistics(ctx, &ent.DeploymentStatistics{
 			Env:    d.Env,
 			RepoID: r.ID,
 		}); err != nil {
@@ -23,10 +27,10 @@ func (i *Interactor) ProduceDeploymentStatisticsOfRepo(ctx context.Context, r *e
 		return nil, err
 	}
 
-	return i.Store.UpdateDeploymentStatistics(ctx, s)
+	return i.store.UpdateDeploymentStatistics(ctx, s)
 }
 
-func (i *Interactor) produceDeploymentStatisticsOfRepo(ctx context.Context, r *ent.Repo, d *ent.Deployment, s *ent.DeploymentStatistics) (*ent.DeploymentStatistics, error) {
+func (i *DeploymentStatisticsInteractor) produceDeploymentStatisticsOfRepo(ctx context.Context, r *ent.Repo, d *ent.Deployment, s *ent.DeploymentStatistics) (*ent.DeploymentStatistics, error) {
 	{
 		if d.IsRollback {
 			s.RollbackCount = s.RollbackCount + 1
@@ -36,7 +40,7 @@ func (i *Interactor) produceDeploymentStatisticsOfRepo(ctx context.Context, r *e
 	}
 
 	{
-		ld, err := i.Store.FindPrevSuccessDeployment(ctx, d)
+		ld, err := i.store.FindPrevSuccessDeployment(ctx, d)
 		if ent.IsNotFound(err) {
 			return s, nil
 		} else if err != nil {
@@ -44,14 +48,14 @@ func (i *Interactor) produceDeploymentStatisticsOfRepo(ctx context.Context, r *e
 		}
 
 		if d.Edges.User == nil {
-			if d, err = i.Store.FindDeploymentByID(ctx, d.ID); err != nil {
+			if d, err = i.store.FindDeploymentByID(ctx, d.ID); err != nil {
 				return nil, err
 			} else if d.Edges.User == nil {
 				return nil, fmt.Errorf("The deployer is not found.")
 			}
 		}
 
-		cms, fs, err := i.SCM.CompareCommits(ctx, d.Edges.User, r, ld.Sha, d.Sha, 1, 100)
+		cms, fs, err := i.scm.CompareCommits(ctx, d.Edges.User, r, ld.Sha, d.Sha, 1, 100)
 		if err != nil {
 			return nil, err
 		}
