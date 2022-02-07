@@ -10,6 +10,7 @@ import (
 	"github.com/gitploy-io/gitploy/model/ent/perm"
 	"github.com/gitploy-io/gitploy/model/extent"
 	"github.com/golang/mock/gomock"
+	"go.uber.org/zap"
 )
 
 func TestInteractor_SyncRemoteRepo(t *testing.T) {
@@ -67,7 +68,7 @@ func TestInteractor_SyncRemoteRepo(t *testing.T) {
 				return p, nil
 			})
 
-		i := &Interactor{Store: store}
+		i := &SyncInteractor{service: &service{store: store, scm: nil, log: zap.L()}}
 		if err := i.SyncRemoteRepo(context.Background(), input.user, input.remote, input.time); err != nil {
 			t.Fatal("SyncRemoteRepo returns error.")
 		}
@@ -115,7 +116,7 @@ func TestInteractor_SyncRemoteRepo(t *testing.T) {
 				return p, nil
 			})
 
-		i := &Interactor{Store: store}
+		i := &SyncInteractor{service: &service{store: store, scm: nil, log: zap.L()}}
 		if err := i.SyncRemoteRepo(context.Background(), input.user, input.remote, input.time); err != nil {
 			t.Fatal("SyncRemoteRepo returns error.")
 		}

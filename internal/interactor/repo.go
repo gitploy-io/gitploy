@@ -10,8 +10,10 @@ import (
 	"go.uber.org/zap"
 )
 
-func (i *Interactor) ActivateRepo(ctx context.Context, u *ent.User, r *ent.Repo, c *extent.WebhookConfig) (*ent.Repo, error) {
-	hid, err := i.SCM.CreateWebhook(ctx, u, r, c)
+type ReposInteractor service
+
+func (i *ReposInteractor) ActivateRepo(ctx context.Context, u *ent.User, r *ent.Repo, c *extent.WebhookConfig) (*ent.Repo, error) {
+	hid, err := i.scm.CreateWebhook(ctx, u, r, c)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create a webhook: %s", err)
 	}
@@ -19,7 +21,7 @@ func (i *Interactor) ActivateRepo(ctx context.Context, u *ent.User, r *ent.Repo,
 	r.WebhookID = hid
 	r.OwnerID = u.ID
 
-	r, err = i.Store.Activate(ctx, r)
+	r, err = i.store.Activate(ctx, r)
 	if err != nil {
 		return nil, fmt.Errorf("failed to activate the webhook: %w", err)
 	}
@@ -27,15 +29,15 @@ func (i *Interactor) ActivateRepo(ctx context.Context, u *ent.User, r *ent.Repo,
 	return r, nil
 }
 
-func (i *Interactor) DeactivateRepo(ctx context.Context, u *ent.User, r *ent.Repo) (*ent.Repo, error) {
-	err := i.SCM.DeleteWebhook(ctx, u, r, r.WebhookID)
+func (i *ReposInteractor) DeactivateRepo(ctx context.Context, u *ent.User, r *ent.Repo) (*ent.Repo, error) {
+	err := i.scm.DeleteWebhook(ctx, u, r, r.WebhookID)
 	if e.HasErrorCode(err, e.ErrorCodeEntityNotFound) {
 		i.log.Info("The webhook is not found, skip to delete the webhook.", zap.Int64("id", r.WebhookID))
 	} else if err != nil {
 		return nil, err
 	}
 
-	r, err = i.Store.Deactivate(ctx, r)
+	r, err = i.store.Deactivate(ctx, r)
 	if err != nil {
 		return nil, err
 	}

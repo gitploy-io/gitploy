@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
+	"go.uber.org/zap"
 
 	"github.com/gitploy-io/gitploy/internal/interactor/mock"
 	"github.com/gitploy-io/gitploy/model/ent"
@@ -28,7 +29,11 @@ func TestInteractor_DeactivateRepo(t *testing.T) {
 			Deactivate(gomock.Any(), gomock.AssignableToTypeOf(&ent.Repo{})).
 			Return(&ent.Repo{}, nil)
 
-		i := newMockInteractor(store, scm)
+		i := &ReposInteractor{
+			store: store,
+			scm:   scm,
+			log:   zap.L(),
+		}
 
 		_, err := i.DeactivateRepo(context.Background(), &ent.User{}, &ent.Repo{})
 		if err != nil {

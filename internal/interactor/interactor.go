@@ -28,6 +28,9 @@ type (
 		*DeploymentsInteractor
 		*DeploymentStatisticsInteractor
 		*EventsInteractor
+		*LocksInteractor
+		*ReposInteractor
+		*SyncInteractor
 	}
 
 	InteractorConfig struct {
@@ -83,6 +86,12 @@ func NewInteractor(c *InteractorConfig) *Interactor {
 	i.EventsInteractor = &EventsInteractor{
 		service: i.common,
 		events:  evbus.New(),
+	}
+	i.LocksInteractor = (*LocksInteractor)(i.common)
+	i.ReposInteractor = (*ReposInteractor)(i.common)
+	i.SyncInteractor = &SyncInteractor{
+		service:    i.common,
+		orgEntries: c.OrgEntries,
 	}
 
 	go func() {
