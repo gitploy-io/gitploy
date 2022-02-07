@@ -1,4 +1,4 @@
-// +build oss
+//go:build oss
 
 package repos
 
@@ -12,25 +12,25 @@ import (
 	"github.com/gitploy-io/gitploy/pkg/e"
 )
 
-func (r *Repo) ListLocks(c *gin.Context) {
+func (s *LocksAPI) List(c *gin.Context) {
 	gb.Response(c, http.StatusOK, make([]*ent.Lock, 0))
 }
 
-func (r *Repo) CreateLock(c *gin.Context) {
+func (s *LocksAPI) Create(c *gin.Context) {
 	gb.ResponseWithError(
 		c,
 		e.NewError(e.ErrorCodeLicenseRequired, nil),
 	)
 }
 
-func (r *Repo) UpdateLock(c *gin.Context) {
+func (s *LocksAPI) Update(c *gin.Context) {
 	gb.ResponseWithError(
 		c,
 		e.NewError(e.ErrorCodeLicenseRequired, nil),
 	)
 }
 
-func (r *Repo) DeleteLock(c *gin.Context) {
+func (s *LocksAPI) Delete(c *gin.Context) {
 	gb.ResponseWithError(
 		c,
 		e.NewError(e.ErrorCodeLicenseRequired, nil),
