@@ -2,7 +2,7 @@ package repos
 
 type (
 	ReposAPI struct {
-		service
+		*service
 
 		WebhookURL    string
 		WebhookSSL    bool
