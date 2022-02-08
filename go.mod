@@ -24,7 +24,9 @@ require (
 	github.com/prometheus/client_golang v1.12.1
 	github.com/shurcooL/githubv4 v0.0.0-20201206200315-234843c633fa
 	github.com/slack-go/slack v0.10.1
-	go.uber.org/zap v1.20.0
+	github.com/tidwall/gjson v1.14.0
+	github.com/urfave/cli/v2 v2.3.0
+	go.uber.org/zap v1.21.0
 	golang.org/x/oauth2 v0.0.0-20210514164344-f6687ab2804c
 	gopkg.in/h2non/gock.v1 v1.1.2
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b
@@ -61,11 +63,9 @@ require (
 	github.com/russross/blackfriday/v2 v2.0.1 // indirect
 	github.com/shurcooL/graphql v0.0.0-20200928012149-18c5c3165e3a // indirect
 	github.com/shurcooL/sanitized_anchor_name v1.0.0 // indirect
-	github.com/tidwall/gjson v1.14.0 // indirect
 	github.com/tidwall/match v1.1.1 // indirect
 	github.com/tidwall/pretty v1.2.0 // indirect
 	github.com/ugorji/go/codec v1.2.6 // indirect
-	github.com/urfave/cli/v2 v2.3.0 // indirect
 	go.uber.org/atomic v1.7.0 // indirect
 	go.uber.org/multierr v1.6.0 // indirect
 	golang.org/x/crypto v0.0.0-20210711020723-a769d52b0f97 // indirect
