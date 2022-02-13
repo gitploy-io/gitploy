@@ -12,7 +12,13 @@ import (
 
 type (
 	// RepoInteractor provides application logic for interacting with repos.
-	RepoInteractor service
+	RepoInteractor struct {
+		*service
+
+		WebhookURL    string
+		WebhookSSL    bool
+		WebhookSecret string
+	}
 
 	// RepoStore defines operations for working with repos.
 	RepoStore interface {
@@ -50,8 +56,14 @@ type (
 	}
 )
 
-func (i *RepoInteractor) ActivateRepo(ctx context.Context, u *ent.User, r *ent.Repo, c *extent.WebhookConfig) (*ent.Repo, error) {
-	hid, err := i.scm.CreateWebhook(ctx, u, r, c)
+// ActivateRepo create a new hook to listen events, and saves
+// the hook ID.
+func (i *RepoInteractor) ActivateRepo(ctx context.Context, u *ent.User, r *ent.Repo) (*ent.Repo, error) {
+	hid, err := i.scm.CreateWebhook(ctx, u, r, &extent.WebhookConfig{
+		URL:         i.WebhookURL,
+		InsecureSSL: i.WebhookSSL,
+		Secret:      i.WebhookSecret,
+	})
 	if err != nil {
 		return nil, fmt.Errorf("failed to create a webhook: %s", err)
 	}
@@ -67,6 +79,7 @@ func (i *RepoInteractor) ActivateRepo(ctx context.Context, u *ent.User, r *ent.R
 	return r, nil
 }
 
+// DeactivateRepo removes the webhook.
 func (i *RepoInteractor) DeactivateRepo(ctx context.Context, u *ent.User, r *ent.Repo) (*ent.Repo, error) {
 	err := i.scm.DeleteWebhook(ctx, u, r, r.WebhookID)
 	if e.HasErrorCode(err, e.ErrorCodeEntityNotFound) {

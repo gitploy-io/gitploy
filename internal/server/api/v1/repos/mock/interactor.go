@@ -38,18 +38,18 @@ func (m *MockInteractor) EXPECT() *MockInteractorMockRecorder {
 }
 
 // ActivateRepo mocks base method.
-func (m *MockInteractor) ActivateRepo(ctx context.Context, u *ent.User, r *ent.Repo, c *extent.WebhookConfig) (*ent.Repo, error) {
+func (m *MockInteractor) ActivateRepo(ctx context.Context, u *ent.User, r *ent.Repo) (*ent.Repo, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ActivateRepo", ctx, u, r, c)
+	ret := m.ctrl.Call(m, "ActivateRepo", ctx, u, r)
 	ret0, _ := ret[0].(*ent.Repo)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // ActivateRepo indicates an expected call of ActivateRepo.
-func (mr *MockInteractorMockRecorder) ActivateRepo(ctx, u, r, c interface{}) *gomock.Call {
+func (mr *MockInteractorMockRecorder) ActivateRepo(ctx, u, r interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ActivateRepo", reflect.TypeOf((*MockInteractor)(nil).ActivateRepo), ctx, u, r, c)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ActivateRepo", reflect.TypeOf((*MockInteractor)(nil).ActivateRepo), ctx, u, r)
 }
 
 // CompareCommits mocks base method.

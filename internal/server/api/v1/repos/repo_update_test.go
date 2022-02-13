@@ -50,7 +50,7 @@ func TestRepoAPI_UpdateRepo(t *testing.T) {
 		gin.SetMode(gin.ReleaseMode)
 		router := gin.New()
 
-		s := RepoAPI{service: &service{i: m, log: zap.L()}}
+		s := &RepoAPI{i: m, log: zap.L()}
 		router.PATCH("/repos/:id", func(c *gin.Context) {
 			t.Log("Set up fake middleware")
 			c.Set(global.KeyUser, &ent.User{})
@@ -89,7 +89,7 @@ func TestRepoAPI_UpdateRepo(t *testing.T) {
 			EXPECT().
 			ActivateRepo(gomock.Any(), gomock.AssignableToTypeOf(&ent.User{}), gomock.Eq(&ent.Repo{
 				ID: r1,
-			}), gomock.AssignableToTypeOf(&extent.WebhookConfig{})).
+			})).
 			DoAndReturn(func(ctx context.Context, u *ent.User, r *ent.Repo, c *extent.WebhookConfig) (*ent.Repo, error) {
 				return r, nil
 			})
@@ -97,7 +97,7 @@ func TestRepoAPI_UpdateRepo(t *testing.T) {
 		gin.SetMode(gin.ReleaseMode)
 		router := gin.New()
 
-		s := RepoAPI{service: &service{i: m, log: zap.L()}}
+		s := RepoAPI{i: m, log: zap.L()}
 		router.PATCH("/repos/:id", func(c *gin.Context) {
 			t.Log("Set up fake middleware")
 			c.Set(global.KeyUser, &ent.User{})

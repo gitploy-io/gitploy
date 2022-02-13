@@ -9,7 +9,6 @@ import (
 
 	gb "github.com/gitploy-io/gitploy/internal/server/global"
 	"github.com/gitploy-io/gitploy/model/ent"
-	"github.com/gitploy-io/gitploy/model/extent"
 	"github.com/gitploy-io/gitploy/pkg/e"
 )
 
@@ -44,11 +43,7 @@ func (s *RepoAPI) Update(c *gin.Context) {
 	// in contrast it remove the webhook when it deactivates.
 	if p.Active != nil {
 		if *p.Active && !re.Active {
-			if re, err = s.i.ActivateRepo(ctx, u, re, &extent.WebhookConfig{
-				URL:         s.WebhookURL,
-				Secret:      s.WebhookSecret,
-				InsecureSSL: s.WebhookSSL,
-			}); err != nil {
+			if re, err = s.i.ActivateRepo(ctx, u, re); err != nil {
 				s.log.Check(gb.GetZapLogLevel(err), "Failed to activate the repository.").Write(zap.Error(err))
 				gb.ResponseWithError(c, err)
 				return

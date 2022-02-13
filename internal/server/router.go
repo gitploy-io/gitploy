@@ -123,10 +123,7 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 	{
 		rm := repos.NewRepoMiddleware(c.Interactor)
 		api := repos.NewAPI(repos.APIConfig{
-			Interactor:    c.Interactor,
-			WebhookURL:    fmt.Sprintf("%s://%s/hooks", c.ProxyProto, c.ProxyHost),
-			WebhookSSL:    c.ProxyProto == "https",
-			WebhookSecret: c.WebhookSecret,
+			Interactor: c.Interactor,
 		})
 		repov1.GET("", api.Repo.List)
 		repov1.GET("/:namespace/:name", rm.RepoReadPerm(), api.Repo.Get)
