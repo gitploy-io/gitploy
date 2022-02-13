@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 
+	i "github.com/gitploy-io/gitploy/internal/interactor"
 	gb "github.com/gitploy-io/gitploy/internal/server/global"
 	"github.com/gitploy-io/gitploy/model/ent"
 	"github.com/gitploy-io/gitploy/pkg/e"
@@ -41,7 +42,10 @@ func (s *CommitAPI) List(c *gin.Context) {
 	rv, _ := c.Get(KeyRepo)
 	repo := rv.(*ent.Repo)
 
-	commits, err := s.i.ListCommits(ctx, u, repo, branch, page, perPage)
+	commits, err := s.i.ListCommits(ctx, u, repo, branch, &i.ListOptions{
+		Page:    page,
+		PerPage: perPage,
+	})
 	if err != nil {
 		s.log.Check(gb.GetZapLogLevel(err), "Failed to list commits.").Write(zap.Error(err))
 		gb.ResponseWithError(c, err)

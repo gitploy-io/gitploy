@@ -7,6 +7,7 @@ import (
 	"github.com/google/go-github/v32/github"
 	graphql "github.com/shurcooL/githubv4"
 
+	i "github.com/gitploy-io/gitploy/internal/interactor"
 	"github.com/gitploy-io/gitploy/model/ent"
 	"github.com/gitploy-io/gitploy/model/extent"
 	"github.com/gitploy-io/gitploy/pkg/e"
@@ -23,14 +24,14 @@ type (
 	}
 )
 
-func (g *Github) ListCommits(ctx context.Context, u *ent.User, r *ent.Repo, branch string, page, perPage int) ([]*extent.Commit, error) {
+func (g *Github) ListCommits(ctx context.Context, u *ent.User, r *ent.Repo, branch string, opt *i.ListOptions) ([]*extent.Commit, error) {
 	cms, _, err := g.Client(ctx, u.Token).
 		Repositories.
 		ListCommits(ctx, r.Namespace, r.Name, &github.CommitsListOptions{
 			SHA: branch,
 			ListOptions: github.ListOptions{
-				Page:    page,
-				PerPage: perPage,
+				Page:    opt.Page,
+				PerPage: opt.PerPage,
 			},
 		})
 	if err != nil {

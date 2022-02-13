@@ -427,18 +427,18 @@ func (mr *MockInteractorMockRecorder) ListCommitStatuses(ctx, u, r, sha interfac
 }
 
 // ListCommits mocks base method.
-func (m *MockInteractor) ListCommits(ctx context.Context, u *ent.User, r *ent.Repo, branch string, page, perPage int) ([]*extent.Commit, error) {
+func (m *MockInteractor) ListCommits(ctx context.Context, u *ent.User, r *ent.Repo, branch string, opt *interactor.ListOptions) ([]*extent.Commit, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListCommits", ctx, u, r, branch, page, perPage)
+	ret := m.ctrl.Call(m, "ListCommits", ctx, u, r, branch, opt)
 	ret0, _ := ret[0].([]*extent.Commit)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // ListCommits indicates an expected call of ListCommits.
-func (mr *MockInteractorMockRecorder) ListCommits(ctx, u, r, branch, page, perPage interface{}) *gomock.Call {
+func (mr *MockInteractorMockRecorder) ListCommits(ctx, u, r, branch, opt interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListCommits", reflect.TypeOf((*MockInteractor)(nil).ListCommits), ctx, u, r, branch, page, perPage)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListCommits", reflect.TypeOf((*MockInteractor)(nil).ListCommits), ctx, u, r, branch, opt)
 }
 
 // ListDeploymentStatuses mocks base method.
