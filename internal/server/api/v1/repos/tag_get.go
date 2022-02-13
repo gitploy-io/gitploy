@@ -9,7 +9,7 @@ import (
 	"go.uber.org/zap"
 )
 
-func (s *TagsAPI) Get(c *gin.Context) {
+func (s *TagAPI) Get(c *gin.Context) {
 	ctx := c.Request.Context()
 
 	var (

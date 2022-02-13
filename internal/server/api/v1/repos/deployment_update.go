@@ -15,7 +15,7 @@ import (
 
 // UpdateDeployment trigger to request for a waiting deployment, and
 // it patches the deployment status 'created'.
-func (s *DeploymentsAPI) Update(c *gin.Context) {
+func (s *DeploymentAPI) Update(c *gin.Context) {
 	ctx := c.Request.Context()
 
 	var (

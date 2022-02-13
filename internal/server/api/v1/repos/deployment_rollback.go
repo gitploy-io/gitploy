@@ -14,7 +14,7 @@ import (
 	"github.com/gitploy-io/gitploy/pkg/e"
 )
 
-func (s *DeploymentsAPI) Rollback(c *gin.Context) {
+func (s *DeploymentAPI) Rollback(c *gin.Context) {
 	ctx := c.Request.Context()
 
 	var (

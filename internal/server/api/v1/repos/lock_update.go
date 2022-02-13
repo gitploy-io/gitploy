@@ -26,7 +26,7 @@ type (
 	}
 )
 
-func (s *LocksAPI) Update(c *gin.Context) {
+func (s *LockAPI) Update(c *gin.Context) {
 	ctx := c.Request.Context()
 
 	var (

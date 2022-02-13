@@ -1,5 +1,5 @@
 package repos
 
 type (
-	TagsAPI service
+	TagAPI service
 )

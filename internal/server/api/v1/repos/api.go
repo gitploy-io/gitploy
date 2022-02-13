@@ -7,16 +7,16 @@ type (
 		common *service
 
 		// APIs used for talking to different parts of the entities.
-		Repos              *ReposAPI
-		Commits            *CommitsAPI
-		Branches           *BranchesAPI
-		Tags               *TagsAPI
-		Deployments        *DeploymentsAPI
-		Config             *ConfigAPI
-		Reviews            *ReviewsAPI
-		DeploymentStatuses *DeploymentStatusesAPI
-		Locks              *LocksAPI
-		Perms              *PermsAPI
+		Repo             *RepoAPI
+		Commits          *CommitAPI
+		Branch           *BranchAPI
+		Tag              *TagAPI
+		Deployment       *DeploymentAPI
+		Config           *ConfigAPI
+		Review           *ReviewAPI
+		DeploymentStatus *DeploymentStatusAPI
+		Lock             *LockAPI
+		Perm             *PermAPI
 	}
 
 	APIConfig struct {
@@ -40,21 +40,21 @@ func NewAPI(c APIConfig) *API {
 		i:   c.Interactor,
 		log: zap.L().Named("repos"),
 	}
-	api.Repos = &ReposAPI{
+	api.Repo = &RepoAPI{
 		service:       api.common,
 		WebhookURL:    c.WebhookURL,
 		WebhookSSL:    c.WebhookSSL,
 		WebhookSecret: c.WebhookSecret,
 	}
-	api.Commits = (*CommitsAPI)(api.common)
-	api.Branches = (*BranchesAPI)(api.common)
-	api.Tags = (*TagsAPI)(api.common)
-	api.Deployments = (*DeploymentsAPI)(api.common)
+	api.Commits = (*CommitAPI)(api.common)
+	api.Branch = (*BranchAPI)(api.common)
+	api.Tag = (*TagAPI)(api.common)
+	api.Deployment = (*DeploymentAPI)(api.common)
 	api.Config = (*ConfigAPI)(api.common)
-	api.Reviews = (*ReviewsAPI)(api.common)
-	api.DeploymentStatuses = (*DeploymentStatusesAPI)(api.common)
-	api.Locks = (*LocksAPI)(api.common)
-	api.Perms = (*PermsAPI)(api.common)
+	api.Review = (*ReviewAPI)(api.common)
+	api.DeploymentStatus = (*DeploymentStatusAPI)(api.common)
+	api.Lock = (*LockAPI)(api.common)
+	api.Perm = (*PermAPI)(api.common)
 
 	return api
 }

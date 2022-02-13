@@ -12,7 +12,7 @@ import (
 	"github.com/gitploy-io/gitploy/pkg/e"
 )
 
-func (s *PermsAPI) List(c *gin.Context) {
+func (s *PermAPI) List(c *gin.Context) {
 	ctx := c.Request.Context()
 
 	var (

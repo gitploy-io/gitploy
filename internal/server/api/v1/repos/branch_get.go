@@ -10,7 +10,7 @@ import (
 	"github.com/gitploy-io/gitploy/model/ent"
 )
 
-func (s *BranchesAPI) Get(c *gin.Context) {
+func (s *BranchAPI) Get(c *gin.Context) {
 	ctx := c.Request.Context()
 
 	var (

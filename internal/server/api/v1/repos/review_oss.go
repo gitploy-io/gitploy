@@ -12,15 +12,15 @@ import (
 	"github.com/gitploy-io/gitploy/pkg/e"
 )
 
-func (s *ReviewsAPI) List(c *gin.Context) {
+func (s *ReviewAPI) List(c *gin.Context) {
 	gb.Response(c, http.StatusOK, make([]*ent.Review, 0))
 }
 
-func (s *ReviewsAPI) GetMine(c *gin.Context) {
+func (s *ReviewAPI) GetMine(c *gin.Context) {
 	gb.Response(c, http.StatusNotFound, nil)
 }
 
-func (s *ReviewsAPI) UpdateMine(c *gin.Context) {
+func (s *ReviewAPI) UpdateMine(c *gin.Context) {
 	gb.ResponseWithError(
 		c,
 		e.NewError(e.ErrorCodeLicenseRequired, nil),
