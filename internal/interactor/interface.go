@@ -14,11 +14,7 @@ import (
 type (
 	Store interface {
 		UserStore
-
-		FindChatUserByID(ctx context.Context, id string) (*ent.ChatUser, error)
-		CreateChatUser(ctx context.Context, cu *ent.ChatUser) (*ent.ChatUser, error)
-		UpdateChatUser(ctx context.Context, cu *ent.ChatUser) (*ent.ChatUser, error)
-		DeleteChatUser(ctx context.Context, cu *ent.ChatUser) error
+		ChatUserStore
 
 		CountActiveRepos(ctx context.Context) (int, error)
 		CountRepos(ctx context.Context) (int, error)
