@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/gitploy-io/gitploy/model/ent"
-	"github.com/gitploy-io/gitploy/model/ent/deployment"
 	"github.com/gitploy-io/gitploy/model/extent"
 )
 
@@ -17,22 +16,8 @@ type (
 		ChatUserStore
 		RepoStore
 		PermStore
-
-		CountDeployments(ctx context.Context) (int, error)
-		SearchDeployments(ctx context.Context, u *ent.User, s []deployment.Status, owned bool, from time.Time, to time.Time, page, perPage int) ([]*ent.Deployment, error)
-		ListInactiveDeploymentsLessThanTime(ctx context.Context, t time.Time, page, perPage int) ([]*ent.Deployment, error)
-		ListDeploymentsOfRepo(ctx context.Context, r *ent.Repo, env string, status string, page, perPage int) ([]*ent.Deployment, error)
-		FindDeploymentByID(ctx context.Context, id int) (*ent.Deployment, error)
-		FindDeploymentByUID(ctx context.Context, uid int64) (*ent.Deployment, error)
-		FindDeploymentOfRepoByNumber(ctx context.Context, r *ent.Repo, number int) (*ent.Deployment, error)
-		FindPrevSuccessDeployment(ctx context.Context, d *ent.Deployment) (*ent.Deployment, error)
-		GetNextDeploymentNumberOfRepo(ctx context.Context, r *ent.Repo) (int, error)
-		CreateDeployment(ctx context.Context, d *ent.Deployment) (*ent.Deployment, error)
-		UpdateDeployment(ctx context.Context, d *ent.Deployment) (*ent.Deployment, error)
-
-		ListDeploymentStatuses(ctx context.Context, d *ent.Deployment) ([]*ent.DeploymentStatus, error)
-		CreateDeploymentStatus(ctx context.Context, s *ent.DeploymentStatus) (*ent.DeploymentStatus, error)
-		SyncDeploymentStatus(ctx context.Context, ds *ent.DeploymentStatus) (*ent.DeploymentStatus, error)
+		DeploymentStore
+		DeploymentStatusStore
 
 		FindDeploymentStatisticsOfRepoByEnv(ctx context.Context, r *ent.Repo, env string) (*ent.DeploymentStatistics, error)
 		CreateDeploymentStatistics(ctx context.Context, s *ent.DeploymentStatistics) (*ent.DeploymentStatistics, error)
@@ -78,22 +63,19 @@ type (
 		Query string
 	}
 
+	// PermStore defines operations for working with deployment_statuses.
+	DeploymentStatusStore interface {
+		ListDeploymentStatuses(ctx context.Context, d *ent.Deployment) ([]*ent.DeploymentStatus, error)
+		CreateDeploymentStatus(ctx context.Context, s *ent.DeploymentStatus) (*ent.DeploymentStatus, error)
+		SyncDeploymentStatus(ctx context.Context, ds *ent.DeploymentStatus) (*ent.DeploymentStatus, error)
+	}
+
 	SCM interface {
 		UserSCM
 		RepoSCM
-
-		GetConfigRedirectURL(ctx context.Context, u *ent.User, r *ent.Repo) (string, error)
-		GetNewConfigRedirectURL(ctx context.Context, u *ent.User, r *ent.Repo) (string, error)
-
-		// SCM returns the deployment with UID and SHA.
-		CreateRemoteDeployment(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, e *extent.Env) (*extent.RemoteDeployment, error)
-		CancelDeployment(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, s *ent.DeploymentStatus) error
-		GetConfig(ctx context.Context, u *ent.User, r *ent.Repo) (*extent.Config, error)
+		DeploymentSCM
 
 		CreateRemoteDeploymentStatus(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, ds *extent.RemoteDeploymentStatus) (*extent.RemoteDeploymentStatus, error)
-
-		CreateWebhook(ctx context.Context, u *ent.User, r *ent.Repo, c *extent.WebhookConfig) (int64, error)
-		DeleteWebhook(ctx context.Context, u *ent.User, r *ent.Repo, id int64) error
 
 		ListCommits(ctx context.Context, u *ent.User, r *ent.Repo, branch string, page, perPage int) ([]*extent.Commit, error)
 		CompareCommits(ctx context.Context, u *ent.User, r *ent.Repo, base, head string, page, perPage int) ([]*extent.Commit, []*extent.CommitFile, error)

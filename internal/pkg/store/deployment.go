@@ -3,9 +3,9 @@ package store
 import (
 	"context"
 	"fmt"
-	"time"
 
 	"entgo.io/ent/dialect/sql"
+	i "github.com/gitploy-io/gitploy/internal/interactor"
 	"github.com/gitploy-io/gitploy/model/ent"
 	"github.com/gitploy-io/gitploy/model/ent/deployment"
 	"github.com/gitploy-io/gitploy/model/ent/perm"
@@ -24,7 +24,7 @@ func (s *Store) CountDeployments(ctx context.Context) (int, error) {
 	return cnt, nil
 }
 
-func (s *Store) SearchDeployments(ctx context.Context, u *ent.User, ss []deployment.Status, owned bool, from time.Time, to time.Time, page, perPage int) ([]*ent.Deployment, error) {
+func (s *Store) SearchDeploymentsOfUser(ctx context.Context, u *ent.User, opt *i.SearchDeploymentsOfUserOptions) ([]*ent.Deployment, error) {
 	statusIn := func(ss []deployment.Status) predicate.Deployment {
 		if len(ss) == 0 {
 			// if not status were provided,
@@ -35,22 +35,22 @@ func (s *Store) SearchDeployments(ctx context.Context, u *ent.User, ss []deploym
 		return deployment.StatusIn(ss...)
 	}
 
-	if owned {
+	if opt.Owned {
 		return s.c.Deployment.
 			Query().
 			Where(
 				deployment.And(
 					deployment.UserIDEQ(u.ID),
-					statusIn(ss),
-					deployment.CreatedAtGTE(from),
-					deployment.CreatedAtLT(to),
+					statusIn(opt.Statuses),
+					deployment.CreatedAtGTE(opt.From),
+					deployment.CreatedAtLT(opt.To),
 				),
 			).
 			WithRepo().
 			WithUser().
 			Order(ent.Desc(deployment.FieldCreatedAt)).
-			Offset(offset(page, perPage)).
-			Limit(perPage).
+			Offset(offset(opt.Page, opt.PerPage)).
+			Limit(opt.PerPage).
 			All(ctx)
 	}
 
@@ -74,36 +74,36 @@ func (s *Store) SearchDeployments(ctx context.Context, u *ent.User, ss []deploym
 		}).
 		Where(
 			deployment.And(
-				statusIn(ss),
-				deployment.CreatedAtGTE(from),
-				deployment.CreatedAtLT(to),
+				statusIn(opt.Statuses),
+				deployment.CreatedAtGTE(opt.From),
+				deployment.CreatedAtLT(opt.To),
 			),
 		).
 		WithRepo().
 		WithUser().
 		Order(ent.Desc(deployment.FieldCreatedAt)).
-		Offset(offset(page, perPage)).
-		Limit(perPage).
+		Offset(offset(opt.Page, opt.PerPage)).
+		Limit(opt.PerPage).
 		All(ctx)
 }
 
-func (s *Store) ListInactiveDeploymentsLessThanTime(ctx context.Context, t time.Time, page, perPage int) ([]*ent.Deployment, error) {
+func (s *Store) ListInactiveDeploymentsLessThanTime(ctx context.Context, opt *i.ListInactiveDeploymentsLessThanTimeOptions) ([]*ent.Deployment, error) {
 	return s.c.Deployment.
 		Query().
 		Where(
 			deployment.And(
 				deployment.StatusIn(deployment.StatusWaiting, deployment.StatusCreated),
-				deployment.CreatedAtLT(t),
+				deployment.CreatedAtLT(opt.Less),
 			),
 		).
 		WithRepo().
 		WithUser().
-		Limit(perPage).
-		Offset(offset(page, perPage)).
+		Limit(opt.PerPage).
+		Offset(offset(opt.Page, opt.PerPage)).
 		All(ctx)
 }
 
-func (s *Store) ListDeploymentsOfRepo(ctx context.Context, r *ent.Repo, env string, status string, page, perPage int) ([]*ent.Deployment, error) {
+func (s *Store) ListDeploymentsOfRepo(ctx context.Context, r *ent.Repo, opt *i.ListDeploymentsOfRepoOptions) ([]*ent.Deployment, error) {
 	q := s.c.Deployment.
 		Query()
 
@@ -111,13 +111,13 @@ func (s *Store) ListDeploymentsOfRepo(ctx context.Context, r *ent.Repo, env stri
 		deployment.RepoIDEQ(r.ID),
 	)
 
-	if env != "" {
+	if env := opt.Env; env != "" {
 		q = q.Where(
 			deployment.EnvEQ(env),
 		)
 	}
 
-	if status != "" {
+	if status := opt.Status; status != "" {
 		q = q.Where(
 			deployment.StatusEQ(deployment.Status(status)),
 		)
@@ -130,8 +130,8 @@ func (s *Store) ListDeploymentsOfRepo(ctx context.Context, r *ent.Repo, env stri
 			uq.Select("id", "login", "avatar", "created_at", "updated_at")
 		}).
 		WithRepo().
-		Limit(perPage).
-		Offset(offset(page, perPage)).
+		Limit(opt.PerPage).
+		Offset(offset(opt.Page, opt.PerPage)).
 		All(ctx)
 }
 

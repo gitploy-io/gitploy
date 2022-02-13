@@ -53,6 +53,8 @@ type (
 	// RepoSCM defines operations for working with remote repos.
 	RepoSCM interface {
 		ListRemoteRepos(ctx context.Context, u *ent.User) ([]*extent.RemoteRepo, error)
+		CreateWebhook(ctx context.Context, u *ent.User, r *ent.Repo, c *extent.WebhookConfig) (int64, error)
+		DeleteWebhook(ctx context.Context, u *ent.User, r *ent.Repo, id int64) error
 	}
 )
 

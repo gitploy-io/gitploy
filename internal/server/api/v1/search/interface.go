@@ -2,15 +2,14 @@ package search
 
 import (
 	"context"
-	"time"
 
+	i "github.com/gitploy-io/gitploy/internal/interactor"
 	"github.com/gitploy-io/gitploy/model/ent"
-	"github.com/gitploy-io/gitploy/model/ent/deployment"
 )
 
 type (
 	Interactor interface {
-		SearchDeployments(ctx context.Context, u *ent.User, s []deployment.Status, owned bool, from time.Time, to time.Time, page, perPage int) ([]*ent.Deployment, error)
+		SearchDeploymentsOfUser(ctx context.Context, u *ent.User, opt *i.SearchDeploymentsOfUserOptions) ([]*ent.Deployment, error)
 		SearchReviews(ctx context.Context, u *ent.User) ([]*ent.Review, error)
 	}
 )

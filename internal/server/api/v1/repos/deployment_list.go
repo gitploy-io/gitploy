@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 
+	"github.com/gitploy-io/gitploy/internal/interactor"
 	gb "github.com/gitploy-io/gitploy/internal/server/global"
 	"github.com/gitploy-io/gitploy/model/ent"
 	"github.com/gitploy-io/gitploy/pkg/e"
@@ -38,7 +39,11 @@ func (s *DeploymentAPI) List(c *gin.Context) {
 	vr, _ := c.Get(KeyRepo)
 	re := vr.(*ent.Repo)
 
-	ds, err := s.i.ListDeploymentsOfRepo(ctx, re, env, status, page, perPage)
+	ds, err := s.i.ListDeploymentsOfRepo(ctx, re, &interactor.ListDeploymentsOfRepoOptions{
+		ListOptions: interactor.ListOptions{Page: page, PerPage: perPage},
+		Env:         env,
+		Status:      status,
+	})
 	if err != nil {
 		s.log.Check(gb.GetZapLogLevel(err), "Failed to list deployments.").Write(zap.Error(err))
 		gb.ResponseWithError(c, err)

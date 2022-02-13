@@ -9,6 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 
+	i "github.com/gitploy-io/gitploy/internal/interactor"
 	gb "github.com/gitploy-io/gitploy/internal/server/global"
 	"github.com/gitploy-io/gitploy/model/ent"
 	"github.com/gitploy-io/gitploy/model/ent/deployment"
@@ -110,7 +111,13 @@ func (s *Search) SearchDeployments(c *gin.Context) {
 	v, _ := c.Get(gb.KeyUser)
 	u := v.(*ent.User)
 
-	if ds, err = s.i.SearchDeployments(ctx, u, ss, o, f.UTC(), t.UTC(), p, pp); err != nil {
+	if ds, err = s.i.SearchDeploymentsOfUser(ctx, u, &i.SearchDeploymentsOfUserOptions{
+		ListOptions: i.ListOptions{Page: p, PerPage: pp},
+		Statuses:    ss,
+		Owned:       o,
+		From:        f.UTC(),
+		To:          t.UTC(),
+	}); err != nil {
 		s.log.Check(gb.GetZapLogLevel(err), "Failed to search deployments.").Write(zap.Error(err))
 		gb.ResponseWithError(c, err)
 		return
