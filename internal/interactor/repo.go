@@ -10,10 +10,60 @@ import (
 	"go.uber.org/zap"
 )
 
-type RepoInteractor service
+type (
+	// RepoInteractor provides application logic for interacting with repos.
+	RepoInteractor struct {
+		*service
 
-func (i *RepoInteractor) ActivateRepo(ctx context.Context, u *ent.User, r *ent.Repo, c *extent.WebhookConfig) (*ent.Repo, error) {
-	hid, err := i.scm.CreateWebhook(ctx, u, r, c)
+		WebhookURL    string
+		WebhookSSL    bool
+		WebhookSecret string
+	}
+
+	// RepoStore defines operations for working with repos.
+	RepoStore interface {
+		CountActiveRepos(ctx context.Context) (int, error)
+		CountRepos(ctx context.Context) (int, error)
+		ListReposOfUser(ctx context.Context, u *ent.User, opt *ListReposOfUserOptions) ([]*ent.Repo, error)
+		FindRepoOfUserByID(ctx context.Context, u *ent.User, id int64) (*ent.Repo, error)
+		FindRepoOfUserByNamespaceName(ctx context.Context, u *ent.User, opt *FindRepoOfUserByNamespaceNameOptions) (*ent.Repo, error)
+		FindRepoByID(ctx context.Context, id int64) (*ent.Repo, error)
+		SyncRepo(ctx context.Context, r *extent.RemoteRepo) (*ent.Repo, error)
+		UpdateRepo(ctx context.Context, r *ent.Repo) (*ent.Repo, error)
+		Activate(ctx context.Context, r *ent.Repo) (*ent.Repo, error)
+		Deactivate(ctx context.Context, r *ent.Repo) (*ent.Repo, error)
+	}
+
+	// ListReposOfUser specifies the optional parameters that
+	// search repos.
+	ListReposOfUserOptions struct {
+		ListOptions
+
+		// Query search the repos contains the query in the namespace or name.
+		Query string
+		// Sorted instructs the system to sort by the 'deployed_at' field.
+		Sorted bool
+	}
+
+	// FindRepoOfUserByNamespaceName specifies the parameters to get the repository.
+	FindRepoOfUserByNamespaceNameOptions struct {
+		Namespace, Name string
+	}
+
+	// RepoSCM defines operations for working with remote repos.
+	RepoSCM interface {
+		ListRemoteRepos(ctx context.Context, u *ent.User) ([]*extent.RemoteRepo, error)
+	}
+)
+
+// ActivateRepo create a new hook to listen events, and saves
+// the hook ID.
+func (i *RepoInteractor) ActivateRepo(ctx context.Context, u *ent.User, r *ent.Repo) (*ent.Repo, error) {
+	hid, err := i.scm.CreateWebhook(ctx, u, r, &extent.WebhookConfig{
+		URL:         i.WebhookURL,
+		InsecureSSL: i.WebhookSSL,
+		Secret:      i.WebhookSecret,
+	})
 	if err != nil {
 		return nil, fmt.Errorf("failed to create a webhook: %s", err)
 	}
@@ -29,6 +79,7 @@ func (i *RepoInteractor) ActivateRepo(ctx context.Context, u *ent.User, r *ent.R
 	return r, nil
 }
 
+// DeactivateRepo removes the webhook.
 func (i *RepoInteractor) DeactivateRepo(ctx context.Context, u *ent.User, r *ent.Repo) (*ent.Repo, error) {
 	err := i.scm.DeleteWebhook(ctx, u, r, r.WebhookID)
 	if e.HasErrorCode(err, e.ErrorCodeEntityNotFound) {

@@ -3,6 +3,7 @@ package web
 import (
 	"context"
 
+	i "github.com/gitploy-io/gitploy/internal/interactor"
 	"github.com/gitploy-io/gitploy/model/ent"
 	"github.com/gitploy-io/gitploy/model/extent"
 )
@@ -20,7 +21,7 @@ type (
 		GetRemoteUserByToken(ctx context.Context, token string) (*extent.RemoteUser, error)
 		ListRemoteOrgsByToken(ctx context.Context, token string) ([]string, error)
 		FindUserByHash(ctx context.Context, hash string) (*ent.User, error)
-		FindRepoOfUserByNamespaceName(ctx context.Context, u *ent.User, namespace, name string) (*ent.Repo, error)
+		FindRepoOfUserByNamespaceName(ctx context.Context, u *ent.User, opt *i.FindRepoOfUserByNamespaceNameOptions) (*ent.Repo, error)
 		GetConfigRedirectURL(ctx context.Context, u *ent.User, r *ent.Repo) (string, error)
 		GetNewConfigRedirectURL(ctx context.Context, u *ent.User, r *ent.Repo) (string, error)
 		GetLicense(ctx context.Context) (*extent.License, error)

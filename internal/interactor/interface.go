@@ -14,22 +14,8 @@ import (
 type (
 	Store interface {
 		UserStore
-
-		FindChatUserByID(ctx context.Context, id string) (*ent.ChatUser, error)
-		CreateChatUser(ctx context.Context, cu *ent.ChatUser) (*ent.ChatUser, error)
-		UpdateChatUser(ctx context.Context, cu *ent.ChatUser) (*ent.ChatUser, error)
-		DeleteChatUser(ctx context.Context, cu *ent.ChatUser) error
-
-		CountActiveRepos(ctx context.Context) (int, error)
-		CountRepos(ctx context.Context) (int, error)
-		ListReposOfUser(ctx context.Context, u *ent.User, q, namespace, name string, sorted bool, page, perPage int) ([]*ent.Repo, error)
-		FindRepoOfUserByID(ctx context.Context, u *ent.User, id int64) (*ent.Repo, error)
-		FindRepoOfUserByNamespaceName(ctx context.Context, u *ent.User, namespace, name string) (*ent.Repo, error)
-		FindRepoByID(ctx context.Context, id int64) (*ent.Repo, error)
-		SyncRepo(ctx context.Context, r *extent.RemoteRepo) (*ent.Repo, error)
-		UpdateRepo(ctx context.Context, r *ent.Repo) (*ent.Repo, error)
-		Activate(ctx context.Context, r *ent.Repo) (*ent.Repo, error)
-		Deactivate(ctx context.Context, r *ent.Repo) (*ent.Repo, error)
+		ChatUserStore
+		RepoStore
 
 		ListPermsOfRepo(ctx context.Context, r *ent.Repo, q string, page, perPage int) ([]*ent.Perm, error)
 		FindPermOfRepo(ctx context.Context, r *ent.Repo, u *ent.User) (*ent.Perm, error)
@@ -83,8 +69,7 @@ type (
 
 	SCM interface {
 		UserSCM
-
-		ListRemoteRepos(ctx context.Context, u *ent.User) ([]*extent.RemoteRepo, error)
+		RepoSCM
 
 		GetConfigRedirectURL(ctx context.Context, u *ent.User, r *ent.Repo) (string, error)
 		GetNewConfigRedirectURL(ctx context.Context, u *ent.User, r *ent.Repo) (string, error)

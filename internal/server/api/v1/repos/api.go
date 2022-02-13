@@ -21,10 +21,6 @@ type (
 
 	APIConfig struct {
 		Interactor
-
-		WebhookURL    string
-		WebhookSSL    bool
-		WebhookSecret string
 	}
 
 	service struct {
@@ -40,12 +36,7 @@ func NewAPI(c APIConfig) *API {
 		i:   c.Interactor,
 		log: zap.L().Named("repos"),
 	}
-	api.Repo = &RepoAPI{
-		service:       api.common,
-		WebhookURL:    c.WebhookURL,
-		WebhookSSL:    c.WebhookSSL,
-		WebhookSecret: c.WebhookSecret,
-	}
+	api.Repo = (*RepoAPI)(api.common)
 	api.Commits = (*CommitAPI)(api.common)
 	api.Branch = (*BranchAPI)(api.common)
 	api.Tag = (*TagAPI)(api.common)

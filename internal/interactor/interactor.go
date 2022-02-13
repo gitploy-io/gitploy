@@ -1,6 +1,8 @@
 package interactor
 
 import (
+	"fmt"
+
 	evbus "github.com/asaskevich/EventBus"
 	"go.uber.org/zap"
 )
@@ -26,12 +28,16 @@ type (
 	}
 
 	InteractorConfig struct {
-		ServerHost  string
-		ServerProto string
+		ServerHost       string
+		ServerProto      string
+		ServerProxyHost  string
+		ServerProxyProto string
 
 		OrgEntries    []string
 		MemberEntries []string
 		AdminUsers    []string
+
+		WebhookSecret string
 
 		LicenseKey string
 
@@ -72,7 +78,12 @@ func NewInteractor(c *InteractorConfig) *Interactor {
 		LicenseKey: c.LicenseKey,
 	}
 	i.LockInteractor = (*LockInteractor)(i.common)
-	i.RepoInteractor = (*RepoInteractor)(i.common)
+	i.RepoInteractor = &RepoInteractor{
+		service:       i.common,
+		WebhookURL:    fmt.Sprintf("%s://%s/hooks", c.ServerProxyProto, c.ServerProxyHost),
+		WebhookSSL:    c.ServerProxyProto == "https",
+		WebhookSecret: c.WebhookSecret,
+	}
 	i.UserInteractor = &UserInteractor{
 		service:       i.common,
 		admins:        c.AdminUsers,

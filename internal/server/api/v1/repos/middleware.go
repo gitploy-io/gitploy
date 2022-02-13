@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	i "github.com/gitploy-io/gitploy/internal/interactor"
 	gb "github.com/gitploy-io/gitploy/internal/server/global"
 	"github.com/gitploy-io/gitploy/model/ent"
 	"github.com/gitploy-io/gitploy/model/ent/perm"
@@ -41,7 +42,10 @@ func (rm *RepoMiddleware) RepoReadPerm() gin.HandlerFunc {
 		v, _ := c.Get(gb.KeyUser)
 		u := v.(*ent.User)
 
-		r, err := rm.i.FindRepoOfUserByNamespaceName(ctx, u, namespace, name)
+		r, err := rm.i.FindRepoOfUserByNamespaceName(ctx, u, &i.FindRepoOfUserByNamespaceNameOptions{
+			Namespace: namespace,
+			Name:      name,
+		})
 		if err != nil {
 			rm.log.Check(gb.GetZapLogLevel(err), "Failed to find the repository.").Write(zap.Error(err))
 			gb.AbortWithError(c, err)
@@ -75,7 +79,10 @@ func (rm *RepoMiddleware) RepoWritePerm() gin.HandlerFunc {
 		v, _ := c.Get(gb.KeyUser)
 		u := v.(*ent.User)
 
-		r, err := rm.i.FindRepoOfUserByNamespaceName(ctx, u, namespace, name)
+		r, err := rm.i.FindRepoOfUserByNamespaceName(ctx, u, &i.FindRepoOfUserByNamespaceNameOptions{
+			Namespace: namespace,
+			Name:      name,
+		})
 		if err != nil {
 			rm.log.Check(gb.GetZapLogLevel(err), "Failed to find the repository.").Write(zap.Error(err))
 			gb.AbortWithError(c, err)
@@ -119,7 +126,10 @@ func (rm *RepoMiddleware) RepoAdminPerm() gin.HandlerFunc {
 		v, _ := c.Get(gb.KeyUser)
 		u := v.(*ent.User)
 
-		r, err := rm.i.FindRepoOfUserByNamespaceName(ctx, u, namespace, name)
+		r, err := rm.i.FindRepoOfUserByNamespaceName(ctx, u, &i.FindRepoOfUserByNamespaceNameOptions{
+			Namespace: namespace,
+			Name:      name,
+		})
 		if err != nil {
 			rm.log.Check(gb.GetZapLogLevel(err), "Failed to find the repository.").Write(zap.Error(err))
 			gb.AbortWithError(c, err)

@@ -45,6 +45,14 @@ type (
 		GetRemoteUserByToken(ctx context.Context, token string) (*extent.RemoteUser, error)
 		ListRemoteOrgsByToken(ctx context.Context, token string) ([]string, error)
 	}
+
+	// ChatUserStore defines operations for working with chat_users.
+	ChatUserStore interface {
+		FindChatUserByID(ctx context.Context, id string) (*ent.ChatUser, error)
+		CreateChatUser(ctx context.Context, cu *ent.ChatUser) (*ent.ChatUser, error)
+		UpdateChatUser(ctx context.Context, cu *ent.ChatUser) (*ent.ChatUser, error)
+		DeleteChatUser(ctx context.Context, cu *ent.ChatUser) error
+	}
 )
 
 // IsAdminUser verifies that the login is an admin or not.

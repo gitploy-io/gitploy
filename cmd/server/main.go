@@ -94,7 +94,6 @@ func newServerConfig(c *Config) *server.ServerConfig {
 		Proto:                c.ServerProto,
 		ProxyHost:            proxyHost,
 		ProxyProto:           proxyProto,
-		WebhookSecret:        c.WebhookSecret,
 		PrometheusEnabled:    c.PrometheusEnabled,
 		PrometheusAuthSecret: c.PrometheusAuthSecret,
 	}
@@ -134,14 +133,21 @@ func newChatConfig(c *Config) *server.ChatConfig {
 func NewInteractor(c *Config) server.Interactor {
 	return interactor.NewInteractor(
 		&interactor.InteractorConfig{
-			ServerHost:    c.ServerHost,
-			ServerProto:   c.ServerProto,
+			// Server Configurations:
+			ServerHost:       c.ServerHost,
+			ServerProto:      c.ServerProto,
+			ServerProxyHost:  c.ServerProxyHost,
+			ServerProxyProto: c.ServerProxyProto,
+			// Sign-in Configurations:
 			OrgEntries:    c.OrganizationEntries,
 			MemberEntries: c.MemberEntries,
 			AdminUsers:    c.AdminUsers,
-			LicenseKey:    c.License,
-			Store:         newStore(c),
-			SCM:           newSCM(c),
+			// Webhook Configurations:
+			WebhookSecret: c.WebhookSecret,
+			// License Configurations:
+			LicenseKey: c.License,
+			Store:      newStore(c),
+			SCM:        newSCM(c),
 		},
 	)
 }

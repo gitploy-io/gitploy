@@ -8,6 +8,7 @@ import (
 	context "context"
 	reflect "reflect"
 
+	interactor "github.com/gitploy-io/gitploy/internal/interactor"
 	ent "github.com/gitploy-io/gitploy/model/ent"
 	extent "github.com/gitploy-io/gitploy/model/extent"
 	gomock "github.com/golang/mock/gomock"
@@ -37,18 +38,18 @@ func (m *MockInteractor) EXPECT() *MockInteractorMockRecorder {
 }
 
 // ActivateRepo mocks base method.
-func (m *MockInteractor) ActivateRepo(ctx context.Context, u *ent.User, r *ent.Repo, c *extent.WebhookConfig) (*ent.Repo, error) {
+func (m *MockInteractor) ActivateRepo(ctx context.Context, u *ent.User, r *ent.Repo) (*ent.Repo, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ActivateRepo", ctx, u, r, c)
+	ret := m.ctrl.Call(m, "ActivateRepo", ctx, u, r)
 	ret0, _ := ret[0].(*ent.Repo)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // ActivateRepo indicates an expected call of ActivateRepo.
-func (mr *MockInteractorMockRecorder) ActivateRepo(ctx, u, r, c interface{}) *gomock.Call {
+func (mr *MockInteractorMockRecorder) ActivateRepo(ctx, u, r interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ActivateRepo", reflect.TypeOf((*MockInteractor)(nil).ActivateRepo), ctx, u, r, c)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ActivateRepo", reflect.TypeOf((*MockInteractor)(nil).ActivateRepo), ctx, u, r)
 }
 
 // CompareCommits mocks base method.
@@ -262,18 +263,18 @@ func (mr *MockInteractorMockRecorder) FindRepoOfUserByID(ctx, u, id interface{})
 }
 
 // FindRepoOfUserByNamespaceName mocks base method.
-func (m *MockInteractor) FindRepoOfUserByNamespaceName(ctx context.Context, u *ent.User, namespace, name string) (*ent.Repo, error) {
+func (m *MockInteractor) FindRepoOfUserByNamespaceName(ctx context.Context, u *ent.User, opt *interactor.FindRepoOfUserByNamespaceNameOptions) (*ent.Repo, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FindRepoOfUserByNamespaceName", ctx, u, namespace, name)
+	ret := m.ctrl.Call(m, "FindRepoOfUserByNamespaceName", ctx, u, opt)
 	ret0, _ := ret[0].(*ent.Repo)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // FindRepoOfUserByNamespaceName indicates an expected call of FindRepoOfUserByNamespaceName.
-func (mr *MockInteractorMockRecorder) FindRepoOfUserByNamespaceName(ctx, u, namespace, name interface{}) *gomock.Call {
+func (mr *MockInteractorMockRecorder) FindRepoOfUserByNamespaceName(ctx, u, opt interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindRepoOfUserByNamespaceName", reflect.TypeOf((*MockInteractor)(nil).FindRepoOfUserByNamespaceName), ctx, u, namespace, name)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindRepoOfUserByNamespaceName", reflect.TypeOf((*MockInteractor)(nil).FindRepoOfUserByNamespaceName), ctx, u, opt)
 }
 
 // FindReviewOfUser mocks base method.
@@ -501,18 +502,18 @@ func (mr *MockInteractorMockRecorder) ListPermsOfRepo(ctx, r, q, page, perPage i
 }
 
 // ListReposOfUser mocks base method.
-func (m *MockInteractor) ListReposOfUser(ctx context.Context, u *ent.User, q, namespace, name string, sorted bool, page, perPage int) ([]*ent.Repo, error) {
+func (m *MockInteractor) ListReposOfUser(ctx context.Context, u *ent.User, opt *interactor.ListReposOfUserOptions) ([]*ent.Repo, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListReposOfUser", ctx, u, q, namespace, name, sorted, page, perPage)
+	ret := m.ctrl.Call(m, "ListReposOfUser", ctx, u, opt)
 	ret0, _ := ret[0].([]*ent.Repo)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // ListReposOfUser indicates an expected call of ListReposOfUser.
-func (mr *MockInteractorMockRecorder) ListReposOfUser(ctx, u, q, namespace, name, sorted, page, perPage interface{}) *gomock.Call {
+func (mr *MockInteractorMockRecorder) ListReposOfUser(ctx, u, opt interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListReposOfUser", reflect.TypeOf((*MockInteractor)(nil).ListReposOfUser), ctx, u, q, namespace, name, sorted, page, perPage)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListReposOfUser", reflect.TypeOf((*MockInteractor)(nil).ListReposOfUser), ctx, u, opt)
 }
 
 // ListReviews mocks base method.

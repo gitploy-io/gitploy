@@ -501,18 +501,18 @@ func (mr *MockStoreMockRecorder) FindRepoOfUserByID(ctx, u, id interface{}) *gom
 }
 
 // FindRepoOfUserByNamespaceName mocks base method.
-func (m *MockStore) FindRepoOfUserByNamespaceName(ctx context.Context, u *ent.User, namespace, name string) (*ent.Repo, error) {
+func (m *MockStore) FindRepoOfUserByNamespaceName(ctx context.Context, u *ent.User, opt *interactor.FindRepoOfUserByNamespaceNameOptions) (*ent.Repo, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FindRepoOfUserByNamespaceName", ctx, u, namespace, name)
+	ret := m.ctrl.Call(m, "FindRepoOfUserByNamespaceName", ctx, u, opt)
 	ret0, _ := ret[0].(*ent.Repo)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // FindRepoOfUserByNamespaceName indicates an expected call of FindRepoOfUserByNamespaceName.
-func (mr *MockStoreMockRecorder) FindRepoOfUserByNamespaceName(ctx, u, namespace, name interface{}) *gomock.Call {
+func (mr *MockStoreMockRecorder) FindRepoOfUserByNamespaceName(ctx, u, opt interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindRepoOfUserByNamespaceName", reflect.TypeOf((*MockStore)(nil).FindRepoOfUserByNamespaceName), ctx, u, namespace, name)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindRepoOfUserByNamespaceName", reflect.TypeOf((*MockStore)(nil).FindRepoOfUserByNamespaceName), ctx, u, opt)
 }
 
 // FindReviewByID mocks base method.
@@ -756,18 +756,18 @@ func (mr *MockStoreMockRecorder) ListPermsOfRepo(ctx, r, q, page, perPage interf
 }
 
 // ListReposOfUser mocks base method.
-func (m *MockStore) ListReposOfUser(ctx context.Context, u *ent.User, q, namespace, name string, sorted bool, page, perPage int) ([]*ent.Repo, error) {
+func (m *MockStore) ListReposOfUser(ctx context.Context, u *ent.User, opt *interactor.ListReposOfUserOptions) ([]*ent.Repo, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListReposOfUser", ctx, u, q, namespace, name, sorted, page, perPage)
+	ret := m.ctrl.Call(m, "ListReposOfUser", ctx, u, opt)
 	ret0, _ := ret[0].([]*ent.Repo)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // ListReposOfUser indicates an expected call of ListReposOfUser.
-func (mr *MockStoreMockRecorder) ListReposOfUser(ctx, u, q, namespace, name, sorted, page, perPage interface{}) *gomock.Call {
+func (mr *MockStoreMockRecorder) ListReposOfUser(ctx, u, opt interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListReposOfUser", reflect.TypeOf((*MockStore)(nil).ListReposOfUser), ctx, u, q, namespace, name, sorted, page, perPage)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListReposOfUser", reflect.TypeOf((*MockStore)(nil).ListReposOfUser), ctx, u, opt)
 }
 
 // ListReviews mocks base method.
