@@ -487,18 +487,18 @@ func (mr *MockInteractorMockRecorder) ListLocksOfRepo(ctx, r interface{}) *gomoc
 }
 
 // ListPermsOfRepo mocks base method.
-func (m *MockInteractor) ListPermsOfRepo(ctx context.Context, r *ent.Repo, q string, page, perPage int) ([]*ent.Perm, error) {
+func (m *MockInteractor) ListPermsOfRepo(ctx context.Context, r *ent.Repo, opt *interactor.ListPermsOfRepoOptions) ([]*ent.Perm, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListPermsOfRepo", ctx, r, q, page, perPage)
+	ret := m.ctrl.Call(m, "ListPermsOfRepo", ctx, r, opt)
 	ret0, _ := ret[0].([]*ent.Perm)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // ListPermsOfRepo indicates an expected call of ListPermsOfRepo.
-func (mr *MockInteractorMockRecorder) ListPermsOfRepo(ctx, r, q, page, perPage interface{}) *gomock.Call {
+func (mr *MockInteractorMockRecorder) ListPermsOfRepo(ctx, r, opt interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListPermsOfRepo", reflect.TypeOf((*MockInteractor)(nil).ListPermsOfRepo), ctx, r, q, page, perPage)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListPermsOfRepo", reflect.TypeOf((*MockInteractor)(nil).ListPermsOfRepo), ctx, r, opt)
 }
 
 // ListReposOfUser mocks base method.

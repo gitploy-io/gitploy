@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	i "github.com/gitploy-io/gitploy/internal/interactor"
 	"github.com/gitploy-io/gitploy/model/ent"
 	"github.com/gitploy-io/gitploy/model/ent/perm"
 	"github.com/gitploy-io/gitploy/model/ent/repo"
@@ -12,19 +13,19 @@ import (
 	"github.com/gitploy-io/gitploy/pkg/e"
 )
 
-func (s *Store) ListPermsOfRepo(ctx context.Context, r *ent.Repo, q string, page, perPage int) ([]*ent.Perm, error) {
+func (s *Store) ListPermsOfRepo(ctx context.Context, r *ent.Repo, opt *i.ListPermsOfRepoOptions) ([]*ent.Perm, error) {
 	perms, err := s.c.Perm.
 		Query().
 		Where(
 			perm.And(
 				perm.HasRepoWith(repo.IDEQ(r.ID)),
-				perm.HasUserWith(user.LoginContains(q)),
+				perm.HasUserWith(user.LoginContains(opt.Query)),
 			),
 		).
 		WithRepo().
 		WithUser().
-		Limit(perPage).
-		Offset(offset(page, perPage)).
+		Limit(opt.PerPage).
+		Offset(offset(opt.Page, opt.PerPage)).
 		All(ctx)
 	if err != nil {
 		return nil, e.NewError(e.ErrorCodeInternalError, err)
