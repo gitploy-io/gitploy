@@ -29,7 +29,7 @@ func TestInteractor_DeactivateRepo(t *testing.T) {
 			Deactivate(gomock.Any(), gomock.AssignableToTypeOf(&ent.Repo{})).
 			Return(&ent.Repo{}, nil)
 
-		i := &ReposInteractor{
+		i := &RepoInteractor{
 			store: store,
 			scm:   scm,
 			log:   zap.L(),

@@ -7,7 +7,7 @@ import (
 
 func TestInteractor_IsAdminUser(t *testing.T) {
 	t.Run("Return false when admins property is nil", func(t *testing.T) {
-		i := &UsersInteractor{
+		i := &UserInteractor{
 			admins: nil,
 		}
 
@@ -20,7 +20,7 @@ func TestInteractor_IsAdminUser(t *testing.T) {
 
 func TestInteractor_IsEntryMember(t *testing.T) {
 	t.Run("Return false when the user's login is not included.", func(t *testing.T) {
-		i := &UsersInteractor{
+		i := &UserInteractor{
 			memberEntries: []string{"octocat"},
 		}
 
@@ -31,7 +31,7 @@ func TestInteractor_IsEntryMember(t *testing.T) {
 	})
 
 	t.Run("Return true when the user's login is included.", func(t *testing.T) {
-		i := &UsersInteractor{
+		i := &UserInteractor{
 			memberEntries: []string{"octocat"},
 		}
 
@@ -44,7 +44,7 @@ func TestInteractor_IsEntryMember(t *testing.T) {
 
 func TestInteractor_IsOrgMember(t *testing.T) {
 	t.Run("Return false when the org is not included.", func(t *testing.T) {
-		i := &UsersInteractor{
+		i := &UserInteractor{
 			memberEntries: []string{"gitploy-io"},
 		}
 
@@ -55,7 +55,7 @@ func TestInteractor_IsOrgMember(t *testing.T) {
 	})
 
 	t.Run("Return true when the org is included.", func(t *testing.T) {
-		i := &UsersInteractor{
+		i := &UserInteractor{
 			memberEntries: []string{"gitploy-io"},
 		}
 

@@ -5,7 +5,7 @@ import (
 )
 
 type (
-	UsersInteractor struct {
+	UserInteractor struct {
 		*service
 
 		admins        []string
@@ -14,7 +14,7 @@ type (
 	}
 )
 
-func (i *UsersInteractor) IsAdminUser(ctx context.Context, login string) bool {
+func (i *UserInteractor) IsAdminUser(ctx context.Context, login string) bool {
 	for _, admin := range i.admins {
 		if login == admin {
 			return true
@@ -24,7 +24,7 @@ func (i *UsersInteractor) IsAdminUser(ctx context.Context, login string) bool {
 	return false
 }
 
-func (i *UsersInteractor) IsEntryMember(ctx context.Context, login string) bool {
+func (i *UserInteractor) IsEntryMember(ctx context.Context, login string) bool {
 	if i.memberEntries == nil {
 		return true
 	}
@@ -38,7 +38,7 @@ func (i *UsersInteractor) IsEntryMember(ctx context.Context, login string) bool 
 	return false
 }
 
-func (i *UsersInteractor) IsOrgMember(ctx context.Context, orgs []string) bool {
+func (i *UserInteractor) IsOrgMember(ctx context.Context, orgs []string) bool {
 	for _, o := range orgs {
 		for _, entry := range i.memberEntries {
 			if o == entry {

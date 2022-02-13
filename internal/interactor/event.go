@@ -15,22 +15,22 @@ const (
 )
 
 type (
-	EventsInteractor struct {
+	EventInteractor struct {
 		*service
 
 		events evbus.Bus
 	}
 )
 
-func (i *EventsInteractor) SubscribeEvent(fn func(e *ent.Event)) error {
+func (i *EventInteractor) SubscribeEvent(fn func(e *ent.Event)) error {
 	return i.events.SubscribeAsync(gitployEvent, fn, false)
 }
 
-func (i *EventsInteractor) UnsubscribeEvent(fn func(e *ent.Event)) error {
+func (i *EventInteractor) UnsubscribeEvent(fn func(e *ent.Event)) error {
 	return i.events.Unsubscribe(gitployEvent, fn)
 }
 
-func (i *EventsInteractor) runPublishingEvents(stop <-chan struct{}) {
+func (i *EventInteractor) runPublishingEvents(stop <-chan struct{}) {
 	ctx := context.Background()
 
 	// Read events periodically and publish to subscribers.
