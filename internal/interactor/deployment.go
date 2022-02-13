@@ -15,13 +15,13 @@ import (
 )
 
 type (
-	DeploymentsInteractor service
+	DeploymentInteractor service
 )
 
 // IsApproved verifies that the request is approved or not.
 // It is approved if there is an approval of reviews at least, but
 // it is rejected if there is a reject of reviews.
-func (i *DeploymentsInteractor) IsApproved(ctx context.Context, d *ent.Deployment) bool {
+func (i *DeploymentInteractor) IsApproved(ctx context.Context, d *ent.Deployment) bool {
 	rvs, _ := i.store.ListReviews(ctx, d)
 
 	for _, r := range rvs {
@@ -43,7 +43,7 @@ func (i *DeploymentsInteractor) IsApproved(ctx context.Context, d *ent.Deploymen
 // But if it requires a review, it saves the payload on the DB
 // and waits until reviewed.
 // It returns an error for a undeployable payload.
-func (i *DeploymentsInteractor) Deploy(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, env *extent.Env) (*ent.Deployment, error) {
+func (i *DeploymentInteractor) Deploy(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, env *extent.Env) (*ent.Deployment, error) {
 	if err := i.isDeployable(ctx, u, r, d, env); err != nil {
 		return nil, err
 	}
@@ -128,7 +128,7 @@ func (i *DeploymentsInteractor) Deploy(ctx context.Context, u *ent.User, r *ent.
 // DeployToRemote posts a new deployment to SCM with the saved payload
 // after review has finished.
 // It returns an error for a undeployable payload.
-func (i *DeploymentsInteractor) DeployToRemote(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, env *extent.Env) (*ent.Deployment, error) {
+func (i *DeploymentInteractor) DeployToRemote(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, env *extent.Env) (*ent.Deployment, error) {
 	if d.Status != deployment.StatusWaiting {
 		return nil, e.NewErrorWithMessage(
 			e.ErrorCodeDeploymentStatusInvalid,
@@ -172,7 +172,7 @@ func (i *DeploymentsInteractor) DeployToRemote(ctx context.Context, u *ent.User,
 	return d, nil
 }
 
-func (i *DeploymentsInteractor) createRemoteDeployment(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, env *extent.Env) (*extent.RemoteDeployment, error) {
+func (i *DeploymentInteractor) createRemoteDeployment(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, env *extent.Env) (*extent.RemoteDeployment, error) {
 	// Rollback configures it can deploy the ref without any constraints.
 	// 1) Set auto_merge false to avoid the merge conflict.
 	// 2) Set required_contexts empty to skip the verfication.
@@ -184,7 +184,7 @@ func (i *DeploymentsInteractor) createRemoteDeployment(ctx context.Context, u *e
 	return i.scm.CreateRemoteDeployment(ctx, u, r, d, env)
 }
 
-func (i *DeploymentsInteractor) isDeployable(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, env *extent.Env) error {
+func (i *DeploymentInteractor) isDeployable(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, env *extent.Env) error {
 	// Skip verifications for roll back.
 	if !d.IsRollback {
 		if ok, err := env.IsDeployableRef(d.Ref); !ok {
@@ -210,7 +210,7 @@ func (i *DeploymentsInteractor) isDeployable(ctx context.Context, u *ent.User, r
 	return nil
 }
 
-func (i *DeploymentsInteractor) runClosingInactiveDeployment(stop <-chan struct{}) {
+func (i *DeploymentInteractor) runClosingInactiveDeployment(stop <-chan struct{}) {
 	ctx := context.Background()
 
 	ticker := time.NewTicker(time.Minute)

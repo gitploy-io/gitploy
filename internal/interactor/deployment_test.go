@@ -17,8 +17,8 @@ import (
 	"github.com/gitploy-io/gitploy/pkg/e"
 )
 
-func newMockDeploymentsInteractor(store Store, scm SCM) *DeploymentsInteractor {
-	return &DeploymentsInteractor{
+func newMockDeploymentInteractor(store Store, scm SCM) *DeploymentInteractor {
+	return &DeploymentInteractor{
 		store: store,
 		scm:   scm,
 		log:   zap.L(),
@@ -44,7 +44,7 @@ func TestInteractor_IsApproved(t *testing.T) {
 				},
 			}, nil)
 
-		i := newMockDeploymentsInteractor(store, scm)
+		i := newMockDeploymentInteractor(store, scm)
 
 		expected := false
 		if ret := i.IsApproved(context.Background(), &ent.Deployment{}); ret != expected {
@@ -75,7 +75,7 @@ func TestInteractor_Deploy(t *testing.T) {
 		store := mock.NewMockStore(ctrl)
 		scm := mock.NewMockSCM(ctrl)
 
-		i := newMockDeploymentsInteractor(store, scm)
+		i := newMockDeploymentInteractor(store, scm)
 
 		_, err := i.Deploy(context.Background(), &ent.User{}, &ent.Repo{}, input.d, input.e)
 		if !e.HasErrorCode(err, e.ErrorCodeEntityUnprocessable) {
@@ -93,7 +93,7 @@ func TestInteractor_Deploy(t *testing.T) {
 			HasLockOfRepoForEnv(ctx, gomock.AssignableToTypeOf(&ent.Repo{}), "").
 			Return(true, nil)
 
-		i := newMockDeploymentsInteractor(store, scm)
+		i := newMockDeploymentInteractor(store, scm)
 
 		_, err := i.Deploy(context.Background(), &ent.User{}, &ent.Repo{}, &ent.Deployment{}, &extent.Env{})
 		if !e.HasErrorCode(err, e.ErrorCodeDeploymentLocked) {
@@ -159,7 +159,7 @@ func TestInteractor_Deploy(t *testing.T) {
 			EXPECT().
 			CreateDeploymentStatus(ctx, gomock.AssignableToTypeOf(&ent.DeploymentStatus{}))
 
-		i := newMockDeploymentsInteractor(store, scm)
+		i := newMockDeploymentInteractor(store, scm)
 
 		d, err := i.Deploy(context.Background(), &ent.User{}, &ent.Repo{}, input.d, input.e)
 		if err != nil {
@@ -243,7 +243,7 @@ func TestInteractor_Deploy(t *testing.T) {
 			CreateEvent(ctx, gomock.AssignableToTypeOf(&ent.Event{})).
 			Return(&ent.Event{}, nil)
 
-		i := newMockDeploymentsInteractor(store, scm)
+		i := newMockDeploymentInteractor(store, scm)
 
 		d, err := i.Deploy(context.Background(), &ent.User{}, &ent.Repo{}, input.d, input.e)
 		if err != nil {
@@ -281,7 +281,7 @@ func TestInteractor_DeployToRemote(t *testing.T) {
 		store := mock.NewMockStore(ctrl)
 		scm := mock.NewMockSCM(ctrl)
 
-		i := newMockDeploymentsInteractor(store, scm)
+		i := newMockDeploymentInteractor(store, scm)
 
 		_, err := i.DeployToRemote(context.Background(), &ent.User{}, &ent.Repo{}, input.d, input.e)
 		if !e.HasErrorCode(err, e.ErrorCodeDeploymentStatusInvalid) {
@@ -345,7 +345,7 @@ func TestInteractor_DeployToRemote(t *testing.T) {
 			EXPECT().
 			CreateDeploymentStatus(ctx, gomock.AssignableToTypeOf(&ent.DeploymentStatus{}))
 
-		i := newMockDeploymentsInteractor(store, scm)
+		i := newMockDeploymentInteractor(store, scm)
 
 		d, err := i.DeployToRemote(context.Background(), &ent.User{}, &ent.Repo{}, input.d, input.e)
 		if err != nil {

@@ -12,7 +12,7 @@ import (
 	"gopkg.in/h2non/gock.v1"
 )
 
-func TestDeploymentsService_List(t *testing.T) {
+func TestDeploymentService_List(t *testing.T) {
 	t.Run("Verify the query of a request.", func(t *testing.T) {
 		ds := []*ent.Deployment{
 			{ID: 1, Env: "production", Status: deployment.StatusWaiting},
@@ -27,7 +27,7 @@ func TestDeploymentsService_List(t *testing.T) {
 
 		c := NewClient("https://cloud.gitploy.io/", http.DefaultClient)
 
-		ret, err := c.Deployments.List(context.Background(), "gitploy-io", "gitploy", DeploymentListOptions{
+		ret, err := c.Deployment.List(context.Background(), "gitploy-io", "gitploy", DeploymentListOptions{
 			ListOptions: ListOptions{Page: 1, PerPage: 30},
 			Env:         "production",
 			Status:      "waiting",
@@ -44,7 +44,7 @@ func TestDeploymentsService_List(t *testing.T) {
 	})
 }
 
-func TestDeploymentsService_Create(t *testing.T) {
+func TestDeploymentService_Create(t *testing.T) {
 	t.Run("Verify the body of a request.", func(t *testing.T) {
 		d := &ent.Deployment{
 			ID: 2, Number: 1, Type: deployment.TypeBranch, Env: "production", Ref: "main",
@@ -68,7 +68,7 @@ func TestDeploymentsService_Create(t *testing.T) {
 
 		c := NewClient("https://cloud.gitploy.io/", http.DefaultClient)
 
-		_, err := c.Deployments.Create(context.Background(), "gitploy-io", "gitploy", DeploymentCreateRequest{
+		_, err := c.Deployment.Create(context.Background(), "gitploy-io", "gitploy", DeploymentCreateRequest{
 			Type: "branch",
 			Env:  "production",
 			Ref:  "main",
@@ -79,7 +79,7 @@ func TestDeploymentsService_Create(t *testing.T) {
 	})
 }
 
-func TestDeploymentsService_Update(t *testing.T) {
+func TestDeploymentService_Update(t *testing.T) {
 	t.Run("Verify the request.", func(t *testing.T) {
 		d := &ent.Deployment{
 			ID: 2, Number: 1, Type: deployment.TypeBranch, Env: "production", Ref: "main",
@@ -91,7 +91,7 @@ func TestDeploymentsService_Update(t *testing.T) {
 
 		c := NewClient("https://cloud.gitploy.io/", http.DefaultClient)
 
-		_, err := c.Deployments.Update(context.Background(), "gitploy-io", "gitploy", 1)
+		_, err := c.Deployment.Update(context.Background(), "gitploy-io", "gitploy", 1)
 		if err != nil {
 			t.Fatalf("Create returns an error: %s", err)
 		}

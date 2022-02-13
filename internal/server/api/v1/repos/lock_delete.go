@@ -17,7 +17,7 @@ import (
 	"github.com/gitploy-io/gitploy/pkg/e"
 )
 
-func (s *LocksAPI) Delete(c *gin.Context) {
+func (s *LockAPI) Delete(c *gin.Context) {
 	ctx := c.Request.Context()
 
 	var (

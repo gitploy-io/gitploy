@@ -11,7 +11,7 @@ import (
 )
 
 type (
-	DeploymentsService service
+	DeploymentService service
 
 	DeploymentListOptions struct {
 		ListOptions
@@ -29,7 +29,7 @@ type (
 
 // List returns the deployment list.
 // It returns an error for a bad request.
-func (s *DeploymentsService) List(ctx context.Context, namespace, name string, options DeploymentListOptions) ([]*ent.Deployment, error) {
+func (s *DeploymentService) List(ctx context.Context, namespace, name string, options DeploymentListOptions) ([]*ent.Deployment, error) {
 	// Build the query.
 	vals := url.Values{}
 
@@ -68,7 +68,7 @@ func (s *DeploymentsService) List(ctx context.Context, namespace, name string, o
 }
 
 // Get returns the deployment.
-func (s *DeploymentsService) Get(ctx context.Context, namespace, name string, number int) (*ent.Deployment, error) {
+func (s *DeploymentService) Get(ctx context.Context, namespace, name string, number int) (*ent.Deployment, error) {
 	req, err := s.client.NewRequest(
 		"GET",
 		fmt.Sprintf("api/v1/repos/%s/%s/deployments/%d", namespace, name, number),
@@ -88,7 +88,7 @@ func (s *DeploymentsService) Get(ctx context.Context, namespace, name string, nu
 }
 
 // Create requests a server to deploy a specific ref(branch, SHA, tag).
-func (s *DeploymentsService) Create(ctx context.Context, namespace, name string, body DeploymentCreateRequest) (*ent.Deployment, error) {
+func (s *DeploymentService) Create(ctx context.Context, namespace, name string, body DeploymentCreateRequest) (*ent.Deployment, error) {
 	req, err := s.client.NewRequest(
 		"POST",
 		fmt.Sprintf("api/v1/repos/%s/%s/deployments", namespace, name),
@@ -108,7 +108,7 @@ func (s *DeploymentsService) Create(ctx context.Context, namespace, name string,
 }
 
 // Update requests to trigger the 'waiting' deployment.
-func (s *DeploymentsService) Update(ctx context.Context, namespace, name string, number int) (*ent.Deployment, error) {
+func (s *DeploymentService) Update(ctx context.Context, namespace, name string, number int) (*ent.Deployment, error) {
 	req, err := s.client.NewRequest(
 		"PUT",
 		fmt.Sprintf("api/v1/repos/%s/%s/deployments/%d", namespace, name, number),

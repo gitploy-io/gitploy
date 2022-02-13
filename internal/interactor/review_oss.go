@@ -9,6 +9,6 @@ import (
 	"github.com/gitploy-io/gitploy/pkg/e"
 )
 
-func (i *DeploymentsInteractor) requestReviewByLogin(ctx context.Context, d *ent.Deployment, login string) (*ent.Review, error) {
+func (i *DeploymentInteractor) requestReviewByLogin(ctx context.Context, d *ent.Deployment, login string) (*ent.Review, error) {
 	return nil, e.NewError(e.ErrorCodeLicenseRequired, nil)
 }

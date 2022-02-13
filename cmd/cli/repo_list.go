@@ -40,11 +40,11 @@ var repoListCommand = &cli.Command{
 		)
 
 		if cli.Bool("all") {
-			if repos, err = c.Repos.ListAll(cli.Context); err != nil {
+			if repos, err = c.Repo.ListAll(cli.Context); err != nil {
 				return err
 			}
 		} else {
-			if repos, err = c.Repos.List(cli.Context, api.RepoListOptions{
+			if repos, err = c.Repo.List(cli.Context, api.RepoListOptions{
 				ListOptions: api.ListOptions{Page: cli.Int("page"), PerPage: cli.Int("per-page")},
 			}); err != nil {
 				return err

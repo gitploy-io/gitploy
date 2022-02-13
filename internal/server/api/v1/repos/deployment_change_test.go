@@ -18,7 +18,7 @@ import (
 	"github.com/gitploy-io/gitploy/model/extent"
 )
 
-func TestDeploymentsAPI_ListChanges(t *testing.T) {
+func TestDeploymentAPI_ListChanges(t *testing.T) {
 	ctx := gomock.Any()
 	any := gomock.Any()
 
@@ -74,7 +74,7 @@ func TestDeploymentsAPI_ListChanges(t *testing.T) {
 		// Ready the router to handle it.
 		gin.SetMode(gin.ReleaseMode)
 
-		s := DeploymentsAPI{i: m, log: zap.L()}
+		s := DeploymentAPI{i: m, log: zap.L()}
 
 		router := gin.New()
 		router.GET("/deployments/:number/changes", func(c *gin.Context) {

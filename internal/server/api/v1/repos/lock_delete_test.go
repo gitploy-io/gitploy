@@ -19,7 +19,7 @@ import (
 	"go.uber.org/zap"
 )
 
-func TestLocksAPI_Delete(t *testing.T) {
+func TestLockAPI_Delete(t *testing.T) {
 	t.Run("Unlock the env", func(t *testing.T) {
 		input := struct {
 			id int
@@ -42,7 +42,7 @@ func TestLocksAPI_Delete(t *testing.T) {
 			DeleteLock(gomock.Any(), gomock.Eq(&ent.Lock{ID: input.id})).
 			Return(nil)
 
-		s := LocksAPI{i: m, log: zap.L()}
+		s := LockAPI{i: m, log: zap.L()}
 		gin.SetMode(gin.ReleaseMode)
 		router := gin.New()
 		router.DELETE("repos/:id/locks/:lockID", s.Delete)

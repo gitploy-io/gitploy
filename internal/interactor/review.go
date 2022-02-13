@@ -15,7 +15,7 @@ import (
 	"github.com/gitploy-io/gitploy/model/ent/event"
 )
 
-func (i *DeploymentsInteractor) requestReviewByLogin(ctx context.Context, d *ent.Deployment, login string) (*ent.Review, error) {
+func (i *DeploymentInteractor) requestReviewByLogin(ctx context.Context, d *ent.Deployment, login string) (*ent.Review, error) {
 	u, err := i.store.FindUserByLogin(ctx, login)
 	if err != nil {
 		return nil, err

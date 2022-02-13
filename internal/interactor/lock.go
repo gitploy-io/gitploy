@@ -7,9 +7,9 @@ import (
 	"go.uber.org/zap"
 )
 
-type LocksInteractor service
+type LockInteractor service
 
-func (i *LocksInteractor) runAutoUnlock(stop <-chan struct{}) {
+func (i *LockInteractor) runAutoUnlock(stop <-chan struct{}) {
 	ctx := context.Background()
 
 	ticker := time.NewTicker(time.Minute)

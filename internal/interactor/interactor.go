@@ -16,14 +16,14 @@ type (
 		common *service
 
 		// services used for talking to different parts of the entities.
-		*DeploymentsInteractor
+		*DeploymentInteractor
 		*DeploymentStatisticsInteractor
-		*EventsInteractor
+		*EventInteractor
 		*LicenseInteractor
-		*LocksInteractor
-		*ReposInteractor
+		*LockInteractor
+		*RepoInteractor
 		*SyncInteractor
-		*UsersInteractor
+		*UserInteractor
 	}
 
 	InteractorConfig struct {
@@ -62,9 +62,9 @@ func NewInteractor(c *InteractorConfig) *Interactor {
 		log:   log,
 	}
 
-	i.DeploymentsInteractor = (*DeploymentsInteractor)(i.common)
+	i.DeploymentInteractor = (*DeploymentInteractor)(i.common)
 	i.DeploymentStatisticsInteractor = (*DeploymentStatisticsInteractor)(i.common)
-	i.EventsInteractor = &EventsInteractor{
+	i.EventInteractor = &EventInteractor{
 		service: i.common,
 		events:  evbus.New(),
 	}
@@ -72,13 +72,13 @@ func NewInteractor(c *InteractorConfig) *Interactor {
 		service:    i.common,
 		LicenseKey: c.LicenseKey,
 	}
-	i.LocksInteractor = (*LocksInteractor)(i.common)
-	i.ReposInteractor = (*ReposInteractor)(i.common)
+	i.LockInteractor = (*LockInteractor)(i.common)
+	i.RepoInteractor = (*RepoInteractor)(i.common)
 	i.SyncInteractor = &SyncInteractor{
 		service:    i.common,
 		orgEntries: c.OrgEntries,
 	}
-	i.UsersInteractor = &UsersInteractor{
+	i.UserInteractor = &UserInteractor{
 		service:       i.common,
 		admins:        c.AdminUsers,
 		orgEntries:    c.OrgEntries,

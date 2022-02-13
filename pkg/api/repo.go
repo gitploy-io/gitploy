@@ -10,7 +10,7 @@ import (
 )
 
 type (
-	ReposService service
+	RepoService service
 
 	RepoListOptions struct {
 		ListOptions
@@ -23,7 +23,7 @@ type (
 )
 
 // ListAll returns all repositories.
-func (s *ReposService) ListAll(ctx context.Context) ([]*ent.Repo, error) {
+func (s *RepoService) ListAll(ctx context.Context) ([]*ent.Repo, error) {
 	// Max value for 'perPage'.
 	const perPage = 100
 
@@ -55,7 +55,7 @@ func (s *ReposService) ListAll(ctx context.Context) ([]*ent.Repo, error) {
 }
 
 // List returns repositories which are on the page.
-func (s *ReposService) List(ctx context.Context, options RepoListOptions) ([]*ent.Repo, error) {
+func (s *RepoService) List(ctx context.Context, options RepoListOptions) ([]*ent.Repo, error) {
 	// Build the query.
 	vals := url.Values{}
 	vals.Add("page", strconv.Itoa(options.Page))
@@ -78,7 +78,7 @@ func (s *ReposService) List(ctx context.Context, options RepoListOptions) ([]*en
 }
 
 // Get returns the repository.
-func (s *ReposService) Get(ctx context.Context, namespace, name string) (*ent.Repo, error) {
+func (s *RepoService) Get(ctx context.Context, namespace, name string) (*ent.Repo, error) {
 	req, err := s.client.NewRequest(
 		"GET",
 		fmt.Sprintf("api/v1/repos/%s/%s", namespace, name),
@@ -95,7 +95,7 @@ func (s *ReposService) Get(ctx context.Context, namespace, name string) (*ent.Re
 	return repo, nil
 }
 
-func (s *ReposService) Update(ctx context.Context, namespace, name string, options RepoUpdateRequest) (*ent.Repo, error) {
+func (s *RepoService) Update(ctx context.Context, namespace, name string, options RepoUpdateRequest) (*ent.Repo, error) {
 	req, err := s.client.NewRequest(
 		"PATCH",
 		fmt.Sprintf("api/v1/repos/%s/%s", namespace, name),
