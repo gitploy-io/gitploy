@@ -36,9 +36,6 @@ type (
 		// Query search the 'login' contains the query.
 		Query string
 	}
-
-	CreateUserPayload struct {
-	}
 )
 
 func (i *UserInteractor) IsAdminUser(ctx context.Context, login string) bool {
