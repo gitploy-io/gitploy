@@ -64,7 +64,7 @@ func TestDeploymentAPI_ListChanges(t *testing.T) {
 
 		m.
 			EXPECT().
-			CompareCommits(ctx, any, any, base, head, gomock.Eq(input.page), gomock.Eq(input.perPage)).
+			CompareCommits(ctx, any, any, base, head, gomock.Any()).
 			Return([]*extent.Commit{
 				{
 					SHA: head,

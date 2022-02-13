@@ -104,7 +104,7 @@ func TestInteractor_ProduceDeploymentStatisticsOfRepo(t *testing.T) {
 		t.Log("MOCK - Get changed commits from the SCM.")
 		scm.
 			EXPECT().
-			CompareCommits(gomock.Any(), gomock.AssignableToTypeOf(&ent.User{}), gomock.AssignableToTypeOf(&ent.Repo{}), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
+			CompareCommits(gomock.Any(), gomock.AssignableToTypeOf(&ent.User{}), gomock.AssignableToTypeOf(&ent.Repo{}), gomock.Any(), gomock.Any(), gomock.Any()).
 			Return([]*extent.Commit{}, []*extent.CommitFile{
 				{Additions: 1, Deletions: 1, Changes: 2},
 			}, nil)

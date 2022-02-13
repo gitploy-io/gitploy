@@ -50,7 +50,7 @@ type (
 		CreateEvent(ctx context.Context, e *ent.Event) (*ent.Event, error)
 
 		ListCommits(ctx context.Context, u *ent.User, r *ent.Repo, branch string, opt *i.ListOptions) ([]*extent.Commit, error)
-		CompareCommits(ctx context.Context, u *ent.User, r *ent.Repo, base, head string, page, perPage int) ([]*extent.Commit, []*extent.CommitFile, error)
+		CompareCommits(ctx context.Context, u *ent.User, r *ent.Repo, base, head string, opt *i.ListOptions) ([]*extent.Commit, []*extent.CommitFile, error)
 		GetCommit(ctx context.Context, u *ent.User, r *ent.Repo, sha string) (*extent.Commit, error)
 		ListCommitStatuses(ctx context.Context, u *ent.User, r *ent.Repo, sha string) ([]*extent.Status, error)
 

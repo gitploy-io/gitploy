@@ -46,7 +46,7 @@ func (g *Github) ListCommits(ctx context.Context, u *ent.User, r *ent.Repo, bran
 	return ret, nil
 }
 
-func (g *Github) CompareCommits(ctx context.Context, u *ent.User, r *ent.Repo, base, head string, page, perPage int) ([]*extent.Commit, []*extent.CommitFile, error) {
+func (g *Github) CompareCommits(ctx context.Context, u *ent.User, r *ent.Repo, base, head string, opt *i.ListOptions) ([]*extent.Commit, []*extent.CommitFile, error) {
 	// TODO: Support pagination.
 	res, _, err := g.Client(ctx, u.Token).
 		Repositories.

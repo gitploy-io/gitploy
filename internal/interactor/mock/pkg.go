@@ -1296,9 +1296,9 @@ func (mr *MockSCMMockRecorder) CancelDeployment(ctx, u, r, d, s interface{}) *go
 }
 
 // CompareCommits mocks base method.
-func (m *MockSCM) CompareCommits(ctx context.Context, u *ent.User, r *ent.Repo, base, head string, page, perPage int) ([]*extent.Commit, []*extent.CommitFile, error) {
+func (m *MockSCM) CompareCommits(ctx context.Context, u *ent.User, r *ent.Repo, base, head string, opt *interactor.ListOptions) ([]*extent.Commit, []*extent.CommitFile, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CompareCommits", ctx, u, r, base, head, page, perPage)
+	ret := m.ctrl.Call(m, "CompareCommits", ctx, u, r, base, head, opt)
 	ret0, _ := ret[0].([]*extent.Commit)
 	ret1, _ := ret[1].([]*extent.CommitFile)
 	ret2, _ := ret[2].(error)
@@ -1306,9 +1306,9 @@ func (m *MockSCM) CompareCommits(ctx context.Context, u *ent.User, r *ent.Repo, 
 }
 
 // CompareCommits indicates an expected call of CompareCommits.
-func (mr *MockSCMMockRecorder) CompareCommits(ctx, u, r, base, head, page, perPage interface{}) *gomock.Call {
+func (mr *MockSCMMockRecorder) CompareCommits(ctx, u, r, base, head, opt interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CompareCommits", reflect.TypeOf((*MockSCM)(nil).CompareCommits), ctx, u, r, base, head, page, perPage)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CompareCommits", reflect.TypeOf((*MockSCM)(nil).CompareCommits), ctx, u, r, base, head, opt)
 }
 
 // CreateRemoteDeployment mocks base method.
@@ -1642,9 +1642,9 @@ func (m *MockCommitSCM) EXPECT() *MockCommitSCMMockRecorder {
 }
 
 // CompareCommits mocks base method.
-func (m *MockCommitSCM) CompareCommits(ctx context.Context, u *ent.User, r *ent.Repo, base, head string, page, perPage int) ([]*extent.Commit, []*extent.CommitFile, error) {
+func (m *MockCommitSCM) CompareCommits(ctx context.Context, u *ent.User, r *ent.Repo, base, head string, opt *interactor.ListOptions) ([]*extent.Commit, []*extent.CommitFile, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CompareCommits", ctx, u, r, base, head, page, perPage)
+	ret := m.ctrl.Call(m, "CompareCommits", ctx, u, r, base, head, opt)
 	ret0, _ := ret[0].([]*extent.Commit)
 	ret1, _ := ret[1].([]*extent.CommitFile)
 	ret2, _ := ret[2].(error)
@@ -1652,9 +1652,9 @@ func (m *MockCommitSCM) CompareCommits(ctx context.Context, u *ent.User, r *ent.
 }
 
 // CompareCommits indicates an expected call of CompareCommits.
-func (mr *MockCommitSCMMockRecorder) CompareCommits(ctx, u, r, base, head, page, perPage interface{}) *gomock.Call {
+func (mr *MockCommitSCMMockRecorder) CompareCommits(ctx, u, r, base, head, opt interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CompareCommits", reflect.TypeOf((*MockCommitSCM)(nil).CompareCommits), ctx, u, r, base, head, page, perPage)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CompareCommits", reflect.TypeOf((*MockCommitSCM)(nil).CompareCommits), ctx, u, r, base, head, opt)
 }
 
 // GetCommit mocks base method.

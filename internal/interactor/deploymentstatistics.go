@@ -66,7 +66,10 @@ func (i *DeploymentStatisticsInteractor) produceDeploymentStatisticsOfRepo(ctx c
 			}
 		}
 
-		cms, fs, err := i.scm.CompareCommits(ctx, d.Edges.User, r, ld.Sha, d.Sha, 1, 100)
+		cms, fs, err := i.scm.CompareCommits(ctx, d.Edges.User, r, ld.Sha, d.Sha, &ListOptions{
+			Page:    1,
+			PerPage: 100,
+		})
 		if err != nil {
 			return nil, err
 		}
