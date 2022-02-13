@@ -46,7 +46,7 @@ type (
 		ListRemoteOrgsByToken(ctx context.Context, token string) ([]string, error)
 	}
 
-	// UserStore defines operations for working with chat_users.
+	// ChatUserStore defines operations for working with chat_users.
 	ChatUserStore interface {
 		FindChatUserByID(ctx context.Context, id string) (*ent.ChatUser, error)
 		CreateChatUser(ctx context.Context, cu *ent.ChatUser) (*ent.ChatUser, error)

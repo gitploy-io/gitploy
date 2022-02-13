@@ -82,7 +82,7 @@ func NewInteractor(c *InteractorConfig) *Interactor {
 		service:       i.common,
 		WebhookURL:    fmt.Sprintf("%s://%s/hooks", c.ServerProxyProto, c.ServerProxyHost),
 		WebhookSSL:    c.ServerProxyProto == "https",
-		WebhookSecret: i.WebhookSecret,
+		WebhookSecret: c.WebhookSecret,
 	}
 	i.UserInteractor = &UserInteractor{
 		service:       i.common,

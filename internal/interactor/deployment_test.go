@@ -19,11 +19,12 @@ import (
 
 func TestInteractor_IsApproved(t *testing.T) {
 	t.Run("Return false when a review is rejected.", func(t *testing.T) {
+		t.Log("Start mocking:")
 		ctrl := gomock.NewController(t)
 		store := mock.NewMockStore(ctrl)
 		scm := mock.NewMockSCM(ctrl)
 
-		t.Log("Return various status reviews")
+		t.Log("\tList reviews.")
 		store.
 			EXPECT().
 			ListReviews(gomock.Any(), gomock.AssignableToTypeOf(&ent.Deployment{})).
