@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin/binding"
 	"go.uber.org/zap"
 
+	i "github.com/gitploy-io/gitploy/internal/interactor"
 	gb "github.com/gitploy-io/gitploy/internal/server/global"
 	"github.com/gitploy-io/gitploy/model/ent"
 	"github.com/gitploy-io/gitploy/model/extent"
@@ -56,7 +57,10 @@ func (u *User) ListUsers(c *gin.Context) {
 		)
 	}
 
-	us, err := u.i.ListUsers(ctx, q, p, pp)
+	us, err := u.i.SearchUsers(ctx, &i.SearchUsersOptions{
+		Query:       q,
+		ListOptions: i.ListOptions{Page: p, PerPage: pp},
+	})
 	if err != nil {
 		u.log.Check(gb.GetZapLogLevel(err), "Failed to list users.").Write(zap.Error(err))
 		gb.ResponseWithError(c, err)

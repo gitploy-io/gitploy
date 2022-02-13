@@ -8,6 +8,7 @@ import (
 	context "context"
 	reflect "reflect"
 
+	interactor "github.com/gitploy-io/gitploy/internal/interactor"
 	ent "github.com/gitploy-io/gitploy/model/ent"
 	extent "github.com/gitploy-io/gitploy/model/extent"
 	gomock "github.com/golang/mock/gomock"
@@ -80,19 +81,19 @@ func (mr *MockInteractorMockRecorder) GetRateLimit(ctx, u interface{}) *gomock.C
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetRateLimit", reflect.TypeOf((*MockInteractor)(nil).GetRateLimit), ctx, u)
 }
 
-// ListUsers mocks base method.
-func (m *MockInteractor) ListUsers(ctx context.Context, login string, page, perPage int) ([]*ent.User, error) {
+// SearchUsers mocks base method.
+func (m *MockInteractor) SearchUsers(ctx context.Context, opts *interactor.SearchUsersOptions) ([]*ent.User, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListUsers", ctx, login, page, perPage)
+	ret := m.ctrl.Call(m, "SearchUsers", ctx, opts)
 	ret0, _ := ret[0].([]*ent.User)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// ListUsers indicates an expected call of ListUsers.
-func (mr *MockInteractorMockRecorder) ListUsers(ctx, login, page, perPage interface{}) *gomock.Call {
+// SearchUsers indicates an expected call of SearchUsers.
+func (mr *MockInteractorMockRecorder) SearchUsers(ctx, opts interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListUsers", reflect.TypeOf((*MockInteractor)(nil).ListUsers), ctx, login, page, perPage)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SearchUsers", reflect.TypeOf((*MockInteractor)(nil).SearchUsers), ctx, opts)
 }
 
 // UpdateUser mocks base method.
