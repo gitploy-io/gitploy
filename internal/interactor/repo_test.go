@@ -1,12 +1,12 @@
-package interactor
+package interactor_test
 
 import (
 	"context"
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	"go.uber.org/zap"
 
+	i "github.com/gitploy-io/gitploy/internal/interactor"
 	"github.com/gitploy-io/gitploy/internal/interactor/mock"
 	"github.com/gitploy-io/gitploy/model/ent"
 	"github.com/gitploy-io/gitploy/pkg/e"
@@ -29,13 +29,12 @@ func TestInteractor_DeactivateRepo(t *testing.T) {
 			Deactivate(gomock.Any(), gomock.AssignableToTypeOf(&ent.Repo{})).
 			Return(&ent.Repo{}, nil)
 
-		i := &RepoInteractor{
-			store: store,
-			scm:   scm,
-			log:   zap.L(),
-		}
+		it := i.NewInteractor(&i.InteractorConfig{
+			Store: store,
+			SCM:   scm,
+		})
 
-		_, err := i.DeactivateRepo(context.Background(), &ent.User{}, &ent.Repo{})
+		_, err := it.DeactivateRepo(context.Background(), &ent.User{}, &ent.Repo{})
 		if err != nil {
 			t.Fatalf("DeactivateRepo returns an error: %v", err)
 		}

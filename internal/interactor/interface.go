@@ -1,4 +1,4 @@
-//go:generate mockgen -source ./interface.go -source ./user.go -destination ./mock/pkg.go -package mock
+//go:generate sh _mock.sh
 
 package interactor
 
@@ -82,8 +82,7 @@ type (
 	}
 
 	SCM interface {
-		GetRemoteUserByToken(ctx context.Context, token string) (*extent.RemoteUser, error)
-		ListRemoteOrgsByToken(ctx context.Context, token string) ([]string, error)
+		SyncSCM
 
 		ListRemoteRepos(ctx context.Context, u *ent.User) ([]*extent.RemoteRepo, error)
 

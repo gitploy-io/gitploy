@@ -9,6 +9,7 @@ import (
 	reflect "reflect"
 	time "time"
 
+	interactor "github.com/gitploy-io/gitploy/internal/interactor"
 	ent "github.com/gitploy-io/gitploy/model/ent"
 	deployment "github.com/gitploy-io/gitploy/model/ent/deployment"
 	extent "github.com/gitploy-io/gitploy/model/extent"
@@ -784,21 +785,6 @@ func (mr *MockStoreMockRecorder) ListReviews(ctx, d interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListReviews", reflect.TypeOf((*MockStore)(nil).ListReviews), ctx, d)
 }
 
-// ListUsers mocks base method.
-func (m *MockStore) ListUsers(ctx context.Context, login string, page, perPage int) ([]*ent.User, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListUsers", ctx, login, page, perPage)
-	ret0, _ := ret[0].([]*ent.User)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// ListUsers indicates an expected call of ListUsers.
-func (mr *MockStoreMockRecorder) ListUsers(ctx, login, page, perPage interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListUsers", reflect.TypeOf((*MockStore)(nil).ListUsers), ctx, login, page, perPage)
-}
-
 // SearchDeployments mocks base method.
 func (m *MockStore) SearchDeployments(ctx context.Context, u *ent.User, s []deployment.Status, owned bool, from, to time.Time, page, perPage int) ([]*ent.Deployment, error) {
 	m.ctrl.T.Helper()
@@ -827,6 +813,21 @@ func (m *MockStore) SearchReviews(ctx context.Context, u *ent.User) ([]*ent.Revi
 func (mr *MockStoreMockRecorder) SearchReviews(ctx, u interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SearchReviews", reflect.TypeOf((*MockStore)(nil).SearchReviews), ctx, u)
+}
+
+// SearchUsers mocks base method.
+func (m *MockStore) SearchUsers(ctx context.Context, opts *interactor.SearchUsersOptions) ([]*ent.User, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SearchUsers", ctx, opts)
+	ret0, _ := ret[0].([]*ent.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// SearchUsers indicates an expected call of SearchUsers.
+func (mr *MockStoreMockRecorder) SearchUsers(ctx, opts interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SearchUsers", reflect.TypeOf((*MockStore)(nil).SearchUsers), ctx, opts)
 }
 
 // SyncDeploymentStatus mocks base method.

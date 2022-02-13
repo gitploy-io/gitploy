@@ -9,11 +9,18 @@ import (
 	"github.com/gitploy-io/gitploy/model/extent"
 )
 
-type SyncInteractor struct {
-	*service
+type (
+	SyncInteractor struct {
+		*service
 
-	orgEntries []string
-}
+		orgEntries []string
+	}
+
+	SyncSCM interface {
+		GetRemoteUserByToken(ctx context.Context, token string) (*extent.RemoteUser, error)
+		ListRemoteOrgsByToken(ctx context.Context, token string) ([]string, error)
+	}
+)
 
 func (i *SyncInteractor) IsEntryOrg(ctx context.Context, namespace string) bool {
 	if i.orgEntries == nil {
