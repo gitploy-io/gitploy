@@ -49,7 +49,7 @@ var repoUpdateCommand = &cli.Command{
 		}
 
 		c := buildClient(cli)
-		repo, err := c.Repos.Update(cli.Context, ns, n, req)
+		repo, err := c.Repo.Update(cli.Context, ns, n, req)
 		if err != nil {
 			return err
 		}
