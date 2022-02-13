@@ -16,12 +16,7 @@ type (
 		UserStore
 		ChatUserStore
 		RepoStore
-
-		ListPermsOfRepo(ctx context.Context, r *ent.Repo, q string, page, perPage int) ([]*ent.Perm, error)
-		FindPermOfRepo(ctx context.Context, r *ent.Repo, u *ent.User) (*ent.Perm, error)
-		CreatePerm(ctx context.Context, p *ent.Perm) (*ent.Perm, error)
-		UpdatePerm(ctx context.Context, p *ent.Perm) (*ent.Perm, error)
-		DeletePermsOfUserLessThanSyncedAt(ctx context.Context, u *ent.User, t time.Time) (int, error)
+		PermStore
 
 		CountDeployments(ctx context.Context) (int, error)
 		SearchDeployments(ctx context.Context, u *ent.User, s []deployment.Status, owned bool, from time.Time, to time.Time, page, perPage int) ([]*ent.Deployment, error)
@@ -65,6 +60,22 @@ type (
 		ListEventsGreaterThanTime(ctx context.Context, t time.Time) ([]*ent.Event, error)
 		CreateEvent(ctx context.Context, e *ent.Event) (*ent.Event, error)
 		CheckNotificationRecordOfEvent(ctx context.Context, e *ent.Event) bool
+	}
+
+	// PermStore defines operations for working with perms.
+	PermStore interface {
+		ListPermsOfRepo(ctx context.Context, r *ent.Repo, opt *ListPermsOfRepoOptions) ([]*ent.Perm, error)
+		FindPermOfRepo(ctx context.Context, r *ent.Repo, u *ent.User) (*ent.Perm, error)
+		CreatePerm(ctx context.Context, p *ent.Perm) (*ent.Perm, error)
+		UpdatePerm(ctx context.Context, p *ent.Perm) (*ent.Perm, error)
+		DeletePermsOfUserLessThanSyncedAt(ctx context.Context, u *ent.User, t time.Time) (int, error)
+	}
+
+	ListPermsOfRepoOptions struct {
+		ListOptions
+
+		// Query search the 'login' contains the query.
+		Query string
 	}
 
 	SCM interface {

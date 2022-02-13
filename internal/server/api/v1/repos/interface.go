@@ -14,7 +14,7 @@ type (
 	Interactor interface {
 		FindUserByID(ctx context.Context, id int64) (*ent.User, error)
 
-		ListPermsOfRepo(ctx context.Context, r *ent.Repo, q string, page, perPage int) ([]*ent.Perm, error)
+		ListPermsOfRepo(ctx context.Context, r *ent.Repo, opt *i.ListPermsOfRepoOptions) ([]*ent.Perm, error)
 		FindPermOfRepo(ctx context.Context, r *ent.Repo, u *ent.User) (*ent.Perm, error)
 
 		ListReposOfUser(ctx context.Context, u *ent.User, opt *i.ListReposOfUserOptions) ([]*ent.Repo, error)

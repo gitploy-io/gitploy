@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 
+	i "github.com/gitploy-io/gitploy/internal/interactor"
 	gb "github.com/gitploy-io/gitploy/internal/server/global"
 	"github.com/gitploy-io/gitploy/model/ent"
 	"github.com/gitploy-io/gitploy/pkg/e"
@@ -42,7 +43,10 @@ func (s *PermAPI) List(c *gin.Context) {
 		perPage = 100
 	}
 
-	perms, err := s.i.ListPermsOfRepo(ctx, re, q, page, perPage)
+	perms, err := s.i.ListPermsOfRepo(ctx, re, &i.ListPermsOfRepoOptions{
+		ListOptions: i.ListOptions{Page: page, PerPage: perPage},
+		Query:       q,
+	})
 	if err != nil {
 		s.log.Check(gb.GetZapLogLevel(err), "Failed to list permissions.").Write(zap.Error(err))
 		gb.ResponseWithError(c, err)
