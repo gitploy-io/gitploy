@@ -9,6 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 
+	i "github.com/gitploy-io/gitploy/internal/interactor"
 	gb "github.com/gitploy-io/gitploy/internal/server/global"
 	"github.com/gitploy-io/gitploy/model/ent"
 	"github.com/gitploy-io/gitploy/model/ent/deployment"
@@ -79,7 +80,10 @@ func (s *DeploymentAPI) ListChanges(c *gin.Context) {
 		}
 	}
 
-	commits, _, err := s.i.CompareCommits(ctx, u, re, ld.Sha, sha, page, perPage)
+	commits, _, err := s.i.CompareCommits(ctx, u, re, ld.Sha, sha, &i.ListOptions{
+		Page:    page,
+		PerPage: perPage,
+	})
 	if err != nil {
 		s.log.Check(gb.GetZapLogLevel(err), "Failed to compare two commits.").Write(zap.Error(err))
 		gb.ResponseWithError(c, err)

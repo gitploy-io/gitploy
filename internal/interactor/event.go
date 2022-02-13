@@ -20,6 +20,13 @@ type (
 
 		events evbus.Bus
 	}
+
+	// EventStore defines operations for working with events.
+	EventStore interface {
+		ListEventsGreaterThanTime(ctx context.Context, t time.Time) ([]*ent.Event, error)
+		CreateEvent(ctx context.Context, e *ent.Event) (*ent.Event, error)
+		CheckNotificationRecordOfEvent(ctx context.Context, e *ent.Event) bool
+	}
 )
 
 func (i *EventInteractor) SubscribeEvent(fn func(e *ent.Event)) error {

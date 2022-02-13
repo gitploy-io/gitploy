@@ -3,12 +3,23 @@ package interactor
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/gitploy-io/gitploy/model/ent"
 )
 
 type (
+	// DeploymentStatisticsInteractor provides application logic for interacting with deployment_statistics.
 	DeploymentStatisticsInteractor service
+
+	// DeploymentStatisticsStore defines operations for working with deployment_statistics.
+	DeploymentStatisticsStore interface {
+		ListAllDeploymentStatistics(ctx context.Context) ([]*ent.DeploymentStatistics, error)
+		ListDeploymentStatisticsGreaterThanTime(ctx context.Context, updated time.Time) ([]*ent.DeploymentStatistics, error)
+		FindDeploymentStatisticsOfRepoByEnv(ctx context.Context, r *ent.Repo, env string) (*ent.DeploymentStatistics, error)
+		CreateDeploymentStatistics(ctx context.Context, s *ent.DeploymentStatistics) (*ent.DeploymentStatistics, error)
+		UpdateDeploymentStatistics(ctx context.Context, s *ent.DeploymentStatistics) (*ent.DeploymentStatistics, error)
+	}
 )
 
 func (i *DeploymentStatisticsInteractor) ProduceDeploymentStatisticsOfRepo(ctx context.Context, r *ent.Repo, d *ent.Deployment) (*ent.DeploymentStatistics, error) {
@@ -55,7 +66,10 @@ func (i *DeploymentStatisticsInteractor) produceDeploymentStatisticsOfRepo(ctx c
 			}
 		}
 
-		cms, fs, err := i.scm.CompareCommits(ctx, d.Edges.User, r, ld.Sha, d.Sha, 1, 100)
+		cms, fs, err := i.scm.CompareCommits(ctx, d.Edges.User, r, ld.Sha, d.Sha, &ListOptions{
+			Page:    1,
+			PerPage: 100,
+		})
 		if err != nil {
 			return nil, err
 		}
