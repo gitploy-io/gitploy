@@ -4,10 +4,26 @@ import (
 	"context"
 	"time"
 
+	"github.com/gitploy-io/gitploy/model/ent"
 	"go.uber.org/zap"
 )
 
-type LockInteractor service
+type (
+	// LockInteractor provides application logic for interacting with users.
+	LockInteractor service
+
+	// LockStore defines operations for working with locks.
+	LockStore interface {
+		ListExpiredLocksLessThanTime(ctx context.Context, t time.Time) ([]*ent.Lock, error)
+		ListLocksOfRepo(ctx context.Context, r *ent.Repo) ([]*ent.Lock, error)
+		FindLockOfRepoByEnv(ctx context.Context, r *ent.Repo, env string) (*ent.Lock, error)
+		HasLockOfRepoForEnv(ctx context.Context, r *ent.Repo, env string) (bool, error)
+		FindLockByID(ctx context.Context, id int) (*ent.Lock, error)
+		CreateLock(ctx context.Context, l *ent.Lock) (*ent.Lock, error)
+		UpdateLock(ctx context.Context, l *ent.Lock) (*ent.Lock, error)
+		DeleteLock(ctx context.Context, l *ent.Lock) error
+	}
+)
 
 func (i *LockInteractor) runAutoUnlock(stop <-chan struct{}) {
 	ctx := context.Background()
