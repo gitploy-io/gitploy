@@ -1,15 +1,16 @@
-package interactor
+package interactor_test
 
 import (
 	"context"
 	"testing"
 
+	i "github.com/gitploy-io/gitploy/internal/interactor"
 	"github.com/gitploy-io/gitploy/internal/interactor/mock"
 	"github.com/gitploy-io/gitploy/model/extent"
 	"github.com/golang/mock/gomock"
 )
 
-func TestStore_GetLicense(t *testing.T) {
+func TestInteractor_GetLicense(t *testing.T) {
 	t.Run("Return the trial license when the signing data is nil.", func(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		store := mock.NewMockStore(ctrl)
@@ -25,9 +26,11 @@ func TestStore_GetLicense(t *testing.T) {
 			CountDeployments(gomock.AssignableToTypeOf(context.Background())).
 			Return(extent.TrialDeploymentLimit, nil)
 
-		i := &LicenseInteractor{service: &service{store: store}}
+		it := i.NewInteractor(&i.InteractorConfig{
+			Store: store,
+		})
 
-		lic, err := i.GetLicense(context.Background())
+		lic, err := it.GetLicense(context.Background())
 		if err != nil {
 			t.Fatalf("GetLicense returns an error: %s", err)
 		}

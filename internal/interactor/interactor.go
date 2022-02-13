@@ -22,7 +22,6 @@ type (
 		*LicenseInteractor
 		*LockInteractor
 		*RepoInteractor
-		*SyncInteractor
 		*UserInteractor
 	}
 
@@ -74,10 +73,6 @@ func NewInteractor(c *InteractorConfig) *Interactor {
 	}
 	i.LockInteractor = (*LockInteractor)(i.common)
 	i.RepoInteractor = (*RepoInteractor)(i.common)
-	i.SyncInteractor = &SyncInteractor{
-		service:    i.common,
-		orgEntries: c.OrgEntries,
-	}
 	i.UserInteractor = &UserInteractor{
 		service:       i.common,
 		admins:        c.AdminUsers,

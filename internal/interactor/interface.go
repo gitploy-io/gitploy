@@ -1,4 +1,4 @@
-//go:generate mockgen -source ./interface.go -destination ./mock/pkg.go -package mock
+//go:generate sh _mock.sh
 
 package interactor
 
@@ -13,14 +13,7 @@ import (
 
 type (
 	Store interface {
-		CountUsers(context.Context) (int, error)
-		ListUsers(ctx context.Context, login string, page, perPage int) ([]*ent.User, error)
-		FindUserByID(ctx context.Context, id int64) (*ent.User, error)
-		FindUserByHash(ctx context.Context, hash string) (*ent.User, error)
-		FindUserByLogin(ctx context.Context, login string) (*ent.User, error)
-		CreateUser(ctx context.Context, u *ent.User) (*ent.User, error)
-		UpdateUser(ctx context.Context, u *ent.User) (*ent.User, error)
-		DeleteUser(ctx context.Context, u *ent.User) error
+		UserStore
 
 		FindChatUserByID(ctx context.Context, id string) (*ent.ChatUser, error)
 		CreateChatUser(ctx context.Context, cu *ent.ChatUser) (*ent.ChatUser, error)
@@ -89,8 +82,7 @@ type (
 	}
 
 	SCM interface {
-		GetRemoteUserByToken(ctx context.Context, token string) (*extent.RemoteUser, error)
-		ListRemoteOrgsByToken(ctx context.Context, token string) ([]string, error)
+		UserSCM
 
 		ListRemoteRepos(ctx context.Context, u *ent.User) ([]*extent.RemoteRepo, error)
 

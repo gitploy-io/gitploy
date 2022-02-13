@@ -1,14 +1,14 @@
-package interactor
+package interactor_test
 
 import (
 	"context"
 	"testing"
 
+	i "github.com/gitploy-io/gitploy/internal/interactor"
 	"github.com/gitploy-io/gitploy/internal/interactor/mock"
 	"github.com/gitploy-io/gitploy/model/ent"
 	"github.com/gitploy-io/gitploy/model/extent"
 	"github.com/golang/mock/gomock"
-	"go.uber.org/zap"
 )
 
 func TestInteractor_ProduceDeploymentStatisticsOfRepo(t *testing.T) {
@@ -56,13 +56,12 @@ func TestInteractor_ProduceDeploymentStatisticsOfRepo(t *testing.T) {
 				return s, nil
 			})
 
-		i := &DeploymentStatisticsInteractor{
-			store: store,
-			scm:   scm,
-			log:   zap.L(),
-		}
+		it := i.NewInteractor(&i.InteractorConfig{
+			Store: store,
+			SCM:   scm,
+		})
 
-		_, err := i.ProduceDeploymentStatisticsOfRepo(context.Background(), input.repo, input.d)
+		_, err := it.ProduceDeploymentStatisticsOfRepo(context.Background(), input.repo, input.d)
 		if err != nil {
 			t.Fatalf("ProduceDeploymentStatisticsOfRepo returns an error: %s", err)
 		}
@@ -118,13 +117,12 @@ func TestInteractor_ProduceDeploymentStatisticsOfRepo(t *testing.T) {
 				return s, nil
 			})
 
-		i := &DeploymentStatisticsInteractor{
-			store: store,
-			scm:   scm,
-			log:   zap.L(),
-		}
+		it := i.NewInteractor(&i.InteractorConfig{
+			Store: store,
+			SCM:   scm,
+		})
 
-		_, err := i.ProduceDeploymentStatisticsOfRepo(context.Background(), input.repo, input.d)
+		_, err := it.ProduceDeploymentStatisticsOfRepo(context.Background(), input.repo, input.d)
 		if err != nil {
 			t.Fatalf("ProduceDeploymentStatisticsOfRepo returns an error: %s", err)
 		}

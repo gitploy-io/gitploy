@@ -5,12 +5,13 @@ import (
 	"testing"
 	"time"
 
+	i "github.com/gitploy-io/gitploy/internal/interactor"
 	"github.com/gitploy-io/gitploy/model/ent"
 	"github.com/gitploy-io/gitploy/model/ent/enttest"
 	"github.com/gitploy-io/gitploy/model/ent/migrate"
 )
 
-func TestStore_ListUsers(t *testing.T) {
+func TestStore_Searchusers(t *testing.T) {
 	client := enttest.Open(t, "sqlite3", "file:ent?mode=memory&cache=shared&_fk=1",
 		enttest.WithMigrateOptions(migrate.WithForeignKeys(false)),
 	)
@@ -46,7 +47,10 @@ func TestStore_ListUsers(t *testing.T) {
 			err error
 		)
 
-		if us, err = s.ListUsers(ctx, "", 1, 30); err != nil {
+		if us, err = s.SearchUsers(ctx, &i.SearchUsersOptions{
+			Query:       "",
+			ListOptions: i.ListOptions{Page: 1, PerPage: 30},
+		}); err != nil {
 			t.Fatalf("ListUsers returns an error: %s", err)
 		}
 
@@ -64,7 +68,12 @@ func TestStore_ListUsers(t *testing.T) {
 			err error
 		)
 
-		if us, err = s.ListUsers(ctx, "pple", 1, 30); err != nil {
+		if us, err = s.SearchUsers(ctx, &i.SearchUsersOptions{
+			Query: "pple",
+			ListOptions: i.ListOptions{
+				Page:    1,
+				PerPage: 30,
+			}}); err != nil {
 			t.Fatalf("ListUsers returns an error: %s", err)
 		}
 

@@ -1,4 +1,4 @@
-package interactor
+package interactor_test
 
 import (
 	"context"
@@ -7,8 +7,8 @@ import (
 
 	"github.com/AlekSi/pointer"
 	"github.com/golang/mock/gomock"
-	"go.uber.org/zap"
 
+	i "github.com/gitploy-io/gitploy/internal/interactor"
 	"github.com/gitploy-io/gitploy/internal/interactor/mock"
 	"github.com/gitploy-io/gitploy/model/ent"
 	"github.com/gitploy-io/gitploy/model/ent/deployment"
@@ -16,14 +16,6 @@ import (
 	"github.com/gitploy-io/gitploy/model/extent"
 	"github.com/gitploy-io/gitploy/pkg/e"
 )
-
-func newMockDeploymentInteractor(store Store, scm SCM) *DeploymentInteractor {
-	return &DeploymentInteractor{
-		store: store,
-		scm:   scm,
-		log:   zap.L(),
-	}
-}
 
 func TestInteractor_IsApproved(t *testing.T) {
 	t.Run("Return false when a review is rejected.", func(t *testing.T) {
@@ -44,10 +36,13 @@ func TestInteractor_IsApproved(t *testing.T) {
 				},
 			}, nil)
 
-		i := newMockDeploymentInteractor(store, scm)
+		it := i.NewInteractor(&i.InteractorConfig{
+			Store: store,
+			SCM:   scm,
+		})
 
 		expected := false
-		if ret := i.IsApproved(context.Background(), &ent.Deployment{}); ret != expected {
+		if ret := it.IsApproved(context.Background(), &ent.Deployment{}); ret != expected {
 			t.Fatalf("IsApproved = %v, wanted %v", ret, expected)
 		}
 	})
@@ -75,9 +70,12 @@ func TestInteractor_Deploy(t *testing.T) {
 		store := mock.NewMockStore(ctrl)
 		scm := mock.NewMockSCM(ctrl)
 
-		i := newMockDeploymentInteractor(store, scm)
+		it := i.NewInteractor(&i.InteractorConfig{
+			Store: store,
+			SCM:   scm,
+		})
 
-		_, err := i.Deploy(context.Background(), &ent.User{}, &ent.Repo{}, input.d, input.e)
+		_, err := it.Deploy(context.Background(), &ent.User{}, &ent.Repo{}, input.d, input.e)
 		if !e.HasErrorCode(err, e.ErrorCodeEntityUnprocessable) {
 			t.Fatalf("Deploy' error = %v, wanted ErrorCodeDeploymentLocked", err)
 		}
@@ -93,9 +91,12 @@ func TestInteractor_Deploy(t *testing.T) {
 			HasLockOfRepoForEnv(ctx, gomock.AssignableToTypeOf(&ent.Repo{}), "").
 			Return(true, nil)
 
-		i := newMockDeploymentInteractor(store, scm)
+		it := i.NewInteractor(&i.InteractorConfig{
+			Store: store,
+			SCM:   scm,
+		})
 
-		_, err := i.Deploy(context.Background(), &ent.User{}, &ent.Repo{}, &ent.Deployment{}, &extent.Env{})
+		_, err := it.Deploy(context.Background(), &ent.User{}, &ent.Repo{}, &ent.Deployment{}, &extent.Env{})
 		if !e.HasErrorCode(err, e.ErrorCodeDeploymentLocked) {
 			t.Fatalf("Deploy' error = %v, wanted ErrorCodeDeploymentLocked", err)
 		}
@@ -159,9 +160,12 @@ func TestInteractor_Deploy(t *testing.T) {
 			EXPECT().
 			CreateDeploymentStatus(ctx, gomock.AssignableToTypeOf(&ent.DeploymentStatus{}))
 
-		i := newMockDeploymentInteractor(store, scm)
+		it := i.NewInteractor(&i.InteractorConfig{
+			Store: store,
+			SCM:   scm,
+		})
 
-		d, err := i.Deploy(context.Background(), &ent.User{}, &ent.Repo{}, input.d, input.e)
+		d, err := it.Deploy(context.Background(), &ent.User{}, &ent.Repo{}, input.d, input.e)
 		if err != nil {
 			t.Fatalf("Deploy returns a error: %s", err)
 		}
@@ -243,9 +247,12 @@ func TestInteractor_Deploy(t *testing.T) {
 			CreateEvent(ctx, gomock.AssignableToTypeOf(&ent.Event{})).
 			Return(&ent.Event{}, nil)
 
-		i := newMockDeploymentInteractor(store, scm)
+		it := i.NewInteractor(&i.InteractorConfig{
+			Store: store,
+			SCM:   scm,
+		})
 
-		d, err := i.Deploy(context.Background(), &ent.User{}, &ent.Repo{}, input.d, input.e)
+		d, err := it.Deploy(context.Background(), &ent.User{}, &ent.Repo{}, input.d, input.e)
 		if err != nil {
 			t.Errorf("Deploy returns a error: %s", err)
 			t.FailNow()
@@ -281,9 +288,12 @@ func TestInteractor_DeployToRemote(t *testing.T) {
 		store := mock.NewMockStore(ctrl)
 		scm := mock.NewMockSCM(ctrl)
 
-		i := newMockDeploymentInteractor(store, scm)
+		it := i.NewInteractor(&i.InteractorConfig{
+			Store: store,
+			SCM:   scm,
+		})
 
-		_, err := i.DeployToRemote(context.Background(), &ent.User{}, &ent.Repo{}, input.d, input.e)
+		_, err := it.DeployToRemote(context.Background(), &ent.User{}, &ent.Repo{}, input.d, input.e)
 		if !e.HasErrorCode(err, e.ErrorCodeDeploymentStatusInvalid) {
 			t.Fatalf("CreateRemoteDeployment error = %v, wanted ErrorCodeDeploymentStatusInvalid", err)
 		}
@@ -345,9 +355,12 @@ func TestInteractor_DeployToRemote(t *testing.T) {
 			EXPECT().
 			CreateDeploymentStatus(ctx, gomock.AssignableToTypeOf(&ent.DeploymentStatus{}))
 
-		i := newMockDeploymentInteractor(store, scm)
+		it := i.NewInteractor(&i.InteractorConfig{
+			Store: store,
+			SCM:   scm,
+		})
 
-		d, err := i.DeployToRemote(context.Background(), &ent.User{}, &ent.Repo{}, input.d, input.e)
+		d, err := it.DeployToRemote(context.Background(), &ent.User{}, &ent.Repo{}, input.d, input.e)
 		if err != nil {
 			t.Errorf("CreateRemoteDeployment returns a error: %s", err)
 			t.FailNow()

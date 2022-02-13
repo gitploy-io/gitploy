@@ -3,6 +3,7 @@ package store
 import (
 	"context"
 
+	i "github.com/gitploy-io/gitploy/internal/interactor"
 	"github.com/gitploy-io/gitploy/model/ent"
 	"github.com/gitploy-io/gitploy/model/ent/user"
 	"github.com/gitploy-io/gitploy/pkg/e"
@@ -19,16 +20,16 @@ func (s *Store) CountUsers(ctx context.Context) (int, error) {
 	return cnt, nil
 }
 
-func (s *Store) ListUsers(ctx context.Context, login string, page, perPage int) ([]*ent.User, error) {
+func (s *Store) SearchUsers(ctx context.Context, opts *i.SearchUsersOptions) ([]*ent.User, error) {
 	return s.c.User.
 		Query().
 		Where(
-			user.LoginContains(login),
+			user.LoginContains(opts.Query),
 		).
 		WithChatUser().
 		Order(ent.Asc(user.FieldLogin)).
-		Offset(offset(page, perPage)).
-		Limit(perPage).
+		Offset(offset(opts.Page, opts.PerPage)).
+		Limit(opts.PerPage).
 		All(ctx)
 }
 
