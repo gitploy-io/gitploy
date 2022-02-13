@@ -83,12 +83,12 @@ type (
 	}
 
 	BranchSCM interface {
-		ListBranches(ctx context.Context, u *ent.User, r *ent.Repo, page, perPage int) ([]*extent.Branch, error)
+		ListBranches(ctx context.Context, u *ent.User, r *ent.Repo, opt *ListOptions) ([]*extent.Branch, error)
 		GetBranch(ctx context.Context, u *ent.User, r *ent.Repo, branch string) (*extent.Branch, error)
 	}
 
 	TagSCM interface {
-		ListTags(ctx context.Context, u *ent.User, r *ent.Repo, page, perPage int) ([]*extent.Tag, error)
+		ListTags(ctx context.Context, u *ent.User, r *ent.Repo, opt *ListOptions) ([]*extent.Tag, error)
 		GetTag(ctx context.Context, u *ent.User, r *ent.Repo, tag string) (*extent.Tag, error)
 	}
 )

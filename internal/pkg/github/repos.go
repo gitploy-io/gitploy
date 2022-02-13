@@ -7,6 +7,7 @@ import (
 	"github.com/google/go-github/v32/github"
 	graphql "github.com/shurcooL/githubv4"
 
+	"github.com/gitploy-io/gitploy/internal/interactor"
 	i "github.com/gitploy-io/gitploy/internal/interactor"
 	"github.com/gitploy-io/gitploy/model/ent"
 	"github.com/gitploy-io/gitploy/model/extent"
@@ -122,13 +123,13 @@ func (g *Github) ListCommitStatuses(ctx context.Context, u *ent.User, r *ent.Rep
 	return ss, nil
 }
 
-func (g *Github) ListBranches(ctx context.Context, u *ent.User, r *ent.Repo, page, perPage int) ([]*extent.Branch, error) {
+func (g *Github) ListBranches(ctx context.Context, u *ent.User, r *ent.Repo, opt *interactor.ListOptions) ([]*extent.Branch, error) {
 	bs, _, err := g.Client(ctx, u.Token).
 		Repositories.
 		ListBranches(ctx, r.Namespace, r.Name, &github.BranchListOptions{
 			ListOptions: github.ListOptions{
-				Page:    page,
-				PerPage: perPage,
+				Page:    opt.Page,
+				PerPage: opt.PerPage,
 			},
 		})
 	if err != nil {
@@ -158,7 +159,7 @@ func (g *Github) GetBranch(ctx context.Context, u *ent.User, r *ent.Repo, branch
 
 // ListTags list up tags as ordered by commit date.
 // Github GraphQL explore - https://docs.github.com/en/graphql/overview/explorer
-func (g *Github) ListTags(ctx context.Context, u *ent.User, r *ent.Repo, page, perPage int) ([]*extent.Tag, error) {
+func (g *Github) ListTags(ctx context.Context, u *ent.User, r *ent.Repo, opt *i.ListOptions) ([]*extent.Tag, error) {
 	var q struct {
 		Repository struct {
 			Refs struct {
@@ -176,7 +177,7 @@ func (g *Github) ListTags(ctx context.Context, u *ent.User, r *ent.Repo, page, p
 	v := map[string]interface{}{
 		"namespace": graphql.String(r.Namespace),
 		"name":      graphql.String(r.Name),
-		"perPage":   graphql.Int(perPage),
+		"perPage":   graphql.Int(opt.PerPage),
 		"cursor":    (*graphql.String)(nil),
 	}
 
@@ -187,7 +188,7 @@ func (g *Github) ListTags(ctx context.Context, u *ent.User, r *ent.Repo, page, p
 			return nil, err
 		}
 
-		if curPage == page || !q.Repository.Refs.PageInfo.HasNextPage {
+		if curPage == opt.Page || !q.Repository.Refs.PageInfo.HasNextPage {
 			break
 		}
 

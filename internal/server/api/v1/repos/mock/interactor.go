@@ -397,18 +397,18 @@ func (mr *MockInteractorMockRecorder) IsApproved(ctx, d interface{}) *gomock.Cal
 }
 
 // ListBranches mocks base method.
-func (m *MockInteractor) ListBranches(ctx context.Context, u *ent.User, r *ent.Repo, page, perPage int) ([]*extent.Branch, error) {
+func (m *MockInteractor) ListBranches(ctx context.Context, u *ent.User, r *ent.Repo, opt *interactor.ListOptions) ([]*extent.Branch, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListBranches", ctx, u, r, page, perPage)
+	ret := m.ctrl.Call(m, "ListBranches", ctx, u, r, opt)
 	ret0, _ := ret[0].([]*extent.Branch)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // ListBranches indicates an expected call of ListBranches.
-func (mr *MockInteractorMockRecorder) ListBranches(ctx, u, r, page, perPage interface{}) *gomock.Call {
+func (mr *MockInteractorMockRecorder) ListBranches(ctx, u, r, opt interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListBranches", reflect.TypeOf((*MockInteractor)(nil).ListBranches), ctx, u, r, page, perPage)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListBranches", reflect.TypeOf((*MockInteractor)(nil).ListBranches), ctx, u, r, opt)
 }
 
 // ListCommitStatuses mocks base method.
@@ -532,18 +532,18 @@ func (mr *MockInteractorMockRecorder) ListReviews(ctx, d interface{}) *gomock.Ca
 }
 
 // ListTags mocks base method.
-func (m *MockInteractor) ListTags(ctx context.Context, u *ent.User, r *ent.Repo, page, perPage int) ([]*extent.Tag, error) {
+func (m *MockInteractor) ListTags(ctx context.Context, u *ent.User, r *ent.Repo, opt *interactor.ListOptions) ([]*extent.Tag, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListTags", ctx, u, r, page, perPage)
+	ret := m.ctrl.Call(m, "ListTags", ctx, u, r, opt)
 	ret0, _ := ret[0].([]*extent.Tag)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // ListTags indicates an expected call of ListTags.
-func (mr *MockInteractorMockRecorder) ListTags(ctx, u, r, page, perPage interface{}) *gomock.Call {
+func (mr *MockInteractorMockRecorder) ListTags(ctx, u, r, opt interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListTags", reflect.TypeOf((*MockInteractor)(nil).ListTags), ctx, u, r, page, perPage)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListTags", reflect.TypeOf((*MockInteractor)(nil).ListTags), ctx, u, r, opt)
 }
 
 // UpdateLock mocks base method.

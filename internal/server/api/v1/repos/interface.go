@@ -54,10 +54,10 @@ type (
 		GetCommit(ctx context.Context, u *ent.User, r *ent.Repo, sha string) (*extent.Commit, error)
 		ListCommitStatuses(ctx context.Context, u *ent.User, r *ent.Repo, sha string) ([]*extent.Status, error)
 
-		ListBranches(ctx context.Context, u *ent.User, r *ent.Repo, page, perPage int) ([]*extent.Branch, error)
+		ListBranches(ctx context.Context, u *ent.User, r *ent.Repo, opt *i.ListOptions) ([]*extent.Branch, error)
 		GetBranch(ctx context.Context, u *ent.User, r *ent.Repo, branch string) (*extent.Branch, error)
 
-		ListTags(ctx context.Context, u *ent.User, r *ent.Repo, page, perPage int) ([]*extent.Tag, error)
+		ListTags(ctx context.Context, u *ent.User, r *ent.Repo, opt *i.ListOptions) ([]*extent.Tag, error)
 		GetTag(ctx context.Context, u *ent.User, r *ent.Repo, tag string) (*extent.Tag, error)
 	}
 )

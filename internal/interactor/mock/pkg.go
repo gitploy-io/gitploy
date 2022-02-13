@@ -1491,18 +1491,18 @@ func (mr *MockSCMMockRecorder) GetTag(ctx, u, r, tag interface{}) *gomock.Call {
 }
 
 // ListBranches mocks base method.
-func (m *MockSCM) ListBranches(ctx context.Context, u *ent.User, r *ent.Repo, page, perPage int) ([]*extent.Branch, error) {
+func (m *MockSCM) ListBranches(ctx context.Context, u *ent.User, r *ent.Repo, opt *interactor.ListOptions) ([]*extent.Branch, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListBranches", ctx, u, r, page, perPage)
+	ret := m.ctrl.Call(m, "ListBranches", ctx, u, r, opt)
 	ret0, _ := ret[0].([]*extent.Branch)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // ListBranches indicates an expected call of ListBranches.
-func (mr *MockSCMMockRecorder) ListBranches(ctx, u, r, page, perPage interface{}) *gomock.Call {
+func (mr *MockSCMMockRecorder) ListBranches(ctx, u, r, opt interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListBranches", reflect.TypeOf((*MockSCM)(nil).ListBranches), ctx, u, r, page, perPage)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListBranches", reflect.TypeOf((*MockSCM)(nil).ListBranches), ctx, u, r, opt)
 }
 
 // ListCommitStatuses mocks base method.
@@ -1566,18 +1566,18 @@ func (mr *MockSCMMockRecorder) ListRemoteRepos(ctx, u interface{}) *gomock.Call 
 }
 
 // ListTags mocks base method.
-func (m *MockSCM) ListTags(ctx context.Context, u *ent.User, r *ent.Repo, page, perPage int) ([]*extent.Tag, error) {
+func (m *MockSCM) ListTags(ctx context.Context, u *ent.User, r *ent.Repo, opt *interactor.ListOptions) ([]*extent.Tag, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListTags", ctx, u, r, page, perPage)
+	ret := m.ctrl.Call(m, "ListTags", ctx, u, r, opt)
 	ret0, _ := ret[0].([]*extent.Tag)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // ListTags indicates an expected call of ListTags.
-func (mr *MockSCMMockRecorder) ListTags(ctx, u, r, page, perPage interface{}) *gomock.Call {
+func (mr *MockSCMMockRecorder) ListTags(ctx, u, r, opt interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListTags", reflect.TypeOf((*MockSCM)(nil).ListTags), ctx, u, r, page, perPage)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListTags", reflect.TypeOf((*MockSCM)(nil).ListTags), ctx, u, r, opt)
 }
 
 // MockDeploymentStatusSCM is a mock of DeploymentStatusSCM interface.
@@ -1741,18 +1741,18 @@ func (mr *MockBranchSCMMockRecorder) GetBranch(ctx, u, r, branch interface{}) *g
 }
 
 // ListBranches mocks base method.
-func (m *MockBranchSCM) ListBranches(ctx context.Context, u *ent.User, r *ent.Repo, page, perPage int) ([]*extent.Branch, error) {
+func (m *MockBranchSCM) ListBranches(ctx context.Context, u *ent.User, r *ent.Repo, opt *interactor.ListOptions) ([]*extent.Branch, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListBranches", ctx, u, r, page, perPage)
+	ret := m.ctrl.Call(m, "ListBranches", ctx, u, r, opt)
 	ret0, _ := ret[0].([]*extent.Branch)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // ListBranches indicates an expected call of ListBranches.
-func (mr *MockBranchSCMMockRecorder) ListBranches(ctx, u, r, page, perPage interface{}) *gomock.Call {
+func (mr *MockBranchSCMMockRecorder) ListBranches(ctx, u, r, opt interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListBranches", reflect.TypeOf((*MockBranchSCM)(nil).ListBranches), ctx, u, r, page, perPage)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListBranches", reflect.TypeOf((*MockBranchSCM)(nil).ListBranches), ctx, u, r, opt)
 }
 
 // MockTagSCM is a mock of TagSCM interface.
@@ -1794,16 +1794,16 @@ func (mr *MockTagSCMMockRecorder) GetTag(ctx, u, r, tag interface{}) *gomock.Cal
 }
 
 // ListTags mocks base method.
-func (m *MockTagSCM) ListTags(ctx context.Context, u *ent.User, r *ent.Repo, page, perPage int) ([]*extent.Tag, error) {
+func (m *MockTagSCM) ListTags(ctx context.Context, u *ent.User, r *ent.Repo, opt *interactor.ListOptions) ([]*extent.Tag, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListTags", ctx, u, r, page, perPage)
+	ret := m.ctrl.Call(m, "ListTags", ctx, u, r, opt)
 	ret0, _ := ret[0].([]*extent.Tag)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // ListTags indicates an expected call of ListTags.
-func (mr *MockTagSCMMockRecorder) ListTags(ctx, u, r, page, perPage interface{}) *gomock.Call {
+func (mr *MockTagSCMMockRecorder) ListTags(ctx, u, r, opt interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListTags", reflect.TypeOf((*MockTagSCM)(nil).ListTags), ctx, u, r, page, perPage)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListTags", reflect.TypeOf((*MockTagSCM)(nil).ListTags), ctx, u, r, opt)
 }
