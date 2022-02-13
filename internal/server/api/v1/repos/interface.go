@@ -5,6 +5,7 @@ package repos
 import (
 	"context"
 
+	i "github.com/gitploy-io/gitploy/internal/interactor"
 	"github.com/gitploy-io/gitploy/model/ent"
 	"github.com/gitploy-io/gitploy/model/extent"
 )
@@ -16,9 +17,9 @@ type (
 		ListPermsOfRepo(ctx context.Context, r *ent.Repo, q string, page, perPage int) ([]*ent.Perm, error)
 		FindPermOfRepo(ctx context.Context, r *ent.Repo, u *ent.User) (*ent.Perm, error)
 
-		ListReposOfUser(ctx context.Context, u *ent.User, q, namespace, name string, sorted bool, page, perPage int) ([]*ent.Repo, error)
+		ListReposOfUser(ctx context.Context, u *ent.User, opt *i.ListReposOfUserOptions) ([]*ent.Repo, error)
 		FindRepoOfUserByID(ctx context.Context, u *ent.User, id int64) (*ent.Repo, error)
-		FindRepoOfUserByNamespaceName(ctx context.Context, u *ent.User, namespace, name string) (*ent.Repo, error)
+		FindRepoOfUserByNamespaceName(ctx context.Context, u *ent.User, opt *i.FindRepoOfUserByNamespaceNameOptions) (*ent.Repo, error)
 		UpdateRepo(ctx context.Context, r *ent.Repo) (*ent.Repo, error)
 		ActivateRepo(ctx context.Context, u *ent.User, r *ent.Repo, c *extent.WebhookConfig) (*ent.Repo, error)
 		DeactivateRepo(ctx context.Context, u *ent.User, r *ent.Repo) (*ent.Repo, error)

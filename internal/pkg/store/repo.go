@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"entgo.io/ent/dialect/sql"
+	i "github.com/gitploy-io/gitploy/internal/interactor"
 	"github.com/gitploy-io/gitploy/model/ent"
 	"github.com/gitploy-io/gitploy/model/ent/deployment"
 	"github.com/gitploy-io/gitploy/model/ent/perm"
@@ -36,7 +37,7 @@ func (s *Store) CountRepos(ctx context.Context) (int, error) {
 	return cnt, nil
 }
 
-func (s *Store) ListReposOfUser(ctx context.Context, u *ent.User, q, namespace, name string, sorted bool, page, perPage int) ([]*ent.Repo, error) {
+func (s *Store) ListReposOfUser(ctx context.Context, u *ent.User, opt *i.ListReposOfUserOptions) ([]*ent.Repo, error) {
 	// Build the query with parameters.
 	qry := s.c.Repo.
 		Query().
@@ -48,10 +49,10 @@ func (s *Store) ListReposOfUser(ctx context.Context, u *ent.User, q, namespace, 
 				Where(sql.EQ(t.C(perm.FieldUserID), u.ID))
 		}).
 		WithOwner().
-		Limit(perPage).
-		Offset(offset(page, perPage))
+		Limit(opt.PerPage).
+		Offset(offset(opt.Page, opt.PerPage))
 
-	if q != "" {
+	if q := opt.Query; q != "" {
 		qry = qry.Where(
 			repo.Or(
 				repo.NamespaceContains(q),
@@ -60,15 +61,7 @@ func (s *Store) ListReposOfUser(ctx context.Context, u *ent.User, q, namespace, 
 		)
 	}
 
-	if namespace != "" {
-		qry = qry.Where(repo.NamespaceEQ(namespace))
-	}
-
-	if name != "" {
-		qry = qry.Where(repo.NameEQ(name))
-	}
-
-	if sorted {
+	if opt.Sorted {
 		qry = qry.Order(
 			ent.Desc(repo.FieldLatestDeployedAt),
 		)
@@ -136,7 +129,7 @@ func (s *Store) FindRepoOfUserByID(ctx context.Context, u *ent.User, id int64) (
 	return r, nil
 }
 
-func (s *Store) FindRepoOfUserByNamespaceName(ctx context.Context, u *ent.User, namespace, name string) (*ent.Repo, error) {
+func (s *Store) FindRepoOfUserByNamespaceName(ctx context.Context, u *ent.User, opt *i.FindRepoOfUserByNamespaceNameOptions) (*ent.Repo, error) {
 	r, err := s.c.Repo.
 		Query().
 		Where(func(s *sql.Selector) {
@@ -148,8 +141,8 @@ func (s *Store) FindRepoOfUserByNamespaceName(ctx context.Context, u *ent.User, 
 		}).
 		Where(
 			repo.And(
-				repo.NamespaceEQ(namespace),
-				repo.NameEQ(name),
+				repo.NamespaceEQ(opt.Namespace),
+				repo.NameEQ(opt.Name),
 			),
 		).
 		WithOwner().

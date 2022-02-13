@@ -7,38 +7,32 @@ import (
 	"testing"
 
 	"github.com/gin-gonic/gin"
+	"github.com/golang/mock/gomock"
+
+	i "github.com/gitploy-io/gitploy/internal/interactor"
 	"github.com/gitploy-io/gitploy/internal/server/api/v1/repos/mock"
 	"github.com/gitploy-io/gitploy/internal/server/global"
 	"github.com/gitploy-io/gitploy/model/ent"
 	"github.com/gitploy-io/gitploy/model/ent/perm"
-	"github.com/golang/mock/gomock"
 )
 
 func TestRepoMiddleware_RepoWritePerm(t *testing.T) {
 	ctx := gomock.Any()
 
 	t.Run("Return 403 error when the permission is read.", func(t *testing.T) {
-		input := struct {
-			namespace string
-			name      string
-		}{
-			namespace: "octocat",
-			name:      "hello-world",
-		}
-
+		t.Log("Start mocking:")
 		ctrl := gomock.NewController(t)
 		m := mock.NewMockInteractor(ctrl)
 
-		t.Logf("It finds the repository.")
+		t.Logf("\tFind the repository, and get the read permission.")
 		m.
 			EXPECT().
-			FindRepoOfUserByNamespaceName(ctx, gomock.AssignableToTypeOf(&ent.User{}), input.namespace, input.name).
+			FindRepoOfUserByNamespaceName(ctx, gomock.AssignableToTypeOf(&ent.User{}), gomock.AssignableToTypeOf(&i.FindRepoOfUserByNamespaceNameOptions{})).
 			Return(&ent.Repo{
-				Namespace: input.namespace,
-				Name:      input.name,
+				Namespace: "octocat",
+				Name:      "hello-world",
 			}, nil)
 
-		t.Logf("It returns the read permission.")
 		m.
 			EXPECT().
 			FindPermOfRepo(ctx, gomock.AssignableToTypeOf(&ent.Repo{}), gomock.AssignableToTypeOf(&ent.User{})).
@@ -57,7 +51,7 @@ func TestRepoMiddleware_RepoWritePerm(t *testing.T) {
 			c.Status(http.StatusOK)
 		})
 
-		req, _ := http.NewRequest("PATCH", fmt.Sprintf("/repos/%s/%s", input.namespace, input.name), nil)
+		req, _ := http.NewRequest("PATCH", fmt.Sprintf("/repos/%s/%s", "octocat", "hello-world"), nil)
 
 		w := httptest.NewRecorder()
 		router.ServeHTTP(w, req)
@@ -68,27 +62,19 @@ func TestRepoMiddleware_RepoWritePerm(t *testing.T) {
 	})
 
 	t.Run("Return 200 when the permission is write.", func(t *testing.T) {
-		input := struct {
-			namespace string
-			name      string
-		}{
-			namespace: "octocat",
-			name:      "hello-world",
-		}
-
+		t.Log("Start mocking:")
 		ctrl := gomock.NewController(t)
 		m := mock.NewMockInteractor(ctrl)
 
-		t.Logf("It finds the repository.")
+		t.Logf("\tFind the repository, and get the write permission.")
 		m.
 			EXPECT().
-			FindRepoOfUserByNamespaceName(ctx, gomock.AssignableToTypeOf(&ent.User{}), input.namespace, input.name).
+			FindRepoOfUserByNamespaceName(ctx, gomock.AssignableToTypeOf(&ent.User{}), gomock.AssignableToTypeOf(&i.FindRepoOfUserByNamespaceNameOptions{})).
 			Return(&ent.Repo{
-				Namespace: input.namespace,
-				Name:      input.name,
+				Namespace: "octocat",
+				Name:      "hello-world",
 			}, nil)
 
-		t.Logf("It returns the read permission.")
 		m.
 			EXPECT().
 			FindPermOfRepo(ctx, gomock.AssignableToTypeOf(&ent.Repo{}), gomock.AssignableToTypeOf(&ent.User{})).
@@ -107,7 +93,7 @@ func TestRepoMiddleware_RepoWritePerm(t *testing.T) {
 			c.Status(http.StatusOK)
 		})
 
-		req, _ := http.NewRequest("PATCH", fmt.Sprintf("/repos/%s/%s", input.namespace, input.name), nil)
+		req, _ := http.NewRequest("PATCH", fmt.Sprintf("/repos/%s/%s", "octocat", "hello-world"), nil)
 
 		w := httptest.NewRecorder()
 		router.ServeHTTP(w, req)
@@ -122,24 +108,17 @@ func TestRepoMiddleware_RepoAdminPerm(t *testing.T) {
 	ctx := gomock.Any()
 
 	t.Run("Return 200 when the permission is admin.", func(t *testing.T) {
-		input := struct {
-			namespace string
-			name      string
-		}{
-			namespace: "octocat",
-			name:      "hello-world",
-		}
-
+		t.Log("Start mocking:")
 		ctrl := gomock.NewController(t)
 		m := mock.NewMockInteractor(ctrl)
 
-		t.Logf("It finds the repository.")
+		t.Logf("\tFind the repository, and get the admin permission.")
 		m.
 			EXPECT().
-			FindRepoOfUserByNamespaceName(ctx, gomock.AssignableToTypeOf(&ent.User{}), input.namespace, input.name).
+			FindRepoOfUserByNamespaceName(ctx, gomock.AssignableToTypeOf(&ent.User{}), gomock.AssignableToTypeOf(&i.FindRepoOfUserByNamespaceNameOptions{})).
 			Return(&ent.Repo{
-				Namespace: input.namespace,
-				Name:      input.name,
+				Namespace: "octocat",
+				Name:      "hello-world",
 			}, nil)
 
 		t.Logf("It returns the read permission.")
@@ -161,7 +140,7 @@ func TestRepoMiddleware_RepoAdminPerm(t *testing.T) {
 			c.Status(http.StatusOK)
 		})
 
-		req, _ := http.NewRequest("PATCH", fmt.Sprintf("/repos/%s/%s", input.namespace, input.name), nil)
+		req, _ := http.NewRequest("PATCH", fmt.Sprintf("/repos/%s/%s", "octocat", "hello-world"), nil)
 
 		w := httptest.NewRecorder()
 		router.ServeHTTP(w, req)

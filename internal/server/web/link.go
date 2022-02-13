@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 
+	i "github.com/gitploy-io/gitploy/internal/interactor"
 	gb "github.com/gitploy-io/gitploy/internal/server/global"
 	"github.com/gitploy-io/gitploy/model/ent"
 )
@@ -22,7 +23,10 @@ func (w *Web) RedirectToConfig(c *gin.Context) {
 	uv, _ := c.Get(gb.KeyUser)
 	u := uv.(*ent.User)
 
-	r, err := w.i.FindRepoOfUserByNamespaceName(ctx, u, namespace, name)
+	r, err := w.i.FindRepoOfUserByNamespaceName(ctx, u, &i.FindRepoOfUserByNamespaceNameOptions{
+		Namespace: namespace,
+		Name:      name,
+	})
 	if err != nil {
 		w.log.Check(gb.GetZapLogLevel(err), "Failed to get the repository.").Write(zap.Error(err))
 		c.String(http.StatusForbidden, "It has failed to get the repository.")
@@ -52,7 +56,10 @@ func (w *Web) RedirectToNewConfig(c *gin.Context) {
 	uv, _ := c.Get(gb.KeyUser)
 	u := uv.(*ent.User)
 
-	r, err := w.i.FindRepoOfUserByNamespaceName(ctx, u, namespace, name)
+	r, err := w.i.FindRepoOfUserByNamespaceName(ctx, u, &i.FindRepoOfUserByNamespaceNameOptions{
+		Namespace: namespace,
+		Name:      name,
+	})
 	if err != nil {
 		w.log.Check(gb.GetZapLogLevel(err), "Failed to get the repository.").Write(zap.Error(err))
 		c.String(http.StatusForbidden, "It has failed to get the repository.")
