@@ -11,7 +11,6 @@ import (
 
 	interactor "github.com/gitploy-io/gitploy/internal/interactor"
 	ent "github.com/gitploy-io/gitploy/model/ent"
-	deployment "github.com/gitploy-io/gitploy/model/ent/deployment"
 	extent "github.com/gitploy-io/gitploy/model/extent"
 	gomock "github.com/golang/mock/gomock"
 )
@@ -666,18 +665,18 @@ func (mr *MockStoreMockRecorder) ListDeploymentStatuses(ctx, d interface{}) *gom
 }
 
 // ListDeploymentsOfRepo mocks base method.
-func (m *MockStore) ListDeploymentsOfRepo(ctx context.Context, r *ent.Repo, env, status string, page, perPage int) ([]*ent.Deployment, error) {
+func (m *MockStore) ListDeploymentsOfRepo(ctx context.Context, r *ent.Repo, opt *interactor.ListDeploymentsOfRepoOptions) ([]*ent.Deployment, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListDeploymentsOfRepo", ctx, r, env, status, page, perPage)
+	ret := m.ctrl.Call(m, "ListDeploymentsOfRepo", ctx, r, opt)
 	ret0, _ := ret[0].([]*ent.Deployment)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // ListDeploymentsOfRepo indicates an expected call of ListDeploymentsOfRepo.
-func (mr *MockStoreMockRecorder) ListDeploymentsOfRepo(ctx, r, env, status, page, perPage interface{}) *gomock.Call {
+func (mr *MockStoreMockRecorder) ListDeploymentsOfRepo(ctx, r, opt interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListDeploymentsOfRepo", reflect.TypeOf((*MockStore)(nil).ListDeploymentsOfRepo), ctx, r, env, status, page, perPage)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListDeploymentsOfRepo", reflect.TypeOf((*MockStore)(nil).ListDeploymentsOfRepo), ctx, r, opt)
 }
 
 // ListEventsGreaterThanTime mocks base method.
@@ -711,18 +710,18 @@ func (mr *MockStoreMockRecorder) ListExpiredLocksLessThanTime(ctx, t interface{}
 }
 
 // ListInactiveDeploymentsLessThanTime mocks base method.
-func (m *MockStore) ListInactiveDeploymentsLessThanTime(ctx context.Context, t time.Time, page, perPage int) ([]*ent.Deployment, error) {
+func (m *MockStore) ListInactiveDeploymentsLessThanTime(ctx context.Context, opt *interactor.ListInactiveDeploymentsLessThanTimeOptions) ([]*ent.Deployment, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListInactiveDeploymentsLessThanTime", ctx, t, page, perPage)
+	ret := m.ctrl.Call(m, "ListInactiveDeploymentsLessThanTime", ctx, opt)
 	ret0, _ := ret[0].([]*ent.Deployment)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // ListInactiveDeploymentsLessThanTime indicates an expected call of ListInactiveDeploymentsLessThanTime.
-func (mr *MockStoreMockRecorder) ListInactiveDeploymentsLessThanTime(ctx, t, page, perPage interface{}) *gomock.Call {
+func (mr *MockStoreMockRecorder) ListInactiveDeploymentsLessThanTime(ctx, opt interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListInactiveDeploymentsLessThanTime", reflect.TypeOf((*MockStore)(nil).ListInactiveDeploymentsLessThanTime), ctx, t, page, perPage)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListInactiveDeploymentsLessThanTime", reflect.TypeOf((*MockStore)(nil).ListInactiveDeploymentsLessThanTime), ctx, opt)
 }
 
 // ListLocksOfRepo mocks base method.
@@ -785,19 +784,19 @@ func (mr *MockStoreMockRecorder) ListReviews(ctx, d interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListReviews", reflect.TypeOf((*MockStore)(nil).ListReviews), ctx, d)
 }
 
-// SearchDeployments mocks base method.
-func (m *MockStore) SearchDeployments(ctx context.Context, u *ent.User, s []deployment.Status, owned bool, from, to time.Time, page, perPage int) ([]*ent.Deployment, error) {
+// SearchDeploymentsOfUser mocks base method.
+func (m *MockStore) SearchDeploymentsOfUser(ctx context.Context, u *ent.User, opt *interactor.SearchDeploymentsOfUserOptions) ([]*ent.Deployment, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SearchDeployments", ctx, u, s, owned, from, to, page, perPage)
+	ret := m.ctrl.Call(m, "SearchDeploymentsOfUser", ctx, u, opt)
 	ret0, _ := ret[0].([]*ent.Deployment)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// SearchDeployments indicates an expected call of SearchDeployments.
-func (mr *MockStoreMockRecorder) SearchDeployments(ctx, u, s, owned, from, to, page, perPage interface{}) *gomock.Call {
+// SearchDeploymentsOfUser indicates an expected call of SearchDeploymentsOfUser.
+func (mr *MockStoreMockRecorder) SearchDeploymentsOfUser(ctx, u, opt interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SearchDeployments", reflect.TypeOf((*MockStore)(nil).SearchDeployments), ctx, u, s, owned, from, to, page, perPage)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SearchDeploymentsOfUser", reflect.TypeOf((*MockStore)(nil).SearchDeploymentsOfUser), ctx, u, opt)
 }
 
 // SearchReviews mocks base method.

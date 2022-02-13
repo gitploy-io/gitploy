@@ -15,7 +15,60 @@ import (
 )
 
 type (
+	// DeploymentInteractor provides application logic for interacting with deployments.
 	DeploymentInteractor service
+
+	// DeploymentStore defines operations for working with deployments.
+	DeploymentStore interface {
+		CountDeployments(ctx context.Context) (int, error)
+		SearchDeploymentsOfUser(ctx context.Context, u *ent.User, opt *SearchDeploymentsOfUserOptions) ([]*ent.Deployment, error)
+		ListInactiveDeploymentsLessThanTime(ctx context.Context, opt *ListInactiveDeploymentsLessThanTimeOptions) ([]*ent.Deployment, error)
+		ListDeploymentsOfRepo(ctx context.Context, r *ent.Repo, opt *ListDeploymentsOfRepoOptions) ([]*ent.Deployment, error)
+		FindDeploymentByID(ctx context.Context, id int) (*ent.Deployment, error)
+		FindDeploymentByUID(ctx context.Context, uid int64) (*ent.Deployment, error)
+		FindDeploymentOfRepoByNumber(ctx context.Context, r *ent.Repo, number int) (*ent.Deployment, error)
+		FindPrevSuccessDeployment(ctx context.Context, d *ent.Deployment) (*ent.Deployment, error)
+		GetNextDeploymentNumberOfRepo(ctx context.Context, r *ent.Repo) (int, error)
+		CreateDeployment(ctx context.Context, d *ent.Deployment) (*ent.Deployment, error)
+		UpdateDeployment(ctx context.Context, d *ent.Deployment) (*ent.Deployment, error)
+	}
+
+	// SearchDeploymentsOfUserOptions specifies the optional parameters that
+	// search deployments.
+	SearchDeploymentsOfUserOptions struct {
+		ListOptions
+
+		Statuses []deployment.Status
+		Owned    bool
+		From     time.Time
+		To       time.Time
+	}
+
+	// ListInactiveDeploymentsLessThanTimeOptions specifies the optional parameters that
+	// get inactive deployments.
+	ListInactiveDeploymentsLessThanTimeOptions struct {
+		ListOptions
+
+		Less time.Time
+	}
+
+	ListDeploymentsOfRepoOptions struct {
+		ListOptions
+
+		Env    string
+		Status string
+	}
+
+	// DeploymentSCM defines operations for working with remote users.
+	DeploymentSCM interface {
+		// SCM returns the deployment with UID and SHA.
+		CreateRemoteDeployment(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, e *extent.Env) (*extent.RemoteDeployment, error)
+		CancelDeployment(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, s *ent.DeploymentStatus) error
+
+		GetConfig(ctx context.Context, u *ent.User, r *ent.Repo) (*extent.Config, error)
+		GetConfigRedirectURL(ctx context.Context, u *ent.User, r *ent.Repo) (string, error)
+		GetNewConfigRedirectURL(ctx context.Context, u *ent.User, r *ent.Repo) (string, error)
+	}
 )
 
 // IsApproved verifies that the request is approved or not.
@@ -223,7 +276,10 @@ L:
 				break L
 			}
 		case t := <-ticker.C:
-			ds, err := i.store.ListInactiveDeploymentsLessThanTime(ctx, t.Add(-30*time.Minute).UTC(), 1, 30)
+			ds, err := i.store.ListInactiveDeploymentsLessThanTime(ctx, &ListInactiveDeploymentsLessThanTimeOptions{
+				ListOptions: ListOptions{Page: 1, PerPage: 30},
+				Less:        t.Add(-30 * time.Minute).UTC(),
+			})
 			if err != nil {
 				i.log.Error("It has failed to read inactive deployments.", zap.Error(err))
 				continue

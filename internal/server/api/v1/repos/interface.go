@@ -24,7 +24,7 @@ type (
 		ActivateRepo(ctx context.Context, u *ent.User, r *ent.Repo) (*ent.Repo, error)
 		DeactivateRepo(ctx context.Context, u *ent.User, r *ent.Repo) (*ent.Repo, error)
 
-		ListDeploymentsOfRepo(ctx context.Context, r *ent.Repo, env string, status string, page, perPage int) ([]*ent.Deployment, error)
+		ListDeploymentsOfRepo(ctx context.Context, r *ent.Repo, opt *i.ListDeploymentsOfRepoOptions) ([]*ent.Deployment, error)
 		FindDeploymentByID(ctx context.Context, id int) (*ent.Deployment, error)
 		FindDeploymentOfRepoByNumber(ctx context.Context, r *ent.Repo, number int) (*ent.Deployment, error)
 		FindPrevSuccessDeployment(ctx context.Context, d *ent.Deployment) (*ent.Deployment, error)

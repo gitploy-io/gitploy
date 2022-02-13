@@ -5,6 +5,7 @@ import (
 	"testing"
 	"time"
 
+	i "github.com/gitploy-io/gitploy/internal/interactor"
 	"github.com/gitploy-io/gitploy/model/ent"
 	"github.com/gitploy-io/gitploy/model/ent/deployment"
 	"github.com/gitploy-io/gitploy/model/ent/enttest"
@@ -71,14 +72,15 @@ func TestStore_SearchDeployments(t *testing.T) {
 
 		store := NewStore(client)
 
-		res, err := store.SearchDeployments(ctx,
+		res, err := store.SearchDeploymentsOfUser(ctx,
 			&ent.User{ID: u1},
-			[]deployment.Status{},
-			owned,
-			time.Now().UTC().Add(-time.Minute),
-			time.Now().UTC(),
-			page,
-			perPage)
+			&i.SearchDeploymentsOfUserOptions{
+				ListOptions: i.ListOptions{Page: page, PerPage: perPage},
+				Statuses:    []deployment.Status{},
+				Owned:       owned,
+				From:        time.Now().UTC().Add(-time.Minute),
+				To:          time.Now().UTC(),
+			})
 		if err != nil {
 			t.Fatalf("SearchDeployments return an error: %s", err)
 		}
@@ -98,16 +100,15 @@ func TestStore_SearchDeployments(t *testing.T) {
 
 		store := NewStore(client)
 
-		res, err := store.SearchDeployments(ctx,
+		res, err := store.SearchDeploymentsOfUser(ctx,
 			&ent.User{ID: u1},
-			[]deployment.Status{
-				deployment.StatusWaiting,
-			},
-			owned,
-			time.Now().UTC().Add(-time.Minute),
-			time.Now().UTC(),
-			page,
-			perPage)
+			&i.SearchDeploymentsOfUserOptions{
+				ListOptions: i.ListOptions{Page: page, PerPage: perPage},
+				Statuses:    []deployment.Status{deployment.StatusWaiting},
+				Owned:       owned,
+				From:        time.Now().UTC().Add(-time.Minute),
+				To:          time.Now().UTC(),
+			})
 		if err != nil {
 			t.Fatalf("SearchDeployments return an error: %s", err)
 		}
@@ -127,14 +128,15 @@ func TestStore_SearchDeployments(t *testing.T) {
 
 		store := NewStore(client)
 
-		res, err := store.SearchDeployments(ctx,
+		res, err := store.SearchDeploymentsOfUser(ctx,
 			&ent.User{ID: u1},
-			[]deployment.Status{},
-			owned,
-			time.Now().UTC().Add(-time.Minute),
-			time.Now().UTC(),
-			page,
-			perPage)
+			&i.SearchDeploymentsOfUserOptions{
+				ListOptions: i.ListOptions{Page: page, PerPage: perPage},
+				Statuses:    []deployment.Status{},
+				Owned:       owned,
+				From:        time.Now().UTC().Add(-time.Minute),
+				To:          time.Now().UTC(),
+			})
 		if err != nil {
 			t.Fatalf("SearchDeployments return an error: %s", err)
 		}
@@ -194,7 +196,11 @@ func TestStore_ListDeploymentsOfRepo(t *testing.T) {
 	s := NewStore(client)
 
 	t.Run("list all deployments", func(tt *testing.T) {
-		ds, err := s.ListDeploymentsOfRepo(ctx, &ent.Repo{ID: r1}, "", "", 1, 100)
+		ds, err := s.ListDeploymentsOfRepo(ctx, &ent.Repo{ID: r1}, &i.ListDeploymentsOfRepoOptions{
+			ListOptions: i.ListOptions{Page: 1, PerPage: 100},
+			Env:         "",
+			Status:      "",
+		})
 		if err != nil {
 			tt.Errorf("failed to list deployments: %s", err)
 			return
@@ -207,7 +213,11 @@ func TestStore_ListDeploymentsOfRepo(t *testing.T) {
 	})
 
 	t.Run("list env=local deployments", func(tt *testing.T) {
-		ds, err := s.ListDeploymentsOfRepo(ctx, &ent.Repo{ID: r1}, "local", "", 1, 100)
+		ds, err := s.ListDeploymentsOfRepo(ctx, &ent.Repo{ID: r1}, &i.ListDeploymentsOfRepoOptions{
+			ListOptions: i.ListOptions{Page: 1, PerPage: 100},
+			Env:         "local",
+			Status:      "",
+		})
 		if err != nil {
 			tt.Errorf("failed to list deployments: %s", err)
 			return
@@ -220,7 +230,11 @@ func TestStore_ListDeploymentsOfRepo(t *testing.T) {
 	})
 
 	t.Run("list status=created deployments", func(tt *testing.T) {
-		ds, err := s.ListDeploymentsOfRepo(ctx, &ent.Repo{ID: r1}, "", "created", 1, 100)
+		ds, err := s.ListDeploymentsOfRepo(ctx, &ent.Repo{ID: r1}, &i.ListDeploymentsOfRepoOptions{
+			ListOptions: i.ListOptions{Page: 1, PerPage: 100},
+			Env:         "",
+			Status:      "created",
+		})
 		if err != nil {
 			tt.Errorf("failed to list deployments: %s", err)
 			return
@@ -233,7 +247,11 @@ func TestStore_ListDeploymentsOfRepo(t *testing.T) {
 	})
 
 	t.Run("list env=local&status=created deployments", func(tt *testing.T) {
-		ds, err := s.ListDeploymentsOfRepo(ctx, &ent.Repo{ID: r1}, "local", "created", 1, 100)
+		ds, err := s.ListDeploymentsOfRepo(ctx, &ent.Repo{ID: r1}, &i.ListDeploymentsOfRepoOptions{
+			ListOptions: i.ListOptions{Page: 1, PerPage: 100},
+			Env:         "local",
+			Status:      "created",
+		})
 		if err != nil {
 			tt.Errorf("failed to list deployments: %s", err)
 			return
