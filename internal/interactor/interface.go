@@ -82,7 +82,7 @@ type (
 	}
 
 	SCM interface {
-		SyncSCM
+		UserSCM
 
 		ListRemoteRepos(ctx context.Context, u *ent.User) ([]*extent.RemoteRepo, error)
 
