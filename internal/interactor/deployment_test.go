@@ -17,38 +17,6 @@ import (
 	"github.com/gitploy-io/gitploy/pkg/e"
 )
 
-func TestInteractor_IsApproved(t *testing.T) {
-	t.Run("Return false when a review is rejected.", func(t *testing.T) {
-		t.Log("Start mocking:")
-		ctrl := gomock.NewController(t)
-		store := mock.NewMockStore(ctrl)
-		scm := mock.NewMockSCM(ctrl)
-
-		t.Log("\tList reviews.")
-		store.
-			EXPECT().
-			ListReviews(gomock.Any(), gomock.AssignableToTypeOf(&ent.Deployment{})).
-			Return([]*ent.Review{
-				{
-					Status: review.StatusPending,
-				},
-				{
-					Status: review.StatusRejected,
-				},
-			}, nil)
-
-		it := i.NewInteractor(&i.InteractorConfig{
-			Store: store,
-			SCM:   scm,
-		})
-
-		expected := false
-		if ret := it.IsApproved(context.Background(), &ent.Deployment{}); ret != expected {
-			t.Fatalf("IsApproved = %v, wanted %v", ret, expected)
-		}
-	})
-}
-
 func TestInteractor_Deploy(t *testing.T) {
 	ctx := gomock.Any()
 

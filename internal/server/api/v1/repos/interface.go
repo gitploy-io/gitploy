@@ -28,7 +28,6 @@ type (
 		FindDeploymentByID(ctx context.Context, id int) (*ent.Deployment, error)
 		FindDeploymentOfRepoByNumber(ctx context.Context, r *ent.Repo, number int) (*ent.Deployment, error)
 		FindPrevSuccessDeployment(ctx context.Context, d *ent.Deployment) (*ent.Deployment, error)
-		IsApproved(ctx context.Context, d *ent.Deployment) bool
 		Deploy(ctx context.Context, u *ent.User, re *ent.Repo, d *ent.Deployment, env *extent.Env) (*ent.Deployment, error)
 		DeployToRemote(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, env *extent.Env) (*ent.Deployment, error)
 		GetConfig(ctx context.Context, u *ent.User, r *ent.Repo) (*extent.Config, error)
