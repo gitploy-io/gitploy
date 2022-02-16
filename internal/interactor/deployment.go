@@ -93,6 +93,7 @@ func (i *DeploymentInteractor) Deploy(ctx context.Context, u *ent.User, r *ent.R
 		Type:                  d.Type,
 		Env:                   d.Env,
 		Ref:                   d.Ref,
+		Status:                deployment.DefaultStatus,
 		ProductionEnvironment: env.IsProductionEnvironment(),
 		IsRollback:            d.IsRollback,
 		UserID:                u.ID,
@@ -100,8 +101,6 @@ func (i *DeploymentInteractor) Deploy(ctx context.Context, u *ent.User, r *ent.R
 	}
 
 	if env.HasReview() {
-		d.Status = deployment.StatusWaiting
-
 		i.log.Debug("Save the deployment to wait reviews.")
 		d, err = i.store.CreateDeployment(ctx, d)
 		if err != nil {
@@ -133,7 +132,7 @@ func (i *DeploymentInteractor) Deploy(ctx context.Context, u *ent.User, r *ent.R
 	d.HTMLURL = rd.HTLMURL
 	d.Status = deployment.StatusCreated
 
-	i.log.Debug("Create a new deployment with the payload.", zap.Any("deployment", d))
+	i.log.Debug("Create a new deployment with the response.", zap.Any("deployment", d))
 	d, err = i.store.CreateDeployment(ctx, d)
 	if err != nil {
 		return nil, fmt.Errorf("It failed to save a new deployment.: %w", err)
