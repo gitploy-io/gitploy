@@ -18,6 +18,7 @@ type (
 		common *service
 
 		// services used for talking to different parts of the entities.
+		*ConfigInteractor
 		*DeploymentInteractor
 		*DeploymentStatisticsInteractor
 		*EventInteractor
@@ -67,6 +68,7 @@ func NewInteractor(c *InteractorConfig) *Interactor {
 		log:   log,
 	}
 
+	i.ConfigInteractor = (*ConfigInteractor)(i.common)
 	i.DeploymentInteractor = (*DeploymentInteractor)(i.common)
 	i.DeploymentStatisticsInteractor = (*DeploymentStatisticsInteractor)(i.common)
 	i.EventInteractor = &EventInteractor{

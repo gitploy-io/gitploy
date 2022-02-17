@@ -41,15 +41,9 @@ func (s *DeploymentAPI) Create(c *gin.Context) {
 	vr, _ := c.Get(KeyRepo)
 	re := vr.(*ent.Repo)
 
-	config, err := s.i.GetConfig(ctx, u, re)
+	config, err := s.i.GetEvaluatedConfig(ctx, u, re, &extent.EvalValues{})
 	if err != nil {
 		s.log.Check(gb.GetZapLogLevel(err), "Failed to get the configuration.").Write(zap.Error(err))
-		gb.ResponseWithStatusAndError(c, http.StatusUnprocessableEntity, err)
-		return
-	}
-
-	if err := config.Eval(&extent.EvalValues{}); err != nil {
-		s.log.Check(gb.GetZapLogLevel(err), "Failed to evaluate the configuration.").Write(zap.Error(err))
 		gb.ResponseWithStatusAndError(c, http.StatusUnprocessableEntity, err)
 		return
 	}

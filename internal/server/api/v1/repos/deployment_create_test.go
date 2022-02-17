@@ -14,52 +14,43 @@ import (
 	"github.com/gitploy-io/gitploy/internal/server/api/v1/repos/mock"
 	"github.com/gitploy-io/gitploy/internal/server/global"
 	"github.com/gitploy-io/gitploy/model/ent"
-	"github.com/gitploy-io/gitploy/model/ent/deployment"
 	"github.com/gitploy-io/gitploy/model/extent"
 )
 
-func TestDeploymentAPI_Create(t *testing.T) {
-	t.Run("a new deployment entity.", func(t *testing.T) {
-		input := struct {
-			payload *DeploymentPostPayload
-		}{
-			payload: &DeploymentPostPayload{
-				Type: "branch",
-				Ref:  "main",
-				Env:  "prod",
-			},
-		}
+func init() {
+	gin.SetMode(gin.ReleaseMode)
+}
 
+func TestDeploymentAPI_Create(t *testing.T) {
+	t.Run("Create a new deployment.", func(t *testing.T) {
+		t.Log("Start mocking:")
 		ctrl := gomock.NewController(t)
 		m := mock.NewMockInteractor(ctrl)
 
+		t.Log("\tGet the evaludated config.")
 		m.
 			EXPECT().
-			GetConfig(gomock.Any(), gomock.AssignableToTypeOf(&ent.User{}), gomock.AssignableToTypeOf(&ent.Repo{})).
+			GetEvaluatedConfig(gomock.Any(), gomock.AssignableToTypeOf(&ent.User{}), gomock.AssignableToTypeOf(&ent.Repo{}), gomock.AssignableToTypeOf(&extent.EvalValues{})).
 			Return(&extent.Config{
 				Envs: []*extent.Env{
-					{
-						Name: "prod",
-					},
+					{Name: "prod"},
 				}}, nil)
 
-		t.Log("Deploy with the payload successfully.")
+		t.Log("\tCreate a new deployment, and dispatch a event.")
 		m.
 			EXPECT().
-			Deploy(gomock.Any(), gomock.AssignableToTypeOf(&ent.User{}), gomock.AssignableToTypeOf(&ent.Repo{}), gomock.Eq(&ent.Deployment{
-				Type: deployment.Type(input.payload.Type),
-				Env:  input.payload.Env,
-				Ref:  input.payload.Ref,
-			}), gomock.AssignableToTypeOf(&extent.Env{})).
+			Deploy(gomock.Any(),
+				gomock.AssignableToTypeOf(&ent.User{}),
+				gomock.AssignableToTypeOf(&ent.Repo{}),
+				gomock.AssignableToTypeOf(&ent.Deployment{}),
+				gomock.AssignableToTypeOf(&extent.Env{})).
 			Return(&ent.Deployment{}, nil)
 
-		t.Log("Dispatch the event.")
 		m.
 			EXPECT().
 			CreateEvent(gomock.Any(), gomock.AssignableToTypeOf(&ent.Event{})).
 			Return(&ent.Event{}, nil)
 
-		t.Log("Read the deployment with edges.")
 		m.
 			EXPECT().
 			FindDeploymentByID(gomock.Any(), gomock.Any()).
@@ -67,14 +58,17 @@ func TestDeploymentAPI_Create(t *testing.T) {
 
 		s := DeploymentAPI{i: m, log: zap.L()}
 
-		gin.SetMode(gin.ReleaseMode)
 		router := gin.New()
 		router.POST("/repos/:id/deployments", func(c *gin.Context) {
 			c.Set(global.KeyUser, &ent.User{})
 			c.Set(KeyRepo, &ent.Repo{})
 		}, s.Create)
 
-		body, _ := json.Marshal(input.payload)
+		body, _ := json.Marshal(&DeploymentPostPayload{
+			Type: "branch",
+			Ref:  "main",
+			Env:  "prod",
+		})
 		req, _ := http.NewRequest("POST", "/repos/1/deployments", bytes.NewBuffer(body))
 		w := httptest.NewRecorder()
 

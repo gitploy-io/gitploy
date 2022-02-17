@@ -41,15 +41,9 @@ func (s *DeploymentAPI) Rollback(c *gin.Context) {
 		return
 	}
 
-	config, err := s.i.GetConfig(ctx, u, re)
+	config, err := s.i.GetEvaluatedConfig(ctx, u, re, &extent.EvalValues{IsRollback: true})
 	if err != nil {
 		s.log.Check(gb.GetZapLogLevel(err), "Failed to get the configuration.").Write(zap.Error(err))
-		gb.ResponseWithStatusAndError(c, http.StatusUnprocessableEntity, err)
-		return
-	}
-
-	if err := config.Eval(&extent.EvalValues{IsRollback: true}); err != nil {
-		s.log.Check(gb.GetZapLogLevel(err), "Failed to evaludate the configuration.").Write(zap.Error(err))
 		gb.ResponseWithStatusAndError(c, http.StatusUnprocessableEntity, err)
 		return
 	}

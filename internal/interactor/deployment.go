@@ -63,10 +63,6 @@ type (
 		// SCM returns the deployment with UID and SHA.
 		CreateRemoteDeployment(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, e *extent.Env) (*extent.RemoteDeployment, error)
 		CancelDeployment(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, s *ent.DeploymentStatus) error
-
-		GetConfig(ctx context.Context, u *ent.User, r *ent.Repo) (*extent.Config, error)
-		GetConfigRedirectURL(ctx context.Context, u *ent.User, r *ent.Repo) (string, error)
-		GetNewConfigRedirectURL(ctx context.Context, u *ent.User, r *ent.Repo) (string, error)
 	}
 )
 

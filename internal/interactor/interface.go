@@ -62,6 +62,7 @@ type (
 		RepoSCM
 		DeploymentSCM
 		DeploymentStatusSCM
+		ConfigSCM
 		CommitSCM
 		BranchSCM
 		TagSCM
