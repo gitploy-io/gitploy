@@ -8,6 +8,7 @@ import (
 	"github.com/AlekSi/pointer"
 	"github.com/gitploy-io/gitploy/model/ent"
 	"github.com/gitploy-io/gitploy/model/ent/deployment"
+	"github.com/gitploy-io/gitploy/model/ent/event"
 	"github.com/gitploy-io/gitploy/model/extent"
 	"github.com/gitploy-io/gitploy/pkg/e"
 	"go.uber.org/zap"
@@ -104,15 +105,9 @@ func (i *DeploymentInteractor) Deploy(ctx context.Context, u *ent.User, r *ent.R
 			return nil, err
 		}
 
-		for _, rvr := range env.Review.Reviewers {
-			if rvr == u.Login {
-				continue
-			}
-
-			i.log.Debug(fmt.Sprintf("Request a review to %s.", rvr))
-			if _, err := i.requestReviewByLogin(ctx, d, rvr); err != nil {
-				i.log.Error("Failed to request the review.", zap.Error(err))
-			}
+		errs := i.requestReviews(ctx, u, d, env)
+		if len(errs) != 0 {
+			i.log.Error("Failed to request a review.", zap.Errors("errs", errs))
 		}
 
 		return d, nil
@@ -142,6 +137,45 @@ func (i *DeploymentInteractor) Deploy(ctx context.Context, u *ent.User, r *ent.R
 	})
 
 	return d, nil
+}
+
+func (i *DeploymentInteractor) requestReviews(ctx context.Context, u *ent.User, d *ent.Deployment, env *extent.Env) []error {
+	errs := make([]error, 0)
+
+	for _, login := range env.Review.Reviewers {
+		if login == u.Login {
+			i.log.Debug("Skip the deployer.")
+			continue
+		}
+
+		reviewer, err := i.store.FindUserByLogin(ctx, login)
+		if err != nil {
+			i.log.Error("Failed to find the reviewer.", zap.Error(err))
+			errs = append(errs, err)
+			continue
+		}
+
+		r, err := i.store.CreateReview(ctx, &ent.Review{
+			DeploymentID: d.ID,
+			UserID:       reviewer.ID,
+		})
+		if err != nil {
+			i.log.Error("Failed to create a review.", zap.Error(err))
+			errs = append(errs, err)
+			continue
+		}
+
+		if _, err := i.store.CreateEvent(ctx, &ent.Event{
+			Kind:     event.KindReview,
+			Type:     event.TypeCreated,
+			ReviewID: r.ID,
+		}); err != nil {
+			i.log.Error("Failed to create a review event.", zap.Error(err))
+			errs = append(errs, err)
+		}
+	}
+
+	return errs
 }
 
 // DeployToRemote posts a new deployment to SCM with the saved payload
