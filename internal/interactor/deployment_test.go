@@ -122,10 +122,6 @@ func TestInteractor_DeployToRemote(t *testing.T) {
 		store := mock.NewMockStore(ctrl)
 		scm := mock.NewMockSCM(ctrl)
 
-		const (
-			UID = 1000
-		)
-
 		t.Log("\tValidate the request.")
 		store.
 			EXPECT().
