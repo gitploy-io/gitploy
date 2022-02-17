@@ -74,10 +74,11 @@ type (
 // But if it requires a review, it saves the payload on the store and waits until reviewed.
 // It returns an error for a undeployable payload.
 func (i *DeploymentInteractor) Deploy(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, env *extent.Env) (*ent.Deployment, error) {
-	v := newDeploymentValidator([]validator{
-		&refValidator{env: env},
-		&frozenWindowValidator{env: env},
-		&lockValidator{repo: r, store: i.store},
+	i.log.Debug("Validate the request.")
+	v := NewDeploymentValidator([]Validator{
+		&RefValidator{Env: env},
+		&FrozenWindowValidator{Env: env},
+		&LockValidator{Repo: r, Store: i.store},
 	})
 	if err := v.Validate(d); err != nil {
 		return nil, err
@@ -151,12 +152,13 @@ func (i *DeploymentInteractor) Deploy(ctx context.Context, u *ent.User, r *ent.R
 // after review has finished.
 // It returns an error for a undeployable payload.
 func (i *DeploymentInteractor) DeployToRemote(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, env *extent.Env) (*ent.Deployment, error) {
-	v := newDeploymentValidator([]validator{
-		&statusValidator{status: deployment.StatusWaiting},
-		&refValidator{env: env},
-		&frozenWindowValidator{env: env},
-		&lockValidator{repo: r, store: i.store},
-		&reviewValidator{store: i.store},
+	i.log.Debug("Validate the request.")
+	v := NewDeploymentValidator([]Validator{
+		&StatusValidator{Status: deployment.StatusWaiting},
+		&RefValidator{Env: env},
+		&FrozenWindowValidator{Env: env},
+		&LockValidator{Repo: r, Store: i.store},
+		&ReviewValidator{Store: i.store},
 	})
 	if err := v.Validate(d); err != nil {
 		return nil, err

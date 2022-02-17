@@ -11,18 +11,18 @@ import (
 	"github.com/gitploy-io/gitploy/pkg/e"
 )
 
-// deploymentValidator validate that it is deployable.
-type deploymentValidator struct {
-	validators []validator
+// DeploymentValidator validate that it is deployable.
+type DeploymentValidator struct {
+	validators []Validator
 }
 
-func newDeploymentValidator(validators []validator) *deploymentValidator {
-	return &deploymentValidator{
+func NewDeploymentValidator(validators []Validator) *DeploymentValidator {
+	return &DeploymentValidator{
 		validators: validators,
 	}
 }
 
-func (v *deploymentValidator) Validate(d *ent.Deployment) error {
+func (v *DeploymentValidator) Validate(d *ent.Deployment) error {
 	for _, v := range v.validators {
 		if err := v.Validate(d); err != nil {
 			return err
@@ -32,18 +32,18 @@ func (v *deploymentValidator) Validate(d *ent.Deployment) error {
 	return nil
 }
 
-// validator defines the method that validate a deployment.
-type validator interface {
+// Validator defines the method that validate a deployment.
+type Validator interface {
 	Validate(d *ent.Deployment) error
 }
 
-// refValidator validate that the 'ref' is matched with the 'deployable_ref' pattern.
-type refValidator struct {
-	env *extent.Env
+// RefValidator validate that the 'ref' is matched with the 'deployable_ref' pattern.
+type RefValidator struct {
+	Env *extent.Env
 }
 
-func (v *refValidator) Validate(d *ent.Deployment) error {
-	ok, err := v.env.IsDeployableRef(d.Ref)
+func (v *RefValidator) Validate(d *ent.Deployment) error {
+	ok, err := v.Env.IsDeployableRef(d.Ref)
 	if err != nil {
 		return err
 	}
@@ -57,13 +57,13 @@ func (v *refValidator) Validate(d *ent.Deployment) error {
 	return nil
 }
 
-// frozenWindowValidator validate that the time is in the frozen window.
-type frozenWindowValidator struct {
-	env *extent.Env
+// FrozenWindowValidator validate that the time is in the frozen window.
+type FrozenWindowValidator struct {
+	Env *extent.Env
 }
 
-func (v *frozenWindowValidator) Validate(d *ent.Deployment) error {
-	ok, err := v.env.IsFreezed(time.Now().UTC())
+func (v *FrozenWindowValidator) Validate(d *ent.Deployment) error {
+	ok, err := v.Env.IsFreezed(time.Now().UTC())
 	if err != nil {
 		return err
 	}
@@ -75,13 +75,13 @@ func (v *frozenWindowValidator) Validate(d *ent.Deployment) error {
 	return nil
 }
 
-// statusValidator validate the deployment status is valid.
-type statusValidator struct {
-	status deployment.Status
+// StatusValidator validate the deployment status is valid.
+type StatusValidator struct {
+	Status deployment.Status
 }
 
-func (v *statusValidator) Validate(d *ent.Deployment) error {
-	if d.Status != v.status {
+func (v *StatusValidator) Validate(d *ent.Deployment) error {
+	if d.Status != v.Status {
 		return e.NewErrorWithMessage(
 			e.ErrorCodeDeploymentStatusInvalid,
 			"The deployment status is not waiting.",
@@ -92,14 +92,14 @@ func (v *statusValidator) Validate(d *ent.Deployment) error {
 	return nil
 }
 
-// lockValidator validate that the environment of the repository is locked.
-type lockValidator struct {
-	repo  *ent.Repo
-	store LockStore
+// LockValidator validate that the environment of the repository is locked.
+type LockValidator struct {
+	Repo  *ent.Repo
+	Store LockStore
 }
 
-func (v *lockValidator) Validate(d *ent.Deployment) error {
-	locked, err := v.store.HasLockOfRepoForEnv(context.Background(), v.repo, d.Env)
+func (v *LockValidator) Validate(d *ent.Deployment) error {
+	locked, err := v.Store.HasLockOfRepoForEnv(context.Background(), v.Repo, d.Env)
 	if err != nil {
 		return err
 	}
@@ -111,14 +111,14 @@ func (v *lockValidator) Validate(d *ent.Deployment) error {
 	return nil
 }
 
-// reviewValidator verifies the request is approved or not.
+// ReviewValidator verifies the request is approved or not.
 // If one of the  reviews has approve the status is approved.
-type reviewValidator struct {
-	store ReviewStore
+type ReviewValidator struct {
+	Store ReviewStore
 }
 
-func (v *reviewValidator) Validate(d *ent.Deployment) error {
-	reviews, err := v.store.ListReviews(context.Background(), d)
+func (v *ReviewValidator) Validate(d *ent.Deployment) error {
+	reviews, err := v.Store.ListReviews(context.Background(), d)
 	if err != nil {
 		return err
 	}
