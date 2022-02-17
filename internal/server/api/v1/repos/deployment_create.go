@@ -10,7 +10,6 @@ import (
 	gb "github.com/gitploy-io/gitploy/internal/server/global"
 	"github.com/gitploy-io/gitploy/model/ent"
 	"github.com/gitploy-io/gitploy/model/ent/deployment"
-	"github.com/gitploy-io/gitploy/model/ent/event"
 	"github.com/gitploy-io/gitploy/model/extent"
 	"github.com/gitploy-io/gitploy/pkg/e"
 )
@@ -41,15 +40,9 @@ func (s *DeploymentAPI) Create(c *gin.Context) {
 	vr, _ := c.Get(KeyRepo)
 	re := vr.(*ent.Repo)
 
-	config, err := s.i.GetConfig(ctx, u, re)
+	config, err := s.i.GetEvaluatedConfig(ctx, u, re, &extent.EvalValues{})
 	if err != nil {
 		s.log.Check(gb.GetZapLogLevel(err), "Failed to get the configuration.").Write(zap.Error(err))
-		gb.ResponseWithStatusAndError(c, http.StatusUnprocessableEntity, err)
-		return
-	}
-
-	if err := config.Eval(&extent.EvalValues{}); err != nil {
-		s.log.Check(gb.GetZapLogLevel(err), "Failed to evaluate the configuration.").Write(zap.Error(err))
 		gb.ResponseWithStatusAndError(c, http.StatusUnprocessableEntity, err)
 		return
 	}
@@ -72,14 +65,6 @@ func (s *DeploymentAPI) Create(c *gin.Context) {
 		s.log.Check(gb.GetZapLogLevel(err), "Failed to deploy.").Write(zap.Error(err))
 		gb.ResponseWithError(c, err)
 		return
-	}
-
-	if _, err := s.i.CreateEvent(ctx, &ent.Event{
-		Kind:         event.KindDeployment,
-		Type:         event.TypeCreated,
-		DeploymentID: d.ID,
-	}); err != nil {
-		s.log.Error("It has failed to create the event.", zap.Error(err))
 	}
 
 	// Get the deployment with edges.

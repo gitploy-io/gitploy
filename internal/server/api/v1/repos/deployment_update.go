@@ -7,7 +7,6 @@ import (
 	"github.com/gin-gonic/gin"
 	gb "github.com/gitploy-io/gitploy/internal/server/global"
 	"github.com/gitploy-io/gitploy/model/ent"
-	"github.com/gitploy-io/gitploy/model/ent/event"
 	"github.com/gitploy-io/gitploy/model/extent"
 	"github.com/gitploy-io/gitploy/pkg/e"
 	"go.uber.org/zap"
@@ -42,15 +41,9 @@ func (s *DeploymentAPI) Update(c *gin.Context) {
 		return
 	}
 
-	config, err := s.i.GetConfig(ctx, u, re)
+	config, err := s.i.GetEvaluatedConfig(ctx, u, re, &extent.EvalValues{IsRollback: d.IsRollback})
 	if err != nil {
 		s.log.Check(gb.GetZapLogLevel(err), "Failed to get the configuration.").Write(zap.Error(err))
-		gb.ResponseWithStatusAndError(c, http.StatusUnprocessableEntity, err)
-		return
-	}
-
-	if err := config.Eval(&extent.EvalValues{IsRollback: d.IsRollback}); err != nil {
-		s.log.Check(gb.GetZapLogLevel(err), "Failed to evaludate the configuration.").Write(zap.Error(err))
 		gb.ResponseWithStatusAndError(c, http.StatusUnprocessableEntity, err)
 		return
 	}
@@ -66,14 +59,6 @@ func (s *DeploymentAPI) Update(c *gin.Context) {
 		s.log.Check(gb.GetZapLogLevel(err), "It has failed to deploy to the remote.").Write(zap.Error(err))
 		gb.ResponseWithError(c, err)
 		return
-	}
-
-	if _, err := s.i.CreateEvent(ctx, &ent.Event{
-		Kind:         event.KindDeployment,
-		Type:         event.TypeUpdated,
-		DeploymentID: d.ID,
-	}); err != nil {
-		s.log.Error("It has failed to create an event.", zap.Error(err))
 	}
 
 	// Get the deployment with edges.
