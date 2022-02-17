@@ -48,11 +48,6 @@ func TestDeploymentAPI_Create(t *testing.T) {
 
 		m.
 			EXPECT().
-			CreateEvent(gomock.Any(), gomock.AssignableToTypeOf(&ent.Event{})).
-			Return(&ent.Event{}, nil)
-
-		m.
-			EXPECT().
 			FindDeploymentByID(gomock.Any(), gomock.Any()).
 			Return(&ent.Deployment{}, nil)
 

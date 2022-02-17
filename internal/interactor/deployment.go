@@ -105,11 +105,20 @@ func (i *DeploymentInteractor) Deploy(ctx context.Context, u *ent.User, r *ent.R
 			return nil, err
 		}
 
+		i.log.Debug("Request reviews.")
 		errs := i.requestReviews(ctx, u, d, env)
 		if len(errs) != 0 {
 			i.log.Error("Failed to request a review.", zap.Errors("errs", errs))
 		}
 
+		i.log.Debug("Dispatch a event.")
+		if _, err := i.store.CreateEvent(ctx, &ent.Event{
+			Kind:         event.KindDeployment,
+			Type:         event.TypeCreated,
+			DeploymentID: d.ID,
+		}); err != nil {
+			i.log.Error("Failed to create the event.", zap.Error(err))
+		}
 		return d, nil
 	}
 
@@ -136,6 +145,14 @@ func (i *DeploymentInteractor) Deploy(ctx context.Context, u *ent.User, r *ent.R
 		DeploymentID: d.ID,
 	})
 
+	i.log.Debug("Dispatch a event.")
+	if _, err := i.store.CreateEvent(ctx, &ent.Event{
+		Kind:         event.KindDeployment,
+		Type:         event.TypeCreated,
+		DeploymentID: d.ID,
+	}); err != nil {
+		i.log.Error("Failed to create the event.", zap.Error(err))
+	}
 	return d, nil
 }
 

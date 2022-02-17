@@ -9,7 +9,6 @@ import (
 
 	gb "github.com/gitploy-io/gitploy/internal/server/global"
 	"github.com/gitploy-io/gitploy/model/ent"
-	"github.com/gitploy-io/gitploy/model/ent/event"
 	"github.com/gitploy-io/gitploy/model/extent"
 	"github.com/gitploy-io/gitploy/pkg/e"
 )
@@ -67,14 +66,6 @@ func (s *DeploymentAPI) Rollback(c *gin.Context) {
 		s.log.Check(gb.GetZapLogLevel(err), "Failed to deploy.").Write(zap.Error(err))
 		gb.ResponseWithError(c, err)
 		return
-	}
-
-	if _, err := s.i.CreateEvent(ctx, &ent.Event{
-		Kind:         event.KindDeployment,
-		Type:         event.TypeCreated,
-		DeploymentID: d.ID,
-	}); err != nil {
-		s.log.Error("It has failed to create the event.", zap.Error(err))
 	}
 
 	// Get the deployment with edges.
