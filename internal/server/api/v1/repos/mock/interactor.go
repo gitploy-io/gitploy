@@ -382,20 +382,6 @@ func (mr *MockInteractorMockRecorder) HasLockOfRepoForEnv(ctx, r, env interface{
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "HasLockOfRepoForEnv", reflect.TypeOf((*MockInteractor)(nil).HasLockOfRepoForEnv), ctx, r, env)
 }
 
-// IsApproved mocks base method.
-func (m *MockInteractor) IsApproved(ctx context.Context, d *ent.Deployment) bool {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "IsApproved", ctx, d)
-	ret0, _ := ret[0].(bool)
-	return ret0
-}
-
-// IsApproved indicates an expected call of IsApproved.
-func (mr *MockInteractorMockRecorder) IsApproved(ctx, d interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "IsApproved", reflect.TypeOf((*MockInteractor)(nil).IsApproved), ctx, d)
-}
-
 // ListBranches mocks base method.
 func (m *MockInteractor) ListBranches(ctx context.Context, u *ent.User, r *ent.Repo, opt *interactor.ListOptions) ([]*extent.Branch, error) {
 	m.ctrl.T.Helper()

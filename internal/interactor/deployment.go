@@ -8,7 +8,6 @@ import (
 	"github.com/AlekSi/pointer"
 	"github.com/gitploy-io/gitploy/model/ent"
 	"github.com/gitploy-io/gitploy/model/ent/deployment"
-	"github.com/gitploy-io/gitploy/model/ent/review"
 	"github.com/gitploy-io/gitploy/model/extent"
 	"github.com/gitploy-io/gitploy/pkg/e"
 	"go.uber.org/zap"
@@ -71,57 +70,38 @@ type (
 	}
 )
 
-// IsApproved verifies that the request is approved or not.
-// It is approved if there is an approval of reviews at least, but
-// it is rejected if there is a reject of reviews.
-func (i *DeploymentInteractor) IsApproved(ctx context.Context, d *ent.Deployment) bool {
-	rvs, _ := i.store.ListReviews(ctx, d)
-
-	for _, r := range rvs {
-		if r.Status == review.StatusRejected {
-			return false
-		}
-	}
-
-	for _, r := range rvs {
-		if r.Status == review.StatusApproved {
-			return true
-		}
-	}
-
-	return false
-}
-
 // Deploy posts a new deployment to SCM with the payload.
-// But if it requires a review, it saves the payload on the DB
-// and waits until reviewed.
+// But if it requires a review, it saves the payload on the store and waits until reviewed.
 // It returns an error for a undeployable payload.
 func (i *DeploymentInteractor) Deploy(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, env *extent.Env) (*ent.Deployment, error) {
-	if err := i.isDeployable(ctx, u, r, d, env); err != nil {
+	i.log.Debug("Validate the request.")
+	v := NewDeploymentValidator([]Validator{
+		&RefValidator{Env: env},
+		&FrozenWindowValidator{Env: env},
+		&LockValidator{Repo: r, Store: i.store},
+	})
+	if err := v.Validate(d); err != nil {
 		return nil, err
 	}
 
 	number, err := i.store.GetNextDeploymentNumberOfRepo(ctx, r)
 	if err != nil {
-		return nil, e.NewError(
-			e.ErrorCodeInternalError,
-			err,
-		)
+		return nil, e.NewError(e.ErrorCodeInternalError, err)
+	}
+
+	d = &ent.Deployment{
+		Number:                number,
+		Type:                  d.Type,
+		Env:                   d.Env,
+		Ref:                   d.Ref,
+		Status:                deployment.DefaultStatus,
+		ProductionEnvironment: env.IsProductionEnvironment(),
+		IsRollback:            d.IsRollback,
+		UserID:                u.ID,
+		RepoID:                r.ID,
 	}
 
 	if env.HasReview() {
-		d := &ent.Deployment{
-			Number:                number,
-			Type:                  d.Type,
-			Env:                   d.Env,
-			Ref:                   d.Ref,
-			Status:                deployment.StatusWaiting,
-			ProductionEnvironment: env.IsProductionEnvironment(),
-			IsRollback:            d.IsRollback,
-			UserID:                u.ID,
-			RepoID:                r.ID,
-		}
-
 		i.log.Debug("Save the deployment to wait reviews.")
 		d, err = i.store.CreateDeployment(ctx, d)
 		if err != nil {
@@ -148,22 +128,12 @@ func (i *DeploymentInteractor) Deploy(ctx context.Context, u *ent.User, r *ent.R
 		return nil, err
 	}
 
-	d = &ent.Deployment{
-		Number:                number,
-		Type:                  d.Type,
-		Env:                   d.Env,
-		Ref:                   d.Ref,
-		Status:                deployment.StatusCreated,
-		UID:                   rd.UID,
-		Sha:                   rd.SHA,
-		HTMLURL:               rd.HTLMURL,
-		ProductionEnvironment: env.IsProductionEnvironment(),
-		IsRollback:            d.IsRollback,
-		UserID:                u.ID,
-		RepoID:                r.ID,
-	}
+	d.UID = rd.UID
+	d.Sha = rd.SHA
+	d.HTMLURL = rd.HTLMURL
+	d.Status = deployment.StatusCreated
 
-	i.log.Debug("Create a new deployment with the payload.", zap.Any("deployment", d))
+	i.log.Debug("Create a new deployment with the response.", zap.Any("deployment", d))
 	d, err = i.store.CreateDeployment(ctx, d)
 	if err != nil {
 		return nil, fmt.Errorf("It failed to save a new deployment.: %w", err)
@@ -182,23 +152,16 @@ func (i *DeploymentInteractor) Deploy(ctx context.Context, u *ent.User, r *ent.R
 // after review has finished.
 // It returns an error for a undeployable payload.
 func (i *DeploymentInteractor) DeployToRemote(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, env *extent.Env) (*ent.Deployment, error) {
-	if d.Status != deployment.StatusWaiting {
-		return nil, e.NewErrorWithMessage(
-			e.ErrorCodeDeploymentStatusInvalid,
-			"The deployment status is not waiting.",
-			nil,
-		)
-	}
-
-	if err := i.isDeployable(ctx, u, r, d, env); err != nil {
+	i.log.Debug("Validate the request.")
+	v := NewDeploymentValidator([]Validator{
+		&StatusValidator{Status: deployment.StatusWaiting},
+		&RefValidator{Env: env},
+		&FrozenWindowValidator{Env: env},
+		&LockValidator{Repo: r, Store: i.store},
+		&ReviewValidator{Store: i.store},
+	})
+	if err := v.Validate(d); err != nil {
 		return nil, err
-	}
-
-	if !i.IsApproved(ctx, d) {
-		return nil, e.NewError(
-			e.ErrorCodeDeploymentNotApproved,
-			nil,
-		)
 	}
 
 	rd, err := i.createRemoteDeployment(ctx, u, r, d, env)
@@ -235,32 +198,6 @@ func (i *DeploymentInteractor) createRemoteDeployment(ctx context.Context, u *en
 	}
 
 	return i.scm.CreateRemoteDeployment(ctx, u, r, d, env)
-}
-
-func (i *DeploymentInteractor) isDeployable(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, env *extent.Env) error {
-	// Skip verifications for roll back.
-	if !d.IsRollback {
-		if ok, err := env.IsDeployableRef(d.Ref); !ok {
-			return e.NewErrorWithMessage(e.ErrorCodeEntityUnprocessable, "The ref is not matched with 'deployable_ref'.", nil)
-		} else if err != nil {
-			return err
-		}
-	}
-
-	// Check that the environment is locked.
-	if locked, err := i.store.HasLockOfRepoForEnv(ctx, r, d.Env); locked {
-		return e.NewError(e.ErrorCodeDeploymentLocked, err)
-	} else if err != nil {
-		return err
-	}
-
-	if freezed, err := env.IsFreezed(time.Now().UTC()); freezed {
-		return e.NewError(e.ErrorCodeDeploymentFrozen, err)
-	} else if err != nil {
-		return err
-	}
-
-	return nil
 }
 
 func (i *DeploymentInteractor) runClosingInactiveDeployment(stop <-chan struct{}) {
