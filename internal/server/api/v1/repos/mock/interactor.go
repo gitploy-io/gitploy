@@ -547,6 +547,21 @@ func (mr *MockInteractorMockRecorder) ListTags(ctx, u, r, opt interface{}) *gomo
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListTags", reflect.TypeOf((*MockInteractor)(nil).ListTags), ctx, u, r, opt)
 }
 
+// RespondReview mocks base method.
+func (m *MockInteractor) RespondReview(ctx context.Context, rv *ent.Review) (*ent.Review, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "RespondReview", ctx, rv)
+	ret0, _ := ret[0].(*ent.Review)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// RespondReview indicates an expected call of RespondReview.
+func (mr *MockInteractorMockRecorder) RespondReview(ctx, rv interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RespondReview", reflect.TypeOf((*MockInteractor)(nil).RespondReview), ctx, rv)
+}
+
 // UpdateLock mocks base method.
 func (m *MockInteractor) UpdateLock(ctx context.Context, l *ent.Lock) (*ent.Lock, error) {
 	m.ctrl.T.Helper()

@@ -47,16 +47,6 @@ type (
 		SyncDeploymentStatus(ctx context.Context, ds *ent.DeploymentStatus) (*ent.DeploymentStatus, error)
 	}
 
-	// ReviewStore defines operations for working with reviews.
-	ReviewStore interface {
-		SearchReviews(ctx context.Context, u *ent.User) ([]*ent.Review, error)
-		ListReviews(ctx context.Context, d *ent.Deployment) ([]*ent.Review, error)
-		FindReviewOfUser(ctx context.Context, u *ent.User, d *ent.Deployment) (*ent.Review, error)
-		FindReviewByID(ctx context.Context, id int) (*ent.Review, error)
-		CreateReview(ctx context.Context, rv *ent.Review) (*ent.Review, error)
-		UpdateReview(ctx context.Context, rv *ent.Review) (*ent.Review, error)
-	}
-
 	SCM interface {
 		UserSCM
 		RepoSCM

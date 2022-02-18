@@ -25,6 +25,7 @@ type (
 		*LicenseInteractor
 		*LockInteractor
 		*RepoInteractor
+		*ReviewInteractor
 		*UserInteractor
 	}
 
@@ -86,6 +87,7 @@ func NewInteractor(c *InteractorConfig) *Interactor {
 		WebhookSSL:    c.ServerProxyProto == "https",
 		WebhookSecret: c.WebhookSecret,
 	}
+	i.ReviewInteractor = (*ReviewInteractor)(i.common)
 	i.UserInteractor = &UserInteractor{
 		service:       i.common,
 		admins:        c.AdminUsers,
