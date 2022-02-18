@@ -16,7 +16,6 @@ import (
 
 	gb "github.com/gitploy-io/gitploy/internal/server/global"
 	"github.com/gitploy-io/gitploy/model/ent"
-	"github.com/gitploy-io/gitploy/model/ent/event"
 	"github.com/gitploy-io/gitploy/model/ent/review"
 	"github.com/gitploy-io/gitploy/pkg/e"
 )
@@ -80,19 +79,12 @@ func (s *ReviewAPI) UpdateMine(c *gin.Context) {
 		rv.Comment = *p.Comment
 	}
 
-	if rv, err = s.i.UpdateReview(ctx, rv); err != nil {
+	if rv, err = s.i.RespondReview(ctx, rv); err != nil {
 		s.log.Check(gb.GetZapLogLevel(err), "Failed to update the review.").Write(zap.Error(err))
 		gb.ResponseWithError(c, err)
 		return
 	}
 
-	if _, err := s.i.CreateEvent(ctx, &ent.Event{
-		Kind:     event.KindReview,
-		Type:     event.TypeUpdated,
-		ReviewID: rv.ID,
-	}); err != nil {
-		s.log.Error("Failed to create the event.", zap.Error(err))
-	}
-
+	s.log.Info("Respond the review successfully.", zap.Int("review_id", rv.ID))
 	gb.Response(c, http.StatusOK, rv)
 }
