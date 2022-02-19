@@ -37,6 +37,7 @@ func main() {
 		Commands: []*cli.Command{
 			repoCommand,
 			deploymentCommand,
+			deploymentStatusCommand,
 			configCommand,
 		},
 	}
