@@ -19,11 +19,12 @@ type (
 		// Reuse a single struct instead of allocating one for each service on the heap.
 		common *client
 
-		// Services used for talking to different parts of the Gitploy API.
+		// Services is used for talking to different parts of the Gitploy API.
 		Repo             *RepoService
 		Deployment       *DeploymentService
 		DeploymentStatus *DeploymentStatusService
 		Config           *ConfigService
+		User             *UserService
 	}
 
 	client struct {
@@ -60,6 +61,7 @@ func NewClient(host string, httpClient *http.Client) *Client {
 	c.Deployment = &DeploymentService{client: c.common}
 	c.DeploymentStatus = &DeploymentStatusService{client: c.common}
 	c.Config = &ConfigService{client: c.common}
+	c.User = &UserService{client: c.common}
 
 	return c
 }
