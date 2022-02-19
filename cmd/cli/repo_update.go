@@ -34,7 +34,7 @@ var repoUpdateCommand = &cli.Command{
 		}
 
 		// Build the request body.
-		req := api.RepoUpdateRequest{}
+		req := &api.RepoUpdateRequest{}
 		if config := cli.String("config"); config != "" {
 			req.ConfigPath = pointer.ToString(config)
 		}

@@ -31,7 +31,7 @@ func (s *RepoService) ListAll(ctx context.Context) ([]*ent.Repo, error) {
 	page := 1
 
 	for {
-		rs, err := s.List(ctx, RepoListOptions{
+		rs, err := s.List(ctx, &RepoListOptions{
 			ListOptions{
 				Page:    page,
 				PerPage: perPage,
@@ -55,7 +55,7 @@ func (s *RepoService) ListAll(ctx context.Context) ([]*ent.Repo, error) {
 }
 
 // List returns repositories which are on the page.
-func (s *RepoService) List(ctx context.Context, options RepoListOptions) ([]*ent.Repo, error) {
+func (s *RepoService) List(ctx context.Context, options *RepoListOptions) ([]*ent.Repo, error) {
 	// Build the query.
 	vals := url.Values{}
 	vals.Add("page", strconv.Itoa(options.Page))
@@ -95,7 +95,7 @@ func (s *RepoService) Get(ctx context.Context, namespace, name string) (*ent.Rep
 	return repo, nil
 }
 
-func (s *RepoService) Update(ctx context.Context, namespace, name string, options RepoUpdateRequest) (*ent.Repo, error) {
+func (s *RepoService) Update(ctx context.Context, namespace, name string, options *RepoUpdateRequest) (*ent.Repo, error) {
 	req, err := s.client.NewRequest(
 		"PATCH",
 		fmt.Sprintf("api/v1/repos/%s/%s", namespace, name),

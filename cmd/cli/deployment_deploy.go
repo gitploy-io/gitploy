@@ -34,7 +34,7 @@ var deploymentDeployCommand = &cli.Command{
 		}
 
 		c := buildClient(cli)
-		d, err := c.Deployment.Create(cli.Context, ns, n, api.DeploymentCreateRequest{
+		d, err := c.Deployment.Create(cli.Context, ns, n, &api.DeploymentCreateRequest{
 			Type: cli.String("type"),
 			Ref:  cli.String("ref"),
 			Env:  cli.String("env"),

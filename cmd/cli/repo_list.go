@@ -44,7 +44,7 @@ var repoListCommand = &cli.Command{
 				return err
 			}
 		} else {
-			if repos, err = c.Repo.List(cli.Context, api.RepoListOptions{
+			if repos, err = c.Repo.List(cli.Context, &api.RepoListOptions{
 				ListOptions: api.ListOptions{Page: cli.Int("page"), PerPage: cli.Int("per-page")},
 			}); err != nil {
 				return err
