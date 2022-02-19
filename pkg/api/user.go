@@ -2,7 +2,6 @@ package api
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/gitploy-io/gitploy/model/ent"
 )
@@ -16,7 +15,7 @@ type (
 func (s *UserService) GetMe(ctx context.Context) (*ent.User, error) {
 	req, err := s.client.NewRequest(
 		"GET",
-		fmt.Sprint("/api/v1/user"),
+		"/api/v1/user",
 		nil,
 	)
 	if err != nil {
