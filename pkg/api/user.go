@@ -16,7 +16,7 @@ type (
 func (s *UserService) GetMe(ctx context.Context) (*ent.User, error) {
 	req, err := s.client.NewRequest(
 		"GET",
-		fmt.Sprintf("/api/v1/user"),
+		fmt.Sprint("/api/v1/user"),
 		nil,
 	)
 	if err != nil {
