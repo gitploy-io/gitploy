@@ -22,7 +22,7 @@ func TestDeploymentStatus_List(t *testing.T) {
 
 		c := NewClient("https://cloud.gitploy.io/", http.DefaultClient)
 
-		_, err := c.DeploymentStatus.List(context.Background(), "gitploy-io", "gitploy", 1, ListOptions{})
+		_, err := c.DeploymentStatus.List(context.Background(), "gitploy-io", "gitploy", 1, &ListOptions{})
 		if err != nil {
 			t.Fatalf("Create returns an error: %s", err)
 		}
@@ -38,7 +38,7 @@ func TestDeploymentStatus_Create(t *testing.T) {
 
 		c := NewClient("https://cloud.gitploy.io/", http.DefaultClient)
 
-		_, err := c.DeploymentStatus.CreateRemote(context.Background(), "gitploy-io", "gitploy", 1, DeploymentStatusCreateRemoteRequest{})
+		_, err := c.DeploymentStatus.CreateRemote(context.Background(), "gitploy-io", "gitploy", 1, &DeploymentStatusCreateRemoteRequest{})
 		if err != nil {
 			t.Fatalf("Create returns an error: %s", err)
 		}

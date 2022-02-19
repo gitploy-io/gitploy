@@ -25,7 +25,7 @@ var deploymentStatusListCommand = &cli.Command{
 		}
 
 		c := buildClient(cli)
-		dss, err := c.DeploymentStatus.List(cli.Context, ns, n, number, api.ListOptions{})
+		dss, err := c.DeploymentStatus.List(cli.Context, ns, n, number, &api.ListOptions{})
 		if err != nil {
 			return err
 		}

@@ -29,7 +29,7 @@ type (
 
 // List returns the deployment list.
 // It returns an error for a bad request.
-func (s *DeploymentService) List(ctx context.Context, namespace, name string, options DeploymentListOptions) ([]*ent.Deployment, error) {
+func (s *DeploymentService) List(ctx context.Context, namespace, name string, options *DeploymentListOptions) ([]*ent.Deployment, error) {
 	// Build the query.
 	vals := url.Values{}
 
@@ -88,7 +88,7 @@ func (s *DeploymentService) Get(ctx context.Context, namespace, name string, num
 }
 
 // Create requests a server to deploy a specific ref(branch, SHA, tag).
-func (s *DeploymentService) Create(ctx context.Context, namespace, name string, body DeploymentCreateRequest) (*ent.Deployment, error) {
+func (s *DeploymentService) Create(ctx context.Context, namespace, name string, body *DeploymentCreateRequest) (*ent.Deployment, error) {
 	req, err := s.client.NewRequest(
 		"POST",
 		fmt.Sprintf("api/v1/repos/%s/%s/deployments", namespace, name),

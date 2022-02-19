@@ -20,7 +20,7 @@ type (
 
 // List returns the list of deployment statuses.
 // It returns an error for a bad request.
-func (s *DeploymentStatusService) List(ctx context.Context, namespace, name string, number int, opt ListOptions) ([]*ent.DeploymentStatus, error) {
+func (s *DeploymentStatusService) List(ctx context.Context, namespace, name string, number int, opt *ListOptions) ([]*ent.DeploymentStatus, error) {
 	req, err := s.client.NewRequest(
 		"GET",
 		fmt.Sprintf("api/v1/repos/%s/%s/deployments/%d/statuses", namespace, name, number),
@@ -40,7 +40,7 @@ func (s *DeploymentStatusService) List(ctx context.Context, namespace, name stri
 
 // CreateRemote returns the remote status.
 // It returns an error for a bad request.
-func (s *DeploymentStatusService) CreateRemote(ctx context.Context, namespace, name string, number int, body DeploymentStatusCreateRemoteRequest) (*extent.RemoteDeploymentStatus, error) {
+func (s *DeploymentStatusService) CreateRemote(ctx context.Context, namespace, name string, number int, body *DeploymentStatusCreateRemoteRequest) (*extent.RemoteDeploymentStatus, error) {
 	req, err := s.client.NewRequest(
 		"POST",
 		fmt.Sprintf("api/v1/repos/%s/%s/deployments/%d/remote-statuses", namespace, name, number),

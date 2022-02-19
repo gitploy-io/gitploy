@@ -27,7 +27,7 @@ func TestDeploymentService_List(t *testing.T) {
 
 		c := NewClient("https://cloud.gitploy.io/", http.DefaultClient)
 
-		ret, err := c.Deployment.List(context.Background(), "gitploy-io", "gitploy", DeploymentListOptions{
+		ret, err := c.Deployment.List(context.Background(), "gitploy-io", "gitploy", &DeploymentListOptions{
 			ListOptions: ListOptions{Page: 1, PerPage: 30},
 			Env:         "production",
 			Status:      "waiting",
@@ -68,7 +68,7 @@ func TestDeploymentService_Create(t *testing.T) {
 
 		c := NewClient("https://cloud.gitploy.io/", http.DefaultClient)
 
-		_, err := c.Deployment.Create(context.Background(), "gitploy-io", "gitploy", DeploymentCreateRequest{
+		_, err := c.Deployment.Create(context.Background(), "gitploy-io", "gitploy", &DeploymentCreateRequest{
 			Type: "branch",
 			Env:  "production",
 			Ref:  "main",

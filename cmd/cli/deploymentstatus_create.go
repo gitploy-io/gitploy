@@ -38,7 +38,7 @@ var deploymentStatusCreateCommand = &cli.Command{
 
 		// Build the request.
 		c := buildClient(cli)
-		req := api.DeploymentStatusCreateRemoteRequest{
+		req := &api.DeploymentStatusCreateRemoteRequest{
 			Status:      cli.String("status"),
 			Description: cli.String("description"),
 		}

@@ -36,7 +36,7 @@ func TestRepoService_List(t *testing.T) {
 
 		c := NewClient("https://cloud.gitploy.io/", http.DefaultClient)
 
-		ret, err := c.Repo.List(context.Background(), RepoListOptions{
+		ret, err := c.Repo.List(context.Background(), &RepoListOptions{
 			ListOptions: ListOptions{Page: 1, PerPage: 30},
 		})
 		if err != nil {
@@ -100,7 +100,7 @@ func TestRepoService_Update(t *testing.T) {
 
 		c := NewClient("https://cloud.gitploy.io/", http.DefaultClient)
 
-		_, err := c.Repo.Update(context.Background(), "gitploy-io", "gitploy", RepoUpdateRequest{
+		_, err := c.Repo.Update(context.Background(), "gitploy-io", "gitploy", &RepoUpdateRequest{
 			ConfigPath: pointer.ToString("new_deploy.yml"),
 		})
 		if err != nil {
