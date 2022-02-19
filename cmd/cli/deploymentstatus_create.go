@@ -21,7 +21,7 @@ var deploymentStatusCreateCommand = &cli.Command{
 		&cli.StringFlag{
 			Name:        "description",
 			Usage:       "A short description of the status.",
-			DefaultText: "Update the deployment status manually.",
+			DefaultText: "User updated the status manually.",
 		},
 	},
 	Action: func(cli *cli.Context) error {
@@ -37,7 +37,7 @@ var deploymentStatusCreateCommand = &cli.Command{
 
 		c := buildClient(cli)
 		dss, err := c.DeploymentStatus.CreateRemote(cli.Context, ns, n, number, api.DeploymentStatusCreateRemoteRequest{
-			Status:      cli.String("stattus"),
+			Status:      cli.String("status"),
 			Description: cli.String("description"),
 		})
 		if err != nil {
