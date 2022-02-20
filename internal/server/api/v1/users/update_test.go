@@ -16,7 +16,7 @@ import (
 	"github.com/golang/mock/gomock"
 )
 
-func TestUser_UpdateUser(t *testing.T) {
+func TestUserAPI_UpdateUser(t *testing.T) {
 	input := struct {
 		ID      int64
 		Payload *userPatchPayload

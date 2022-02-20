@@ -10,6 +10,15 @@ import (
 	"github.com/gitploy-io/gitploy/model/ent"
 )
 
+type (
+	// extendedUserData includes the 'hash' field.
+	extendedUserData struct {
+		*ent.User
+
+		Hash string `json:"hash"`
+	}
+)
+
 func (u *UserAPI) GetMe(c *gin.Context) {
 	ctx := c.Request.Context()
 
@@ -23,5 +32,8 @@ func (u *UserAPI) GetMe(c *gin.Context) {
 		return
 	}
 
-	gb.Response(c, http.StatusOK, uv)
+	gb.Response(c, http.StatusOK, extendedUserData{
+		User: uv,
+		Hash: uv.Hash,
+	})
 }
