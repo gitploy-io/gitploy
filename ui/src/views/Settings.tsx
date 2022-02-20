@@ -32,14 +32,14 @@ export default function Settings(): JSX.Element {
                 <Descriptions.Item label="Login">
                     <b>{user?.login}</b>
                 </Descriptions.Item>
-                <Descriptions.Item label="Login">
+                <Descriptions.Item label="Role">
                     {(user?.admin)? 
                         <Tag color="purple">Admin</Tag> 
                         : 
                         <Tag color="purple">Member</Tag>}
                 </Descriptions.Item>
             </Descriptions>
-            <Descriptions title="Rate Limit" style={{marginTop: "40px"}} column={2}>
+            <Descriptions title="Rate Limit" style={{marginTop: "40px"}} column={1}>
                 <Descriptions.Item label="Limit">{rateLimit?.limit}</Descriptions.Item>
                 <Descriptions.Item label="Remaining">{rateLimit?.remaining}</Descriptions.Item>
                 <Descriptions.Item label="Reset">{moment(rateLimit?.reset).fromNow()}</Descriptions.Item>
