@@ -146,9 +146,7 @@ export default function DeploymentView(): JSX.Element {
                             <Breadcrumb.Item>Deployments</Breadcrumb.Item>
                             <Breadcrumb.Item>{number}</Breadcrumb.Item>
                         </Breadcrumb>}
-                    extra={[
-                        reviewBtn,
-                    ]}
+                    extra={reviewBtn}
                     onBack={onBack} 
                 />
             </div>

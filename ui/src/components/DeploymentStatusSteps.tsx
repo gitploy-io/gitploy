@@ -15,6 +15,7 @@ export default function DeploymentStatusSteps(props: DeploymentStatusStepsProps)
             {props.statuses.map((status, idx) => {
                 return (
                     <Timeline.Item 
+                        key={idx}
                         color={getStatusColor(status.status)}
                         style={(idx === props.statuses.length - 1)? {paddingBottom: 0} : {}}
                     >
