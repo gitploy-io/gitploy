@@ -54,7 +54,7 @@ func TestUser_UpdateUser(t *testing.T) {
 
 	gin.SetMode(gin.ReleaseMode)
 	r := gin.New()
-	r.PATCH("/users/:id", NewUser(m).UpdateUser)
+	r.PATCH("/users/:id", NewUserAPI(m).UpdateUser)
 
 	p, _ := json.Marshal(input.Payload)
 	req, _ := http.NewRequest("PATCH", fmt.Sprintf("/users/%d", input.ID), bytes.NewBuffer(p))

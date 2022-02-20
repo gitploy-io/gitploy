@@ -16,7 +16,7 @@ import (
 )
 
 type (
-	User struct {
+	UserAPI struct {
 		i   Interactor
 		log *zap.Logger
 	}
@@ -26,14 +26,14 @@ type (
 	}
 )
 
-func NewUser(i Interactor) *User {
-	return &User{
+func NewUserAPI(i Interactor) *UserAPI {
+	return &UserAPI{
 		i:   i,
 		log: zap.L().Named("users"),
 	}
 }
 
-func (u *User) ListUsers(c *gin.Context) {
+func (u *UserAPI) ListUsers(c *gin.Context) {
 	ctx := c.Request.Context()
 
 	var (
@@ -70,7 +70,7 @@ func (u *User) ListUsers(c *gin.Context) {
 	gb.Response(c, http.StatusOK, us)
 }
 
-func (u *User) UpdateUser(c *gin.Context) {
+func (u *UserAPI) UpdateUser(c *gin.Context) {
 	ctx := c.Request.Context()
 
 	var (
@@ -116,7 +116,7 @@ func (u *User) UpdateUser(c *gin.Context) {
 	gb.Response(c, http.StatusOK, du)
 }
 
-func (u *User) DeleteUser(c *gin.Context) {
+func (u *UserAPI) DeleteUser(c *gin.Context) {
 	ctx := c.Request.Context()
 
 	var (
@@ -149,7 +149,7 @@ func (u *User) DeleteUser(c *gin.Context) {
 	c.Status(http.StatusOK)
 }
 
-func (u *User) GetMyUser(c *gin.Context) {
+func (u *UserAPI) GetMyUser(c *gin.Context) {
 	ctx := c.Request.Context()
 
 	v, _ := c.Get(gb.KeyUser)
@@ -165,7 +165,7 @@ func (u *User) GetMyUser(c *gin.Context) {
 	gb.Response(c, http.StatusOK, uv)
 }
 
-func (u *User) GetRateLimit(c *gin.Context) {
+func (u *UserAPI) GetRateLimit(c *gin.Context) {
 	ctx := c.Request.Context()
 
 	v, _ := c.Get(gb.KeyUser)
