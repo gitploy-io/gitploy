@@ -15,12 +15,13 @@ export default function DeploymentStatusSteps(props: DeploymentStatusStepsProps)
             {props.statuses.map((status, idx) => {
                 return (
                     <Timeline.Item 
+                        key={idx}
                         color={getStatusColor(status.status)}
                         style={(idx === props.statuses.length - 1)? {paddingBottom: 0} : {}}
                     >
                         <Paragraph style={{margin: 0}}>
                             <Text strong>{status.description}</Text> 
-                            {(status.logUrl !== "")? <Link href={status.logUrl}> View</Link> : <></>}<br/>
+                            {(status.logUrl !== "")? <Link href={status.logUrl} target="_blank"> View</Link> : <></>}<br/>
                             <Text>Updated</Text> <Text code className="gitploy-code">{status.status}</Text> <Text>at {moment(status.createdAt).format('HH:mm:ss')}</Text>
                         </Paragraph>
                     </Timeline.Item>
