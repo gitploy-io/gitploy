@@ -1,11 +1,11 @@
-import { Avatar, Button, Tag } from "antd"
-import moment from "moment"
 import { useEffect } from "react"
 import { shallowEqual } from "react-redux"
 import { Helmet } from "react-helmet"
+import { Avatar, Button, Tag, Descriptions } from "antd"
+import moment from "moment"
 
 import { useAppSelector, useAppDispatch } from "../redux/hooks"
-import { fetchMe, fetchRateLimit,checkSlack } from "../redux/settings"
+import { fetchMe, fetchRateLimit, checkSlack } from "../redux/settings"
 
 import Main from "./Main"
 
@@ -27,24 +27,23 @@ export default function Settings(): JSX.Element {
             <Helmet>
                 <title>Settings</title>
             </Helmet>
-            <div >
-                <h1>Settings</h1>
-            </div>
-            <div style={{marginTop: "40px"}}>
-                <h2>User</h2>
-                <p>
-                    Login: <Avatar src={user?.avatar}/> <b>{user?.login}</b> 
-                </p>
-                <p>
-                    Role: {(user?.admin)? <Tag color="purple">Admin</Tag> : <Tag color="purple">Member</Tag>}
-                </p>
-            </div>
-            <div style={{marginTop: "40px"}}>
-                <h2>Rate Limit</h2>
-                <p>Limit: {rateLimit?.limit}</p>
-                <p>Remaining: {rateLimit?.remaining}</p>
-                <p>Reset: {moment(rateLimit?.reset).fromNow()}</p>
-            </div>
+            <h1>Settings</h1>
+            <Descriptions title="User Info" column={1} style={{marginTop: "40px"}}>
+                <Descriptions.Item label="Login">
+                    <b>{user?.login}</b>
+                </Descriptions.Item>
+                <Descriptions.Item label="Login">
+                    {(user?.admin)? 
+                        <Tag color="purple">Admin</Tag> 
+                        : 
+                        <Tag color="purple">Member</Tag>}
+                </Descriptions.Item>
+            </Descriptions>
+            <Descriptions title="Rate Limit" style={{marginTop: "40px"}} column={2}>
+                <Descriptions.Item label="Limit">{rateLimit?.limit}</Descriptions.Item>
+                <Descriptions.Item label="Remaining">{rateLimit?.remaining}</Descriptions.Item>
+                <Descriptions.Item label="Reset">{moment(rateLimit?.reset).fromNow()}</Descriptions.Item>
+            </Descriptions>
             {(isSlackEnabled)?
                 <div style={{marginTop: "40px", marginBottom: "20px"}}>
                     <h2>Slack</h2>
