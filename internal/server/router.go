@@ -159,10 +159,10 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 	{
 		m := users.NewUserMiddleware()
 		u := users.NewUserAPI(c.Interactor)
-		usersv1.GET("", m.AdminOnly(), u.ListUsers)
-		usersv1.PATCH("/:id", m.AdminOnly(), u.UpdateUser)
-		usersv1.DELETE("/:id", m.AdminOnly(), u.DeleteUser)
-		userv1.GET("", u.GetMyUser)
+		usersv1.GET("", m.AdminOnly(), u.List)
+		usersv1.PATCH("/:id", m.AdminOnly(), u.Update)
+		usersv1.DELETE("/:id", m.AdminOnly(), u.Delete)
+		userv1.GET("", u.GetMe)
 		userv1.GET("/rate-limit", u.GetRateLimit)
 	}
 
