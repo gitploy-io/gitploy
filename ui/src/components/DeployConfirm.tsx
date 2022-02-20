@@ -171,7 +171,13 @@ function CommitChange(props: CommitChangeProps): JSX.Element {
 
     return (
         <span >
-            <a href={props.commit.htmlUrl} className="gitploy-link"><strong>{message}</strong></a>
+            <a  
+                href={props.commit.htmlUrl} 
+                target="_blank" 
+                className="gitploy-link"
+            >
+                <strong>{message}</strong>
+            </a>
             {(description.length) ? 
                 <Button size="small" type="text" onClick={onClickHide}>
                     <Text className="gitploy-code" code>...</Text>

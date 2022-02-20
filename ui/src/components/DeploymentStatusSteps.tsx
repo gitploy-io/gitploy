@@ -20,7 +20,7 @@ export default function DeploymentStatusSteps(props: DeploymentStatusStepsProps)
                     >
                         <Paragraph style={{margin: 0}}>
                             <Text strong>{status.description}</Text> 
-                            {(status.logUrl !== "")? <Link href={status.logUrl}> View</Link> : <></>}<br/>
+                            {(status.logUrl !== "")? <Link href={status.logUrl} target="_blank"> View</Link> : <></>}<br/>
                             <Text>Updated</Text> <Text code className="gitploy-code">{status.status}</Text> <Text>at {moment(status.createdAt).format('HH:mm:ss')}</Text>
                         </Paragraph>
                     </Timeline.Item>
