@@ -9,6 +9,7 @@ export interface UserData {
     login: string
     avatar: string
     admin: boolean
+    hash?: string
     created_at: string
     updated_at: string
     edges: {
@@ -47,6 +48,7 @@ export const mapDataToUser = (data: UserData): User => {
         login: data.login,
         avatar: data.avatar,
         admin: data.admin,
+        hash: data.hash,
         createdAt: new Date(data.created_at),
         updatedAt: new Date(data.updated_at),
         chatUser: cu,

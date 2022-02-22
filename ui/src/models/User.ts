@@ -3,6 +3,8 @@ export default interface User {
     login: string
     avatar: string
     admin: boolean
+    // It exists only when getting self user.
+    hash?: string
     createdAt: Date
     updatedAt: Date
     chatUser: ChatUser | null
