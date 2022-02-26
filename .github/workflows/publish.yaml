@@ -41,3 +41,31 @@ jobs:
           platforms: linux/amd64  # ,linux/arm64
           push: true
           tags: ${{ steps.docker_meta.outputs.tags }}
+
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v2
+      - 
+        uses: actions/setup-go@v1
+        with:
+          go-version: '1.17'
+      - 
+        name: test
+        run: go test -cpu 4 -coverprofile .testCoverage.txt $(go list ./... | grep -v model/ent | grep -v mock)
+        env:
+          GIN_MODE: release
+      - 
+        name: build
+        run: sh ./scripts/build-cli.sh
+      - 
+        name: release
+        uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ github.token }}"
+          prerelease: true
+          files: |
+            release/gitploy_*.tar.gz
+            release/gitploy_checksums.txt
