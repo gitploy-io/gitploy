@@ -6,7 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
-	"github.com/google/go-github/v32/github"
+	"github.com/google/go-github/v42/github"
 	"go.uber.org/zap"
 
 	gb "github.com/gitploy-io/gitploy/internal/server/global"

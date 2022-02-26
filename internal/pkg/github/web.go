@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/gitploy-io/gitploy/model/extent"
-	"github.com/google/go-github/v32/github"
+	"github.com/google/go-github/v42/github"
 )
 
 func (g *Github) GetRemoteUserByToken(ctx context.Context, token string) (*extent.RemoteUser, error) {
