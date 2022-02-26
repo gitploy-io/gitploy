@@ -3,8 +3,9 @@ import moment from "moment"
 
 import DeploymentStatusBadge from "../DeploymentStatusBadge"
 import UserAvatar from "../UserAvatar"
+import CommitChanges from "./CommitChanges"
 
-import { Deployment } from "../../models"
+import { Commit, Deployment } from "../../models"
 import { getShortRef } from "../../libs"
 import { useState } from "react"
 
@@ -12,6 +13,7 @@ const { Text } = Typography
 
 interface DeploymentDescriptorProps {
     deployment: Deployment
+    commits: Commit[]
 }
 
 export default function DeploymentDescriptor(props: DeploymentDescriptorProps): JSX.Element {
@@ -51,10 +53,13 @@ export default function DeploymentDescriptor(props: DeploymentDescriptorProps): 
                 <Modal 
                     title="Changes" 
                     visible={visible}
-                    width={1000}
+                    width={800}
+                    // Hide OK Button
+                    okButtonProps={{style: {display: "none"}}}
+                    cancelText="Close"
                     onCancel={hideModal}
                 >
-                    TODO: Show commits
+                    <CommitChanges changes={props.commits}/>
                 </Modal>
             </Descriptions.Item>
         </Descriptions>

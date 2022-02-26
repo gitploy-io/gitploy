@@ -154,14 +154,14 @@ export default function DeploymentView(): JSX.Element {
             </div>
             <Row>
                 <Col  span={23} offset={1} lg={{span: 13, offset: 1}}>
-                    <DeploymentDescriptor deployment={deployment}/>
+                    <DeploymentDescriptor commits={changes} deployment={deployment}/>
                 </Col>
                 <Col span={23} offset={1}  lg={{span: 6, offset: 2}}>
                    <ReviewerList reviews={reviews}/> 
                 </Col>
             </Row>
             <Row style={{marginTop: 40}}>
-                <Col offset={2} span={22}>
+                <Col offset={1} span={22} md={{offset: 2}}>
                     {deployment.statuses?
                         <DeploymentStatusSteps statuses={deployment.statuses}/>
                         :
