@@ -154,6 +154,10 @@ func init() {
 	repo.DefaultUpdatedAt = repoDescUpdatedAt.Default.(func() time.Time)
 	// repo.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	repo.UpdateDefaultUpdatedAt = repoDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// repoDescLatestDeployedAt is the schema descriptor for latest_deployed_at field.
+	repoDescLatestDeployedAt := repoFields[9].Descriptor()
+	// repo.DefaultLatestDeployedAt holds the default value on creation for the latest_deployed_at field.
+	repo.DefaultLatestDeployedAt = repoDescLatestDeployedAt.Default.(func() time.Time)
 	reviewFields := schema.Review{}.Fields()
 	_ = reviewFields
 	// reviewDescCreatedAt is the schema descriptor for created_at field.

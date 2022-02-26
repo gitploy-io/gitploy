@@ -299,6 +299,10 @@ func (rc *RepoCreate) defaults() {
 		v := repo.DefaultUpdatedAt()
 		rc.mutation.SetUpdatedAt(v)
 	}
+	if _, ok := rc.mutation.LatestDeployedAt(); !ok {
+		v := repo.DefaultLatestDeployedAt()
+		rc.mutation.SetLatestDeployedAt(v)
+	}
 }
 
 // check runs all checks and user-defined validators on the builder.
