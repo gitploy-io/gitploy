@@ -83,7 +83,7 @@ func NewInteractor(c *InteractorConfig) *Interactor {
 	i.LockInteractor = (*LockInteractor)(i.common)
 	i.RepoInteractor = &RepoInteractor{
 		service:       i.common,
-		WebhookURL:    fmt.Sprintf("%s://%s/hooks", c.ServerProxyProto, c.ServerProxyHost),
+		WebhookURL:    c.BuildWebhookURL(),
 		WebhookSSL:    c.ServerProxyProto == "https",
 		WebhookSecret: c.WebhookSecret,
 	}
@@ -111,4 +111,12 @@ func NewInteractor(c *InteractorConfig) *Interactor {
 	}()
 
 	return i
+}
+
+func (c *InteractorConfig) BuildWebhookURL() string {
+	if c.ServerProxyProto != "" && c.ServerProxyHost != "" {
+		return fmt.Sprintf("%s://%s/hooks", c.ServerProxyProto, c.ServerProxyHost)
+	}
+
+	return fmt.Sprintf("%s://%s/hooks", c.ServerProto, c.ServerHost)
 }
