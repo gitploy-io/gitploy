@@ -34,7 +34,7 @@ func (Repo) Fields() []ent.Field {
 			UpdateDefault(nowUTC),
 		// Denormalization to sort with deployment.
 		field.Time("latest_deployed_at").
-			Default(nowUTC).
+			Default(zeroTime).
 			Optional(),
 		// The 'owner_id' field is the ID who activated the repository.
 		field.Int64("owner_id").

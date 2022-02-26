@@ -19,3 +19,7 @@ func generateHash() string {
 func nowUTC() time.Time {
 	return time.Now().UTC()
 }
+
+func zeroTime() time.Time {
+	return time.Time{}
+}
