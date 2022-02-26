@@ -1,9 +1,10 @@
 import { Timeline, Typography } from "antd"
+import { ClockCircleOutlined } from "@ant-design/icons"
 import moment from "moment"
 
 import { DeploymentStatus } from "../models"
 
-const { Paragraph, Text, Link } = Typography
+const { Text, Link } = Typography
 
 interface DeploymentStatusStepsProps {
     statuses: DeploymentStatus[]
@@ -17,13 +18,14 @@ export default function DeploymentStatusSteps(props: DeploymentStatusStepsProps)
                     <Timeline.Item 
                         key={idx}
                         color={getStatusColor(status.status)}
-                        style={(idx === props.statuses.length - 1)? {paddingBottom: 0} : {}}
                     >
-                        <Paragraph style={{margin: 0}}>
-                            <Text strong>{status.description}</Text> 
-                            {(status.logUrl !== "")? <Link href={status.logUrl} target="_blank"> View</Link> : <></>}<br/>
-                            <Text>Updated</Text> <Text code className="gitploy-code">{status.status}</Text> <Text>at {moment(status.createdAt).format('HH:mm:ss')}</Text>
-                        </Paragraph>
+                        <ClockCircleOutlined /> {moment(status.createdAt).format("YYYY-MM-DD HH:mm:ss")}<br/>
+                        <b>{status.description}</b>&nbsp;&nbsp;
+                        {(status.logUrl !== "")? 
+                            <Link href={status.logUrl} target="_blank">View Detail</Link> 
+                            : 
+                            <></>}<br />
+                        Updated <Text className="gitploy-code" code>{status.status}</Text> {moment(status.createdAt).fromNow()}
                     </Timeline.Item>
                 )
             })}

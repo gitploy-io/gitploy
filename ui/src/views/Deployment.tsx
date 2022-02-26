@@ -1,8 +1,8 @@
 import { useEffect } from "react"
-import { Breadcrumb, PageHeader, Result } from "antd"
 import { shallowEqual } from 'react-redux'
 import { useParams } from "react-router-dom"
 import { Helmet } from "react-helmet"
+import { Breadcrumb, Button, PageHeader, Result, Row, Col } from "antd"
 
 import { useAppSelector, useAppDispatch } from "../redux/hooks"
 import { 
@@ -27,7 +27,9 @@ import { subscribeEvents } from "../apis"
 import Main from "./Main"
 import ReviewModal from "../components/ReviewModal"
 import Spin from "../components/Spin"
-import DeployConfirm from "../components/DeployConfirm"
+import DeploymentDescriptor from "../components/DeploymentDescriptor"
+import ReviewerList from "../components/ReviewerList"
+import DeploymentStatusSteps from "../components/DeploymentStatusSteps"
 
 interface Params {
     namespace: string
@@ -150,16 +152,41 @@ export default function DeploymentView(): JSX.Element {
                     onBack={onBack} 
                 />
             </div>
-            <div style={{marginTop: "20px", marginBottom: "30px"}}>
-                <DeployConfirm 
-                    isDeployable={isDeployable(deployment, reviews)}
-                    deploying={RequestStatus.Pending === deploying}
-                    deployment={deployment}
-                    changes={changes}
-                    reviews={reviews}
-                    onClickDeploy={onClickDeploy}
-                />
-            </div>
+            <Row>
+                <Col  span={23} offset={1} lg={{span: 13, offset: 1}}>
+                    <DeploymentDescriptor commits={changes} deployment={deployment}/>
+                </Col>
+                <Col span={23} offset={1}  lg={{span: 6, offset: 2}}>
+                   <ReviewerList reviews={reviews}/> 
+                </Col>
+            </Row>
+            <Row style={{marginTop: 40}}>
+                <Col offset={1} span={22} md={{offset: 2}}>
+                    {deployment.statuses?
+                        <DeploymentStatusSteps statuses={deployment.statuses}/>
+                        :
+                        <></>}
+                </Col>
+            </Row>
+            <Row style={{marginTop: 20}}>
+                <Col offset={16}>
+                    {isDeployable(deployment, reviews)?
+                        <Button 
+                            loading={RequestStatus.Pending === deploying} 
+                            type="primary" 
+                            onClick={onClickDeploy}
+                        >
+                            Deploy
+                        </Button>
+                        :
+                        <Button 
+                            type="primary" 
+                            disabled
+                        >
+                          Deploy
+                        </Button>}
+                </Col>
+            </Row>
         </Main>
     )
 }
