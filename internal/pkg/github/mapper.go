@@ -4,7 +4,7 @@ import (
 	"strings"
 
 	"github.com/gitploy-io/gitploy/model/extent"
-	"github.com/google/go-github/v32/github"
+	"github.com/google/go-github/v42/github"
 )
 
 func mapGithubUserToUser(u *github.User) *extent.RemoteUser {
@@ -32,7 +32,7 @@ func mapGithubRepoToRemotePerm(r *github.Repository) *extent.RemoteRepo {
 		Namespace:   namespace,
 		Name:        name,
 		Description: *r.Description,
-		Perm:        mapGithubPermToRepoPerm(*r.Permissions),
+		Perm:        mapGithubPermToRepoPerm(r.Permissions),
 	}
 }
 
@@ -100,12 +100,14 @@ func mapGithubStatusToStatus(s *github.RepoStatus) *extent.Status {
 	}
 
 	status := &extent.Status{
-		Context:   *s.Context,
-		AvatarURL: "",
-		State:     state,
+		Context: *s.Context,
+		State:   state,
 	}
 	if s.TargetURL != nil {
 		status.TargetURL = *s.TargetURL
+	}
+	if s.AvatarURL != nil {
+		status.AvatarURL = *s.AvatarURL
 	}
 
 	return status

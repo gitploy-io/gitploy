@@ -4,7 +4,7 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/google/go-github/v32/github"
+	"github.com/google/go-github/v42/github"
 	graphql "github.com/shurcooL/githubv4"
 
 	"github.com/gitploy-io/gitploy/internal/interactor"
@@ -51,7 +51,7 @@ func (g *Github) CompareCommits(ctx context.Context, u *ent.User, r *ent.Repo, b
 	// TODO: Support pagination.
 	res, _, err := g.Client(ctx, u.Token).
 		Repositories.
-		CompareCommits(ctx, r.Namespace, r.Name, base, head)
+		CompareCommits(ctx, r.Namespace, r.Name, base, head, &github.ListOptions{})
 	if err != nil {
 		return nil, nil, err
 	}
@@ -72,7 +72,7 @@ func (g *Github) CompareCommits(ctx context.Context, u *ent.User, r *ent.Repo, b
 func (g *Github) GetCommit(ctx context.Context, u *ent.User, r *ent.Repo, sha string) (*extent.Commit, error) {
 	cm, res, err := g.Client(ctx, u.Token).
 		Repositories.
-		GetCommit(ctx, r.Namespace, r.Name, sha)
+		GetCommit(ctx, r.Namespace, r.Name, sha, &github.ListOptions{})
 	// Github returns Unprocessable entity if the commit is not found.
 	if res.StatusCode == http.StatusNotFound || res.StatusCode == http.StatusUnprocessableEntity {
 		return nil, e.NewErrorWithMessage(e.ErrorCodeEntityNotFound, "The commit is not found.", err)
@@ -147,7 +147,7 @@ func (g *Github) ListBranches(ctx context.Context, u *ent.User, r *ent.Repo, opt
 func (g *Github) GetBranch(ctx context.Context, u *ent.User, r *ent.Repo, branch string) (*extent.Branch, error) {
 	b, res, err := g.Client(ctx, u.Token).
 		Repositories.
-		GetBranch(ctx, r.Namespace, r.Name, branch)
+		GetBranch(ctx, r.Namespace, r.Name, branch, false)
 	if res.StatusCode == http.StatusNotFound {
 		return nil, e.NewErrorWithMessage(e.ErrorCodeEntityNotFound, "The branch is not found.", err)
 	} else if err != nil {

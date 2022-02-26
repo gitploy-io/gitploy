@@ -9,7 +9,7 @@ import (
 	"github.com/gitploy-io/gitploy/model/ent"
 	"github.com/gitploy-io/gitploy/model/extent"
 	"github.com/gitploy-io/gitploy/pkg/e"
-	"github.com/google/go-github/v32/github"
+	"github.com/google/go-github/v42/github"
 )
 
 func (g *Github) CreateRemoteDeployment(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, env *extent.Env) (*extent.RemoteDeployment, error) {
@@ -47,7 +47,7 @@ func (g *Github) CreateRemoteDeployment(ctx context.Context, u *ent.User, r *ent
 	var url string
 	commit, _, err := g.Client(ctx, u.Token).
 		Repositories.
-		GetCommit(ctx, r.Namespace, r.Name, *gd.SHA)
+		GetCommit(ctx, r.Namespace, r.Name, *gd.SHA, &github.ListOptions{})
 	if err == nil {
 		url = *commit.HTMLURL
 	}

@@ -3,7 +3,7 @@ package github
 import (
 	"context"
 
-	"github.com/google/go-github/v32/github"
+	"github.com/google/go-github/v42/github"
 	graphql "github.com/shurcooL/githubv4"
 	"golang.org/x/oauth2"
 )

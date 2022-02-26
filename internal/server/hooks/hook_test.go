@@ -11,7 +11,7 @@ import (
 	"github.com/AlekSi/pointer"
 	"github.com/gin-gonic/gin"
 	"github.com/golang/mock/gomock"
-	"github.com/google/go-github/v32/github"
+	"github.com/google/go-github/v42/github"
 
 	"github.com/gitploy-io/gitploy/internal/server/hooks/mock"
 	"github.com/gitploy-io/gitploy/model/ent"

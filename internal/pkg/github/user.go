@@ -5,7 +5,7 @@ import (
 
 	"github.com/gitploy-io/gitploy/model/ent"
 	"github.com/gitploy-io/gitploy/model/extent"
-	"github.com/google/go-github/v32/github"
+	"github.com/google/go-github/v42/github"
 )
 
 func (g *Github) GetRateLimit(ctx context.Context, u *ent.User) (*extent.RateLimit, error) {
