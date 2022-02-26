@@ -100,12 +100,14 @@ func mapGithubStatusToStatus(s *github.RepoStatus) *extent.Status {
 	}
 
 	status := &extent.Status{
-		Context:   *s.Context,
-		AvatarURL: "",
-		State:     state,
+		Context: *s.Context,
+		State:   state,
 	}
 	if s.TargetURL != nil {
 		status.TargetURL = *s.TargetURL
+	}
+	if s.AvatarURL != nil {
+		status.AvatarURL = *s.AvatarURL
 	}
 
 	return status
