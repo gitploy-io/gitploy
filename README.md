@@ -21,7 +21,7 @@ GitHub provides the [deployment API](https://docs.github.com/en/rest/reference/d
 
 Gitploy enables your organization **to build the deployment system around deployment API in minutes**, and it provides the place to manage all deployment and deploying in the same manner. 
 
-![gitploy](./images/gitploy.gif)
+![gitploy](./images/gitploy-v2.gif)
 
 
 ## Features
