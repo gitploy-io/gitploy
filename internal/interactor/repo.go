@@ -63,7 +63,7 @@ type (
 func (i *RepoInteractor) ActivateRepo(ctx context.Context, u *ent.User, r *ent.Repo) (*ent.Repo, error) {
 	hid, err := i.scm.CreateWebhook(ctx, u, r, &extent.WebhookConfig{
 		URL:         i.WebhookURL,
-		InsecureSSL: i.WebhookSSL,
+		InsecureSSL: !i.WebhookSSL,
 		Secret:      i.WebhookSecret,
 	})
 	if err != nil {
