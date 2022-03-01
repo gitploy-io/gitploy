@@ -3,6 +3,7 @@ import { shallowEqual } from "react-redux"
 import { Layout, Menu, Row, Col, Result, Button, Drawer, Avatar, Dropdown, Badge} from "antd"
 import { SettingFilled } from "@ant-design/icons"
 import { Helmet } from "react-helmet"
+import moment from "moment"
 
 import { useAppSelector, useAppDispatch } from "../redux/hooks"
 import { init, searchDeployments, searchReviews, fetchLicense, notifyDeploymentEvent, notifyReviewmentEvent, mainSlice as slice } from "../redux/main"
@@ -157,7 +158,7 @@ export default function Main(props: any) {
                     </Col>
                 </Row>
             </Header>
-            <Content style={{ padding: '50px 50px' }}>
+            <Content style={{ padding: "50px 50px" }}>
                 <Row>
                     <Col 
                         span={22}
@@ -168,9 +169,9 @@ export default function Main(props: any) {
                     </Col>
                 </Row>
             </Content>
-            <Footer style={{ textAlign: 'center' }}>
+            <Footer style={{ textAlign: "center" }}>
                 <LicenseFooter license={license} />
-                Gitploy ©2021 Created by Gitploy.IO 
+                Gitploy ©{moment().format("YYYY")} Created by Gitploy.IO 
             </Footer>
         </Layout>
     )
