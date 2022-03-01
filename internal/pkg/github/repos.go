@@ -250,7 +250,7 @@ func (g *Github) CreateWebhook(ctx context.Context, u *ent.User, r *ent.Repo, c 
 				"url":          c.URL,
 				"content_type": "json",
 				"secret":       c.Secret,
-				"insecure_ssl": mapInsecureSSL(c.InsecureSSL),
+				"insecure_ssl": mapInsecureSSL(c.SSL),
 			},
 			Events: []string{"deployment_status", "push"},
 			Active: github.Bool(true),

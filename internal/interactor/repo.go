@@ -62,9 +62,9 @@ type (
 // the hook ID.
 func (i *RepoInteractor) ActivateRepo(ctx context.Context, u *ent.User, r *ent.Repo) (*ent.Repo, error) {
 	hid, err := i.scm.CreateWebhook(ctx, u, r, &extent.WebhookConfig{
-		URL:         i.WebhookURL,
-		InsecureSSL: i.WebhookSSL,
-		Secret:      i.WebhookSecret,
+		URL:    i.WebhookURL,
+		SSL:    i.WebhookSSL,
+		Secret: i.WebhookSecret,
 	})
 	if err != nil {
 		return nil, fmt.Errorf("failed to create a webhook: %s", err)

@@ -148,6 +148,8 @@ func mapGithubBranchToBranch(b *github.Branch) *extent.Branch {
 	}
 }
 
+// mapInsecureSSL returns 0 when verification is performed
+// but returns 1 when verification is not performed.
 func mapInsecureSSL(ssl bool) int {
 	if ssl {
 		return 0
