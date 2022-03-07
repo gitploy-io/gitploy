@@ -16,8 +16,8 @@ envs:
       - "publish-image"
     production_environment: true
     review:
-      enabled: true
+      enabled: false
       reviewers: 
         - hanjunlee
-        - noah-qa
+        - gitploy-qa
     deployable_ref: 'v.*\..*\..*'
