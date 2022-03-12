@@ -163,7 +163,9 @@ export default function Main(props: any) {
                         span={22}
                         offset={1}
                         md={{span: 14, offset: 5}} 
-                        lg={{span: 10, offset: 7}}>
+                        lg={{span: 12, offset: 6}} 
+                        xxl={{span: 10, offset: 7}}
+                    >
                         {content}
                     </Col>
                 </Row>
