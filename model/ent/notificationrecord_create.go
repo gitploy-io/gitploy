@@ -102,10 +102,10 @@ func (nrc *NotificationRecordCreate) ExecX(ctx context.Context) {
 // check runs all checks and user-defined validators on the builder.
 func (nrc *NotificationRecordCreate) check() error {
 	if _, ok := nrc.mutation.EventID(); !ok {
-		return &ValidationError{Name: "event_id", err: errors.New(`ent: missing required field "event_id"`)}
+		return &ValidationError{Name: "event_id", err: errors.New(`ent: missing required field "NotificationRecord.event_id"`)}
 	}
 	if _, ok := nrc.mutation.EventID(); !ok {
-		return &ValidationError{Name: "event", err: errors.New("ent: missing required edge \"event\"")}
+		return &ValidationError{Name: "event", err: errors.New(`ent: missing required edge "NotificationRecord.event"`)}
 	}
 	return nil
 }

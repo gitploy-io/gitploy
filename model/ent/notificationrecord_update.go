@@ -113,7 +113,7 @@ func (nru *NotificationRecordUpdate) ExecX(ctx context.Context) {
 // check runs all checks and user-defined validators on the builder.
 func (nru *NotificationRecordUpdate) check() error {
 	if _, ok := nru.mutation.EventID(); nru.mutation.EventCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"event\"")
+		return errors.New(`ent: clearing a required unique edge "NotificationRecord.event"`)
 	}
 	return nil
 }
@@ -282,7 +282,7 @@ func (nruo *NotificationRecordUpdateOne) ExecX(ctx context.Context) {
 // check runs all checks and user-defined validators on the builder.
 func (nruo *NotificationRecordUpdateOne) check() error {
 	if _, ok := nruo.mutation.EventID(); nruo.mutation.EventCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"event\"")
+		return errors.New(`ent: clearing a required unique edge "NotificationRecord.event"`)
 	}
 	return nil
 }
@@ -300,7 +300,7 @@ func (nruo *NotificationRecordUpdateOne) sqlSave(ctx context.Context) (_node *No
 	}
 	id, ok := nruo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "ID", err: fmt.Errorf("missing NotificationRecord.ID for update")}
+		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "NotificationRecord.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
 	if fields := nruo.fields; len(fields) > 0 {
