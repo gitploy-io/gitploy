@@ -157,7 +157,7 @@ func (pq *PermQuery) FirstIDX(ctx context.Context) int {
 }
 
 // Only returns a single Perm entity found by the query, ensuring it only returns one.
-// Returns a *NotSingularError when exactly one Perm entity is not found.
+// Returns a *NotSingularError when more than one Perm entity is found.
 // Returns a *NotFoundError when no Perm entities are found.
 func (pq *PermQuery) Only(ctx context.Context) (*Perm, error) {
 	nodes, err := pq.Limit(2).All(ctx)
@@ -184,7 +184,7 @@ func (pq *PermQuery) OnlyX(ctx context.Context) *Perm {
 }
 
 // OnlyID is like Only, but returns the only Perm ID in the query.
-// Returns a *NotSingularError when exactly one Perm ID is not found.
+// Returns a *NotSingularError when more than one Perm ID is found.
 // Returns a *NotFoundError when no entities are found.
 func (pq *PermQuery) OnlyID(ctx context.Context) (id int, err error) {
 	var ids []int
@@ -295,8 +295,9 @@ func (pq *PermQuery) Clone() *PermQuery {
 		withUser:   pq.withUser.Clone(),
 		withRepo:   pq.withRepo.Clone(),
 		// clone intermediate query.
-		sql:  pq.sql.Clone(),
-		path: pq.path,
+		sql:    pq.sql.Clone(),
+		path:   pq.path,
+		unique: pq.unique,
 	}
 }
 
@@ -475,6 +476,10 @@ func (pq *PermQuery) sqlCount(ctx context.Context) (int, error) {
 	if len(pq.modifiers) > 0 {
 		_spec.Modifiers = pq.modifiers
 	}
+	_spec.Node.Columns = pq.fields
+	if len(pq.fields) > 0 {
+		_spec.Unique = pq.unique != nil && *pq.unique
+	}
 	return sqlgraph.CountNodes(ctx, pq.driver, _spec)
 }
 
@@ -545,6 +550,9 @@ func (pq *PermQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	if pq.sql != nil {
 		selector = pq.sql
 		selector.Select(selector.Columns(columns...)...)
+	}
+	if pq.unique != nil && *pq.unique {
+		selector.Distinct()
 	}
 	for _, m := range pq.modifiers {
 		m(selector)
@@ -853,9 +861,7 @@ func (pgb *PermGroupBy) sqlQuery() *sql.Selector {
 		for _, f := range pgb.fields {
 			columns = append(columns, selector.C(f))
 		}
-		for _, c := range aggregation {
-			columns = append(columns, c)
-		}
+		columns = append(columns, aggregation...)
 		selector.Select(columns...)
 	}
 	return selector.GroupBy(selector.Columns(pgb.fields...)...)

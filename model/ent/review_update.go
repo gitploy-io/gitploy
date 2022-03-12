@@ -233,14 +233,14 @@ func (ru *ReviewUpdate) defaults() {
 func (ru *ReviewUpdate) check() error {
 	if v, ok := ru.mutation.Status(); ok {
 		if err := review.StatusValidator(v); err != nil {
-			return &ValidationError{Name: "status", err: fmt.Errorf("ent: validator failed for field \"status\": %w", err)}
+			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "Review.status": %w`, err)}
 		}
 	}
 	if _, ok := ru.mutation.UserID(); ru.mutation.UserCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"user\"")
+		return errors.New(`ent: clearing a required unique edge "Review.user"`)
 	}
 	if _, ok := ru.mutation.DeploymentID(); ru.mutation.DeploymentCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"deployment\"")
+		return errors.New(`ent: clearing a required unique edge "Review.deployment"`)
 	}
 	return nil
 }
@@ -649,14 +649,14 @@ func (ruo *ReviewUpdateOne) defaults() {
 func (ruo *ReviewUpdateOne) check() error {
 	if v, ok := ruo.mutation.Status(); ok {
 		if err := review.StatusValidator(v); err != nil {
-			return &ValidationError{Name: "status", err: fmt.Errorf("ent: validator failed for field \"status\": %w", err)}
+			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "Review.status": %w`, err)}
 		}
 	}
 	if _, ok := ruo.mutation.UserID(); ruo.mutation.UserCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"user\"")
+		return errors.New(`ent: clearing a required unique edge "Review.user"`)
 	}
 	if _, ok := ruo.mutation.DeploymentID(); ruo.mutation.DeploymentCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"deployment\"")
+		return errors.New(`ent: clearing a required unique edge "Review.deployment"`)
 	}
 	return nil
 }
@@ -674,7 +674,7 @@ func (ruo *ReviewUpdateOne) sqlSave(ctx context.Context) (_node *Review, err err
 	}
 	id, ok := ruo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "ID", err: fmt.Errorf("missing Review.ID for update")}
+		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Review.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
 	if fields := ruo.fields; len(fields) > 0 {

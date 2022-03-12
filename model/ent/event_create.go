@@ -200,23 +200,23 @@ func (ec *EventCreate) defaults() {
 // check runs all checks and user-defined validators on the builder.
 func (ec *EventCreate) check() error {
 	if _, ok := ec.mutation.Kind(); !ok {
-		return &ValidationError{Name: "kind", err: errors.New(`ent: missing required field "kind"`)}
+		return &ValidationError{Name: "kind", err: errors.New(`ent: missing required field "Event.kind"`)}
 	}
 	if v, ok := ec.mutation.Kind(); ok {
 		if err := event.KindValidator(v); err != nil {
-			return &ValidationError{Name: "kind", err: fmt.Errorf(`ent: validator failed for field "kind": %w`, err)}
+			return &ValidationError{Name: "kind", err: fmt.Errorf(`ent: validator failed for field "Event.kind": %w`, err)}
 		}
 	}
 	if _, ok := ec.mutation.GetType(); !ok {
-		return &ValidationError{Name: "type", err: errors.New(`ent: missing required field "type"`)}
+		return &ValidationError{Name: "type", err: errors.New(`ent: missing required field "Event.type"`)}
 	}
 	if v, ok := ec.mutation.GetType(); ok {
 		if err := event.TypeValidator(v); err != nil {
-			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "type": %w`, err)}
+			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "Event.type": %w`, err)}
 		}
 	}
 	if _, ok := ec.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "created_at"`)}
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Event.created_at"`)}
 	}
 	return nil
 }
