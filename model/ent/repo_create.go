@@ -308,25 +308,25 @@ func (rc *RepoCreate) defaults() {
 // check runs all checks and user-defined validators on the builder.
 func (rc *RepoCreate) check() error {
 	if _, ok := rc.mutation.Namespace(); !ok {
-		return &ValidationError{Name: "namespace", err: errors.New(`ent: missing required field "namespace"`)}
+		return &ValidationError{Name: "namespace", err: errors.New(`ent: missing required field "Repo.namespace"`)}
 	}
 	if _, ok := rc.mutation.Name(); !ok {
-		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "name"`)}
+		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "Repo.name"`)}
 	}
 	if _, ok := rc.mutation.Description(); !ok {
-		return &ValidationError{Name: "description", err: errors.New(`ent: missing required field "description"`)}
+		return &ValidationError{Name: "description", err: errors.New(`ent: missing required field "Repo.description"`)}
 	}
 	if _, ok := rc.mutation.ConfigPath(); !ok {
-		return &ValidationError{Name: "config_path", err: errors.New(`ent: missing required field "config_path"`)}
+		return &ValidationError{Name: "config_path", err: errors.New(`ent: missing required field "Repo.config_path"`)}
 	}
 	if _, ok := rc.mutation.Active(); !ok {
-		return &ValidationError{Name: "active", err: errors.New(`ent: missing required field "active"`)}
+		return &ValidationError{Name: "active", err: errors.New(`ent: missing required field "Repo.active"`)}
 	}
 	if _, ok := rc.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "created_at"`)}
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Repo.created_at"`)}
 	}
 	if _, ok := rc.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "updated_at"`)}
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Repo.updated_at"`)}
 	}
 	return nil
 }
