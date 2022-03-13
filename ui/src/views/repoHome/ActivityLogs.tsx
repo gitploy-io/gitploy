@@ -2,10 +2,18 @@ import { Timeline, Typography } from 'antd'
 import { SyncOutlined } from '@ant-design/icons'
 import moment from "moment"
 
+<<<<<<< HEAD:ui/src/views/repoHome/ActivityLogs.tsx
 import { Deployment, DeploymentStatusEnum } from "../../models"
 import DeploymentStatusBadge from "../../components/DeploymentStatusBadge"
 import UserAvatar from '../../components/UserAvatar'
 import DeploymentRefCode from '../../components/DeploymentRefCode'
+=======
+import { Deployment, DeploymentStatusEnum } from "../models"
+import DeploymentStatusBadge from "./DeploymentStatusBadge"
+import UserAvatar from './UserAvatar'
+import DeploymentRefCode from './DeploymentRefCode'
+import { getStatusColor } from "./partials"
+>>>>>>> 6d4e825 (Add ActivityHistory):ui/src/components/ActivityLogs.tsx
 
 const { Text } = Typography
 
@@ -36,26 +44,4 @@ export default function ActivityLogs({ deployments }: ActivityLogsProps): JSX.El
             })}
         </Timeline>
     )
-}
-
-// https://ant.design/components/timeline/#Timeline.Item
-const getStatusColor = (status: DeploymentStatusEnum) => {
-    switch (status) {
-        case DeploymentStatusEnum.Waiting:
-            return "gray"
-        case DeploymentStatusEnum.Created:
-            return "purple"
-        case DeploymentStatusEnum.Queued:
-            return "purple"
-        case DeploymentStatusEnum.Running:
-            return "purple"
-        case DeploymentStatusEnum.Success:
-            return "green"
-        case DeploymentStatusEnum.Failure:
-            return "red"
-        case DeploymentStatusEnum.Canceled:
-            return "gray"
-        default:
-            return "gray"
-    }
 }

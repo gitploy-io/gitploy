@@ -7,7 +7,7 @@ import { perPage, activitiesSlice, searchDeployments } from "../redux/activities
 
 import Main from "./Main"
 import SearchActivities from "../components/SearchActivities"
-import ActivityLogs from "../components/ActivityLogs"
+import ActivityHistory from "../components/ActivityHistory"
 import Pagination from "../components/Pagination"
 import Spin from '../components/Spin'
 
@@ -59,7 +59,7 @@ export default function Activities(): JSX.Element {
                             <Spin />
                         </div> 
                         :
-                        <ActivityLogs deployments={deployments}/>}
+                        <ActivityHistory deployments={deployments}/>}
                 </div>
             </div>
             <div style={{marginTop: 30, textAlign: "center"}}>

@@ -11,9 +11,9 @@ interface DeploymentRefCodeProps {
 export default function DeploymentRefCode(props: DeploymentRefCodeProps): JSX.Element {
     let ref: string
     if (props.deployment.type === DeploymentType.Commit) {
-        ref = props.deployment.ref.substr(0, 7)
+        ref = props.deployment.ref.substring(0, 7)
     } else if (props.deployment.type === DeploymentType.Branch && props.deployment.sha !== "") {
-        ref = `${props.deployment.ref}(${props.deployment.sha.substr(0, 7)})`
+        ref = `${props.deployment.ref}(${props.deployment.sha.substring(0, 7)})`
     } else {
         ref = props.deployment.ref
     }
