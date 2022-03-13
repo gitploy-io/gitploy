@@ -157,7 +157,7 @@ export const searchDeployments = async (statuses: DeploymentStatusEnum[], owned:
     })
 
     const fromParam = (from)? `from=${from.toISOString()}` : ""
-    const toParam = (to)? `&to=to.toISOString()` : ""
+    const toParam = (to)? `&to=${to.toISOString()}` : ""
     
     const deployments: Deployment[] = await _fetch(`${instance}/api/v1/search/deployments?statuses=${ss.join(",")}&owned=${owned}&${fromParam}&${toParam}&page=${page}&per_page=${perPage}`, {
         headers,

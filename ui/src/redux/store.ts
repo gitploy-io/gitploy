@@ -11,6 +11,7 @@ import { repoSettingsSlice } from "./repoSettings"
 import { settingsSlice } from "./settings"
 import { deploymentSlice } from "./deployment"
 import { membersSlice } from "./members"
+import { activitiesSlice } from './activities'
 
 export const store =  configureStore({
   reducer: {
@@ -25,6 +26,7 @@ export const store =  configureStore({
     settings: settingsSlice.reducer,
     deployment: deploymentSlice.reducer,
     members: membersSlice.reducer,
+    activities: activitiesSlice.reducer,
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware({
     serializableCheck: false
