@@ -133,7 +133,7 @@ func (cuq *ChatUserQuery) FirstIDX(ctx context.Context) string {
 }
 
 // Only returns a single ChatUser entity found by the query, ensuring it only returns one.
-// Returns a *NotSingularError when exactly one ChatUser entity is not found.
+// Returns a *NotSingularError when more than one ChatUser entity is found.
 // Returns a *NotFoundError when no ChatUser entities are found.
 func (cuq *ChatUserQuery) Only(ctx context.Context) (*ChatUser, error) {
 	nodes, err := cuq.Limit(2).All(ctx)
@@ -160,7 +160,7 @@ func (cuq *ChatUserQuery) OnlyX(ctx context.Context) *ChatUser {
 }
 
 // OnlyID is like Only, but returns the only ChatUser ID in the query.
-// Returns a *NotSingularError when exactly one ChatUser ID is not found.
+// Returns a *NotSingularError when more than one ChatUser ID is found.
 // Returns a *NotFoundError when no entities are found.
 func (cuq *ChatUserQuery) OnlyID(ctx context.Context) (id string, err error) {
 	var ids []string
@@ -270,8 +270,9 @@ func (cuq *ChatUserQuery) Clone() *ChatUserQuery {
 		predicates: append([]predicate.ChatUser{}, cuq.predicates...),
 		withUser:   cuq.withUser.Clone(),
 		// clone intermediate query.
-		sql:  cuq.sql.Clone(),
-		path: cuq.path,
+		sql:    cuq.sql.Clone(),
+		path:   cuq.path,
+		unique: cuq.unique,
 	}
 }
 
@@ -412,6 +413,10 @@ func (cuq *ChatUserQuery) sqlCount(ctx context.Context) (int, error) {
 	if len(cuq.modifiers) > 0 {
 		_spec.Modifiers = cuq.modifiers
 	}
+	_spec.Node.Columns = cuq.fields
+	if len(cuq.fields) > 0 {
+		_spec.Unique = cuq.unique != nil && *cuq.unique
+	}
 	return sqlgraph.CountNodes(ctx, cuq.driver, _spec)
 }
 
@@ -482,6 +487,9 @@ func (cuq *ChatUserQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	if cuq.sql != nil {
 		selector = cuq.sql
 		selector.Select(selector.Columns(columns...)...)
+	}
+	if cuq.unique != nil && *cuq.unique {
+		selector.Distinct()
 	}
 	for _, m := range cuq.modifiers {
 		m(selector)
@@ -790,9 +798,7 @@ func (cugb *ChatUserGroupBy) sqlQuery() *sql.Selector {
 		for _, f := range cugb.fields {
 			columns = append(columns, selector.C(f))
 		}
-		for _, c := range aggregation {
-			columns = append(columns, c)
-		}
+		columns = append(columns, aggregation...)
 		selector.Select(columns...)
 	}
 	return selector.GroupBy(selector.Columns(cugb.fields...)...)

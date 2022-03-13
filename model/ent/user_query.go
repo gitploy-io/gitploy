@@ -254,7 +254,7 @@ func (uq *UserQuery) FirstIDX(ctx context.Context) int64 {
 }
 
 // Only returns a single User entity found by the query, ensuring it only returns one.
-// Returns a *NotSingularError when exactly one User entity is not found.
+// Returns a *NotSingularError when more than one User entity is found.
 // Returns a *NotFoundError when no User entities are found.
 func (uq *UserQuery) Only(ctx context.Context) (*User, error) {
 	nodes, err := uq.Limit(2).All(ctx)
@@ -281,7 +281,7 @@ func (uq *UserQuery) OnlyX(ctx context.Context) *User {
 }
 
 // OnlyID is like Only, but returns the only User ID in the query.
-// Returns a *NotSingularError when exactly one User ID is not found.
+// Returns a *NotSingularError when more than one User ID is found.
 // Returns a *NotFoundError when no entities are found.
 func (uq *UserQuery) OnlyID(ctx context.Context) (id int64, err error) {
 	var ids []int64
@@ -396,8 +396,9 @@ func (uq *UserQuery) Clone() *UserQuery {
 		withLocks:       uq.withLocks.Clone(),
 		withRepos:       uq.withRepos.Clone(),
 		// clone intermediate query.
-		sql:  uq.sql.Clone(),
-		path: uq.path,
+		sql:    uq.sql.Clone(),
+		path:   uq.path,
+		unique: uq.unique,
 	}
 }
 
@@ -721,6 +722,10 @@ func (uq *UserQuery) sqlCount(ctx context.Context) (int, error) {
 	if len(uq.modifiers) > 0 {
 		_spec.Modifiers = uq.modifiers
 	}
+	_spec.Node.Columns = uq.fields
+	if len(uq.fields) > 0 {
+		_spec.Unique = uq.unique != nil && *uq.unique
+	}
 	return sqlgraph.CountNodes(ctx, uq.driver, _spec)
 }
 
@@ -791,6 +796,9 @@ func (uq *UserQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	if uq.sql != nil {
 		selector = uq.sql
 		selector.Select(selector.Columns(columns...)...)
+	}
+	if uq.unique != nil && *uq.unique {
+		selector.Distinct()
 	}
 	for _, m := range uq.modifiers {
 		m(selector)
@@ -1099,9 +1107,7 @@ func (ugb *UserGroupBy) sqlQuery() *sql.Selector {
 		for _, f := range ugb.fields {
 			columns = append(columns, selector.C(f))
 		}
-		for _, c := range aggregation {
-			columns = append(columns, c)
-		}
+		columns = append(columns, aggregation...)
 		selector.Select(columns...)
 	}
 	return selector.GroupBy(selector.Columns(ugb.fields...)...)

@@ -133,7 +133,7 @@ func (dsq *DeploymentStatusQuery) FirstIDX(ctx context.Context) int {
 }
 
 // Only returns a single DeploymentStatus entity found by the query, ensuring it only returns one.
-// Returns a *NotSingularError when exactly one DeploymentStatus entity is not found.
+// Returns a *NotSingularError when more than one DeploymentStatus entity is found.
 // Returns a *NotFoundError when no DeploymentStatus entities are found.
 func (dsq *DeploymentStatusQuery) Only(ctx context.Context) (*DeploymentStatus, error) {
 	nodes, err := dsq.Limit(2).All(ctx)
@@ -160,7 +160,7 @@ func (dsq *DeploymentStatusQuery) OnlyX(ctx context.Context) *DeploymentStatus {
 }
 
 // OnlyID is like Only, but returns the only DeploymentStatus ID in the query.
-// Returns a *NotSingularError when exactly one DeploymentStatus ID is not found.
+// Returns a *NotSingularError when more than one DeploymentStatus ID is found.
 // Returns a *NotFoundError when no entities are found.
 func (dsq *DeploymentStatusQuery) OnlyID(ctx context.Context) (id int, err error) {
 	var ids []int
@@ -270,8 +270,9 @@ func (dsq *DeploymentStatusQuery) Clone() *DeploymentStatusQuery {
 		predicates:     append([]predicate.DeploymentStatus{}, dsq.predicates...),
 		withDeployment: dsq.withDeployment.Clone(),
 		// clone intermediate query.
-		sql:  dsq.sql.Clone(),
-		path: dsq.path,
+		sql:    dsq.sql.Clone(),
+		path:   dsq.path,
+		unique: dsq.unique,
 	}
 }
 
@@ -412,6 +413,10 @@ func (dsq *DeploymentStatusQuery) sqlCount(ctx context.Context) (int, error) {
 	if len(dsq.modifiers) > 0 {
 		_spec.Modifiers = dsq.modifiers
 	}
+	_spec.Node.Columns = dsq.fields
+	if len(dsq.fields) > 0 {
+		_spec.Unique = dsq.unique != nil && *dsq.unique
+	}
 	return sqlgraph.CountNodes(ctx, dsq.driver, _spec)
 }
 
@@ -482,6 +487,9 @@ func (dsq *DeploymentStatusQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	if dsq.sql != nil {
 		selector = dsq.sql
 		selector.Select(selector.Columns(columns...)...)
+	}
+	if dsq.unique != nil && *dsq.unique {
+		selector.Distinct()
 	}
 	for _, m := range dsq.modifiers {
 		m(selector)
@@ -790,9 +798,7 @@ func (dsgb *DeploymentStatusGroupBy) sqlQuery() *sql.Selector {
 		for _, f := range dsgb.fields {
 			columns = append(columns, selector.C(f))
 		}
-		for _, c := range aggregation {
-			columns = append(columns, c)
-		}
+		columns = append(columns, aggregation...)
 		selector.Select(columns...)
 	}
 	return selector.GroupBy(selector.Columns(dsgb.fields...)...)
