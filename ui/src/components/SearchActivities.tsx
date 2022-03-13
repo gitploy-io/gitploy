@@ -1,4 +1,4 @@
-import { Form, DatePicker, Button, Switch } from "antd"
+import { Row, Col, Form, DatePicker, Button, Switch } from "antd"
 import moment from "moment"
 
 interface SearchActivitiesProps {
@@ -7,10 +7,8 @@ interface SearchActivitiesProps {
 }
 
 export default function SearchActivities(props: SearchActivitiesProps): JSX.Element {
-    return (
-        <Form
-            layout="inline"
-        >
+    const content = (
+        <>
             <Form.Item label="Period">
                 <DatePicker.RangePicker 
                     format="YYYY-MM-DD HH:mm"
@@ -33,6 +31,22 @@ export default function SearchActivities(props: SearchActivitiesProps): JSX.Elem
                     Search
                 </Button>
             </Form.Item>
-        </Form>
+        </>
+    )
+    return (
+        <Row>
+            {/* Mobile view */}
+            <Col span={24} lg={0}>
+                <Form layout="horizontal" >
+                    {content}
+                </Form>
+            </Col>
+            {/* Laptop */}
+            <Col span={0} lg={24}>
+                <Form layout="inline" >
+                    {content}
+                </Form>
+            </Col>
+        </Row>
     )
 }
