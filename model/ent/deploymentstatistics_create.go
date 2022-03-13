@@ -276,40 +276,40 @@ func (dsc *DeploymentStatisticsCreate) defaults() {
 // check runs all checks and user-defined validators on the builder.
 func (dsc *DeploymentStatisticsCreate) check() error {
 	if _, ok := dsc.mutation.Env(); !ok {
-		return &ValidationError{Name: "env", err: errors.New(`ent: missing required field "DeploymentStatistics.env"`)}
+		return &ValidationError{Name: "env", err: errors.New(`ent: missing required field "env"`)}
 	}
 	if _, ok := dsc.mutation.Count(); !ok {
-		return &ValidationError{Name: "count", err: errors.New(`ent: missing required field "DeploymentStatistics.count"`)}
+		return &ValidationError{Name: "count", err: errors.New(`ent: missing required field "count"`)}
 	}
 	if _, ok := dsc.mutation.RollbackCount(); !ok {
-		return &ValidationError{Name: "rollback_count", err: errors.New(`ent: missing required field "DeploymentStatistics.rollback_count"`)}
+		return &ValidationError{Name: "rollback_count", err: errors.New(`ent: missing required field "rollback_count"`)}
 	}
 	if _, ok := dsc.mutation.Additions(); !ok {
-		return &ValidationError{Name: "additions", err: errors.New(`ent: missing required field "DeploymentStatistics.additions"`)}
+		return &ValidationError{Name: "additions", err: errors.New(`ent: missing required field "additions"`)}
 	}
 	if _, ok := dsc.mutation.Deletions(); !ok {
-		return &ValidationError{Name: "deletions", err: errors.New(`ent: missing required field "DeploymentStatistics.deletions"`)}
+		return &ValidationError{Name: "deletions", err: errors.New(`ent: missing required field "deletions"`)}
 	}
 	if _, ok := dsc.mutation.Changes(); !ok {
-		return &ValidationError{Name: "changes", err: errors.New(`ent: missing required field "DeploymentStatistics.changes"`)}
+		return &ValidationError{Name: "changes", err: errors.New(`ent: missing required field "changes"`)}
 	}
 	if _, ok := dsc.mutation.LeadTimeSeconds(); !ok {
-		return &ValidationError{Name: "lead_time_seconds", err: errors.New(`ent: missing required field "DeploymentStatistics.lead_time_seconds"`)}
+		return &ValidationError{Name: "lead_time_seconds", err: errors.New(`ent: missing required field "lead_time_seconds"`)}
 	}
 	if _, ok := dsc.mutation.CommitCount(); !ok {
-		return &ValidationError{Name: "commit_count", err: errors.New(`ent: missing required field "DeploymentStatistics.commit_count"`)}
+		return &ValidationError{Name: "commit_count", err: errors.New(`ent: missing required field "commit_count"`)}
 	}
 	if _, ok := dsc.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "DeploymentStatistics.created_at"`)}
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "created_at"`)}
 	}
 	if _, ok := dsc.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "DeploymentStatistics.updated_at"`)}
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "updated_at"`)}
 	}
 	if _, ok := dsc.mutation.RepoID(); !ok {
-		return &ValidationError{Name: "repo_id", err: errors.New(`ent: missing required field "DeploymentStatistics.repo_id"`)}
+		return &ValidationError{Name: "repo_id", err: errors.New(`ent: missing required field "repo_id"`)}
 	}
 	if _, ok := dsc.mutation.RepoID(); !ok {
-		return &ValidationError{Name: "repo", err: errors.New(`ent: missing required edge "DeploymentStatistics.repo"`)}
+		return &ValidationError{Name: "repo", err: errors.New("ent: missing required edge \"repo\"")}
 	}
 	return nil
 }

@@ -468,24 +468,24 @@ func (du *DeploymentUpdate) defaults() {
 func (du *DeploymentUpdate) check() error {
 	if v, ok := du.mutation.GetType(); ok {
 		if err := deployment.TypeValidator(v); err != nil {
-			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "Deployment.type": %w`, err)}
+			return &ValidationError{Name: "type", err: fmt.Errorf("ent: validator failed for field \"type\": %w", err)}
 		}
 	}
 	if v, ok := du.mutation.Status(); ok {
 		if err := deployment.StatusValidator(v); err != nil {
-			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "Deployment.status": %w`, err)}
+			return &ValidationError{Name: "status", err: fmt.Errorf("ent: validator failed for field \"status\": %w", err)}
 		}
 	}
 	if v, ok := du.mutation.HTMLURL(); ok {
 		if err := deployment.HTMLURLValidator(v); err != nil {
-			return &ValidationError{Name: "html_url", err: fmt.Errorf(`ent: validator failed for field "Deployment.html_url": %w`, err)}
+			return &ValidationError{Name: "html_url", err: fmt.Errorf("ent: validator failed for field \"html_url\": %w", err)}
 		}
 	}
 	if _, ok := du.mutation.UserID(); du.mutation.UserCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "Deployment.user"`)
+		return errors.New("ent: clearing a required unique edge \"user\"")
 	}
 	if _, ok := du.mutation.RepoID(); du.mutation.RepoCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "Deployment.repo"`)
+		return errors.New("ent: clearing a required unique edge \"repo\"")
 	}
 	return nil
 }
@@ -1350,24 +1350,24 @@ func (duo *DeploymentUpdateOne) defaults() {
 func (duo *DeploymentUpdateOne) check() error {
 	if v, ok := duo.mutation.GetType(); ok {
 		if err := deployment.TypeValidator(v); err != nil {
-			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "Deployment.type": %w`, err)}
+			return &ValidationError{Name: "type", err: fmt.Errorf("ent: validator failed for field \"type\": %w", err)}
 		}
 	}
 	if v, ok := duo.mutation.Status(); ok {
 		if err := deployment.StatusValidator(v); err != nil {
-			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "Deployment.status": %w`, err)}
+			return &ValidationError{Name: "status", err: fmt.Errorf("ent: validator failed for field \"status\": %w", err)}
 		}
 	}
 	if v, ok := duo.mutation.HTMLURL(); ok {
 		if err := deployment.HTMLURLValidator(v); err != nil {
-			return &ValidationError{Name: "html_url", err: fmt.Errorf(`ent: validator failed for field "Deployment.html_url": %w`, err)}
+			return &ValidationError{Name: "html_url", err: fmt.Errorf("ent: validator failed for field \"html_url\": %w", err)}
 		}
 	}
 	if _, ok := duo.mutation.UserID(); duo.mutation.UserCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "Deployment.user"`)
+		return errors.New("ent: clearing a required unique edge \"user\"")
 	}
 	if _, ok := duo.mutation.RepoID(); duo.mutation.RepoCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "Deployment.repo"`)
+		return errors.New("ent: clearing a required unique edge \"repo\"")
 	}
 	return nil
 }
@@ -1385,7 +1385,7 @@ func (duo *DeploymentUpdateOne) sqlSave(ctx context.Context) (_node *Deployment,
 	}
 	id, ok := duo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Deployment.id" for update`)}
+		return nil, &ValidationError{Name: "ID", err: fmt.Errorf("missing Deployment.ID for update")}
 	}
 	_spec.Node.ID.Value = id
 	if fields := duo.fields; len(fields) > 0 {

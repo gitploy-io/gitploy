@@ -230,7 +230,7 @@ func (rq *RepoQuery) FirstIDX(ctx context.Context) int64 {
 }
 
 // Only returns a single Repo entity found by the query, ensuring it only returns one.
-// Returns a *NotSingularError when more than one Repo entity is found.
+// Returns a *NotSingularError when exactly one Repo entity is not found.
 // Returns a *NotFoundError when no Repo entities are found.
 func (rq *RepoQuery) Only(ctx context.Context) (*Repo, error) {
 	nodes, err := rq.Limit(2).All(ctx)
@@ -257,7 +257,7 @@ func (rq *RepoQuery) OnlyX(ctx context.Context) *Repo {
 }
 
 // OnlyID is like Only, but returns the only Repo ID in the query.
-// Returns a *NotSingularError when more than one Repo ID is found.
+// Returns a *NotSingularError when exactly one Repo ID is not found.
 // Returns a *NotFoundError when no entities are found.
 func (rq *RepoQuery) OnlyID(ctx context.Context) (id int64, err error) {
 	var ids []int64
@@ -371,9 +371,8 @@ func (rq *RepoQuery) Clone() *RepoQuery {
 		withDeploymentStatistics: rq.withDeploymentStatistics.Clone(),
 		withOwner:                rq.withOwner.Clone(),
 		// clone intermediate query.
-		sql:    rq.sql.Clone(),
-		path:   rq.path,
-		unique: rq.unique,
+		sql:  rq.sql.Clone(),
+		path: rq.path,
 	}
 }
 
@@ -662,10 +661,6 @@ func (rq *RepoQuery) sqlCount(ctx context.Context) (int, error) {
 	if len(rq.modifiers) > 0 {
 		_spec.Modifiers = rq.modifiers
 	}
-	_spec.Node.Columns = rq.fields
-	if len(rq.fields) > 0 {
-		_spec.Unique = rq.unique != nil && *rq.unique
-	}
 	return sqlgraph.CountNodes(ctx, rq.driver, _spec)
 }
 
@@ -736,9 +731,6 @@ func (rq *RepoQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	if rq.sql != nil {
 		selector = rq.sql
 		selector.Select(selector.Columns(columns...)...)
-	}
-	if rq.unique != nil && *rq.unique {
-		selector.Distinct()
 	}
 	for _, m := range rq.modifiers {
 		m(selector)
@@ -1047,7 +1039,9 @@ func (rgb *RepoGroupBy) sqlQuery() *sql.Selector {
 		for _, f := range rgb.fields {
 			columns = append(columns, selector.C(f))
 		}
-		columns = append(columns, aggregation...)
+		for _, c := range aggregation {
+			columns = append(columns, c)
+		}
 		selector.Select(columns...)
 	}
 	return selector.GroupBy(selector.Columns(rgb.fields...)...)
