@@ -204,30 +204,30 @@ func (rc *ReviewCreate) defaults() {
 // check runs all checks and user-defined validators on the builder.
 func (rc *ReviewCreate) check() error {
 	if _, ok := rc.mutation.Status(); !ok {
-		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "Review.status"`)}
+		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "status"`)}
 	}
 	if v, ok := rc.mutation.Status(); ok {
 		if err := review.StatusValidator(v); err != nil {
-			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "Review.status": %w`, err)}
+			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "status": %w`, err)}
 		}
 	}
 	if _, ok := rc.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Review.created_at"`)}
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "created_at"`)}
 	}
 	if _, ok := rc.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Review.updated_at"`)}
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "updated_at"`)}
 	}
 	if _, ok := rc.mutation.UserID(); !ok {
-		return &ValidationError{Name: "user_id", err: errors.New(`ent: missing required field "Review.user_id"`)}
+		return &ValidationError{Name: "user_id", err: errors.New(`ent: missing required field "user_id"`)}
 	}
 	if _, ok := rc.mutation.DeploymentID(); !ok {
-		return &ValidationError{Name: "deployment_id", err: errors.New(`ent: missing required field "Review.deployment_id"`)}
+		return &ValidationError{Name: "deployment_id", err: errors.New(`ent: missing required field "deployment_id"`)}
 	}
 	if _, ok := rc.mutation.UserID(); !ok {
-		return &ValidationError{Name: "user", err: errors.New(`ent: missing required edge "Review.user"`)}
+		return &ValidationError{Name: "user", err: errors.New("ent: missing required edge \"user\"")}
 	}
 	if _, ok := rc.mutation.DeploymentID(); !ok {
-		return &ValidationError{Name: "deployment", err: errors.New(`ent: missing required edge "Review.deployment"`)}
+		return &ValidationError{Name: "deployment", err: errors.New("ent: missing required edge \"deployment\"")}
 	}
 	return nil
 }

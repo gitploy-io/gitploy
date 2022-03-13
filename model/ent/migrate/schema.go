@@ -17,7 +17,7 @@ var (
 		{Name: "bot_token", Type: field.TypeString},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "user_id", Type: field.TypeInt64, Unique: true},
+		{Name: "user_id", Type: field.TypeInt64, Unique: true, Nullable: true},
 	}
 	// ChatUsersTable holds the schema information for the "chat_users" table.
 	ChatUsersTable = &schema.Table{
@@ -50,8 +50,8 @@ var (
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "is_approval_enabled", Type: field.TypeBool, Nullable: true},
 		{Name: "required_approval_count", Type: field.TypeInt, Nullable: true},
-		{Name: "repo_id", Type: field.TypeInt64},
-		{Name: "user_id", Type: field.TypeInt64},
+		{Name: "repo_id", Type: field.TypeInt64, Nullable: true},
+		{Name: "user_id", Type: field.TypeInt64, Nullable: true},
 	}
 	// DeploymentsTable holds the schema information for the "deployments" table.
 	DeploymentsTable = &schema.Table{
@@ -69,7 +69,7 @@ var (
 				Symbol:     "deployments_users_deployments",
 				Columns:    []*schema.Column{DeploymentsColumns[16]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
-				OnDelete:   schema.NoAction,
+				OnDelete:   schema.SetNull,
 			},
 		},
 		Indexes: []*schema.Index{
@@ -118,7 +118,7 @@ var (
 		{Name: "commit_count", Type: field.TypeInt, Default: 0},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "repo_id", Type: field.TypeInt64},
+		{Name: "repo_id", Type: field.TypeInt64, Nullable: true},
 	}
 	// DeploymentStatisticsTable holds the schema information for the "deployment_statistics" table.
 	DeploymentStatisticsTable = &schema.Table{
@@ -154,7 +154,7 @@ var (
 		{Name: "log_url", Type: field.TypeString, Nullable: true},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "deployment_id", Type: field.TypeInt},
+		{Name: "deployment_id", Type: field.TypeInt, Nullable: true},
 	}
 	// DeploymentStatusTable holds the schema information for the "deployment_status" table.
 	DeploymentStatusTable = &schema.Table{
@@ -213,8 +213,8 @@ var (
 		{Name: "env", Type: field.TypeString},
 		{Name: "expired_at", Type: field.TypeTime, Nullable: true},
 		{Name: "created_at", Type: field.TypeTime},
-		{Name: "repo_id", Type: field.TypeInt64},
-		{Name: "user_id", Type: field.TypeInt64},
+		{Name: "repo_id", Type: field.TypeInt64, Nullable: true},
+		{Name: "user_id", Type: field.TypeInt64, Nullable: true},
 	}
 	// LocksTable holds the schema information for the "locks" table.
 	LocksTable = &schema.Table{
@@ -232,7 +232,7 @@ var (
 				Symbol:     "locks_users_locks",
 				Columns:    []*schema.Column{LocksColumns[5]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
-				OnDelete:   schema.NoAction,
+				OnDelete:   schema.SetNull,
 			},
 		},
 		Indexes: []*schema.Index{
@@ -246,7 +246,7 @@ var (
 	// NotificationRecordsColumns holds the columns for the "notification_records" table.
 	NotificationRecordsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "event_id", Type: field.TypeInt, Unique: true},
+		{Name: "event_id", Type: field.TypeInt, Unique: true, Nullable: true},
 	}
 	// NotificationRecordsTable holds the schema information for the "notification_records" table.
 	NotificationRecordsTable = &schema.Table{
@@ -258,7 +258,7 @@ var (
 				Symbol:     "notification_records_events_notification_record",
 				Columns:    []*schema.Column{NotificationRecordsColumns[1]},
 				RefColumns: []*schema.Column{EventsColumns[0]},
-				OnDelete:   schema.NoAction,
+				OnDelete:   schema.SetNull,
 			},
 		},
 	}
@@ -269,8 +269,8 @@ var (
 		{Name: "synced_at", Type: field.TypeTime, Nullable: true, SchemaType: map[string]string{"mysql": "timestamp(6)"}},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "repo_id", Type: field.TypeInt64},
-		{Name: "user_id", Type: field.TypeInt64},
+		{Name: "repo_id", Type: field.TypeInt64, Nullable: true},
+		{Name: "user_id", Type: field.TypeInt64, Nullable: true},
 	}
 	// PermsTable holds the schema information for the "perms" table.
 	PermsTable = &schema.Table{
@@ -356,8 +356,8 @@ var (
 		{Name: "comment", Type: field.TypeString, Nullable: true, Size: 2147483647},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "deployment_id", Type: field.TypeInt},
-		{Name: "user_id", Type: field.TypeInt64},
+		{Name: "deployment_id", Type: field.TypeInt, Nullable: true},
+		{Name: "user_id", Type: field.TypeInt64, Nullable: true},
 	}
 	// ReviewsTable holds the schema information for the "reviews" table.
 	ReviewsTable = &schema.Table{
@@ -375,7 +375,7 @@ var (
 				Symbol:     "reviews_users_reviews",
 				Columns:    []*schema.Column{ReviewsColumns[6]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
-				OnDelete:   schema.NoAction,
+				OnDelete:   schema.SetNull,
 			},
 		},
 	}

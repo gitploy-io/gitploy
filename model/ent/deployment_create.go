@@ -364,58 +364,58 @@ func (dc *DeploymentCreate) defaults() {
 // check runs all checks and user-defined validators on the builder.
 func (dc *DeploymentCreate) check() error {
 	if _, ok := dc.mutation.Number(); !ok {
-		return &ValidationError{Name: "number", err: errors.New(`ent: missing required field "Deployment.number"`)}
+		return &ValidationError{Name: "number", err: errors.New(`ent: missing required field "number"`)}
 	}
 	if _, ok := dc.mutation.GetType(); !ok {
-		return &ValidationError{Name: "type", err: errors.New(`ent: missing required field "Deployment.type"`)}
+		return &ValidationError{Name: "type", err: errors.New(`ent: missing required field "type"`)}
 	}
 	if v, ok := dc.mutation.GetType(); ok {
 		if err := deployment.TypeValidator(v); err != nil {
-			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "Deployment.type": %w`, err)}
+			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "type": %w`, err)}
 		}
 	}
 	if _, ok := dc.mutation.Env(); !ok {
-		return &ValidationError{Name: "env", err: errors.New(`ent: missing required field "Deployment.env"`)}
+		return &ValidationError{Name: "env", err: errors.New(`ent: missing required field "env"`)}
 	}
 	if _, ok := dc.mutation.Ref(); !ok {
-		return &ValidationError{Name: "ref", err: errors.New(`ent: missing required field "Deployment.ref"`)}
+		return &ValidationError{Name: "ref", err: errors.New(`ent: missing required field "ref"`)}
 	}
 	if _, ok := dc.mutation.Status(); !ok {
-		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "Deployment.status"`)}
+		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "status"`)}
 	}
 	if v, ok := dc.mutation.Status(); ok {
 		if err := deployment.StatusValidator(v); err != nil {
-			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "Deployment.status": %w`, err)}
+			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "status": %w`, err)}
 		}
 	}
 	if v, ok := dc.mutation.HTMLURL(); ok {
 		if err := deployment.HTMLURLValidator(v); err != nil {
-			return &ValidationError{Name: "html_url", err: fmt.Errorf(`ent: validator failed for field "Deployment.html_url": %w`, err)}
+			return &ValidationError{Name: "html_url", err: fmt.Errorf(`ent: validator failed for field "html_url": %w`, err)}
 		}
 	}
 	if _, ok := dc.mutation.ProductionEnvironment(); !ok {
-		return &ValidationError{Name: "production_environment", err: errors.New(`ent: missing required field "Deployment.production_environment"`)}
+		return &ValidationError{Name: "production_environment", err: errors.New(`ent: missing required field "production_environment"`)}
 	}
 	if _, ok := dc.mutation.IsRollback(); !ok {
-		return &ValidationError{Name: "is_rollback", err: errors.New(`ent: missing required field "Deployment.is_rollback"`)}
+		return &ValidationError{Name: "is_rollback", err: errors.New(`ent: missing required field "is_rollback"`)}
 	}
 	if _, ok := dc.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Deployment.created_at"`)}
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "created_at"`)}
 	}
 	if _, ok := dc.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Deployment.updated_at"`)}
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "updated_at"`)}
 	}
 	if _, ok := dc.mutation.UserID(); !ok {
-		return &ValidationError{Name: "user_id", err: errors.New(`ent: missing required field "Deployment.user_id"`)}
+		return &ValidationError{Name: "user_id", err: errors.New(`ent: missing required field "user_id"`)}
 	}
 	if _, ok := dc.mutation.RepoID(); !ok {
-		return &ValidationError{Name: "repo_id", err: errors.New(`ent: missing required field "Deployment.repo_id"`)}
+		return &ValidationError{Name: "repo_id", err: errors.New(`ent: missing required field "repo_id"`)}
 	}
 	if _, ok := dc.mutation.UserID(); !ok {
-		return &ValidationError{Name: "user", err: errors.New(`ent: missing required edge "Deployment.user"`)}
+		return &ValidationError{Name: "user", err: errors.New("ent: missing required edge \"user\"")}
 	}
 	if _, ok := dc.mutation.RepoID(); !ok {
-		return &ValidationError{Name: "repo", err: errors.New(`ent: missing required edge "Deployment.repo"`)}
+		return &ValidationError{Name: "repo", err: errors.New("ent: missing required edge \"repo\"")}
 	}
 	return nil
 }

@@ -4,7 +4,6 @@ package ent
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"time"
 
@@ -240,12 +239,12 @@ func (eu *EventUpdate) ExecX(ctx context.Context) {
 func (eu *EventUpdate) check() error {
 	if v, ok := eu.mutation.Kind(); ok {
 		if err := event.KindValidator(v); err != nil {
-			return &ValidationError{Name: "kind", err: fmt.Errorf(`ent: validator failed for field "Event.kind": %w`, err)}
+			return &ValidationError{Name: "kind", err: fmt.Errorf("ent: validator failed for field \"kind\": %w", err)}
 		}
 	}
 	if v, ok := eu.mutation.GetType(); ok {
 		if err := event.TypeValidator(v); err != nil {
-			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "Event.type": %w`, err)}
+			return &ValidationError{Name: "type", err: fmt.Errorf("ent: validator failed for field \"type\": %w", err)}
 		}
 	}
 	return nil
@@ -650,12 +649,12 @@ func (euo *EventUpdateOne) ExecX(ctx context.Context) {
 func (euo *EventUpdateOne) check() error {
 	if v, ok := euo.mutation.Kind(); ok {
 		if err := event.KindValidator(v); err != nil {
-			return &ValidationError{Name: "kind", err: fmt.Errorf(`ent: validator failed for field "Event.kind": %w`, err)}
+			return &ValidationError{Name: "kind", err: fmt.Errorf("ent: validator failed for field \"kind\": %w", err)}
 		}
 	}
 	if v, ok := euo.mutation.GetType(); ok {
 		if err := event.TypeValidator(v); err != nil {
-			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "Event.type": %w`, err)}
+			return &ValidationError{Name: "type", err: fmt.Errorf("ent: validator failed for field \"type\": %w", err)}
 		}
 	}
 	return nil
@@ -674,7 +673,7 @@ func (euo *EventUpdateOne) sqlSave(ctx context.Context) (_node *Event, err error
 	}
 	id, ok := euo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Event.id" for update`)}
+		return nil, &ValidationError{Name: "ID", err: fmt.Errorf("missing Event.ID for update")}
 	}
 	_spec.Node.ID.Value = id
 	if fields := euo.fields; len(fields) > 0 {

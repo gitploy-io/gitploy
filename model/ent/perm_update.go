@@ -196,14 +196,14 @@ func (pu *PermUpdate) defaults() {
 func (pu *PermUpdate) check() error {
 	if v, ok := pu.mutation.RepoPerm(); ok {
 		if err := perm.RepoPermValidator(v); err != nil {
-			return &ValidationError{Name: "repo_perm", err: fmt.Errorf(`ent: validator failed for field "Perm.repo_perm": %w`, err)}
+			return &ValidationError{Name: "repo_perm", err: fmt.Errorf("ent: validator failed for field \"repo_perm\": %w", err)}
 		}
 	}
 	if _, ok := pu.mutation.UserID(); pu.mutation.UserCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "Perm.user"`)
+		return errors.New("ent: clearing a required unique edge \"user\"")
 	}
 	if _, ok := pu.mutation.RepoID(); pu.mutation.RepoCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "Perm.repo"`)
+		return errors.New("ent: clearing a required unique edge \"repo\"")
 	}
 	return nil
 }
@@ -522,14 +522,14 @@ func (puo *PermUpdateOne) defaults() {
 func (puo *PermUpdateOne) check() error {
 	if v, ok := puo.mutation.RepoPerm(); ok {
 		if err := perm.RepoPermValidator(v); err != nil {
-			return &ValidationError{Name: "repo_perm", err: fmt.Errorf(`ent: validator failed for field "Perm.repo_perm": %w`, err)}
+			return &ValidationError{Name: "repo_perm", err: fmt.Errorf("ent: validator failed for field \"repo_perm\": %w", err)}
 		}
 	}
 	if _, ok := puo.mutation.UserID(); puo.mutation.UserCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "Perm.user"`)
+		return errors.New("ent: clearing a required unique edge \"user\"")
 	}
 	if _, ok := puo.mutation.RepoID(); puo.mutation.RepoCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "Perm.repo"`)
+		return errors.New("ent: clearing a required unique edge \"repo\"")
 	}
 	return nil
 }
@@ -547,7 +547,7 @@ func (puo *PermUpdateOne) sqlSave(ctx context.Context) (_node *Perm, err error) 
 	}
 	id, ok := puo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Perm.id" for update`)}
+		return nil, &ValidationError{Name: "ID", err: fmt.Errorf("missing Perm.ID for update")}
 	}
 	_spec.Node.ID.Value = id
 	if fields := puo.fields; len(fields) > 0 {
