@@ -174,28 +174,28 @@ func (cuc *ChatUserCreate) defaults() {
 // check runs all checks and user-defined validators on the builder.
 func (cuc *ChatUserCreate) check() error {
 	if _, ok := cuc.mutation.Token(); !ok {
-		return &ValidationError{Name: "token", err: errors.New(`ent: missing required field "ChatUser.token"`)}
+		return &ValidationError{Name: "token", err: errors.New(`ent: missing required field "token"`)}
 	}
 	if _, ok := cuc.mutation.Refresh(); !ok {
-		return &ValidationError{Name: "refresh", err: errors.New(`ent: missing required field "ChatUser.refresh"`)}
+		return &ValidationError{Name: "refresh", err: errors.New(`ent: missing required field "refresh"`)}
 	}
 	if _, ok := cuc.mutation.Expiry(); !ok {
-		return &ValidationError{Name: "expiry", err: errors.New(`ent: missing required field "ChatUser.expiry"`)}
+		return &ValidationError{Name: "expiry", err: errors.New(`ent: missing required field "expiry"`)}
 	}
 	if _, ok := cuc.mutation.BotToken(); !ok {
-		return &ValidationError{Name: "bot_token", err: errors.New(`ent: missing required field "ChatUser.bot_token"`)}
+		return &ValidationError{Name: "bot_token", err: errors.New(`ent: missing required field "bot_token"`)}
 	}
 	if _, ok := cuc.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "ChatUser.created_at"`)}
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "created_at"`)}
 	}
 	if _, ok := cuc.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "ChatUser.updated_at"`)}
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "updated_at"`)}
 	}
 	if _, ok := cuc.mutation.UserID(); !ok {
-		return &ValidationError{Name: "user_id", err: errors.New(`ent: missing required field "ChatUser.user_id"`)}
+		return &ValidationError{Name: "user_id", err: errors.New(`ent: missing required field "user_id"`)}
 	}
 	if _, ok := cuc.mutation.UserID(); !ok {
-		return &ValidationError{Name: "user", err: errors.New(`ent: missing required edge "ChatUser.user"`)}
+		return &ValidationError{Name: "user", err: errors.New("ent: missing required edge \"user\"")}
 	}
 	return nil
 }
@@ -209,11 +209,7 @@ func (cuc *ChatUserCreate) sqlSave(ctx context.Context) (*ChatUser, error) {
 		return nil, err
 	}
 	if _spec.ID.Value != nil {
-		if id, ok := _spec.ID.Value.(string); ok {
-			_node.ID = id
-		} else {
-			return nil, fmt.Errorf("unexpected ChatUser.ID type: %T", _spec.ID.Value)
-		}
+		_node.ID = _spec.ID.Value.(string)
 	}
 	return _node, nil
 }

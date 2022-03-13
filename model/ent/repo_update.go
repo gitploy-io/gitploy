@@ -4,7 +4,6 @@ package ent
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"time"
 
@@ -1135,7 +1134,7 @@ func (ruo *RepoUpdateOne) sqlSave(ctx context.Context) (_node *Repo, err error) 
 	}
 	id, ok := ruo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Repo.id" for update`)}
+		return nil, &ValidationError{Name: "ID", err: fmt.Errorf("missing Repo.ID for update")}
 	}
 	_spec.Node.ID.Value = id
 	if fields := ruo.fields; len(fields) > 0 {

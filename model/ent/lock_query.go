@@ -157,7 +157,7 @@ func (lq *LockQuery) FirstIDX(ctx context.Context) int {
 }
 
 // Only returns a single Lock entity found by the query, ensuring it only returns one.
-// Returns a *NotSingularError when more than one Lock entity is found.
+// Returns a *NotSingularError when exactly one Lock entity is not found.
 // Returns a *NotFoundError when no Lock entities are found.
 func (lq *LockQuery) Only(ctx context.Context) (*Lock, error) {
 	nodes, err := lq.Limit(2).All(ctx)
@@ -184,7 +184,7 @@ func (lq *LockQuery) OnlyX(ctx context.Context) *Lock {
 }
 
 // OnlyID is like Only, but returns the only Lock ID in the query.
-// Returns a *NotSingularError when more than one Lock ID is found.
+// Returns a *NotSingularError when exactly one Lock ID is not found.
 // Returns a *NotFoundError when no entities are found.
 func (lq *LockQuery) OnlyID(ctx context.Context) (id int, err error) {
 	var ids []int
@@ -295,9 +295,8 @@ func (lq *LockQuery) Clone() *LockQuery {
 		withUser:   lq.withUser.Clone(),
 		withRepo:   lq.withRepo.Clone(),
 		// clone intermediate query.
-		sql:    lq.sql.Clone(),
-		path:   lq.path,
-		unique: lq.unique,
+		sql:  lq.sql.Clone(),
+		path: lq.path,
 	}
 }
 
@@ -476,10 +475,6 @@ func (lq *LockQuery) sqlCount(ctx context.Context) (int, error) {
 	if len(lq.modifiers) > 0 {
 		_spec.Modifiers = lq.modifiers
 	}
-	_spec.Node.Columns = lq.fields
-	if len(lq.fields) > 0 {
-		_spec.Unique = lq.unique != nil && *lq.unique
-	}
 	return sqlgraph.CountNodes(ctx, lq.driver, _spec)
 }
 
@@ -550,9 +545,6 @@ func (lq *LockQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	if lq.sql != nil {
 		selector = lq.sql
 		selector.Select(selector.Columns(columns...)...)
-	}
-	if lq.unique != nil && *lq.unique {
-		selector.Distinct()
 	}
 	for _, m := range lq.modifiers {
 		m(selector)
@@ -861,7 +853,9 @@ func (lgb *LockGroupBy) sqlQuery() *sql.Selector {
 		for _, f := range lgb.fields {
 			columns = append(columns, selector.C(f))
 		}
-		columns = append(columns, aggregation...)
+		for _, c := range aggregation {
+			columns = append(columns, c)
+		}
 		selector.Select(columns...)
 	}
 	return selector.GroupBy(selector.Columns(lgb.fields...)...)
