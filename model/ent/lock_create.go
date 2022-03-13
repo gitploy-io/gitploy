@@ -158,22 +158,22 @@ func (lc *LockCreate) defaults() {
 // check runs all checks and user-defined validators on the builder.
 func (lc *LockCreate) check() error {
 	if _, ok := lc.mutation.Env(); !ok {
-		return &ValidationError{Name: "env", err: errors.New(`ent: missing required field "env"`)}
+		return &ValidationError{Name: "env", err: errors.New(`ent: missing required field "Lock.env"`)}
 	}
 	if _, ok := lc.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "created_at"`)}
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Lock.created_at"`)}
 	}
 	if _, ok := lc.mutation.UserID(); !ok {
-		return &ValidationError{Name: "user_id", err: errors.New(`ent: missing required field "user_id"`)}
+		return &ValidationError{Name: "user_id", err: errors.New(`ent: missing required field "Lock.user_id"`)}
 	}
 	if _, ok := lc.mutation.RepoID(); !ok {
-		return &ValidationError{Name: "repo_id", err: errors.New(`ent: missing required field "repo_id"`)}
+		return &ValidationError{Name: "repo_id", err: errors.New(`ent: missing required field "Lock.repo_id"`)}
 	}
 	if _, ok := lc.mutation.UserID(); !ok {
-		return &ValidationError{Name: "user", err: errors.New("ent: missing required edge \"user\"")}
+		return &ValidationError{Name: "user", err: errors.New(`ent: missing required edge "Lock.user"`)}
 	}
 	if _, ok := lc.mutation.RepoID(); !ok {
-		return &ValidationError{Name: "repo", err: errors.New("ent: missing required edge \"repo\"")}
+		return &ValidationError{Name: "repo", err: errors.New(`ent: missing required edge "Lock.repo"`)}
 	}
 	return nil
 }

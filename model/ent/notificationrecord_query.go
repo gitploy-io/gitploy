@@ -133,7 +133,7 @@ func (nrq *NotificationRecordQuery) FirstIDX(ctx context.Context) int {
 }
 
 // Only returns a single NotificationRecord entity found by the query, ensuring it only returns one.
-// Returns a *NotSingularError when exactly one NotificationRecord entity is not found.
+// Returns a *NotSingularError when more than one NotificationRecord entity is found.
 // Returns a *NotFoundError when no NotificationRecord entities are found.
 func (nrq *NotificationRecordQuery) Only(ctx context.Context) (*NotificationRecord, error) {
 	nodes, err := nrq.Limit(2).All(ctx)
@@ -160,7 +160,7 @@ func (nrq *NotificationRecordQuery) OnlyX(ctx context.Context) *NotificationReco
 }
 
 // OnlyID is like Only, but returns the only NotificationRecord ID in the query.
-// Returns a *NotSingularError when exactly one NotificationRecord ID is not found.
+// Returns a *NotSingularError when more than one NotificationRecord ID is found.
 // Returns a *NotFoundError when no entities are found.
 func (nrq *NotificationRecordQuery) OnlyID(ctx context.Context) (id int, err error) {
 	var ids []int
@@ -270,8 +270,9 @@ func (nrq *NotificationRecordQuery) Clone() *NotificationRecordQuery {
 		predicates: append([]predicate.NotificationRecord{}, nrq.predicates...),
 		withEvent:  nrq.withEvent.Clone(),
 		// clone intermediate query.
-		sql:  nrq.sql.Clone(),
-		path: nrq.path,
+		sql:    nrq.sql.Clone(),
+		path:   nrq.path,
+		unique: nrq.unique,
 	}
 }
 
@@ -412,6 +413,10 @@ func (nrq *NotificationRecordQuery) sqlCount(ctx context.Context) (int, error) {
 	if len(nrq.modifiers) > 0 {
 		_spec.Modifiers = nrq.modifiers
 	}
+	_spec.Node.Columns = nrq.fields
+	if len(nrq.fields) > 0 {
+		_spec.Unique = nrq.unique != nil && *nrq.unique
+	}
 	return sqlgraph.CountNodes(ctx, nrq.driver, _spec)
 }
 
@@ -482,6 +487,9 @@ func (nrq *NotificationRecordQuery) sqlQuery(ctx context.Context) *sql.Selector 
 	if nrq.sql != nil {
 		selector = nrq.sql
 		selector.Select(selector.Columns(columns...)...)
+	}
+	if nrq.unique != nil && *nrq.unique {
+		selector.Distinct()
 	}
 	for _, m := range nrq.modifiers {
 		m(selector)
@@ -790,9 +798,7 @@ func (nrgb *NotificationRecordGroupBy) sqlQuery() *sql.Selector {
 		for _, f := range nrgb.fields {
 			columns = append(columns, selector.C(f))
 		}
-		for _, c := range aggregation {
-			columns = append(columns, c)
-		}
+		columns = append(columns, aggregation...)
 		selector.Select(columns...)
 	}
 	return selector.GroupBy(selector.Columns(nrgb.fields...)...)

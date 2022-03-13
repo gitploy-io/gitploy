@@ -189,7 +189,7 @@ func (dsu *DeploymentStatusUpdate) defaults() {
 // check runs all checks and user-defined validators on the builder.
 func (dsu *DeploymentStatusUpdate) check() error {
 	if _, ok := dsu.mutation.DeploymentID(); dsu.mutation.DeploymentCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"deployment\"")
+		return errors.New(`ent: clearing a required unique edge "DeploymentStatus.deployment"`)
 	}
 	return nil
 }
@@ -480,7 +480,7 @@ func (dsuo *DeploymentStatusUpdateOne) defaults() {
 // check runs all checks and user-defined validators on the builder.
 func (dsuo *DeploymentStatusUpdateOne) check() error {
 	if _, ok := dsuo.mutation.DeploymentID(); dsuo.mutation.DeploymentCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"deployment\"")
+		return errors.New(`ent: clearing a required unique edge "DeploymentStatus.deployment"`)
 	}
 	return nil
 }
@@ -498,7 +498,7 @@ func (dsuo *DeploymentStatusUpdateOne) sqlSave(ctx context.Context) (_node *Depl
 	}
 	id, ok := dsuo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "ID", err: fmt.Errorf("missing DeploymentStatus.ID for update")}
+		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "DeploymentStatus.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
 	if fields := dsuo.fields; len(fields) > 0 {

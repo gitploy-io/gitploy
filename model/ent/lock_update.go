@@ -172,10 +172,10 @@ func (lu *LockUpdate) ExecX(ctx context.Context) {
 // check runs all checks and user-defined validators on the builder.
 func (lu *LockUpdate) check() error {
 	if _, ok := lu.mutation.UserID(); lu.mutation.UserCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"user\"")
+		return errors.New(`ent: clearing a required unique edge "Lock.user"`)
 	}
 	if _, ok := lu.mutation.RepoID(); lu.mutation.RepoCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"repo\"")
+		return errors.New(`ent: clearing a required unique edge "Lock.repo"`)
 	}
 	return nil
 }
@@ -463,10 +463,10 @@ func (luo *LockUpdateOne) ExecX(ctx context.Context) {
 // check runs all checks and user-defined validators on the builder.
 func (luo *LockUpdateOne) check() error {
 	if _, ok := luo.mutation.UserID(); luo.mutation.UserCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"user\"")
+		return errors.New(`ent: clearing a required unique edge "Lock.user"`)
 	}
 	if _, ok := luo.mutation.RepoID(); luo.mutation.RepoCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"repo\"")
+		return errors.New(`ent: clearing a required unique edge "Lock.repo"`)
 	}
 	return nil
 }
@@ -484,7 +484,7 @@ func (luo *LockUpdateOne) sqlSave(ctx context.Context) (_node *Lock, err error) 
 	}
 	id, ok := luo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "ID", err: fmt.Errorf("missing Lock.ID for update")}
+		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Lock.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
 	if fields := luo.fields; len(fields) > 0 {

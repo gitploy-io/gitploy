@@ -188,30 +188,30 @@ func (pc *PermCreate) defaults() {
 // check runs all checks and user-defined validators on the builder.
 func (pc *PermCreate) check() error {
 	if _, ok := pc.mutation.RepoPerm(); !ok {
-		return &ValidationError{Name: "repo_perm", err: errors.New(`ent: missing required field "repo_perm"`)}
+		return &ValidationError{Name: "repo_perm", err: errors.New(`ent: missing required field "Perm.repo_perm"`)}
 	}
 	if v, ok := pc.mutation.RepoPerm(); ok {
 		if err := perm.RepoPermValidator(v); err != nil {
-			return &ValidationError{Name: "repo_perm", err: fmt.Errorf(`ent: validator failed for field "repo_perm": %w`, err)}
+			return &ValidationError{Name: "repo_perm", err: fmt.Errorf(`ent: validator failed for field "Perm.repo_perm": %w`, err)}
 		}
 	}
 	if _, ok := pc.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "created_at"`)}
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Perm.created_at"`)}
 	}
 	if _, ok := pc.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "updated_at"`)}
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Perm.updated_at"`)}
 	}
 	if _, ok := pc.mutation.UserID(); !ok {
-		return &ValidationError{Name: "user_id", err: errors.New(`ent: missing required field "user_id"`)}
+		return &ValidationError{Name: "user_id", err: errors.New(`ent: missing required field "Perm.user_id"`)}
 	}
 	if _, ok := pc.mutation.RepoID(); !ok {
-		return &ValidationError{Name: "repo_id", err: errors.New(`ent: missing required field "repo_id"`)}
+		return &ValidationError{Name: "repo_id", err: errors.New(`ent: missing required field "Perm.repo_id"`)}
 	}
 	if _, ok := pc.mutation.UserID(); !ok {
-		return &ValidationError{Name: "user", err: errors.New("ent: missing required edge \"user\"")}
+		return &ValidationError{Name: "user", err: errors.New(`ent: missing required edge "Perm.user"`)}
 	}
 	if _, ok := pc.mutation.RepoID(); !ok {
-		return &ValidationError{Name: "repo", err: errors.New("ent: missing required edge \"repo\"")}
+		return &ValidationError{Name: "repo", err: errors.New(`ent: missing required edge "Perm.repo"`)}
 	}
 	return nil
 }

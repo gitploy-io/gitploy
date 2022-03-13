@@ -178,19 +178,19 @@ func (dsc *DeploymentStatusCreate) defaults() {
 // check runs all checks and user-defined validators on the builder.
 func (dsc *DeploymentStatusCreate) check() error {
 	if _, ok := dsc.mutation.Status(); !ok {
-		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "status"`)}
+		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "DeploymentStatus.status"`)}
 	}
 	if _, ok := dsc.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "created_at"`)}
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "DeploymentStatus.created_at"`)}
 	}
 	if _, ok := dsc.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "updated_at"`)}
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "DeploymentStatus.updated_at"`)}
 	}
 	if _, ok := dsc.mutation.DeploymentID(); !ok {
-		return &ValidationError{Name: "deployment_id", err: errors.New(`ent: missing required field "deployment_id"`)}
+		return &ValidationError{Name: "deployment_id", err: errors.New(`ent: missing required field "DeploymentStatus.deployment_id"`)}
 	}
 	if _, ok := dsc.mutation.DeploymentID(); !ok {
-		return &ValidationError{Name: "deployment", err: errors.New("ent: missing required edge \"deployment\"")}
+		return &ValidationError{Name: "deployment", err: errors.New(`ent: missing required edge "DeploymentStatus.deployment"`)}
 	}
 	return nil
 }

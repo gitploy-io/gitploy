@@ -304,31 +304,31 @@ func (uc *UserCreate) defaults() {
 // check runs all checks and user-defined validators on the builder.
 func (uc *UserCreate) check() error {
 	if _, ok := uc.mutation.Login(); !ok {
-		return &ValidationError{Name: "login", err: errors.New(`ent: missing required field "login"`)}
+		return &ValidationError{Name: "login", err: errors.New(`ent: missing required field "User.login"`)}
 	}
 	if _, ok := uc.mutation.Avatar(); !ok {
-		return &ValidationError{Name: "avatar", err: errors.New(`ent: missing required field "avatar"`)}
+		return &ValidationError{Name: "avatar", err: errors.New(`ent: missing required field "User.avatar"`)}
 	}
 	if _, ok := uc.mutation.Admin(); !ok {
-		return &ValidationError{Name: "admin", err: errors.New(`ent: missing required field "admin"`)}
+		return &ValidationError{Name: "admin", err: errors.New(`ent: missing required field "User.admin"`)}
 	}
 	if _, ok := uc.mutation.Token(); !ok {
-		return &ValidationError{Name: "token", err: errors.New(`ent: missing required field "token"`)}
+		return &ValidationError{Name: "token", err: errors.New(`ent: missing required field "User.token"`)}
 	}
 	if _, ok := uc.mutation.Refresh(); !ok {
-		return &ValidationError{Name: "refresh", err: errors.New(`ent: missing required field "refresh"`)}
+		return &ValidationError{Name: "refresh", err: errors.New(`ent: missing required field "User.refresh"`)}
 	}
 	if _, ok := uc.mutation.Expiry(); !ok {
-		return &ValidationError{Name: "expiry", err: errors.New(`ent: missing required field "expiry"`)}
+		return &ValidationError{Name: "expiry", err: errors.New(`ent: missing required field "User.expiry"`)}
 	}
 	if _, ok := uc.mutation.Hash(); !ok {
-		return &ValidationError{Name: "hash", err: errors.New(`ent: missing required field "hash"`)}
+		return &ValidationError{Name: "hash", err: errors.New(`ent: missing required field "User.hash"`)}
 	}
 	if _, ok := uc.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "created_at"`)}
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "User.created_at"`)}
 	}
 	if _, ok := uc.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "updated_at"`)}
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "User.updated_at"`)}
 	}
 	return nil
 }
