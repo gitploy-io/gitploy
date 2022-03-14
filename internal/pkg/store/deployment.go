@@ -35,27 +35,8 @@ func (s *Store) SearchDeploymentsOfUser(ctx context.Context, u *ent.User, opt *i
 		return deployment.StatusIn(ss...)
 	}
 
-	// Search deployments that were triggered by the user.
-	if opt.Owned {
-		return s.c.Deployment.
-			Query().
-			Where(
-				deployment.And(
-					deployment.UserIDEQ(u.ID),
-					statusIn(opt.Statuses),
-					deployment.CreatedAtGTE(opt.From.UTC()),
-					deployment.CreatedAtLT(opt.To.UTC()),
-				),
-			).
-			Order(ent.Desc(deployment.FieldCreatedAt)).
-			Offset(offset(opt.Page, opt.PerPage)).
-			Limit(opt.PerPage).
-			WithRepo().
-			WithUser().
-			All(ctx)
-	}
-
-	return s.c.Deployment.
+	// Build the query searching all deployments under the accessible repositories.
+	qry := s.c.Deployment.
 		Query().
 		Where(func(s *sql.Selector) {
 			p := sql.Table(perm.Table)
@@ -78,8 +59,19 @@ func (s *Store) SearchDeploymentsOfUser(ctx context.Context, u *ent.User, opt *i
 		Offset(offset(opt.Page, opt.PerPage)).
 		Limit(opt.PerPage).
 		WithRepo().
-		WithUser().
-		All(ctx)
+		WithUser()
+
+	// Search only deployments that were triggered by the user.
+	if opt.Owned {
+		qry.Where(deployment.UserIDEQ(u.ID))
+	}
+
+	// Search only deployments for production environment.
+	if opt.ProductionOnly {
+		qry.Where(deployment.ProductionEnvironment(true))
+	}
+
+	return qry.All(ctx)
 }
 
 func (s *Store) ListInactiveDeploymentsLessThanTime(ctx context.Context, opt *i.ListInactiveDeploymentsLessThanTimeOptions) ([]*ent.Deployment, error) {

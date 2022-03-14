@@ -43,6 +43,7 @@ func TestStore_SearchDeployments(t *testing.T) {
 		SetRef("main").
 		SetEnv("local").
 		SetStatus(deployment.StatusCreated).
+		SetProductionEnvironment(true).
 		SetUserID(1).
 		SetRepoID(1).
 		SaveX(ctx)
@@ -99,7 +100,29 @@ func TestStore_SearchDeployments(t *testing.T) {
 		}
 	})
 
-	t.Run("Returns waiting deployments under the accessible repositories.", func(t *testing.T) {
+	t.Run("Returns all deployment triggered by myself.", func(t *testing.T) {
+		store := NewStore(client)
+
+		res, err := store.SearchDeploymentsOfUser(ctx,
+			&ent.User{ID: 1},
+			&i.SearchDeploymentsOfUserOptions{
+				ListOptions: i.ListOptions{Page: 1, PerPage: 30},
+				Statuses:    []deployment.Status{},
+				Owned:       true,
+				From:        time.Now().UTC().Add(-time.Minute),
+				To:          time.Now().UTC(),
+			})
+		if err != nil {
+			t.Fatalf("SearchDeployments return an error: %s", err)
+		}
+
+		expected := 2
+		if len(res) != expected {
+			t.Fatalf("SearchDeployments = %v, wanted %v", res, expected)
+		}
+	})
+
+	t.Run("Returns deployments which are 'created'.", func(t *testing.T) {
 		store := NewStore(client)
 
 		res, err := store.SearchDeploymentsOfUser(ctx,
@@ -121,15 +144,15 @@ func TestStore_SearchDeployments(t *testing.T) {
 		}
 	})
 
-	t.Run("Returns all deployment triggered by myself.", func(t *testing.T) {
+	t.Run("Returns deployments for production environment.", func(t *testing.T) {
 		store := NewStore(client)
 
 		res, err := store.SearchDeploymentsOfUser(ctx,
 			&ent.User{ID: 1},
 			&i.SearchDeploymentsOfUserOptions{
 				ListOptions: i.ListOptions{Page: 1, PerPage: 30},
-				Statuses:    []deployment.Status{},
-				Owned:       true,
+				Statuses:    []deployment.Status{deployment.StatusCreated},
+				Owned:       false,
 				From:        time.Now().UTC().Add(-time.Minute),
 				To:          time.Now().UTC(),
 			})
@@ -137,9 +160,9 @@ func TestStore_SearchDeployments(t *testing.T) {
 			t.Fatalf("SearchDeployments return an error: %s", err)
 		}
 
-		expected := 2
+		expected := 1
 		if len(res) != expected {
-			t.Fatalf("SearchDeployments = %v, wanted %v", res, expected)
+			t.Fatalf("SearchDeployments = %v, wanted %v", len(res), expected)
 		}
 	})
 }

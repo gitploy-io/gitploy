@@ -38,40 +38,32 @@ func (s *Search) SearchDeployments(c *gin.Context) {
 	ctx := c.Request.Context()
 
 	var (
-		statuses = c.DefaultQuery("statuses", "")
-		owned    = c.DefaultQuery("owned", "true")
-		from     = c.DefaultQuery("from", time.Now().Add(-activeDuration).Format(time.RFC3339))
-		to       = c.DefaultQuery("to", time.Now().Format(time.RFC3339))
-		page     = c.DefaultQuery("page", "1")
-		perPage  = c.DefaultQuery("per_page", "30")
-	)
-
-	var (
-		ss  = make([]deployment.Status, 0)
-		o   bool
-		f   time.Time
-		t   time.Time
-		p   int
-		pp  int
-		err error
+		statuses       = []deployment.Status{}
+		owned          bool
+		productionOnly bool
+		from, to       time.Time
+		page, perPage  int
+		err            error
 	)
 
 	// Validate query parameters.
-	for _, st := range strings.Split(statuses, ",") {
-		if st != "" {
-			ss = append(ss, deployment.Status(st))
+	for _, s := range strings.Split(c.DefaultQuery("statuses", ""), ",") {
+		if s != "" {
+			statuses = append(statuses, deployment.Status(s))
 		}
 	}
 
-	if o, err = strconv.ParseBool(owned); err != nil {
-		gb.ResponseWithError(
-			c,
-			e.NewErrorWithMessage(e.ErrorCodeParameterInvalid, "The owned must be boolean.", err),
-		)
+	if owned, err = strconv.ParseBool(c.DefaultQuery("owned", "true")); err != nil {
+		gb.ResponseWithError(c, e.NewErrorWithMessage(e.ErrorCodeParameterInvalid, "The owned must be boolean.", err))
 		return
 	}
 
-	if f, err = time.Parse(time.RFC3339, from); err != nil {
+	if productionOnly, err = strconv.ParseBool(c.DefaultQuery("production_only", "false")); err != nil {
+		gb.ResponseWithError(c, e.NewErrorWithMessage(e.ErrorCodeParameterInvalid, "The production must be boolean.", err))
+		return
+	}
+
+	if from, err = time.Parse(time.RFC3339, c.DefaultQuery("from", time.Now().Add(-activeDuration).Format(time.RFC3339))); err != nil {
 		gb.ResponseWithError(
 			c,
 			e.NewErrorWithMessage(e.ErrorCodeParameterInvalid, "Invalid format of \"from\" parameter, RFC3339 format only.", err),
@@ -79,7 +71,7 @@ func (s *Search) SearchDeployments(c *gin.Context) {
 		return
 	}
 
-	if t, err = time.Parse(time.RFC3339, to); err != nil {
+	if to, err = time.Parse(time.RFC3339, c.DefaultQuery("to", time.Now().Format(time.RFC3339))); err != nil {
 		gb.ResponseWithError(
 			c,
 			e.NewErrorWithMessage(e.ErrorCodeParameterInvalid, "Invalid format of \"to\" parameter, RFC3339 format only.", err),
@@ -87,19 +79,13 @@ func (s *Search) SearchDeployments(c *gin.Context) {
 		return
 	}
 
-	if p, err = strconv.Atoi(page); err != nil {
-		gb.ResponseWithError(
-			c,
-			e.NewErrorWithMessage(e.ErrorCodeParameterInvalid, "Invalid format of \"page\" parameter.", err),
-		)
+	if page, err = strconv.Atoi(c.DefaultQuery("page", "1")); err != nil {
+		gb.ResponseWithError(c, e.NewErrorWithMessage(e.ErrorCodeParameterInvalid, "The page must be number.", err))
 		return
 	}
 
-	if pp, err = strconv.Atoi(perPage); err != nil {
-		gb.ResponseWithError(
-			c,
-			e.NewErrorWithMessage(e.ErrorCodeParameterInvalid, "Invalid format of \"per_page\" parameter.", err),
-		)
+	if perPage, err = strconv.Atoi(c.DefaultQuery("per_page", "1")); err != nil {
+		gb.ResponseWithError(c, e.NewErrorWithMessage(e.ErrorCodeParameterInvalid, "The per_page must be number.", err))
 		return
 	}
 
@@ -112,11 +98,12 @@ func (s *Search) SearchDeployments(c *gin.Context) {
 	u := v.(*ent.User)
 
 	if ds, err = s.i.SearchDeploymentsOfUser(ctx, u, &i.SearchDeploymentsOfUserOptions{
-		ListOptions: i.ListOptions{Page: p, PerPage: pp},
-		Statuses:    ss,
-		Owned:       o,
-		From:        f,
-		To:          t,
+		ListOptions:    i.ListOptions{Page: page, PerPage: perPage},
+		Statuses:       statuses,
+		Owned:          owned,
+		ProductionOnly: productionOnly,
+		From:           from,
+		To:             to,
 	}); err != nil {
 		s.log.Check(gb.GetZapLogLevel(err), "Failed to search deployments.").Write(zap.Error(err))
 		gb.ResponseWithError(c, err)
