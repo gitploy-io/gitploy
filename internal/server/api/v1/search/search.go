@@ -115,8 +115,8 @@ func (s *Search) SearchDeployments(c *gin.Context) {
 		ListOptions: i.ListOptions{Page: p, PerPage: pp},
 		Statuses:    ss,
 		Owned:       o,
-		From:        f.UTC(),
-		To:          t.UTC(),
+		From:        f,
+		To:          t,
 	}); err != nil {
 		s.log.Check(gb.GetZapLogLevel(err), "Failed to search deployments.").Write(zap.Error(err))
 		gb.ResponseWithError(c, err)

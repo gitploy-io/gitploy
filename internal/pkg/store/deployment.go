@@ -43,8 +43,8 @@ func (s *Store) SearchDeploymentsOfUser(ctx context.Context, u *ent.User, opt *i
 				deployment.And(
 					deployment.UserIDEQ(u.ID),
 					statusIn(opt.Statuses),
-					deployment.CreatedAtGTE(opt.From),
-					deployment.CreatedAtLT(opt.To),
+					deployment.CreatedAtGTE(opt.From.UTC()),
+					deployment.CreatedAtLT(opt.To.UTC()),
 				),
 			).
 			Order(ent.Desc(deployment.FieldCreatedAt)).
@@ -70,8 +70,8 @@ func (s *Store) SearchDeploymentsOfUser(ctx context.Context, u *ent.User, opt *i
 		Where(
 			deployment.And(
 				statusIn(opt.Statuses),
-				deployment.CreatedAtGTE(opt.From),
-				deployment.CreatedAtLT(opt.To),
+				deployment.CreatedAtGTE(opt.From.UTC()),
+				deployment.CreatedAtLT(opt.To.UTC()),
 			),
 		).
 		Order(ent.Desc(deployment.FieldCreatedAt)).
