@@ -35,6 +35,7 @@ func (s *Store) SearchDeploymentsOfUser(ctx context.Context, u *ent.User, opt *i
 		return deployment.StatusIn(ss...)
 	}
 
+	// Search deployments that were triggered by the user.
 	if opt.Owned {
 		return s.c.Deployment.
 			Query().
@@ -46,31 +47,25 @@ func (s *Store) SearchDeploymentsOfUser(ctx context.Context, u *ent.User, opt *i
 					deployment.CreatedAtLT(opt.To),
 				),
 			).
-			WithRepo().
-			WithUser().
 			Order(ent.Desc(deployment.FieldCreatedAt)).
 			Offset(offset(opt.Page, opt.PerPage)).
 			Limit(opt.PerPage).
+			WithRepo().
+			WithUser().
 			All(ctx)
 	}
 
 	return s.c.Deployment.
 		Query().
 		Where(func(s *sql.Selector) {
-			t := sql.Table(perm.Table)
+			p := sql.Table(perm.Table)
 
-			// Join with Perm for Repo.ID
-			s.Join(t).
-				On(
-					s.C(deployment.FieldRepoID),
-					s.C(perm.FieldRepoID),
-				).
-				Where(
-					sql.EQ(
-						t.C(perm.FieldUserID),
-						u.ID,
-					),
-				)
+			s.Join(p).OnP(
+				sql.And(
+					sql.ColumnsEQ(p.C(perm.FieldRepoID), s.C(deployment.FieldRepoID)),
+					sql.EQ(p.C(perm.FieldUserID), u.ID),
+				),
+			)
 		}).
 		Where(
 			deployment.And(
@@ -79,11 +74,11 @@ func (s *Store) SearchDeploymentsOfUser(ctx context.Context, u *ent.User, opt *i
 				deployment.CreatedAtLT(opt.To),
 			),
 		).
-		WithRepo().
-		WithUser().
 		Order(ent.Desc(deployment.FieldCreatedAt)).
 		Offset(offset(opt.Page, opt.PerPage)).
 		Limit(opt.PerPage).
+		WithRepo().
+		WithUser().
 		All(ctx)
 }
 

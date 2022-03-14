@@ -23,26 +23,38 @@ func TestStore_SearchDeployments(t *testing.T) {
 
 	ctx := context.Background()
 
-	const (
-		u1 = 1
-		u2 = 2
-		r1 = 1
-		r2 = 2
-	)
+	t.Log("User_1 has the permissions for repo_1 and repo_2.")
+	client.Perm.
+		Create().
+		SetUserID(1).
+		SetRepoID(1).
+		SaveX(ctx)
 
 	client.Perm.
 		Create().
-		SetUserID(u1).
-		SetRepoID(r1).
+		SetUserID(1).
+		SetRepoID(2).
 		SaveX(ctx)
 
+	t.Log("Create the deployments under the repo_1.")
 	client.Deployment.Create().
 		SetType(deployment.TypeBranch).
 		SetNumber(1).
 		SetRef("main").
 		SetEnv("local").
-		SetUserID(u1).
-		SetRepoID(r1).
+		SetStatus(deployment.StatusCreated).
+		SetUserID(1).
+		SetRepoID(1).
+		SaveX(ctx)
+
+	t.Log("Create the deployments under the repo_2.")
+	client.Deployment.Create().
+		SetType(deployment.TypeBranch).
+		SetNumber(1).
+		SetRef("main").
+		SetEnv("dev").
+		SetUserID(1).
+		SetRepoID(2).
 		SaveX(ctx)
 
 	client.Deployment.Create().
@@ -50,35 +62,30 @@ func TestStore_SearchDeployments(t *testing.T) {
 		SetNumber(2).
 		SetRef("main").
 		SetEnv("dev").
-		SetUserID(u2).
-		SetRepoID(r1).
+		SetUserID(2).
+		SetRepoID(2).
 		SaveX(ctx)
 
+	t.Log("Create the deployments under the repo_3.")
 	client.Deployment.Create().
 		SetType(deployment.TypeBranch).
-		SetNumber(3).
+		SetNumber(1).
 		SetRef("main").
 		SetEnv("dev").
-		SetUserID(u2).
-		SetRepoID(r1).
+		SetUserID(2).
+		SetRepoID(3).
 		SetStatus(deployment.StatusCreated).
 		SaveX(ctx)
 
-	t.Run("u1 searchs all deployments of r1.", func(t *testing.T) {
-		const (
-			owned   = false
-			page    = 1
-			perPage = 30
-		)
-
+	t.Run("Returns all deployments under the accessible repositories.", func(t *testing.T) {
 		store := NewStore(client)
 
 		res, err := store.SearchDeploymentsOfUser(ctx,
-			&ent.User{ID: u1},
+			&ent.User{ID: 1},
 			&i.SearchDeploymentsOfUserOptions{
-				ListOptions: i.ListOptions{Page: page, PerPage: perPage},
+				ListOptions: i.ListOptions{Page: 1, PerPage: 30},
 				Statuses:    []deployment.Status{},
-				Owned:       owned,
+				Owned:       false,
 				From:        time.Now().UTC().Add(-time.Minute),
 				To:          time.Now().UTC(),
 			})
@@ -92,49 +99,15 @@ func TestStore_SearchDeployments(t *testing.T) {
 		}
 	})
 
-	t.Run("u1 searchs waiting deployments of r1.", func(t *testing.T) {
-		const (
-			owned   = false
-			page    = 1
-			perPage = 30
-		)
-
+	t.Run("Returns waiting deployments under the accessible repositories.", func(t *testing.T) {
 		store := NewStore(client)
 
 		res, err := store.SearchDeploymentsOfUser(ctx,
-			&ent.User{ID: u1},
+			&ent.User{ID: 1},
 			&i.SearchDeploymentsOfUserOptions{
-				ListOptions: i.ListOptions{Page: page, PerPage: perPage},
-				Statuses:    []deployment.Status{deployment.StatusWaiting},
-				Owned:       owned,
-				From:        time.Now().UTC().Add(-time.Minute),
-				To:          time.Now().UTC(),
-			})
-		if err != nil {
-			t.Fatalf("SearchDeployments return an error: %s", err)
-		}
-
-		expected := 2
-		if len(res) != expected {
-			t.Fatalf("SearchDeployments = %v, wanted %v", len(res), expected)
-		}
-	})
-
-	t.Run("u1 searchs owned deployments of r1.", func(t *testing.T) {
-		const (
-			owned   = true
-			page    = 1
-			perPage = 30
-		)
-
-		store := NewStore(client)
-
-		res, err := store.SearchDeploymentsOfUser(ctx,
-			&ent.User{ID: u1},
-			&i.SearchDeploymentsOfUserOptions{
-				ListOptions: i.ListOptions{Page: page, PerPage: perPage},
-				Statuses:    []deployment.Status{},
-				Owned:       owned,
+				ListOptions: i.ListOptions{Page: 1, PerPage: 30},
+				Statuses:    []deployment.Status{deployment.StatusCreated},
+				Owned:       false,
 				From:        time.Now().UTC().Add(-time.Minute),
 				To:          time.Now().UTC(),
 			})
@@ -143,6 +116,28 @@ func TestStore_SearchDeployments(t *testing.T) {
 		}
 
 		expected := 1
+		if len(res) != expected {
+			t.Fatalf("SearchDeployments = %v, wanted %v", len(res), expected)
+		}
+	})
+
+	t.Run("Returns all deployment triggered by myself.", func(t *testing.T) {
+		store := NewStore(client)
+
+		res, err := store.SearchDeploymentsOfUser(ctx,
+			&ent.User{ID: 1},
+			&i.SearchDeploymentsOfUserOptions{
+				ListOptions: i.ListOptions{Page: 1, PerPage: 30},
+				Statuses:    []deployment.Status{},
+				Owned:       true,
+				From:        time.Now().UTC().Add(-time.Minute),
+				To:          time.Now().UTC(),
+			})
+		if err != nil {
+			t.Fatalf("SearchDeployments return an error: %s", err)
+		}
+
+		expected := 2
 		if len(res) != expected {
 			t.Fatalf("SearchDeployments = %v, wanted %v", res, expected)
 		}
