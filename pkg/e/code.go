@@ -3,6 +3,7 @@ package e
 import (
 	"errors"
 	"fmt"
+	"strings"
 )
 
 const (
@@ -78,7 +79,16 @@ func NewErrorWithMessage(code ErrorCode, message string, wrap error) *Error {
 }
 
 func (e *Error) Error() string {
-	return fmt.Sprintf("code: %s, message: %s, wrap: %s", e.Code, e.Message, e.Wrap)
+	msgs := []string{
+		fmt.Sprintf("Code: %s", e.Code),
+		fmt.Sprintf("Message: %s", e.Message),
+	}
+
+	if e.Wrap != nil {
+		msgs = append(msgs, fmt.Sprintf("Wrap: %s", e.Wrap))
+	}
+
+	return strings.Join(msgs, ", ")
 }
 
 func (e *Error) Unwrap() error {
