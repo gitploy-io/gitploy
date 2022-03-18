@@ -35,8 +35,12 @@ type (
 
 		// DeployableRef validates the ref is deployable or not.
 		DeployableRef *string `json:"deployable_ref" yaml:"deployable_ref"`
+
 		// AutoDeployOn deploys automatically when the pattern is matched.
 		AutoDeployOn *string `json:"auto_deploy_on" yaml:"auto_deploy_on"`
+
+		// Serialization verify if there is a running deployment.
+		Serialization *bool `json:"serialization" yaml:"serialization"`
 
 		// Review is the configuration of Review,
 		// It is disabled when it is empty.

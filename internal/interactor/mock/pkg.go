@@ -454,6 +454,21 @@ func (mr *MockStoreMockRecorder) FindPermOfRepo(ctx, r, u interface{}) *gomock.C
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindPermOfRepo", reflect.TypeOf((*MockStore)(nil).FindPermOfRepo), ctx, r, u)
 }
 
+// FindPrevRunningDeployment mocks base method.
+func (m *MockStore) FindPrevRunningDeployment(ctx context.Context, d *ent.Deployment) (*ent.Deployment, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindPrevRunningDeployment", ctx, d)
+	ret0, _ := ret[0].(*ent.Deployment)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindPrevRunningDeployment indicates an expected call of FindPrevRunningDeployment.
+func (mr *MockStoreMockRecorder) FindPrevRunningDeployment(ctx, d interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindPrevRunningDeployment", reflect.TypeOf((*MockStore)(nil).FindPrevRunningDeployment), ctx, d)
+}
+
 // FindPrevSuccessDeployment mocks base method.
 func (m *MockStore) FindPrevSuccessDeployment(ctx context.Context, d *ent.Deployment) (*ent.Deployment, error) {
 	m.ctrl.T.Helper()
@@ -1143,119 +1158,6 @@ func (m *MockDeploymentStatusStore) SyncDeploymentStatus(ctx context.Context, ds
 func (mr *MockDeploymentStatusStoreMockRecorder) SyncDeploymentStatus(ctx, ds interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SyncDeploymentStatus", reflect.TypeOf((*MockDeploymentStatusStore)(nil).SyncDeploymentStatus), ctx, ds)
-}
-
-// MockReviewStore is a mock of ReviewStore interface.
-type MockReviewStore struct {
-	ctrl     *gomock.Controller
-	recorder *MockReviewStoreMockRecorder
-}
-
-// MockReviewStoreMockRecorder is the mock recorder for MockReviewStore.
-type MockReviewStoreMockRecorder struct {
-	mock *MockReviewStore
-}
-
-// NewMockReviewStore creates a new mock instance.
-func NewMockReviewStore(ctrl *gomock.Controller) *MockReviewStore {
-	mock := &MockReviewStore{ctrl: ctrl}
-	mock.recorder = &MockReviewStoreMockRecorder{mock}
-	return mock
-}
-
-// EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockReviewStore) EXPECT() *MockReviewStoreMockRecorder {
-	return m.recorder
-}
-
-// CreateReview mocks base method.
-func (m *MockReviewStore) CreateReview(ctx context.Context, rv *ent.Review) (*ent.Review, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateReview", ctx, rv)
-	ret0, _ := ret[0].(*ent.Review)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// CreateReview indicates an expected call of CreateReview.
-func (mr *MockReviewStoreMockRecorder) CreateReview(ctx, rv interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateReview", reflect.TypeOf((*MockReviewStore)(nil).CreateReview), ctx, rv)
-}
-
-// FindReviewByID mocks base method.
-func (m *MockReviewStore) FindReviewByID(ctx context.Context, id int) (*ent.Review, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FindReviewByID", ctx, id)
-	ret0, _ := ret[0].(*ent.Review)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// FindReviewByID indicates an expected call of FindReviewByID.
-func (mr *MockReviewStoreMockRecorder) FindReviewByID(ctx, id interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindReviewByID", reflect.TypeOf((*MockReviewStore)(nil).FindReviewByID), ctx, id)
-}
-
-// FindReviewOfUser mocks base method.
-func (m *MockReviewStore) FindReviewOfUser(ctx context.Context, u *ent.User, d *ent.Deployment) (*ent.Review, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FindReviewOfUser", ctx, u, d)
-	ret0, _ := ret[0].(*ent.Review)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// FindReviewOfUser indicates an expected call of FindReviewOfUser.
-func (mr *MockReviewStoreMockRecorder) FindReviewOfUser(ctx, u, d interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindReviewOfUser", reflect.TypeOf((*MockReviewStore)(nil).FindReviewOfUser), ctx, u, d)
-}
-
-// ListReviews mocks base method.
-func (m *MockReviewStore) ListReviews(ctx context.Context, d *ent.Deployment) ([]*ent.Review, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListReviews", ctx, d)
-	ret0, _ := ret[0].([]*ent.Review)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// ListReviews indicates an expected call of ListReviews.
-func (mr *MockReviewStoreMockRecorder) ListReviews(ctx, d interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListReviews", reflect.TypeOf((*MockReviewStore)(nil).ListReviews), ctx, d)
-}
-
-// SearchReviews mocks base method.
-func (m *MockReviewStore) SearchReviews(ctx context.Context, u *ent.User) ([]*ent.Review, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SearchReviews", ctx, u)
-	ret0, _ := ret[0].([]*ent.Review)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// SearchReviews indicates an expected call of SearchReviews.
-func (mr *MockReviewStoreMockRecorder) SearchReviews(ctx, u interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SearchReviews", reflect.TypeOf((*MockReviewStore)(nil).SearchReviews), ctx, u)
-}
-
-// UpdateReview mocks base method.
-func (m *MockReviewStore) UpdateReview(ctx context.Context, rv *ent.Review) (*ent.Review, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UpdateReview", ctx, rv)
-	ret0, _ := ret[0].(*ent.Review)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// UpdateReview indicates an expected call of UpdateReview.
-func (mr *MockReviewStoreMockRecorder) UpdateReview(ctx, rv interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateReview", reflect.TypeOf((*MockReviewStore)(nil).UpdateReview), ctx, rv)
 }
 
 // MockSCM is a mock of SCM interface.

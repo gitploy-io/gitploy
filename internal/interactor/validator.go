@@ -141,18 +141,24 @@ func (v *ReviewValidator) Validate(d *ent.Deployment) error {
 // SerializationValidator verify if there is currently a running deployment
 // for the environment.
 type SerializationValidator struct {
+	Env   *extent.Env
 	Store DeploymentStore
 }
 
 func (v *SerializationValidator) Validate(d *ent.Deployment) error {
-	d, err := v.Store.FindPrevRunningDeployment(context.Background(), d)
-	if !e.HasErrorCode(err, e.ErrorCodeEntityNotFound) {
-		return err
+	// Skip if the serialization field is disabled.
+	if v.Env.Serialization == nil || !*v.Env.Serialization {
+		return nil
 	}
 
+	d, err := v.Store.FindPrevRunningDeployment(context.Background(), d)
 	if d != nil {
 		return e.NewError(e.ErrorCodeDeploymentSerialization, nil)
 	}
 
-	return nil
+	if e.HasErrorCode(err, e.ErrorCodeEntityNotFound) {
+		return nil
+	}
+
+	return err
 }

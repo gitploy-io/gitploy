@@ -77,6 +77,7 @@ func (i *DeploymentInteractor) Deploy(ctx context.Context, u *ent.User, r *ent.R
 		&RefValidator{Env: env},
 		&FrozenWindowValidator{Env: env},
 		&LockValidator{Repo: r, Store: i.store},
+		&SerializationValidator{Env: env, Store: i.store},
 	})
 	if err := v.Validate(d); err != nil {
 		return nil, err
@@ -206,6 +207,7 @@ func (i *DeploymentInteractor) DeployToRemote(ctx context.Context, u *ent.User, 
 		&RefValidator{Env: env},
 		&FrozenWindowValidator{Env: env},
 		&LockValidator{Repo: r, Store: i.store},
+		&SerializationValidator{Env: env, Store: i.store},
 		&ReviewValidator{Store: i.store},
 	})
 	if err := v.Validate(d); err != nil {

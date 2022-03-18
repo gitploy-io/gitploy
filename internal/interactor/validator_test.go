@@ -102,3 +102,39 @@ func TestReviewValidator_Validate(t *testing.T) {
 		}
 	})
 }
+
+func TestSerializationValidator_Validate(t *testing.T) {
+	t.Run("Returns nil if the serialization is empty.", func(t *testing.T) {
+		ctrl := gomock.NewController(t)
+		store := mock.NewMockStore(ctrl)
+
+		v := &i.SerializationValidator{
+			Env:   &extent.Env{},
+			Store: store,
+		}
+
+		if err := v.Validate(&ent.Deployment{}); err != nil {
+			t.Fatalf("Validate returns an error: %v", err)
+		}
+	})
+
+	t.Run("Returns an deployment_serialization error if there is a running deployment.", func(t *testing.T) {
+		t.Log("Start mocking:")
+		ctrl := gomock.NewController(t)
+		store := mock.NewMockStore(ctrl)
+
+		t.Log("Return a running deployment.")
+		store.EXPECT().
+			FindPrevRunningDeployment(gomock.Any(), gomock.AssignableToTypeOf(&ent.Deployment{})).
+			Return(&ent.Deployment{}, nil)
+
+		v := &i.SerializationValidator{
+			Env:   &extent.Env{Serialization: pointer.ToBool(true)},
+			Store: store,
+		}
+
+		if err := v.Validate(&ent.Deployment{}); !e.HasErrorCode(err, e.ErrorCodeDeploymentSerialization) {
+			t.Fatalf("Error is not deployment_serialization: %v", err)
+		}
+	})
+}
