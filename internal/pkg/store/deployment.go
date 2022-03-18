@@ -208,6 +208,32 @@ func (s *Store) GetNextDeploymentNumberOfRepo(ctx context.Context, r *ent.Repo) 
 	return cnt + 1, nil
 }
 
+// FindPrevRunningDeployment find a deployment of which the status is created, queued, or running.
+func (s *Store) FindPrevRunningDeployment(ctx context.Context, d *ent.Deployment) (*ent.Deployment, error) {
+	d, err := s.c.Deployment.
+		Query().
+		Where(
+			deployment.And(
+				deployment.RepoIDEQ(d.RepoID),
+				deployment.EnvEQ(d.Env),
+				deployment.StatusIn(
+					deployment.StatusCreated,
+					deployment.StatusQueued,
+					deployment.StatusRunning,
+				),
+			),
+		).
+		Order(ent.Desc(deployment.FieldCreatedAt)).
+		First(ctx)
+	if ent.IsNotFound(err) {
+		return nil, e.NewErrorWithMessage(e.ErrorCodeEntityNotFound, "The deployment is not found.", err)
+	} else if err != nil {
+		return nil, e.NewError(e.ErrorCodeInternalError, err)
+	}
+
+	return d, nil
+}
+
 func (s *Store) FindPrevSuccessDeployment(ctx context.Context, d *ent.Deployment) (*ent.Deployment, error) {
 	d, err := s.c.Deployment.
 		Query().
