@@ -21,6 +21,8 @@ const (
 	ErrorCodeDeploymentFrozen ErrorCode = "deployment_frozen"
 	// ErrorCodeDeploymentUnapproved is when the deployment is not approved.
 	ErrorCodeDeploymentNotApproved ErrorCode = "deployment_not_approved"
+	// ErrorCodeDeploymentSerialization is the serialization error.
+	ErrorCodeDeploymentSerialization ErrorCode = "deployment_serialization"
 	// ErrorCodeDeploymentStatusNotWaiting is the status must be 'waiting' to create a remote deployment.
 	ErrorCodeDeploymentStatusInvalid ErrorCode = "deployment_status_invalid"
 

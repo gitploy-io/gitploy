@@ -137,3 +137,22 @@ func (v *ReviewValidator) Validate(d *ent.Deployment) error {
 
 	return e.NewError(e.ErrorCodeDeploymentNotApproved, nil)
 }
+
+// SerializationValidator verify if there is currently a running deployment
+// for the environment.
+type SerializationValidator struct {
+	Store DeploymentStore
+}
+
+func (v *SerializationValidator) Validate(d *ent.Deployment) error {
+	d, err := v.Store.FindPrevRunningDeployment(context.Background(), d)
+	if !e.HasErrorCode(err, e.ErrorCodeEntityNotFound) {
+		return err
+	}
+
+	if d != nil {
+		return e.NewError(e.ErrorCodeDeploymentSerialization, nil)
+	}
+
+	return nil
+}
