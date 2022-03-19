@@ -27,6 +27,7 @@ type (
 		FindDeploymentByID(ctx context.Context, id int) (*ent.Deployment, error)
 		FindDeploymentByUID(ctx context.Context, uid int64) (*ent.Deployment, error)
 		FindDeploymentOfRepoByNumber(ctx context.Context, r *ent.Repo, number int) (*ent.Deployment, error)
+		FindPrevRunningDeployment(ctx context.Context, d *ent.Deployment) (*ent.Deployment, error)
 		FindPrevSuccessDeployment(ctx context.Context, d *ent.Deployment) (*ent.Deployment, error)
 		GetNextDeploymentNumberOfRepo(ctx context.Context, r *ent.Repo) (int, error)
 		CreateDeployment(ctx context.Context, d *ent.Deployment) (*ent.Deployment, error)
@@ -71,21 +72,12 @@ type (
 // But if it requires a review, it saves the payload on the store and waits until reviewed.
 // It returns an error for a undeployable payload.
 func (i *DeploymentInteractor) Deploy(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, env *extent.Env) (*ent.Deployment, error) {
-	i.log.Debug("Validate the request.")
-	v := NewDeploymentValidator([]Validator{
-		&RefValidator{Env: env},
-		&FrozenWindowValidator{Env: env},
-		&LockValidator{Repo: r, Store: i.store},
-	})
-	if err := v.Validate(d); err != nil {
-		return nil, err
-	}
-
 	number, err := i.store.GetNextDeploymentNumberOfRepo(ctx, r)
 	if err != nil {
 		return nil, e.NewError(e.ErrorCodeInternalError, err)
 	}
 
+	i.log.Debug("Get the next number, and build the deployment.")
 	d = &ent.Deployment{
 		Number:                number,
 		Type:                  d.Type,
@@ -96,6 +88,17 @@ func (i *DeploymentInteractor) Deploy(ctx context.Context, u *ent.User, r *ent.R
 		IsRollback:            d.IsRollback,
 		UserID:                u.ID,
 		RepoID:                r.ID,
+	}
+
+	i.log.Debug("Validate the deployment before a request.")
+	v := NewDeploymentValidator([]Validator{
+		&RefValidator{Env: env},
+		&FrozenWindowValidator{Env: env},
+		&LockValidator{Repo: r, Store: i.store},
+		&SerializationValidator{Env: env, Store: i.store},
+	})
+	if err := v.Validate(d); err != nil {
+		return nil, err
 	}
 
 	if env.HasReview() {
@@ -199,12 +202,13 @@ func (i *DeploymentInteractor) requestReviews(ctx context.Context, u *ent.User, 
 // after review has finished.
 // It returns an error for a undeployable payload.
 func (i *DeploymentInteractor) DeployToRemote(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, env *extent.Env) (*ent.Deployment, error) {
-	i.log.Debug("Validate the request.")
+	i.log.Debug("Validate the deployment before a request.")
 	v := NewDeploymentValidator([]Validator{
 		&StatusValidator{Status: deployment.StatusWaiting},
 		&RefValidator{Env: env},
 		&FrozenWindowValidator{Env: env},
 		&LockValidator{Repo: r, Store: i.store},
+		&SerializationValidator{Env: env, Store: i.store},
 		&ReviewValidator{Store: i.store},
 	})
 	if err := v.Validate(d); err != nil {

@@ -10,6 +10,7 @@ import (
 	"github.com/gitploy-io/gitploy/model/ent/deployment"
 	"github.com/gitploy-io/gitploy/model/ent/enttest"
 	"github.com/gitploy-io/gitploy/model/ent/migrate"
+	"github.com/gitploy-io/gitploy/pkg/e"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -336,6 +337,66 @@ func TestStore_GetNextDeploymentNumberOfRepo(t *testing.T) {
 		if number != expected {
 			t.Fatalf("GetNextDeploymentNumberOfRepo = %d, want %d", number, expected)
 			t.FailNow()
+		}
+	})
+}
+
+func TestStore_FindPrevRunningDeployment(t *testing.T) {
+	t.Run("Returns an not_found error if there's no deployment.", func(t *testing.T) {
+		client := enttest.Open(t, "sqlite3", "file:ent?mode=memory&cache=shared&_fk=1",
+			enttest.WithMigrateOptions(migrate.WithForeignKeys(false)),
+		)
+		defer client.Close()
+
+		client.Deployment.Create().
+			SetType(deployment.TypeBranch).
+			SetNumber(1).
+			SetType("branch").
+			SetRef("main").
+			SetEnv("prod").
+			SetStatus(deployment.StatusSuccess).
+			SetCreatedAt(time.Now().Add(-1 * time.Hour)).
+			SetRepoID(1).
+			SetUserID(1).
+			SaveX(context.Background())
+
+		s := NewStore(client)
+
+		_, err := s.FindPrevRunningDeployment(context.Background(), &ent.Deployment{
+			Env:    "prod",
+			RepoID: 1,
+		})
+		if !e.HasErrorCode(err, e.ErrorCodeEntityNotFound) {
+			t.Fatalf("FindPrevRunningDeployment error != NotFoundError: %s", err)
+		}
+	})
+
+	t.Run("Return the latest running deployment.", func(t *testing.T) {
+		client := enttest.Open(t, "sqlite3", "file:ent?mode=memory&cache=shared&_fk=1",
+			enttest.WithMigrateOptions(migrate.WithForeignKeys(false)),
+		)
+		defer client.Close()
+
+		client.Deployment.Create().
+			SetType(deployment.TypeBranch).
+			SetNumber(1).
+			SetType("branch").
+			SetRef("main").
+			SetEnv("prod").
+			SetStatus(deployment.StatusRunning).
+			SetCreatedAt(time.Now().Add(-1 * time.Hour)).
+			SetRepoID(1).
+			SetUserID(1).
+			SaveX(context.Background())
+
+		s := NewStore(client)
+
+		_, err := s.FindPrevRunningDeployment(context.Background(), &ent.Deployment{
+			Env:    "prod",
+			RepoID: 1,
+		})
+		if err != nil {
+			t.Fatalf("FindPrevRunningDeployment returns an error: %s", err)
 		}
 	})
 }

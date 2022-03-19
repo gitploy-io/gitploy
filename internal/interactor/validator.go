@@ -9,6 +9,7 @@ import (
 	"github.com/gitploy-io/gitploy/model/ent/review"
 	"github.com/gitploy-io/gitploy/model/extent"
 	"github.com/gitploy-io/gitploy/pkg/e"
+	"go.uber.org/zap"
 )
 
 // DeploymentValidator validate that it is deployable.
@@ -136,4 +137,34 @@ func (v *ReviewValidator) Validate(d *ent.Deployment) error {
 	}
 
 	return e.NewError(e.ErrorCodeDeploymentNotApproved, nil)
+}
+
+// SerializationValidator verify if there is currently a running deployment
+// for the environment.
+type SerializationValidator struct {
+	Env   *extent.Env
+	Store DeploymentStore
+}
+
+func (v *SerializationValidator) Validate(d *ent.Deployment) error {
+	log := zap.L().Named("serialization-validator")
+	defer log.Sync()
+
+	// Skip if the serialization field is disabled.
+	if v.Env.Serialization == nil || !*v.Env.Serialization {
+		log.Debug("Skip the serialization validator.")
+		return nil
+	}
+
+	d, err := v.Store.FindPrevRunningDeployment(context.Background(), d)
+	if d != nil {
+		return e.NewError(e.ErrorCodeDeploymentSerialization, nil)
+	}
+
+	if e.HasErrorCode(err, e.ErrorCodeEntityNotFound) {
+		log.Debug("There is no running deployment.")
+		return nil
+	}
+
+	return err
 }

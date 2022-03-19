@@ -3,6 +3,7 @@ package e
 import (
 	"errors"
 	"fmt"
+	"strings"
 )
 
 const (
@@ -21,6 +22,8 @@ const (
 	ErrorCodeDeploymentFrozen ErrorCode = "deployment_frozen"
 	// ErrorCodeDeploymentUnapproved is when the deployment is not approved.
 	ErrorCodeDeploymentNotApproved ErrorCode = "deployment_not_approved"
+	// ErrorCodeDeploymentSerialization is the serialization error.
+	ErrorCodeDeploymentSerialization ErrorCode = "deployment_serialization"
 	// ErrorCodeDeploymentStatusNotWaiting is the status must be 'waiting' to create a remote deployment.
 	ErrorCodeDeploymentStatusInvalid ErrorCode = "deployment_status_invalid"
 
@@ -76,7 +79,16 @@ func NewErrorWithMessage(code ErrorCode, message string, wrap error) *Error {
 }
 
 func (e *Error) Error() string {
-	return fmt.Sprintf("code: %s, message: %s, wrap: %s", e.Code, e.Message, e.Wrap)
+	msgs := []string{
+		fmt.Sprintf("Code: %s", e.Code),
+		fmt.Sprintf("Message: %s", e.Message),
+	}
+
+	if e.Wrap != nil {
+		msgs = append(msgs, fmt.Sprintf("Wrap: %s", e.Wrap))
+	}
+
+	return strings.Join(msgs, ", ")
 }
 
 func (e *Error) Unwrap() error {
