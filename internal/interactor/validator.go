@@ -9,6 +9,7 @@ import (
 	"github.com/gitploy-io/gitploy/model/ent/review"
 	"github.com/gitploy-io/gitploy/model/extent"
 	"github.com/gitploy-io/gitploy/pkg/e"
+	"go.uber.org/zap"
 )
 
 // DeploymentValidator validate that it is deployable.
@@ -146,8 +147,12 @@ type SerializationValidator struct {
 }
 
 func (v *SerializationValidator) Validate(d *ent.Deployment) error {
+	log := zap.L().Named("serialization-validator")
+	defer log.Sync()
+
 	// Skip if the serialization field is disabled.
 	if v.Env.Serialization == nil || !*v.Env.Serialization {
+		log.Debug("Skip the serialization validator.")
 		return nil
 	}
 
@@ -157,6 +162,7 @@ func (v *SerializationValidator) Validate(d *ent.Deployment) error {
 	}
 
 	if e.HasErrorCode(err, e.ErrorCodeEntityNotFound) {
+		log.Debug("There is no running deployment.")
 		return nil
 	}
 
