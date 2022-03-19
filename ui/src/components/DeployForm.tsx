@@ -221,6 +221,7 @@ export default function DeployForm(props: DeployFormProps): JSX.Element {
                             options={props.branches.map(branch => mapBranchToOption(branch))}
                             onSelectOption={onSelectBranch}
                             onClickAddItem={props.onClickAddBranch}
+                            showSearch
                             placeholder="Select branch"
                             style={styleWidthForCheck}/>
                 </Form.Item>
@@ -240,6 +241,7 @@ export default function DeployForm(props: DeployFormProps): JSX.Element {
                             options={props.commits.map(commit => mapCommitToOption(commit))}
                             onSelectOption={onSelectCommit}
                             onClickAddItem={props.onClickAddCommit}
+                            showSearch
                             placeholder="Select commit"
                             style={styleWidthForCheck}/>
                 </Form.Item>
@@ -259,6 +261,7 @@ export default function DeployForm(props: DeployFormProps): JSX.Element {
                             options={props.tags.map(tag => mapTagToOption(tag))}
                             onSelectOption={onSelectTag}
                             onClickAddItem={props.onClickAddTag}
+                            showSearch
                             placeholder="Select commit"
                             style={styleWidthForCheck}/>
                 </Form.Item>
