@@ -14,7 +14,7 @@ const (
 
 	// ErrorCodeDeploymentConflict is the deployment number is conflicted.
 	ErrorCodeDeploymentConflict ErrorCode = "deployment_conflict"
-	// ErrorCodeDeploymentInvalid is the payload is invalid when it posts a remote deployment.
+	// ErrorCodeDeploymentInvalid is the payload is invalid.
 	ErrorCodeDeploymentInvalid ErrorCode = "deployment_invalid"
 	// ErrorCodeDeploymentLocked is when the environment is locked.
 	ErrorCodeDeploymentLocked ErrorCode = "deployment_locked"
