@@ -537,6 +537,20 @@ func RefContainsFold(v string) predicate.Deployment {
 	})
 }
 
+// DynamicPayloadIsNil applies the IsNil predicate on the "dynamic_payload" field.
+func DynamicPayloadIsNil() predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldDynamicPayload)))
+	})
+}
+
+// DynamicPayloadNotNil applies the NotNil predicate on the "dynamic_payload" field.
+func DynamicPayloadNotNil() predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldDynamicPayload)))
+	})
+}
+
 // StatusEQ applies the EQ predicate on the "status" field.
 func StatusEQ(v Status) predicate.Deployment {
 	return predicate.Deployment(func(s *sql.Selector) {

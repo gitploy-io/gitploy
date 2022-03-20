@@ -26,6 +26,8 @@ func (Deployment) Fields() []ent.Field {
 			Default("commit"),
 		field.String("env"),
 		field.String("ref"),
+		field.JSON("dynamic_payload", map[string]interface{}{}).
+			Optional(),
 		field.Enum("status").
 			Values(
 				"waiting",

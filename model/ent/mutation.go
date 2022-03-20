@@ -757,6 +757,7 @@ type DeploymentMutation struct {
 	_type                      *deployment.Type
 	env                        *string
 	ref                        *string
+	dynamic_payload            *map[string]interface{}
 	status                     *deployment.Status
 	uid                        *int64
 	adduid                     *int64
@@ -1048,6 +1049,55 @@ func (m *DeploymentMutation) OldRef(ctx context.Context) (v string, err error) {
 // ResetRef resets all changes to the "ref" field.
 func (m *DeploymentMutation) ResetRef() {
 	m.ref = nil
+}
+
+// SetDynamicPayload sets the "dynamic_payload" field.
+func (m *DeploymentMutation) SetDynamicPayload(value map[string]interface{}) {
+	m.dynamic_payload = &value
+}
+
+// DynamicPayload returns the value of the "dynamic_payload" field in the mutation.
+func (m *DeploymentMutation) DynamicPayload() (r map[string]interface{}, exists bool) {
+	v := m.dynamic_payload
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDynamicPayload returns the old "dynamic_payload" field's value of the Deployment entity.
+// If the Deployment object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DeploymentMutation) OldDynamicPayload(ctx context.Context) (v map[string]interface{}, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDynamicPayload is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDynamicPayload requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDynamicPayload: %w", err)
+	}
+	return oldValue.DynamicPayload, nil
+}
+
+// ClearDynamicPayload clears the value of the "dynamic_payload" field.
+func (m *DeploymentMutation) ClearDynamicPayload() {
+	m.dynamic_payload = nil
+	m.clearedFields[deployment.FieldDynamicPayload] = struct{}{}
+}
+
+// DynamicPayloadCleared returns if the "dynamic_payload" field was cleared in this mutation.
+func (m *DeploymentMutation) DynamicPayloadCleared() bool {
+	_, ok := m.clearedFields[deployment.FieldDynamicPayload]
+	return ok
+}
+
+// ResetDynamicPayload resets all changes to the "dynamic_payload" field.
+func (m *DeploymentMutation) ResetDynamicPayload() {
+	m.dynamic_payload = nil
+	delete(m.clearedFields, deployment.FieldDynamicPayload)
 }
 
 // SetStatus sets the "status" field.
@@ -1822,7 +1872,7 @@ func (m *DeploymentMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *DeploymentMutation) Fields() []string {
-	fields := make([]string, 0, 16)
+	fields := make([]string, 0, 17)
 	if m.number != nil {
 		fields = append(fields, deployment.FieldNumber)
 	}
@@ -1834,6 +1884,9 @@ func (m *DeploymentMutation) Fields() []string {
 	}
 	if m.ref != nil {
 		fields = append(fields, deployment.FieldRef)
+	}
+	if m.dynamic_payload != nil {
+		fields = append(fields, deployment.FieldDynamicPayload)
 	}
 	if m.status != nil {
 		fields = append(fields, deployment.FieldStatus)
@@ -1887,6 +1940,8 @@ func (m *DeploymentMutation) Field(name string) (ent.Value, bool) {
 		return m.Env()
 	case deployment.FieldRef:
 		return m.Ref()
+	case deployment.FieldDynamicPayload:
+		return m.DynamicPayload()
 	case deployment.FieldStatus:
 		return m.Status()
 	case deployment.FieldUID:
@@ -1928,6 +1983,8 @@ func (m *DeploymentMutation) OldField(ctx context.Context, name string) (ent.Val
 		return m.OldEnv(ctx)
 	case deployment.FieldRef:
 		return m.OldRef(ctx)
+	case deployment.FieldDynamicPayload:
+		return m.OldDynamicPayload(ctx)
 	case deployment.FieldStatus:
 		return m.OldStatus(ctx)
 	case deployment.FieldUID:
@@ -1988,6 +2045,13 @@ func (m *DeploymentMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetRef(v)
+		return nil
+	case deployment.FieldDynamicPayload:
+		v, ok := value.(map[string]interface{})
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDynamicPayload(v)
 		return nil
 	case deployment.FieldStatus:
 		v, ok := value.(deployment.Status)
@@ -2142,6 +2206,9 @@ func (m *DeploymentMutation) AddField(name string, value ent.Value) error {
 // mutation.
 func (m *DeploymentMutation) ClearedFields() []string {
 	var fields []string
+	if m.FieldCleared(deployment.FieldDynamicPayload) {
+		fields = append(fields, deployment.FieldDynamicPayload)
+	}
 	if m.FieldCleared(deployment.FieldUID) {
 		fields = append(fields, deployment.FieldUID)
 	}
@@ -2171,6 +2238,9 @@ func (m *DeploymentMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *DeploymentMutation) ClearField(name string) error {
 	switch name {
+	case deployment.FieldDynamicPayload:
+		m.ClearDynamicPayload()
+		return nil
 	case deployment.FieldUID:
 		m.ClearUID()
 		return nil
@@ -2205,6 +2275,9 @@ func (m *DeploymentMutation) ResetField(name string) error {
 		return nil
 	case deployment.FieldRef:
 		m.ResetRef()
+		return nil
+	case deployment.FieldDynamicPayload:
+		m.ResetDynamicPayload()
 		return nil
 	case deployment.FieldStatus:
 		m.ResetStatus()

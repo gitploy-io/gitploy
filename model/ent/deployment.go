@@ -3,6 +3,7 @@
 package ent
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 	"time"
@@ -26,6 +27,8 @@ type Deployment struct {
 	Env string `json:"env"`
 	// Ref holds the value of the "ref" field.
 	Ref string `json:"ref"`
+	// DynamicPayload holds the value of the "dynamic_payload" field.
+	DynamicPayload map[string]interface{} `json:"dynamic_payload,omitemtpy"`
 	// Status holds the value of the "status" field.
 	Status deployment.Status `json:"status"`
 	// UID holds the value of the "uid" field.
@@ -132,6 +135,8 @@ func (*Deployment) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
+		case deployment.FieldDynamicPayload:
+			values[i] = new([]byte)
 		case deployment.FieldProductionEnvironment, deployment.FieldIsRollback, deployment.FieldIsApprovalEnabled:
 			values[i] = new(sql.NullBool)
 		case deployment.FieldID, deployment.FieldNumber, deployment.FieldUID, deployment.FieldUserID, deployment.FieldRepoID, deployment.FieldRequiredApprovalCount:
@@ -184,6 +189,14 @@ func (d *Deployment) assignValues(columns []string, values []interface{}) error 
 				return fmt.Errorf("unexpected type %T for field ref", values[i])
 			} else if value.Valid {
 				d.Ref = value.String
+			}
+		case deployment.FieldDynamicPayload:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field dynamic_payload", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &d.DynamicPayload); err != nil {
+					return fmt.Errorf("unmarshal field dynamic_payload: %w", err)
+				}
 			}
 		case deployment.FieldStatus:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -320,6 +333,8 @@ func (d *Deployment) String() string {
 	builder.WriteString(d.Env)
 	builder.WriteString(", ref=")
 	builder.WriteString(d.Ref)
+	builder.WriteString(", dynamic_payload=")
+	builder.WriteString(fmt.Sprintf("%v", d.DynamicPayload))
 	builder.WriteString(", status=")
 	builder.WriteString(fmt.Sprintf("%v", d.Status))
 	builder.WriteString(", uid=")

@@ -13,6 +13,12 @@ import (
 )
 
 func (g *Github) CreateRemoteDeployment(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, env *extent.Env) (*extent.RemoteDeployment, error) {
+	// If there is a dynamic payload, set it as the payload.
+	payload := env.Payload
+	if d.DynamicPayload != nil {
+		payload = d.DynamicPayload
+	}
+
 	gd, res, err := g.Client(ctx, u.Token).
 		Repositories.
 		CreateDeployment(ctx, r.Namespace, r.Name, &github.DeploymentRequest{
@@ -22,7 +28,7 @@ func (g *Github) CreateRemoteDeployment(ctx context.Context, u *ent.User, r *ent
 			Description:           env.Description,
 			AutoMerge:             env.AutoMerge,
 			RequiredContexts:      env.RequiredContexts,
-			Payload:               env.Payload,
+			Payload:               payload,
 			ProductionEnvironment: env.ProductionEnvironment,
 		})
 	if res.StatusCode == http.StatusConflict {

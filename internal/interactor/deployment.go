@@ -83,6 +83,7 @@ func (i *DeploymentInteractor) Deploy(ctx context.Context, u *ent.User, r *ent.R
 		Type:                  d.Type,
 		Env:                   d.Env,
 		Ref:                   d.Ref,
+		DynamicPayload:        d.DynamicPayload,
 		Status:                deployment.DefaultStatus,
 		ProductionEnvironment: env.IsProductionEnvironment(),
 		IsRollback:            d.IsRollback,
@@ -99,6 +100,13 @@ func (i *DeploymentInteractor) Deploy(ctx context.Context, u *ent.User, r *ent.R
 	})
 	if err := v.Validate(d); err != nil {
 		return nil, err
+	}
+
+	if env.IsDynamicPayloadEnabled() {
+		i.log.Debug("Validate the dynamic_payload.")
+		if err = env.ValidateDynamicPayload(d.DynamicPayload); err != nil {
+			return nil, err
+		}
 	}
 
 	if env.HasReview() {
