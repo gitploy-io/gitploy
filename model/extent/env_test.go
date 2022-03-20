@@ -150,3 +150,89 @@ func TestEnv_IsFreezed(t *testing.T) {
 		}
 	})
 }
+
+func TestDynamicPayload_Validate(t *testing.T) {
+	t.Run("Return an error when the required field is not exist.", func(t *testing.T) {
+		c := DynamicPayload{
+			Inputs: map[string]Input{
+				"foo": {
+					Type:     InputTypeString,
+					Required: pointer.ToBool(true),
+				},
+			},
+		}
+
+		err := c.Validate(map[string]interface{}{})
+		if err == nil {
+			t.Fatalf("Validate doesn't return an error.")
+		}
+	})
+
+	t.Run("Skip the optional field if there is no value.", func(t *testing.T) {
+		c := DynamicPayload{
+			Inputs: map[string]Input{
+				"foo": {
+					Type: InputTypeString,
+				},
+			},
+		}
+
+		err := c.Validate(map[string]interface{}{})
+		if err != nil {
+			t.Fatalf("Validate return an error: %s", err)
+		}
+	})
+
+	t.Run("Return an error when the selected value is not in the options.", func(t *testing.T) {
+		c := DynamicPayload{
+			Inputs: map[string]Input{
+				"foo": {
+					Type:     InputTypeSelect,
+					Required: pointer.ToBool(true),
+					Options:  &[]string{"option1", "option2"},
+				},
+			},
+		}
+
+		input := map[string]interface{}{"foo": "value"}
+
+		err := c.Validate(input)
+		if err == nil {
+			t.Fatalf("Validate doesn't return an error.")
+		}
+	})
+
+	t.Run("Return nil if validation has succeed.", func(t *testing.T) {
+		c := DynamicPayload{
+			Inputs: map[string]Input{
+				"foo": {
+					Type:     InputTypeSelect,
+					Required: pointer.ToBool(true),
+					Options:  &[]string{"option1", "option2"},
+				},
+				"bar": {
+					Type:     InputTypeNumber,
+					Required: pointer.ToBool(true),
+				},
+				"baz": {
+					Type: InputTypeNumber,
+				},
+				"qux": {
+					Type: InputTypeBoolean,
+				},
+			},
+		}
+
+		input := map[string]interface{}{
+			"foo": "option1",
+			"bar": 1,
+			"baz": 4.2,
+			"qux": false,
+		}
+
+		err := c.Validate(input)
+		if err != nil {
+			t.Fatalf("Evaluate return an error: %s", err)
+		}
+	})
+}

@@ -126,8 +126,12 @@ func (e *Env) IsFreezed(t time.Time) (bool, error) {
 	return false, nil
 }
 
-func (e *Env) EvaluateDynamicPayload(values map[string]interface{}) (map[string]interface{}, error) {
-	return e.DynamicPayload.Evaluate(values)
+func (e *Env) IsDynamicPayloadEnabled() bool {
+	return (e.DynamicPayload != nil && e.DynamicPayload.Enabled)
+}
+
+func (e *Env) ValidateDynamicPayload(values map[string]interface{}) error {
+	return e.DynamicPayload.Validate(values)
 }
 
 // DynamicPayload can be set to dynamically fill in the payload.
@@ -136,9 +140,9 @@ type DynamicPayload struct {
 	Inputs  map[string]Input `json:"inputs" yaml:"inputs"`
 }
 
-// Evaluate validates the payload. After that,
-// an object containing only the value of the defined field is returned.
-func (dp *DynamicPayload) Evaluate(values map[string]interface{}) (output map[string]interface{}, err error) {
+// Validate validates the payload.
+func (dp *DynamicPayload) Validate(values map[string]interface{}) (err error) {
+
 	for key, input := range dp.Inputs {
 		// If it is a required field, check if the value exists.
 		value, ok := values[key]
@@ -147,60 +151,60 @@ func (dp *DynamicPayload) Evaluate(values map[string]interface{}) (output map[st
 				continue
 			}
 
-			return nil, e.NewErrorWithMessage(e.ErrorCodeDeploymentInvalid, fmt.Sprintf("The '%s' field is required.", key), nil)
+			return e.NewErrorWithMessage(e.ErrorCodeDeploymentInvalid, fmt.Sprintf("The '%s' field is required.", key), nil)
 		}
 
-		eval, err := dp.validate(input, value)
+		err := dp.validate(input, value)
 		if err != nil {
-			return nil, err
+			return err
 		}
 
-		output[key] = eval
 	}
 
-	return output, nil
+	return nil
 }
 
-func (dp *DynamicPayload) validate(input Input, value interface{}) (interface{}, error) {
+func (dp *DynamicPayload) validate(input Input, value interface{}) error {
 	switch input.Type {
 	case InputTypeSelect:
 		// Checks if the selected value matches the option,
 		// and returns the value if it is.
 		sv, ok := value.(string)
 		if !ok {
-			return nil, e.NewErrorWithMessage(e.ErrorCodeDeploymentInvalid, fmt.Sprintf("The '%v' is not string type.", value), nil)
+			return e.NewErrorWithMessage(e.ErrorCodeDeploymentInvalid, fmt.Sprintf("The '%v' is not string type.", value), nil)
 		}
 
 		for _, option := range *input.Options {
 			if sv == option {
-				return sv, nil
+				return nil
 			}
 		}
 
-		return nil, e.NewErrorWithMessage(e.ErrorCodeDeploymentInvalid, "The '%s' is not matched with the options.", nil)
+		return e.NewErrorWithMessage(e.ErrorCodeDeploymentInvalid, "The '%s' is not matched with the options.", nil)
 	case InputTypeNumber:
-		nv, ok := value.(float64)
-		if !ok {
-			return nil, e.NewErrorWithMessage(e.ErrorCodeDeploymentInvalid, fmt.Sprintf("The '%v' is not string type.", value), nil)
+		if _, ok := value.(float64); ok {
+			return nil
 		}
 
-		return nv, nil
+		if _, ok := value.(int); !ok {
+			return e.NewErrorWithMessage(e.ErrorCodeDeploymentInvalid, fmt.Sprintf("The '%v' is not number type.", value), nil)
+		}
+
+		return nil
 	case InputTypeString:
-		sv, ok := value.(string)
-		if !ok {
-			return nil, e.NewErrorWithMessage(e.ErrorCodeDeploymentInvalid, fmt.Sprintf("The '%v' is not string type.", value), nil)
+		if _, ok := value.(string); !ok {
+			return e.NewErrorWithMessage(e.ErrorCodeDeploymentInvalid, fmt.Sprintf("The '%v' is not string type.", value), nil)
 		}
 
-		return sv, nil
+		return nil
 	case InputTypeBoolean:
-		bv, ok := value.(bool)
-		if !ok {
-			return nil, e.NewErrorWithMessage(e.ErrorCodeDeploymentInvalid, fmt.Sprintf("The '%v' is not string type.", value), nil)
+		if _, ok := value.(bool); !ok {
+			return e.NewErrorWithMessage(e.ErrorCodeDeploymentInvalid, fmt.Sprintf("The '%v' is not string type.", value), nil)
 		}
 
-		return bv, nil
+		return nil
 	default:
-		return nil, e.NewErrorWithMessage(e.ErrorCodeDeploymentInvalid, "The type must be 'select', 'number', 'string', or 'boolean'.", nil)
+		return e.NewErrorWithMessage(e.ErrorCodeDeploymentInvalid, "The type must be 'select', 'number', 'string', or 'boolean'.", nil)
 	}
 }
 
