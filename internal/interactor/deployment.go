@@ -71,23 +71,28 @@ type (
 // Deploy posts a new deployment to SCM with the payload.
 // But if it requires a review, it saves the payload on the store and waits until reviewed.
 // It returns an error for a undeployable payload.
-func (i *DeploymentInteractor) Deploy(ctx context.Context, u *ent.User, r *ent.Repo, d *ent.Deployment, env *extent.Env) (*ent.Deployment, error) {
+func (i *DeploymentInteractor) Deploy(ctx context.Context, u *ent.User, r *ent.Repo, t *ent.Deployment, env *extent.Env) (*ent.Deployment, error) {
 	number, err := i.store.GetNextDeploymentNumberOfRepo(ctx, r)
 	if err != nil {
 		return nil, e.NewError(e.ErrorCodeInternalError, err)
 	}
 
 	i.log.Debug("Get the next number, and build the deployment.")
-	d = &ent.Deployment{
+	d := &ent.Deployment{
 		Number:                number,
-		Type:                  d.Type,
-		Env:                   d.Env,
-		Ref:                   d.Ref,
+		Type:                  t.Type,
+		Env:                   t.Env,
+		Ref:                   t.Ref,
 		Status:                deployment.DefaultStatus,
 		ProductionEnvironment: env.IsProductionEnvironment(),
-		IsRollback:            d.IsRollback,
+		IsRollback:            t.IsRollback,
 		UserID:                u.ID,
 		RepoID:                r.ID,
+	}
+
+	if env.IsDynamicPayloadEnabled() {
+		i.log.Debug("Set the dynamic payload.")
+		d.DynamicPayload = t.DynamicPayload
 	}
 
 	i.log.Debug("Validate the deployment before a request.")
@@ -96,6 +101,7 @@ func (i *DeploymentInteractor) Deploy(ctx context.Context, u *ent.User, r *ent.R
 		&FrozenWindowValidator{Env: env},
 		&LockValidator{Repo: r, Store: i.store},
 		&SerializationValidator{Env: env, Store: i.store},
+		&DynamicPayloadValidator{Env: env},
 	})
 	if err := v.Validate(d); err != nil {
 		return nil, err

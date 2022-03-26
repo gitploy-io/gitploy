@@ -265,6 +265,7 @@ func (s *Store) CreateDeployment(ctx context.Context, d *ent.Deployment) (*ent.D
 		SetType(d.Type).
 		SetRef(d.Ref).
 		SetEnv(d.Env).
+		SetDynamicPayload(d.DynamicPayload).
 		SetUID(d.UID).
 		SetSha(d.Sha).
 		SetHTMLURL(d.HTMLURL).
@@ -277,10 +278,7 @@ func (s *Store) CreateDeployment(ctx context.Context, d *ent.Deployment) (*ent.D
 	if ent.IsConstraintError(err) {
 		return nil, e.NewError(e.ErrorCodeDeploymentConflict, err)
 	} else if ent.IsValidationError(err) {
-		return nil, e.NewErrorWithMessage(
-			e.ErrorCodeEntityUnprocessable,
-			fmt.Sprintf("Failed to create a deployment. The value of \"%s\" field is invalid.", err.(*ent.ValidationError).Name),
-			err)
+		return nil, e.NewErrorWithMessage(e.ErrorCodeEntityUnprocessable, fmt.Sprintf("Failed to create a deployment. The value of \"%s\" field is invalid.", err.(*ent.ValidationError).Name), err)
 	} else if err != nil {
 		return nil, e.NewError(e.ErrorCodeInternalError, err)
 	}

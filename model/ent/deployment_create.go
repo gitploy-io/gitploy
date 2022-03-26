@@ -57,6 +57,12 @@ func (dc *DeploymentCreate) SetRef(s string) *DeploymentCreate {
 	return dc
 }
 
+// SetDynamicPayload sets the "dynamic_payload" field.
+func (dc *DeploymentCreate) SetDynamicPayload(m map[string]interface{}) *DeploymentCreate {
+	dc.mutation.SetDynamicPayload(m)
+	return dc
+}
+
 // SetStatus sets the "status" field.
 func (dc *DeploymentCreate) SetStatus(d deployment.Status) *DeploymentCreate {
 	dc.mutation.SetStatus(d)
@@ -475,6 +481,14 @@ func (dc *DeploymentCreate) createSpec() (*Deployment, *sqlgraph.CreateSpec) {
 			Column: deployment.FieldRef,
 		})
 		_node.Ref = value
+	}
+	if value, ok := dc.mutation.DynamicPayload(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: deployment.FieldDynamicPayload,
+		})
+		_node.DynamicPayload = value
 	}
 	if value, ok := dc.mutation.Status(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

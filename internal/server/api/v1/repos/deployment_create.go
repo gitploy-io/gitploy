@@ -16,9 +16,10 @@ import (
 
 type (
 	DeploymentPostPayload struct {
-		Type string `json:"type"`
-		Ref  string `json:"ref"`
-		Env  string `json:"env"`
+		Type           string                 `json:"type"`
+		Ref            string                 `json:"ref"`
+		Env            string                 `json:"env"`
+		DynamicPayload map[string]interface{} `json:"dynamic_payload"`
 	}
 )
 
@@ -56,9 +57,10 @@ func (s *DeploymentAPI) Create(c *gin.Context) {
 
 	d, err := s.i.Deploy(ctx, u, re,
 		&ent.Deployment{
-			Type: deployment.Type(p.Type),
-			Env:  p.Env,
-			Ref:  p.Ref,
+			Type:           deployment.Type(p.Type),
+			Env:            p.Env,
+			Ref:            p.Ref,
+			DynamicPayload: p.DynamicPayload,
 		},
 		env)
 	if err != nil {

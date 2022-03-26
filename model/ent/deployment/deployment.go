@@ -20,6 +20,8 @@ const (
 	FieldEnv = "env"
 	// FieldRef holds the string denoting the ref field in the database.
 	FieldRef = "ref"
+	// FieldDynamicPayload holds the string denoting the dynamic_payload field in the database.
+	FieldDynamicPayload = "dynamic_payload"
 	// FieldStatus holds the string denoting the status field in the database.
 	FieldStatus = "status"
 	// FieldUID holds the string denoting the uid field in the database.
@@ -100,6 +102,7 @@ var Columns = []string{
 	FieldType,
 	FieldEnv,
 	FieldRef,
+	FieldDynamicPayload,
 	FieldStatus,
 	FieldUID,
 	FieldSha,

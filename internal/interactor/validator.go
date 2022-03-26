@@ -168,3 +168,17 @@ func (v *SerializationValidator) Validate(d *ent.Deployment) error {
 
 	return err
 }
+
+// DynamicPayloadValidator validate the payload with
+// the specifications defined in the configuration file.
+type DynamicPayloadValidator struct {
+	Env *extent.Env
+}
+
+func (v *DynamicPayloadValidator) Validate(d *ent.Deployment) error {
+	if !v.Env.IsDynamicPayloadEnabled() {
+		return nil
+	}
+
+	return v.Env.ValidateDynamicPayload(d.DynamicPayload)
+}

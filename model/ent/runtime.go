@@ -37,23 +37,23 @@ func init() {
 	deploymentFields := schema.Deployment{}.Fields()
 	_ = deploymentFields
 	// deploymentDescHTMLURL is the schema descriptor for html_url field.
-	deploymentDescHTMLURL := deploymentFields[7].Descriptor()
+	deploymentDescHTMLURL := deploymentFields[8].Descriptor()
 	// deployment.HTMLURLValidator is a validator for the "html_url" field. It is called by the builders before save.
 	deployment.HTMLURLValidator = deploymentDescHTMLURL.Validators[0].(func(string) error)
 	// deploymentDescProductionEnvironment is the schema descriptor for production_environment field.
-	deploymentDescProductionEnvironment := deploymentFields[8].Descriptor()
+	deploymentDescProductionEnvironment := deploymentFields[9].Descriptor()
 	// deployment.DefaultProductionEnvironment holds the default value on creation for the production_environment field.
 	deployment.DefaultProductionEnvironment = deploymentDescProductionEnvironment.Default.(bool)
 	// deploymentDescIsRollback is the schema descriptor for is_rollback field.
-	deploymentDescIsRollback := deploymentFields[9].Descriptor()
+	deploymentDescIsRollback := deploymentFields[10].Descriptor()
 	// deployment.DefaultIsRollback holds the default value on creation for the is_rollback field.
 	deployment.DefaultIsRollback = deploymentDescIsRollback.Default.(bool)
 	// deploymentDescCreatedAt is the schema descriptor for created_at field.
-	deploymentDescCreatedAt := deploymentFields[10].Descriptor()
+	deploymentDescCreatedAt := deploymentFields[11].Descriptor()
 	// deployment.DefaultCreatedAt holds the default value on creation for the created_at field.
 	deployment.DefaultCreatedAt = deploymentDescCreatedAt.Default.(func() time.Time)
 	// deploymentDescUpdatedAt is the schema descriptor for updated_at field.
-	deploymentDescUpdatedAt := deploymentFields[11].Descriptor()
+	deploymentDescUpdatedAt := deploymentFields[12].Descriptor()
 	// deployment.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	deployment.DefaultUpdatedAt = deploymentDescUpdatedAt.Default.(func() time.Time)
 	// deployment.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.

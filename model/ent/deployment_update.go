@@ -72,6 +72,18 @@ func (du *DeploymentUpdate) SetRef(s string) *DeploymentUpdate {
 	return du
 }
 
+// SetDynamicPayload sets the "dynamic_payload" field.
+func (du *DeploymentUpdate) SetDynamicPayload(m map[string]interface{}) *DeploymentUpdate {
+	du.mutation.SetDynamicPayload(m)
+	return du
+}
+
+// ClearDynamicPayload clears the value of the "dynamic_payload" field.
+func (du *DeploymentUpdate) ClearDynamicPayload() *DeploymentUpdate {
+	du.mutation.ClearDynamicPayload()
+	return du
+}
+
 // SetStatus sets the "status" field.
 func (du *DeploymentUpdate) SetStatus(d deployment.Status) *DeploymentUpdate {
 	du.mutation.SetStatus(d)
@@ -543,6 +555,19 @@ func (du *DeploymentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: deployment.FieldRef,
 		})
 	}
+	if value, ok := du.mutation.DynamicPayload(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: deployment.FieldDynamicPayload,
+		})
+	}
+	if du.mutation.DynamicPayloadCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Column: deployment.FieldDynamicPayload,
+		})
+	}
 	if value, ok := du.mutation.Status(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeEnum,
@@ -944,6 +969,18 @@ func (duo *DeploymentUpdateOne) SetEnv(s string) *DeploymentUpdateOne {
 // SetRef sets the "ref" field.
 func (duo *DeploymentUpdateOne) SetRef(s string) *DeploymentUpdateOne {
 	duo.mutation.SetRef(s)
+	return duo
+}
+
+// SetDynamicPayload sets the "dynamic_payload" field.
+func (duo *DeploymentUpdateOne) SetDynamicPayload(m map[string]interface{}) *DeploymentUpdateOne {
+	duo.mutation.SetDynamicPayload(m)
+	return duo
+}
+
+// ClearDynamicPayload clears the value of the "dynamic_payload" field.
+func (duo *DeploymentUpdateOne) ClearDynamicPayload() *DeploymentUpdateOne {
+	duo.mutation.ClearDynamicPayload()
 	return duo
 }
 
@@ -1440,6 +1477,19 @@ func (duo *DeploymentUpdateOne) sqlSave(ctx context.Context) (_node *Deployment,
 			Type:   field.TypeString,
 			Value:  value,
 			Column: deployment.FieldRef,
+		})
+	}
+	if value, ok := duo.mutation.DynamicPayload(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: deployment.FieldDynamicPayload,
+		})
+	}
+	if duo.mutation.DynamicPayloadCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Column: deployment.FieldDynamicPayload,
 		})
 	}
 	if value, ok := duo.mutation.Status(); ok {

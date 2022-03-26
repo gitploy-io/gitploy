@@ -523,6 +523,8 @@ paths:
                   type: string
                 env:
                   type: string
+                dynamic_payload:
+                  type: object
               required:
                 - type
                 - ref
