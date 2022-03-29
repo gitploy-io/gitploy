@@ -1869,8 +1869,9 @@ components:
         enabled:
           type: boolean
         inputs:
-          type: array
-          items:
+          # Dictionaries
+          type: object
+          additionalProperties:
             type: object
             properties:
               type:

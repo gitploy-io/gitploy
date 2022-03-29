@@ -2,7 +2,7 @@ import { StatusCodes } from 'http-status-codes'
 
 import { instance, headers } from './setting'
 import { _fetch } from "./_base"
-import { Config, Env, HttpNotFoundError } from '../models'
+import { Config, Env, DynamicPayloadInputTypeEnum, HttpNotFoundError } from '../models'
 
 interface ConfigData {
     envs: EnvData[]
@@ -11,6 +11,10 @@ interface ConfigData {
 interface EnvData {
     name: string
     required_contexts?: string[]
+    dynamic_payload?: {
+        enabled: boolean,
+        inputs: Map<string, any>,
+    }
     review?: {
         enabled: boolean
         reviewers: string[]
@@ -19,11 +23,15 @@ interface EnvData {
 
 const mapDataToConfig = (data: ConfigData): Config => {
     const envs: Env[] = data.envs.map((e: EnvData) => {
-        const { review } = e
+        const { dynamic_payload, review } = e
 
         return {
             name: e.name,
             requiredContexts: e.required_contexts,
+            dynamicPayload: (dynamic_payload)? {
+                enabled: dynamic_payload?.enabled,
+                inputs: dynamic_payload?.inputs,
+            } : undefined,
             review,
         }
     })
