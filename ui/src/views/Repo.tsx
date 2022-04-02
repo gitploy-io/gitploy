@@ -13,7 +13,7 @@ import RepoHome from './RepoHome'
 import RepoLock from "./RepoLock";
 import RepoDeploy from './RepoDeploy'
 import RepoRollabck from './RepoRollback'
-import RepoSettings from "./RepoSettings"
+import RepoSettings from "./repoSettings"
 
 interface Params {
     namespace: string
