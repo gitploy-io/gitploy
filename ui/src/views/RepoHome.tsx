@@ -46,8 +46,6 @@ export default function RepoHome(): JSX.Element {
         // eslint-disable-next-line
     }, [dispatch])
 
-    const isLast = deployments.length < perPage
-
     const onChangeEnv = (env: string) => {
         dispatch(slice.actions.setEnv(env))
         dispatch(fetchDeployments())
@@ -85,7 +83,12 @@ export default function RepoHome(): JSX.Element {
                 }
             </div>
             <div style={{marginTop: "20px", textAlign: "center"}}>
-                <Pagination page={page} isLast={isLast} onClickPrev={onClickPrev} onClickNext={onClickNext} ></Pagination>
+                <Pagination 
+                    disabledPrev={page <= 1} 
+                    disabledNext={deployments.length < perPage} 
+                    onClickPrev={onClickPrev} 
+                    onClickNext={onClickNext} 
+                />
             </div>
         </div>
     )

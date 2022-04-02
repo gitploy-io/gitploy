@@ -57,8 +57,6 @@ export default function Home(): JSX.Element {
         f()
     }
 
-    const isLast = repos.length < perPage
-
     if (loading) {
         return (
             <Main>
@@ -95,7 +93,12 @@ export default function Home(): JSX.Element {
                 <RepoList repos={repos}></RepoList>
             </div>
             <div style={{marginTop: "20px", textAlign: "center"}}>
-                <Pagination page={page} isLast={isLast} onClickPrev={onClickPrev} onClickNext={onClickNext} ></Pagination>
+                <Pagination 
+                    disabledPrev={page <= 1} 
+                    disabledNext={repos.length < perPage} 
+                    onClickPrev={onClickPrev} 
+                    onClickNext={onClickNext} 
+                />
             </div>
         </Main>
     )
