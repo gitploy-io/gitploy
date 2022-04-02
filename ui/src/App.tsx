@@ -8,7 +8,7 @@ import {
 import Home from "./views/home"
 import Repo from "./views/Repo"
 import Deployment from "./views/Deployment"
-import Settings from "./views/Settings"
+import Settings from "./views/settings"
 import Members from "./views/members"
 
 function App(): JSX.Element {
