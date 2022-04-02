@@ -182,7 +182,8 @@ export default function DeployForm(props: DeployFormProps): JSX.Element {
     return (
         <Form
             onFinish={onClickFinish}
-            name="deploy">
+            name="deploy"
+        >
             <Form.Item
                 {...selectLayout}
                 rules={[{required: true}]}

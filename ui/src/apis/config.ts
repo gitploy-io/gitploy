@@ -2,7 +2,7 @@ import { StatusCodes } from 'http-status-codes'
 
 import { instance, headers } from './setting'
 import { _fetch } from "./_base"
-import { Config, Env, DynamicPayloadInputTypeEnum, HttpNotFoundError } from '../models'
+import { Config, Env, HttpNotFoundError } from '../models'
 
 interface ConfigData {
     envs: EnvData[]
@@ -13,7 +13,7 @@ interface EnvData {
     required_contexts?: string[]
     dynamic_payload?: {
         enabled: boolean,
-        inputs: Map<string, any>,
+        inputs: any,
     }
     review?: {
         enabled: boolean

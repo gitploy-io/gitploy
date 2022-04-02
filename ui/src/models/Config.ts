@@ -14,15 +14,17 @@ export interface Env {
 
 export interface DynamicPayload {
     enabled: boolean
-    inputs: Map<string, DynamicPayloadInput>
+    inputs: {
+        [key: string]: DynamicPayloadInput
+    }
 }
 
 export interface DynamicPayloadInput {
     type: DynamicPayloadInputTypeEnum
-    required: boolean
-    default: any
-    description: string
-    options: string[]
+    required?: boolean
+    default?: any
+    description?: string
+    options?: string[]
 }
 
 export enum DynamicPayloadInputTypeEnum {
