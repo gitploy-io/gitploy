@@ -3,13 +3,13 @@ import { useParams } from "react-router-dom";
 import { shallowEqual } from "react-redux";
 import { PageHeader, Select } from 'antd'
 
-import { useAppSelector, useAppDispatch } from '../redux/hooks'
-import { repoHomeSlice as slice, fetchEnvs, fetchDeployments, perPage } from '../redux/repoHome'
-import { subscribeEvents } from "../apis"
+import { useAppSelector, useAppDispatch } from '../../redux/hooks'
+import { repoHomeSlice as slice, fetchEnvs, fetchDeployments, perPage } from '../../redux/repoHome'
+import { subscribeEvents } from "../../apis"
 
-import ActivityLogs from '../components/ActivityLogs'
-import Spin from '../components/Spin'
-import Pagination from '../components/Pagination'
+import ActivityLogs from './ActivityLogs'
+import Spin from '../../components/Spin'
+import Pagination from '../../components/Pagination'
 
 const { Option } = Select
 
@@ -78,8 +78,9 @@ export default function RepoHome(): JSX.Element {
             </div>
             <div style={{marginTop: "30px", padding: "16px 24px"}}>
                 {(loading)? 
-                    <div style={{textAlign: "center"}}><Spin /></div> :
-                    <ActivityLogs deployments={deployments}/>
+                    <div style={{textAlign: "center"}}><Spin /></div> 
+                    :
+                    <ActivityLogs />
                 }
             </div>
             <div style={{marginTop: "20px", textAlign: "center"}}>
