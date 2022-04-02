@@ -51,8 +51,8 @@ export default function Members(): JSX.Element {
             </div>
             <div style={{marginTop: "40px", textAlign: "center"}}>
                 <Pagination 
-                    page={page}
-                    isLast={users.length !== perPage}
+                    disabledPrev={page <= 1}
+                    disabledNext={users.length < perPage}
                     onClickPrev={onClickPrev}
                     onClickNext={onClickNext}
                 />    
