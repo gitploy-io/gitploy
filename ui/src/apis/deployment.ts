@@ -191,11 +191,13 @@ export const getDeployment = async (namespace: string, name: string, number: num
     return deployment
 }
 
-export const createDeployment = async (namespace: string, name: string, type: DeploymentType = DeploymentType.Commit, ref: string, env: string): Promise<Deployment> => {
+// eslint-disable-next-line
+export const createDeployment = async (namespace: string, name: string, type: DeploymentType = DeploymentType.Commit, ref: string, env: string, payload?: any): Promise<Deployment> => {
     const body = JSON.stringify({
         type,
         ref,
-        env
+        env,
+        dynamic_payload: payload
     })
     const response = await _fetch(`${instance}/api/v1/repos/${namespace}/${name}/deployments`, {
         headers,

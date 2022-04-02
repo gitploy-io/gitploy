@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { shallowEqual } from "react-redux";
 import { useParams } from "react-router-dom";
 import { PageHeader, Result, Button } from "antd";
@@ -20,9 +20,11 @@ import {
     addTagManually, 
     searchCandidates,
     fetchUser,
-    deploy} from "../redux/repoDeploy"
+    deploy
+} from "../redux/repoDeploy"
 
 import DeployForm, {Option} from "../components/DeployForm"
+import DynamicPayloadModal from "../components/DynamicPayloadModal";
 
 const { actions } = repoDeploySlice
 
@@ -37,6 +39,7 @@ export default function RepoDeploy(): JSX.Element {
         display,
         config, 
         envs, 
+        env,
         currentDeployment,
         branches, 
         branchStatuses,
@@ -46,6 +49,8 @@ export default function RepoDeploy(): JSX.Element {
         tagStatuses,
         deploying } = useAppSelector(state => state.repoDeploy, shallowEqual)
     const dispatch = useAppDispatch()
+
+    const [payloadModalVisible, setPayloadModalVisible] = useState(false);
 
     useEffect(() => {
         const f = async () => {
@@ -99,10 +104,20 @@ export default function RepoDeploy(): JSX.Element {
     }
 
     const onClickDeploy = () => {
-        const f = async () => {
-            await dispatch(deploy())
+        if (env?.dynamicPayload?.enabled) {
+            setPayloadModalVisible(true)
+        } else {
+            dispatch(deploy(null))
         }
-        f()
+    }
+
+    const onClickDeployWithPayload = (values: any) => {
+        dispatch(deploy(values))
+        setPayloadModalVisible(false)
+    }
+
+    const onClickCancel = () => {
+        setPayloadModalVisible(false)
     }
 
     if (!display) {
@@ -154,6 +169,16 @@ export default function RepoDeploy(): JSX.Element {
                     deploying={deploying === RequestStatus.Pending}
                     onClickDeploy={onClickDeploy} 
                 />
+                {(env)? 
+                    <DynamicPayloadModal
+                        visible={payloadModalVisible}
+                        env={env}
+                        onClickOk={onClickDeployWithPayload}
+                        onClickCancel={onClickCancel}
+                    />
+                    :
+                    <></>
+                }
             </div>
         </div>
     )

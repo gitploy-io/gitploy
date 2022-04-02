@@ -256,9 +256,9 @@ export const fetchUser = createAsyncThunk<User, void, { state: {repoDeploy: Repo
     }
 )
 
-export const deploy = createAsyncThunk<void, void, { state: {repoDeploy: RepoDeployState}}> (
+export const deploy = createAsyncThunk<void, any, { state: {repoDeploy: RepoDeployState}}> (
     "repoDeploy/deploy",
-    async (_ , { getState, rejectWithValue, requestId }) => {
+    async (payload, { getState, rejectWithValue, requestId }) => {
         const { namespace, name, env, type, branch, commit, tag, deploying, deployId } = getState().repoDeploy
         if (!env) {
             throw new Error("The env is undefined.")
@@ -271,11 +271,11 @@ export const deploy = createAsyncThunk<void, void, { state: {repoDeploy: RepoDep
         try {
             let deployment: Deployment
             if (type === DeploymentType.Commit && commit) {
-                deployment = await createDeployment(namespace, name, type, commit.sha, env.name)
+                deployment = await createDeployment(namespace, name, type, commit.sha, env.name, payload)
             } else if (type === DeploymentType.Branch && branch) {
-                deployment = await createDeployment(namespace, name, type, branch.name, env.name)
+                deployment = await createDeployment(namespace, name, type, branch.name, env.name, payload)
             } else if (type === DeploymentType.Tag && tag) {
-                deployment = await createDeployment(namespace, name, type, tag.name, env.name)
+                deployment = await createDeployment(namespace, name, type, tag.name, env.name, payload)
             } else {
                 throw new Error("The type should be one of them: commit, branch, and tag.")
             }
