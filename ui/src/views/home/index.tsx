@@ -17,7 +17,7 @@ const { Search } = Input
 const { actions } = homeSlice
 
 export default function Home(): JSX.Element {
-    const { loading, repos, page, syncing } = useAppSelector(state => state.home, shallowEqual)
+    const { repos, page, syncing } = useAppSelector(state => state.home, shallowEqual)
     const dispatch = useAppDispatch()
 
     useEffect(() => {
