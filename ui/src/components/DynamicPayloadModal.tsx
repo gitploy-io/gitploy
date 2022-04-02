@@ -41,10 +41,7 @@ export default function DynamicPayloadModal(props: DynamicPayloadModalProps): JS
     if (props.env.dynamicPayload) {
         Object.entries(props.env.dynamicPayload.inputs).forEach((entry) => {
             const [name, input] = entry
-
-            if (input.default !== undefined) {
-                initialValues[name] = input.default
-            }
+            initialValues[name] = input.default
         })
     }
 
