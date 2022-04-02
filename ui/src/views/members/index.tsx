@@ -3,18 +3,16 @@ import { shallowEqual } from "react-redux"
 import { Input } from "antd"
 import { Helmet } from "react-helmet"
 
-import { useAppSelector, useAppDispatch } from "../redux/hooks"
-import { membersSlice as slice, fetchUsers, updateUser, deleteUser, perPage } from "../redux/members"
+import { useAppSelector, useAppDispatch } from "../../redux/hooks"
+import { membersSlice as slice, fetchUsers, perPage } from "../../redux/members"
 
-import { User } from "../models"
-
-import Main from './Main'
-import MemberList from "../components/MemberList"
-import Pagination from "../components/Pagination"
+import Main from '../Main'
+import MemberList from "./MemberList"
+import Pagination from "../../components/Pagination"
 
 const { Search } = Input
 
-export default function Member(): JSX.Element {
+export default function Members(): JSX.Element {
     const { users, page } = useAppSelector(state => state.members, shallowEqual)
     const dispatch = useAppDispatch()
 
@@ -25,14 +23,6 @@ export default function Member(): JSX.Element {
     const onSearch = (value: string) => {
         dispatch(slice.actions.setQuery(value))
         dispatch(fetchUsers())
-    }
-
-    const onChangeSwitch = (user: User, checked: boolean) => {
-        dispatch(updateUser({user, admin: checked}))
-    }
-
-    const onClickDelete = (user: User) => {
-        dispatch(deleteUser(user))
     }
 
     const onClickPrev = () => {
@@ -57,11 +47,7 @@ export default function Member(): JSX.Element {
                 <Search placeholder="Search user ..." onSearch={onSearch} enterButton />
             </div>
             <div style={{marginTop: "40px"}}>
-                <MemberList
-                    users={users}
-                    onChangeSwitch={onChangeSwitch}
-                    onClickDelete={onClickDelete}
-                />
+                <MemberList/>
             </div>
             <div style={{marginTop: "40px", textAlign: "center"}}>
                 <Pagination 

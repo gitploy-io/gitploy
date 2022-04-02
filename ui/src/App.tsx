@@ -9,7 +9,7 @@ import Home from "./views/Home"
 import Repo from "./views/Repo"
 import Deployment from "./views/Deployment"
 import Settings from "./views/Settings"
-import Members from "./views/Members"
+import Members from "./views/members"
 
 function App(): JSX.Element {
     return (
