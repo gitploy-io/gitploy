@@ -6,7 +6,7 @@ import { Button, Tag, Descriptions, Input } from "antd"
 import { useAppSelector, useAppDispatch } from "../redux/hooks"
 import { fetchMe, checkSlack } from "../redux/settings"
 
-import Main from "./Main"
+import Main from "./main"
 
 export default function Settings(): JSX.Element {
     const { user, isSlackEnabled } = useAppSelector(state => state.settings, shallowEqual)

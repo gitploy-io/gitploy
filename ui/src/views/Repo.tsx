@@ -8,7 +8,7 @@ import { useAppSelector, useAppDispatch } from '../redux/hooks'
 import { init, activate, repoSlice as slice } from '../redux/repo'
 
 import ActivateButton from "../components/ActivateButton"
-import Main from './Main'
+import Main from './main'
 import RepoHome from './RepoHome'
 import RepoLock from "./RepoLock";
 import RepoDeploy from './RepoDeploy'

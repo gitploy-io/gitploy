@@ -8,7 +8,7 @@ import { homeSlice, listRepos, perPage, sync, homeSlice as slice } from '../redu
 import { RequestStatus } from '../models'
 import { subscribeEvents } from "../apis"
 
-import Main from './Main'
+import Main from './main'
 import SyncButton from "../components/SyncButton"
 import RepoList from '../components/RepoList'
 import Pagination from '../components/Pagination'
