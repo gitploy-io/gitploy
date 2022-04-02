@@ -16,9 +16,9 @@ import {
     mainSlice as slice 
 } from "../../redux/main"
 
-import LicenseFooter from "../../components/LicenseFooter"
 import MainHeader from "./Header"
 import MainContent from "./Content"
+import LicenseWarning from "./LicenseWarningFooter"
 
 const { Header, Content, Footer } = Layout
 
@@ -27,7 +27,6 @@ export default function Main(props: React.PropsWithChildren<{}>) {
     const { 
         deployments,
         reviews,
-        license,
     } = useAppSelector(state => state.main, shallowEqual)
     const dispatch = useAppDispatch()
 
@@ -67,8 +66,12 @@ export default function Main(props: React.PropsWithChildren<{}>) {
                 </MainContent>
             </Content>
             <Footer style={{ textAlign: "center" }}>
-                <LicenseFooter license={license} />
-                Gitploy ©{moment().format("YYYY")} Created by Gitploy.IO 
+                <div>
+                    <LicenseWarning />
+                </div>
+                <div>
+                    Gitploy ©{moment().format("YYYY")} Created by Gitploy.IO 
+                </div>
             </Footer>
         </Layout>
     )
