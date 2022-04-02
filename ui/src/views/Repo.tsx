@@ -9,7 +9,7 @@ import { init, activate, repoSlice as slice } from '../redux/repo'
 
 import ActivateButton from "../components/ActivateButton"
 import Main from './main'
-import RepoHome from './RepoHome'
+import RepoHome from './repoHome'
 import RepoLock from "./RepoLock";
 import RepoDeploy from './RepoDeploy'
 import RepoRollabck from './RepoRollback'
