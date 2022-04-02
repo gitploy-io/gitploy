@@ -6,7 +6,7 @@ import { Helmet } from "react-helmet"
 import { useAppSelector, useAppDispatch } from "../../redux/hooks"
 import { membersSlice as slice, fetchUsers, perPage } from "../../redux/members"
 
-import Main from '../Main'
+import Main from '../main'
 import MemberList from "./MemberList"
 import Pagination from "../../components/Pagination"
 

@@ -24,7 +24,7 @@ import {
 } from "../models"
 import { subscribeEvents } from "../apis"
 
-import Main from "./Main"
+import Main from "./main"
 import ReviewModal from "../components/ReviewModal"
 import Spin from "../components/Spin"
 import DeploymentDescriptor from "../components/DeploymentDescriptor"
