@@ -5,7 +5,7 @@ import {
     Route,
 } from "react-router-dom";
 
-import Home from "./views/Home"
+import Home from "./views/home"
 import Repo from "./views/Repo"
 import Deployment from "./views/Deployment"
 import Settings from "./views/Settings"
