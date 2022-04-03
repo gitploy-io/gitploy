@@ -1,22 +1,25 @@
+import { useState } from "react"
 import { Button, Descriptions, Modal, Typography } from "antd"
 import moment from "moment"
 
-import DeploymentStatusBadge from "../DeploymentStatusBadge"
-import UserAvatar from "../UserAvatar"
 import CommitChanges from "./CommitChanges"
+import DeploymentStatusBadge from "../../components/DeploymentStatusBadge"
+import UserAvatar from "../../components/UserAvatar"
 
 import { Commit, Deployment } from "../../models"
 import { getShortRef } from "../../libs"
-import { useState } from "react"
 
 const { Text } = Typography
 
-interface DeploymentDescriptorProps {
+export interface DeploymentDescriptorProps {
     deployment: Deployment
-    commits: Commit[]
+    changes: Commit[]
 }
 
-export default function DeploymentDescriptor(props: DeploymentDescriptorProps): JSX.Element {
+export default function DeploymentDescriptor({
+    deployment, 
+    changes
+}: DeploymentDescriptorProps): JSX.Element {
     const [visible, setVisible] = useState<boolean>(false)
 
     const showModal = () => {
@@ -29,18 +32,20 @@ export default function DeploymentDescriptor(props: DeploymentDescriptorProps): 
 
     return (
         <Descriptions title="Information" bordered column={1}>
-            <Descriptions.Item label="Environment">{props.deployment.env}</Descriptions.Item>
+            <Descriptions.Item label="Environment">
+                {deployment.env}
+            </Descriptions.Item>
             <Descriptions.Item label="Ref">
-                <Text className="gitploy-code" code>{getShortRef(props.deployment)}</Text>
+                <Text className="gitploy-code" code>{getShortRef(deployment)}</Text>
             </Descriptions.Item>
             <Descriptions.Item label="Status">
-                <DeploymentStatusBadge deployment={props.deployment}/>
+                <DeploymentStatusBadge deployment={deployment}/>
             </Descriptions.Item>
             <Descriptions.Item label="Deployer">
-                <UserAvatar user={props.deployment.deployer} boldName={false}/>
+                <UserAvatar user={deployment.deployer} boldName={false}/>
             </Descriptions.Item>
             <Descriptions.Item label="Deploy Time">
-                {moment(props.deployment.createdAt).format("YYYY-MM-DD HH:mm:ss")}
+                {moment(deployment.createdAt).format("YYYY-MM-DD HH:mm:ss")}
             </Descriptions.Item>
             <Descriptions.Item label="Changes">
                 <Button 
@@ -59,7 +64,7 @@ export default function DeploymentDescriptor(props: DeploymentDescriptorProps): 
                     cancelText="Close"
                     onCancel={hideModal}
                 >
-                    <CommitChanges changes={props.commits}/>
+                    <CommitChanges changes={changes}/>
                 </Modal>
             </Descriptions.Item>
         </Descriptions>

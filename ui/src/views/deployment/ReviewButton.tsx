@@ -1,19 +1,25 @@
 import { useState } from "react"
 import { Button, Modal, Space, Input } from "antd"
 
-import { Review, ReviewStatusEnum } from "../models"
+import { Review, ReviewStatusEnum,  } from "../../models"
 
-const { TextArea } = Input
-
-interface ReviewModalProps {
-    review: Review
+export interface ReviewButtonProps {
+    review?: Review
     onClickApprove(comment: string): void
     onClickApproveAndDeploy(comment: string): void
     onClickReject(comment: string): void
 }
 
-export default function ReviewModal(props: ReviewModalProps): JSX.Element {
-    const [comment, setComment] = useState(props.review.comment)
+export default function ReviewButton(props: ReviewButtonProps): JSX.Element {
+    const { review } = props
+
+    // If no review has been assigned, an empty value is returned.
+    if (!review) {
+        return <></>
+    }
+
+    // Stores the review comment state and passes it as a parameter when updating.
+    const [comment, setComment] = useState(review.comment)
 
     const onChangeComment = (e: any) => {
         setComment(e.target.value)
@@ -23,6 +29,10 @@ export default function ReviewModal(props: ReviewModalProps): JSX.Element {
 
     const showModal = () => {
         setIsModalVisible(true);
+    }
+
+    const onClickCancel = () => {
+        setIsModalVisible(false)
     }
   
     const onClickApprove = () => {
@@ -40,34 +50,30 @@ export default function ReviewModal(props: ReviewModalProps): JSX.Element {
         setIsModalVisible(false)
     }
   
-    const onClickCancel = () => {
-        setIsModalVisible(false)
-    }
-
     return (
         <>
+            {(review.status === ReviewStatusEnum.Pending)? 
+                <Button type="primary" onClick={showModal}>
+                    Review
+                </Button> 
+                :
+                <Button onClick={showModal}>
+                    Reviewed
+                </Button>}
             <Modal 
                 title="Review" 
                 visible={isModalVisible} 
                 onCancel={onClickCancel}
-                footer={
+                footer={(
                     <Space>
                         <Button type="primary" danger onClick={onClickReject}>Reject</Button>
                         <Button type="primary" onClick={onClickApproveAndDeploy}>Approve and Deploy</Button>
                         <Button type="primary" onClick={onClickApprove}>Approve</Button>
                     </Space>
-                }
+                )}
             >
-                <TextArea rows={3} onChange={onChangeComment} value={comment}/>
+                <Input.TextArea rows={3} onChange={onChangeComment} value={comment}/>
             </Modal>
-            {(props.review.status === ReviewStatusEnum.Pending)? 
-                <Button type="primary" onClick={showModal}>
-                    Review
-                </Button> :
-                <Button onClick={showModal}>
-                    Reviewed
-                </Button> 
-            }
         </>
     )
 

@@ -2,50 +2,51 @@ import { useEffect } from "react"
 import { shallowEqual } from 'react-redux'
 import { useParams } from "react-router-dom"
 import { Helmet } from "react-helmet"
-import { Breadcrumb, Button, PageHeader, Result, Row, Col } from "antd"
+import { Button, PageHeader, Result, Row, Col } from "antd"
 
-import { useAppSelector, useAppDispatch } from "../redux/hooks"
+import { useAppSelector, useAppDispatch } from "../../redux/hooks"
 import { 
     deploymentSlice as slice, 
     fetchDeployment, 
     fetchDeploymentChanges,
     deployToSCM,
     fetchReviews,
+    fetchUserReview,
     approve,
     reject,
-    fetchUserReview,
-} from "../redux/deployment"
+} from "../../redux/deployment"
 import { 
     Deployment, 
     DeploymentStatusEnum, 
     Review,
     ReviewStatusEnum,
     RequestStatus
-} from "../models"
-import { subscribeEvents } from "../apis"
+} from "../../models"
+import { subscribeEvents } from "../../apis"
 
-import Main from "./main"
-import ReviewModal from "../components/ReviewModal"
-import Spin from "../components/Spin"
-import DeploymentDescriptor from "../components/DeploymentDescriptor"
-import ReviewerList from "../components/ReviewerList"
-import DeploymentStatusSteps from "../components/DeploymentStatusSteps"
+import Main from "../main"
+import HeaderBreadcrumb, { HeaderBreadcrumbProps } from "./HeaderBreadcrumb"
+import ReviewButton, { ReviewButtonProps } from "./ReviewButton"
+import ReviewerList, { ReviewListProps } from "./ReviewList"
+import DeploymentDescriptor, { DeploymentDescriptorProps } from "./DeploymentDescriptor"
+import DeploymentStatusSteps from "./DeploymentStatusSteps"
+import Spin from "../../components/Spin"
 
-interface Params {
-    namespace: string
-    name: string
-    number: string
-}
+// It makes the view by binding the state to the deployment page.
+export default (): JSX.Element => {
+    const { namespace, name, number } = useParams<{
+        namespace: string,
+        name: string,
+        number: string,
+    }>()
 
-export default function DeploymentView(): JSX.Element {
-    const { namespace, name, number } = useParams<Params>()
     const { 
         display,
         deployment, 
         changes,
         deploying,
         reviews,
-        userReview,
+        userReview: review,
     } = useAppSelector(state => state.deployment, shallowEqual )
     const dispatch = useAppDispatch()
 
@@ -71,8 +72,8 @@ export default function DeploymentView(): JSX.Element {
         // eslint-disable-next-line 
     }, [dispatch])
 
-    const onClickDeploy = () => {
-        dispatch(deployToSCM())
+    const onClickApprove = (comment: string) => {
+        dispatch(approve(comment))
     }
 
     const onClickApproveAndDeploy = (comment: string) => {
@@ -85,16 +86,12 @@ export default function DeploymentView(): JSX.Element {
         f()
     }
 
-    const onClickApprove = (comment: string) => {
-       dispatch(approve(comment))
-    }
-
     const onClickReject = (comment: string) => {
         dispatch(reject(comment))
     }
 
-    const onBack = () => {
-        window.location.href = `/${namespace}/${name}`
+    const onClickDeploy = () => {
+        dispatch(deployToSCM())
     }
 
     if (!display) {
@@ -118,18 +115,52 @@ export default function DeploymentView(): JSX.Element {
         )
     }
 
-    const reviewBtn = (userReview)?
-        <ReviewModal 
-            key={0}
-            review={userReview}
-            onClickApproveAndDeploy={onClickApproveAndDeploy}
-            onClickApprove={onClickApprove}
-            onClickReject={onClickReject}
-        />:
-        <></>
-
     return (
         <Main>
+            <DeploymentPage 
+                namespace={namespace}
+                name={name}
+                number={number}
+                deploying={deploying}
+                deployment={deployment}
+                changes={changes}
+                reviews={reviews}
+                review={review}
+                onClickApprove={onClickApprove}
+                onClickApproveAndDeploy={onClickApproveAndDeploy}
+                onClickReject={onClickReject}
+                onClickDeploy={onClickDeploy}
+            />
+        </Main>
+    )
+}
+
+interface DeploymentPageProps extends HeaderBreadcrumbProps, ReviewButtonProps, ReviewListProps, DeploymentDescriptorProps {
+    deploying: RequestStatus
+    onClickDeploy(): void
+}
+
+function DeploymentPage({
+    namespace,
+    name,
+    number,
+    deploying,
+    deployment,
+    changes,
+    reviews,
+    review,
+    onClickApprove,
+    onClickApproveAndDeploy,
+    onClickReject,
+    onClickDeploy,
+}: DeploymentPageProps): JSX.Element {
+
+    const onBack = () => {
+        window.location.href = `/${namespace}/${name}`
+    }
+
+    return (
+        <>
             <Helmet>
                 <title>Deployment #{number} - {namespace}/{name}</title>
             </Helmet>
@@ -137,27 +168,34 @@ export default function DeploymentView(): JSX.Element {
                 <PageHeader
                     title={`Deployment #${number}`}
                     breadcrumb={
-                        <Breadcrumb>
-                            <Breadcrumb.Item>
-                                <a href="/">Repositories</a>
-                            </Breadcrumb.Item>
-                            <Breadcrumb.Item>{namespace}</Breadcrumb.Item>
-                            <Breadcrumb.Item>
-                                <a href={`/${namespace}/${name}`}>{name}</a>
-                            </Breadcrumb.Item>
-                            <Breadcrumb.Item>Deployments</Breadcrumb.Item>
-                            <Breadcrumb.Item>{number}</Breadcrumb.Item>
-                        </Breadcrumb>}
-                    extra={reviewBtn}
+                        <HeaderBreadcrumb 
+                            namespace={namespace} 
+                            name={name} 
+                            number={number} 
+                        />
+                    }
+                    extra={
+                        <ReviewButton 
+                            review={review} 
+                            onClickApprove={onClickApprove}
+                            onClickApproveAndDeploy={onClickApproveAndDeploy}
+                            onClickReject={onClickReject}
+                        />
+                    }
                     onBack={onBack} 
                 />
             </div>
             <Row>
                 <Col  span={23} offset={1} lg={{span: 13, offset: 1}}>
-                    <DeploymentDescriptor commits={changes} deployment={deployment}/>
+                    <DeploymentDescriptor 
+                        changes={changes} 
+                        deployment={deployment}
+                    />
                 </Col>
                 <Col span={23} offset={1}  lg={{span: 6, offset: 2}}>
-                   <ReviewerList reviews={reviews}/> 
+                    <ReviewerList 
+                        reviews={reviews}
+                    /> 
                 </Col>
             </Row>
             <Row style={{marginTop: 40}}>
@@ -187,7 +225,7 @@ export default function DeploymentView(): JSX.Element {
                         </Button>}
                 </Col>
             </Row>
-        </Main>
+        </>
     )
 }
 
