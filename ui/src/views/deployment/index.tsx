@@ -28,18 +28,18 @@ import Main from "../main"
 import HeaderBreadcrumb, { HeaderBreadcrumbProps } from "./HeaderBreadcrumb"
 import ReviewButton, { ReviewButtonProps } from "./ReviewButton"
 import ReviewerList, { ReviewListProps } from "./ReviewList"
-import DeploymentDescriptor from "./DeploymentDescriptor"
+import DeploymentDescriptor, { DeploymentDescriptorProps } from "./DeploymentDescriptor"
 import DeploymentStatusSteps from "./DeploymentStatusSteps"
 import Spin from "../../components/Spin"
 
-interface Params {
-    namespace: string
-    name: string
-    number: string
-}
+// It makes the view by binding the state to the deployment page.
+export default (): JSX.Element => {
+    const { namespace, name, number } = useParams<{
+        namespace: string,
+        name: string,
+        number: string,
+    }>()
 
-export default function DeploymentView(): JSX.Element {
-    const { namespace, name, number } = useParams<Params>()
     const { 
         display,
         deployment, 
@@ -94,10 +94,6 @@ export default function DeploymentView(): JSX.Element {
         dispatch(deployToSCM())
     }
 
-    const onBack = () => {
-        window.location.href = `/${namespace}/${name}`
-    }
-
     if (!display) {
         return (
             <Main>
@@ -121,6 +117,50 @@ export default function DeploymentView(): JSX.Element {
 
     return (
         <Main>
+            <DeploymentPage 
+                namespace={namespace}
+                name={name}
+                number={number}
+                deploying={deploying}
+                deployment={deployment}
+                changes={changes}
+                reviews={reviews}
+                review={review}
+                onClickApprove={onClickApprove}
+                onClickApproveAndDeploy={onClickApproveAndDeploy}
+                onClickReject={onClickReject}
+                onClickDeploy={onClickDeploy}
+            />
+        </Main>
+    )
+}
+
+interface DeploymentPageProps extends HeaderBreadcrumbProps, ReviewButtonProps, ReviewListProps, DeploymentDescriptorProps {
+    deploying: RequestStatus
+    onClickDeploy(): void
+}
+
+function DeploymentPage({
+    namespace,
+    name,
+    number,
+    deploying,
+    deployment,
+    changes,
+    reviews,
+    review,
+    onClickApprove,
+    onClickApproveAndDeploy,
+    onClickReject,
+    onClickDeploy,
+}: DeploymentPageProps): JSX.Element {
+
+    const onBack = () => {
+        window.location.href = `/${namespace}/${name}`
+    }
+
+    return (
+        <>
             <Helmet>
                 <title>Deployment #{number} - {namespace}/{name}</title>
             </Helmet>
@@ -185,7 +225,7 @@ export default function DeploymentView(): JSX.Element {
                         </Button>}
                 </Col>
             </Row>
-        </Main>
+        </>
     )
 }
 
