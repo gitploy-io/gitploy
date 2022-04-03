@@ -4,32 +4,30 @@ import { useParams } from "react-router-dom"
 import { Helmet } from "react-helmet"
 import { Breadcrumb, Button, PageHeader, Result, Row, Col } from "antd"
 
-import { useAppSelector, useAppDispatch } from "../redux/hooks"
+import { useAppSelector, useAppDispatch } from "../../redux/hooks"
 import { 
     deploymentSlice as slice, 
     fetchDeployment, 
     fetchDeploymentChanges,
     deployToSCM,
     fetchReviews,
-    approve,
-    reject,
     fetchUserReview,
-} from "../redux/deployment"
+} from "../../redux/deployment"
 import { 
     Deployment, 
     DeploymentStatusEnum, 
     Review,
     ReviewStatusEnum,
     RequestStatus
-} from "../models"
-import { subscribeEvents } from "../apis"
+} from "../../models"
+import { subscribeEvents } from "../../apis"
 
-import Main from "./main"
-import ReviewModal from "../components/ReviewModal"
-import Spin from "../components/Spin"
-import DeploymentDescriptor from "../components/DeploymentDescriptor"
-import ReviewerList from "../components/ReviewerList"
-import DeploymentStatusSteps from "../components/DeploymentStatusSteps"
+import Main from "../main"
+import ReviewButton from "./ReviewButton"
+import Spin from "../../components/Spin"
+import DeploymentDescriptor from "../../components/DeploymentDescriptor"
+import ReviewerList from "../../components/ReviewerList"
+import DeploymentStatusSteps from "../../components/DeploymentStatusSteps"
 
 interface Params {
     namespace: string
@@ -45,7 +43,6 @@ export default function DeploymentView(): JSX.Element {
         changes,
         deploying,
         reviews,
-        userReview,
     } = useAppSelector(state => state.deployment, shallowEqual )
     const dispatch = useAppDispatch()
 
@@ -75,24 +72,6 @@ export default function DeploymentView(): JSX.Element {
         dispatch(deployToSCM())
     }
 
-    const onClickApproveAndDeploy = (comment: string) => {
-        const f = async () => {
-            await dispatch(approve(comment))
-            if (deployment?.status === DeploymentStatusEnum.Waiting) {
-                await dispatch(deployToSCM())
-            }
-        }
-        f()
-    }
-
-    const onClickApprove = (comment: string) => {
-       dispatch(approve(comment))
-    }
-
-    const onClickReject = (comment: string) => {
-        dispatch(reject(comment))
-    }
-
     const onBack = () => {
         window.location.href = `/${namespace}/${name}`
     }
@@ -118,16 +97,6 @@ export default function DeploymentView(): JSX.Element {
         )
     }
 
-    const reviewBtn = (userReview)?
-        <ReviewModal 
-            key={0}
-            review={userReview}
-            onClickApproveAndDeploy={onClickApproveAndDeploy}
-            onClickApprove={onClickApprove}
-            onClickReject={onClickReject}
-        />:
-        <></>
-
     return (
         <Main>
             <Helmet>
@@ -136,19 +105,8 @@ export default function DeploymentView(): JSX.Element {
             <div>
                 <PageHeader
                     title={`Deployment #${number}`}
-                    breadcrumb={
-                        <Breadcrumb>
-                            <Breadcrumb.Item>
-                                <a href="/">Repositories</a>
-                            </Breadcrumb.Item>
-                            <Breadcrumb.Item>{namespace}</Breadcrumb.Item>
-                            <Breadcrumb.Item>
-                                <a href={`/${namespace}/${name}`}>{name}</a>
-                            </Breadcrumb.Item>
-                            <Breadcrumb.Item>Deployments</Breadcrumb.Item>
-                            <Breadcrumb.Item>{number}</Breadcrumb.Item>
-                        </Breadcrumb>}
-                    extra={reviewBtn}
+                    breadcrumb={<HeaderBreadcrumb />}
+                    extra={<ReviewButton/>}
                     onBack={onBack} 
                 />
             </div>
@@ -209,4 +167,28 @@ function isDeployable(deployment: Deployment, reviews: Review[]): boolean {
     }
 
     return false
+}
+
+function HeaderBreadcrumb(): JSX.Element {
+    const { namespace, name, number } = useParams<Params>()
+
+    return (
+        <Breadcrumb>
+            <Breadcrumb.Item>
+                <a href="/">Repositories</a>
+            </Breadcrumb.Item>
+            <Breadcrumb.Item>
+                {namespace}
+            </Breadcrumb.Item>
+            <Breadcrumb.Item>
+                <a href={`/${namespace}/${name}`}>{name}</a>
+            </Breadcrumb.Item>
+            <Breadcrumb.Item>
+                Deployments
+            </Breadcrumb.Item>
+            <Breadcrumb.Item>
+                {number}
+            </Breadcrumb.Item>
+        </Breadcrumb>
+    )
 }
