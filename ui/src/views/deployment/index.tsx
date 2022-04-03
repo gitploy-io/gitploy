@@ -24,9 +24,9 @@ import { subscribeEvents } from "../../apis"
 
 import Main from "../main"
 import ReviewButton from "./ReviewButton"
+import ReviewerList from "./ReviewList"
 import Spin from "../../components/Spin"
 import DeploymentDescriptor from "../../components/DeploymentDescriptor"
-import ReviewerList from "../../components/ReviewerList"
 import DeploymentStatusSteps from "../../components/DeploymentStatusSteps"
 
 interface Params {
@@ -115,7 +115,7 @@ export default function DeploymentView(): JSX.Element {
                     <DeploymentDescriptor commits={changes} deployment={deployment}/>
                 </Col>
                 <Col span={23} offset={1}  lg={{span: 6, offset: 2}}>
-                   <ReviewerList reviews={reviews}/> 
+                   <ReviewerList /> 
                 </Col>
             </Row>
             <Row style={{marginTop: 40}}>
