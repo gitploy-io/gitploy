@@ -2,7 +2,7 @@ import { useEffect } from "react"
 import { shallowEqual } from 'react-redux'
 import { useParams } from "react-router-dom"
 import { Helmet } from "react-helmet"
-import { Breadcrumb, Button, PageHeader, Result, Row, Col } from "antd"
+import { Button, PageHeader, Result, Row, Col } from "antd"
 
 import { useAppSelector, useAppDispatch } from "../../redux/hooks"
 import { 
@@ -25,11 +25,11 @@ import {
 import { subscribeEvents } from "../../apis"
 
 import Main from "../main"
+import HeaderBreadcrumb, { HeaderBreadcrumbProps } from "./HeaderBreadcrumb"
 import ReviewButton, { ReviewButtonProps } from "./ReviewButton"
 import ReviewerList, { ReviewListProps } from "./ReviewList"
-import HeaderBreadcrumb, { HeaderBreadcrumbProps } from "./HeaderBreadcrumb"
+import DeploymentDescriptor from "./DeploymentDescriptor"
 import Spin from "../../components/Spin"
-import DeploymentDescriptor from "../../components/DeploymentDescriptor"
 import DeploymentStatusSteps from "../../components/DeploymentStatusSteps"
 
 interface Params {
@@ -87,7 +87,7 @@ export default function DeploymentView(): JSX.Element {
     }
 
     const onClickReject = (comment: string) => {
-        dispatch(approve(comment))
+        dispatch(reject(comment))
     }
 
     const onClickDeploy = () => {
@@ -147,10 +147,15 @@ export default function DeploymentView(): JSX.Element {
             </div>
             <Row>
                 <Col  span={23} offset={1} lg={{span: 13, offset: 1}}>
-                    <DeploymentDescriptor commits={changes} deployment={deployment}/>
+                    <DeploymentDescriptor 
+                        changes={changes} 
+                        deployment={deployment}
+                    />
                 </Col>
                 <Col span={23} offset={1}  lg={{span: 6, offset: 2}}>
-                   <ReviewerList reviews={reviews}/> 
+                    <ReviewerList 
+                        reviews={reviews}
+                    /> 
                 </Col>
             </Row>
             <Row style={{marginTop: 40}}>
