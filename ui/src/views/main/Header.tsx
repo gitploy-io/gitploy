@@ -1,22 +1,23 @@
 import { useState } from "react"
-import { shallowEqual } from "react-redux"
 import { Menu, Row, Col, Button, Drawer, Avatar, Dropdown, Badge, Space} from "antd"
 import { SettingFilled } from "@ant-design/icons"
 
-import { useAppSelector } from "../../redux/hooks"
-
+import { Deployment, User, Review } from "../../models"
 import RecentActivities from "../../components/RecentActivities"
 
 import Logo from "../../logo.svg"
 
-export default function Header(): JSX.Element {
-    const { 
-        authorized, 
-        user,
-        deployments,
-        reviews,
-    } = useAppSelector(state => state.main, shallowEqual)
+export interface HeaderProps {
+    user: User | undefined
+    deployments: Deployment[]
+    reviews: Review[]
+}
 
+export default function Header({
+    user,
+    deployments,
+    reviews,
+}: HeaderProps): JSX.Element {
     const activitiesCount = deployments.length + reviews.length
 
     const [ isRecentActivitiesVisible, setRecentActivitiesVisible ] = useState(false)
@@ -63,7 +64,7 @@ export default function Header(): JSX.Element {
                         reviews={reviews}
                     />
                 </Drawer>
-                {(authorized) ? 
+                {(user) ? 
                     <Dropdown 
                         overlay={(
                             <Menu>

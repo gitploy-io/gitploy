@@ -97,7 +97,7 @@ function Home({
 }: HomeProps): JSX.Element {
 
     return (
-        <Main>
+        <>
             <Helmet>
                 <title>Home</title>
             </Helmet>
@@ -136,6 +136,6 @@ function Home({
                     onClickNext={onClickNext} 
                 />
             </div>
-        </Main>
+        </>
     )
 }

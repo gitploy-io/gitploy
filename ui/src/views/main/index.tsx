@@ -16,18 +16,22 @@ import {
     mainSlice as slice 
 } from "../../redux/main"
 
-import MainHeader from "./Header"
-import MainContent from "./Content"
-import LicenseWarning from "./LicenseWarningFooter"
+import MainHeader, { HeaderProps } from "./Header"
+import MainContent, { ContentProps } from "./Content"
+import LicenseWarning, { LicenseWarningFooterProps } from "./LicenseWarningFooter"
 
 const { Header, Content, Footer } = Layout
 
-// eslint-disable-next-line
-export default function Main(props: React.PropsWithChildren<{}>) { 
+export default (props: React.PropsWithChildren<any>): JSX.Element => { 
     const { 
+        authorized,
+        available,
+        expired,
+        user,
         deployments,
         reviews,
     } = useAppSelector(state => state.main, shallowEqual)
+
     const dispatch = useAppDispatch()
 
     useEffect(() => {
@@ -48,6 +52,38 @@ export default function Main(props: React.PropsWithChildren<{}>) {
         }
     }, [dispatch])
 
+    const onClickRetry = () => {
+        dispatch(slice.actions.setAvailable(true))
+        dispatch(slice.actions.setExpired(false))
+    }
+
+    return (
+        <Main 
+            authorized={authorized}
+            available={available}
+            expired={expired}
+            user={user}
+            deployments={deployments}
+            reviews={reviews}
+            onClickRetry={onClickRetry}
+            children={props.children}
+        />
+    )
+}
+
+interface MainProps extends HeaderProps, ContentProps, LicenseWarningFooterProps {}
+
+function Main({
+    authorized,
+    available,
+    expired,
+    user,
+    deployments,
+    reviews,
+    license,
+    children,
+    onClickRetry
+}: React.PropsWithChildren<MainProps>) { 
     return (
         <Layout className="layout">
             <Helmet>
@@ -58,16 +94,27 @@ export default function Main(props: React.PropsWithChildren<{}>) {
                     <link rel="icon" href="/favicon.ico" />}
             </Helmet>
             <Header>
-                <MainHeader />
+                <MainHeader 
+                    user={user}
+                    deployments={deployments}
+                    reviews={reviews}
+                />
             </Header>
             <Content style={{ padding: "50px 50px" }}>
-                <MainContent>
-                    {props.children}
+                <MainContent
+                    authorized={authorized}
+                    available={available}
+                    expired={expired}
+                    onClickRetry={onClickRetry}
+                >
+                    {children}
                 </MainContent>
             </Content>
             <Footer style={{ textAlign: "center" }}>
                 <div>
-                    <LicenseWarning />
+                    <LicenseWarning 
+                        license={license}
+                    />
                 </div>
                 <div>
                     Gitploy ©{moment().format("YYYY")} Created by Gitploy.IO 

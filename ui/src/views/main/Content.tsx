@@ -1,22 +1,22 @@
-import { shallowEqual } from "react-redux"
 import { Row, Col, Result, Button} from "antd"
 
-import { useAppSelector, useAppDispatch } from "../../redux/hooks"
-import { mainSlice as slice } from "../../redux/main"
 import React from "react"
 
-export default function Content(props: React.PropsWithChildren<any>): JSX.Element {
-    const { 
-        available, 
-        authorized, 
-        expired,
-    } = useAppSelector(state => state.main, shallowEqual)
-    const dispatch = useAppDispatch()
+export interface ContentProps {
+    available: boolean 
+    authorized: boolean
+    expired: boolean
+    onClickRetry(): void
+}
 
-    const onClickRetry = () => {
-        dispatch(slice.actions.setAvailable(true))
-        dispatch(slice.actions.setExpired(false))
-    }
+export default function Content({
+    available,
+    authorized,
+    expired,
+    children,
+    onClickRetry,
+}: React.PropsWithChildren<ContentProps>): JSX.Element {
+
 
     let content: React.ReactNode
     if (!available) {
@@ -44,7 +44,7 @@ export default function Content(props: React.PropsWithChildren<any>): JSX.Elemen
             extra={[<Button key="console" type="primary" onClick={onClickRetry}>Retry</Button>]}
         />
     } else {
-        content = props.children
+        content = children
     }
 
     return (
