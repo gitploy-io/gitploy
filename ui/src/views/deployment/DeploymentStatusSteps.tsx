@@ -2,11 +2,11 @@ import { Timeline, Typography } from "antd"
 import { ClockCircleOutlined } from "@ant-design/icons"
 import moment from "moment"
 
-import { DeploymentStatus } from "../models"
+import { DeploymentStatus } from "../../models"
 
 const { Text, Link } = Typography
 
-interface DeploymentStatusStepsProps {
+export interface DeploymentStatusStepsProps {
     statuses: DeploymentStatus[]
 }
 
@@ -40,6 +40,6 @@ const getStatusColor = (status: string) => {
         case "failure":
             return "red"
         default:
-            return "#722ed1"
+            return "purple"
     }
 }

@@ -29,8 +29,8 @@ import HeaderBreadcrumb, { HeaderBreadcrumbProps } from "./HeaderBreadcrumb"
 import ReviewButton, { ReviewButtonProps } from "./ReviewButton"
 import ReviewerList, { ReviewListProps } from "./ReviewList"
 import DeploymentDescriptor from "./DeploymentDescriptor"
+import DeploymentStatusSteps from "./DeploymentStatusSteps"
 import Spin from "../../components/Spin"
-import DeploymentStatusSteps from "../../components/DeploymentStatusSteps"
 
 interface Params {
     namespace: string
