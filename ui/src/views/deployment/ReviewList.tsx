@@ -1,18 +1,16 @@
-import { shallowEqual } from 'react-redux'
 import { Popover, Button, Descriptions, Typography } from "antd"
 import { CheckOutlined, CloseOutlined, CommentOutlined, ClockCircleOutlined } from "@ant-design/icons"
 
-import { useAppSelector } from "../../redux/hooks"
 import { Review, ReviewStatusEnum } from "../../models"
 import UserAvatar from "../../components/UserAvatar"
 
 const { Text } = Typography
 
-export default function ReviewList(): JSX.Element {
-    const { 
-        reviews,
-    } = useAppSelector(state => state.deployment, shallowEqual )
+export interface ReviewListProps {
+    reviews: Review[]
+}
 
+export default function ReviewList({ reviews }: ReviewListProps): JSX.Element {
     if (reviews.length === 0) {
         return (
             <Descriptions title="Reviewers" >
@@ -59,9 +57,7 @@ function ReviewCommentIcon(props: {review: Review}): JSX.Element {
             <Popover
                 title="Comment"
                 trigger="click"
-                content={
-                    <div style={{whiteSpace: "pre"}}>{comment}</div>
-                }
+                content={<div style={{whiteSpace: "pre"}}>{comment}</div>}
             >
                 <Button 
                     type="text" 

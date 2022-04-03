@@ -1,21 +1,17 @@
 import { useState } from "react"
-import { shallowEqual } from 'react-redux'
 import { Button, Modal, Space, Input } from "antd"
 
-import { ReviewStatusEnum, DeploymentStatusEnum } from "../../models"
-import { useAppSelector, useAppDispatch } from "../../redux/hooks"
-import { 
-    deployToSCM,
-    approve,
-    reject,
-} from "../../redux/deployment"
+import { Review, ReviewStatusEnum,  } from "../../models"
 
-export default function ReviewButton(): JSX.Element {
-    const { 
-        deployment, 
-        userReview: review,
-    } = useAppSelector(state => state.deployment, shallowEqual )
-    const dispatch = useAppDispatch()
+export interface ReviewButtonProps {
+    review?: Review
+    onClickApprove(comment: string): void
+    onClickApproveAndDeploy(comment: string): void
+    onClickReject(comment: string): void
+}
+
+export default function ReviewButton(props: ReviewButtonProps): JSX.Element {
+    const { review } = props
 
     // If no review has been assigned, an empty value is returned.
     if (!review) {
@@ -40,24 +36,17 @@ export default function ReviewButton(): JSX.Element {
     }
   
     const onClickApprove = () => {
-        dispatch(approve(comment))
+        props.onClickApprove(comment)
         setIsModalVisible(false)
     }
 
     const onClickApproveAndDeploy = () => {
-        const f = async () => {
-            await dispatch(approve(comment))
-            if (deployment?.status === DeploymentStatusEnum.Waiting) {
-                await dispatch(deployToSCM())
-            }
-        }
-
-        f()
+        props.onClickApproveAndDeploy(comment)
         setIsModalVisible(false)
     }
 
     const onClickReject = () => {
-        dispatch(reject(comment))
+        props.onClickReject(comment)
         setIsModalVisible(false)
     }
   

@@ -12,6 +12,8 @@ import {
     deployToSCM,
     fetchReviews,
     fetchUserReview,
+    approve,
+    reject,
 } from "../../redux/deployment"
 import { 
     Deployment, 
@@ -23,8 +25,9 @@ import {
 import { subscribeEvents } from "../../apis"
 
 import Main from "../main"
-import ReviewButton from "./ReviewButton"
-import ReviewerList from "./ReviewList"
+import ReviewButton, { ReviewButtonProps } from "./ReviewButton"
+import ReviewerList, { ReviewListProps } from "./ReviewList"
+import HeaderBreadcrumb, { HeaderBreadcrumbProps } from "./HeaderBreadcrumb"
 import Spin from "../../components/Spin"
 import DeploymentDescriptor from "../../components/DeploymentDescriptor"
 import DeploymentStatusSteps from "../../components/DeploymentStatusSteps"
@@ -43,6 +46,7 @@ export default function DeploymentView(): JSX.Element {
         changes,
         deploying,
         reviews,
+        userReview: review,
     } = useAppSelector(state => state.deployment, shallowEqual )
     const dispatch = useAppDispatch()
 
@@ -67,6 +71,24 @@ export default function DeploymentView(): JSX.Element {
         }
         // eslint-disable-next-line 
     }, [dispatch])
+
+    const onClickApprove = (comment: string) => {
+        dispatch(approve(comment))
+    }
+
+    const onClickApproveAndDeploy = (comment: string) => {
+        const f = async () => {
+            await dispatch(approve(comment))
+            if (deployment?.status === DeploymentStatusEnum.Waiting) {
+                await dispatch(deployToSCM())
+            }
+        }
+        f()
+    }
+
+    const onClickReject = (comment: string) => {
+        dispatch(approve(comment))
+    }
 
     const onClickDeploy = () => {
         dispatch(deployToSCM())
@@ -105,8 +127,21 @@ export default function DeploymentView(): JSX.Element {
             <div>
                 <PageHeader
                     title={`Deployment #${number}`}
-                    breadcrumb={<HeaderBreadcrumb />}
-                    extra={<ReviewButton/>}
+                    breadcrumb={
+                        <HeaderBreadcrumb 
+                            namespace={namespace} 
+                            name={name} 
+                            number={number} 
+                        />
+                    }
+                    extra={
+                        <ReviewButton 
+                            review={review} 
+                            onClickApprove={onClickApprove}
+                            onClickApproveAndDeploy={onClickApproveAndDeploy}
+                            onClickReject={onClickReject}
+                        />
+                    }
                     onBack={onBack} 
                 />
             </div>
@@ -115,7 +150,7 @@ export default function DeploymentView(): JSX.Element {
                     <DeploymentDescriptor commits={changes} deployment={deployment}/>
                 </Col>
                 <Col span={23} offset={1}  lg={{span: 6, offset: 2}}>
-                   <ReviewerList /> 
+                   <ReviewerList reviews={reviews}/> 
                 </Col>
             </Row>
             <Row style={{marginTop: 40}}>
@@ -167,28 +202,4 @@ function isDeployable(deployment: Deployment, reviews: Review[]): boolean {
     }
 
     return false
-}
-
-function HeaderBreadcrumb(): JSX.Element {
-    const { namespace, name, number } = useParams<Params>()
-
-    return (
-        <Breadcrumb>
-            <Breadcrumb.Item>
-                <a href="/">Repositories</a>
-            </Breadcrumb.Item>
-            <Breadcrumb.Item>
-                {namespace}
-            </Breadcrumb.Item>
-            <Breadcrumb.Item>
-                <a href={`/${namespace}/${name}`}>{name}</a>
-            </Breadcrumb.Item>
-            <Breadcrumb.Item>
-                Deployments
-            </Breadcrumb.Item>
-            <Breadcrumb.Item>
-                {number}
-            </Breadcrumb.Item>
-        </Breadcrumb>
-    )
 }
