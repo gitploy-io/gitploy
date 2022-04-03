@@ -10,14 +10,16 @@ import { RequestStatus } from '../../models'
 import { subscribeEvents } from "../../apis"
 
 import Main from '../main'
-import RepoList from './RepoList'
+import RepoList, { RepoListProps } from './RepoList'
 import Pagination from '../../components/Pagination'
+import Spin from '../../components/Spin'
 
 const { Search } = Input
 const { actions } = homeSlice
 
-export default function Home(): JSX.Element {
-    const { repos, page, syncing } = useAppSelector(state => state.home, shallowEqual)
+// Binding the state to the deployment page.
+export default ():JSX.Element => {
+    const { loading, repos, page, syncing } = useAppSelector(state => state.home, shallowEqual)
     const dispatch = useAppDispatch()
 
     useEffect(() => {
@@ -59,6 +61,43 @@ export default function Home(): JSX.Element {
 
     return (
         <Main>
+            <Home
+                loading={loading}
+                syncing={syncing}
+                page={page}
+                repos={repos}
+                search={search}
+                onClickSync={onClickSync}
+                onClickPrev={onClickPrev}
+                onClickNext={onClickNext}
+            />
+        </Main>
+    )
+}
+
+interface HomeProps extends RepoListProps {
+    loading: boolean
+    syncing: RequestStatus
+    page: number
+    search(q: string): void
+    onClickSync(): void
+    onClickPrev(): void
+    onClickNext(): void
+}
+
+function Home({
+    loading,
+    page,
+    syncing,
+    repos,
+    search,
+    onClickSync,
+    onClickPrev,
+    onClickNext,
+}: HomeProps): JSX.Element {
+
+    return (
+        <Main>
             <Helmet>
                 <title>Home</title>
             </Helmet>
@@ -82,7 +121,12 @@ export default function Home(): JSX.Element {
                 <Search placeholder="Search repository ..." onSearch={search} size="large" enterButton />
             </div>
             <div style={{"marginTop": "20px"}}>
-                <RepoList />
+                {(loading)? 
+                    <div style={{textAlign: "center"}}>
+                        <Spin />
+                    </div>
+                    :
+                    <RepoList repos={repos} />}
             </div>
             <div style={{marginTop: "20px", textAlign: "center"}}>
                 <Pagination 
