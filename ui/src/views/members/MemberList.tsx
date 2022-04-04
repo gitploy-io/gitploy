@@ -1,27 +1,18 @@
-import { shallowEqual } from "react-redux"
 import { List, Switch, Button, Avatar } from "antd"
-
-import { useAppSelector, useAppDispatch } from "../../redux/hooks"
-import { updateUser, deleteUser } from "../../redux/members"
 
 import { User } from "../../models"
 
-export default function MemberList(): JSX.Element {
-    const { users } = useAppSelector(state => state.members, shallowEqual)
-    const dispatch = useAppDispatch()
+export interface MemberListProps {
+    users: User[]
+    onChangeSwitch(user: User, checked: boolean): void
+    onClickDelete(user: User): void
+}
 
-    const onChangeSwitch = (user: User, checked: boolean) => {
-        dispatch(updateUser({user, admin: checked}))
-    }
-
-    const onClickDelete = (user: User) => {
-        dispatch(deleteUser(user))
-    }
-
+export default function MemberList(props: MemberListProps): JSX.Element {
     return (
         <List
             itemLayout="horizontal"
-            dataSource={users}
+            dataSource={props.users}
             renderItem={(user) => (
                 <List.Item
                     actions={[
@@ -29,12 +20,12 @@ export default function MemberList(): JSX.Element {
                             checkedChildren="Adm"  
                             unCheckedChildren="Mem"
                             checked={user.admin}
-                            onChange={(checked) => {onChangeSwitch(user, checked)}}
+                            onChange={(checked) => {props.onChangeSwitch(user, checked)}}
                         />,
                         <Button
                             type="primary"
                             danger
-                            onClick={() => {onClickDelete(user)}}
+                            onClick={() => {props.onClickDelete(user)}}
                         >
                             Delete
                         </Button>
