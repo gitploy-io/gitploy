@@ -50,6 +50,7 @@ export default (): JSX.Element => {
     )
 }
 
+// eslint-disable-next-line
 interface RepoSettingsProps extends SettingFormProps {}
 
 function RepoSettings({

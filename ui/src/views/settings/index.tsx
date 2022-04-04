@@ -6,11 +6,12 @@ import { useAppSelector, useAppDispatch } from "../../redux/hooks"
 import { fetchMe, checkSlack } from "../../redux/settings"
 
 import Main from "../main"
-import UserDescription from "./UserDescriptions"
+import UserDescription, { UserDescriptionsProps } from "./UserDescriptions"
 import SlackDescriptions from "./SlackDescriptions"
 
-export default function Settings(): JSX.Element {
-    const { isSlackEnabled } = useAppSelector(state => state.settings, shallowEqual)
+export default (): JSX.Element => {
+    const { user, isSlackEnabled } = useAppSelector(state => state.settings, shallowEqual)
+
     const dispatch = useAppDispatch()
 
     useEffect(() => {
@@ -20,19 +21,37 @@ export default function Settings(): JSX.Element {
 
     return (
         <Main>
+            <Settings 
+                user={user}
+                isSlackEnabled={isSlackEnabled}
+            />
+        </Main>
+    )
+}
+
+interface SettingsProps extends UserDescriptionsProps {
+    isSlackEnabled: boolean
+}
+
+function Settings({
+    user,
+    isSlackEnabled
+}: SettingsProps): JSX.Element {
+    return (
+        <>
             <Helmet>
                 <title>Settings</title>
             </Helmet>
             <h1>Settings</h1>
             <div>
-                <UserDescription />
+                <UserDescription user={user}/>
             </div>
             {(isSlackEnabled)?
                 <div style={{marginTop: "40px", marginBottom: "20px"}}>
-                    <SlackDescriptions />
+                    <SlackDescriptions user={user}/>
                 </div>
                 :
                 <></>}
-        </Main>
+        </>
     )
 }

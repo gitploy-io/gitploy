@@ -1,11 +1,14 @@
-import { shallowEqual } from "react-redux"
 import { Tag, Descriptions, Input } from "antd"
 
-import { useAppSelector } from "../../redux/hooks"
+import { User } from "../../models"
 
-export default function UserDescriptions(): JSX.Element {
-    const { user } = useAppSelector(state => state.settings, shallowEqual)
+export interface UserDescriptionsProps {
+    user?: User
+}
 
+export default function UserDescriptions({
+    user
+}: UserDescriptionsProps): JSX.Element {
     return (
         <Descriptions 
             title="User Info" 
