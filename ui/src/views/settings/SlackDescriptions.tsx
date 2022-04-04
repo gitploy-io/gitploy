@@ -1,11 +1,14 @@
-import { shallowEqual } from "react-redux"
 import { Button, Descriptions } from "antd"
 
-import { useAppSelector } from "../../redux/hooks"
+import { User } from "../../models"
 
-export default function SlackDescriptions(): JSX.Element {
-    const { user } = useAppSelector(state => state.settings, shallowEqual)
+export interface SlackDescriptionsProps {
+    user?: User
+}
 
+export default function SlackDescriptions({
+    user,
+}: SlackDescriptionsProps): JSX.Element {
     const connected = (user?.chatUser)? true : false
 
     return (

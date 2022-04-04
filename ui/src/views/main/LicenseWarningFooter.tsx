@@ -1,11 +1,14 @@
 import moment from "moment"
-import { shallowEqual } from "react-redux"
 
-import { useAppSelector } from "../../redux/hooks"
+import { License } from "../../models"
 
-export default function LicenseWarningFooter(): JSX.Element {
-    const { license } = useAppSelector(state => state.main, shallowEqual)
+export interface LicenseWarningFooterProps {
+    license?: License
+}
 
+export default function LicenseWarningFooter({
+    license
+}: LicenseWarningFooterProps): JSX.Element {
     if (!license) {
         return <></>
     }

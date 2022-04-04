@@ -4,18 +4,23 @@ import { shallowEqual } from "react-redux";
 import { PageHeader } from "antd"
 
 import { useAppSelector, useAppDispatch } from "../../redux/hooks"
+import { save, deactivate, repoSettingsSlice as slice } from "../../redux/repoSettings"
 import { init } from "../../redux/repoSettings"
 
-import SettingsForm from "./SettingsForm"
+import SettingsForm, { SettingFormProps } from "./SettingsForm"
+import { RequestStatus } from "../../models";
 
-interface Params {
-    namespace: string
-    name: string
-}
+export default (): JSX.Element => {
+    const { namespace, name } = useParams<{
+        namespace: string
+        name: string
+    }>()
 
-export default function RepoSettings(): JSX.Element {
-    const { namespace, name } = useParams<Params>()
-    const { repo } = useAppSelector(state => state.repoSettings, shallowEqual)
+    const { 
+        saving,
+        repo 
+    } = useAppSelector(state => state.repoSettings, shallowEqual)
+
     const dispatch = useAppDispatch()
 
     useEffect(() => {
@@ -26,6 +31,34 @@ export default function RepoSettings(): JSX.Element {
         // eslint-disable-next-line
     }, [dispatch])
 
+    const onClickFinish = (values: any) => {
+        dispatch(slice.actions.setConfigPath(values.config))
+        dispatch(save())
+    }
+
+    const onClickDeactivate = () => {
+        dispatch(deactivate())
+    }
+
+    return (
+        <RepoSettings 
+            saving={saving === RequestStatus.Pending}
+            repo={repo}
+            onClickFinish={onClickFinish}
+            onClickDeactivate={onClickDeactivate}
+        />
+    )
+}
+
+// eslint-disable-next-line
+interface RepoSettingsProps extends SettingFormProps {}
+
+function RepoSettings({
+    saving,
+    repo,
+    onClickFinish,
+    onClickDeactivate,
+}: RepoSettingsProps): JSX.Element {
     return (
         <div>
             <div>
@@ -33,8 +66,14 @@ export default function RepoSettings(): JSX.Element {
             </div>
             <div>
                 {(repo)?
-                    <SettingsForm />
-                    :<></>}
+                    <SettingsForm 
+                        saving={saving}
+                        repo={repo}
+                        onClickFinish={onClickFinish}
+                        onClickDeactivate={onClickDeactivate}
+                    />
+                    :
+                    <></>}
             </div>
         </div>
     )

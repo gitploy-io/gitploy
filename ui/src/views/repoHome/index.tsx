@@ -7,25 +7,25 @@ import { useAppSelector, useAppDispatch } from '../../redux/hooks'
 import { repoHomeSlice as slice, fetchEnvs, fetchDeployments, perPage } from '../../redux/repoHome'
 import { subscribeEvents } from "../../apis"
 
-import ActivityLogs from './ActivityLogs'
+import ActivityLogs, { ActivityLogsProps } from './ActivityLogs'
 import Spin from '../../components/Spin'
-import Pagination from '../../components/Pagination'
+import Pagination, { PaginationProps } from '../../components/Pagination'
 
 const { Option } = Select
 
-interface Params {
-    namespace: string
-    name: string
-}
+export default (): JSX.Element => {
+    const { namespace, name } = useParams<{
+        namespace: string,
+        name: string
+    }>()
 
-export default function RepoHome(): JSX.Element {
-    const { namespace, name } = useParams<Params>()
     const {
         loading,
         deployments,
         envs,
-        page
+        page,
     } = useAppSelector(state => state.repoHome, shallowEqual)
+
     const dispatch = useAppDispatch()
 
     useEffect(() => {
@@ -60,6 +60,39 @@ export default function RepoHome(): JSX.Element {
         dispatch(slice.actions.increasePage())
         dispatch(fetchDeployments())
     }
+    return (
+        <RepoHome
+            loading={loading}
+            deployments={deployments}
+            envs={envs}
+            onChangeEnv={onChangeEnv}
+            disabledPrev={page <= 1}
+            disabledNext={deployments.length < perPage}
+            onClickPrev={onClickPrev}
+            onClickNext={onClickNext}
+        />
+    )
+}
+
+interface RepoHomeProps extends ActivityLogsProps, PaginationProps{
+    loading: boolean
+    envs: string[]
+    onChangeEnv(env: string): void
+}
+
+export function RepoHome({
+    // Deployments
+    loading,
+    deployments,
+    // Environment Selector
+    envs,
+    onChangeEnv,
+    // Pagination
+    disabledPrev,
+    disabledNext,
+    onClickNext,
+    onClickPrev,
+}: RepoHomeProps): JSX.Element {
 
     return (
         <div>
@@ -80,13 +113,15 @@ export default function RepoHome(): JSX.Element {
                 {(loading)? 
                     <div style={{textAlign: "center"}}><Spin /></div> 
                     :
-                    <ActivityLogs />
+                    <ActivityLogs 
+                        deployments={deployments}
+                    />
                 }
             </div>
             <div style={{marginTop: "20px", textAlign: "center"}}>
                 <Pagination 
-                    disabledPrev={page <= 1} 
-                    disabledNext={deployments.length < perPage} 
+                    disabledPrev={disabledPrev} 
+                    disabledNext={disabledNext} 
                     onClickPrev={onClickPrev} 
                     onClickNext={onClickNext} 
                 />

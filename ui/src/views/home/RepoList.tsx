@@ -1,27 +1,18 @@
-import { shallowEqual } from 'react-redux'
 import { List, Typography } from 'antd'
 import moment from "moment"
 
-import { useAppSelector } from '../../redux/hooks'
-import { Deployment } from '../../models'
+import { Repo, Deployment } from '../../models'
 import UserAvatar from '../../components/UserAvatar'
 import DeploymentStatusBadge from "../../components/DeploymentStatusBadge"
 import DeploymentRefCode from "../../components/DeploymentRefCode"
-import Spin from '../../components/Spin'
 
 const { Text, Paragraph } = Typography
 
-export default function RepoList(): JSX.Element {
-    const { loading, repos } = useAppSelector(state => state.home, shallowEqual)
+export interface RepoListProps {
+    repos: Repo[]
+}
 
-    if (loading) {
-        return (
-            <div style={{textAlign: "center"}}>
-                <Spin />
-            </div>
-        )
-    }
-
+export default function RepoList({repos}: RepoListProps): JSX.Element {
     return (
         <List
             dataSource={repos}

@@ -1,22 +1,19 @@
-import { shallowEqual } from "react-redux";
 import { Timeline, Typography } from 'antd'
 import { SyncOutlined } from '@ant-design/icons'
 import moment from "moment"
 
-import { useAppSelector } from '../../redux/hooks'
-import { DeploymentStatusEnum } from "../../models"
-
+import { Deployment, DeploymentStatusEnum } from "../../models"
 import DeploymentStatusBadge from "../../components/DeploymentStatusBadge"
 import UserAvatar from '../../components/UserAvatar'
 import DeploymentRefCode from '../../components/DeploymentRefCode'
 
 const { Text } = Typography
 
-export default function ActivityLogs(): JSX.Element {
-    const {
-        deployments,
-    } = useAppSelector(state => state.repoHome, shallowEqual)
+export interface ActivityLogsProps {
+    deployments: Deployment[]
+}
 
+export default function ActivityLogs({ deployments }: ActivityLogsProps): JSX.Element {
     return (
         <Timeline>
             {deployments.map((d, idx) => {
