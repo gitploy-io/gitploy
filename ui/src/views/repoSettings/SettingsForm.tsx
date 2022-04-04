@@ -1,14 +1,20 @@
-import { shallowEqual } from "react-redux";
 import { Form, Input, Button, Space, Typography } from "antd"
 
-import { useAppSelector, useAppDispatch } from "../../redux/hooks"
-import { save, deactivate, repoSettingsSlice as slice } from "../../redux/repoSettings"
-import { RequestStatus } from "../../models"
+import { Repo } from "../../models"
 
-export default function RepoSettingForm(): JSX.Element {
-    const { repo, saving } = useAppSelector(state => state.repoSettings, shallowEqual)
-    const dispatch = useAppDispatch()
+export interface SettingFormProps {
+    saving: boolean
+    repo?: Repo
+    onClickFinish(values: any): void
+    onClickDeactivate(): void
+}
 
+export default function SettingForm({
+    saving,
+    repo,
+    onClickFinish,
+    onClickDeactivate,
+}: SettingFormProps): JSX.Element {
     const layout = {
       labelCol: { span: 5},
       wrapperCol: { span: 12 },
@@ -17,15 +23,6 @@ export default function RepoSettingForm(): JSX.Element {
     const submitLayout = {
       wrapperCol: { offset: 5, span: 12 },
     };
-
-    const onClickFinish = (values: any) => {
-        dispatch(slice.actions.setConfigPath(values.config))
-        dispatch(save())
-    }
-
-    const onClickDeactivate = () => {
-        dispatch(deactivate())
-    }
 
     const initialValues = {
         "config": repo?.configPath
@@ -57,7 +54,7 @@ export default function RepoSettingForm(): JSX.Element {
             <Form.Item {...submitLayout}>
                 <Form.Item noStyle>
                     <Button 
-                        loading={saving === RequestStatus.Pending}
+                        loading={saving}
                         type="primary" 
                         htmlType="submit"
                     >

@@ -45,15 +45,17 @@ export default (): JSX.Element => {
     }
 
     return (
-        <Members 
-            users={users}
-            page={page}
-            onChangeSwitch={onChangeSwitch}
-            onClickDelete={onClickDelete}
-            onClickPrev={onClickPrev}
-            onClickNext={onClickNext}
-            onSearch={onSearch}
-        />
+        <Main>
+            <Members 
+                users={users}
+                page={page}
+                onChangeSwitch={onChangeSwitch}
+                onClickDelete={onClickDelete}
+                onClickPrev={onClickPrev}
+                onClickNext={onClickNext}
+                onSearch={onSearch}
+            />
+        </Main>
     )
 }
 
@@ -74,7 +76,7 @@ function Members({
     onSearch,
 }: MembersProps): JSX.Element {
     return (
-        <Main>
+        <>
             <Helmet>
                 <title>Members</title>
             </Helmet>
@@ -99,6 +101,6 @@ function Members({
                     onClickNext={onClickNext}
                 />    
             </div>
-        </Main>
+        </>
     )
 }
