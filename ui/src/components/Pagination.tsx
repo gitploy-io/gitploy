@@ -1,6 +1,6 @@
 import { Button } from 'antd'
 
-interface PaginationProps {
+export interface PaginationProps {
     disabledPrev: boolean
     disabledNext: boolean
     onClickPrev(): void
