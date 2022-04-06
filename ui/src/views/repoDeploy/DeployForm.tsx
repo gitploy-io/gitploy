@@ -1,17 +1,19 @@
 import { useState } from "react"
 import { Form, Select, Radio, Button, Typography, Avatar, Tag as AntdTag } from "antd"
 
-import { Branch, Commit, Tag, Deployment, DeploymentType, Status, Env } from "../models"
+import { Branch, Commit, Tag, Deployment, DeploymentType, Status, Env } from "../../models"
 
-import CreatableSelect, {Option as Op} from "./CreatableSelect"
-import StatusStateIcon from "./StatusStateIcon"
+import CreatableSelect, {Option as Op} from "../../components/CreatableSelect"
+import StatusStateIcon from "../../components/StatusStateIcon"
 import moment from "moment"
 
 export type Option = Op
 
 const { Text } = Typography
 
-interface DeployFormProps {
+// TODO: Remove the set functions and
+// change it so that the component returns a value when submitting.
+export interface DeployFormProps {
     envs: Env[]
     onSelectEnv(env: Env): void
     onChangeType(type: DeploymentType): void

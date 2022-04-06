@@ -1,6 +1,6 @@
 import { Modal, Form, Select, Input, InputNumber, Checkbox } from "antd"
 
-import { Env, DynamicPayloadInput, DynamicPayloadInputTypeEnum } from "../models"
+import { Env, DynamicPayloadInput, DynamicPayloadInputTypeEnum } from "../../models"
 
 export interface DynamicPayloadModalProps {
     visible: boolean

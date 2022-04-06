@@ -11,7 +11,7 @@ import ActivateButton from "../components/ActivateButton"
 import Main from './main'
 import RepoHome from './repoHome'
 import RepoLock from "./repoLock"
-import RepoDeploy from './RepoDeploy'
+import RepoDeploy from './repoDeploy'
 import RepoRollabck from './RepoRollback'
 import RepoSettings from "./repoSettings"
 

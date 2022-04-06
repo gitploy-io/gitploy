@@ -20,7 +20,7 @@ export default function ActivityLogs({ deployments }: ActivityLogsProps): JSX.El
                 const dot = (d.status === DeploymentStatusEnum.Running)? 
                     <SyncOutlined style={{color: "purple"}} spin />
                     : 
-                    <></>
+                    null
                 const avatar = <UserAvatar user={d.deployer} />
 
                 return (
