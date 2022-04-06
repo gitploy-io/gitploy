@@ -4,18 +4,18 @@ import { useParams } from "react-router-dom";
 import { PageHeader, Button } from 'antd'
 import { Result } from "antd"
 
-import { useAppSelector, useAppDispatch } from "../redux/hooks"
-import { fetchConfig, listLocks, lock, unlock, repoLockSlice as slice, setAutoUnlock} from "../redux/repoLock"
-import LockList from '../components/LockList'
+import { useAppSelector, useAppDispatch } from "../../redux/hooks"
+import { fetchConfig, listLocks, lock, unlock, repoLockSlice as slice, setAutoUnlock} from "../../redux/repoLock"
+import LockList, { LockListProps } from "./LockList"
 
-interface Params {
-    namespace: string
-    name: string
-}
+export default (): JSX.Element => {
+    const { namespace, name } = useParams<{
+        namespace: string
+        name: string
+    }>()
 
-export default function RepoLock(): JSX.Element {
-    const { namespace, name } = useParams<Params>()
     const { display, config, locks } = useAppSelector(state => state.repoLock, shallowEqual)
+
     const dispatch = useAppDispatch()
 
     useEffect(() => {
@@ -28,6 +28,18 @@ export default function RepoLock(): JSX.Element {
         f()
         // eslint-disable-next-line 
     }, [dispatch])
+
+    const onClickLock = (env: string) => {
+        dispatch(lock(env))
+    }
+
+    const onClickUnlock = (env: string) => {
+        dispatch(unlock(env))
+    }
+
+    const onChangeExpiredAt = (env: string, expiredAt: Date) => {
+        dispatch(setAutoUnlock({env, expiredAt}))
+    }
 
     if (!display) {
         return <></>
@@ -50,17 +62,26 @@ export default function RepoLock(): JSX.Element {
         )
     }
 
-    const onClickLock = (env: string) => {
-        dispatch(lock(env))
-    }
+    return (
+        <RepoLock 
+            envs={(config)? config.envs : []}
+            locks={locks}
+            onClickLock={onClickLock}
+            onClickUnlock={onClickUnlock}
+            onChangeExpiredAt={onChangeExpiredAt}
+        />
+    )
+}
 
-    const onClickUnlock = (env: string) => {
-        dispatch(unlock(env))
-    }
+interface RepoLockProps extends LockListProps {}
 
-    const onChangeExpiredAt = (env: string, expiredAt: Date) => {
-        dispatch(setAutoUnlock({env, expiredAt}))
-    }
+function RepoLock({
+    envs,
+    locks,
+    onChangeExpiredAt,
+    onClickLock,
+    onClickUnlock
+}: RepoLockProps): JSX.Element {
 
     return <div>
         <div>
@@ -68,7 +89,7 @@ export default function RepoLock(): JSX.Element {
         </div>
         <div style={{padding: "16px 24px"}}>
             <LockList
-                envs={(config)? config.envs:[]}
+                envs={envs}
                 locks={locks}
                 onClickLock={onClickLock}
                 onClickUnlock={onClickUnlock}

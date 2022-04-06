@@ -6,10 +6,10 @@ import {
 import { LockOutlined, UnlockOutlined } from "@ant-design/icons"
 import moment from 'moment'
 
-import { Env, Lock } from "../models"
-import UserAvatar from './UserAvatar'
+import { Env, Lock } from "../../models"
+import UserAvatar from '../../components/UserAvatar'
 
-interface LockListProps {
+export interface LockListProps {
     envs: Env[]
     locks: Lock[]
     onClickLock(env: string): void
