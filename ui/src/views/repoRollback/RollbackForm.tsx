@@ -4,6 +4,8 @@ import moment from 'moment'
 import { Deployment, Env } from "../../models"
 import DeploymentRefCode from '../../components/DeploymentRefCode'
 
+// TODO: Remove the set functions and
+// change it so that the component returns a value when submitting.
 export interface RollbackFormProps {
     envs: Env[]
     onSelectEnv(env: Env): void
