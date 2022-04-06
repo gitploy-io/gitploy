@@ -6,7 +6,7 @@ import {
 } from "react-router-dom";
 
 import Home from "./views/home"
-import Repo from "./views/Repo"
+import Repo from "./views/repo"
 import Deployment from "./views/deployment"
 import Settings from "./views/settings"
 import Members from "./views/members"

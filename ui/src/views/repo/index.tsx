@@ -4,16 +4,16 @@ import { shallowEqual } from "react-redux";
 import { useEffect } from "react";
 import { Helmet } from "react-helmet"
 
-import { useAppSelector, useAppDispatch } from '../redux/hooks'
-import { init, activate, repoSlice as slice } from '../redux/repo'
+import { useAppSelector, useAppDispatch } from '../../redux/hooks'
+import { init, activate, repoSlice as slice } from '../../redux/repo'
 
-import ActivateButton from "../components/ActivateButton"
-import Main from './main'
-import RepoHome from './repoHome'
-import RepoLock from "./repoLock"
-import RepoDeploy from './repoDeploy'
-import RepoRollabck from './repoRollback'
-import RepoSettings from "./repoSettings"
+import ActivateButton from "../../components/ActivateButton"
+import Main from '../main'
+import RepoHome from '../repoHome'
+import RepoLock from "../repoLock"
+import RepoDeploy from '../repoDeploy'
+import RepoRollabck from '../repoRollback'
+import RepoSettings from "../repoSettings"
 
 interface Params {
     namespace: string
@@ -21,7 +21,7 @@ interface Params {
     tab: string
 }
 
-export default function Repo(): JSX.Element {
+export default (): JSX.Element => {
     const { namespace, name, tab } = useParams<Params>()
     const { display, repo } = useAppSelector(state => state.repo, shallowEqual)
     const dispatch = useAppDispatch()
@@ -39,23 +39,51 @@ export default function Repo(): JSX.Element {
         dispatch(activate())
     }
 
-    const active = (repo?.active)? true : false
-    
     if (!display) {
-        return <Main>
-            <div />
-        </Main>
+        return (
+            <Main>
+                <div />
+            </Main>
+        )
     } else if (display && !repo) {
-        return <Main>
-            <Result
-                style={{paddingTop: '120px'}}
-                status="warning"
-                title="The page is not found."
-                subTitle="Please check the URL."
-            />
-        </Main>
+        return (
+            <Main>
+                <Result
+                    style={{paddingTop: '120px'}}
+                    status="warning"
+                    title="The page is not found."
+                    subTitle="Please check the URL."
+                />
+            </Main>
+        )
     }
 
+    return (
+        <Repo 
+            namespace={namespace}
+            name={name}
+            tab={tab}
+            active={(repo?.active)? true : false}
+            onClickActivate={onClickActivate}
+        />
+    )
+}
+
+interface RepoProps {
+    namespace: string
+    name: string
+    tab: string
+    active: boolean
+    onClickActivate(): void
+}
+
+function Repo({
+    namespace,
+    name,
+    tab,
+    active,
+    onClickActivate
+}: RepoProps): JSX.Element {
     const styleActivateButton: React.CSSProperties = {
         display: (!active)? "" : "none",
         marginTop: "20px", 
