@@ -3,8 +3,8 @@ import { shallowEqual } from "react-redux";
 import { useParams } from "react-router-dom";
 import { PageHeader, Result, Button } from "antd";
 
-import { useAppSelector, useAppDispatch } from "../redux/hooks"
-import { DeploymentType, Branch, Commit, Tag, RequestStatus, Env } from "../models";
+import { useAppSelector, useAppDispatch } from "../../redux/hooks"
+import { DeploymentType, Branch, Commit, Tag, RequestStatus, Env } from "../../models";
 import { 
     fetchConfig, 
     repoDeploySlice, 
@@ -21,20 +21,18 @@ import {
     searchCandidates,
     fetchUser,
     deploy
-} from "../redux/repoDeploy"
-
-import DeployForm, {Option} from "../components/DeployForm"
-import DynamicPayloadModal from "../components/DynamicPayloadModal";
+} from "../../redux/repoDeploy"
+import DeployForm, { DeployFormProps,  Option} from "./DeployForm"
+import DynamicPayloadModal, { DynamicPayloadModalProps } from "./DynamicPayloadModal"
 
 const { actions } = repoDeploySlice
 
-interface Params {
-    namespace: string
-    name: string
-}
+export default (): JSX.Element => {
+    const { namespace, name } = useParams<{
+        namespace: string
+        name: string
+    }>()
 
-export default function RepoDeploy(): JSX.Element {
-    const { namespace, name } = useParams<Params>()
     const { 
         display,
         config, 
@@ -48,9 +46,8 @@ export default function RepoDeploy(): JSX.Element {
         tags, 
         tagStatuses,
         deploying } = useAppSelector(state => state.repoDeploy, shallowEqual)
-    const dispatch = useAppDispatch()
 
-    const [payloadModalVisible, setPayloadModalVisible] = useState(false);
+    const dispatch = useAppDispatch()
 
     useEffect(() => {
         const f = async () => {
@@ -104,20 +101,11 @@ export default function RepoDeploy(): JSX.Element {
     }
 
     const onClickDeploy = () => {
-        if (env?.dynamicPayload?.enabled) {
-            setPayloadModalVisible(true)
-        } else {
-            dispatch(deploy(null))
-        }
+        dispatch(deploy(null))
     }
 
     const onClickDeployWithPayload = (values: any) => {
         dispatch(deploy(values))
-        setPayloadModalVisible(false)
-    }
-
-    const onClickCancel = () => {
-        setPayloadModalVisible(false)
     }
 
     if (!display) {
@@ -139,6 +127,81 @@ export default function RepoDeploy(): JSX.Element {
                 ]}
             />
         )
+    }
+    return (
+        <RepoDeploy 
+            envs={envs}
+            onSelectEnv={onSelectEnv}
+            onChangeType={onChangeType}
+            currentDeployment={currentDeployment}
+            branches={branches}
+            onSelectBranch={onSelectBranch}
+            onClickAddBranch={onClickAddBranch}
+            branchStatuses={branchStatuses}
+            commits={commits}
+            onSelectCommit={onSelectCommit}
+            onClickAddCommit={onClickAddCommit}
+            commitStatuses={commitStatuses}
+            tags={tags}
+            onSelectTag={onSelectTag}
+            onClickAddTag={onClickAddTag}
+            tagStatuses={tagStatuses}
+            deploying={deploying === RequestStatus.Pending}
+            onClickDeploy={onClickDeploy}
+            env={env}
+            onClickOk={onClickDeployWithPayload}
+        />
+    )
+}
+
+interface RepoDeployProps extends 
+    DeployFormProps,
+    Omit<DynamicPayloadModalProps, "visible" | "env" | "onClickCancel"> {
+    env?: Env
+}
+
+function RepoDeploy({
+    // Properities for the DeployForm component.
+    envs, 
+    onSelectEnv,
+    onChangeType,
+    currentDeployment,
+    branches,
+    onSelectBranch,
+    onClickAddBranch,
+    branchStatuses,
+    commits,
+    onSelectCommit,
+    onClickAddCommit,
+    commitStatuses,
+    tags,
+    onSelectTag,
+    onClickAddTag,
+    tagStatuses,
+    deploying,
+    onClickDeploy,
+    // Properties for the DynamicPayloadModal component.
+    env,
+    onClickOk,
+}: RepoDeployProps): JSX.Element {
+
+    const [payloadModalVisible, setPayloadModalVisible] = useState(false);
+
+    const _onClickDeploy = () => {
+        if (env?.dynamicPayload?.enabled) {
+            setPayloadModalVisible(true)
+        } else {
+            onClickDeploy()
+        }
+    }
+
+    const _onClickOk = (values: any) => {
+        onClickOk(values)
+        setPayloadModalVisible(false)
+    }
+
+    const onClickCancel = () => {
+        setPayloadModalVisible(false)
     }
 
     return (
@@ -166,14 +229,14 @@ export default function RepoDeploy(): JSX.Element {
                     onSelectTag={onSelectTag}
                     onClickAddTag={onClickAddTag}
                     tagStatuses={tagStatuses}
-                    deploying={deploying === RequestStatus.Pending}
-                    onClickDeploy={onClickDeploy} 
+                    deploying={deploying}
+                    onClickDeploy={_onClickDeploy} 
                 />
                 {(env)? 
                     <DynamicPayloadModal
                         visible={payloadModalVisible}
                         env={env}
-                        onClickOk={onClickDeployWithPayload}
+                        onClickOk={_onClickOk}
                         onClickCancel={onClickCancel}
                     />
                     :
