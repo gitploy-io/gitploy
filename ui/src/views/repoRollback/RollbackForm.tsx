@@ -1,10 +1,12 @@
 import { Form, Select, Button, Avatar } from 'antd'
 import moment from 'moment'
 
-import { Deployment, Env } from "../models"
-import DeploymentRefCode from './DeploymentRefCode'
+import { Deployment, Env } from "../../models"
+import DeploymentRefCode from '../../components/DeploymentRefCode'
 
-interface RollbackFormProps {
+// TODO: Remove the set functions and
+// change it so that the component returns a value when submitting.
+export interface RollbackFormProps {
     envs: Env[]
     onSelectEnv(env: Env): void
     deployments: Deployment[]
