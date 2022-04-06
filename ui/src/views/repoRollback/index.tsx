@@ -17,19 +17,20 @@ import RollbackForm, { RollbackFormProps } from "./RollbackForm"
 
 const { actions } = repoRollbackSlice
 
-export interface Params {
-    namespace: string
-    name: string
-}
-
 export default ():JSX.Element => {
-    const { namespace, name } = useParams<Params>()
+    const { namespace, name } = useParams<{
+        namespace: string
+        name: string
+    }>()
+
     const {
         display,
         config,
         envs,
         deployments, 
-        deploying } = useAppSelector(state => state.repoRollback, shallowEqual)
+        deploying 
+    } = useAppSelector(state => state.repoRollback, shallowEqual)
+
     const dispatch = useAppDispatch()
 
     useEffect(() => {
