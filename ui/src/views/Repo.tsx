@@ -12,7 +12,7 @@ import Main from './main'
 import RepoHome from './repoHome'
 import RepoLock from "./repoLock"
 import RepoDeploy from './repoDeploy'
-import RepoRollabck from './RepoRollback'
+import RepoRollabck from './repoRollback'
 import RepoSettings from "./repoSettings"
 
 interface Params {

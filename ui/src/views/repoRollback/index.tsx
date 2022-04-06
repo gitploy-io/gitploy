@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { PageHeader, Result, Button } from 'antd'
 import { shallowEqual } from "react-redux";
 
-import { useAppDispatch, useAppSelector } from "../redux/hooks"
+import { useAppDispatch, useAppSelector } from "../../redux/hooks"
 import { 
     repoRollbackSlice, 
     fetchConfig, 
@@ -11,10 +11,9 @@ import {
     searchCandidates, 
     fetchUser,
     rollback,
-} from "../redux/repoRollback"
-
-import { Deployment, RequestStatus, Env } from '../models'
-import RollbackForm from "../components/RollbackForm";
+} from "../../redux/repoRollback"
+import { Deployment, RequestStatus, Env } from "../../models"
+import RollbackForm, { RollbackFormProps } from "./RollbackForm"
 
 const { actions } = repoRollbackSlice
 
@@ -23,7 +22,7 @@ export interface Params {
     name: string
 }
 
-export default function RepoHome(): JSX.Element {
+export default ():JSX.Element => {
     const { namespace, name } = useParams<Params>()
     const {
         display,
@@ -83,6 +82,29 @@ export default function RepoHome(): JSX.Element {
     }
 
     return (
+        <RepoRollback 
+            envs={envs}
+            onSelectEnv={onSelectEnv}
+            deployments={deployments}
+            onSelectDeployment={onSelectDeployment}
+            onClickRollback={onClickRollback}
+            deploying={deploying === RequestStatus.Pending}
+        />
+    )
+}
+
+interface RepoRollbackProps extends RollbackFormProps {}
+
+function RepoRollback({
+    envs,
+    onSelectEnv,
+    deployments,
+    onSelectDeployment,
+    onClickRollback,
+    deploying
+}: RepoRollbackProps): JSX.Element {
+
+    return (
         <div>
             <div>
                 <PageHeader
@@ -96,7 +118,7 @@ export default function RepoHome(): JSX.Element {
                     deployments={deployments}
                     onSelectDeployment={onSelectDeployment}
                     onClickRollback={onClickRollback}
-                    deploying={deploying === RequestStatus.Pending} 
+                    deploying={deploying} 
                 />
             </div>
         </div>

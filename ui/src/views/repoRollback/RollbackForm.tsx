@@ -1,10 +1,10 @@
 import { Form, Select, Button, Avatar } from 'antd'
 import moment from 'moment'
 
-import { Deployment, Env } from "../models"
-import DeploymentRefCode from './DeploymentRefCode'
+import { Deployment, Env } from "../../models"
+import DeploymentRefCode from '../../components/DeploymentRefCode'
 
-interface RollbackFormProps {
+export interface RollbackFormProps {
     envs: Env[]
     onSelectEnv(env: Env): void
     deployments: Deployment[]
