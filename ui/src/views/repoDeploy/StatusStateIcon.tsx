@@ -1,7 +1,7 @@
 import { Popover, Avatar, Typography, Row, Col, Divider, Space } from "antd"
 import { CheckOutlined, CloseOutlined, StopOutlined, ExclamationCircleOutlined, ClockCircleOutlined } from "@ant-design/icons"
 
-import { Status, StatusState } from "../models"
+import { Status, StatusState } from "../../models"
 
 const colorSuccess = "#1a7f37"
 const colorFailure = "#cf222e"

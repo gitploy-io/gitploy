@@ -4,7 +4,7 @@ import { Form, Select, Radio, Button, Typography, Avatar, Tag as AntdTag } from 
 import { Branch, Commit, Tag, Deployment, DeploymentType, Status, Env } from "../../models"
 
 import CreatableSelect, {Option as Op} from "../../components/CreatableSelect"
-import StatusStateIcon from "../../components/StatusStateIcon"
+import StatusStateIcon from "./StatusStateIcon"
 import moment from "moment"
 
 export type Option = Op
