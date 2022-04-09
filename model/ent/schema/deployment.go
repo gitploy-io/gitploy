@@ -107,7 +107,7 @@ func (Deployment) Indexes() []ent.Index {
 		index.Fields("repo_id", "env", "created_at"),
 		index.Fields("repo_id", "created_at"),
 		// The deployment number is unique for the repo.
-		index.Fields("number", "repo_id").
+		index.Fields("repo_id", "number").
 			Unique(),
 		// Find by UID when the hook is coming.
 		index.Fields("uid"),

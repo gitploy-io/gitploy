@@ -90,9 +90,9 @@ var (
 				Columns: []*schema.Column{DeploymentsColumns[16], DeploymentsColumns[12]},
 			},
 			{
-				Name:    "deployment_number_repo_id",
+				Name:    "deployment_repo_id_number",
 				Unique:  true,
-				Columns: []*schema.Column{DeploymentsColumns[1], DeploymentsColumns[16]},
+				Columns: []*schema.Column{DeploymentsColumns[16], DeploymentsColumns[1]},
 			},
 			{
 				Name:    "deployment_uid",

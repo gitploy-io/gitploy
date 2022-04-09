@@ -290,12 +290,6 @@ func TestStore_GetNextDeploymentNumberOfRepo(t *testing.T) {
 	})
 
 	t.Run("Return two when there is a single deployment.", func(t *testing.T) {
-		const (
-			u1 = 1
-			r1 = 1
-			r2 = 2
-		)
-
 		client := enttest.Open(t, "sqlite3", "file:ent?mode=memory&cache=shared&_fk=1",
 			enttest.WithMigrateOptions(migrate.WithForeignKeys(false)),
 		)
@@ -309,8 +303,8 @@ func TestStore_GetNextDeploymentNumberOfRepo(t *testing.T) {
 			SetType("branch").
 			SetRef("main").
 			SetEnv("local").
-			SetUserID(u1).
-			SetRepoID(r1).
+			SetUserID(1).
+			SetRepoID(1).
 			SetStatus(deployment.StatusCreated).
 			SaveX(ctx)
 
@@ -320,14 +314,14 @@ func TestStore_GetNextDeploymentNumberOfRepo(t *testing.T) {
 			SetType("branch").
 			SetRef("main").
 			SetEnv("prod").
-			SetUserID(u1).
-			SetRepoID(r2).
+			SetUserID(1).
+			SetRepoID(2).
 			SetStatus(deployment.StatusCreated).
 			SaveX(ctx)
 
 		s := NewStore(client)
 
-		number, err := s.GetNextDeploymentNumberOfRepo(ctx, &ent.Repo{ID: r1})
+		number, err := s.GetNextDeploymentNumberOfRepo(ctx, &ent.Repo{ID: 1})
 		if err != nil {
 			t.Fatalf("GetNextDeploymentNumberOfRepo returns an error: %s", err)
 			t.FailNow()
