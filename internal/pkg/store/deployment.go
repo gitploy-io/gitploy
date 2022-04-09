@@ -196,16 +196,29 @@ func (s *Store) FindDeploymentByUID(ctx context.Context, uid int64) (*ent.Deploy
 }
 
 func (s *Store) GetNextDeploymentNumberOfRepo(ctx context.Context, r *ent.Repo) (int, error) {
-	cnt, err := s.c.Deployment.Query().
-		Where(
-			deployment.RepoID(r.ID),
-		).
-		Count(ctx)
+	var v []struct {
+		RepoID int64 `json:"repo_id"`
+		Max    int   `json:"max"`
+	}
+	err := s.c.Deployment.Query().
+		Where(deployment.RepoID(r.ID)).
+		GroupBy(deployment.FieldRepoID).
+		Aggregate(ent.Max(deployment.FieldNumber)).
+		Scan(ctx, &v)
 	if err != nil {
-		return 0, err
+		return 0, e.NewError(e.ErrorCodeInternalError, err)
 	}
 
-	return cnt + 1, nil
+	if len(v) >= 2 {
+		return 0, e.NewErrorWithMessage(e.ErrorCodeInternalError, "The result format of query is invalid.", err)
+	}
+
+	// The return value must be one when there is no deployment record.
+	if len(v) == 0 {
+		return 1, nil
+	}
+
+	return v[0].Max + 1, nil
 }
 
 // FindPrevRunningDeployment find a deployment of which the status is created, queued, or running.
