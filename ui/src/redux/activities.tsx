@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit"
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
 
 import { 
     searchDeployments as _searchDeployments, 
@@ -8,8 +8,6 @@ import { Deployment, } from "../models"
 export const perPage = 30
 
 interface ActivitiesState {
-    start?: Date
-    end?: Date
     loading: boolean
     deployments: Deployment[]
     page: number
@@ -21,12 +19,19 @@ const initialState: ActivitiesState = {
     page: 1,
 }
 
-export const searchDeployments = createAsyncThunk<Deployment[], void, { state: { activities: ActivitiesState } }>(
+export const searchDeployments = createAsyncThunk<
+    Deployment[], {
+        start?: Date,
+        end?: Date,
+        productionOnly: boolean,
+    }, {
+    state: { activities: ActivitiesState } 
+}>(
     "activities/searchDeployments",
-    async (_, { getState, rejectWithValue }) => {
-        const {start, end, page} = getState().activities
+    async ({start, end, productionOnly}, { getState, rejectWithValue }) => {
+        const {page} = getState().activities
         try {
-            return await _searchDeployments([], false, start, end, page, perPage)
+            return await _searchDeployments([], false, productionOnly, start, end, page, perPage)
         } catch (e) {
             return rejectWithValue(e)
         }
@@ -37,12 +42,6 @@ export const activitiesSlice = createSlice({
     name: "activities",
     initialState,
     reducers: {
-        setStart: (state, action: PayloadAction<Date>) => {
-            state.start = action.payload
-        },
-        setEnd: (state, action: PayloadAction<Date>) => {
-            state.end = action.payload
-        },
         increasePage: (state) => {
             state.page = state.page + 1
         },

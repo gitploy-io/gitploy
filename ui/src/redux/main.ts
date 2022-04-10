@@ -88,7 +88,7 @@ export const searchDeployments = createAsyncThunk<Deployment[], void, { state: {
                 DeploymentStatusEnum.Created, 
                 DeploymentStatusEnum.Queued,
                 DeploymentStatusEnum.Running,
-            ], false)
+            ], false, false)
             return deployments
         } catch (e) {
             return rejectWithValue(e)

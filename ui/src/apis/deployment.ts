@@ -150,7 +150,7 @@ function mapDeploymentStatusToString(status: DeploymentStatusEnum): string {
 
 }
 
-export const searchDeployments = async (statuses: DeploymentStatusEnum[], owned: boolean, from?: Date, to?: Date, page = 1, perPage = 30): Promise<Deployment[]> => {
+export const searchDeployments = async (statuses: DeploymentStatusEnum[], owned: boolean, productionOnly: boolean, from?: Date, to?: Date, page = 1, perPage = 30): Promise<Deployment[]> => {
     const ss: string[] = []
     statuses.forEach((status) => {
         ss.push(mapDeploymentStatusToString(status))
@@ -159,7 +159,7 @@ export const searchDeployments = async (statuses: DeploymentStatusEnum[], owned:
     const fromParam = (from)? `from=${from.toISOString()}` : ""
     const toParam = (to)? `&to=${to.toISOString()}` : ""
     
-    const deployments: Deployment[] = await _fetch(`${instance}/api/v1/search/deployments?statuses=${ss.join(",")}&owned=${owned}&${fromParam}&${toParam}&page=${page}&per_page=${perPage}`, {
+    const deployments: Deployment[] = await _fetch(`${instance}/api/v1/search/deployments?statuses=${ss.join(",")}&owned=${owned}&production_only=${productionOnly}&${fromParam}&${toParam}&page=${page}&per_page=${perPage}`, {
         headers,
         credentials: 'same-origin',
     })

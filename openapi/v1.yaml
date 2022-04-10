@@ -1345,6 +1345,12 @@ paths:
             type: boolean
             description: Own deployments.
         - in: query
+          name: production_only
+          required: false
+          schema:
+            type: boolean
+            description: Return the deployments for the production environment.
+        - in: query
           name: from
           required: false
           schema:

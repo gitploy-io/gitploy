@@ -6,11 +6,10 @@ import { useAppSelector, useAppDispatch } from "../../redux/hooks"
 import { perPage, activitiesSlice, searchDeployments } from "../../redux/activities"
 
 import Main from "../main"
-import SearchActivities, { SearchActivitiesProps } from "./SearchActivities"
+import SearchActivities, { SearchActivitiesProps, SearchActivitiesValues } from "./SearchActivities"
 import ActivityHistory, { ActivityHistoryProps } from "./ActivityHistory"
 import Pagination, { PaginationProps } from "../../components/Pagination"
 import Spin from "../../components/Spin"
-import { deploy } from "../../redux/repoDeploy"
 
 const { actions } = activitiesSlice
 
@@ -24,16 +23,20 @@ export default ():JSX.Element => {
     const dispatch = useAppDispatch()
 
     useEffect(() => {
-        dispatch(searchDeployments())
+        dispatch(searchDeployments({
+            productionOnly: false
+        }))
+
         // eslint-disable-next-line 
     }, [dispatch])
 
-    const onChangePeriod = (start: Date, end: Date) => {
-        dispatch(actions.setStart(start))
-        dispatch(actions.setEnd(end))
+    const onClickSearch = (values: SearchActivitiesValues) => {
+        dispatch(searchDeployments({
+            start: values.period? values.period[0].toDate() : undefined,
+            end: values.period? values.period[1].toDate() : undefined,
+            productionOnly: values.productionOnly? values.productionOnly : false
+        }))
     }
-
-    const onClickSearch = () => dispatch(searchDeployments())
 
     const onClickPrev = () => dispatch(actions.decreasePage())
 
@@ -42,7 +45,6 @@ export default ():JSX.Element => {
     return (
         <Main>
             <Activities 
-                onChangePeriod={onChangePeriod}
                 onClickSearch={onClickSearch}
                 loading={loading}
                 deployments={deployments}
@@ -61,7 +63,7 @@ interface ActivitiesProps extends SearchActivitiesProps, ActivityHistoryProps, P
 
 function Activities({
     // Properties to search.
-    onChangePeriod,
+    initialValues,
     onClickSearch,
     // Properties for the deployment history.
     loading,
@@ -81,7 +83,7 @@ function Activities({
             <div style={{marginTop: 30}}>
                 <h2>Search</h2>
                 <SearchActivities 
-                    onChangePeriod={onChangePeriod}
+                    initialValues={initialValues}
                     onClickSearch={onClickSearch}
                 />
             </div>
