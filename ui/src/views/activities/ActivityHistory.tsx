@@ -1,15 +1,15 @@
 import { Timeline, Typography } from 'antd'
 import moment from "moment"
 
-import { Deployment } from "../models"
-import DeploymentStatusBadge from "./DeploymentStatusBadge"
-import UserAvatar from './UserAvatar'
-import DeploymentRefCode from './DeploymentRefCode'
-import { getStatusColor } from "./partials"
+import { Deployment } from "../../models"
+import DeploymentStatusBadge from "../../components/DeploymentStatusBadge"
+import UserAvatar from '../../components/UserAvatar'
+import DeploymentRefCode from '../../components/DeploymentRefCode'
+import { getStatusColor } from "../../components/partials"
 
 const { Text } = Typography
 
-interface ActivityHistoryProps {
+export interface ActivityHistoryProps {
     deployments: Deployment[]
 }
 

@@ -2,18 +2,19 @@ import { useEffect } from "react"
 import { shallowEqual } from 'react-redux'
 import { Helmet } from "react-helmet"
 
-import { useAppSelector, useAppDispatch } from "../redux/hooks"
-import { perPage, activitiesSlice, searchDeployments } from "../redux/activities"
+import { useAppSelector, useAppDispatch } from "../../redux/hooks"
+import { perPage, activitiesSlice, searchDeployments } from "../../redux/activities"
 
-import Main from "./Main"
-import SearchActivities from "../components/SearchActivities"
-import ActivityHistory from "../components/ActivityHistory"
-import Pagination from "../components/Pagination"
-import Spin from '../components/Spin'
+import Main from "../main"
+import SearchActivities, { SearchActivitiesProps } from "./SearchActivities"
+import ActivityHistory, { ActivityHistoryProps } from "./ActivityHistory"
+import Pagination, { PaginationProps } from "../../components/Pagination"
+import Spin from "../../components/Spin"
+import { deploy } from "../../redux/repoDeploy"
 
 const { actions } = activitiesSlice
 
-export default function Activities(): JSX.Element {
+export default ():JSX.Element => {
     const { 
         loading,
         deployments,
@@ -40,6 +41,39 @@ export default function Activities(): JSX.Element {
 
     return (
         <Main>
+            <Activities 
+                onChangePeriod={onChangePeriod}
+                onClickSearch={onClickSearch}
+                loading={loading}
+                deployments={deployments}
+                disabledPrev={page <= 1}
+                disabledNext={deployments.length != perPage}
+                onClickPrev={onClickPrev}
+                onClickNext={onClickNext}
+            />
+        </Main>
+    )
+}
+
+interface ActivitiesProps extends SearchActivitiesProps, ActivityHistoryProps, PaginationProps  {
+    loading: boolean
+}
+
+function Activities({
+    // Properties to search.
+    onChangePeriod,
+    onClickSearch,
+    // Properties for the deployment history.
+    loading,
+    deployments,
+    // Pagination for the pagination.
+    disabledPrev,
+    disabledNext,
+    onClickPrev,
+    onClickNext
+}: ActivitiesProps): JSX.Element {
+    return (
+        <>
             <Helmet>
                 <title>Activities</title>
             </Helmet>
@@ -64,11 +98,11 @@ export default function Activities(): JSX.Element {
             </div>
             <div style={{marginTop: 30, textAlign: "center"}}>
                 <Pagination 
-                    page={page} 
-                    isLast={deployments.length !== perPage} 
+                    disabledPrev={disabledPrev}
+                    disabledNext={disabledNext}
                     onClickPrev={onClickPrev} 
                     onClickNext={onClickNext} />
             </div>
-        </Main>
+        </>
     )
 }

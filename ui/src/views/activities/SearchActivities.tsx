@@ -1,7 +1,7 @@
 import { Row, Col, Form, DatePicker, Button, Switch } from "antd"
 import moment from "moment"
 
-interface SearchActivitiesProps {
+export interface SearchActivitiesProps {
     onChangePeriod(start: Date, end: Date): void
     onClickSearch(): void
 }
