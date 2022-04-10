@@ -102,7 +102,7 @@ var (
 			{
 				Name:    "deployment_created_at_status",
 				Unique:  false,
-				Columns: []*schema.Column{DeploymentsColumns[6], DeploymentsColumns[12]},
+				Columns: []*schema.Column{DeploymentsColumns[12], DeploymentsColumns[6]},
 			},
 		},
 	}
