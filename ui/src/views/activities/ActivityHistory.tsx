@@ -28,9 +28,7 @@ export default function ActivityHistory(props: ActivityHistoryProps): JSX.Elemen
                             </a>
                         </p>
                         <p>
-                            <UserAvatar user={d.deployer} /> deployed <DeploymentRefCode deployment={d}/>&nbsp;
-                            to <Text strong>{d.env}</Text>&nbsp;
-                            on {moment(d.createdAt).format("LLL")} <DeploymentStatusBadge deployment={d}/>
+                            <UserAvatar user={d.deployer} /> deployed <DeploymentRefCode deployment={d}/> to <Text strong>{d.env}</Text> on {moment(d.createdAt).format("LLL")} <DeploymentStatusBadge deployment={d}/>
                         </p>
                     </Timeline.Item>
                 )
