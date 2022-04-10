@@ -39,10 +39,11 @@ type (
 	SearchDeploymentsOfUserOptions struct {
 		ListOptions
 
-		Statuses []deployment.Status
-		Owned    bool
-		From     time.Time
-		To       time.Time
+		Statuses       []deployment.Status
+		Owned          bool
+		ProductionOnly bool
+		From           time.Time
+		To             time.Time
 	}
 
 	// ListInactiveDeploymentsLessThanTimeOptions specifies the optional parameters that

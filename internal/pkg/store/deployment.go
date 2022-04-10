@@ -35,56 +35,43 @@ func (s *Store) SearchDeploymentsOfUser(ctx context.Context, u *ent.User, opt *i
 		return deployment.StatusIn(ss...)
 	}
 
-	if opt.Owned {
-		return s.c.Deployment.
-			Query().
-			Where(
-				deployment.And(
-					deployment.UserIDEQ(u.ID),
-					statusIn(opt.Statuses),
-					deployment.CreatedAtGTE(opt.From),
-					deployment.CreatedAtLT(opt.To),
-				),
-			).
-			WithRepo().
-			WithUser().
-			Order(ent.Desc(deployment.FieldCreatedAt)).
-			Offset(offset(opt.Page, opt.PerPage)).
-			Limit(opt.PerPage).
-			All(ctx)
-	}
-
-	return s.c.Deployment.
+	// Build the query searching all deployments under the accessible repositories.
+	qry := s.c.Deployment.
 		Query().
 		Where(func(s *sql.Selector) {
-			t := sql.Table(perm.Table)
+			p := sql.Table(perm.Table)
 
-			// Join with Perm for Repo.ID
-			s.Join(t).
-				On(
-					s.C(deployment.FieldRepoID),
-					s.C(perm.FieldRepoID),
-				).
-				Where(
-					sql.EQ(
-						t.C(perm.FieldUserID),
-						u.ID,
-					),
-				)
+			s.Join(p).OnP(
+				sql.And(
+					sql.ColumnsEQ(p.C(perm.FieldRepoID), s.C(deployment.FieldRepoID)),
+					sql.EQ(p.C(perm.FieldUserID), u.ID),
+				),
+			)
 		}).
 		Where(
 			deployment.And(
 				statusIn(opt.Statuses),
-				deployment.CreatedAtGTE(opt.From),
-				deployment.CreatedAtLT(opt.To),
+				deployment.CreatedAtGTE(opt.From.UTC()),
+				deployment.CreatedAtLT(opt.To.UTC()),
 			),
 		).
-		WithRepo().
-		WithUser().
 		Order(ent.Desc(deployment.FieldCreatedAt)).
 		Offset(offset(opt.Page, opt.PerPage)).
 		Limit(opt.PerPage).
-		All(ctx)
+		WithRepo().
+		WithUser()
+
+	// Search only deployments that were triggered by the user.
+	if opt.Owned {
+		qry.Where(deployment.UserIDEQ(u.ID))
+	}
+
+	// Search only deployments for production environment.
+	if opt.ProductionOnly {
+		qry.Where(deployment.ProductionEnvironment(true))
+	}
+
+	return qry.All(ctx)
 }
 
 func (s *Store) ListInactiveDeploymentsLessThanTime(ctx context.Context, opt *i.ListInactiveDeploymentsLessThanTimeOptions) ([]*ent.Deployment, error) {

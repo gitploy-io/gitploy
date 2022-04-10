@@ -112,6 +112,7 @@ func (Deployment) Indexes() []ent.Index {
 		// Find by UID when the hook is coming.
 		index.Fields("uid"),
 		// List inactive deployments for 30 minutes.
-		index.Fields("status", "created_at"),
+		// Or search deployments that were created between the start time and the end time.
+		index.Fields("created_at", "status"),
 	}
 }
