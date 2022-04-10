@@ -29,6 +29,7 @@ interface DeploymentListProps {
     deployments: Deployment[]
 }
 
+// TODO: Move the component into the main view.
 function DeploymentList(props: DeploymentListProps): JSX.Element {
     return <List
         dataSource={props.deployments}

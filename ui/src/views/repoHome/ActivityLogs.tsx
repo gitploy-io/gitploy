@@ -2,18 +2,11 @@ import { Timeline, Typography } from 'antd'
 import { SyncOutlined } from '@ant-design/icons'
 import moment from "moment"
 
-<<<<<<< HEAD:ui/src/views/repoHome/ActivityLogs.tsx
 import { Deployment, DeploymentStatusEnum } from "../../models"
 import DeploymentStatusBadge from "../../components/DeploymentStatusBadge"
 import UserAvatar from '../../components/UserAvatar'
 import DeploymentRefCode from '../../components/DeploymentRefCode'
-=======
-import { Deployment, DeploymentStatusEnum } from "../models"
-import DeploymentStatusBadge from "./DeploymentStatusBadge"
-import UserAvatar from './UserAvatar'
-import DeploymentRefCode from './DeploymentRefCode'
-import { getStatusColor } from "./partials"
->>>>>>> 6d4e825 (Add ActivityHistory):ui/src/components/ActivityLogs.tsx
+import { getStatusColor } from "../../components/partials"
 
 const { Text } = Typography
 
