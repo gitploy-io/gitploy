@@ -32,8 +32,11 @@ export default function Header({
                     <Menu.Item key={1}>
                         <a href="/">Home</a>
                     </Menu.Item>
+                    <Menu.Item key={2}>
+                        <a href="/activities">Activities</a>
+                    </Menu.Item>
                     {(user?.admin)? 
-                        <Menu.Item key={2}>
+                        <Menu.Item key={3}>
                             <a href="/members">Members</a>
                         </Menu.Item>
                         : 

@@ -10,6 +10,7 @@ import Repo from "./views/repo"
 import Deployment from "./views/deployment"
 import Settings from "./views/settings"
 import Members from "./views/members"
+import Activities from "./views/activities"
 
 function App(): JSX.Element {
     return (
@@ -30,6 +31,9 @@ function App(): JSX.Element {
                     </Route>
                     <Route path="/members">
                         <Members />
+                    </Route>
+                    <Route path="/activities">
+                        <Activities />
                     </Route>
                     <Route path="/">
                         <Home />

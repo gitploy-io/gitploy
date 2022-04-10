@@ -6,6 +6,7 @@ import { Deployment, DeploymentStatusEnum } from "../../models"
 import DeploymentStatusBadge from "../../components/DeploymentStatusBadge"
 import UserAvatar from '../../components/UserAvatar'
 import DeploymentRefCode from '../../components/DeploymentRefCode'
+import { getStatusColor } from "../../components/partials"
 
 const { Text } = Typography
 
@@ -36,26 +37,4 @@ export default function ActivityLogs({ deployments }: ActivityLogsProps): JSX.El
             })}
         </Timeline>
     )
-}
-
-// https://ant.design/components/timeline/#Timeline.Item
-const getStatusColor = (status: DeploymentStatusEnum) => {
-    switch (status) {
-        case DeploymentStatusEnum.Waiting:
-            return "gray"
-        case DeploymentStatusEnum.Created:
-            return "purple"
-        case DeploymentStatusEnum.Queued:
-            return "purple"
-        case DeploymentStatusEnum.Running:
-            return "purple"
-        case DeploymentStatusEnum.Success:
-            return "green"
-        case DeploymentStatusEnum.Failure:
-            return "red"
-        case DeploymentStatusEnum.Canceled:
-            return "gray"
-        default:
-            return "gray"
-    }
 }
