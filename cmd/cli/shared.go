@@ -26,7 +26,7 @@ func buildClient(cli *cli.Context) *api.Client {
 func splitFullName(name string) (string, string, error) {
 	ss := strings.Split(name, "/")
 	if len(ss) != 2 {
-		return "", "", fmt.Errorf("'%s' is invalid format", name)
+		return "", "", fmt.Errorf("'%s' is invalid repository name", name)
 	}
 
 	return ss[0], ss[1], nil
@@ -36,7 +36,7 @@ func splitFullName(name string) (string, string, error) {
 func printJson(cli *cli.Context, v interface{}) error {
 	output, err := json.MarshalIndent(v, "", "  ")
 	if err != nil {
-		return fmt.Errorf("Failed to marshal: %w", err)
+		return fmt.Errorf("Failed to print JSON format: %w", err)
 	}
 
 	if query := cli.String("query"); query != "" {
