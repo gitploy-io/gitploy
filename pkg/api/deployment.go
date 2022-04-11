@@ -21,9 +21,10 @@ type (
 	}
 
 	DeploymentCreateRequest struct {
-		Type string `json:"type"`
-		Ref  string `json:"ref"`
-		Env  string `json:"env"`
+		Type           string                 `json:"type"`
+		Ref            string                 `json:"ref"`
+		Env            string                 `json:"env"`
+		DynamicPayload map[string]interface{} `json:"dynamic_payload"`
 	}
 )
 
