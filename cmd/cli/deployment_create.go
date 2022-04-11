@@ -6,8 +6,8 @@ import (
 	"github.com/gitploy-io/gitploy/pkg/api"
 )
 
-var deploymentDeployCommand = &cli.Command{
-	Name:      "deploy",
+var deploymentCreateCommand = &cli.Command{
+	Name:      "create",
 	Usage:     "Deploy a specific ref(branch, SHA, tag) to the environment.",
 	ArgsUsage: "<owner>/<repo>",
 	Flags: []cli.Flag{
