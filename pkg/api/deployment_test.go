@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
+	"reflect"
 	"testing"
 
 	"github.com/gitploy-io/gitploy/model/ent"
@@ -61,7 +62,12 @@ func TestDeploymentService_Create(t *testing.T) {
 				}
 
 				// Verify the fields of the body.
-				return b.Type == "branch" && b.Env == "production" && b.Ref == "main", nil
+				return b.Type == "branch" &&
+					b.Env == "production" &&
+					b.Ref == "main" &&
+					reflect.DeepEqual(b.DynamicPayload, map[string]interface{}{
+						"foo": "bar",
+					}), nil
 			}).
 			Reply(201).
 			JSON(d)
@@ -72,6 +78,9 @@ func TestDeploymentService_Create(t *testing.T) {
 			Type: "branch",
 			Env:  "production",
 			Ref:  "main",
+			DynamicPayload: map[string]interface{}{
+				"foo": "bar",
+			},
 		})
 		if err != nil {
 			t.Fatalf("Create returns an error: %s", err)
