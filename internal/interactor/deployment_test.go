@@ -57,7 +57,7 @@ func TestInteractor_Deploy(t *testing.T) {
 
 		store.
 			EXPECT().
-			CreateDeploymentStatus(ctx, gomock.AssignableToTypeOf(&ent.DeploymentStatus{}))
+			CreateEntDeploymentStatus(ctx, gomock.AssignableToTypeOf(&ent.DeploymentStatus{}))
 
 		it := i.NewInteractor(&i.InteractorConfig{
 			Store: store,
@@ -160,7 +160,7 @@ func TestInteractor_DeployToRemote(t *testing.T) {
 
 		store.
 			EXPECT().
-			CreateDeploymentStatus(ctx, gomock.AssignableToTypeOf(&ent.DeploymentStatus{}))
+			CreateEntDeploymentStatus(ctx, gomock.AssignableToTypeOf(&ent.DeploymentStatus{}))
 
 		it := i.NewInteractor(&i.InteractorConfig{
 			Store: store,

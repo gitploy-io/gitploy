@@ -68,21 +68,6 @@ func (mr *MockInteractorMockRecorder) CompareCommits(ctx, u, r, base, head, opt 
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CompareCommits", reflect.TypeOf((*MockInteractor)(nil).CompareCommits), ctx, u, r, base, head, opt)
 }
 
-// CreateEvent mocks base method.
-func (m *MockInteractor) CreateEvent(ctx context.Context, e *ent.Event) (*ent.Event, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateEvent", ctx, e)
-	ret0, _ := ret[0].(*ent.Event)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// CreateEvent indicates an expected call of CreateEvent.
-func (mr *MockInteractorMockRecorder) CreateEvent(ctx, e interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateEvent", reflect.TypeOf((*MockInteractor)(nil).CreateEvent), ctx, e)
-}
-
 // CreateLock mocks base method.
 func (m *MockInteractor) CreateLock(ctx context.Context, l *ent.Lock) (*ent.Lock, error) {
 	m.ctrl.T.Helper()

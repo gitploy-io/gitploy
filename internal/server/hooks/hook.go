@@ -12,7 +12,6 @@ import (
 	gb "github.com/gitploy-io/gitploy/internal/server/global"
 	"github.com/gitploy-io/gitploy/model/ent"
 	"github.com/gitploy-io/gitploy/model/ent/deployment"
-	"github.com/gitploy-io/gitploy/model/ent/event"
 	"github.com/gitploy-io/gitploy/model/extent"
 	"github.com/gitploy-io/gitploy/pkg/e"
 )
@@ -118,7 +117,7 @@ func (h *Hooks) handleGithubDeploymentEvent(c *gin.Context) {
 	}
 
 	ds.DeploymentID = d.ID
-	if ds, err = h.i.SyncDeploymentStatus(ctx, ds); err != nil {
+	if ds, err = h.i.CreateDeploymentStatus(ctx, ds); err != nil {
 		h.log.Check(gb.GetZapLogLevel(err), "Failed to create a new the deployment status.").Write(zap.Error(err))
 		gb.ResponseWithError(c, err)
 		return
@@ -129,14 +128,6 @@ func (h *Hooks) handleGithubDeploymentEvent(c *gin.Context) {
 		h.log.Check(gb.GetZapLogLevel(err), "Failed to update the deployment.").Write(zap.Error(err))
 		gb.ResponseWithError(c, err)
 		return
-	}
-
-	if _, err := h.i.CreateEvent(ctx, &ent.Event{
-		Kind:         event.KindDeployment,
-		Type:         event.TypeUpdated,
-		DeploymentID: d.ID,
-	}); err != nil {
-		h.log.Error("It has failed to create the event.", zap.Error(err))
 	}
 
 	// Produce statistics when the deployment is success, and production environment.

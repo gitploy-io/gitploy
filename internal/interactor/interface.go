@@ -43,8 +43,9 @@ type (
 	// PermStore defines operations for working with deployment_statuses.
 	DeploymentStatusStore interface {
 		ListDeploymentStatuses(ctx context.Context, d *ent.Deployment) ([]*ent.DeploymentStatus, error)
-		CreateDeploymentStatus(ctx context.Context, s *ent.DeploymentStatus) (*ent.DeploymentStatus, error)
-		SyncDeploymentStatus(ctx context.Context, ds *ent.DeploymentStatus) (*ent.DeploymentStatus, error)
+		// CreateEntDeploymentStatus create a DeploymentStatus entity to the store.
+		// Ent is appended to distinguish it from the interactor.
+		CreateEntDeploymentStatus(ctx context.Context, s *ent.DeploymentStatus) (*ent.DeploymentStatus, error)
 	}
 
 	SCM interface {

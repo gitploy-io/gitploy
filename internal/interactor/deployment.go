@@ -121,14 +121,14 @@ func (i *DeploymentInteractor) Deploy(ctx context.Context, u *ent.User, r *ent.R
 			i.log.Error("Failed to request a review.", zap.Errors("errs", errs))
 		}
 
-		i.log.Debug("Dispatch a event.")
-		if _, err := i.store.CreateEvent(ctx, &ent.Event{
-			Kind:         event.KindDeployment,
-			Type:         event.TypeCreated,
+		if _, err := i.CreateDeploymentStatus(ctx, &ent.DeploymentStatus{
+			Status:       string(deployment.StatusWaiting),
+			Description:  "Gitploy waits the reviews.",
 			DeploymentID: d.ID,
 		}); err != nil {
-			i.log.Error("Failed to create the event.", zap.Error(err))
+			i.log.Error("Failed to create a deployment status.", zap.Error(err))
 		}
+
 		return d, nil
 	}
 
@@ -149,20 +149,14 @@ func (i *DeploymentInteractor) Deploy(ctx context.Context, u *ent.User, r *ent.R
 		return nil, fmt.Errorf("It failed to save a new deployment.: %w", err)
 	}
 
-	i.store.CreateDeploymentStatus(ctx, &ent.DeploymentStatus{
+	if _, err := i.CreateDeploymentStatus(ctx, &ent.DeploymentStatus{
 		Status:       string(deployment.StatusCreated),
 		Description:  "Gitploy starts to deploy.",
 		DeploymentID: d.ID,
-	})
-
-	i.log.Debug("Dispatch a event.")
-	if _, err := i.store.CreateEvent(ctx, &ent.Event{
-		Kind:         event.KindDeployment,
-		Type:         event.TypeCreated,
-		DeploymentID: d.ID,
 	}); err != nil {
-		i.log.Error("Failed to create the event.", zap.Error(err))
+		i.log.Error("Failed to create a deployment status.", zap.Error(err))
 	}
+
 	return d, nil
 }
 
@@ -237,9 +231,9 @@ func (i *DeploymentInteractor) DeployToRemote(ctx context.Context, u *ent.User, 
 		return nil, err
 	}
 
-	i.store.CreateDeploymentStatus(ctx, &ent.DeploymentStatus{
+	i.CreateDeploymentStatus(ctx, &ent.DeploymentStatus{
 		Status:       string(deployment.StatusCreated),
-		Description:  "Gitploy creates a new deployment.",
+		Description:  "Gitploy start to deploy.",
 		DeploymentID: d.ID,
 	})
 
@@ -256,6 +250,24 @@ func (i *DeploymentInteractor) createRemoteDeployment(ctx context.Context, u *en
 	}
 
 	return i.scm.CreateRemoteDeployment(ctx, u, r, d, env)
+}
+
+// CreateDeploymentStatus create a DeploymentStatus and dispatch the event.
+func (i *DeploymentInteractor) CreateDeploymentStatus(ctx context.Context, ds *ent.DeploymentStatus) (*ent.DeploymentStatus, error) {
+	ds, err := i.store.CreateEntDeploymentStatus(ctx, ds)
+	if err != nil {
+		return nil, err
+	}
+
+	if _, err := i.store.CreateEvent(ctx, &ent.Event{
+		Kind:               event.KindDeploymentStatus,
+		Type:               event.TypeCreated,
+		DeploymentStatusID: ds.ID,
+	}); err != nil {
+		i.log.Error("Failed to dispatch the event.", zap.Error(err))
+	}
+
+	return ds, nil
 }
 
 func (i *DeploymentInteractor) runClosingInactiveDeployment(stop <-chan struct{}) {
@@ -295,7 +307,7 @@ L:
 							continue
 						}
 
-						if _, err := i.store.CreateDeploymentStatus(ctx, s); err != nil {
+						if _, err := i.CreateDeploymentStatus(ctx, s); err != nil {
 							i.log.Error("It has failed to create a new deployment status.", zap.Error(err))
 							continue
 						}
