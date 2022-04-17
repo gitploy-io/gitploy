@@ -87,6 +87,7 @@ func buildDyanmicPayload(fields []string, env *extent.Env) (map[string]interface
 
 	payload := make(map[string]interface{})
 
+	// Build the payload, and use the default value if there is no value.
 	for key, input := range env.DynamicPayload.Inputs {
 		val, ok := values[key]
 		// Set the default value if the value doesn't exist.
@@ -103,6 +104,17 @@ func buildDyanmicPayload(fields []string, env *extent.Env) (map[string]interface
 		}
 
 		payload[key] = parsed
+	}
+
+	// Check that the required values are present.
+	for key, input := range env.DynamicPayload.Inputs {
+		if !(input.Required != nil && *input.Required) {
+			continue
+		}
+
+		if _, ok := payload[key]; !ok {
+			return nil, fmt.Errorf("The value of the '%s' field is required", key)
+		}
 	}
 
 	return payload, nil
