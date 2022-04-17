@@ -18,6 +18,6 @@ type (
 		UpdateDeployment(ctx context.Context, d *ent.Deployment) (*ent.Deployment, error)
 		ProduceDeploymentStatisticsOfRepo(ctx context.Context, r *ent.Repo, d *ent.Deployment) (*ent.DeploymentStatistics, error)
 		CreateEvent(ctx context.Context, e *ent.Event) (*ent.Event, error)
-		GetConfig(ctx context.Context, u *ent.User, r *ent.Repo) (*extent.Config, error)
+		GetEvaluatedConfig(ctx context.Context, u *ent.User, r *ent.Repo, v *extent.EvalValues) (*extent.Config, error)
 	}
 )
