@@ -96,19 +96,19 @@ func (mr *MockInteractorMockRecorder) FindRepoByID(ctx, id interface{}) *gomock.
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindRepoByID", reflect.TypeOf((*MockInteractor)(nil).FindRepoByID), ctx, id)
 }
 
-// GetConfig mocks base method.
-func (m *MockInteractor) GetConfig(ctx context.Context, u *ent.User, r *ent.Repo) (*extent.Config, error) {
+// GetEvaluatedConfig mocks base method.
+func (m *MockInteractor) GetEvaluatedConfig(ctx context.Context, u *ent.User, r *ent.Repo, v *extent.EvalValues) (*extent.Config, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetConfig", ctx, u, r)
+	ret := m.ctrl.Call(m, "GetEvaluatedConfig", ctx, u, r, v)
 	ret0, _ := ret[0].(*extent.Config)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// GetConfig indicates an expected call of GetConfig.
-func (mr *MockInteractorMockRecorder) GetConfig(ctx, u, r interface{}) *gomock.Call {
+// GetEvaluatedConfig indicates an expected call of GetEvaluatedConfig.
+func (mr *MockInteractorMockRecorder) GetEvaluatedConfig(ctx, u, r, v interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetConfig", reflect.TypeOf((*MockInteractor)(nil).GetConfig), ctx, u, r)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetEvaluatedConfig", reflect.TypeOf((*MockInteractor)(nil).GetEvaluatedConfig), ctx, u, r, v)
 }
 
 // ProduceDeploymentStatisticsOfRepo mocks base method.

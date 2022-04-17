@@ -123,7 +123,7 @@ func TestHook_HandleHook(t *testing.T) {
 		t.Log("Return the auto-deployment environment.")
 		m.
 			EXPECT().
-			GetConfig(gomock.Any(), gomock.AssignableToTypeOf(&ent.User{}), gomock.AssignableToTypeOf(&ent.Repo{})).
+			GetEvaluatedConfig(gomock.Any(), gomock.AssignableToTypeOf(&ent.User{}), gomock.AssignableToTypeOf(&ent.Repo{}), gomock.AssignableToTypeOf(&extent.EvalValues{})).
 			Return(&extent.Config{
 				Envs: []*extent.Env{
 					{
@@ -150,11 +150,6 @@ func TestHook_HandleHook(t *testing.T) {
 				gomock.AssignableToTypeOf(&extent.Env{}),
 			).
 			Return(&ent.Deployment{}, nil)
-
-		m.
-			EXPECT().
-			CreateEvent(gomock.Any(), gomock.AssignableToTypeOf(&ent.Event{})).
-			Return(&ent.Event{}, nil)
 
 		h := NewHooks(&ConfigHooks{}, m)
 		r := gin.New()

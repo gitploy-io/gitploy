@@ -13,6 +13,7 @@ import (
 	"github.com/gitploy-io/gitploy/model/ent"
 	"github.com/gitploy-io/gitploy/model/ent/deployment"
 	"github.com/gitploy-io/gitploy/model/ent/event"
+	"github.com/gitploy-io/gitploy/model/extent"
 	"github.com/gitploy-io/gitploy/pkg/e"
 )
 
@@ -170,53 +171,52 @@ func (h *Hooks) handleGithubPushEvent(c *gin.Context) {
 		return
 	} else if r.Edges.Owner == nil {
 		h.log.Warn("The owner is not found.", zap.Int64("repo_id", r.ID))
-		gb.ResponseWithError(c,
-			e.NewErrorWithMessage(e.ErrorCodeInternalError, "The owner is not found.", nil),
-		)
+		gb.ResponseWithError(c, e.NewErrorWithMessage(e.ErrorCodeInternalError, "The owner is not found.", nil))
 		return
 	}
 
-	config, err := h.i.GetConfig(ctx, r.Edges.Owner, r)
+	h.log.Debug("Get the configuration of the repository.")
+	config, err := h.i.GetEvaluatedConfig(ctx, r.Edges.Owner, r, &extent.EvalValues{
+		IsRollback: false,
+	})
 	if err != nil {
 		h.log.Check(gb.GetZapLogLevel(err), "Failed to find the configuration file.").Write(zap.Error(err))
 		gb.ResponseWithError(c, err)
 		return
 	}
 
-	for _, env := range config.Envs {
-		ok, err := env.IsAutoDeployOn(*evt.Ref)
-		if err != nil {
-			h.log.Warn("Failed to validate the ref is matched with 'auto_deploy_on'.", zap.Error(err))
-			continue
-		}
-		if !ok {
-			continue
-		}
+	h.log.Debug("Parse the ref of the hook.", zap.String("ref", *evt.Ref))
+	typ, ref, err := parseGithubRef(*evt.Ref)
+	if err != nil {
+		h.log.Error("Failed to parse the ref.", zap.Error(err))
+		gb.ResponseWithError(c, err)
+		return
+	}
 
-		typ, ref, err := parseGithubRef(*evt.Ref)
-		if err != nil {
-			h.log.Error("Failed to parse the ref.", zap.Error(err))
+	// Checks whether the 'auto_deploy_on' field is valid.
+	for _, env := range config.Envs {
+		if _, err := env.IsAutoDeployOn(*evt.Ref); err != nil {
+			h.log.Error("Failed to validate the ref is matched with 'auto_deploy_on'.", zap.Error(err))
+			gb.ResponseWithError(c, err)
+			return
+		}
+	}
+
+	// If it is a ref matching the 'auto_deploy_on' field, Gitploy trigger to deploy.
+	for _, env := range config.Envs {
+		if ok, _ := env.IsAutoDeployOn(*evt.Ref); !ok {
+			h.log.Debug("Skip the environment, not matched with the ref.", zap.String("env", env.Name), zap.String("ref", *evt.Ref))
 			continue
 		}
 
 		h.log.Info("Trigger to deploy the ref.", zap.String("ref", *evt.Ref), zap.String("environment", env.Name))
-		d := &ent.Deployment{
+		_, err = h.i.Deploy(ctx, r.Edges.Owner, r, &ent.Deployment{
 			Type: typ,
 			Ref:  ref,
 			Env:  env.Name,
-		}
-		d, err = h.i.Deploy(ctx, r.Edges.Owner, r, d, env)
+		}, env)
 		if err != nil {
 			h.log.Error("Failed to deploy.", zap.Error(err))
-			continue
-		}
-
-		if _, err := h.i.CreateEvent(ctx, &ent.Event{
-			Kind:         event.KindDeployment,
-			Type:         event.TypeCreated,
-			DeploymentID: d.ID,
-		}); err != nil {
-			h.log.Error("It has failed to create the event.", zap.Error(err))
 		}
 	}
 
