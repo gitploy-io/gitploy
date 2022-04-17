@@ -20,12 +20,16 @@ const (
 	FieldCreatedAt = "created_at"
 	// FieldDeploymentID holds the string denoting the deployment_id field in the database.
 	FieldDeploymentID = "deployment_id"
+	// FieldDeploymentStatusID holds the string denoting the deployment_status_id field in the database.
+	FieldDeploymentStatusID = "deployment_status_id"
 	// FieldReviewID holds the string denoting the review_id field in the database.
 	FieldReviewID = "review_id"
 	// FieldDeletedID holds the string denoting the deleted_id field in the database.
 	FieldDeletedID = "deleted_id"
 	// EdgeDeployment holds the string denoting the deployment edge name in mutations.
 	EdgeDeployment = "deployment"
+	// EdgeDeploymentStatus holds the string denoting the deployment_status edge name in mutations.
+	EdgeDeploymentStatus = "deployment_status"
 	// EdgeReview holds the string denoting the review edge name in mutations.
 	EdgeReview = "review"
 	// EdgeNotificationRecord holds the string denoting the notification_record edge name in mutations.
@@ -39,6 +43,13 @@ const (
 	DeploymentInverseTable = "deployments"
 	// DeploymentColumn is the table column denoting the deployment relation/edge.
 	DeploymentColumn = "deployment_id"
+	// DeploymentStatusTable is the table that holds the deployment_status relation/edge.
+	DeploymentStatusTable = "events"
+	// DeploymentStatusInverseTable is the table name for the DeploymentStatus entity.
+	// It exists in this package in order to avoid circular dependency with the "deploymentstatus" package.
+	DeploymentStatusInverseTable = "deployment_status"
+	// DeploymentStatusColumn is the table column denoting the deployment_status relation/edge.
+	DeploymentStatusColumn = "deployment_status_id"
 	// ReviewTable is the table that holds the review relation/edge.
 	ReviewTable = "events"
 	// ReviewInverseTable is the table name for the Review entity.
@@ -62,6 +73,7 @@ var Columns = []string{
 	FieldType,
 	FieldCreatedAt,
 	FieldDeploymentID,
+	FieldDeploymentStatusID,
 	FieldReviewID,
 	FieldDeletedID,
 }
@@ -86,9 +98,9 @@ type Kind string
 
 // Kind values.
 const (
-	KindDeployment Kind = "deployment"
-	KindReview     Kind = "review"
-	KindApproval   Kind = "approval"
+	KindDeployment       Kind = "deployment"
+	KindDeploymentStatus Kind = "deployment_status"
+	KindReview           Kind = "review"
 )
 
 func (k Kind) String() string {
@@ -98,7 +110,7 @@ func (k Kind) String() string {
 // KindValidator is a validator for the "kind" field enum values. It is called by the builders before save.
 func KindValidator(k Kind) error {
 	switch k {
-	case KindDeployment, KindReview, KindApproval:
+	case KindDeployment, KindDeploymentStatus, KindReview:
 		return nil
 	default:
 		return fmt.Errorf("event: invalid enum value for kind field: %q", k)

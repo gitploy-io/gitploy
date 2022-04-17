@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/gitploy-io/gitploy/model/ent/deployment"
+	"github.com/gitploy-io/gitploy/model/ent/deploymentstatus"
 	"github.com/gitploy-io/gitploy/model/ent/event"
 	"github.com/gitploy-io/gitploy/model/ent/notificationrecord"
 	"github.com/gitploy-io/gitploy/model/ent/predicate"
@@ -77,6 +78,26 @@ func (eu *EventUpdate) ClearDeploymentID() *EventUpdate {
 	return eu
 }
 
+// SetDeploymentStatusID sets the "deployment_status_id" field.
+func (eu *EventUpdate) SetDeploymentStatusID(i int) *EventUpdate {
+	eu.mutation.SetDeploymentStatusID(i)
+	return eu
+}
+
+// SetNillableDeploymentStatusID sets the "deployment_status_id" field if the given value is not nil.
+func (eu *EventUpdate) SetNillableDeploymentStatusID(i *int) *EventUpdate {
+	if i != nil {
+		eu.SetDeploymentStatusID(*i)
+	}
+	return eu
+}
+
+// ClearDeploymentStatusID clears the value of the "deployment_status_id" field.
+func (eu *EventUpdate) ClearDeploymentStatusID() *EventUpdate {
+	eu.mutation.ClearDeploymentStatusID()
+	return eu
+}
+
 // SetReviewID sets the "review_id" field.
 func (eu *EventUpdate) SetReviewID(i int) *EventUpdate {
 	eu.mutation.SetReviewID(i)
@@ -129,6 +150,11 @@ func (eu *EventUpdate) SetDeployment(d *Deployment) *EventUpdate {
 	return eu.SetDeploymentID(d.ID)
 }
 
+// SetDeploymentStatus sets the "deployment_status" edge to the DeploymentStatus entity.
+func (eu *EventUpdate) SetDeploymentStatus(d *DeploymentStatus) *EventUpdate {
+	return eu.SetDeploymentStatusID(d.ID)
+}
+
 // SetReview sets the "review" edge to the Review entity.
 func (eu *EventUpdate) SetReview(r *Review) *EventUpdate {
 	return eu.SetReviewID(r.ID)
@@ -161,6 +187,12 @@ func (eu *EventUpdate) Mutation() *EventMutation {
 // ClearDeployment clears the "deployment" edge to the Deployment entity.
 func (eu *EventUpdate) ClearDeployment() *EventUpdate {
 	eu.mutation.ClearDeployment()
+	return eu
+}
+
+// ClearDeploymentStatus clears the "deployment_status" edge to the DeploymentStatus entity.
+func (eu *EventUpdate) ClearDeploymentStatus() *EventUpdate {
+	eu.mutation.ClearDeploymentStatus()
 	return eu
 }
 
@@ -345,6 +377,41 @@ func (eu *EventUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if eu.mutation.DeploymentStatusCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   event.DeploymentStatusTable,
+			Columns: []string{event.DeploymentStatusColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: deploymentstatus.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := eu.mutation.DeploymentStatusIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   event.DeploymentStatusTable,
+			Columns: []string{event.DeploymentStatusColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: deploymentstatus.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if eu.mutation.ReviewCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -480,6 +547,26 @@ func (euo *EventUpdateOne) ClearDeploymentID() *EventUpdateOne {
 	return euo
 }
 
+// SetDeploymentStatusID sets the "deployment_status_id" field.
+func (euo *EventUpdateOne) SetDeploymentStatusID(i int) *EventUpdateOne {
+	euo.mutation.SetDeploymentStatusID(i)
+	return euo
+}
+
+// SetNillableDeploymentStatusID sets the "deployment_status_id" field if the given value is not nil.
+func (euo *EventUpdateOne) SetNillableDeploymentStatusID(i *int) *EventUpdateOne {
+	if i != nil {
+		euo.SetDeploymentStatusID(*i)
+	}
+	return euo
+}
+
+// ClearDeploymentStatusID clears the value of the "deployment_status_id" field.
+func (euo *EventUpdateOne) ClearDeploymentStatusID() *EventUpdateOne {
+	euo.mutation.ClearDeploymentStatusID()
+	return euo
+}
+
 // SetReviewID sets the "review_id" field.
 func (euo *EventUpdateOne) SetReviewID(i int) *EventUpdateOne {
 	euo.mutation.SetReviewID(i)
@@ -532,6 +619,11 @@ func (euo *EventUpdateOne) SetDeployment(d *Deployment) *EventUpdateOne {
 	return euo.SetDeploymentID(d.ID)
 }
 
+// SetDeploymentStatus sets the "deployment_status" edge to the DeploymentStatus entity.
+func (euo *EventUpdateOne) SetDeploymentStatus(d *DeploymentStatus) *EventUpdateOne {
+	return euo.SetDeploymentStatusID(d.ID)
+}
+
 // SetReview sets the "review" edge to the Review entity.
 func (euo *EventUpdateOne) SetReview(r *Review) *EventUpdateOne {
 	return euo.SetReviewID(r.ID)
@@ -564,6 +656,12 @@ func (euo *EventUpdateOne) Mutation() *EventMutation {
 // ClearDeployment clears the "deployment" edge to the Deployment entity.
 func (euo *EventUpdateOne) ClearDeployment() *EventUpdateOne {
 	euo.mutation.ClearDeployment()
+	return euo
+}
+
+// ClearDeploymentStatus clears the "deployment_status" edge to the DeploymentStatus entity.
+func (euo *EventUpdateOne) ClearDeploymentStatus() *EventUpdateOne {
+	euo.mutation.ClearDeploymentStatus()
 	return euo
 }
 
@@ -764,6 +862,41 @@ func (euo *EventUpdateOne) sqlSave(ctx context.Context) (_node *Event, err error
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
 					Column: deployment.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if euo.mutation.DeploymentStatusCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   event.DeploymentStatusTable,
+			Columns: []string{event.DeploymentStatusColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: deploymentstatus.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := euo.mutation.DeploymentStatusIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   event.DeploymentStatusTable,
+			Columns: []string{event.DeploymentStatusColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: deploymentstatus.FieldID,
 				},
 			},
 		}

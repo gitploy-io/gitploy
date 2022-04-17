@@ -174,11 +174,12 @@ var (
 	// EventsColumns holds the columns for the "events" table.
 	EventsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "kind", Type: field.TypeEnum, Enums: []string{"deployment", "review", "approval"}},
+		{Name: "kind", Type: field.TypeEnum, Enums: []string{"deployment", "deployment_status", "review"}},
 		{Name: "type", Type: field.TypeEnum, Enums: []string{"created", "updated", "deleted"}},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "deleted_id", Type: field.TypeInt, Nullable: true},
 		{Name: "deployment_id", Type: field.TypeInt, Nullable: true},
+		{Name: "deployment_status_id", Type: field.TypeInt, Nullable: true},
 		{Name: "review_id", Type: field.TypeInt, Nullable: true},
 	}
 	// EventsTable holds the schema information for the "events" table.
@@ -194,8 +195,14 @@ var (
 				OnDelete:   schema.Cascade,
 			},
 			{
-				Symbol:     "events_reviews_event",
+				Symbol:     "events_deployment_status_event",
 				Columns:    []*schema.Column{EventsColumns[6]},
+				RefColumns: []*schema.Column{DeploymentStatusColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "events_reviews_event",
+				Columns:    []*schema.Column{EventsColumns[7]},
 				RefColumns: []*schema.Column{ReviewsColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
@@ -422,7 +429,8 @@ func init() {
 	DeploymentStatisticsTable.ForeignKeys[0].RefTable = ReposTable
 	DeploymentStatusTable.ForeignKeys[0].RefTable = DeploymentsTable
 	EventsTable.ForeignKeys[0].RefTable = DeploymentsTable
-	EventsTable.ForeignKeys[1].RefTable = ReviewsTable
+	EventsTable.ForeignKeys[1].RefTable = DeploymentStatusTable
+	EventsTable.ForeignKeys[2].RefTable = ReviewsTable
 	LocksTable.ForeignKeys[0].RefTable = ReposTable
 	LocksTable.ForeignKeys[1].RefTable = UsersTable
 	NotificationRecordsTable.ForeignKeys[0].RefTable = EventsTable

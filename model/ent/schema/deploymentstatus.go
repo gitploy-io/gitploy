@@ -2,6 +2,7 @@ package schema
 
 import (
 	"entgo.io/ent"
+	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 )
@@ -38,5 +39,9 @@ func (DeploymentStatus) Edges() []ent.Edge {
 			Field("deployment_id").
 			Unique().
 			Required(),
+		edge.To("event", Event.Type).
+			Annotations(entsql.Annotation{
+				OnDelete: entsql.Cascade,
+			}),
 	}
 }

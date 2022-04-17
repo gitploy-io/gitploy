@@ -3645,6 +3645,9 @@ type DeploymentStatusMutation struct {
 	clearedFields     map[string]struct{}
 	deployment        *int
 	cleareddeployment bool
+	event             map[int]struct{}
+	removedevent      map[int]struct{}
+	clearedevent      bool
 	done              bool
 	oldValue          func(context.Context) (*DeploymentStatus, error)
 	predicates        []predicate.DeploymentStatus
@@ -4016,6 +4019,60 @@ func (m *DeploymentStatusMutation) ResetDeployment() {
 	m.cleareddeployment = false
 }
 
+// AddEventIDs adds the "event" edge to the Event entity by ids.
+func (m *DeploymentStatusMutation) AddEventIDs(ids ...int) {
+	if m.event == nil {
+		m.event = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.event[ids[i]] = struct{}{}
+	}
+}
+
+// ClearEvent clears the "event" edge to the Event entity.
+func (m *DeploymentStatusMutation) ClearEvent() {
+	m.clearedevent = true
+}
+
+// EventCleared reports if the "event" edge to the Event entity was cleared.
+func (m *DeploymentStatusMutation) EventCleared() bool {
+	return m.clearedevent
+}
+
+// RemoveEventIDs removes the "event" edge to the Event entity by IDs.
+func (m *DeploymentStatusMutation) RemoveEventIDs(ids ...int) {
+	if m.removedevent == nil {
+		m.removedevent = make(map[int]struct{})
+	}
+	for i := range ids {
+		delete(m.event, ids[i])
+		m.removedevent[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedEvent returns the removed IDs of the "event" edge to the Event entity.
+func (m *DeploymentStatusMutation) RemovedEventIDs() (ids []int) {
+	for id := range m.removedevent {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// EventIDs returns the "event" edge IDs in the mutation.
+func (m *DeploymentStatusMutation) EventIDs() (ids []int) {
+	for id := range m.event {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetEvent resets all changes to the "event" edge.
+func (m *DeploymentStatusMutation) ResetEvent() {
+	m.event = nil
+	m.clearedevent = false
+	m.removedevent = nil
+}
+
 // Where appends a list predicates to the DeploymentStatusMutation builder.
 func (m *DeploymentStatusMutation) Where(ps ...predicate.DeploymentStatus) {
 	m.predicates = append(m.predicates, ps...)
@@ -4237,9 +4294,12 @@ func (m *DeploymentStatusMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *DeploymentStatusMutation) AddedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	if m.deployment != nil {
 		edges = append(edges, deploymentstatus.EdgeDeployment)
+	}
+	if m.event != nil {
+		edges = append(edges, deploymentstatus.EdgeEvent)
 	}
 	return edges
 }
@@ -4252,13 +4312,22 @@ func (m *DeploymentStatusMutation) AddedIDs(name string) []ent.Value {
 		if id := m.deployment; id != nil {
 			return []ent.Value{*id}
 		}
+	case deploymentstatus.EdgeEvent:
+		ids := make([]ent.Value, 0, len(m.event))
+		for id := range m.event {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *DeploymentStatusMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
+	if m.removedevent != nil {
+		edges = append(edges, deploymentstatus.EdgeEvent)
+	}
 	return edges
 }
 
@@ -4266,15 +4335,24 @@ func (m *DeploymentStatusMutation) RemovedEdges() []string {
 // the given name in this mutation.
 func (m *DeploymentStatusMutation) RemovedIDs(name string) []ent.Value {
 	switch name {
+	case deploymentstatus.EdgeEvent:
+		ids := make([]ent.Value, 0, len(m.removedevent))
+		for id := range m.removedevent {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *DeploymentStatusMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	if m.cleareddeployment {
 		edges = append(edges, deploymentstatus.EdgeDeployment)
+	}
+	if m.clearedevent {
+		edges = append(edges, deploymentstatus.EdgeEvent)
 	}
 	return edges
 }
@@ -4285,6 +4363,8 @@ func (m *DeploymentStatusMutation) EdgeCleared(name string) bool {
 	switch name {
 	case deploymentstatus.EdgeDeployment:
 		return m.cleareddeployment
+	case deploymentstatus.EdgeEvent:
+		return m.clearedevent
 	}
 	return false
 }
@@ -4307,6 +4387,9 @@ func (m *DeploymentStatusMutation) ResetEdge(name string) error {
 	case deploymentstatus.EdgeDeployment:
 		m.ResetDeployment()
 		return nil
+	case deploymentstatus.EdgeEvent:
+		m.ResetEvent()
+		return nil
 	}
 	return fmt.Errorf("unknown DeploymentStatus edge %s", name)
 }
@@ -4325,6 +4408,8 @@ type EventMutation struct {
 	clearedFields              map[string]struct{}
 	deployment                 *int
 	cleareddeployment          bool
+	deployment_status          *int
+	cleareddeployment_status   bool
 	review                     *int
 	clearedreview              bool
 	notification_record        *int
@@ -4589,6 +4674,55 @@ func (m *EventMutation) ResetDeploymentID() {
 	delete(m.clearedFields, event.FieldDeploymentID)
 }
 
+// SetDeploymentStatusID sets the "deployment_status_id" field.
+func (m *EventMutation) SetDeploymentStatusID(i int) {
+	m.deployment_status = &i
+}
+
+// DeploymentStatusID returns the value of the "deployment_status_id" field in the mutation.
+func (m *EventMutation) DeploymentStatusID() (r int, exists bool) {
+	v := m.deployment_status
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeploymentStatusID returns the old "deployment_status_id" field's value of the Event entity.
+// If the Event object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EventMutation) OldDeploymentStatusID(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDeploymentStatusID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDeploymentStatusID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeploymentStatusID: %w", err)
+	}
+	return oldValue.DeploymentStatusID, nil
+}
+
+// ClearDeploymentStatusID clears the value of the "deployment_status_id" field.
+func (m *EventMutation) ClearDeploymentStatusID() {
+	m.deployment_status = nil
+	m.clearedFields[event.FieldDeploymentStatusID] = struct{}{}
+}
+
+// DeploymentStatusIDCleared returns if the "deployment_status_id" field was cleared in this mutation.
+func (m *EventMutation) DeploymentStatusIDCleared() bool {
+	_, ok := m.clearedFields[event.FieldDeploymentStatusID]
+	return ok
+}
+
+// ResetDeploymentStatusID resets all changes to the "deployment_status_id" field.
+func (m *EventMutation) ResetDeploymentStatusID() {
+	m.deployment_status = nil
+	delete(m.clearedFields, event.FieldDeploymentStatusID)
+}
+
 // SetReviewID sets the "review_id" field.
 func (m *EventMutation) SetReviewID(i int) {
 	m.review = &i
@@ -4734,6 +4868,32 @@ func (m *EventMutation) ResetDeployment() {
 	m.cleareddeployment = false
 }
 
+// ClearDeploymentStatus clears the "deployment_status" edge to the DeploymentStatus entity.
+func (m *EventMutation) ClearDeploymentStatus() {
+	m.cleareddeployment_status = true
+}
+
+// DeploymentStatusCleared reports if the "deployment_status" edge to the DeploymentStatus entity was cleared.
+func (m *EventMutation) DeploymentStatusCleared() bool {
+	return m.DeploymentStatusIDCleared() || m.cleareddeployment_status
+}
+
+// DeploymentStatusIDs returns the "deployment_status" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// DeploymentStatusID instead. It exists only for internal usage by the builders.
+func (m *EventMutation) DeploymentStatusIDs() (ids []int) {
+	if id := m.deployment_status; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetDeploymentStatus resets all changes to the "deployment_status" edge.
+func (m *EventMutation) ResetDeploymentStatus() {
+	m.deployment_status = nil
+	m.cleareddeployment_status = false
+}
+
 // ClearReview clears the "review" edge to the Review entity.
 func (m *EventMutation) ClearReview() {
 	m.clearedreview = true
@@ -4818,7 +4978,7 @@ func (m *EventMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *EventMutation) Fields() []string {
-	fields := make([]string, 0, 6)
+	fields := make([]string, 0, 7)
 	if m.kind != nil {
 		fields = append(fields, event.FieldKind)
 	}
@@ -4830,6 +4990,9 @@ func (m *EventMutation) Fields() []string {
 	}
 	if m.deployment != nil {
 		fields = append(fields, event.FieldDeploymentID)
+	}
+	if m.deployment_status != nil {
+		fields = append(fields, event.FieldDeploymentStatusID)
 	}
 	if m.review != nil {
 		fields = append(fields, event.FieldReviewID)
@@ -4853,6 +5016,8 @@ func (m *EventMutation) Field(name string) (ent.Value, bool) {
 		return m.CreatedAt()
 	case event.FieldDeploymentID:
 		return m.DeploymentID()
+	case event.FieldDeploymentStatusID:
+		return m.DeploymentStatusID()
 	case event.FieldReviewID:
 		return m.ReviewID()
 	case event.FieldDeletedID:
@@ -4874,6 +5039,8 @@ func (m *EventMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldCreatedAt(ctx)
 	case event.FieldDeploymentID:
 		return m.OldDeploymentID(ctx)
+	case event.FieldDeploymentStatusID:
+		return m.OldDeploymentStatusID(ctx)
 	case event.FieldReviewID:
 		return m.OldReviewID(ctx)
 	case event.FieldDeletedID:
@@ -4914,6 +5081,13 @@ func (m *EventMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetDeploymentID(v)
+		return nil
+	case event.FieldDeploymentStatusID:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeploymentStatusID(v)
 		return nil
 	case event.FieldReviewID:
 		v, ok := value.(int)
@@ -4977,6 +5151,9 @@ func (m *EventMutation) ClearedFields() []string {
 	if m.FieldCleared(event.FieldDeploymentID) {
 		fields = append(fields, event.FieldDeploymentID)
 	}
+	if m.FieldCleared(event.FieldDeploymentStatusID) {
+		fields = append(fields, event.FieldDeploymentStatusID)
+	}
 	if m.FieldCleared(event.FieldReviewID) {
 		fields = append(fields, event.FieldReviewID)
 	}
@@ -4999,6 +5176,9 @@ func (m *EventMutation) ClearField(name string) error {
 	switch name {
 	case event.FieldDeploymentID:
 		m.ClearDeploymentID()
+		return nil
+	case event.FieldDeploymentStatusID:
+		m.ClearDeploymentStatusID()
 		return nil
 	case event.FieldReviewID:
 		m.ClearReviewID()
@@ -5026,6 +5206,9 @@ func (m *EventMutation) ResetField(name string) error {
 	case event.FieldDeploymentID:
 		m.ResetDeploymentID()
 		return nil
+	case event.FieldDeploymentStatusID:
+		m.ResetDeploymentStatusID()
+		return nil
 	case event.FieldReviewID:
 		m.ResetReviewID()
 		return nil
@@ -5038,9 +5221,12 @@ func (m *EventMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *EventMutation) AddedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.deployment != nil {
 		edges = append(edges, event.EdgeDeployment)
+	}
+	if m.deployment_status != nil {
+		edges = append(edges, event.EdgeDeploymentStatus)
 	}
 	if m.review != nil {
 		edges = append(edges, event.EdgeReview)
@@ -5059,6 +5245,10 @@ func (m *EventMutation) AddedIDs(name string) []ent.Value {
 		if id := m.deployment; id != nil {
 			return []ent.Value{*id}
 		}
+	case event.EdgeDeploymentStatus:
+		if id := m.deployment_status; id != nil {
+			return []ent.Value{*id}
+		}
 	case event.EdgeReview:
 		if id := m.review; id != nil {
 			return []ent.Value{*id}
@@ -5073,7 +5263,7 @@ func (m *EventMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *EventMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	return edges
 }
 
@@ -5087,9 +5277,12 @@ func (m *EventMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *EventMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.cleareddeployment {
 		edges = append(edges, event.EdgeDeployment)
+	}
+	if m.cleareddeployment_status {
+		edges = append(edges, event.EdgeDeploymentStatus)
 	}
 	if m.clearedreview {
 		edges = append(edges, event.EdgeReview)
@@ -5106,6 +5299,8 @@ func (m *EventMutation) EdgeCleared(name string) bool {
 	switch name {
 	case event.EdgeDeployment:
 		return m.cleareddeployment
+	case event.EdgeDeploymentStatus:
+		return m.cleareddeployment_status
 	case event.EdgeReview:
 		return m.clearedreview
 	case event.EdgeNotificationRecord:
@@ -5120,6 +5315,9 @@ func (m *EventMutation) ClearEdge(name string) error {
 	switch name {
 	case event.EdgeDeployment:
 		m.ClearDeployment()
+		return nil
+	case event.EdgeDeploymentStatus:
+		m.ClearDeploymentStatus()
 		return nil
 	case event.EdgeReview:
 		m.ClearReview()
@@ -5137,6 +5335,9 @@ func (m *EventMutation) ResetEdge(name string) error {
 	switch name {
 	case event.EdgeDeployment:
 		m.ResetDeployment()
+		return nil
+	case event.EdgeDeploymentStatus:
+		m.ResetDeploymentStatus()
 		return nil
 	case event.EdgeReview:
 		m.ResetReview()

@@ -14,6 +14,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/gitploy-io/gitploy/model/ent/deployment"
+	"github.com/gitploy-io/gitploy/model/ent/deploymentstatus"
 	"github.com/gitploy-io/gitploy/model/ent/event"
 	"github.com/gitploy-io/gitploy/model/ent/notificationrecord"
 	"github.com/gitploy-io/gitploy/model/ent/predicate"
@@ -31,6 +32,7 @@ type EventQuery struct {
 	predicates []predicate.Event
 	// eager-loading edges.
 	withDeployment         *DeploymentQuery
+	withDeploymentStatus   *DeploymentStatusQuery
 	withReview             *ReviewQuery
 	withNotificationRecord *NotificationRecordQuery
 	modifiers              []func(s *sql.Selector)
@@ -85,6 +87,28 @@ func (eq *EventQuery) QueryDeployment() *DeploymentQuery {
 			sqlgraph.From(event.Table, event.FieldID, selector),
 			sqlgraph.To(deployment.Table, deployment.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, event.DeploymentTable, event.DeploymentColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(eq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryDeploymentStatus chains the current query on the "deployment_status" edge.
+func (eq *EventQuery) QueryDeploymentStatus() *DeploymentStatusQuery {
+	query := &DeploymentStatusQuery{config: eq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := eq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := eq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(event.Table, event.FieldID, selector),
+			sqlgraph.To(deploymentstatus.Table, deploymentstatus.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, event.DeploymentStatusTable, event.DeploymentStatusColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(eq.driver.Dialect(), step)
 		return fromU, nil
@@ -318,6 +342,7 @@ func (eq *EventQuery) Clone() *EventQuery {
 		order:                  append([]OrderFunc{}, eq.order...),
 		predicates:             append([]predicate.Event{}, eq.predicates...),
 		withDeployment:         eq.withDeployment.Clone(),
+		withDeploymentStatus:   eq.withDeploymentStatus.Clone(),
 		withReview:             eq.withReview.Clone(),
 		withNotificationRecord: eq.withNotificationRecord.Clone(),
 		// clone intermediate query.
@@ -335,6 +360,17 @@ func (eq *EventQuery) WithDeployment(opts ...func(*DeploymentQuery)) *EventQuery
 		opt(query)
 	}
 	eq.withDeployment = query
+	return eq
+}
+
+// WithDeploymentStatus tells the query-builder to eager-load the nodes that are connected to
+// the "deployment_status" edge. The optional arguments are used to configure the query builder of the edge.
+func (eq *EventQuery) WithDeploymentStatus(opts ...func(*DeploymentStatusQuery)) *EventQuery {
+	query := &DeploymentStatusQuery{config: eq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	eq.withDeploymentStatus = query
 	return eq
 }
 
@@ -425,8 +461,9 @@ func (eq *EventQuery) sqlAll(ctx context.Context) ([]*Event, error) {
 	var (
 		nodes       = []*Event{}
 		_spec       = eq.querySpec()
-		loadedTypes = [3]bool{
+		loadedTypes = [4]bool{
 			eq.withDeployment != nil,
+			eq.withDeploymentStatus != nil,
 			eq.withReview != nil,
 			eq.withNotificationRecord != nil,
 		}
@@ -476,6 +513,32 @@ func (eq *EventQuery) sqlAll(ctx context.Context) ([]*Event, error) {
 			}
 			for i := range nodes {
 				nodes[i].Edges.Deployment = n
+			}
+		}
+	}
+
+	if query := eq.withDeploymentStatus; query != nil {
+		ids := make([]int, 0, len(nodes))
+		nodeids := make(map[int][]*Event)
+		for i := range nodes {
+			fk := nodes[i].DeploymentStatusID
+			if _, ok := nodeids[fk]; !ok {
+				ids = append(ids, fk)
+			}
+			nodeids[fk] = append(nodeids[fk], nodes[i])
+		}
+		query.Where(deploymentstatus.IDIn(ids...))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			nodes, ok := nodeids[n.ID]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "deployment_status_id" returned %v`, n.ID)
+			}
+			for i := range nodes {
+				nodes[i].Edges.DeploymentStatus = n
 			}
 		}
 	}

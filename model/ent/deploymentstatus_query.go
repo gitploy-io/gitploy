@@ -4,6 +4,7 @@ package ent
 
 import (
 	"context"
+	"database/sql/driver"
 	"errors"
 	"fmt"
 	"math"
@@ -14,6 +15,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/gitploy-io/gitploy/model/ent/deployment"
 	"github.com/gitploy-io/gitploy/model/ent/deploymentstatus"
+	"github.com/gitploy-io/gitploy/model/ent/event"
 	"github.com/gitploy-io/gitploy/model/ent/predicate"
 )
 
@@ -28,6 +30,7 @@ type DeploymentStatusQuery struct {
 	predicates []predicate.DeploymentStatus
 	// eager-loading edges.
 	withDeployment *DeploymentQuery
+	withEvent      *EventQuery
 	modifiers      []func(s *sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -80,6 +83,28 @@ func (dsq *DeploymentStatusQuery) QueryDeployment() *DeploymentQuery {
 			sqlgraph.From(deploymentstatus.Table, deploymentstatus.FieldID, selector),
 			sqlgraph.To(deployment.Table, deployment.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, deploymentstatus.DeploymentTable, deploymentstatus.DeploymentColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(dsq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryEvent chains the current query on the "event" edge.
+func (dsq *DeploymentStatusQuery) QueryEvent() *EventQuery {
+	query := &EventQuery{config: dsq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := dsq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := dsq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(deploymentstatus.Table, deploymentstatus.FieldID, selector),
+			sqlgraph.To(event.Table, event.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, deploymentstatus.EventTable, deploymentstatus.EventColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(dsq.driver.Dialect(), step)
 		return fromU, nil
@@ -269,6 +294,7 @@ func (dsq *DeploymentStatusQuery) Clone() *DeploymentStatusQuery {
 		order:          append([]OrderFunc{}, dsq.order...),
 		predicates:     append([]predicate.DeploymentStatus{}, dsq.predicates...),
 		withDeployment: dsq.withDeployment.Clone(),
+		withEvent:      dsq.withEvent.Clone(),
 		// clone intermediate query.
 		sql:    dsq.sql.Clone(),
 		path:   dsq.path,
@@ -284,6 +310,17 @@ func (dsq *DeploymentStatusQuery) WithDeployment(opts ...func(*DeploymentQuery))
 		opt(query)
 	}
 	dsq.withDeployment = query
+	return dsq
+}
+
+// WithEvent tells the query-builder to eager-load the nodes that are connected to
+// the "event" edge. The optional arguments are used to configure the query builder of the edge.
+func (dsq *DeploymentStatusQuery) WithEvent(opts ...func(*EventQuery)) *DeploymentStatusQuery {
+	query := &EventQuery{config: dsq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	dsq.withEvent = query
 	return dsq
 }
 
@@ -352,8 +389,9 @@ func (dsq *DeploymentStatusQuery) sqlAll(ctx context.Context) ([]*DeploymentStat
 	var (
 		nodes       = []*DeploymentStatus{}
 		_spec       = dsq.querySpec()
-		loadedTypes = [1]bool{
+		loadedTypes = [2]bool{
 			dsq.withDeployment != nil,
+			dsq.withEvent != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -402,6 +440,31 @@ func (dsq *DeploymentStatusQuery) sqlAll(ctx context.Context) ([]*DeploymentStat
 			for i := range nodes {
 				nodes[i].Edges.Deployment = n
 			}
+		}
+	}
+
+	if query := dsq.withEvent; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[int]*DeploymentStatus)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.Event = []*Event{}
+		}
+		query.Where(predicate.Event(func(s *sql.Selector) {
+			s.Where(sql.InValues(deploymentstatus.EventColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.DeploymentStatusID
+			node, ok := nodeids[fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "deployment_status_id" returned %v for node %v`, fk, n.ID)
+			}
+			node.Edges.Event = append(node.Edges.Event, n)
 		}
 	}
 

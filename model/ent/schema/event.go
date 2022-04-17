@@ -18,9 +18,8 @@ func (Event) Fields() []ent.Field {
 		field.Enum("kind").
 			Values(
 				"deployment",
+				"deployment_status",
 				"review",
-				// Deprecated values:
-				"approval",
 			),
 		field.Enum("type").
 			Values(
@@ -31,6 +30,8 @@ func (Event) Fields() []ent.Field {
 		field.Time("created_at").
 			Default(nowUTC),
 		field.Int("deployment_id").
+			Optional(),
+		field.Int("deployment_status_id").
 			Optional(),
 		field.Int("review_id").
 			Optional(),
@@ -46,6 +47,10 @@ func (Event) Edges() []ent.Edge {
 		edge.From("deployment", Deployment.Type).
 			Ref("event").
 			Field("deployment_id").
+			Unique(),
+		edge.From("deployment_status", DeploymentStatus.Type).
+			Ref("event").
+			Field("deployment_status_id").
 			Unique(),
 		edge.From("review", Review.Type).
 			Ref("event").

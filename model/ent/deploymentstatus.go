@@ -38,9 +38,11 @@ type DeploymentStatus struct {
 type DeploymentStatusEdges struct {
 	// Deployment holds the value of the deployment edge.
 	Deployment *Deployment `json:"deployment,omitempty"`
+	// Event holds the value of the event edge.
+	Event []*Event `json:"event,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [1]bool
+	loadedTypes [2]bool
 }
 
 // DeploymentOrErr returns the Deployment value or an error if the edge
@@ -55,6 +57,15 @@ func (e DeploymentStatusEdges) DeploymentOrErr() (*Deployment, error) {
 		return e.Deployment, nil
 	}
 	return nil, &NotLoadedError{edge: "deployment"}
+}
+
+// EventOrErr returns the Event value or an error if the edge
+// was not loaded in eager-loading.
+func (e DeploymentStatusEdges) EventOrErr() ([]*Event, error) {
+	if e.loadedTypes[1] {
+		return e.Event, nil
+	}
+	return nil, &NotLoadedError{edge: "event"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -133,6 +144,11 @@ func (ds *DeploymentStatus) assignValues(columns []string, values []interface{})
 // QueryDeployment queries the "deployment" edge of the DeploymentStatus entity.
 func (ds *DeploymentStatus) QueryDeployment() *DeploymentQuery {
 	return (&DeploymentStatusClient{config: ds.config}).QueryDeployment(ds)
+}
+
+// QueryEvent queries the "event" edge of the DeploymentStatus entity.
+func (ds *DeploymentStatus) QueryEvent() *EventQuery {
+	return (&DeploymentStatusClient{config: ds.config}).QueryEvent(ds)
 }
 
 // Update returns a builder for updating this DeploymentStatus.

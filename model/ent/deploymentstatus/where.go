@@ -724,6 +724,34 @@ func HasDeploymentWith(preds ...predicate.Deployment) predicate.DeploymentStatus
 	})
 }
 
+// HasEvent applies the HasEdge predicate on the "event" edge.
+func HasEvent() predicate.DeploymentStatus {
+	return predicate.DeploymentStatus(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(EventTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, EventTable, EventColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasEventWith applies the HasEdge predicate on the "event" edge with a given conditions (other predicates).
+func HasEventWith(preds ...predicate.Event) predicate.DeploymentStatus {
+	return predicate.DeploymentStatus(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(EventInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, EventTable, EventColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.DeploymentStatus) predicate.DeploymentStatus {
 	return predicate.DeploymentStatus(func(s *sql.Selector) {
