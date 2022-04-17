@@ -94,8 +94,9 @@ func buildDyanmicPayload(fields []string, env *extent.Env) (map[string]interface
 		if !ok {
 			if input.Default != nil {
 				payload[key] = *input.Default
-				continue
 			}
+
+			continue
 		}
 
 		parsed, err := parseValue(input, val)
