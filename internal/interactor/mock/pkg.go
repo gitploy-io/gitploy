@@ -409,6 +409,21 @@ func (mr *MockStoreMockRecorder) FindDeploymentStatisticsOfRepoByEnv(ctx, r, env
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindDeploymentStatisticsOfRepoByEnv", reflect.TypeOf((*MockStore)(nil).FindDeploymentStatisticsOfRepoByEnv), ctx, r, env)
 }
 
+// FindDeploymentStatusByID mocks base method.
+func (m *MockStore) FindDeploymentStatusByID(ctx context.Context, id int) (*ent.DeploymentStatus, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindDeploymentStatusByID", ctx, id)
+	ret0, _ := ret[0].(*ent.DeploymentStatus)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindDeploymentStatusByID indicates an expected call of FindDeploymentStatusByID.
+func (mr *MockStoreMockRecorder) FindDeploymentStatusByID(ctx, id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindDeploymentStatusByID", reflect.TypeOf((*MockStore)(nil).FindDeploymentStatusByID), ctx, id)
+}
+
 // FindLockByID mocks base method.
 func (m *MockStore) FindLockByID(ctx context.Context, id int) (*ent.Lock, error) {
 	m.ctrl.T.Helper()
@@ -1113,6 +1128,21 @@ func (m *MockDeploymentStatusStore) CreateEntDeploymentStatus(ctx context.Contex
 func (mr *MockDeploymentStatusStoreMockRecorder) CreateEntDeploymentStatus(ctx, s interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateEntDeploymentStatus", reflect.TypeOf((*MockDeploymentStatusStore)(nil).CreateEntDeploymentStatus), ctx, s)
+}
+
+// FindDeploymentStatusByID mocks base method.
+func (m *MockDeploymentStatusStore) FindDeploymentStatusByID(ctx context.Context, id int) (*ent.DeploymentStatus, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindDeploymentStatusByID", ctx, id)
+	ret0, _ := ret[0].(*ent.DeploymentStatus)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindDeploymentStatusByID indicates an expected call of FindDeploymentStatusByID.
+func (mr *MockDeploymentStatusStoreMockRecorder) FindDeploymentStatusByID(ctx, id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindDeploymentStatusByID", reflect.TypeOf((*MockDeploymentStatusStore)(nil).FindDeploymentStatusByID), ctx, id)
 }
 
 // ListDeploymentStatuses mocks base method.

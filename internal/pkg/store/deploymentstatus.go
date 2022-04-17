@@ -49,3 +49,12 @@ func (s *Store) CreateEntDeploymentStatus(ctx context.Context, ds *ent.Deploymen
 
 	return ret, nil
 }
+
+func (s *Store) FindDeploymentStatusByID(ctx context.Context, id int) (*ent.DeploymentStatus, error) {
+	ds, err := s.c.DeploymentStatus.Get(ctx, id)
+	if ent.IsNotFound(err) {
+		return nil, e.NewError(e.ErrorCodeEntityNotFound, err)
+	}
+
+	return ds, nil
+}

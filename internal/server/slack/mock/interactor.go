@@ -79,6 +79,51 @@ func (mr *MockInteractorMockRecorder) FindChatUserByID(ctx, id interface{}) *gom
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindChatUserByID", reflect.TypeOf((*MockInteractor)(nil).FindChatUserByID), ctx, id)
 }
 
+// FindDeploymentByID mocks base method.
+func (m *MockInteractor) FindDeploymentByID(ctx context.Context, id int) (*ent.Deployment, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindDeploymentByID", ctx, id)
+	ret0, _ := ret[0].(*ent.Deployment)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindDeploymentByID indicates an expected call of FindDeploymentByID.
+func (mr *MockInteractorMockRecorder) FindDeploymentByID(ctx, id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindDeploymentByID", reflect.TypeOf((*MockInteractor)(nil).FindDeploymentByID), ctx, id)
+}
+
+// FindDeploymentStatusByID mocks base method.
+func (m *MockInteractor) FindDeploymentStatusByID(ctx context.Context, id int) (*ent.DeploymentStatus, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindDeploymentStatusByID", ctx, id)
+	ret0, _ := ret[0].(*ent.DeploymentStatus)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindDeploymentStatusByID indicates an expected call of FindDeploymentStatusByID.
+func (mr *MockInteractorMockRecorder) FindDeploymentStatusByID(ctx, id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindDeploymentStatusByID", reflect.TypeOf((*MockInteractor)(nil).FindDeploymentStatusByID), ctx, id)
+}
+
+// FindReviewByID mocks base method.
+func (m *MockInteractor) FindReviewByID(ctx context.Context, id int) (*ent.Review, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindReviewByID", ctx, id)
+	ret0, _ := ret[0].(*ent.Review)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindReviewByID indicates an expected call of FindReviewByID.
+func (mr *MockInteractorMockRecorder) FindReviewByID(ctx, id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindReviewByID", reflect.TypeOf((*MockInteractor)(nil).FindReviewByID), ctx, id)
+}
+
 // FindUserByID mocks base method.
 func (m *MockInteractor) FindUserByID(ctx context.Context, id int64) (*ent.User, error) {
 	m.ctrl.T.Helper()
