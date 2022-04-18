@@ -2,13 +2,11 @@
 // Use of this source code is governed by the Gitploy Non-Commercial License
 // that can be found in the LICENSE file.
 
-// +build !oss
+//go:build !oss
 
 package stream
 
 import (
-	"context"
-	"fmt"
 	"math/rand"
 	"time"
 
@@ -19,7 +17,7 @@ import (
 	gb "github.com/gitploy-io/gitploy/internal/server/global"
 	"github.com/gitploy-io/gitploy/model/ent"
 	"github.com/gitploy-io/gitploy/model/ent/event"
-	"github.com/gitploy-io/gitploy/pkg/e"
+	"github.com/gitploy-io/gitploy/model/ent/review"
 )
 
 // GetEvents streams events of deployment, or review.
@@ -29,30 +27,57 @@ func (s *Stream) GetEvents(c *gin.Context) {
 	v, _ := c.Get(gb.KeyUser)
 	u, _ := v.(*ent.User)
 
-	debugID := randstr()
-
-	events := make(chan *ent.Event, 10)
+	events := make(chan *sse.Event, 10)
 
 	// Subscribe events
 	// it'll unsubscribe after the connection is closed.
 	sub := func(e *ent.Event) {
+		switch e.Kind {
+		case event.KindDeployment:
+			d, err := s.i.FindDeploymentByID(ctx, e.DeletedID)
+			if err != nil {
+				s.log.Error("Failed to find the deployment.", zap.Error(err))
+				return
+			}
 
-		// Deleted type is always propagated to all.
-		if e.Type == event.TypeDeleted {
-			events <- e
-			return
+			if u.ID != d.UserID {
+				s.log.Debug("Skip the event. The user is not deployer.")
+				return
+			}
+
+			s.log.Debug("Dispatch a deployment event.", zap.Int("id", d.ID))
+			events <- &sse.Event{
+				Event: "deployment",
+				Data:  d,
+			}
+
+		case event.KindReview:
+			r, err := s.i.FindReviewByID(ctx, e.ReviewID)
+			if err != nil {
+				s.log.Error("Failed to find the review.", zap.Error(err))
+				return
+			}
+
+			// Dispatch an event to the reviewer.
+			if r.Status == review.StatusPending && u.ID == r.UserID {
+				s.log.Debug("Dispatch a review event.", zap.Int("id", r.ID))
+				events <- &sse.Event{
+					Event: "review",
+					Data:  r,
+				}
+			}
+
+			// Dispatch an event to the requester.
+			if (r.Status == review.StatusApproved || r.Status == review.StatusRejected) && u.ID == r.Edges.User.ID {
+				s.log.Debug("Dispatch a review event.", zap.Int("id", r.ID))
+				events <- &sse.Event{
+					Event: "review",
+					Data:  r,
+				}
+			}
 		}
-
-		if ok, err := s.hasPermForEvent(ctx, u, e); err != nil {
-			s.log.Error("It has failed to check the perm.", zap.Error(err))
-			return
-		} else if !ok {
-			s.log.Debug("Skip the event. The user has not the perm.")
-			return
-		}
-
-		events <- e
 	}
+
 	if err := s.i.SubscribeEvent(sub); err != nil {
 		s.log.Check(gb.GetZapLogLevel(err), "Failed to subscribe notification events").Write(zap.Error(err))
 		gb.ResponseWithError(c, err)
@@ -83,54 +108,10 @@ L:
 			})
 			w.Flush()
 		case e := <-events:
-			c.Render(-1, sse.Event{
-				Event: "event",
-				Data:  e,
-			})
+			c.Render(-1, e)
 			w.Flush()
-			s.log.Debug("server sent event.", zap.Int("event_id", e.ID), zap.String("debug_id", debugID))
 		}
 	}
-}
-
-// hasPermForEvent checks the user has permission for the event.
-func (s *Stream) hasPermForEvent(ctx context.Context, u *ent.User, evt *ent.Event) (bool, error) {
-	if evt.Kind == event.KindDeployment {
-		d, err := s.i.FindDeploymentByID(ctx, evt.DeploymentID)
-		if err != nil {
-			return false, err
-		}
-
-		if _, err = s.i.FindPermOfRepo(ctx, d.Edges.Repo, u); e.HasErrorCode(err, e.ErrorCodeEntityNotFound) {
-			return false, nil
-		} else if err != nil {
-			return false, err
-		}
-
-		return true, nil
-	}
-
-	if evt.Kind == event.KindReview {
-		rv, err := s.i.FindReviewByID(ctx, evt.ReviewID)
-		if err != nil {
-			return false, err
-		}
-
-		d, err := s.i.FindDeploymentByID(ctx, rv.DeploymentID)
-		if err != nil {
-			return false, err
-		}
-
-		if _, err = s.i.FindPermOfRepo(ctx, d.Edges.Repo, u); e.HasErrorCode(err, e.ErrorCodeEntityNotFound) {
-			return false, nil
-		} else if err != nil {
-			return false, err
-		}
-
-		return true, nil
-	}
-
-	return false, fmt.Errorf("The type of event is not \"deployment\" or \"review\".")
 }
 
 func randstr() string {
