@@ -1436,41 +1436,13 @@ paths:
                       type: integer
                     event:
                       type: string
+                      enum:
+                        - deployment
+                        - review
                     data:
-                      type: object 
-                      format: json 
-                      required:
-                        - id
-                        - kind
-                        - type
-                        - created_at
-                        - edges
-                      properties: 
-                        id:
-                          type: integer
-                        kind:
-                          type: string
-                          enum:
-                            - deployment
-                            - review
-                        type:
-                          type: string
-                          enum:
-                            - created
-                            - updated
-                            - deleted
-                        created_at:
-                          type: string
-                        deleted_id:
-                          type: integer
-                          description: The ID of deleted resource.
-                        edges:
-                          type: object
-                          properties:
-                            deployment:
-                              $ref: '#/components/schemas/Deployment'
-                            review:
-                              $ref: '#/components/schemas/Review'
+                      oneOf:
+                        - $ref: '#/components/schemas/Deployment'
+                        - $ref: '#/components/schemas/Review'
   /sync:
     post:
       tags:
