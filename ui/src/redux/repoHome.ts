@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit'
 
-import { Deployment, Event, EventTypeEnum } from '../models'
+import { Deployment } from '../models'
 import { listDeployments, getConfig } from '../apis'
 
 export const perPage = 20;

@@ -5,7 +5,7 @@ import { Input, Breadcrumb, Button } from 'antd'
 import { RedoOutlined } from "@ant-design/icons"
 
 import { useAppSelector, useAppDispatch } from '../../redux/hooks'
-import { homeSlice, listRepos, perPage, sync, homeSlice as slice } from '../../redux/home'
+import { homeSlice, listRepos, perPage, sync } from '../../redux/home'
 import { RequestStatus } from '../../models'
 
 import Main from '../main'

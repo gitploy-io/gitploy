@@ -139,9 +139,7 @@ const notify = (title: string, options?: NotificationOptions) => {
  */
 export const notifyDeploymentEvent = createAsyncThunk<void, Deployment, { state: { main: MainState } }>(
     "main/notifyDeploymentEvent",
-    async (deployment, { getState }) => {
-        const { user } = getState().main
-
+    async (deployment) => {
         if (deployment.status === DeploymentStatusEnum.Created) {
             notify(`New Deployment #${deployment.number}`, {
                 icon: "/logo192.png",
@@ -165,8 +163,7 @@ export const notifyDeploymentEvent = createAsyncThunk<void, Deployment, { state:
  */
 export const notifyReviewmentEvent = createAsyncThunk<void, Review, { state: { main: MainState } }>(
     "main/notifyReviewmentEvent",
-    async (review, { getState }) => {
-        const { user } = getState().main
+    async (review) => {
         if (review.status === ReviewStatusEnum.Pending) {
             notify(`Review Requested`, {
                 icon: "/logo192.png",

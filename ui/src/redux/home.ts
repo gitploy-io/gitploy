@@ -3,8 +3,6 @@ import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit'
 import { 
     Repo, 
     RequestStatus, 
-    Event,
-    EventTypeEnum
 } from '../models'
 import * as apis from '../apis'
 
