@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit'
 
-import { Deployment, Event, EventTypeEnum } from '../models'
+import { Deployment } from '../models'
 import { listDeployments, getConfig } from '../apis'
 
 export const perPage = 20;
@@ -61,27 +61,6 @@ export const repoHomeSlice = createSlice({
         },
         decreasePage: (state) => {
             state.page = state.page - 1
-        },
-        handleDeploymentEvent: (state, action: PayloadAction<Event>) => {
-            const event = action.payload
-
-            if (!(event.deployment?.repo?.namespace === state.namespace 
-                && event.deployment?.repo?.name === state.name)) {
-                return
-            }
-
-            if (!(state.env === "" || event.deployment?.env === state.env)) {
-                return
-            }
-
-            if (event.type === EventTypeEnum.Created && event.deployment) {
-                state.deployments.unshift(event.deployment)
-                return
-            }
-
-            state.deployments = state.deployments.map((deployment) => {
-                return (event.deployment?.id ===  deployment.id)? event.deployment : deployment
-            })
         },
     },
     extraReducers: builder => {

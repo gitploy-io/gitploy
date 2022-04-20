@@ -3,8 +3,6 @@ import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit'
 import { 
     Repo, 
     RequestStatus, 
-    Event,
-    EventTypeEnum
 } from '../models'
 import * as apis from '../apis'
 
@@ -72,29 +70,6 @@ export const homeSlice = createSlice({
         },
         decreasePage: (state) => {
             state.page = state.page - 1
-        },
-        handleDeploymentEvent: (state, action: PayloadAction<Event>) => {
-            const event = action.payload
-            
-            state.repos = state.repos.map((repo) => {
-                if (event.deployment?.repo?.id !== repo.id) {
-                    return repo
-                }
-
-                if (!repo.deployments) {
-                    repo.deployments = []
-                }
-
-                if (event.type === EventTypeEnum.Created) {
-                    repo.deployments.unshift(event.deployment)
-                    return repo
-                }
-
-                repo.deployments = repo.deployments.map((deployment) => {
-                    return (event.deployment?.id === deployment.id )? event.deployment : deployment
-                })
-                return repo
-            })
         },
     },
     extraReducers: builder => {

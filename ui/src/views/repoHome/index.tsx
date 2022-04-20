@@ -5,7 +5,6 @@ import { PageHeader, Select } from 'antd'
 
 import { useAppSelector, useAppDispatch } from '../../redux/hooks'
 import { repoHomeSlice as slice, fetchEnvs, fetchDeployments, perPage } from '../../redux/repoHome'
-import { subscribeEvents } from "../../apis"
 
 import ActivityLogs, { ActivityLogsProps } from './ActivityLogs'
 import Spin from '../../components/Spin'
@@ -36,14 +35,6 @@ export default (): JSX.Element => {
         }
         f()
 
-        const sub = subscribeEvents((event) => {
-            dispatch(slice.actions.handleDeploymentEvent(event))
-        })
-
-        return () => {
-            sub.close()
-        }
-        // eslint-disable-next-line
     }, [dispatch])
 
     const onChangeEnv = (env: string) => {
