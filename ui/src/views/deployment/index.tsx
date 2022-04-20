@@ -22,7 +22,10 @@ import {
     ReviewStatusEnum,
     RequestStatus
 } from "../../models"
-import { subscribeEvents } from "../../apis"
+import { 
+    subscribeDeploymentEvents, 
+    subscribeReviewEvents
+} from "../../apis"
 
 import Main from "../main"
 import HeaderBreadcrumb, { HeaderBreadcrumbProps } from "./HeaderBreadcrumb"
@@ -61,13 +64,17 @@ export default (): JSX.Element => {
         }
         f()
 
-        const sub = subscribeEvents((event) => {
-            dispatch(slice.actions.handleDeploymentEvent(event))
-            dispatch(slice.actions.handleReviewEvent(event))
+        const deploymentEvent = subscribeDeploymentEvents((deployment) => {
+            dispatch(slice.actions.handleDeploymentEvent(deployment))
+        })
+
+        const reviewEvent = subscribeReviewEvents((review) => {
+            dispatch(slice.actions.handleReviewEvent(review))
         })
 
         return () => {
-            sub.close()
+            deploymentEvent.close()
+            reviewEvent.close()
         }
         // eslint-disable-next-line 
     }, [dispatch])

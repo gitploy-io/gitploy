@@ -5,7 +5,6 @@ import {
     Deployment, 
     Commit,
     Review,
-    Event,
     RequestStatus, 
     HttpNotFoundError, 
     HttpForbiddenError,
@@ -179,18 +178,14 @@ export const deploymentSlice = createSlice({
         setDisplay: (state, action: PayloadAction<boolean>) => {
             state.display = action.payload
         },
-        handleDeploymentEvent: (state, action: PayloadAction<Event>) => {
-            const event = action.payload
-
-            if (event.deployment?.id !== state.deployment?.id) {
-                return
+        handleDeploymentEvent: (state, action: PayloadAction<Deployment>) => {
+            if (action.payload.id === state.deployment?.id) {
+                state.deployment = action.payload
             }
-
-            state.deployment = event.deployment
         },
-        handleReviewEvent: (state, action: PayloadAction<Event>) => {
+        handleReviewEvent: (state, action: PayloadAction<Review>) => {
             state.reviews = state.reviews.map((review) => {
-                return (review.id === action.payload.review?.id)? action.payload.review : review
+                return (action.payload.id === review.id)? action.payload : review
             })
         }
     },

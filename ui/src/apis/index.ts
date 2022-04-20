@@ -1,5 +1,7 @@
-import { sync } from "./sync"
-import { 
+export {
+    sync 
+} from "./sync"
+export { 
     listRepos, 
     getRepo, 
     updateRepo, 
@@ -8,8 +10,10 @@ import {
     lockRepo,
     unlockRepo,
 } from "./repo"
-import { listPerms } from "./perm"
-import { 
+export { 
+    listPerms 
+} from "./perm"
+export { 
     searchDeployments, 
     listDeployments, 
     getDeployment,
@@ -18,68 +22,49 @@ import {
     rollbackDeployment, 
     listDeploymentChanges 
 } from './deployment'
-import { getConfig } from './config'
-import { listCommits, getCommit, listStatuses } from './commit'
-import { listBranches, getBranch } from './branch'
-import { listTags, getTag } from './tag'
-import { listUsers, updateUser, deleteUser, getMe, getRateLimit } from "./user"
-import { checkSlack } from "./chat"
-import {
+export {
+    getConfig 
+} from './config'
+export { 
+    listCommits, 
+    getCommit, 
+    listStatuses 
+} from './commit'
+export { 
+    listBranches, 
+    getBranch 
+} from './branch'
+export { 
+    listTags, 
+    getTag 
+} from './tag'
+export { 
+    listUsers, 
+    updateUser, 
+    deleteUser, 
+    getMe, 
+    getRateLimit 
+} from "./user"
+export { 
+    checkSlack 
+} from "./chat"
+export {
     searchReviews,
     listReviews,
     getUserReview,
     approveReview,
     rejectReview,
 } from "./review"
-import {
+export {
     listLocks,
     lock,
     unlock,
     updateLock
 } from "./lock"
-import { getLicense  } from "./license"
-import { subscribeEvents } from "./events"
-
-export {
-    sync,
-    listRepos,
-    getRepo,
-    updateRepo,
-    activateRepo,
-    deactivateRepo,
-    lockRepo,
-    unlockRepo,
-    listPerms,
-    searchDeployments,
-    listDeployments,
-    getDeployment,
-    createDeployment,
-    createRemoteDeployment,
-    rollbackDeployment,
-    listDeploymentChanges,
-    getConfig,
-    listCommits,
-    getCommit,
-    listStatuses,
-    listBranches,
-    getBranch,
-    listTags,
-    getTag,
-    listUsers,
-    updateUser,
-    deleteUser,
-    getMe,
-    getRateLimit,
-    checkSlack,
-    searchReviews,
-    listReviews,
-    getUserReview,
-    approveReview,
-    rejectReview,
-    listLocks,
-    lock,
-    unlock,
-    updateLock,
-    getLicense,
-    subscribeEvents
-}
+export { 
+    getLicense  
+} from "./license"
+export { 
+    subscribeDeploymentEvents,
+    subscribeReviewEvents,
+} from "./events"

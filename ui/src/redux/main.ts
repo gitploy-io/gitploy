@@ -6,13 +6,11 @@ import {
     Deployment, 
     DeploymentStatusEnum, 
     Review,
-    Event,
-    EventKindEnum,
-    EventTypeEnum,
     HttpInternalServerError, 
     HttpUnauthorizedError, 
     HttpPaymentRequiredError,
     License,
+    ReviewStatusEnum,
 } from "../models"
 import { 
     getMe, 
@@ -139,32 +137,24 @@ const notify = (title: string, options?: NotificationOptions) => {
 /**
  * The browser notifies only the user who triggers the deployment.
  */
-export const notifyDeploymentEvent = createAsyncThunk<void, Event, { state: { main: MainState } }>(
+export const notifyDeploymentEvent = createAsyncThunk<void, Deployment, { state: { main: MainState } }>(
     "main/notifyDeploymentEvent",
-    async (event, { getState }) => {
+    async (deployment, { getState }) => {
         const { user } = getState().main
 
-        if (!(event.kind === EventKindEnum.Deployment && event.deployment)) {
-            return
-        }
-
-        if (event.deployment.deployer?.id !== user?.id) {
-            return
-        }
-
-        if (event.type === EventTypeEnum.Created) {
-            notify(`New Deployment #${event.deployment.number}`, {
+        if (deployment.status === DeploymentStatusEnum.Created) {
+            notify(`New Deployment #${deployment.number}`, {
                 icon: "/logo192.png",
-                body: `Start to deploy ${getShortRef(event.deployment)} to the ${event.deployment.env} environment of ${event.deployment.repo?.namespace}/${event.deployment.repo?.name}.`,
-                tag: String(event.id),
+                body: `Start to deploy ${getShortRef(deployment)} to the ${deployment.env} environment of ${deployment.repo?.namespace}/${deployment.repo?.name}.`,
+                tag: String(deployment.id),
             })
             return
         }
 
-        notify(`Deployment Updated #${event.deployment.number}`, {
+        notify(`Deployment Updated #${deployment.number}`, {
             icon: "/logo192.png",
-            body: `The deployment ${event.deployment.number} of ${event.deployment.repo?.namespace}/${event.deployment.repo?.name} is updated ${event.deployment.status}.`,
-            tag: String(event.id),
+            body: `The deployment ${deployment.number} of ${deployment.repo?.namespace}/${deployment.repo?.name} is updated ${deployment.status}.`,
+            tag: String(deployment.id),
         })
     }
 )
@@ -173,33 +163,25 @@ export const notifyDeploymentEvent = createAsyncThunk<void, Event, { state: { ma
  * The browser notifies the requester when the review is responded to, 
  * but it should notify the reviewer when the review is requested.
  */
-export const notifyReviewmentEvent = createAsyncThunk<void, Event, { state: { main: MainState } }>(
+export const notifyReviewmentEvent = createAsyncThunk<void, Review, { state: { main: MainState } }>(
     "main/notifyReviewmentEvent",
-    async (event, { getState }) => {
+    async (review, { getState }) => {
         const { user } = getState().main
-        if (event.kind !== EventKindEnum.Review) {
-            return
-        }
-
-        if (event.type === EventTypeEnum.Created
-            && event.review?.user?.id === user?.id) {
+        if (review.status === ReviewStatusEnum.Pending) {
             notify(`Review Requested`, {
                 icon: "/logo192.png",
-                body: `${event.review?.deployment?.deployer?.login} requested the review for the deployment ${event.review?.deployment?.number} of ${event.review?.deployment?.repo?.namespace}/${event.review?.deployment?.repo?.name}`,
-                tag: String(event.id),
+                body: `${review.deployment?.deployer?.login} requested the review for the deployment ${review.deployment?.number} of ${review.deployment?.repo?.namespace}/${review.deployment?.repo?.name}`,
+                tag: String(review.id),
             })
             return
         }
 
-        if (event.type === EventTypeEnum.Updated
-            && event.review?.deployment?.deployer?.id === user?.id) {
-            notify(`Review Responded`, {
-                icon: "/logo192.png",
-                body: `${event.review?.user?.login} ${event.review?.status} the deployment ${event.review?.deployment?.number} of ${event.review?.deployment?.repo?.namespace}/${event.review?.deployment?.repo?.name}`,
-                tag: String(event.id),
-            })
-            return
-        }
+        notify(`Review Responded`, {
+            icon: "/logo192.png",
+            body: `${review.user?.login} ${review.status} the deployment ${review.deployment?.number} of ${review.deployment?.repo?.namespace}/${review.deployment?.repo?.name}`,
+            tag: String(review.id),
+        })
+        return
     }
 )
 
@@ -218,60 +200,30 @@ export const mainSlice = createSlice({
             state.expired = action.payload
         },
         /**
-         * Handle all deployment events that the user can access.
-         * Note that some deployments are triggered by others.
+         * Update the status of the deployment with an event.
          */
-        handleDeploymentEvent: (state, action: PayloadAction<Event>) => {
-            const event = action.payload
-            if (event.kind !== EventKindEnum.Deployment) {
-                return
-            } 
-
-            if (event.type === EventTypeEnum.Created 
-                && event.deployment) {
-                state.deployments.unshift(event.deployment)
+        handleDeploymentEvent: (state, { payload: deployment }: PayloadAction<Deployment>) => {
+            if (deployment.status === DeploymentStatusEnum.Created) {
+                state.deployments.unshift(deployment)
                 return
             }
 
-            // Update the deployment if it exist.
-            const idx = state.deployments.findIndex((deployment) => {
-                return event.deployment?.id === deployment.id
+            state.deployments = state.deployments.filter((item) => {
+                return !(item.status === DeploymentStatusEnum.Success 
+                    || item.status === DeploymentStatusEnum.Failure)
             })
 
-            if (idx !== -1 ) {
-                if (!(event.deployment?.status === DeploymentStatusEnum.Waiting 
-                    || event.deployment?.status === DeploymentStatusEnum.Created
-                    || event.deployment?.status === DeploymentStatusEnum.Queued
-                    || event.deployment?.status === DeploymentStatusEnum.Running)) {
-                    state.deployments.splice(idx, 1)
-                    return
-                } 
-
-                state.deployments[idx] = event.deployment
-                return
-            } 
+            state.deployments = state.deployments.map((item) => {
+                return (item.id === deployment.id)? deployment : item
+            })
         },
-        handleReviewEvent: (state, action: PayloadAction<Event>) => {
-            const event = action.payload
-            if (action.payload.kind !== EventKindEnum.Review) {
-                return
-            } 
-            
-            if (event.type === EventTypeEnum.Created
-                && event.review
-                && event.review?.user?.id === state.user?.id) {
-                state.reviews.unshift(event.review)
-                return
-            }
-
-            const idx = state.reviews.findIndex((review) => {
-                return event.review?.id === review.id 
+        /**
+         * Reviews are removed from the state.
+         */
+        handleReviewEvent: (state, { payload: review }: PayloadAction<Review>) => {
+            state.reviews = state.reviews.filter((item) => {
+                return item.id !== review.id
             })
-
-            if (idx !== -1) {
-                state.reviews.splice(idx, 1)
-                return
-            } 
         },
     },
     extraReducers: builder => {

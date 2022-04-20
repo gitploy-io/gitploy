@@ -7,7 +7,6 @@ import { RedoOutlined } from "@ant-design/icons"
 import { useAppSelector, useAppDispatch } from '../../redux/hooks'
 import { homeSlice, listRepos, perPage, sync, homeSlice as slice } from '../../redux/home'
 import { RequestStatus } from '../../models'
-import { subscribeEvents } from "../../apis"
 
 import Main from '../main'
 import RepoList, { RepoListProps } from './RepoList'
@@ -24,14 +23,6 @@ export default ():JSX.Element => {
 
     useEffect(() => {
         dispatch(listRepos())
-
-        const sub = subscribeEvents((event) => {
-            dispatch(slice.actions.handleDeploymentEvent(event))
-        })
-
-        return () => {
-            sub.close()
-        }
     }, [dispatch])
 
     const search = (q: string) => {
