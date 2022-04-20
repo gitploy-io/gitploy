@@ -17,7 +17,6 @@ import (
 	gb "github.com/gitploy-io/gitploy/internal/server/global"
 	"github.com/gitploy-io/gitploy/model/ent"
 	"github.com/gitploy-io/gitploy/model/ent/event"
-	"github.com/gitploy-io/gitploy/model/ent/review"
 )
 
 // GetEvents streams events of deployment, or review.
@@ -34,14 +33,14 @@ func (s *Stream) GetEvents(c *gin.Context) {
 	sub := func(e *ent.Event) {
 		switch e.Kind {
 		case event.KindDeployment:
-			d, err := s.i.FindDeploymentByID(ctx, e.DeletedID)
+			d, err := s.i.FindDeploymentByID(ctx, e.DeploymentID)
 			if err != nil {
 				s.log.Error("Failed to find the deployment.", zap.Error(err))
 				return
 			}
 
-			if u.ID != d.UserID {
-				s.log.Debug("Skip the event. The user is not deployer.")
+			if _, err := s.i.FindPermOfRepo(ctx, d.Edges.Repo, u); err != nil {
+				s.log.Debug("Skip the event. The permission is denied.")
 				return
 			}
 
@@ -58,22 +57,21 @@ func (s *Stream) GetEvents(c *gin.Context) {
 				return
 			}
 
-			// Dispatch an event to the reviewer.
-			if r.Status == review.StatusPending && u.ID == r.UserID {
-				s.log.Debug("Dispatch a review event.", zap.Int("id", r.ID))
-				events <- &sse.Event{
-					Event: "review",
-					Data:  r,
-				}
+			d, err := s.i.FindDeploymentByID(ctx, r.DeploymentID)
+			if err != nil {
+				s.log.Error("Failed to find the deployment.", zap.Error(err))
+				return
 			}
 
-			// Dispatch an event to the requester.
-			if (r.Status == review.StatusApproved || r.Status == review.StatusRejected) && u.ID == r.Edges.User.ID {
-				s.log.Debug("Dispatch a review event.", zap.Int("id", r.ID))
-				events <- &sse.Event{
-					Event: "review",
-					Data:  r,
-				}
+			if _, err := s.i.FindPermOfRepo(ctx, d.Edges.Repo, u); err != nil {
+				s.log.Debug("Skip the event. The permission is denied.")
+				return
+			}
+
+			s.log.Debug("Dispatch a review event.", zap.Int("id", r.ID))
+			events <- &sse.Event{
+				Event: "review",
+				Data:  r,
 			}
 		}
 	}
