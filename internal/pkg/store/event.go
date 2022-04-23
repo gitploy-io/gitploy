@@ -28,6 +28,10 @@ func (s *Store) ListEventsGreaterThanTime(ctx context.Context, t time.Time) ([]*
 				WithRepo().
 				WithDeploymentStatuses()
 		}).
+		WithDeploymentStatus(func(dsq *ent.DeploymentStatusQuery) {
+			dsq.
+				WithDeployment()
+		}).
 		WithReview(func(rq *ent.ReviewQuery) {
 			rq.
 				WithUser().
