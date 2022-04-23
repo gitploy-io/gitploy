@@ -5,14 +5,20 @@ import { Helmet } from "react-helmet"
 import moment from "moment"
 
 import { useAppSelector, useAppDispatch } from "../../redux/hooks"
-import { subscribeDeploymentEvents, subscribeReviewEvents } from "../../apis"
+import { 
+    subscribeDeploymentEvents, 
+    subscribeDeploymentStatusEvents,
+    subscribeReviewEvents 
+} from "../../apis"
 import { 
     init, 
     searchDeployments, 
     searchReviews, 
     fetchLicense, 
     notifyDeploymentEvent, 
+    notifyDeploymentStatusEvent,
     notifyReviewmentEvent, 
+    handleDeploymentStatusEvent,
     mainSlice as slice 
 } from "../../redux/main"
 
@@ -45,6 +51,11 @@ export default (props: React.PropsWithChildren<any>): JSX.Element => {
             dispatch(notifyDeploymentEvent(deployment))
         })
 
+        const deploymentStatusEvents = subscribeDeploymentStatusEvents((deploymentStatus) => {
+            dispatch(handleDeploymentStatusEvent(deploymentStatus))
+            dispatch(notifyDeploymentStatusEvent(deploymentStatus))
+        })
+
         const reviewEvents = subscribeReviewEvents((review) => {
             dispatch(slice.actions.handleReviewEvent(review))
             dispatch(notifyReviewmentEvent(review))
@@ -52,6 +63,7 @@ export default (props: React.PropsWithChildren<any>): JSX.Element => {
 
         return () => {
             deploymentEvents.close()
+            deploymentStatusEvents.close()
             reviewEvents.close()
         }
     }, [dispatch])

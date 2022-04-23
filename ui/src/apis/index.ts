@@ -66,5 +66,6 @@ export {
 } from "./license"
 export { 
     subscribeDeploymentEvents,
+    subscribeDeploymentStatusEvents,
     subscribeReviewEvents,
 } from "./events"

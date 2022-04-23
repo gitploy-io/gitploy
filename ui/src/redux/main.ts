@@ -11,11 +11,13 @@ import {
     HttpPaymentRequiredError,
     License,
     ReviewStatusEnum,
+    DeploymentStatus,
 } from "../models"
 import { 
     getMe, 
     searchDeployments as _searchDeployments, 
     searchReviews as _searchReviews,
+    getDeployment,
     getLicense 
 } from "../apis"
 import { getShortRef } from "../libs"
@@ -157,6 +159,27 @@ export const notifyDeploymentEvent = createAsyncThunk<void, Deployment, { state:
     }
 )
 
+export const notifyDeploymentStatusEvent = createAsyncThunk<void, DeploymentStatus, { state: { main: MainState } }>(
+    "main/notifyDeploymentStatusEvent",
+    async (deploymentStatus, {rejectWithValue}) => {
+        if (deploymentStatus.edges === undefined) {
+            return rejectWithValue(new Error("Edges is not included."))
+        }
+
+        const { repo, deployment } = deploymentStatus.edges
+        if (repo === undefined || deployment === undefined) {
+            return rejectWithValue(new Error("Repo or Deployment is not included in the edges."))
+        }
+
+        notify(`${repo.namespace}/${repo.name} #${deployment.number}`, {
+            icon: "/logo192.png",
+            body: `${deploymentStatus.status} - ${deploymentStatus.description}`,
+            tag: String(deployment.id),
+            
+        })
+    }
+)
+
 /**
  * The browser notifies the requester when the review is responded to, 
  * but it should notify the reviewer when the review is requested.
@@ -182,6 +205,22 @@ export const notifyReviewmentEvent = createAsyncThunk<void, Review, { state: { m
     }
 )
 
+
+export const handleDeploymentStatusEvent = createAsyncThunk<Deployment, DeploymentStatus, { state: { main: MainState } }>(
+    "main/handleDeploymentStatusEvent",
+    async (deploymentStatus, { rejectWithValue }) => {
+        if (deploymentStatus.edges === undefined) {
+            return rejectWithValue(new Error("Edges is not included."))
+        }
+
+        const { repo, deployment } = deploymentStatus.edges
+        if (repo === undefined || deployment === undefined) {
+            return rejectWithValue(new Error("Repo or Deployment is not included in the edges."))
+        }
+
+        return await getDeployment(repo.namespace, repo.name, deployment.number)
+    }
+)
 
 export const mainSlice = createSlice({
     name: "main",
@@ -239,6 +278,22 @@ export const mainSlice = createSlice({
 
             .addCase(fetchLicense.fulfilled, (state, action) => {
                 state.license = action.payload
+            })
+
+            .addCase(handleDeploymentStatusEvent.fulfilled, (state, { payload: deployment }) => {
+                if (deployment.status === DeploymentStatusEnum.Created) {
+                    state.deployments.unshift(deployment)
+                    return
+                }
+
+                state.deployments = state.deployments.map((item) => {
+                    return (item.id === deployment.id)? deployment : item
+                })
+
+                state.deployments = state.deployments.filter((item) => {
+                    return !(item.status === DeploymentStatusEnum.Success 
+                        || item.status === DeploymentStatusEnum.Failure)
+                })
             })
     }
 })
