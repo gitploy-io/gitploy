@@ -14,6 +14,7 @@ import (
 
 type (
 	RepoPatchPayload struct {
+		Name       *string `json:"name"`
 		ConfigPath *string `json:"config_path"`
 		Active     *bool   `json:"active"`
 	}
@@ -57,17 +58,22 @@ func (s *RepoAPI) Update(c *gin.Context) {
 		}
 	}
 
-	if p.ConfigPath != nil {
-		if *p.ConfigPath != re.ConfigPath {
-			re.ConfigPath = *p.ConfigPath
-
-			if re, err = s.i.UpdateRepo(ctx, re); err != nil {
-				s.log.Check(gb.GetZapLogLevel(err), "Failed to update the repository.").Write(zap.Error(err))
-				gb.ResponseWithError(c, err)
-				return
-			}
-		}
+	if p.Name != nil {
+		s.log.Debug("Set the name field.", zap.String("value", *p.Name))
+		re.Name = *p.Name
 	}
 
+	if p.ConfigPath != nil {
+		s.log.Debug("Set the config_path field.", zap.String("value", *p.ConfigPath))
+		re.ConfigPath = *p.ConfigPath
+	}
+
+	if re, err = s.i.UpdateRepo(ctx, re); err != nil {
+		s.log.Check(gb.GetZapLogLevel(err), "Failed to update the repository.").Write(zap.Error(err))
+		gb.ResponseWithError(c, err)
+		return
+	}
+
+	s.log.Info("Update the repository.", zap.Int64("repo_id", re.ID))
 	gb.Response(c, http.StatusOK, re)
 }

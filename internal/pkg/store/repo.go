@@ -179,13 +179,13 @@ func (s *Store) SyncRepo(ctx context.Context, r *extent.RemoteRepo) (*ent.Repo, 
 func (s *Store) UpdateRepo(ctx context.Context, r *ent.Repo) (*ent.Repo, error) {
 	ret, err := s.c.Repo.
 		UpdateOne(r).
+		SetName(r.Name).
 		SetConfigPath(r.ConfigPath).
 		Save(ctx)
 	if ent.IsValidationError(err) {
-		return nil, e.NewErrorWithMessage(
-			e.ErrorCodeEntityUnprocessable,
-			fmt.Sprintf("The value of \"%s\" field is invalid.", err.(*ent.ValidationError).Name),
-			err)
+		return nil, e.NewErrorWithMessage(e.ErrorCodeEntityUnprocessable, fmt.Sprintf("The value of \"%s\" field is invalid.", err.(*ent.ValidationError).Name), err)
+	} else if ent.IsConstraintError(err) {
+		return nil, e.NewError(e.ErrorRepoUniqueName, err)
 	} else if err != nil {
 		return nil, e.NewError(e.ErrorCodeInternalError, err)
 	}

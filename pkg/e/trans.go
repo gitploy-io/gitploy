@@ -19,7 +19,8 @@ var messages = map[ErrorCode]string{
 	ErrorCodeLicenseDecode:           "Decoding the license is failed.",
 	ErrorCodeLicenseRequired:         "The license is required.",
 	ErrorCodeParameterInvalid:        "Invalid request parameter.",
-	ErrorPermissionRequired:          "The permission is required",
+	ErrorPermissionRequired:          "The permission is required.",
+	ErrorRepoUniqueName:              "The repository name already exists.",
 }
 
 func GetMessage(code ErrorCode) string {
@@ -49,6 +50,7 @@ var httpCodes = map[ErrorCode]int{
 	ErrorCodeLicenseRequired:         http.StatusPaymentRequired,
 	ErrorCodeParameterInvalid:        http.StatusBadRequest,
 	ErrorPermissionRequired:          http.StatusForbidden,
+	ErrorRepoUniqueName:              http.StatusUnprocessableEntity,
 }
 
 func GetHttpCode(code ErrorCode) int {

@@ -49,6 +49,9 @@ const (
 
 	// ErrorPermissionRequired is the permission is required to access.
 	ErrorPermissionRequired ErrorCode = "permission_required"
+
+	// ErrorRepoUniqueName is the repository name must be unique.
+	ErrorRepoUniqueName ErrorCode = "repo_unique_name"
 )
 
 type (
