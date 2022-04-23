@@ -15,6 +15,7 @@ import (
 	"github.com/gitploy-io/gitploy/model/ent/deploymentstatus"
 	"github.com/gitploy-io/gitploy/model/ent/event"
 	"github.com/gitploy-io/gitploy/model/ent/predicate"
+	"github.com/gitploy-io/gitploy/model/ent/repo"
 )
 
 // DeploymentStatusUpdate is the builder for updating DeploymentStatus entities.
@@ -102,9 +103,20 @@ func (dsu *DeploymentStatusUpdate) SetDeploymentID(i int) *DeploymentStatusUpdat
 	return dsu
 }
 
+// SetRepoID sets the "repo_id" field.
+func (dsu *DeploymentStatusUpdate) SetRepoID(i int64) *DeploymentStatusUpdate {
+	dsu.mutation.SetRepoID(i)
+	return dsu
+}
+
 // SetDeployment sets the "deployment" edge to the Deployment entity.
 func (dsu *DeploymentStatusUpdate) SetDeployment(d *Deployment) *DeploymentStatusUpdate {
 	return dsu.SetDeploymentID(d.ID)
+}
+
+// SetRepo sets the "repo" edge to the Repo entity.
+func (dsu *DeploymentStatusUpdate) SetRepo(r *Repo) *DeploymentStatusUpdate {
+	return dsu.SetRepoID(r.ID)
 }
 
 // AddEventIDs adds the "event" edge to the Event entity by IDs.
@@ -130,6 +142,12 @@ func (dsu *DeploymentStatusUpdate) Mutation() *DeploymentStatusMutation {
 // ClearDeployment clears the "deployment" edge to the Deployment entity.
 func (dsu *DeploymentStatusUpdate) ClearDeployment() *DeploymentStatusUpdate {
 	dsu.mutation.ClearDeployment()
+	return dsu
+}
+
+// ClearRepo clears the "repo" edge to the Repo entity.
+func (dsu *DeploymentStatusUpdate) ClearRepo() *DeploymentStatusUpdate {
+	dsu.mutation.ClearRepo()
 	return dsu
 }
 
@@ -228,6 +246,9 @@ func (dsu *DeploymentStatusUpdate) check() error {
 	if _, ok := dsu.mutation.DeploymentID(); dsu.mutation.DeploymentCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "DeploymentStatus.deployment"`)
 	}
+	if _, ok := dsu.mutation.RepoID(); dsu.mutation.RepoCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "DeploymentStatus.repo"`)
+	}
 	return nil
 }
 
@@ -323,6 +344,41 @@ func (dsu *DeploymentStatusUpdate) sqlSave(ctx context.Context) (n int, err erro
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
 					Column: deployment.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if dsu.mutation.RepoCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   deploymentstatus.RepoTable,
+			Columns: []string{deploymentstatus.RepoColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt64,
+					Column: repo.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := dsu.mutation.RepoIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   deploymentstatus.RepoTable,
+			Columns: []string{deploymentstatus.RepoColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt64,
+					Column: repo.FieldID,
 				},
 			},
 		}
@@ -476,9 +532,20 @@ func (dsuo *DeploymentStatusUpdateOne) SetDeploymentID(i int) *DeploymentStatusU
 	return dsuo
 }
 
+// SetRepoID sets the "repo_id" field.
+func (dsuo *DeploymentStatusUpdateOne) SetRepoID(i int64) *DeploymentStatusUpdateOne {
+	dsuo.mutation.SetRepoID(i)
+	return dsuo
+}
+
 // SetDeployment sets the "deployment" edge to the Deployment entity.
 func (dsuo *DeploymentStatusUpdateOne) SetDeployment(d *Deployment) *DeploymentStatusUpdateOne {
 	return dsuo.SetDeploymentID(d.ID)
+}
+
+// SetRepo sets the "repo" edge to the Repo entity.
+func (dsuo *DeploymentStatusUpdateOne) SetRepo(r *Repo) *DeploymentStatusUpdateOne {
+	return dsuo.SetRepoID(r.ID)
 }
 
 // AddEventIDs adds the "event" edge to the Event entity by IDs.
@@ -504,6 +571,12 @@ func (dsuo *DeploymentStatusUpdateOne) Mutation() *DeploymentStatusMutation {
 // ClearDeployment clears the "deployment" edge to the Deployment entity.
 func (dsuo *DeploymentStatusUpdateOne) ClearDeployment() *DeploymentStatusUpdateOne {
 	dsuo.mutation.ClearDeployment()
+	return dsuo
+}
+
+// ClearRepo clears the "repo" edge to the Repo entity.
+func (dsuo *DeploymentStatusUpdateOne) ClearRepo() *DeploymentStatusUpdateOne {
+	dsuo.mutation.ClearRepo()
 	return dsuo
 }
 
@@ -608,6 +681,9 @@ func (dsuo *DeploymentStatusUpdateOne) defaults() {
 func (dsuo *DeploymentStatusUpdateOne) check() error {
 	if _, ok := dsuo.mutation.DeploymentID(); dsuo.mutation.DeploymentCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "DeploymentStatus.deployment"`)
+	}
+	if _, ok := dsuo.mutation.RepoID(); dsuo.mutation.RepoCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "DeploymentStatus.repo"`)
 	}
 	return nil
 }
@@ -721,6 +797,41 @@ func (dsuo *DeploymentStatusUpdateOne) sqlSave(ctx context.Context) (_node *Depl
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
 					Column: deployment.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if dsuo.mutation.RepoCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   deploymentstatus.RepoTable,
+			Columns: []string{deploymentstatus.RepoColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt64,
+					Column: repo.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := dsuo.mutation.RepoIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   deploymentstatus.RepoTable,
+			Columns: []string{deploymentstatus.RepoColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt64,
+					Column: repo.FieldID,
 				},
 			},
 		}

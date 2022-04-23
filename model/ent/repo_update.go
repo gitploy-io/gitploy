@@ -13,6 +13,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/gitploy-io/gitploy/model/ent/deployment"
 	"github.com/gitploy-io/gitploy/model/ent/deploymentstatistics"
+	"github.com/gitploy-io/gitploy/model/ent/deploymentstatus"
 	"github.com/gitploy-io/gitploy/model/ent/lock"
 	"github.com/gitploy-io/gitploy/model/ent/perm"
 	"github.com/gitploy-io/gitploy/model/ent/predicate"
@@ -196,6 +197,21 @@ func (ru *RepoUpdate) AddDeployments(d ...*Deployment) *RepoUpdate {
 	return ru.AddDeploymentIDs(ids...)
 }
 
+// AddDeploymentStatusIDs adds the "deployment_statuses" edge to the DeploymentStatus entity by IDs.
+func (ru *RepoUpdate) AddDeploymentStatusIDs(ids ...int) *RepoUpdate {
+	ru.mutation.AddDeploymentStatusIDs(ids...)
+	return ru
+}
+
+// AddDeploymentStatuses adds the "deployment_statuses" edges to the DeploymentStatus entity.
+func (ru *RepoUpdate) AddDeploymentStatuses(d ...*DeploymentStatus) *RepoUpdate {
+	ids := make([]int, len(d))
+	for i := range d {
+		ids[i] = d[i].ID
+	}
+	return ru.AddDeploymentStatusIDs(ids...)
+}
+
 // AddLockIDs adds the "locks" edge to the Lock entity by IDs.
 func (ru *RepoUpdate) AddLockIDs(ids ...int) *RepoUpdate {
 	ru.mutation.AddLockIDs(ids...)
@@ -276,6 +292,27 @@ func (ru *RepoUpdate) RemoveDeployments(d ...*Deployment) *RepoUpdate {
 		ids[i] = d[i].ID
 	}
 	return ru.RemoveDeploymentIDs(ids...)
+}
+
+// ClearDeploymentStatuses clears all "deployment_statuses" edges to the DeploymentStatus entity.
+func (ru *RepoUpdate) ClearDeploymentStatuses() *RepoUpdate {
+	ru.mutation.ClearDeploymentStatuses()
+	return ru
+}
+
+// RemoveDeploymentStatusIDs removes the "deployment_statuses" edge to DeploymentStatus entities by IDs.
+func (ru *RepoUpdate) RemoveDeploymentStatusIDs(ids ...int) *RepoUpdate {
+	ru.mutation.RemoveDeploymentStatusIDs(ids...)
+	return ru
+}
+
+// RemoveDeploymentStatuses removes "deployment_statuses" edges to DeploymentStatus entities.
+func (ru *RepoUpdate) RemoveDeploymentStatuses(d ...*DeploymentStatus) *RepoUpdate {
+	ids := make([]int, len(d))
+	for i := range d {
+		ids[i] = d[i].ID
+	}
+	return ru.RemoveDeploymentStatusIDs(ids...)
 }
 
 // ClearLocks clears all "locks" edges to the Lock entity.
@@ -589,6 +626,60 @@ func (ru *RepoUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
 					Column: deployment.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if ru.mutation.DeploymentStatusesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   repo.DeploymentStatusesTable,
+			Columns: []string{repo.DeploymentStatusesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: deploymentstatus.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ru.mutation.RemovedDeploymentStatusesIDs(); len(nodes) > 0 && !ru.mutation.DeploymentStatusesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   repo.DeploymentStatusesTable,
+			Columns: []string{repo.DeploymentStatusesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: deploymentstatus.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ru.mutation.DeploymentStatusesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   repo.DeploymentStatusesTable,
+			Columns: []string{repo.DeploymentStatusesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: deploymentstatus.FieldID,
 				},
 			},
 		}
@@ -922,6 +1013,21 @@ func (ruo *RepoUpdateOne) AddDeployments(d ...*Deployment) *RepoUpdateOne {
 	return ruo.AddDeploymentIDs(ids...)
 }
 
+// AddDeploymentStatusIDs adds the "deployment_statuses" edge to the DeploymentStatus entity by IDs.
+func (ruo *RepoUpdateOne) AddDeploymentStatusIDs(ids ...int) *RepoUpdateOne {
+	ruo.mutation.AddDeploymentStatusIDs(ids...)
+	return ruo
+}
+
+// AddDeploymentStatuses adds the "deployment_statuses" edges to the DeploymentStatus entity.
+func (ruo *RepoUpdateOne) AddDeploymentStatuses(d ...*DeploymentStatus) *RepoUpdateOne {
+	ids := make([]int, len(d))
+	for i := range d {
+		ids[i] = d[i].ID
+	}
+	return ruo.AddDeploymentStatusIDs(ids...)
+}
+
 // AddLockIDs adds the "locks" edge to the Lock entity by IDs.
 func (ruo *RepoUpdateOne) AddLockIDs(ids ...int) *RepoUpdateOne {
 	ruo.mutation.AddLockIDs(ids...)
@@ -1002,6 +1108,27 @@ func (ruo *RepoUpdateOne) RemoveDeployments(d ...*Deployment) *RepoUpdateOne {
 		ids[i] = d[i].ID
 	}
 	return ruo.RemoveDeploymentIDs(ids...)
+}
+
+// ClearDeploymentStatuses clears all "deployment_statuses" edges to the DeploymentStatus entity.
+func (ruo *RepoUpdateOne) ClearDeploymentStatuses() *RepoUpdateOne {
+	ruo.mutation.ClearDeploymentStatuses()
+	return ruo
+}
+
+// RemoveDeploymentStatusIDs removes the "deployment_statuses" edge to DeploymentStatus entities by IDs.
+func (ruo *RepoUpdateOne) RemoveDeploymentStatusIDs(ids ...int) *RepoUpdateOne {
+	ruo.mutation.RemoveDeploymentStatusIDs(ids...)
+	return ruo
+}
+
+// RemoveDeploymentStatuses removes "deployment_statuses" edges to DeploymentStatus entities.
+func (ruo *RepoUpdateOne) RemoveDeploymentStatuses(d ...*DeploymentStatus) *RepoUpdateOne {
+	ids := make([]int, len(d))
+	for i := range d {
+		ids[i] = d[i].ID
+	}
+	return ruo.RemoveDeploymentStatusIDs(ids...)
 }
 
 // ClearLocks clears all "locks" edges to the Lock entity.
@@ -1339,6 +1466,60 @@ func (ruo *RepoUpdateOne) sqlSave(ctx context.Context) (_node *Repo, err error) 
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
 					Column: deployment.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if ruo.mutation.DeploymentStatusesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   repo.DeploymentStatusesTable,
+			Columns: []string{repo.DeploymentStatusesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: deploymentstatus.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ruo.mutation.RemovedDeploymentStatusesIDs(); len(nodes) > 0 && !ruo.mutation.DeploymentStatusesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   repo.DeploymentStatusesTable,
+			Columns: []string{repo.DeploymentStatusesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: deploymentstatus.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ruo.mutation.DeploymentStatusesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   repo.DeploymentStatusesTable,
+			Columns: []string{repo.DeploymentStatusesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: deploymentstatus.FieldID,
 				},
 			},
 		}

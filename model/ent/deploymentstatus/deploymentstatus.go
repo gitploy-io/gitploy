@@ -23,8 +23,12 @@ const (
 	FieldUpdatedAt = "updated_at"
 	// FieldDeploymentID holds the string denoting the deployment_id field in the database.
 	FieldDeploymentID = "deployment_id"
+	// FieldRepoID holds the string denoting the repo_id field in the database.
+	FieldRepoID = "repo_id"
 	// EdgeDeployment holds the string denoting the deployment edge name in mutations.
 	EdgeDeployment = "deployment"
+	// EdgeRepo holds the string denoting the repo edge name in mutations.
+	EdgeRepo = "repo"
 	// EdgeEvent holds the string denoting the event edge name in mutations.
 	EdgeEvent = "event"
 	// Table holds the table name of the deploymentstatus in the database.
@@ -36,6 +40,13 @@ const (
 	DeploymentInverseTable = "deployments"
 	// DeploymentColumn is the table column denoting the deployment relation/edge.
 	DeploymentColumn = "deployment_id"
+	// RepoTable is the table that holds the repo relation/edge.
+	RepoTable = "deployment_status"
+	// RepoInverseTable is the table name for the Repo entity.
+	// It exists in this package in order to avoid circular dependency with the "repo" package.
+	RepoInverseTable = "repos"
+	// RepoColumn is the table column denoting the repo relation/edge.
+	RepoColumn = "repo_id"
 	// EventTable is the table that holds the event relation/edge.
 	EventTable = "events"
 	// EventInverseTable is the table name for the Event entity.
@@ -54,6 +65,7 @@ var Columns = []string{
 	FieldCreatedAt,
 	FieldUpdatedAt,
 	FieldDeploymentID,
+	FieldRepoID,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).

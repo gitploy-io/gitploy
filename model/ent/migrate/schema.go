@@ -156,6 +156,7 @@ var (
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "deployment_id", Type: field.TypeInt},
+		{Name: "repo_id", Type: field.TypeInt64},
 	}
 	// DeploymentStatusTable holds the schema information for the "deployment_status" table.
 	DeploymentStatusTable = &schema.Table{
@@ -167,6 +168,12 @@ var (
 				Symbol:     "deployment_status_deployments_deployment_statuses",
 				Columns:    []*schema.Column{DeploymentStatusColumns[6]},
 				RefColumns: []*schema.Column{DeploymentsColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "deployment_status_repos_deployment_statuses",
+				Columns:    []*schema.Column{DeploymentStatusColumns[7]},
+				RefColumns: []*schema.Column{ReposColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
 		},
@@ -428,6 +435,7 @@ func init() {
 	DeploymentsTable.ForeignKeys[1].RefTable = UsersTable
 	DeploymentStatisticsTable.ForeignKeys[0].RefTable = ReposTable
 	DeploymentStatusTable.ForeignKeys[0].RefTable = DeploymentsTable
+	DeploymentStatusTable.ForeignKeys[1].RefTable = ReposTable
 	EventsTable.ForeignKeys[0].RefTable = DeploymentsTable
 	EventsTable.ForeignKeys[1].RefTable = DeploymentStatusTable
 	EventsTable.ForeignKeys[2].RefTable = ReviewsTable

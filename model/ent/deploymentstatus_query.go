@@ -17,6 +17,7 @@ import (
 	"github.com/gitploy-io/gitploy/model/ent/deploymentstatus"
 	"github.com/gitploy-io/gitploy/model/ent/event"
 	"github.com/gitploy-io/gitploy/model/ent/predicate"
+	"github.com/gitploy-io/gitploy/model/ent/repo"
 )
 
 // DeploymentStatusQuery is the builder for querying DeploymentStatus entities.
@@ -30,6 +31,7 @@ type DeploymentStatusQuery struct {
 	predicates []predicate.DeploymentStatus
 	// eager-loading edges.
 	withDeployment *DeploymentQuery
+	withRepo       *RepoQuery
 	withEvent      *EventQuery
 	modifiers      []func(s *sql.Selector)
 	// intermediate query (i.e. traversal path).
@@ -83,6 +85,28 @@ func (dsq *DeploymentStatusQuery) QueryDeployment() *DeploymentQuery {
 			sqlgraph.From(deploymentstatus.Table, deploymentstatus.FieldID, selector),
 			sqlgraph.To(deployment.Table, deployment.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, deploymentstatus.DeploymentTable, deploymentstatus.DeploymentColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(dsq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryRepo chains the current query on the "repo" edge.
+func (dsq *DeploymentStatusQuery) QueryRepo() *RepoQuery {
+	query := &RepoQuery{config: dsq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := dsq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := dsq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(deploymentstatus.Table, deploymentstatus.FieldID, selector),
+			sqlgraph.To(repo.Table, repo.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, deploymentstatus.RepoTable, deploymentstatus.RepoColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(dsq.driver.Dialect(), step)
 		return fromU, nil
@@ -294,6 +318,7 @@ func (dsq *DeploymentStatusQuery) Clone() *DeploymentStatusQuery {
 		order:          append([]OrderFunc{}, dsq.order...),
 		predicates:     append([]predicate.DeploymentStatus{}, dsq.predicates...),
 		withDeployment: dsq.withDeployment.Clone(),
+		withRepo:       dsq.withRepo.Clone(),
 		withEvent:      dsq.withEvent.Clone(),
 		// clone intermediate query.
 		sql:    dsq.sql.Clone(),
@@ -310,6 +335,17 @@ func (dsq *DeploymentStatusQuery) WithDeployment(opts ...func(*DeploymentQuery))
 		opt(query)
 	}
 	dsq.withDeployment = query
+	return dsq
+}
+
+// WithRepo tells the query-builder to eager-load the nodes that are connected to
+// the "repo" edge. The optional arguments are used to configure the query builder of the edge.
+func (dsq *DeploymentStatusQuery) WithRepo(opts ...func(*RepoQuery)) *DeploymentStatusQuery {
+	query := &RepoQuery{config: dsq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	dsq.withRepo = query
 	return dsq
 }
 
@@ -389,8 +425,9 @@ func (dsq *DeploymentStatusQuery) sqlAll(ctx context.Context) ([]*DeploymentStat
 	var (
 		nodes       = []*DeploymentStatus{}
 		_spec       = dsq.querySpec()
-		loadedTypes = [2]bool{
+		loadedTypes = [3]bool{
 			dsq.withDeployment != nil,
+			dsq.withRepo != nil,
 			dsq.withEvent != nil,
 		}
 	)
@@ -439,6 +476,32 @@ func (dsq *DeploymentStatusQuery) sqlAll(ctx context.Context) ([]*DeploymentStat
 			}
 			for i := range nodes {
 				nodes[i].Edges.Deployment = n
+			}
+		}
+	}
+
+	if query := dsq.withRepo; query != nil {
+		ids := make([]int64, 0, len(nodes))
+		nodeids := make(map[int64][]*DeploymentStatus)
+		for i := range nodes {
+			fk := nodes[i].RepoID
+			if _, ok := nodeids[fk]; !ok {
+				ids = append(ids, fk)
+			}
+			nodeids[fk] = append(nodeids[fk], nodes[i])
+		}
+		query.Where(repo.IDIn(ids...))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			nodes, ok := nodeids[n.ID]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "repo_id" returned %v`, n.ID)
+			}
+			for i := range nodes {
+				nodes[i].Edges.Repo = n
 			}
 		}
 	}
