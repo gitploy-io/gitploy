@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/gitploy-io/gitploy/model/ent/deployment"
 	"github.com/gitploy-io/gitploy/model/ent/deploymentstatus"
 	"github.com/gitploy-io/gitploy/model/ent/event"
 	"github.com/gitploy-io/gitploy/model/ent/notificationrecord"
@@ -26,8 +25,6 @@ type Event struct {
 	Type event.Type `json:"type"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at"`
-	// DeploymentID holds the value of the "deployment_id" field.
-	DeploymentID int `json:"deployment_id,omitemtpy"`
 	// DeploymentStatusID holds the value of the "deployment_status_id" field.
 	DeploymentStatusID int `json:"deployment_status_id,omitemtpy"`
 	// ReviewID holds the value of the "review_id" field.
@@ -41,8 +38,6 @@ type Event struct {
 
 // EventEdges holds the relations/edges for other nodes in the graph.
 type EventEdges struct {
-	// Deployment holds the value of the deployment edge.
-	Deployment *Deployment `json:"deployment,omitempty"`
 	// DeploymentStatus holds the value of the deployment_status edge.
 	DeploymentStatus *DeploymentStatus `json:"deployment_status,omitempty"`
 	// Review holds the value of the review edge.
@@ -51,27 +46,13 @@ type EventEdges struct {
 	NotificationRecord *NotificationRecord `json:"notification_record,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [4]bool
-}
-
-// DeploymentOrErr returns the Deployment value or an error if the edge
-// was not loaded in eager-loading, or loaded but was not found.
-func (e EventEdges) DeploymentOrErr() (*Deployment, error) {
-	if e.loadedTypes[0] {
-		if e.Deployment == nil {
-			// The edge deployment was loaded in eager-loading,
-			// but was not found.
-			return nil, &NotFoundError{label: deployment.Label}
-		}
-		return e.Deployment, nil
-	}
-	return nil, &NotLoadedError{edge: "deployment"}
+	loadedTypes [3]bool
 }
 
 // DeploymentStatusOrErr returns the DeploymentStatus value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e EventEdges) DeploymentStatusOrErr() (*DeploymentStatus, error) {
-	if e.loadedTypes[1] {
+	if e.loadedTypes[0] {
 		if e.DeploymentStatus == nil {
 			// The edge deployment_status was loaded in eager-loading,
 			// but was not found.
@@ -85,7 +66,7 @@ func (e EventEdges) DeploymentStatusOrErr() (*DeploymentStatus, error) {
 // ReviewOrErr returns the Review value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e EventEdges) ReviewOrErr() (*Review, error) {
-	if e.loadedTypes[2] {
+	if e.loadedTypes[1] {
 		if e.Review == nil {
 			// The edge review was loaded in eager-loading,
 			// but was not found.
@@ -99,7 +80,7 @@ func (e EventEdges) ReviewOrErr() (*Review, error) {
 // NotificationRecordOrErr returns the NotificationRecord value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e EventEdges) NotificationRecordOrErr() (*NotificationRecord, error) {
-	if e.loadedTypes[3] {
+	if e.loadedTypes[2] {
 		if e.NotificationRecord == nil {
 			// The edge notification_record was loaded in eager-loading,
 			// but was not found.
@@ -115,7 +96,7 @@ func (*Event) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case event.FieldID, event.FieldDeploymentID, event.FieldDeploymentStatusID, event.FieldReviewID, event.FieldDeletedID:
+		case event.FieldID, event.FieldDeploymentStatusID, event.FieldReviewID, event.FieldDeletedID:
 			values[i] = new(sql.NullInt64)
 		case event.FieldKind, event.FieldType:
 			values[i] = new(sql.NullString)
@@ -160,12 +141,6 @@ func (e *Event) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				e.CreatedAt = value.Time
 			}
-		case event.FieldDeploymentID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field deployment_id", values[i])
-			} else if value.Valid {
-				e.DeploymentID = int(value.Int64)
-			}
 		case event.FieldDeploymentStatusID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field deployment_status_id", values[i])
@@ -187,11 +162,6 @@ func (e *Event) assignValues(columns []string, values []interface{}) error {
 		}
 	}
 	return nil
-}
-
-// QueryDeployment queries the "deployment" edge of the Event entity.
-func (e *Event) QueryDeployment() *DeploymentQuery {
-	return (&EventClient{config: e.config}).QueryDeployment(e)
 }
 
 // QueryDeploymentStatus queries the "deployment_status" edge of the Event entity.
@@ -238,8 +208,6 @@ func (e *Event) String() string {
 	builder.WriteString(fmt.Sprintf("%v", e.Type))
 	builder.WriteString(", created_at=")
 	builder.WriteString(e.CreatedAt.Format(time.ANSIC))
-	builder.WriteString(", deployment_id=")
-	builder.WriteString(fmt.Sprintf("%v", e.DeploymentID))
 	builder.WriteString(", deployment_status_id=")
 	builder.WriteString(fmt.Sprintf("%v", e.DeploymentStatusID))
 	builder.WriteString(", review_id=")

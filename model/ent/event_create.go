@@ -10,7 +10,6 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/gitploy-io/gitploy/model/ent/deployment"
 	"github.com/gitploy-io/gitploy/model/ent/deploymentstatus"
 	"github.com/gitploy-io/gitploy/model/ent/event"
 	"github.com/gitploy-io/gitploy/model/ent/notificationrecord"
@@ -46,20 +45,6 @@ func (ec *EventCreate) SetCreatedAt(t time.Time) *EventCreate {
 func (ec *EventCreate) SetNillableCreatedAt(t *time.Time) *EventCreate {
 	if t != nil {
 		ec.SetCreatedAt(*t)
-	}
-	return ec
-}
-
-// SetDeploymentID sets the "deployment_id" field.
-func (ec *EventCreate) SetDeploymentID(i int) *EventCreate {
-	ec.mutation.SetDeploymentID(i)
-	return ec
-}
-
-// SetNillableDeploymentID sets the "deployment_id" field if the given value is not nil.
-func (ec *EventCreate) SetNillableDeploymentID(i *int) *EventCreate {
-	if i != nil {
-		ec.SetDeploymentID(*i)
 	}
 	return ec
 }
@@ -104,11 +89,6 @@ func (ec *EventCreate) SetNillableDeletedID(i *int) *EventCreate {
 		ec.SetDeletedID(*i)
 	}
 	return ec
-}
-
-// SetDeployment sets the "deployment" edge to the Deployment entity.
-func (ec *EventCreate) SetDeployment(d *Deployment) *EventCreate {
-	return ec.SetDeploymentID(d.ID)
 }
 
 // SetDeploymentStatus sets the "deployment_status" edge to the DeploymentStatus entity.
@@ -296,26 +276,6 @@ func (ec *EventCreate) createSpec() (*Event, *sqlgraph.CreateSpec) {
 			Column: event.FieldDeletedID,
 		})
 		_node.DeletedID = value
-	}
-	if nodes := ec.mutation.DeploymentIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   event.DeploymentTable,
-			Columns: []string{event.DeploymentColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: deployment.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_node.DeploymentID = nodes[0]
-		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := ec.mutation.DeploymentStatusIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

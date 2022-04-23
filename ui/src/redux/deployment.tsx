@@ -194,11 +194,6 @@ export const deploymentSlice = createSlice({
         setDisplay: (state, action: PayloadAction<boolean>) => {
             state.display = action.payload
         },
-        handleDeploymentEvent: (state, action: PayloadAction<Deployment>) => {
-            if (action.payload.id === state.deployment?.id) {
-                state.deployment = action.payload
-            }
-        },
         handleReviewEvent: (state, action: PayloadAction<Review>) => {
             state.reviews = state.reviews.map((review) => {
                 return (action.payload.id === review.id)? action.payload : review

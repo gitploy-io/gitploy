@@ -20,7 +20,6 @@ import {
     getDeployment,
     getLicense 
 } from "../apis"
-import { getShortRef } from "../libs"
 
 interface MainState {
     available: boolean
@@ -136,29 +135,6 @@ const notify = (title: string, options?: NotificationOptions) => {
     new Notification(title, options)
 }
 
-/**
- * The browser notifies only the user who triggers the deployment.
- */
-export const notifyDeploymentEvent = createAsyncThunk<void, Deployment, { state: { main: MainState } }>(
-    "main/notifyDeploymentEvent",
-    async (deployment) => {
-        if (deployment.status === DeploymentStatusEnum.Created) {
-            notify(`New Deployment #${deployment.number}`, {
-                icon: "/logo192.png",
-                body: `Start to deploy ${getShortRef(deployment)} to the ${deployment.env} environment of ${deployment.repo?.namespace}/${deployment.repo?.name}.`,
-                tag: String(deployment.id),
-            })
-            return
-        }
-
-        notify(`Deployment Updated #${deployment.number}`, {
-            icon: "/logo192.png",
-            body: `The deployment ${deployment.number} of ${deployment.repo?.namespace}/${deployment.repo?.name} is updated ${deployment.status}.`,
-            tag: String(deployment.id),
-        })
-    }
-)
-
 export const notifyDeploymentStatusEvent = createAsyncThunk<void, DeploymentStatus, { state: { main: MainState } }>(
     "main/notifyDeploymentStatusEvent",
     async (deploymentStatus, {rejectWithValue}) => {
@@ -234,24 +210,6 @@ export const mainSlice = createSlice({
         },
         setExpired: (state, action: PayloadAction<boolean>) => {
             state.expired = action.payload
-        },
-        /**
-         * Update the status of the deployment with an event.
-         */
-        handleDeploymentEvent: (state, { payload: deployment }: PayloadAction<Deployment>) => {
-            if (deployment.status === DeploymentStatusEnum.Created) {
-                state.deployments.unshift(deployment)
-                return
-            }
-
-            state.deployments = state.deployments.filter((item) => {
-                return !(item.status === DeploymentStatusEnum.Success 
-                    || item.status === DeploymentStatusEnum.Failure)
-            })
-
-            state.deployments = state.deployments.map((item) => {
-                return (item.id === deployment.id)? deployment : item
-            })
         },
         /**
          * Reviews are removed from the state.

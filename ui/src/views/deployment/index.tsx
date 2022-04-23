@@ -24,7 +24,6 @@ import {
     RequestStatus
 } from "../../models"
 import { 
-    subscribeDeploymentEvents, 
     subscribeDeploymentStatusEvents,
     subscribeReviewEvents
 } from "../../apis"
@@ -66,10 +65,6 @@ export default (): JSX.Element => {
         }
         f()
 
-        const deploymentEvent = subscribeDeploymentEvents((deployment) => {
-            dispatch(slice.actions.handleDeploymentEvent(deployment))
-        })
-
         const deploymentStatusEvent = subscribeDeploymentStatusEvents((deploymentStatus) => {
             dispatch(handleDeploymentStatusEvent(deploymentStatus))
         })
@@ -79,7 +74,6 @@ export default (): JSX.Element => {
         })
 
         return () => {
-            deploymentEvent.close()
             deploymentStatusEvent.close()
             reviewEvent.close()
         }

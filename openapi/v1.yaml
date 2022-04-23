@@ -1437,12 +1437,10 @@ paths:
                     event:
                       type: string
                       enum:
-                        - deployment
                         - deployment_status
                         - review
                     data:
                       oneOf:
-                        - $ref: '#/components/schemas/Deployment'
                         - $ref: '#/components/schemas/DeploymentStatus'
                         - $ref: '#/components/schemas/Review'
   /sync:

@@ -22,12 +22,6 @@ func (s *Store) ListEventsGreaterThanTime(ctx context.Context, t time.Time) ([]*
 		Where(
 			event.CreatedAtGT(t),
 		).
-		WithDeployment(func(dq *ent.DeploymentQuery) {
-			dq.
-				WithUser().
-				WithRepo().
-				WithDeploymentStatuses()
-		}).
 		WithDeploymentStatus(func(dsq *ent.DeploymentStatusQuery) {
 			dsq.
 				WithDeployment().

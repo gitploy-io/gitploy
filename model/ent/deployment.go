@@ -68,11 +68,9 @@ type DeploymentEdges struct {
 	Reviews []*Review `json:"reviews,omitempty"`
 	// DeploymentStatuses holds the value of the deployment_statuses edge.
 	DeploymentStatuses []*DeploymentStatus `json:"deployment_statuses,omitempty"`
-	// Event holds the value of the event edge.
-	Event []*Event `json:"event,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [5]bool
+	loadedTypes [4]bool
 }
 
 // UserOrErr returns the User value or an error if the edge
@@ -119,15 +117,6 @@ func (e DeploymentEdges) DeploymentStatusesOrErr() ([]*DeploymentStatus, error) 
 		return e.DeploymentStatuses, nil
 	}
 	return nil, &NotLoadedError{edge: "deployment_statuses"}
-}
-
-// EventOrErr returns the Event value or an error if the edge
-// was not loaded in eager-loading.
-func (e DeploymentEdges) EventOrErr() ([]*Event, error) {
-	if e.loadedTypes[4] {
-		return e.Event, nil
-	}
-	return nil, &NotLoadedError{edge: "event"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -295,11 +284,6 @@ func (d *Deployment) QueryReviews() *ReviewQuery {
 // QueryDeploymentStatuses queries the "deployment_statuses" edge of the Deployment entity.
 func (d *Deployment) QueryDeploymentStatuses() *DeploymentStatusQuery {
 	return (&DeploymentClient{config: d.config}).QueryDeploymentStatuses(d)
-}
-
-// QueryEvent queries the "event" edge of the Deployment entity.
-func (d *Deployment) QueryEvent() *EventQuery {
-	return (&DeploymentClient{config: d.config}).QueryEvent(d)
 }
 
 // Update returns a builder for updating this Deployment.

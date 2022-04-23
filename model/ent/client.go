@@ -448,22 +448,6 @@ func (c *DeploymentClient) QueryDeploymentStatuses(d *Deployment) *DeploymentSta
 	return query
 }
 
-// QueryEvent queries the event edge of a Deployment.
-func (c *DeploymentClient) QueryEvent(d *Deployment) *EventQuery {
-	query := &EventQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := d.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(deployment.Table, deployment.FieldID, id),
-			sqlgraph.To(event.Table, event.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, deployment.EventTable, deployment.EventColumn),
-		)
-		fromV = sqlgraph.Neighbors(d.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
 // Hooks returns the client hooks.
 func (c *DeploymentClient) Hooks() []Hook {
 	return c.hooks.Deployment
@@ -796,22 +780,6 @@ func (c *EventClient) GetX(ctx context.Context, id int) *Event {
 		panic(err)
 	}
 	return obj
-}
-
-// QueryDeployment queries the deployment edge of a Event.
-func (c *EventClient) QueryDeployment(e *Event) *DeploymentQuery {
-	query := &DeploymentQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := e.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(event.Table, event.FieldID, id),
-			sqlgraph.To(deployment.Table, deployment.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, event.DeploymentTable, event.DeploymentColumn),
-		)
-		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
 }
 
 // QueryDeploymentStatus queries the deployment_status edge of a Event.
