@@ -15,6 +15,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/gitploy-io/gitploy/model/ent/deployment"
 	"github.com/gitploy-io/gitploy/model/ent/deploymentstatistics"
+	"github.com/gitploy-io/gitploy/model/ent/deploymentstatus"
 	"github.com/gitploy-io/gitploy/model/ent/lock"
 	"github.com/gitploy-io/gitploy/model/ent/perm"
 	"github.com/gitploy-io/gitploy/model/ent/predicate"
@@ -34,6 +35,7 @@ type RepoQuery struct {
 	// eager-loading edges.
 	withPerms                *PermQuery
 	withDeployments          *DeploymentQuery
+	withDeploymentStatuses   *DeploymentStatusQuery
 	withLocks                *LockQuery
 	withDeploymentStatistics *DeploymentStatisticsQuery
 	withOwner                *UserQuery
@@ -111,6 +113,28 @@ func (rq *RepoQuery) QueryDeployments() *DeploymentQuery {
 			sqlgraph.From(repo.Table, repo.FieldID, selector),
 			sqlgraph.To(deployment.Table, deployment.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, repo.DeploymentsTable, repo.DeploymentsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(rq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryDeploymentStatuses chains the current query on the "deployment_statuses" edge.
+func (rq *RepoQuery) QueryDeploymentStatuses() *DeploymentStatusQuery {
+	query := &DeploymentStatusQuery{config: rq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := rq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := rq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(repo.Table, repo.FieldID, selector),
+			sqlgraph.To(deploymentstatus.Table, deploymentstatus.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, repo.DeploymentStatusesTable, repo.DeploymentStatusesColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(rq.driver.Dialect(), step)
 		return fromU, nil
@@ -367,6 +391,7 @@ func (rq *RepoQuery) Clone() *RepoQuery {
 		predicates:               append([]predicate.Repo{}, rq.predicates...),
 		withPerms:                rq.withPerms.Clone(),
 		withDeployments:          rq.withDeployments.Clone(),
+		withDeploymentStatuses:   rq.withDeploymentStatuses.Clone(),
 		withLocks:                rq.withLocks.Clone(),
 		withDeploymentStatistics: rq.withDeploymentStatistics.Clone(),
 		withOwner:                rq.withOwner.Clone(),
@@ -396,6 +421,17 @@ func (rq *RepoQuery) WithDeployments(opts ...func(*DeploymentQuery)) *RepoQuery 
 		opt(query)
 	}
 	rq.withDeployments = query
+	return rq
+}
+
+// WithDeploymentStatuses tells the query-builder to eager-load the nodes that are connected to
+// the "deployment_statuses" edge. The optional arguments are used to configure the query builder of the edge.
+func (rq *RepoQuery) WithDeploymentStatuses(opts ...func(*DeploymentStatusQuery)) *RepoQuery {
+	query := &DeploymentStatusQuery{config: rq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	rq.withDeploymentStatuses = query
 	return rq
 }
 
@@ -497,9 +533,10 @@ func (rq *RepoQuery) sqlAll(ctx context.Context) ([]*Repo, error) {
 	var (
 		nodes       = []*Repo{}
 		_spec       = rq.querySpec()
-		loadedTypes = [5]bool{
+		loadedTypes = [6]bool{
 			rq.withPerms != nil,
 			rq.withDeployments != nil,
+			rq.withDeploymentStatuses != nil,
 			rq.withLocks != nil,
 			rq.withDeploymentStatistics != nil,
 			rq.withOwner != nil,
@@ -575,6 +612,31 @@ func (rq *RepoQuery) sqlAll(ctx context.Context) ([]*Repo, error) {
 				return nil, fmt.Errorf(`unexpected foreign-key "repo_id" returned %v for node %v`, fk, n.ID)
 			}
 			node.Edges.Deployments = append(node.Edges.Deployments, n)
+		}
+	}
+
+	if query := rq.withDeploymentStatuses; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[int64]*Repo)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.DeploymentStatuses = []*DeploymentStatus{}
+		}
+		query.Where(predicate.DeploymentStatus(func(s *sql.Selector) {
+			s.Where(sql.InValues(repo.DeploymentStatusesColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.RepoID
+			node, ok := nodeids[fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "repo_id" returned %v for node %v`, fk, n.ID)
+			}
+			node.Edges.DeploymentStatuses = append(node.Edges.DeploymentStatuses, n)
 		}
 	}
 

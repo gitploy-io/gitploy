@@ -17,6 +17,11 @@ type (
 		UpdateChatUser(ctx context.Context, cu *ent.ChatUser) (*ent.ChatUser, error)
 		DeleteChatUser(ctx context.Context, cu *ent.ChatUser) error
 
+		FindDeploymentByID(ctx context.Context, id int) (*ent.Deployment, error)
+		FindDeploymentStatusByID(ctx context.Context, id int) (*ent.DeploymentStatus, error)
+
+		FindReviewByID(ctx context.Context, id int) (*ent.Review, error)
+
 		SubscribeEvent(fn func(e *ent.Event)) error
 		UnsubscribeEvent(fn func(e *ent.Event)) error
 	}

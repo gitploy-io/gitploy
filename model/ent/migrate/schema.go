@@ -156,6 +156,7 @@ var (
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "deployment_id", Type: field.TypeInt},
+		{Name: "repo_id", Type: field.TypeInt64, Nullable: true},
 	}
 	// DeploymentStatusTable holds the schema information for the "deployment_status" table.
 	DeploymentStatusTable = &schema.Table{
@@ -169,16 +170,22 @@ var (
 				RefColumns: []*schema.Column{DeploymentsColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
+			{
+				Symbol:     "deployment_status_repos_deployment_statuses",
+				Columns:    []*schema.Column{DeploymentStatusColumns[7]},
+				RefColumns: []*schema.Column{ReposColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
 		},
 	}
 	// EventsColumns holds the columns for the "events" table.
 	EventsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "kind", Type: field.TypeEnum, Enums: []string{"deployment", "review", "approval"}},
+		{Name: "kind", Type: field.TypeEnum, Enums: []string{"deployment_status", "review"}},
 		{Name: "type", Type: field.TypeEnum, Enums: []string{"created", "updated", "deleted"}},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "deleted_id", Type: field.TypeInt, Nullable: true},
-		{Name: "deployment_id", Type: field.TypeInt, Nullable: true},
+		{Name: "deployment_status_id", Type: field.TypeInt, Nullable: true},
 		{Name: "review_id", Type: field.TypeInt, Nullable: true},
 	}
 	// EventsTable holds the schema information for the "events" table.
@@ -188,9 +195,9 @@ var (
 		PrimaryKey: []*schema.Column{EventsColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "events_deployments_event",
+				Symbol:     "events_deployment_status_event",
 				Columns:    []*schema.Column{EventsColumns[5]},
-				RefColumns: []*schema.Column{DeploymentsColumns[0]},
+				RefColumns: []*schema.Column{DeploymentStatusColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
 			{
@@ -421,7 +428,8 @@ func init() {
 	DeploymentsTable.ForeignKeys[1].RefTable = UsersTable
 	DeploymentStatisticsTable.ForeignKeys[0].RefTable = ReposTable
 	DeploymentStatusTable.ForeignKeys[0].RefTable = DeploymentsTable
-	EventsTable.ForeignKeys[0].RefTable = DeploymentsTable
+	DeploymentStatusTable.ForeignKeys[1].RefTable = ReposTable
+	EventsTable.ForeignKeys[0].RefTable = DeploymentStatusTable
 	EventsTable.ForeignKeys[1].RefTable = ReviewsTable
 	LocksTable.ForeignKeys[0].RefTable = ReposTable
 	LocksTable.ForeignKeys[1].RefTable = UsersTable

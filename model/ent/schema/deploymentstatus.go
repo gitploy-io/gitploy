@@ -2,6 +2,7 @@ package schema
 
 import (
 	"entgo.io/ent"
+	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 )
@@ -27,6 +28,10 @@ func (DeploymentStatus) Fields() []ent.Field {
 
 		// edges
 		field.Int("deployment_id"),
+		// Denormalize the 'repo_id' field so that
+		// we can figure out the repository easily.
+		field.Int64("repo_id").
+			Optional(),
 	}
 }
 
@@ -38,5 +43,13 @@ func (DeploymentStatus) Edges() []ent.Edge {
 			Field("deployment_id").
 			Unique().
 			Required(),
+		edge.From("repo", Repo.Type).
+			Ref("deployment_statuses").
+			Field("repo_id").
+			Unique(),
+		edge.To("event", Event.Type).
+			Annotations(entsql.Annotation{
+				OnDelete: entsql.Cascade,
+			}),
 	}
 }

@@ -15,7 +15,6 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/gitploy-io/gitploy/model/ent/deployment"
 	"github.com/gitploy-io/gitploy/model/ent/deploymentstatus"
-	"github.com/gitploy-io/gitploy/model/ent/event"
 	"github.com/gitploy-io/gitploy/model/ent/predicate"
 	"github.com/gitploy-io/gitploy/model/ent/repo"
 	"github.com/gitploy-io/gitploy/model/ent/review"
@@ -36,7 +35,6 @@ type DeploymentQuery struct {
 	withRepo               *RepoQuery
 	withReviews            *ReviewQuery
 	withDeploymentStatuses *DeploymentStatusQuery
-	withEvent              *EventQuery
 	modifiers              []func(s *sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -155,28 +153,6 @@ func (dq *DeploymentQuery) QueryDeploymentStatuses() *DeploymentStatusQuery {
 			sqlgraph.From(deployment.Table, deployment.FieldID, selector),
 			sqlgraph.To(deploymentstatus.Table, deploymentstatus.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, deployment.DeploymentStatusesTable, deployment.DeploymentStatusesColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(dq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
-// QueryEvent chains the current query on the "event" edge.
-func (dq *DeploymentQuery) QueryEvent() *EventQuery {
-	query := &EventQuery{config: dq.config}
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := dq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := dq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(deployment.Table, deployment.FieldID, selector),
-			sqlgraph.To(event.Table, event.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, deployment.EventTable, deployment.EventColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(dq.driver.Dialect(), step)
 		return fromU, nil
@@ -369,7 +345,6 @@ func (dq *DeploymentQuery) Clone() *DeploymentQuery {
 		withRepo:               dq.withRepo.Clone(),
 		withReviews:            dq.withReviews.Clone(),
 		withDeploymentStatuses: dq.withDeploymentStatuses.Clone(),
-		withEvent:              dq.withEvent.Clone(),
 		// clone intermediate query.
 		sql:    dq.sql.Clone(),
 		path:   dq.path,
@@ -418,17 +393,6 @@ func (dq *DeploymentQuery) WithDeploymentStatuses(opts ...func(*DeploymentStatus
 		opt(query)
 	}
 	dq.withDeploymentStatuses = query
-	return dq
-}
-
-// WithEvent tells the query-builder to eager-load the nodes that are connected to
-// the "event" edge. The optional arguments are used to configure the query builder of the edge.
-func (dq *DeploymentQuery) WithEvent(opts ...func(*EventQuery)) *DeploymentQuery {
-	query := &EventQuery{config: dq.config}
-	for _, opt := range opts {
-		opt(query)
-	}
-	dq.withEvent = query
 	return dq
 }
 
@@ -497,12 +461,11 @@ func (dq *DeploymentQuery) sqlAll(ctx context.Context) ([]*Deployment, error) {
 	var (
 		nodes       = []*Deployment{}
 		_spec       = dq.querySpec()
-		loadedTypes = [5]bool{
+		loadedTypes = [4]bool{
 			dq.withUser != nil,
 			dq.withRepo != nil,
 			dq.withReviews != nil,
 			dq.withDeploymentStatuses != nil,
-			dq.withEvent != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -627,31 +590,6 @@ func (dq *DeploymentQuery) sqlAll(ctx context.Context) ([]*Deployment, error) {
 				return nil, fmt.Errorf(`unexpected foreign-key "deployment_id" returned %v for node %v`, fk, n.ID)
 			}
 			node.Edges.DeploymentStatuses = append(node.Edges.DeploymentStatuses, n)
-		}
-	}
-
-	if query := dq.withEvent; query != nil {
-		fks := make([]driver.Value, 0, len(nodes))
-		nodeids := make(map[int]*Deployment)
-		for i := range nodes {
-			fks = append(fks, nodes[i].ID)
-			nodeids[nodes[i].ID] = nodes[i]
-			nodes[i].Edges.Event = []*Event{}
-		}
-		query.Where(predicate.Event(func(s *sql.Selector) {
-			s.Where(sql.InValues(deployment.EventColumn, fks...))
-		}))
-		neighbors, err := query.All(ctx)
-		if err != nil {
-			return nil, err
-		}
-		for _, n := range neighbors {
-			fk := n.DeploymentID
-			node, ok := nodeids[fk]
-			if !ok {
-				return nil, fmt.Errorf(`unexpected foreign-key "deployment_id" returned %v for node %v`, fk, n.ID)
-			}
-			node.Edges.Event = append(node.Edges.Event, n)
 		}
 	}
 

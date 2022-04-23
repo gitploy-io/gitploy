@@ -12,7 +12,7 @@ import (
 
 func TestStore_CreateEvent(t *testing.T) {
 
-	t.Run("Create a new deleted event", func(t *testing.T) {
+	t.Run("Create a new deployment_status event", func(t *testing.T) {
 		ctx := context.Background()
 
 		client := enttest.Open(t, "sqlite3", "file:ent?mode=memory&cache=shared&_fk=1",
@@ -22,17 +22,13 @@ func TestStore_CreateEvent(t *testing.T) {
 
 		s := NewStore(client)
 
-		e, err := s.CreateEvent(ctx, &ent.Event{
-			Kind:      event.KindReview,
-			Type:      event.TypeDeleted,
-			DeletedID: 1,
+		_, err := s.CreateEvent(ctx, &ent.Event{
+			Kind:               event.KindDeploymentStatus,
+			Type:               event.TypeCreated,
+			DeploymentStatusID: 1,
 		})
 		if err != nil {
 			t.Fatalf("CreateEvent returns an error: %s", err)
-		}
-
-		if e.DeletedID != 1 {
-			t.Fatalf("event.DeletedID = %v, wanted %v", e.DeletedID, 1)
 		}
 	})
 }

@@ -46,7 +46,7 @@ func TestHook_HandleHook(t *testing.T) {
 
 		m.
 			EXPECT().
-			SyncDeploymentStatus(gomock.Any(), gomock.Eq(&ent.DeploymentStatus{
+			CreateDeploymentStatus(gomock.Any(), gomock.Eq(&ent.DeploymentStatus{
 				Status:       *e.DeploymentStatus.State,
 				Description:  *e.DeploymentStatus.Description,
 				CreatedAt:    e.DeploymentStatus.CreatedAt.Time.UTC(),
@@ -74,11 +74,6 @@ func TestHook_HandleHook(t *testing.T) {
 				UID:    *e.Deployment.ID,
 				Status: deployment.StatusSuccess,
 			}, nil)
-
-		m.
-			EXPECT().
-			CreateEvent(gomock.Any(), gomock.Any()).
-			Return(&ent.Event{}, nil)
 
 		h := NewHooks(&ConfigHooks{}, m)
 		r := gin.New()

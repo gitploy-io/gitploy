@@ -41,4 +41,10 @@ export interface DeploymentStatus {
     logUrl: string
     createdAt: string
     updatedAt: string
+    deploymentId: number
+    repoId: number
+    edges?: {
+        deployment?: Deployment
+        repo?: Repo
+    }
 }

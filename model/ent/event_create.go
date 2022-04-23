@@ -10,7 +10,7 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/gitploy-io/gitploy/model/ent/deployment"
+	"github.com/gitploy-io/gitploy/model/ent/deploymentstatus"
 	"github.com/gitploy-io/gitploy/model/ent/event"
 	"github.com/gitploy-io/gitploy/model/ent/notificationrecord"
 	"github.com/gitploy-io/gitploy/model/ent/review"
@@ -49,16 +49,16 @@ func (ec *EventCreate) SetNillableCreatedAt(t *time.Time) *EventCreate {
 	return ec
 }
 
-// SetDeploymentID sets the "deployment_id" field.
-func (ec *EventCreate) SetDeploymentID(i int) *EventCreate {
-	ec.mutation.SetDeploymentID(i)
+// SetDeploymentStatusID sets the "deployment_status_id" field.
+func (ec *EventCreate) SetDeploymentStatusID(i int) *EventCreate {
+	ec.mutation.SetDeploymentStatusID(i)
 	return ec
 }
 
-// SetNillableDeploymentID sets the "deployment_id" field if the given value is not nil.
-func (ec *EventCreate) SetNillableDeploymentID(i *int) *EventCreate {
+// SetNillableDeploymentStatusID sets the "deployment_status_id" field if the given value is not nil.
+func (ec *EventCreate) SetNillableDeploymentStatusID(i *int) *EventCreate {
 	if i != nil {
-		ec.SetDeploymentID(*i)
+		ec.SetDeploymentStatusID(*i)
 	}
 	return ec
 }
@@ -91,9 +91,9 @@ func (ec *EventCreate) SetNillableDeletedID(i *int) *EventCreate {
 	return ec
 }
 
-// SetDeployment sets the "deployment" edge to the Deployment entity.
-func (ec *EventCreate) SetDeployment(d *Deployment) *EventCreate {
-	return ec.SetDeploymentID(d.ID)
+// SetDeploymentStatus sets the "deployment_status" edge to the DeploymentStatus entity.
+func (ec *EventCreate) SetDeploymentStatus(d *DeploymentStatus) *EventCreate {
+	return ec.SetDeploymentStatusID(d.ID)
 }
 
 // SetReview sets the "review" edge to the Review entity.
@@ -277,24 +277,24 @@ func (ec *EventCreate) createSpec() (*Event, *sqlgraph.CreateSpec) {
 		})
 		_node.DeletedID = value
 	}
-	if nodes := ec.mutation.DeploymentIDs(); len(nodes) > 0 {
+	if nodes := ec.mutation.DeploymentStatusIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   event.DeploymentTable,
-			Columns: []string{event.DeploymentColumn},
+			Table:   event.DeploymentStatusTable,
+			Columns: []string{event.DeploymentStatusColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: deployment.FieldID,
+					Column: deploymentstatus.FieldID,
 				},
 			},
 		}
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.DeploymentID = nodes[0]
+		_node.DeploymentStatusID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := ec.mutation.ReviewIDs(); len(nodes) > 0 {

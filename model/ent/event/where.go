@@ -100,10 +100,10 @@ func CreatedAt(v time.Time) predicate.Event {
 	})
 }
 
-// DeploymentID applies equality check predicate on the "deployment_id" field. It's identical to DeploymentIDEQ.
-func DeploymentID(v int) predicate.Event {
+// DeploymentStatusID applies equality check predicate on the "deployment_status_id" field. It's identical to DeploymentStatusIDEQ.
+func DeploymentStatusID(v int) predicate.Event {
 	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldDeploymentID), v))
+		s.Where(sql.EQ(s.C(FieldDeploymentStatusID), v))
 	})
 }
 
@@ -293,22 +293,22 @@ func CreatedAtLTE(v time.Time) predicate.Event {
 	})
 }
 
-// DeploymentIDEQ applies the EQ predicate on the "deployment_id" field.
-func DeploymentIDEQ(v int) predicate.Event {
+// DeploymentStatusIDEQ applies the EQ predicate on the "deployment_status_id" field.
+func DeploymentStatusIDEQ(v int) predicate.Event {
 	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldDeploymentID), v))
+		s.Where(sql.EQ(s.C(FieldDeploymentStatusID), v))
 	})
 }
 
-// DeploymentIDNEQ applies the NEQ predicate on the "deployment_id" field.
-func DeploymentIDNEQ(v int) predicate.Event {
+// DeploymentStatusIDNEQ applies the NEQ predicate on the "deployment_status_id" field.
+func DeploymentStatusIDNEQ(v int) predicate.Event {
 	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldDeploymentID), v))
+		s.Where(sql.NEQ(s.C(FieldDeploymentStatusID), v))
 	})
 }
 
-// DeploymentIDIn applies the In predicate on the "deployment_id" field.
-func DeploymentIDIn(vs ...int) predicate.Event {
+// DeploymentStatusIDIn applies the In predicate on the "deployment_status_id" field.
+func DeploymentStatusIDIn(vs ...int) predicate.Event {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -320,12 +320,12 @@ func DeploymentIDIn(vs ...int) predicate.Event {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.In(s.C(FieldDeploymentID), v...))
+		s.Where(sql.In(s.C(FieldDeploymentStatusID), v...))
 	})
 }
 
-// DeploymentIDNotIn applies the NotIn predicate on the "deployment_id" field.
-func DeploymentIDNotIn(vs ...int) predicate.Event {
+// DeploymentStatusIDNotIn applies the NotIn predicate on the "deployment_status_id" field.
+func DeploymentStatusIDNotIn(vs ...int) predicate.Event {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -337,21 +337,21 @@ func DeploymentIDNotIn(vs ...int) predicate.Event {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.NotIn(s.C(FieldDeploymentID), v...))
+		s.Where(sql.NotIn(s.C(FieldDeploymentStatusID), v...))
 	})
 }
 
-// DeploymentIDIsNil applies the IsNil predicate on the "deployment_id" field.
-func DeploymentIDIsNil() predicate.Event {
+// DeploymentStatusIDIsNil applies the IsNil predicate on the "deployment_status_id" field.
+func DeploymentStatusIDIsNil() predicate.Event {
 	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldDeploymentID)))
+		s.Where(sql.IsNull(s.C(FieldDeploymentStatusID)))
 	})
 }
 
-// DeploymentIDNotNil applies the NotNil predicate on the "deployment_id" field.
-func DeploymentIDNotNil() predicate.Event {
+// DeploymentStatusIDNotNil applies the NotNil predicate on the "deployment_status_id" field.
+func DeploymentStatusIDNotNil() predicate.Event {
 	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldDeploymentID)))
+		s.Where(sql.NotNull(s.C(FieldDeploymentStatusID)))
 	})
 }
 
@@ -507,25 +507,25 @@ func DeletedIDNotNil() predicate.Event {
 	})
 }
 
-// HasDeployment applies the HasEdge predicate on the "deployment" edge.
-func HasDeployment() predicate.Event {
+// HasDeploymentStatus applies the HasEdge predicate on the "deployment_status" edge.
+func HasDeploymentStatus() predicate.Event {
 	return predicate.Event(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(DeploymentTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, DeploymentTable, DeploymentColumn),
+			sqlgraph.To(DeploymentStatusTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, DeploymentStatusTable, DeploymentStatusColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasDeploymentWith applies the HasEdge predicate on the "deployment" edge with a given conditions (other predicates).
-func HasDeploymentWith(preds ...predicate.Deployment) predicate.Event {
+// HasDeploymentStatusWith applies the HasEdge predicate on the "deployment_status" edge with a given conditions (other predicates).
+func HasDeploymentStatusWith(preds ...predicate.DeploymentStatus) predicate.Event {
 	return predicate.Event(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(DeploymentInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, DeploymentTable, DeploymentColumn),
+			sqlgraph.To(DeploymentStatusInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, DeploymentStatusTable, DeploymentStatusColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

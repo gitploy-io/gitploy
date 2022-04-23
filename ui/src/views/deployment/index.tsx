@@ -14,6 +14,7 @@ import {
     fetchUserReview,
     approve,
     reject,
+    handleDeploymentStatusEvent
 } from "../../redux/deployment"
 import { 
     Deployment, 
@@ -23,7 +24,7 @@ import {
     RequestStatus
 } from "../../models"
 import { 
-    subscribeDeploymentEvents, 
+    subscribeDeploymentStatusEvents,
     subscribeReviewEvents
 } from "../../apis"
 
@@ -64,8 +65,8 @@ export default (): JSX.Element => {
         }
         f()
 
-        const deploymentEvent = subscribeDeploymentEvents((deployment) => {
-            dispatch(slice.actions.handleDeploymentEvent(deployment))
+        const deploymentStatusEvent = subscribeDeploymentStatusEvents((deploymentStatus) => {
+            dispatch(handleDeploymentStatusEvent(deploymentStatus))
         })
 
         const reviewEvent = subscribeReviewEvents((review) => {
@@ -73,7 +74,7 @@ export default (): JSX.Element => {
         })
 
         return () => {
-            deploymentEvent.close()
+            deploymentStatusEvent.close()
             reviewEvent.close()
         }
         // eslint-disable-next-line 

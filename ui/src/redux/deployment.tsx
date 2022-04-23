@@ -3,6 +3,7 @@ import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit'
 
 import { 
     Deployment, 
+    DeploymentStatus,
     Commit,
     Review,
     RequestStatus, 
@@ -165,6 +166,21 @@ export const fetchUserReview = createAsyncThunk<Review, void, { state: {deployme
     },
 )
 
+export const handleDeploymentStatusEvent = createAsyncThunk<Deployment, DeploymentStatus, { state: { deployment: DeploymentState } }>(
+    "deployment/handleDeploymentStatusEvent",
+    async (deploymentStatus, { rejectWithValue }) => {
+        if (deploymentStatus.edges === undefined) {
+            return rejectWithValue(new Error("Edges is not included."))
+        }
+
+        const { repo, deployment } = deploymentStatus.edges
+        if (repo === undefined || deployment === undefined) {
+            return rejectWithValue(new Error("Repo or Deployment is not included in the edges."))
+        }
+
+        return await getDeployment(repo.namespace, repo.name, deployment.number)
+    }
+)
 
 export const deploymentSlice = createSlice({
     name: "deployment",
@@ -177,11 +193,6 @@ export const deploymentSlice = createSlice({
         },
         setDisplay: (state, action: PayloadAction<boolean>) => {
             state.display = action.payload
-        },
-        handleDeploymentEvent: (state, action: PayloadAction<Deployment>) => {
-            if (action.payload.id === state.deployment?.id) {
-                state.deployment = action.payload
-            }
         },
         handleReviewEvent: (state, action: PayloadAction<Review>) => {
             state.reviews = state.reviews.map((review) => {
@@ -227,6 +238,11 @@ export const deploymentSlice = createSlice({
             })
             .addCase(fetchUserReview.fulfilled, (state, action) => {
                 state.userReview = action.payload
+            })
+            .addCase(handleDeploymentStatusEvent.fulfilled, (state, action) => {
+                if (action.payload.id === state.deployment?.id) {
+                    state.deployment = action.payload
+                }
             })
     }
 })

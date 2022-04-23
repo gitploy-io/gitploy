@@ -35,6 +35,8 @@ const (
 	EdgePerms = "perms"
 	// EdgeDeployments holds the string denoting the deployments edge name in mutations.
 	EdgeDeployments = "deployments"
+	// EdgeDeploymentStatuses holds the string denoting the deployment_statuses edge name in mutations.
+	EdgeDeploymentStatuses = "deployment_statuses"
 	// EdgeLocks holds the string denoting the locks edge name in mutations.
 	EdgeLocks = "locks"
 	// EdgeDeploymentStatistics holds the string denoting the deployment_statistics edge name in mutations.
@@ -57,6 +59,13 @@ const (
 	DeploymentsInverseTable = "deployments"
 	// DeploymentsColumn is the table column denoting the deployments relation/edge.
 	DeploymentsColumn = "repo_id"
+	// DeploymentStatusesTable is the table that holds the deployment_statuses relation/edge.
+	DeploymentStatusesTable = "deployment_status"
+	// DeploymentStatusesInverseTable is the table name for the DeploymentStatus entity.
+	// It exists in this package in order to avoid circular dependency with the "deploymentstatus" package.
+	DeploymentStatusesInverseTable = "deployment_status"
+	// DeploymentStatusesColumn is the table column denoting the deployment_statuses relation/edge.
+	DeploymentStatusesColumn = "repo_id"
 	// LocksTable is the table that holds the locks relation/edge.
 	LocksTable = "locks"
 	// LocksInverseTable is the table name for the Lock entity.

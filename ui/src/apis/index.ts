@@ -65,6 +65,6 @@ export {
     getLicense  
 } from "./license"
 export { 
-    subscribeDeploymentEvents,
+    subscribeDeploymentStatusEvents,
     subscribeReviewEvents,
 } from "./events"

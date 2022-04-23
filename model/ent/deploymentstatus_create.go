@@ -12,6 +12,8 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/gitploy-io/gitploy/model/ent/deployment"
 	"github.com/gitploy-io/gitploy/model/ent/deploymentstatus"
+	"github.com/gitploy-io/gitploy/model/ent/event"
+	"github.com/gitploy-io/gitploy/model/ent/repo"
 )
 
 // DeploymentStatusCreate is the builder for creating a DeploymentStatus entity.
@@ -89,9 +91,43 @@ func (dsc *DeploymentStatusCreate) SetDeploymentID(i int) *DeploymentStatusCreat
 	return dsc
 }
 
+// SetRepoID sets the "repo_id" field.
+func (dsc *DeploymentStatusCreate) SetRepoID(i int64) *DeploymentStatusCreate {
+	dsc.mutation.SetRepoID(i)
+	return dsc
+}
+
+// SetNillableRepoID sets the "repo_id" field if the given value is not nil.
+func (dsc *DeploymentStatusCreate) SetNillableRepoID(i *int64) *DeploymentStatusCreate {
+	if i != nil {
+		dsc.SetRepoID(*i)
+	}
+	return dsc
+}
+
 // SetDeployment sets the "deployment" edge to the Deployment entity.
 func (dsc *DeploymentStatusCreate) SetDeployment(d *Deployment) *DeploymentStatusCreate {
 	return dsc.SetDeploymentID(d.ID)
+}
+
+// SetRepo sets the "repo" edge to the Repo entity.
+func (dsc *DeploymentStatusCreate) SetRepo(r *Repo) *DeploymentStatusCreate {
+	return dsc.SetRepoID(r.ID)
+}
+
+// AddEventIDs adds the "event" edge to the Event entity by IDs.
+func (dsc *DeploymentStatusCreate) AddEventIDs(ids ...int) *DeploymentStatusCreate {
+	dsc.mutation.AddEventIDs(ids...)
+	return dsc
+}
+
+// AddEvent adds the "event" edges to the Event entity.
+func (dsc *DeploymentStatusCreate) AddEvent(e ...*Event) *DeploymentStatusCreate {
+	ids := make([]int, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return dsc.AddEventIDs(ids...)
 }
 
 // Mutation returns the DeploymentStatusMutation object of the builder.
@@ -277,6 +313,45 @@ func (dsc *DeploymentStatusCreate) createSpec() (*DeploymentStatus, *sqlgraph.Cr
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.DeploymentID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := dsc.mutation.RepoIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   deploymentstatus.RepoTable,
+			Columns: []string{deploymentstatus.RepoColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt64,
+					Column: repo.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.RepoID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := dsc.mutation.EventIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   deploymentstatus.EventTable,
+			Columns: []string{deploymentstatus.EventColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: event.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

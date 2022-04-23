@@ -31,22 +31,29 @@ func (s *Stream) GetEvents(c *gin.Context) {
 	// it'll unsubscribe after the connection is closed.
 	sub := func(e *ent.Event) {
 		switch e.Kind {
-		case event.KindDeployment:
-			d, err := s.i.FindDeploymentByID(ctx, e.DeploymentID)
+		case event.KindDeploymentStatus:
+			ds, err := s.i.FindDeploymentStatusByID(ctx, e.DeploymentStatusID)
+			if err != nil {
+				s.log.Error("Failed to find the deployment status.", zap.Error(err))
+				return
+			}
+
+			// Ensure that a user has access to the repository of the deployment.
+			d, err := s.i.FindDeploymentByID(ctx, ds.DeploymentID)
 			if err != nil {
 				s.log.Error("Failed to find the deployment.", zap.Error(err))
 				return
 			}
 
 			if _, err := s.i.FindPermOfRepo(ctx, d.Edges.Repo, u); err != nil {
-				s.log.Debug("Skip the event. The permission is denied.")
+				s.log.Debug("Skip the event. The permission is denied.", zap.Error(err))
 				return
 			}
 
-			s.log.Debug("Dispatch a deployment event.", zap.Int("id", d.ID))
+			s.log.Debug("Dispatch a deployment_status event.", zap.Int("id", d.ID))
 			events <- &sse.Event{
-				Event: "deployment",
-				Data:  d,
+				Event: "deployment_status",
+				Data:  ds,
 			}
 
 		case event.KindReview:

@@ -117,7 +117,8 @@ function mapDeploymentStatusEnum(s: string) {
     }
 }
 
-function mapDataToDeploymentStatus(data: any): DeploymentStatus {
+// eslint-disable-next-line
+export function mapDataToDeploymentStatus(data: any): DeploymentStatus {
     return {
         id: data.id,
         status: data.status,
@@ -125,6 +126,12 @@ function mapDataToDeploymentStatus(data: any): DeploymentStatus {
         logUrl: data.log_url,
         createdAt: data.created_at,
         updatedAt: data.updated_at,
+        deploymentId: data.deployment_id,
+        repoId: data.repo_id,
+        edges: {
+            deployment: (data.edges.deployment)? mapDataToDeployment(data.edges.deployment) : undefined,
+            repo: (data.edges.repo)? mapDataToRepo(data.edges.repo) : undefined
+        }
     }
 }
 

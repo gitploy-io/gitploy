@@ -172,19 +172,19 @@ func (mr *MockStoreMockRecorder) CreateDeploymentStatistics(ctx, s interface{}) 
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateDeploymentStatistics", reflect.TypeOf((*MockStore)(nil).CreateDeploymentStatistics), ctx, s)
 }
 
-// CreateDeploymentStatus mocks base method.
-func (m *MockStore) CreateDeploymentStatus(ctx context.Context, s *ent.DeploymentStatus) (*ent.DeploymentStatus, error) {
+// CreateEntDeploymentStatus mocks base method.
+func (m *MockStore) CreateEntDeploymentStatus(ctx context.Context, s *ent.DeploymentStatus) (*ent.DeploymentStatus, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateDeploymentStatus", ctx, s)
+	ret := m.ctrl.Call(m, "CreateEntDeploymentStatus", ctx, s)
 	ret0, _ := ret[0].(*ent.DeploymentStatus)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// CreateDeploymentStatus indicates an expected call of CreateDeploymentStatus.
-func (mr *MockStoreMockRecorder) CreateDeploymentStatus(ctx, s interface{}) *gomock.Call {
+// CreateEntDeploymentStatus indicates an expected call of CreateEntDeploymentStatus.
+func (mr *MockStoreMockRecorder) CreateEntDeploymentStatus(ctx, s interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateDeploymentStatus", reflect.TypeOf((*MockStore)(nil).CreateDeploymentStatus), ctx, s)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateEntDeploymentStatus", reflect.TypeOf((*MockStore)(nil).CreateEntDeploymentStatus), ctx, s)
 }
 
 // CreateEvent mocks base method.
@@ -407,6 +407,21 @@ func (m *MockStore) FindDeploymentStatisticsOfRepoByEnv(ctx context.Context, r *
 func (mr *MockStoreMockRecorder) FindDeploymentStatisticsOfRepoByEnv(ctx, r, env interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindDeploymentStatisticsOfRepoByEnv", reflect.TypeOf((*MockStore)(nil).FindDeploymentStatisticsOfRepoByEnv), ctx, r, env)
+}
+
+// FindDeploymentStatusByID mocks base method.
+func (m *MockStore) FindDeploymentStatusByID(ctx context.Context, id int) (*ent.DeploymentStatus, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindDeploymentStatusByID", ctx, id)
+	ret0, _ := ret[0].(*ent.DeploymentStatus)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindDeploymentStatusByID indicates an expected call of FindDeploymentStatusByID.
+func (mr *MockStoreMockRecorder) FindDeploymentStatusByID(ctx, id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindDeploymentStatusByID", reflect.TypeOf((*MockStore)(nil).FindDeploymentStatusByID), ctx, id)
 }
 
 // FindLockByID mocks base method.
@@ -844,21 +859,6 @@ func (mr *MockStoreMockRecorder) SearchUsers(ctx, opts interface{}) *gomock.Call
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SearchUsers", reflect.TypeOf((*MockStore)(nil).SearchUsers), ctx, opts)
 }
 
-// SyncDeploymentStatus mocks base method.
-func (m *MockStore) SyncDeploymentStatus(ctx context.Context, ds *ent.DeploymentStatus) (*ent.DeploymentStatus, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SyncDeploymentStatus", ctx, ds)
-	ret0, _ := ret[0].(*ent.DeploymentStatus)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// SyncDeploymentStatus indicates an expected call of SyncDeploymentStatus.
-func (mr *MockStoreMockRecorder) SyncDeploymentStatus(ctx, ds interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SyncDeploymentStatus", reflect.TypeOf((*MockStore)(nil).SyncDeploymentStatus), ctx, ds)
-}
-
 // SyncRepo mocks base method.
 func (m *MockStore) SyncRepo(ctx context.Context, r *extent.RemoteRepo) (*ent.Repo, error) {
 	m.ctrl.T.Helper()
@@ -1115,19 +1115,34 @@ func (m *MockDeploymentStatusStore) EXPECT() *MockDeploymentStatusStoreMockRecor
 	return m.recorder
 }
 
-// CreateDeploymentStatus mocks base method.
-func (m *MockDeploymentStatusStore) CreateDeploymentStatus(ctx context.Context, s *ent.DeploymentStatus) (*ent.DeploymentStatus, error) {
+// CreateEntDeploymentStatus mocks base method.
+func (m *MockDeploymentStatusStore) CreateEntDeploymentStatus(ctx context.Context, s *ent.DeploymentStatus) (*ent.DeploymentStatus, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateDeploymentStatus", ctx, s)
+	ret := m.ctrl.Call(m, "CreateEntDeploymentStatus", ctx, s)
 	ret0, _ := ret[0].(*ent.DeploymentStatus)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// CreateDeploymentStatus indicates an expected call of CreateDeploymentStatus.
-func (mr *MockDeploymentStatusStoreMockRecorder) CreateDeploymentStatus(ctx, s interface{}) *gomock.Call {
+// CreateEntDeploymentStatus indicates an expected call of CreateEntDeploymentStatus.
+func (mr *MockDeploymentStatusStoreMockRecorder) CreateEntDeploymentStatus(ctx, s interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateDeploymentStatus", reflect.TypeOf((*MockDeploymentStatusStore)(nil).CreateDeploymentStatus), ctx, s)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateEntDeploymentStatus", reflect.TypeOf((*MockDeploymentStatusStore)(nil).CreateEntDeploymentStatus), ctx, s)
+}
+
+// FindDeploymentStatusByID mocks base method.
+func (m *MockDeploymentStatusStore) FindDeploymentStatusByID(ctx context.Context, id int) (*ent.DeploymentStatus, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindDeploymentStatusByID", ctx, id)
+	ret0, _ := ret[0].(*ent.DeploymentStatus)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindDeploymentStatusByID indicates an expected call of FindDeploymentStatusByID.
+func (mr *MockDeploymentStatusStoreMockRecorder) FindDeploymentStatusByID(ctx, id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindDeploymentStatusByID", reflect.TypeOf((*MockDeploymentStatusStore)(nil).FindDeploymentStatusByID), ctx, id)
 }
 
 // ListDeploymentStatuses mocks base method.
@@ -1143,21 +1158,6 @@ func (m *MockDeploymentStatusStore) ListDeploymentStatuses(ctx context.Context, 
 func (mr *MockDeploymentStatusStoreMockRecorder) ListDeploymentStatuses(ctx, d interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListDeploymentStatuses", reflect.TypeOf((*MockDeploymentStatusStore)(nil).ListDeploymentStatuses), ctx, d)
-}
-
-// SyncDeploymentStatus mocks base method.
-func (m *MockDeploymentStatusStore) SyncDeploymentStatus(ctx context.Context, ds *ent.DeploymentStatus) (*ent.DeploymentStatus, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SyncDeploymentStatus", ctx, ds)
-	ret0, _ := ret[0].(*ent.DeploymentStatus)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// SyncDeploymentStatus indicates an expected call of SyncDeploymentStatus.
-func (mr *MockDeploymentStatusStoreMockRecorder) SyncDeploymentStatus(ctx, ds interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SyncDeploymentStatus", reflect.TypeOf((*MockDeploymentStatusStore)(nil).SyncDeploymentStatus), ctx, ds)
 }
 
 // MockSCM is a mock of SCM interface.

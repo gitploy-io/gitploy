@@ -52,12 +52,13 @@ func TestInteractor_Deploy(t *testing.T) {
 
 		store.
 			EXPECT().
-			CreateEvent(gomock.Any(), gomock.AssignableToTypeOf(&ent.Event{})).
-			Return(&ent.Event{}, nil)
+			CreateEntDeploymentStatus(ctx, gomock.AssignableToTypeOf(&ent.DeploymentStatus{})).
+			Return(&ent.DeploymentStatus{}, nil)
 
 		store.
 			EXPECT().
-			CreateDeploymentStatus(ctx, gomock.AssignableToTypeOf(&ent.DeploymentStatus{}))
+			CreateEvent(gomock.Any(), gomock.AssignableToTypeOf(&ent.Event{})).
+			Return(&ent.Event{}, nil)
 
 		it := i.NewInteractor(&i.InteractorConfig{
 			Store: store,
@@ -98,6 +99,11 @@ func TestInteractor_Deploy(t *testing.T) {
 			DoAndReturn(func(ctx context.Context, d *ent.Deployment) (interface{}, interface{}) {
 				return d, nil
 			})
+
+		store.
+			EXPECT().
+			CreateEntDeploymentStatus(ctx, gomock.AssignableToTypeOf(&ent.DeploymentStatus{})).
+			Return(&ent.DeploymentStatus{}, nil)
 
 		store.
 			EXPECT().
@@ -160,7 +166,13 @@ func TestInteractor_DeployToRemote(t *testing.T) {
 
 		store.
 			EXPECT().
-			CreateDeploymentStatus(ctx, gomock.AssignableToTypeOf(&ent.DeploymentStatus{}))
+			CreateEntDeploymentStatus(ctx, gomock.AssignableToTypeOf(&ent.DeploymentStatus{})).
+			Return(&ent.DeploymentStatus{}, nil)
+
+		store.
+			EXPECT().
+			CreateEvent(gomock.Any(), gomock.AssignableToTypeOf(&ent.Event{})).
+			Return(&ent.Event{}, nil)
 
 		it := i.NewInteractor(&i.InteractorConfig{
 			Store: store,

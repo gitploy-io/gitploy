@@ -13,7 +13,6 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/gitploy-io/gitploy/model/ent/deployment"
 	"github.com/gitploy-io/gitploy/model/ent/deploymentstatus"
-	"github.com/gitploy-io/gitploy/model/ent/event"
 	"github.com/gitploy-io/gitploy/model/ent/predicate"
 	"github.com/gitploy-io/gitploy/model/ent/repo"
 	"github.com/gitploy-io/gitploy/model/ent/review"
@@ -312,21 +311,6 @@ func (du *DeploymentUpdate) AddDeploymentStatuses(d ...*DeploymentStatus) *Deplo
 	return du.AddDeploymentStatusIDs(ids...)
 }
 
-// AddEventIDs adds the "event" edge to the Event entity by IDs.
-func (du *DeploymentUpdate) AddEventIDs(ids ...int) *DeploymentUpdate {
-	du.mutation.AddEventIDs(ids...)
-	return du
-}
-
-// AddEvent adds the "event" edges to the Event entity.
-func (du *DeploymentUpdate) AddEvent(e ...*Event) *DeploymentUpdate {
-	ids := make([]int, len(e))
-	for i := range e {
-		ids[i] = e[i].ID
-	}
-	return du.AddEventIDs(ids...)
-}
-
 // Mutation returns the DeploymentMutation object of the builder.
 func (du *DeploymentUpdate) Mutation() *DeploymentMutation {
 	return du.mutation
@@ -384,27 +368,6 @@ func (du *DeploymentUpdate) RemoveDeploymentStatuses(d ...*DeploymentStatus) *De
 		ids[i] = d[i].ID
 	}
 	return du.RemoveDeploymentStatusIDs(ids...)
-}
-
-// ClearEvent clears all "event" edges to the Event entity.
-func (du *DeploymentUpdate) ClearEvent() *DeploymentUpdate {
-	du.mutation.ClearEvent()
-	return du
-}
-
-// RemoveEventIDs removes the "event" edge to Event entities by IDs.
-func (du *DeploymentUpdate) RemoveEventIDs(ids ...int) *DeploymentUpdate {
-	du.mutation.RemoveEventIDs(ids...)
-	return du
-}
-
-// RemoveEvent removes "event" edges to Event entities.
-func (du *DeploymentUpdate) RemoveEvent(e ...*Event) *DeploymentUpdate {
-	ids := make([]int, len(e))
-	for i := range e {
-		ids[i] = e[i].ID
-	}
-	return du.RemoveEventIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -860,60 +823,6 @@ func (du *DeploymentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if du.mutation.EventCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   deployment.EventTable,
-			Columns: []string{deployment.EventColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: event.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := du.mutation.RemovedEventIDs(); len(nodes) > 0 && !du.mutation.EventCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   deployment.EventTable,
-			Columns: []string{deployment.EventColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: event.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := du.mutation.EventIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   deployment.EventTable,
-			Columns: []string{deployment.EventColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: event.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
 	if n, err = sqlgraph.UpdateNodes(ctx, du.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{deployment.Label}
@@ -1212,21 +1121,6 @@ func (duo *DeploymentUpdateOne) AddDeploymentStatuses(d ...*DeploymentStatus) *D
 	return duo.AddDeploymentStatusIDs(ids...)
 }
 
-// AddEventIDs adds the "event" edge to the Event entity by IDs.
-func (duo *DeploymentUpdateOne) AddEventIDs(ids ...int) *DeploymentUpdateOne {
-	duo.mutation.AddEventIDs(ids...)
-	return duo
-}
-
-// AddEvent adds the "event" edges to the Event entity.
-func (duo *DeploymentUpdateOne) AddEvent(e ...*Event) *DeploymentUpdateOne {
-	ids := make([]int, len(e))
-	for i := range e {
-		ids[i] = e[i].ID
-	}
-	return duo.AddEventIDs(ids...)
-}
-
 // Mutation returns the DeploymentMutation object of the builder.
 func (duo *DeploymentUpdateOne) Mutation() *DeploymentMutation {
 	return duo.mutation
@@ -1284,27 +1178,6 @@ func (duo *DeploymentUpdateOne) RemoveDeploymentStatuses(d ...*DeploymentStatus)
 		ids[i] = d[i].ID
 	}
 	return duo.RemoveDeploymentStatusIDs(ids...)
-}
-
-// ClearEvent clears all "event" edges to the Event entity.
-func (duo *DeploymentUpdateOne) ClearEvent() *DeploymentUpdateOne {
-	duo.mutation.ClearEvent()
-	return duo
-}
-
-// RemoveEventIDs removes the "event" edge to Event entities by IDs.
-func (duo *DeploymentUpdateOne) RemoveEventIDs(ids ...int) *DeploymentUpdateOne {
-	duo.mutation.RemoveEventIDs(ids...)
-	return duo
-}
-
-// RemoveEvent removes "event" edges to Event entities.
-func (duo *DeploymentUpdateOne) RemoveEvent(e ...*Event) *DeploymentUpdateOne {
-	ids := make([]int, len(e))
-	for i := range e {
-		ids[i] = e[i].ID
-	}
-	return duo.RemoveEventIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -1776,60 +1649,6 @@ func (duo *DeploymentUpdateOne) sqlSave(ctx context.Context) (_node *Deployment,
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
 					Column: deploymentstatus.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if duo.mutation.EventCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   deployment.EventTable,
-			Columns: []string{deployment.EventColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: event.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := duo.mutation.RemovedEventIDs(); len(nodes) > 0 && !duo.mutation.EventCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   deployment.EventTable,
-			Columns: []string{deployment.EventColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: event.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := duo.mutation.EventIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   deployment.EventTable,
-			Columns: []string{deployment.EventColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: event.FieldID,
 				},
 			},
 		}

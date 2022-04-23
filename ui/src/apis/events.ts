@@ -1,20 +1,20 @@
 import { instance } from './setting'
 
-import { mapDataToDeployment } from "./deployment"
-import {  mapDataToReview } from "./review"
-import { Deployment, Review  } from "../models"
+import { mapDataToDeploymentStatus } from "./deployment"
+import { mapDataToReview } from "./review"
+import { DeploymentStatus, Review  } from "../models"
 
 
-export const subscribeDeploymentEvents = (cb: (deployment: Deployment) => void): EventSource => {
+export const subscribeDeploymentStatusEvents = (cb: (status: DeploymentStatus) => void): EventSource => {
     const sse = new EventSource(`${instance}/api/v1/stream/events`, {
         withCredentials: true,
     })
 
-    sse.addEventListener("deployment", (e: any) => {
+    sse.addEventListener("deployment_status", (e: any) => {
         const data = JSON.parse(e.data)
-        const deployment = mapDataToDeployment(data)
+        const status = mapDataToDeploymentStatus(data)
 
-        cb(deployment)
+        cb(status)
     })
 
     return sse

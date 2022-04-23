@@ -11,14 +11,15 @@ import {
     HttpPaymentRequiredError,
     License,
     ReviewStatusEnum,
+    DeploymentStatus,
 } from "../models"
 import { 
     getMe, 
     searchDeployments as _searchDeployments, 
     searchReviews as _searchReviews,
+    getDeployment,
     getLicense 
 } from "../apis"
-import { getShortRef } from "../libs"
 
 interface MainState {
     available: boolean
@@ -134,25 +135,23 @@ const notify = (title: string, options?: NotificationOptions) => {
     new Notification(title, options)
 }
 
-/**
- * The browser notifies only the user who triggers the deployment.
- */
-export const notifyDeploymentEvent = createAsyncThunk<void, Deployment, { state: { main: MainState } }>(
-    "main/notifyDeploymentEvent",
-    async (deployment) => {
-        if (deployment.status === DeploymentStatusEnum.Created) {
-            notify(`New Deployment #${deployment.number}`, {
-                icon: "/logo192.png",
-                body: `Start to deploy ${getShortRef(deployment)} to the ${deployment.env} environment of ${deployment.repo?.namespace}/${deployment.repo?.name}.`,
-                tag: String(deployment.id),
-            })
-            return
+export const notifyDeploymentStatusEvent = createAsyncThunk<void, DeploymentStatus, { state: { main: MainState } }>(
+    "main/notifyDeploymentStatusEvent",
+    async (deploymentStatus, {rejectWithValue}) => {
+        if (deploymentStatus.edges === undefined) {
+            return rejectWithValue(new Error("Edges is not included."))
         }
 
-        notify(`Deployment Updated #${deployment.number}`, {
+        const { repo, deployment } = deploymentStatus.edges
+        if (repo === undefined || deployment === undefined) {
+            return rejectWithValue(new Error("Repo or Deployment is not included in the edges."))
+        }
+
+        notify(`${repo.namespace}/${repo.name} #${deployment.number}`, {
             icon: "/logo192.png",
-            body: `The deployment ${deployment.number} of ${deployment.repo?.namespace}/${deployment.repo?.name} is updated ${deployment.status}.`,
+            body: `${deploymentStatus.status} - ${deploymentStatus.description}`,
             tag: String(deployment.id),
+            
         })
     }
 )
@@ -183,6 +182,22 @@ export const notifyReviewmentEvent = createAsyncThunk<void, Review, { state: { m
 )
 
 
+export const handleDeploymentStatusEvent = createAsyncThunk<Deployment, DeploymentStatus, { state: { main: MainState } }>(
+    "main/handleDeploymentStatusEvent",
+    async (deploymentStatus, { rejectWithValue }) => {
+        if (deploymentStatus.edges === undefined) {
+            return rejectWithValue(new Error("Edges is not included."))
+        }
+
+        const { repo, deployment } = deploymentStatus.edges
+        if (repo === undefined || deployment === undefined) {
+            return rejectWithValue(new Error("Repo or Deployment is not included in the edges."))
+        }
+
+        return await getDeployment(repo.namespace, repo.name, deployment.number)
+    }
+)
+
 export const mainSlice = createSlice({
     name: "main",
     initialState,
@@ -195,24 +210,6 @@ export const mainSlice = createSlice({
         },
         setExpired: (state, action: PayloadAction<boolean>) => {
             state.expired = action.payload
-        },
-        /**
-         * Update the status of the deployment with an event.
-         */
-        handleDeploymentEvent: (state, { payload: deployment }: PayloadAction<Deployment>) => {
-            if (deployment.status === DeploymentStatusEnum.Created) {
-                state.deployments.unshift(deployment)
-                return
-            }
-
-            state.deployments = state.deployments.filter((item) => {
-                return !(item.status === DeploymentStatusEnum.Success 
-                    || item.status === DeploymentStatusEnum.Failure)
-            })
-
-            state.deployments = state.deployments.map((item) => {
-                return (item.id === deployment.id)? deployment : item
-            })
         },
         /**
          * Reviews are removed from the state.
@@ -239,6 +236,22 @@ export const mainSlice = createSlice({
 
             .addCase(fetchLicense.fulfilled, (state, action) => {
                 state.license = action.payload
+            })
+
+            .addCase(handleDeploymentStatusEvent.fulfilled, (state, { payload: deployment }) => {
+                if (deployment.status === DeploymentStatusEnum.Created) {
+                    state.deployments.unshift(deployment)
+                    return
+                }
+
+                state.deployments = state.deployments.map((item) => {
+                    return (item.id === deployment.id)? deployment : item
+                })
+
+                state.deployments = state.deployments.filter((item) => {
+                    return !(item.status === DeploymentStatusEnum.Success 
+                        || item.status === DeploymentStatusEnum.Failure)
+                })
             })
     }
 })

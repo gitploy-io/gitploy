@@ -22,11 +22,10 @@ func (s *Store) ListEventsGreaterThanTime(ctx context.Context, t time.Time) ([]*
 		Where(
 			event.CreatedAtGT(t),
 		).
-		WithDeployment(func(dq *ent.DeploymentQuery) {
-			dq.
-				WithUser().
-				WithRepo().
-				WithDeploymentStatuses()
+		WithDeploymentStatus(func(dsq *ent.DeploymentStatusQuery) {
+			dsq.
+				WithDeployment().
+				WithRepo()
 		}).
 		WithReview(func(rq *ent.ReviewQuery) {
 			rq.
@@ -47,10 +46,8 @@ func (s *Store) CreateEvent(ctx context.Context, e *ent.Event) (*ent.Event, erro
 		SetKind(e.Kind).
 		SetType(e.Type)
 
-	if e.Type == event.TypeDeleted {
-		qry = qry.SetDeletedID(e.DeletedID)
-	} else if e.Kind == event.KindDeployment {
-		qry = qry.SetDeploymentID(e.DeploymentID)
+	if e.Kind == event.KindDeploymentStatus {
+		qry = qry.SetDeploymentStatusID(e.DeploymentStatusID)
 	} else if e.Kind == event.KindReview {
 		qry = qry.SetReviewID(e.ReviewID)
 	}
