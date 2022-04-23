@@ -125,6 +125,7 @@ func (i *DeploymentInteractor) Deploy(ctx context.Context, u *ent.User, r *ent.R
 			Status:       string(deployment.StatusWaiting),
 			Description:  "Gitploy waits the reviews.",
 			DeploymentID: d.ID,
+			RepoID:       r.ID,
 		}); err != nil {
 			i.log.Error("Failed to create a deployment status.", zap.Error(err))
 		}
@@ -153,6 +154,7 @@ func (i *DeploymentInteractor) Deploy(ctx context.Context, u *ent.User, r *ent.R
 		Status:       string(deployment.StatusCreated),
 		Description:  "Gitploy starts to deploy.",
 		DeploymentID: d.ID,
+		RepoID:       r.ID,
 	}); err != nil {
 		i.log.Error("Failed to create a deployment status.", zap.Error(err))
 	}
@@ -235,6 +237,7 @@ func (i *DeploymentInteractor) DeployToRemote(ctx context.Context, u *ent.User, 
 		Status:       string(deployment.StatusCreated),
 		Description:  "Gitploy start to deploy.",
 		DeploymentID: d.ID,
+		RepoID:       r.ID,
 	})
 
 	return d, nil
@@ -301,6 +304,7 @@ L:
 							Status:       "canceled",
 							Description:  "Gitploy cancels the inactive deployment.",
 							DeploymentID: d.ID,
+							RepoID:       d.RepoID,
 						}
 						if err := i.scm.CancelDeployment(ctx, d.Edges.User, d.Edges.Repo, d, s); err != nil {
 							i.log.Error("It has failed to cancel the remote deployment.", zap.Error(err))

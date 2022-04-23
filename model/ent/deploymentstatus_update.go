@@ -109,6 +109,20 @@ func (dsu *DeploymentStatusUpdate) SetRepoID(i int64) *DeploymentStatusUpdate {
 	return dsu
 }
 
+// SetNillableRepoID sets the "repo_id" field if the given value is not nil.
+func (dsu *DeploymentStatusUpdate) SetNillableRepoID(i *int64) *DeploymentStatusUpdate {
+	if i != nil {
+		dsu.SetRepoID(*i)
+	}
+	return dsu
+}
+
+// ClearRepoID clears the value of the "repo_id" field.
+func (dsu *DeploymentStatusUpdate) ClearRepoID() *DeploymentStatusUpdate {
+	dsu.mutation.ClearRepoID()
+	return dsu
+}
+
 // SetDeployment sets the "deployment" edge to the Deployment entity.
 func (dsu *DeploymentStatusUpdate) SetDeployment(d *Deployment) *DeploymentStatusUpdate {
 	return dsu.SetDeploymentID(d.ID)
@@ -245,9 +259,6 @@ func (dsu *DeploymentStatusUpdate) defaults() {
 func (dsu *DeploymentStatusUpdate) check() error {
 	if _, ok := dsu.mutation.DeploymentID(); dsu.mutation.DeploymentCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "DeploymentStatus.deployment"`)
-	}
-	if _, ok := dsu.mutation.RepoID(); dsu.mutation.RepoCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "DeploymentStatus.repo"`)
 	}
 	return nil
 }
@@ -538,6 +549,20 @@ func (dsuo *DeploymentStatusUpdateOne) SetRepoID(i int64) *DeploymentStatusUpdat
 	return dsuo
 }
 
+// SetNillableRepoID sets the "repo_id" field if the given value is not nil.
+func (dsuo *DeploymentStatusUpdateOne) SetNillableRepoID(i *int64) *DeploymentStatusUpdateOne {
+	if i != nil {
+		dsuo.SetRepoID(*i)
+	}
+	return dsuo
+}
+
+// ClearRepoID clears the value of the "repo_id" field.
+func (dsuo *DeploymentStatusUpdateOne) ClearRepoID() *DeploymentStatusUpdateOne {
+	dsuo.mutation.ClearRepoID()
+	return dsuo
+}
+
 // SetDeployment sets the "deployment" edge to the Deployment entity.
 func (dsuo *DeploymentStatusUpdateOne) SetDeployment(d *Deployment) *DeploymentStatusUpdateOne {
 	return dsuo.SetDeploymentID(d.ID)
@@ -681,9 +706,6 @@ func (dsuo *DeploymentStatusUpdateOne) defaults() {
 func (dsuo *DeploymentStatusUpdateOne) check() error {
 	if _, ok := dsuo.mutation.DeploymentID(); dsuo.mutation.DeploymentCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "DeploymentStatus.deployment"`)
-	}
-	if _, ok := dsuo.mutation.RepoID(); dsuo.mutation.RepoCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "DeploymentStatus.repo"`)
 	}
 	return nil
 }

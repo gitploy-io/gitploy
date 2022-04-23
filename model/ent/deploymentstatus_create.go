@@ -97,6 +97,14 @@ func (dsc *DeploymentStatusCreate) SetRepoID(i int64) *DeploymentStatusCreate {
 	return dsc
 }
 
+// SetNillableRepoID sets the "repo_id" field if the given value is not nil.
+func (dsc *DeploymentStatusCreate) SetNillableRepoID(i *int64) *DeploymentStatusCreate {
+	if i != nil {
+		dsc.SetRepoID(*i)
+	}
+	return dsc
+}
+
 // SetDeployment sets the "deployment" edge to the Deployment entity.
 func (dsc *DeploymentStatusCreate) SetDeployment(d *Deployment) *DeploymentStatusCreate {
 	return dsc.SetDeploymentID(d.ID)
@@ -217,14 +225,8 @@ func (dsc *DeploymentStatusCreate) check() error {
 	if _, ok := dsc.mutation.DeploymentID(); !ok {
 		return &ValidationError{Name: "deployment_id", err: errors.New(`ent: missing required field "DeploymentStatus.deployment_id"`)}
 	}
-	if _, ok := dsc.mutation.RepoID(); !ok {
-		return &ValidationError{Name: "repo_id", err: errors.New(`ent: missing required field "DeploymentStatus.repo_id"`)}
-	}
 	if _, ok := dsc.mutation.DeploymentID(); !ok {
 		return &ValidationError{Name: "deployment", err: errors.New(`ent: missing required edge "DeploymentStatus.deployment"`)}
-	}
-	if _, ok := dsc.mutation.RepoID(); !ok {
-		return &ValidationError{Name: "repo", err: errors.New(`ent: missing required edge "DeploymentStatus.repo"`)}
 	}
 	return nil
 }

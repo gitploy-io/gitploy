@@ -156,7 +156,7 @@ var (
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "deployment_id", Type: field.TypeInt},
-		{Name: "repo_id", Type: field.TypeInt64},
+		{Name: "repo_id", Type: field.TypeInt64, Nullable: true},
 	}
 	// DeploymentStatusTable holds the schema information for the "deployment_status" table.
 	DeploymentStatusTable = &schema.Table{

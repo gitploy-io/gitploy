@@ -21,13 +21,27 @@ func (s *Store) ListDeploymentStatuses(ctx context.Context, d *ent.Deployment) (
 	return dss, nil
 }
 
+func (s *Store) FindDeploymentStatusByID(ctx context.Context, id int) (*ent.DeploymentStatus, error) {
+	ds, err := s.c.DeploymentStatus.Query().
+		Where(deploymentstatus.IDEQ(id)).
+		WithDeployment().
+		WithRepo().
+		Only(ctx)
+	if ent.IsNotFound(err) {
+		return nil, e.NewError(e.ErrorCodeEntityNotFound, err)
+	}
+
+	return ds, nil
+}
+
 func (s *Store) CreateEntDeploymentStatus(ctx context.Context, ds *ent.DeploymentStatus) (*ent.DeploymentStatus, error) {
 	// Build the query creating a deployment status.
 	qry := s.c.DeploymentStatus.Create().
 		SetStatus(ds.Status).
 		SetDescription(ds.Description).
 		SetLogURL(ds.LogURL).
-		SetDeploymentID(ds.DeploymentID)
+		SetDeploymentID(ds.DeploymentID).
+		SetRepoID(ds.RepoID)
 
 	if !ds.CreatedAt.IsZero() {
 		qry.SetCreatedAt(ds.CreatedAt.UTC())
@@ -48,13 +62,4 @@ func (s *Store) CreateEntDeploymentStatus(ctx context.Context, ds *ent.Deploymen
 	}
 
 	return ret, nil
-}
-
-func (s *Store) FindDeploymentStatusByID(ctx context.Context, id int) (*ent.DeploymentStatus, error) {
-	ds, err := s.c.DeploymentStatus.Get(ctx, id)
-	if ent.IsNotFound(err) {
-		return nil, e.NewError(e.ErrorCodeEntityNotFound, err)
-	}
-
-	return ds, nil
 }

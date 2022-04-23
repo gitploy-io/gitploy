@@ -117,6 +117,7 @@ func (h *Hooks) handleGithubDeploymentEvent(c *gin.Context) {
 	}
 
 	ds.DeploymentID = d.ID
+	ds.RepoID = d.RepoID
 	if ds, err = h.i.CreateDeploymentStatus(ctx, ds); err != nil {
 		h.log.Check(gb.GetZapLogLevel(err), "Failed to create a new the deployment status.").Write(zap.Error(err))
 		gb.ResponseWithError(c, err)

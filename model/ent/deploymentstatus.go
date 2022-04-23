@@ -31,7 +31,7 @@ type DeploymentStatus struct {
 	// DeploymentID holds the value of the "deployment_id" field.
 	DeploymentID int `json:"deployment_id"`
 	// RepoID holds the value of the "repo_id" field.
-	RepoID int64 `json:"repo_id"`
+	RepoID int64 `json:"repo_id,omitemtpy"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the DeploymentStatusQuery when eager-loading is set.
 	Edges DeploymentStatusEdges `json:"edges"`

@@ -4026,9 +4026,22 @@ func (m *DeploymentStatusMutation) OldRepoID(ctx context.Context) (v int64, err 
 	return oldValue.RepoID, nil
 }
 
+// ClearRepoID clears the value of the "repo_id" field.
+func (m *DeploymentStatusMutation) ClearRepoID() {
+	m.repo = nil
+	m.clearedFields[deploymentstatus.FieldRepoID] = struct{}{}
+}
+
+// RepoIDCleared returns if the "repo_id" field was cleared in this mutation.
+func (m *DeploymentStatusMutation) RepoIDCleared() bool {
+	_, ok := m.clearedFields[deploymentstatus.FieldRepoID]
+	return ok
+}
+
 // ResetRepoID resets all changes to the "repo_id" field.
 func (m *DeploymentStatusMutation) ResetRepoID() {
 	m.repo = nil
+	delete(m.clearedFields, deploymentstatus.FieldRepoID)
 }
 
 // ClearDeployment clears the "deployment" edge to the Deployment entity.
@@ -4064,7 +4077,7 @@ func (m *DeploymentStatusMutation) ClearRepo() {
 
 // RepoCleared reports if the "repo" edge to the Repo entity was cleared.
 func (m *DeploymentStatusMutation) RepoCleared() bool {
-	return m.clearedrepo
+	return m.RepoIDCleared() || m.clearedrepo
 }
 
 // RepoIDs returns the "repo" edge IDs in the mutation.
@@ -4320,6 +4333,9 @@ func (m *DeploymentStatusMutation) ClearedFields() []string {
 	if m.FieldCleared(deploymentstatus.FieldLogURL) {
 		fields = append(fields, deploymentstatus.FieldLogURL)
 	}
+	if m.FieldCleared(deploymentstatus.FieldRepoID) {
+		fields = append(fields, deploymentstatus.FieldRepoID)
+	}
 	return fields
 }
 
@@ -4339,6 +4355,9 @@ func (m *DeploymentStatusMutation) ClearField(name string) error {
 		return nil
 	case deploymentstatus.FieldLogURL:
 		m.ClearLogURL()
+		return nil
+	case deploymentstatus.FieldRepoID:
+		m.ClearRepoID()
 		return nil
 	}
 	return fmt.Errorf("unknown DeploymentStatus nullable field %s", name)

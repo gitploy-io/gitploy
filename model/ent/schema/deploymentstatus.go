@@ -30,7 +30,8 @@ func (DeploymentStatus) Fields() []ent.Field {
 		field.Int("deployment_id"),
 		// Denormalize the 'repo_id' field so that
 		// we can figure out the repository easily.
-		field.Int64("repo_id"),
+		field.Int64("repo_id").
+			Optional(),
 	}
 }
 
@@ -45,8 +46,7 @@ func (DeploymentStatus) Edges() []ent.Edge {
 		edge.From("repo", Repo.Type).
 			Ref("deployment_statuses").
 			Field("repo_id").
-			Unique().
-			Required(),
+			Unique(),
 		edge.To("event", Event.Type).
 			Annotations(entsql.Annotation{
 				OnDelete: entsql.Cascade,

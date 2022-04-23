@@ -751,6 +751,20 @@ func RepoIDNotIn(vs ...int64) predicate.DeploymentStatus {
 	})
 }
 
+// RepoIDIsNil applies the IsNil predicate on the "repo_id" field.
+func RepoIDIsNil() predicate.DeploymentStatus {
+	return predicate.DeploymentStatus(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldRepoID)))
+	})
+}
+
+// RepoIDNotNil applies the NotNil predicate on the "repo_id" field.
+func RepoIDNotNil() predicate.DeploymentStatus {
+	return predicate.DeploymentStatus(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldRepoID)))
+	})
+}
+
 // HasDeployment applies the HasEdge predicate on the "deployment" edge.
 func HasDeployment() predicate.DeploymentStatus {
 	return predicate.DeploymentStatus(func(s *sql.Selector) {

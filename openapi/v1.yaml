@@ -1751,11 +1751,24 @@ components:
           type: string
         updated_at:
           type: string
+        deployment_id:
+          type: number
+        repo_id:
+          type: number
+        edges:
+          type: object
+          properties:
+            deployment:
+              $ref: '#/components/schemas/DeploymentStatus'
+            repo:
+              $ref: '#/components/schemas/Repository'
       required:
         - id
         - status
         - created_at
         - updated_at
+        - deployment_id
+        - repo_id
     RemoteDeploymentStatus:
       type: object
       properties:
