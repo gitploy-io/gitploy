@@ -9,6 +9,7 @@ import (
 	"github.com/gitploy-io/gitploy/model/ent/enttest"
 	"github.com/gitploy-io/gitploy/model/ent/migrate"
 	"github.com/gitploy-io/gitploy/model/extent"
+	"github.com/gitploy-io/gitploy/pkg/e"
 )
 
 func TestStore_ListReposOfUser(t *testing.T) {
@@ -193,6 +194,72 @@ func TestStore_SyncRepo(t *testing.T) {
 			Perm:        extent.RemoteRepoPermAdmin,
 		}); err != nil {
 			t.Fatalf("SyncRepo return an error: %s", err)
+		}
+	})
+}
+
+func TestStore_UpdateRepo(t *testing.T) {
+	t.Run("Update the repository name.", func(t *testing.T) {
+		client := enttest.Open(t, "sqlite3", "file:ent?mode=memory&cache=shared&_fk=1",
+			enttest.WithMigrateOptions(migrate.WithForeignKeys(false)),
+		)
+		defer client.Close()
+
+		repo := client.Repo.Create().
+			SetNamespace("gitploy-io").
+			SetName("gitploy").
+			SetDescription("").
+			SaveX(context.Background())
+
+		s := NewStore(client)
+
+		// Replace values
+		repo.Name = "gitploy-next"
+		repo.ConfigPath = "deploy-next.yml"
+
+		var (
+			ret *ent.Repo
+			err error
+		)
+		ret, err = s.UpdateRepo(context.Background(), repo)
+		if err != nil {
+			t.Fatalf("UpdateRepo return an error: %s", err)
+		}
+
+		if repo.Name != "gitploy-next" ||
+			repo.ConfigPath != "deploy-next.yml" {
+			t.Fatalf("UpdateRepo = %s, wanted %s", repo, ret)
+		}
+	})
+
+	t.Run("Return an error if the same repository name exists.", func(t *testing.T) {
+		client := enttest.Open(t, "sqlite3", "file:ent?mode=memory&cache=shared&_fk=1",
+			enttest.WithMigrateOptions(migrate.WithForeignKeys(true)),
+		)
+		defer client.Close()
+
+		client.Repo.Create().
+			SetNamespace("gitploy-io").
+			SetName("gitploy-next").
+			SetDescription("").
+			SaveX(context.Background())
+
+		repo := client.Repo.Create().
+			SetNamespace("gitploy-io").
+			SetName("gitploy").
+			SetDescription("").
+			SaveX(context.Background())
+
+		s := NewStore(client)
+
+		repo.Name = "gitploy-next"
+
+		var (
+			err error
+		)
+		_, err = s.UpdateRepo(context.Background(), repo)
+		if !e.HasErrorCode(err, e.ErrorRepoUniqueName) {
+			t.Fatalf("UpdateRepo doesn't return the ErrorRepoUniqueName error: %s", err)
 		}
 	})
 }

@@ -93,6 +93,12 @@ func TestRepoAPI_UpdateRepo(t *testing.T) {
 				return r, nil
 			})
 
+		m.EXPECT().
+			UpdateRepo(gomock.Any(), gomock.AssignableToTypeOf(&ent.Repo{})).
+			DoAndReturn(func(ctx context.Context, r *ent.Repo) (*ent.Repo, error) {
+				return r, nil
+			})
+
 		gin.SetMode(gin.ReleaseMode)
 		router := gin.New()
 

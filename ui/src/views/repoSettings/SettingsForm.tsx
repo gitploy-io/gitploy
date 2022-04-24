@@ -1,52 +1,68 @@
 import { Form, Input, Button, Space, Typography } from "antd"
-
-import { Repo } from "../../models"
+import { useState } from "react"
 
 export interface SettingFormProps {
-    saving: boolean
-    repo?: Repo
-    onClickFinish(values: any): void
+    configLink: string
+    initialValues?: SettingFormValues
+    onClickFinish(values: SettingFormValues): void
     onClickDeactivate(): void
 }
 
+export interface SettingFormValues {
+    name: string
+    config_path: string
+}
+
 export default function SettingForm({
-    saving,
-    repo,
+    configLink,
+    initialValues,
     onClickFinish,
     onClickDeactivate,
 }: SettingFormProps): JSX.Element {
+    const [saving, setSaving] = useState(false) 
+
     const layout = {
       labelCol: { span: 5},
       wrapperCol: { span: 12 },
-    };
+    }
 
     const submitLayout = {
       wrapperCol: { offset: 5, span: 12 },
-    };
+    }
 
-    const initialValues = {
-        "config": repo?.configPath
+    const onFinish = (values: any) => {
+        setSaving(true)
+        onClickFinish(values)
+        setSaving(false)
     }
 
     return (
         <Form
             name="setting"
             initialValues={initialValues}
-            onFinish={onClickFinish}
+            onFinish={onFinish}
         >
+            <Form.Item
+                label="Name"
+                name="name"
+                {...layout}
+                rules={[{required: true}]}
+            >
+                <Input />
+            </Form.Item>
             <Form.Item
                 label="Config"
                 {...layout}
             >
                 <Space>
                     <Form.Item
-                        name="config"
+                        name="config_path"
                         rules={[{required: true}]}
                         noStyle
                     >
                         <Input />
                     </Form.Item>
-                    <Typography.Link target="_blank" href={`/link/${repo?.namespace}/${repo?.name}/config`}>
+                    <Typography.Link target="_blank" href={configLink}>
                         Link
                     </Typography.Link>
                 </Space>
