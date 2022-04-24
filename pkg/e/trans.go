@@ -20,7 +20,7 @@ var messages = map[ErrorCode]string{
 	ErrorCodeLicenseRequired:         "The license is required.",
 	ErrorCodeParameterInvalid:        "Invalid request parameter.",
 	ErrorPermissionRequired:          "The permission is required.",
-	ErrorRepoUniqueName:              "The repository name already exists.",
+	ErrorRepoUniqueName:              "The same repository name already exists.",
 }
 
 func GetMessage(code ErrorCode) string {
