@@ -4,7 +4,7 @@ import { instance, headers } from './setting'
 import { _fetch } from "./_base"
 import { DeploymentData, mapDataToDeployment } from "./deployment"
 
-import { Repo, HttpForbiddenError, Deployment } from '../models'
+import { Repo, HttpForbiddenError, Deployment, HttpUnprocessableEntityError } from '../models'
 
 export interface RepoData {
     id: number
@@ -66,7 +66,10 @@ export const getRepo = async (namespace: string, name: string): Promise<Repo> =>
     return repo
 }
 
-export const updateRepo = async (namespace: string, name: string, payload: {config_path: string}): Promise<Repo> => {
+export const updateRepo = async (namespace: string, name: string, payload: {
+    name?: string,
+    config_path?: string,
+}): Promise<Repo> => {
     const res = await _fetch(`${instance}/api/v1/repos/${namespace}/${name}`, {
         headers,
         credentials: 'same-origin',
@@ -76,6 +79,9 @@ export const updateRepo = async (namespace: string, name: string, payload: {conf
     if (res.status === StatusCodes.FORBIDDEN) {
         const message = await res.json().then(data => data.message)
         throw new HttpForbiddenError(message)
+    } else if (res.status === StatusCodes.UNPROCESSABLE_ENTITY) {
+        const message = await res.json().then(data => data.message)
+        throw new HttpUnprocessableEntityError(message)
     }
 
     const ret: Repo = await res

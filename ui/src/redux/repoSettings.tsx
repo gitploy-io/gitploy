@@ -1,8 +1,8 @@
-import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit"
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
 import { message } from "antd"
 
 import { getRepo, updateRepo, deactivateRepo } from "../apis"
-import { Repo, RequestStatus, HttpForbiddenError  } from "../models"
+import { Repo, RequestStatus, HttpForbiddenError, HttpUnprocessableEntityError  } from "../models"
 
 interface RepoSettingsState {
     repo?: Repo
@@ -25,9 +25,16 @@ export const init = createAsyncThunk<Repo, {namespace: string, name: string}, { 
     },
 )
 
-export const save = createAsyncThunk<Repo, void, { state: {repoSettings: RepoSettingsState} }>(
+export const save = createAsyncThunk<
+    Repo, 
+    {
+        name: string,
+        config_path: string
+    },
+    { state: {repoSettings: RepoSettingsState} }
+>(
     'repoSettings/save', 
-    async (_, { getState, rejectWithValue, requestId } ) => {
+    async (values, { getState, rejectWithValue, requestId } ) => {
         const { repo, saveId, saving } = getState().repoSettings
         if (!repo) {
             throw new Error("There is no repo.")
@@ -38,13 +45,19 @@ export const save = createAsyncThunk<Repo, void, { state: {repoSettings: RepoSet
         }
 
         try {
-            const nr = await updateRepo(repo.namespace, repo.name, {config_path: repo.configPath})
+            const nr = await updateRepo(repo.namespace, repo.name, values)
             message.success("Success to save.", 3)
             return nr
         } catch(e) {
             if (e instanceof HttpForbiddenError) {
                 message.warn("Only admin permission can update.", 3)
-            } 
+            } else if (e instanceof HttpUnprocessableEntityError) {
+                message.error(<> 
+                    <span>It is unprocesable entity.</span><br/>
+                    <span className="gitploy-quote">{e.message}</span>
+                </>, 3)
+            }
+
 
             return rejectWithValue(e)
         }
@@ -65,7 +78,6 @@ export const deactivate = createAsyncThunk<Repo, void, { state: {repoSettings: R
             if (e instanceof HttpForbiddenError) {
                 message.warn("Only admin permission can deactivate.", 3)
             } 
-
             return rejectWithValue(e)
         }
     },
@@ -74,15 +86,7 @@ export const deactivate = createAsyncThunk<Repo, void, { state: {repoSettings: R
 export const repoSettingsSlice = createSlice({
     name: "repoSettings",
     initialState,
-    reducers: {
-        setConfigPath: (state, action: PayloadAction<string>) => {
-            if (!state.repo) {
-                return
-            }
-
-            state.repo.configPath = action.payload
-        }
-    },
+    reducers: {},
     extraReducers: builder => {
         builder
             .addCase(init.fulfilled, (state, action) => {
