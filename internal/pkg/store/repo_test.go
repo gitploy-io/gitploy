@@ -257,7 +257,7 @@ func TestStore_UpdateRepo(t *testing.T) {
 		var (
 			err error
 		)
-		repo, err = s.UpdateRepo(context.Background(), repo)
+		_, err = s.UpdateRepo(context.Background(), repo)
 		if !e.HasErrorCode(err, e.ErrorRepoUniqueName) {
 			t.Fatalf("UpdateRepo doesn't return the ErrorRepoUniqueName error: %s", err)
 		}
