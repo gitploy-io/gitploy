@@ -1,13 +1,20 @@
 envs:
   - name: dev
     task: ${GITPLOY_DEPLOY_TASK:=rollback}:kubernetes
-    # Disable "auto_merge" to avoid merge conflict
-    # when it deploys the tag behind the head.
     auto_merge: false
-    # Check test and publish is succeed.
     required_contexts:
       - "publish-image"
     deployable_ref: 'v.*\..*\..*'
+    serialization: true
+    inputs:
+      pullPolicy:
+        required: true
+        type: select
+        description: Image pull policy
+        options:
+          - Always
+          - IfNotPresent
+        default: Always
 
   - name: production
     task: ${GITPLOY_DEPLOY_TASK:=rollback}:kubernetes
@@ -21,3 +28,13 @@ envs:
         - hanjunlee
         - gitploy-qa
     deployable_ref: 'v.*\..*\..*'
+    serialization: true
+    inputs:
+      pullPolicy:
+        required: true
+        type: select
+        description: Image pull policy
+        options:
+          - Always
+          - IfNotPresent
+        default: Always
