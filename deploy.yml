@@ -6,15 +6,17 @@ envs:
       - "publish-image"
     deployable_ref: 'v.*\..*\..*'
     serialization: true
-    inputs:
-      pullPolicy:
-        required: true
-        type: select
-        description: Image pull policy
-        options:
-          - Always
-          - IfNotPresent
-        default: Always
+    dynamic_payload:
+      enabled: true
+      inputs:
+        pullPolicy:
+          required: true
+          type: select
+          description: Image pull policy
+          options:
+            - Always
+            - IfNotPresent
+          default: Always
 
   - name: production
     task: ${GITPLOY_DEPLOY_TASK:=rollback}:kubernetes
@@ -29,12 +31,14 @@ envs:
         - gitploy-qa
     deployable_ref: 'v.*\..*\..*'
     serialization: true
-    inputs:
-      pullPolicy:
-        required: true
-        type: select
-        description: Image pull policy
-        options:
-          - Always
-          - IfNotPresent
-        default: Always
+    dynamic_payload:
+      enabled: true
+      inputs:
+        pullPolicy:
+          required: true
+          type: select
+          description: Image pull policy
+          options:
+            - Always
+            - IfNotPresent
+          default: Always
