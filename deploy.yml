@@ -8,6 +8,7 @@ envs:
     required_contexts:
       - "publish-image"
     deployable_ref: 'v.*\..*\..*'
+    serialization: true
 
   - name: production
     task: ${GITPLOY_DEPLOY_TASK:=rollback}:kubernetes
@@ -21,3 +22,4 @@ envs:
         - hanjunlee
         - gitploy-qa
     deployable_ref: 'v.*\..*\..*'
+    serialization: true
