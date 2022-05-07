@@ -7,7 +7,7 @@ module.exports = {
       options: {
         lessLoaderOptions: {
           lessOptions: {
-            modifyVars: { 
+            modifyVars: {
               // Custom theme
               // https://github.com/ant-design/ant-design/blob/master/components/style/themes/default.less
               // Colors
@@ -17,8 +17,8 @@ module.exports = {
               // Layout
               '@layout-header-background': '@purple-10',
               '@layout-body-background': '#fff',
-              // 
-              '@border-radius-base': '5px'
+              //
+              '@border-radius-base': '5px',
             },
             javascriptEnabled: true,
           },

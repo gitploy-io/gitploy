@@ -1,35 +1,35 @@
-export default interface Config  {
-    envs: Env[]
+export default interface Config {
+  envs: Env[];
 }
 
 export interface Env {
-    name: string
-    requiredContexts?: string[]
-    dynamicPayload?: DynamicPayload
-    review?: {
-        enabled: boolean
-        reviewers: string[]
-    }
+  name: string;
+  requiredContexts?: string[];
+  dynamicPayload?: DynamicPayload;
+  review?: {
+    enabled: boolean;
+    reviewers: string[];
+  };
 }
 
 export interface DynamicPayload {
-    enabled: boolean
-    inputs: {
-        [key: string]: DynamicPayloadInput
-    }
+  enabled: boolean;
+  inputs: {
+    [key: string]: DynamicPayloadInput;
+  };
 }
 
 export interface DynamicPayloadInput {
-    type: DynamicPayloadInputTypeEnum
-    required?: boolean
-    default?: any
-    description?: string
-    options?: string[]
+  type: DynamicPayloadInputTypeEnum;
+  required?: boolean;
+  default?: any;
+  description?: string;
+  options?: string[];
 }
 
 export enum DynamicPayloadInputTypeEnum {
-    Select = "select",
-    String = "string",
-    Number = "number",
-    Boolean = "boolean"
+  Select = 'select',
+  String = 'string',
+  Number = 'number',
+  Boolean = 'boolean',
 }
