@@ -27,7 +27,8 @@
     "build": "craco build",
     "test": "craco test",
     "eject": "craco eject",
-    "lint": "npx eslint . --ext .ts,.tsx"
+    "lint": "npx eslint . --ext .ts,.tsx",
+    "prettier": "npx prettier --write ."
   },
   "eslintConfig": {
     "extends": [
