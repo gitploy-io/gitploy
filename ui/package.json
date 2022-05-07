@@ -10,6 +10,7 @@
     "@testing-library/user-event": "^12.8.3",
     "antd": "^4.16.1",
     "craco-less": "^1.17.1",
+    "follow-redirects": "^1.14.7",
     "http-status-codes": "^2.1.4",
     "lodash.debounce": "^4.0.8",
     "moment": "^2.29.1",
@@ -19,8 +20,7 @@
     "react-redux": "^7.2.4",
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.3",
-    "web-vitals": "^1.1.2",
-    "follow-redirects": "^1.14.7"
+    "web-vitals": "^1.1.2"
   },
   "scripts": {
     "start": "craco start",
@@ -58,6 +58,7 @@
     "@typescript-eslint/eslint-plugin": "^4.28.4",
     "@typescript-eslint/parser": "^4.28.4",
     "eslint": "^7.31.0",
+    "prettier": "2.6.2",
     "typescript": "^4.3.5"
   }
 }
