@@ -1,65 +1,65 @@
-import { StatusCodes } from 'http-status-codes'
+import { StatusCodes } from 'http-status-codes';
 
 export class HttpRequestError extends Error {
-    constructor(public code: number, public m: string) {
-        super(m)
+  constructor(public code: number, public m: string) {
+    super(m);
 
-        Object.setPrototypeOf(this, HttpRequestError.prototype)
-    }
+    Object.setPrototypeOf(this, HttpRequestError.prototype);
+  }
 }
 
 export class HttpInternalServerError extends HttpRequestError {
-    constructor(public m: string) {
-        super(StatusCodes.INTERNAL_SERVER_ERROR, m)
+  constructor(public m: string) {
+    super(StatusCodes.INTERNAL_SERVER_ERROR, m);
 
-        Object.setPrototypeOf(this, HttpInternalServerError.prototype)
-    }
+    Object.setPrototypeOf(this, HttpInternalServerError.prototype);
+  }
 }
 
 export class HttpUnauthorizedError extends HttpRequestError {
-    constructor(public m: string) {
-        super(StatusCodes.UNAUTHORIZED, m)
+  constructor(public m: string) {
+    super(StatusCodes.UNAUTHORIZED, m);
 
-        Object.setPrototypeOf(this, HttpUnauthorizedError.prototype)
-    }
+    Object.setPrototypeOf(this, HttpUnauthorizedError.prototype);
+  }
 }
 
 export class HttpPaymentRequiredError extends HttpRequestError {
-    constructor(public m: string) {
-        super(StatusCodes.PAYMENT_REQUIRED, m)
+  constructor(public m: string) {
+    super(StatusCodes.PAYMENT_REQUIRED, m);
 
-        Object.setPrototypeOf(this, HttpPaymentRequiredError.prototype)
-    }
+    Object.setPrototypeOf(this, HttpPaymentRequiredError.prototype);
+  }
 }
 
 export class HttpForbiddenError extends HttpRequestError {
-    constructor(public m: string) {
-        super(StatusCodes.FORBIDDEN, m)
+  constructor(public m: string) {
+    super(StatusCodes.FORBIDDEN, m);
 
-        Object.setPrototypeOf(this, HttpForbiddenError.prototype)
-    }
+    Object.setPrototypeOf(this, HttpForbiddenError.prototype);
+  }
 }
 
 export class HttpNotFoundError extends HttpRequestError {
-    constructor(public m: string) {
-        super(StatusCodes.NOT_FOUND, m)
+  constructor(public m: string) {
+    super(StatusCodes.NOT_FOUND, m);
 
-        Object.setPrototypeOf(this, HttpNotFoundError.prototype)
-    }
+    Object.setPrototypeOf(this, HttpNotFoundError.prototype);
+  }
 }
 
 export class HttpConflictError extends HttpRequestError {
-    constructor(public m: string) {
-        super(StatusCodes.CONFLICT, m)
+  constructor(public m: string) {
+    super(StatusCodes.CONFLICT, m);
 
-        Object.setPrototypeOf(this, HttpConflictError.prototype)
-    }
+    Object.setPrototypeOf(this, HttpConflictError.prototype);
+  }
 }
 
 export class HttpUnprocessableEntityError extends HttpRequestError {
-    constructor(public m: string) {
-        super(StatusCodes.UNPROCESSABLE_ENTITY, m)
+  constructor(public m: string) {
+    super(StatusCodes.UNPROCESSABLE_ENTITY, m);
 
-        Object.setPrototypeOf(this, HttpUnprocessableEntityError.prototype)
-    }
+    Object.setPrototypeOf(this, HttpUnprocessableEntityError.prototype);
+  }
 }

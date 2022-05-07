@@ -1,34 +1,27 @@
-import { Breadcrumb } from "antd"
+import { Breadcrumb } from 'antd';
 
 export interface HeaderBreadcrumbProps {
-    namespace: string
-    name: string
-    number: string
+  namespace: string;
+  name: string;
+  number: string;
 }
 
 export default function HeaderBreadcrumb({
-    namespace,
-    name,
-    number
+  namespace,
+  name,
+  number,
 }: HeaderBreadcrumbProps): JSX.Element {
-
-    return (
-        <Breadcrumb>
-            <Breadcrumb.Item>
-                <a href="/">Repositories</a>
-            </Breadcrumb.Item>
-            <Breadcrumb.Item>
-                {namespace}
-            </Breadcrumb.Item>
-            <Breadcrumb.Item>
-                <a href={`/${namespace}/${name}`}>{name}</a>
-            </Breadcrumb.Item>
-            <Breadcrumb.Item>
-                Deployments
-            </Breadcrumb.Item>
-            <Breadcrumb.Item>
-                {number}
-            </Breadcrumb.Item>
-        </Breadcrumb>
-    )
+  return (
+    <Breadcrumb>
+      <Breadcrumb.Item>
+        <a href="/">Repositories</a>
+      </Breadcrumb.Item>
+      <Breadcrumb.Item>{namespace}</Breadcrumb.Item>
+      <Breadcrumb.Item>
+        <a href={`/${namespace}/${name}`}>{name}</a>
+      </Breadcrumb.Item>
+      <Breadcrumb.Item>Deployments</Breadcrumb.Item>
+      <Breadcrumb.Item>{number}</Breadcrumb.Item>
+    </Breadcrumb>
+  );
 }

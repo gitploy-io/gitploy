@@ -1,4 +1,4 @@
 export default interface Tag {
-    name: string
-    commitSha: string
+  name: string;
+  commitSha: string;
 }

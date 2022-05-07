@@ -1,19 +1,19 @@
-import { configureStore } from '@reduxjs/toolkit'
+import { configureStore } from '@reduxjs/toolkit';
 
-import { mainSlice, apiMiddleware } from "./main"
-import { homeSlice } from "./home"
-import { repoSlice } from "./repo"
-import { repoHomeSlice } from "./repoHome"
-import { repoDeploySlice } from "./repoDeploy"
-import { repoLockSlice } from "./repoLock"
-import { repoRollbackSlice } from "./repoRollback"
-import { repoSettingsSlice } from "./repoSettings"
-import { settingsSlice } from "./settings"
-import { deploymentSlice } from "./deployment"
-import { membersSlice } from "./members"
-import { activitiesSlice } from './activities'
+import { mainSlice, apiMiddleware } from './main';
+import { homeSlice } from './home';
+import { repoSlice } from './repo';
+import { repoHomeSlice } from './repoHome';
+import { repoDeploySlice } from './repoDeploy';
+import { repoLockSlice } from './repoLock';
+import { repoRollbackSlice } from './repoRollback';
+import { repoSettingsSlice } from './repoSettings';
+import { settingsSlice } from './settings';
+import { deploymentSlice } from './deployment';
+import { membersSlice } from './members';
+import { activitiesSlice } from './activities';
 
-export const store =  configureStore({
+export const store = configureStore({
   reducer: {
     main: mainSlice.reducer,
     home: homeSlice.reducer,
@@ -28,13 +28,13 @@ export const store =  configureStore({
     members: membersSlice.reducer,
     activities: activitiesSlice.reducer,
   },
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware({
-    serializableCheck: false
-  })
-    .concat(apiMiddleware),
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: false,
+    }).concat(apiMiddleware),
   devTools: true,
-})
+});
 
-export type RootState = ReturnType<typeof store.getState>
+export type RootState = ReturnType<typeof store.getState>;
 
-export type AppDispatch = typeof store.dispatch
+export type AppDispatch = typeof store.dispatch;

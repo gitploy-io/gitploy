@@ -1,6 +1,6 @@
 export default interface License {
-    kind: string
-    memberCount: number
-    memberLimit: number
-    expiredAt: Date
+  kind: string;
+  memberCount: number;
+  memberLimit: number;
+  expiredAt: Date;
 }

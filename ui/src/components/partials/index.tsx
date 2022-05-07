@@ -1,3 +1,3 @@
-import { getStatusColor } from "./deploymentStatus"
+import { getStatusColor } from './deploymentStatus';
 
-export { getStatusColor }
+export { getStatusColor };
