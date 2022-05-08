@@ -1,67 +1,85 @@
 package interactor
 
 import (
+	"context"
 	"fmt"
+	"time"
 
 	evbus "github.com/asaskevich/EventBus"
 	"go.uber.org/zap"
 )
 
-type (
-	Interactor struct {
-		Store
-		SCM
+type InteractorConfig struct {
+	ServerHost       string
+	ServerProto      string
+	ServerProxyHost  string
+	ServerProxyProto string
 
-		// The channel to stop background workers.
-		stopCh chan struct{}
+	OrgEntries    []string
+	MemberEntries []string
+	AdminUsers    []string
 
-		common *service
+	WebhookSecret string
 
-		// services used for talking to different parts of the entities.
-		*ConfigInteractor
-		*DeploymentInteractor
-		*DeploymentStatisticsInteractor
-		*EventInteractor
-		*LicenseInteractor
-		*LockInteractor
-		*RepoInteractor
-		*ReviewInteractor
-		*UserInteractor
+	LicenseKey string
+
+	Store
+	SCM
+}
+
+func (c *InteractorConfig) BuildWebhookURL() string {
+	if c.ServerProxyProto != "" && c.ServerProxyHost != "" {
+		return fmt.Sprintf("%s://%s/hooks", c.ServerProxyProto, c.ServerProxyHost)
 	}
 
-	InteractorConfig struct {
-		ServerHost       string
-		ServerProto      string
-		ServerProxyHost  string
-		ServerProxyProto string
+	return fmt.Sprintf("%s://%s/hooks", c.ServerProto, c.ServerHost)
+}
 
-		OrgEntries    []string
-		MemberEntries []string
-		AdminUsers    []string
-
-		WebhookSecret string
-
-		LicenseKey string
-
-		Store
-		SCM
+func (c *InteractorConfig) CheckWebhookSSL() bool {
+	if c.ServerProxyProto != "" && c.ServerProxyHost != "" {
+		return c.ServerProxyProto == "https"
 	}
 
-	service struct {
-		store Store
-		scm   SCM
-		log   *zap.Logger
-	}
-)
+	return c.ServerProto == "https"
+}
+
+type service struct {
+	store Store
+	scm   SCM
+	log   *zap.Logger
+}
+
+type Interactor struct {
+	Store
+	SCM
+
+	// The channel to stop background workers.
+	stopCh chan struct{}
+
+	common *service
+
+	// services used for talking to different parts of the entities.
+	*ConfigInteractor
+	*DeploymentInteractor
+	*DeploymentStatisticsInteractor
+	*EventInteractor
+	*LicenseInteractor
+	*LockInteractor
+	*RepoInteractor
+	*ReviewInteractor
+	*UserInteractor
+	*PermInteractor
+}
 
 func NewInteractor(c *InteractorConfig) *Interactor {
+	log := zap.L().Named("interactor")
+	defer log.Sync()
+
 	i := &Interactor{
 		Store:  c.Store,
 		SCM:    c.SCM,
 		stopCh: make(chan struct{}),
 	}
-
-	log := zap.L().Named("interactor")
 
 	i.common = &service{
 		store: c.Store,
@@ -94,37 +112,38 @@ func NewInteractor(c *InteractorConfig) *Interactor {
 		orgEntries:    c.OrgEntries,
 		memberEntries: c.MemberEntries,
 	}
-
-	go func() {
-		log.Info("Start the working publishing events.")
-		i.runPublishingEvents(i.stopCh)
-	}()
-
-	go func() {
-		log.Info("Start the worker canceling inactive deployments.")
-		i.runClosingInactiveDeployment(i.stopCh)
-	}()
-
-	go func() {
-		log.Info("Start the worker for the auto unlock.")
-		i.runAutoUnlock(i.stopCh)
-	}()
+	i.PermInteractor = &PermInteractor{
+		service:    i.common,
+		orgEntries: c.OrgEntries,
+	}
 
 	return i
 }
 
-func (c *InteractorConfig) BuildWebhookURL() string {
-	if c.ServerProxyProto != "" && c.ServerProxyHost != "" {
-		return fmt.Sprintf("%s://%s/hooks", c.ServerProxyProto, c.ServerProxyHost)
+func (i *Interactor) Init() {
+	log := zap.L().Named("interactor")
+	defer log.Sync()
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	log.Debug("Resync organization entries.")
+	if err := i.ResyncPerms(ctx); err != nil {
+		log.Fatal("Failed to resynchronize with the perms.", zap.Error(err))
 	}
 
-	return fmt.Sprintf("%s://%s/hooks", c.ServerProto, c.ServerHost)
-}
+	go func() {
+		log.Debug("Start the working publishing events.")
+		i.runPublishingEvents(i.stopCh)
+	}()
 
-func (c *InteractorConfig) CheckWebhookSSL() bool {
-	if c.ServerProxyProto != "" && c.ServerProxyHost != "" {
-		return c.ServerProxyProto == "https"
-	}
+	go func() {
+		log.Debug("Start the worker canceling inactive deployments.")
+		i.runClosingInactiveDeployment(i.stopCh)
+	}()
 
-	return c.ServerProto == "https"
+	go func() {
+		log.Debug("Start the worker for the auto unlock.")
+		i.runAutoUnlock(i.stopCh)
+	}()
 }

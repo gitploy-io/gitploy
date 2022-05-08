@@ -4,7 +4,6 @@ package interactor
 
 import (
 	"context"
-	"time"
 
 	"github.com/gitploy-io/gitploy/model/ent"
 	"github.com/gitploy-io/gitploy/model/extent"
@@ -22,22 +21,6 @@ type (
 		LockStore
 		ReviewStore
 		EventStore
-	}
-
-	// PermStore defines operations for working with perms.
-	PermStore interface {
-		ListPermsOfRepo(ctx context.Context, r *ent.Repo, opt *ListPermsOfRepoOptions) ([]*ent.Perm, error)
-		FindPermOfRepo(ctx context.Context, r *ent.Repo, u *ent.User) (*ent.Perm, error)
-		CreatePerm(ctx context.Context, p *ent.Perm) (*ent.Perm, error)
-		UpdatePerm(ctx context.Context, p *ent.Perm) (*ent.Perm, error)
-		DeletePermsOfUserLessThanSyncedAt(ctx context.Context, u *ent.User, t time.Time) (int, error)
-	}
-
-	ListPermsOfRepoOptions struct {
-		ListOptions
-
-		// Query search the 'login' contains the query.
-		Query string
 	}
 
 	// PermStore defines operations for working with deployment_statuses.
