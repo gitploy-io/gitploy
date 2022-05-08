@@ -13,6 +13,13 @@ import (
 	"github.com/gitploy-io/gitploy/pkg/e"
 )
 
+func (s *Store) ListPerms(ctx context.Context, opt *i.ListOptions) ([]*ent.Perm, error) {
+	return s.c.Perm.Query().
+		Limit(opt.PerPage).
+		Offset(offset(opt.Page, opt.PerPage)).
+		All(ctx)
+}
+
 func (s *Store) ListPermsOfRepo(ctx context.Context, r *ent.Repo, opt *i.ListPermsOfRepoOptions) ([]*ent.Perm, error) {
 	perms, err := s.c.Perm.
 		Query().
@@ -121,4 +128,8 @@ func (s *Store) DeletePermsOfUserLessThanSyncedAt(ctx context.Context, u *ent.Us
 	}
 
 	return cnt, nil
+}
+
+func (s *Store) DeletePerm(ctx context.Context, p *ent.Perm) error {
+	return s.c.Perm.DeleteOne(p).Exec(ctx)
 }
