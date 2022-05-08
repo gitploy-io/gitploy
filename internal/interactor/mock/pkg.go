@@ -305,6 +305,20 @@ func (mr *MockStoreMockRecorder) DeleteLock(ctx, l interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteLock", reflect.TypeOf((*MockStore)(nil).DeleteLock), ctx, l)
 }
 
+// DeletePerm mocks base method.
+func (m *MockStore) DeletePerm(ctx context.Context, p *ent.Perm) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeletePerm", ctx, p)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeletePerm indicates an expected call of DeletePerm.
+func (mr *MockStoreMockRecorder) DeletePerm(ctx, p interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeletePerm", reflect.TypeOf((*MockStore)(nil).DeletePerm), ctx, p)
+}
+
 // DeletePermsOfUserLessThanSyncedAt mocks base method.
 func (m *MockStore) DeletePermsOfUserLessThanSyncedAt(ctx context.Context, u *ent.User, t time.Time) (int, error) {
 	m.ctrl.T.Helper()
@@ -769,6 +783,21 @@ func (mr *MockStoreMockRecorder) ListLocksOfRepo(ctx, r interface{}) *gomock.Cal
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListLocksOfRepo", reflect.TypeOf((*MockStore)(nil).ListLocksOfRepo), ctx, r)
 }
 
+// ListPerms mocks base method.
+func (m *MockStore) ListPerms(ctx context.Context, opt *interactor.ListOptions) ([]*ent.Perm, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListPerms", ctx, opt)
+	ret0, _ := ret[0].([]*ent.Perm)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListPerms indicates an expected call of ListPerms.
+func (mr *MockStoreMockRecorder) ListPerms(ctx, opt interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListPerms", reflect.TypeOf((*MockStore)(nil).ListPerms), ctx, opt)
+}
+
 // ListPermsOfRepo mocks base method.
 func (m *MockStore) ListPermsOfRepo(ctx context.Context, r *ent.Repo, opt *interactor.ListPermsOfRepoOptions) ([]*ent.Perm, error) {
 	m.ctrl.T.Helper()
@@ -992,104 +1021,6 @@ func (m *MockStore) UpdateUser(ctx context.Context, u *ent.User) (*ent.User, err
 func (mr *MockStoreMockRecorder) UpdateUser(ctx, u interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateUser", reflect.TypeOf((*MockStore)(nil).UpdateUser), ctx, u)
-}
-
-// MockPermStore is a mock of PermStore interface.
-type MockPermStore struct {
-	ctrl     *gomock.Controller
-	recorder *MockPermStoreMockRecorder
-}
-
-// MockPermStoreMockRecorder is the mock recorder for MockPermStore.
-type MockPermStoreMockRecorder struct {
-	mock *MockPermStore
-}
-
-// NewMockPermStore creates a new mock instance.
-func NewMockPermStore(ctrl *gomock.Controller) *MockPermStore {
-	mock := &MockPermStore{ctrl: ctrl}
-	mock.recorder = &MockPermStoreMockRecorder{mock}
-	return mock
-}
-
-// EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockPermStore) EXPECT() *MockPermStoreMockRecorder {
-	return m.recorder
-}
-
-// CreatePerm mocks base method.
-func (m *MockPermStore) CreatePerm(ctx context.Context, p *ent.Perm) (*ent.Perm, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreatePerm", ctx, p)
-	ret0, _ := ret[0].(*ent.Perm)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// CreatePerm indicates an expected call of CreatePerm.
-func (mr *MockPermStoreMockRecorder) CreatePerm(ctx, p interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreatePerm", reflect.TypeOf((*MockPermStore)(nil).CreatePerm), ctx, p)
-}
-
-// DeletePermsOfUserLessThanSyncedAt mocks base method.
-func (m *MockPermStore) DeletePermsOfUserLessThanSyncedAt(ctx context.Context, u *ent.User, t time.Time) (int, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "DeletePermsOfUserLessThanSyncedAt", ctx, u, t)
-	ret0, _ := ret[0].(int)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// DeletePermsOfUserLessThanSyncedAt indicates an expected call of DeletePermsOfUserLessThanSyncedAt.
-func (mr *MockPermStoreMockRecorder) DeletePermsOfUserLessThanSyncedAt(ctx, u, t interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeletePermsOfUserLessThanSyncedAt", reflect.TypeOf((*MockPermStore)(nil).DeletePermsOfUserLessThanSyncedAt), ctx, u, t)
-}
-
-// FindPermOfRepo mocks base method.
-func (m *MockPermStore) FindPermOfRepo(ctx context.Context, r *ent.Repo, u *ent.User) (*ent.Perm, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FindPermOfRepo", ctx, r, u)
-	ret0, _ := ret[0].(*ent.Perm)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// FindPermOfRepo indicates an expected call of FindPermOfRepo.
-func (mr *MockPermStoreMockRecorder) FindPermOfRepo(ctx, r, u interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindPermOfRepo", reflect.TypeOf((*MockPermStore)(nil).FindPermOfRepo), ctx, r, u)
-}
-
-// ListPermsOfRepo mocks base method.
-func (m *MockPermStore) ListPermsOfRepo(ctx context.Context, r *ent.Repo, opt *interactor.ListPermsOfRepoOptions) ([]*ent.Perm, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListPermsOfRepo", ctx, r, opt)
-	ret0, _ := ret[0].([]*ent.Perm)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// ListPermsOfRepo indicates an expected call of ListPermsOfRepo.
-func (mr *MockPermStoreMockRecorder) ListPermsOfRepo(ctx, r, opt interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListPermsOfRepo", reflect.TypeOf((*MockPermStore)(nil).ListPermsOfRepo), ctx, r, opt)
-}
-
-// UpdatePerm mocks base method.
-func (m *MockPermStore) UpdatePerm(ctx context.Context, p *ent.Perm) (*ent.Perm, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UpdatePerm", ctx, p)
-	ret0, _ := ret[0].(*ent.Perm)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// UpdatePerm indicates an expected call of UpdatePerm.
-func (mr *MockPermStoreMockRecorder) UpdatePerm(ctx, p interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdatePerm", reflect.TypeOf((*MockPermStore)(nil).UpdatePerm), ctx, p)
 }
 
 // MockDeploymentStatusStore is a mock of DeploymentStatusStore interface.

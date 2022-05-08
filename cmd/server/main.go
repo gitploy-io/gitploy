@@ -131,7 +131,7 @@ func newChatConfig(c *Config) *server.ChatConfig {
 }
 
 func NewInteractor(c *Config) server.Interactor {
-	return interactor.NewInteractor(
+	i := interactor.NewInteractor(
 		&interactor.InteractorConfig{
 			// Server Configurations:
 			ServerHost:       c.ServerHost,
@@ -150,6 +150,10 @@ func NewInteractor(c *Config) server.Interactor {
 			SCM:        newSCM(c),
 		},
 	)
+
+	i.Init()
+
+	return i
 }
 
 func newStore(c *Config) interactor.Store {
