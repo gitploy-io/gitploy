@@ -17,6 +17,8 @@ func (s *Store) ListPerms(ctx context.Context, opt *i.ListOptions) ([]*ent.Perm,
 	return s.c.Perm.Query().
 		Limit(opt.PerPage).
 		Offset(offset(opt.Page, opt.PerPage)).
+		WithRepo().
+		WithUser().
 		All(ctx)
 }
 

@@ -47,7 +47,12 @@ func (i *PermInteractor) ResyncPerms(ctx context.Context) error {
 		}
 
 		for _, p := range perms {
-			if p.Edges.Repo != nil && i.matchOrg(p.Edges.Repo.Namespace) {
+			if p.Edges.Repo == nil {
+				i.log.Warn("Failed to eager loading for the perm.", zap.Int("perm_id", p.ID))
+				continue
+			}
+
+			if i.matchOrg(p.Edges.Repo.Namespace) {
 				continue
 			}
 
