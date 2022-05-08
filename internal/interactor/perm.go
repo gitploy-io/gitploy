@@ -34,6 +34,11 @@ type PermInteractor struct {
 
 // ResyncPerms delete all permissions not included in the organization entries.
 func (i *PermInteractor) ResyncPerms(ctx context.Context) error {
+	if i.orgEntries == nil {
+		i.log.Debug("Skip to resync perms, the organization entries is emtpy.")
+		return nil
+	}
+
 	const perPage = 100
 
 	page := 1
