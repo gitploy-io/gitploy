@@ -29,6 +29,8 @@ func (s *Store) FindDeploymentStatusByID(ctx context.Context, id int) (*ent.Depl
 		Only(ctx)
 	if ent.IsNotFound(err) {
 		return nil, e.NewError(e.ErrorCodeEntityNotFound, err)
+	} else if err != nil {
+		return nil, e.NewErrorWithMessage(e.ErrorCodeInternalError, "Failed to find deployment status.", err)
 	}
 
 	return ds, nil
