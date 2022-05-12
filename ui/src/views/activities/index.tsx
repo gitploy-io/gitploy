@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { shallowEqual } from 'react-redux';
 import { Helmet } from 'react-helmet';
 
@@ -38,19 +38,39 @@ export default (): JSX.Element => {
     // eslint-disable-next-line
   }, [dispatch]);
 
-  const onClickSearch = (values: SearchActivitiesValues) => {
+  const [searchOptions, setSearchOptions] = useState<SearchActivitiesValues>(
+    {}
+  );
+
+  const search = () =>
     dispatch(
       searchDeployments({
-        start: values.period ? values.period[0].toDate() : undefined,
-        end: values.period ? values.period[1].toDate() : undefined,
-        productionOnly: values.productionOnly ? values.productionOnly : false,
+        start: searchOptions.period
+          ? searchOptions.period[0].toDate()
+          : undefined,
+        end: searchOptions.period
+          ? searchOptions.period[1].toDate()
+          : undefined,
+        productionOnly: searchOptions.productionOnly
+          ? searchOptions.productionOnly
+          : false,
       })
     );
+
+  const onClickSearch = (values: SearchActivitiesValues) => {
+    setSearchOptions(values);
+    search();
   };
 
-  const onClickPrev = () => dispatch(actions.decreasePage());
+  const onClickPrev = () => {
+    dispatch(actions.decreasePage());
+    search();
+  };
 
-  const onClickNext = () => dispatch(actions.increasePage());
+  const onClickNext = () => {
+    dispatch(actions.increasePage());
+    search();
+  };
 
   return (
     <Main>
