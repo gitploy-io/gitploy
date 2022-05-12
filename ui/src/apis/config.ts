@@ -1,46 +1,12 @@
+import camelcaseKeys from 'camelcase-keys';
 import { StatusCodes } from 'http-status-codes';
 
 import { instance, headers } from './setting';
 import { _fetch } from './_base';
-import { Config, Env, HttpNotFoundError } from '../models';
+import { Config, HttpNotFoundError } from '../models';
 
-interface ConfigData {
-  envs: EnvData[];
-}
-
-interface EnvData {
-  name: string;
-  required_contexts?: string[];
-  dynamic_payload?: {
-    enabled: boolean;
-    inputs: any;
-  };
-  review?: {
-    enabled: boolean;
-    reviewers: string[];
-  };
-}
-
-const mapDataToConfig = (data: ConfigData): Config => {
-  const envs: Env[] = data.envs.map((e: EnvData) => {
-    const { dynamic_payload, review } = e;
-
-    return {
-      name: e.name,
-      requiredContexts: e.required_contexts,
-      dynamicPayload: dynamic_payload
-        ? {
-            enabled: dynamic_payload?.enabled,
-            inputs: dynamic_payload?.inputs,
-          }
-        : undefined,
-      review,
-    };
-  });
-
-  return {
-    envs,
-  };
+const mapDataToConfig = (data: any): Config => {
+  return camelcaseKeys(data, { deep: true });
 };
 
 export const getConfig = async (

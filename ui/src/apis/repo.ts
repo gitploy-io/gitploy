@@ -1,3 +1,4 @@
+import camelcaseKeys from 'camelcase-keys';
 import { StatusCodes } from 'http-status-codes';
 
 import { instance, headers } from './setting';
@@ -7,7 +8,6 @@ import { DeploymentData, mapDataToDeployment } from './deployment';
 import {
   Repo,
   HttpForbiddenError,
-  Deployment,
   HttpUnprocessableEntityError,
 } from '../models';
 
@@ -27,28 +27,19 @@ export interface RepoData {
   };
 }
 
-// eslint-disable-next-line
-export const mapDataToRepo = (data: RepoData): Repo => {
-  let deployments: Deployment[] | undefined;
+export const mapDataToRepo = (data: any): Repo => {
+  const repo: Repo = camelcaseKeys(data);
 
-  if (typeof data.edges.deployments !== 'undefined') {
-    deployments = data.edges.deployments.map((data) =>
+  repo.createdAt = new Date(data.created_at);
+  repo.updatedAt = new Date(data.updated_at);
+
+  if ('deployments' in data.edges) {
+    repo.deployments = data.edges.deployments.map((data) =>
       mapDataToDeployment(data)
     );
   }
 
-  return {
-    id: data.id,
-    namespace: data.namespace,
-    name: data.name,
-    description: data.description,
-    configPath: data.config_path,
-    active: data.active,
-    webhookId: data.webhook_id,
-    createdAt: new Date(data.created_at),
-    updatedAt: new Date(data.updated_at),
-    deployments,
-  };
+  return repo;
 };
 
 export const listRepos = async (

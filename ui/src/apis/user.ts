@@ -1,8 +1,9 @@
+import camelcaseKeys from 'camelcase-keys';
 import { StatusCodes } from 'http-status-codes';
 
 import { _fetch } from './_base';
 import { instance, headers } from './setting';
-import { User, ChatUser, RateLimit, HttpForbiddenError } from '../models';
+import { User, RateLimit, HttpForbiddenError } from '../models';
 
 export interface UserData {
   id: number;
@@ -29,30 +30,23 @@ interface RateLimitData {
   reset: string;
 }
 
-export const mapDataToUser = (data: UserData): User => {
-  let cu: ChatUser | null;
-  if (data.edges.chat_user) {
-    const chat_user = data.edges.chat_user;
+export const mapDataToUser = (data: any): User => {
+  const user: User = camelcaseKeys(data);
 
-    cu = {
-      id: chat_user.id,
-      createdAt: new Date(chat_user.created_at),
-      updatedAt: new Date(chat_user.updated_at),
+  user.createdAt = new Date(data.created_at);
+  user.updatedAt = new Date(data.updated_at);
+
+  if ('chat_user' in data.edges) {
+    const { chatUserData } = data.edges;
+
+    user.chatUser = {
+      id: chatUserData.id,
+      createdAt: new Date(chatUserData.created_at),
+      updatedAt: new Date(chatUserData.updated_at),
     };
-  } else {
-    cu = null;
   }
 
-  return {
-    id: data.id,
-    login: data.login,
-    avatar: data.avatar,
-    admin: data.admin,
-    hash: data.hash,
-    createdAt: new Date(data.created_at),
-    updatedAt: new Date(data.updated_at),
-    chatUser: cu,
-  };
+  return user;
 };
 
 export const mapDataToRateLimit = (data: RateLimitData): RateLimit => {

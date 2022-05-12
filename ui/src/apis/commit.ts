@@ -1,61 +1,24 @@
+import camelcaseKeys from 'camelcase-keys';
 import { StatusCodes } from 'http-status-codes';
 
 import { instance, headers } from './setting';
 import { _fetch } from './_base';
-import {
-  Commit,
-  Author,
-  Status,
-  HttpNotFoundError,
-  StatusState,
-} from '../models';
+import { Commit, Status, HttpNotFoundError, StatusState } from '../models';
 
-interface CommitData {
-  sha: string;
-  message: string;
-  is_pull_request: boolean;
-  html_url: string;
-  author?: {
-    login: string;
-    avatar_url: string;
-    date: string;
-  };
-}
+export const mapDataToCommit = (data: any): Commit => {
+  const commit: Commit = camelcaseKeys(data, { deep: true });
 
-export const mapDataToCommit = (data: CommitData): Commit => {
-  let author: Author | undefined;
-
-  if (data.author) {
-    author = {
-      login: data.author.login,
-      avatarUrl: data.author.avatar_url,
-      date: new Date(data.author.date),
-    };
+  if (commit.author) {
+    // Convert the type of date field.
+    commit.author.date = new Date(data.author.date);
   }
 
-  return {
-    sha: data.sha,
-    message: data.message,
-    isPullRequest: data.is_pull_request,
-    htmlUrl: data.html_url,
-    author,
-  };
+  return commit;
 };
 
-interface StatusData {
-  context: string;
-  avatar_url: string;
-  target_url: string;
-  state: string;
-}
-
-const mapDataToStatus = (data: StatusData): Status => {
-  return {
-    context: data.context,
-    avatarUrl: data.avatar_url,
-    targetUrl: data.target_url,
-    state: mapStatusState(data.state),
-  };
+const mapDataToStatus = (data: any): Status => {
+  const status = camelcaseKeys(data, { deep: true });
+  return status;
 };
 
 const mapStatusState = (state: string): StatusState => {
@@ -90,7 +53,7 @@ export const listCommits = async (
     }
   )
     .then((response) => response.json())
-    .then((commits) => commits.map((c: CommitData) => mapDataToCommit(c)));
+    .then((commits) => commits.map((c: any) => mapDataToCommit(c)));
 
   return commits;
 };
@@ -114,7 +77,7 @@ export const getCommit = async (
 
   const commit: Commit = await response
     .json()
-    .then((c: CommitData) => mapDataToCommit(c));
+    .then((c: any) => mapDataToCommit(c));
 
   return commit;
 };
@@ -138,7 +101,7 @@ export const listStatuses = async (
 
   const result = await response.json().then((d) => {
     let state: StatusState;
-    const statuses: Status[] = d.statuses.map((status: StatusData) =>
+    const statuses: Status[] = d.statuses.map((status: any) =>
       mapDataToStatus(status)
     );
 

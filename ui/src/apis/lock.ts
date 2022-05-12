@@ -1,40 +1,27 @@
+import camelcaseKeys from 'camelcase-keys';
 import { StatusCodes } from 'http-status-codes';
 
 import { instance, headers } from './setting';
 import { _fetch } from './_base';
-import { UserData, mapDataToUser } from './user';
+import { mapDataToUser } from './user';
 import {
   Lock,
-  User,
   HttpForbiddenError,
   HttpNotFoundError,
   HttpUnprocessableEntityError,
 } from '../models';
 
-interface LockData {
-  id: number;
-  env: string;
-  expired_at?: string;
-  created_at: string;
-  edges: {
-    user?: UserData;
-  };
-}
+const mapDataToLock = (data: any): Lock => {
+  const lock: Lock = camelcaseKeys(data);
 
-const mapDataToLock = (data: LockData): Lock => {
-  let user: User | undefined;
+  lock.expiredAt = data.expired_at ? new Date(data.expired_at) : undefined;
+  lock.createdAt = new Date(data.created_at);
 
-  if (data.edges.user) {
-    user = mapDataToUser(data.edges.user);
+  if ('user' in data.edges) {
+    lock.user = mapDataToUser(data.edges.user);
   }
 
-  return {
-    id: data.id,
-    env: data.env,
-    expiredAt: data.expired_at ? new Date(data.expired_at) : undefined,
-    createdAt: new Date(data.created_at),
-    user,
-  };
+  return lock;
 };
 
 export const listLocks = async (

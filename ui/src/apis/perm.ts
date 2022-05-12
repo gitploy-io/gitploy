@@ -1,29 +1,22 @@
+import camelcaseKeys from 'camelcase-keys';
 import { instance, headers } from './setting';
 import { _fetch } from './_base';
-import { mapDataToUser, UserData } from './user';
-import { mapDataToRepo, RepoData } from './repo';
+import { mapDataToUser } from './user';
+import { mapDataToRepo } from './repo';
 import { Perm } from '../models';
 
-interface PermData {
-  repo_perm: string;
-  synced_at: string;
-  created_at: string;
-  updated_at: string;
-  edges: {
-    user: UserData;
-    repo: RepoData;
-  };
-}
+const mapDataToPerm = (data: any): Perm => {
+  const perm: Perm = camelcaseKeys(data);
 
-const mapDataToPerm = (data: PermData): Perm => {
-  return {
-    repoPerm: data.repo_perm,
-    syncedAt: new Date(data.synced_at),
-    createdAt: new Date(data.created_at),
-    updatedAt: new Date(data.updated_at),
-    user: mapDataToUser(data.edges.user),
-    repo: mapDataToRepo(data.edges.repo),
-  };
+  perm.syncedAt = new Date(data.synced_at);
+  perm.createdAt = new Date(data.created_at);
+  perm.updatedAt = new Date(data.updated_at);
+
+  // Edges
+  perm.user = mapDataToUser(data.edges.user);
+  perm.repo = mapDataToRepo(data.edges.repo);
+
+  return perm;
 };
 
 export const listPerms = async (

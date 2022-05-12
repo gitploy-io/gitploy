@@ -1,19 +1,13 @@
+import camelcaseKeys from 'camelcase-keys';
 import { StatusCodes } from 'http-status-codes';
 
 import { instance, headers } from './setting';
 import { _fetch } from './_base';
 import { Branch, HttpNotFoundError } from '../models';
 
-interface BranchData {
-  name: string;
-  commit_sha: string;
-}
-
-const mapDataToBranch = (data: BranchData): Branch => {
-  return {
-    name: data.name,
-    commitSha: data.commit_sha,
-  };
+const mapDataToBranch = (data: any): Branch => {
+  const branch = camelcaseKeys(data, { deep: true });
+  return branch;
 };
 
 export const listBranches = async (
@@ -30,7 +24,7 @@ export const listBranches = async (
     }
   )
     .then((response) => response.json())
-    .then((branches) => branches.map((b: BranchData) => mapDataToBranch(b)));
+    .then((branches) => branches.map((b: any) => mapDataToBranch(b)));
 
   return branches;
 };
@@ -54,7 +48,7 @@ export const getBranch = async (
 
   const ret: Branch = await response
     .json()
-    .then((b: BranchData) => mapDataToBranch(b));
+    .then((b: any) => mapDataToBranch(b));
 
   return ret;
 };

@@ -1,22 +1,15 @@
+import camelcaseKeys from 'camelcase-keys';
 import { instance, headers } from './setting';
 import { _fetch } from './_base';
 
 import { License } from '../models';
 
-interface LicenseData {
-  kind: string;
-  member_count: number;
-  member_limit: number;
-  expired_at: string;
-}
+function mapDataToLicense(data: any): License {
+  const license: License = camelcaseKeys(data);
 
-function mapDataToLicense(data: LicenseData): License {
-  return {
-    kind: data.kind,
-    memberCount: data.member_count,
-    memberLimit: data.member_limit,
-    expiredAt: new Date(data.expired_at),
-  };
+  license.expiredAt = new Date(data.expired_at);
+
+  return license;
 }
 
 export const getLicense = async (): Promise<License> => {
