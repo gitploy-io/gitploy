@@ -1,66 +1,35 @@
+import camelcaseKeys from 'camelcase-keys';
 import { StatusCodes } from 'http-status-codes';
 
 import { _fetch } from './_base';
 import { instance, headers } from './setting';
-import { User, ChatUser, RateLimit, HttpForbiddenError } from '../models';
+import { User, RateLimit, HttpForbiddenError } from '../models';
 
-export interface UserData {
-  id: number;
-  login: string;
-  avatar: string;
-  admin: boolean;
-  hash?: string;
-  created_at: string;
-  updated_at: string;
-  edges: {
-    chat_user: ChatUserData;
-  };
-}
+export const mapDataToUser = (data: any): User => {
+  const user: User = camelcaseKeys(data);
 
-interface ChatUserData {
-  id: string;
-  created_at: string;
-  updated_at: string;
-}
+  user.createdAt = new Date(data.created_at);
+  user.updatedAt = new Date(data.updated_at);
 
-interface RateLimitData {
-  limit: number;
-  remaining: number;
-  reset: string;
-}
+  if ('chat_user' in data.edges) {
+    const { chat_user } = data.edges;
 
-export const mapDataToUser = (data: UserData): User => {
-  let cu: ChatUser | null;
-  if (data.edges.chat_user) {
-    const chat_user = data.edges.chat_user;
-
-    cu = {
+    user.chatUser = {
       id: chat_user.id,
       createdAt: new Date(chat_user.created_at),
       updatedAt: new Date(chat_user.updated_at),
     };
-  } else {
-    cu = null;
   }
 
-  return {
-    id: data.id,
-    login: data.login,
-    avatar: data.avatar,
-    admin: data.admin,
-    hash: data.hash,
-    createdAt: new Date(data.created_at),
-    updatedAt: new Date(data.updated_at),
-    chatUser: cu,
-  };
+  return user;
 };
 
-export const mapDataToRateLimit = (data: RateLimitData): RateLimit => {
-  return {
-    limit: data.limit,
-    remaining: data.remaining,
-    reset: new Date(data.reset),
-  };
+export const mapDataToRateLimit = (data: any): RateLimit => {
+  const rateLimit = camelcaseKeys(data);
+
+  rateLimit.reset = new Date(data.reset);
+
+  return rateLimit;
 };
 
 /**
@@ -85,7 +54,7 @@ export const listUsers = async (
 
   const users = await res
     .json()
-    .then((data: UserData[]) => data.map((d) => mapDataToUser(d)));
+    .then((data: any[]) => data.map((d) => mapDataToUser(d)));
 
   return users;
 };
@@ -105,9 +74,7 @@ export const updateUser = async (
     throw new HttpForbiddenError(message);
   }
 
-  const user: User = await res
-    .json()
-    .then((data: UserData) => mapDataToUser(data));
+  const user: User = await res.json().then((data: any) => mapDataToUser(data));
 
   return user;
 };

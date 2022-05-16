@@ -1,64 +1,27 @@
+import camelcaseKeys from 'camelcase-keys';
 import { StatusCodes } from 'http-status-codes';
 
 import { instance, headers } from './setting';
 import { _fetch } from './_base';
-import { UserData, mapDataToUser } from './user';
-import { DeploymentData, mapDataToDeployment } from './deployment';
-import {
-  User,
-  Deployment,
-  Review,
-  ReviewStatusEnum,
-  HttpNotFoundError,
-} from '../models';
+import { mapDataToUser } from './user';
+import { mapDataToDeployment } from './deployment';
+import { Review, HttpNotFoundError } from '../models';
 
-export interface ReviewData {
-  id: number;
-  status: string;
-  comment: string;
-  created_at: string;
-  updated_at: string;
-  edges: {
-    user: UserData;
-    deployment: DeploymentData;
-  };
-}
+export const mapDataToReview = (data: any): Review => {
+  const review: Review = camelcaseKeys(data);
 
-// eslint-disable-next-line
-export const mapDataToReview = (data: ReviewData): Review => {
-  let user: User | undefined;
-  let deployment: Deployment | undefined;
+  review.createdAt = new Date(data.created_at);
+  review.updatedAt = new Date(data.updated_at);
 
   if ('user' in data.edges) {
-    user = mapDataToUser(data.edges.user);
+    review.user = mapDataToUser(data.edges.user);
   }
 
   if ('deployment' in data.edges) {
-    deployment = mapDataToDeployment(data.edges.deployment);
+    review.deployment = mapDataToDeployment(data.edges.deployment);
   }
 
-  return {
-    id: data.id,
-    status: mapDataToReviewStatus(data.status),
-    comment: data.comment,
-    createdAt: new Date(data.created_at),
-    updatedAt: new Date(data.updated_at),
-    user,
-    deployment,
-  };
-};
-
-const mapDataToReviewStatus = (status: string): ReviewStatusEnum => {
-  switch (status) {
-    case 'pending':
-      return ReviewStatusEnum.Pending;
-    case 'approved':
-      return ReviewStatusEnum.Approved;
-    case 'rejected':
-      return ReviewStatusEnum.Rejected;
-    default:
-      return ReviewStatusEnum.Pending;
-  }
+  return review;
 };
 
 export const searchReviews = async (): Promise<Review[]> => {

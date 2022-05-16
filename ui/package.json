@@ -9,6 +9,7 @@
     "@testing-library/react": "^11.2.7",
     "@testing-library/user-event": "^12.8.3",
     "antd": "^4.16.1",
+    "camelcase-keys": "^7.0.2",
     "craco-less": "^1.17.1",
     "follow-redirects": "^1.14.7",
     "http-status-codes": "^2.1.4",

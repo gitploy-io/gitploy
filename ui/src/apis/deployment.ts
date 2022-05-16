@@ -1,10 +1,9 @@
+import camelcaseKeys from 'camelcase-keys';
 import { StatusCodes } from 'http-status-codes';
 
 import { instance, headers } from './setting';
 import { _fetch } from './_base';
 import {
-  User,
-  Repo,
   Deployment,
   DeploymentType,
   DeploymentStatus,
@@ -14,128 +13,48 @@ import {
   HttpForbiddenError,
   HttpConflictError,
 } from '../models';
-import { UserData, mapDataToUser } from './user';
-import { RepoData, mapDataToRepo } from './repo';
+import { mapDataToUser } from './user';
+import { mapDataToRepo } from './repo';
 import { mapDataToCommit } from './commit';
 
-export interface DeploymentData {
-  id: number;
-  number: number;
-  type: string;
-  ref: string;
-  sha: string;
-  env: string;
-  status: string;
-  uid: number;
-  is_rollback: boolean;
-  auto_deploy: boolean;
-  created_at: string;
-  updated_at: string;
-  edges: {
-    user?: UserData;
-    repo?: RepoData;
-    deployment_statuses?: DeploymentStatusData[];
-  };
-}
+export const mapDataToDeployment = (data: any): Deployment => {
+  const deployment: Deployment = camelcaseKeys(data);
 
-interface DeploymentStatusData {
-  id: number;
-  status: string;
-  description: string;
-  log_url: string;
-  created_at: string;
-  updated_at: string;
-}
+  // Convert the time string into Date.
+  deployment.createdAt = new Date(data.created_at);
+  deployment.updatedAt = new Date(data.updated_at);
 
-export const mapDataToDeployment = (data: DeploymentData): Deployment => {
-  let deployer: User | undefined;
-  let repo: Repo | undefined;
-  let statuses: DeploymentStatus[] = [];
-
-  if (typeof data.edges.user !== 'undefined') {
-    deployer = mapDataToUser(data.edges.user);
+  if ('user' in data.edges) {
+    deployment.deployer = mapDataToUser(data.edges.user);
   }
 
-  if (typeof data.edges.repo !== 'undefined') {
-    repo = mapDataToRepo(data.edges.repo);
+  if ('repo' in data.edges) {
+    deployment.repo = mapDataToRepo(data.edges.repo);
   }
 
-  if (typeof data.edges.deployment_statuses !== 'undefined') {
-    statuses = data.edges.deployment_statuses.map((data: any) =>
+  if ('deployment_statuses' in data.edges) {
+    deployment.statuses = data.edges.deployment_statuses.map((data: any) =>
       mapDataToDeploymentStatus(data)
     );
   }
 
-  return {
-    id: data.id,
-    number: data.number,
-    type: mapDeploymentType(data.type),
-    ref: data.ref,
-    sha: data.sha,
-    env: data.env,
-    status: mapDeploymentStatusEnum(data.status),
-    uid: data.uid,
-    isRollback: data.is_rollback,
-    createdAt: new Date(data.created_at),
-    updatedAt: new Date(data.updated_at),
-    deployer,
-    repo,
-    statuses,
-  };
+  return deployment;
 };
 
-function mapDeploymentType(t: string) {
-  switch (t) {
-    case 'commit':
-      return DeploymentType.Commit;
-    case 'branch':
-      return DeploymentType.Branch;
-    case 'tag':
-      return DeploymentType.Tag;
-    default:
-      return DeploymentType.Commit;
-  }
-}
-
-function mapDeploymentStatusEnum(s: string) {
-  switch (s) {
-    case 'waiting':
-      return DeploymentStatusEnum.Waiting;
-    case 'created':
-      return DeploymentStatusEnum.Created;
-    case 'queued':
-      return DeploymentStatusEnum.Queued;
-    case 'running':
-      return DeploymentStatusEnum.Running;
-    case 'success':
-      return DeploymentStatusEnum.Success;
-    case 'failure':
-      return DeploymentStatusEnum.Failure;
-    case 'canceled':
-      return DeploymentStatusEnum.Canceled;
-    default:
-      return DeploymentStatusEnum.Waiting;
-  }
-}
-
-// eslint-disable-next-line
 export function mapDataToDeploymentStatus(data: any): DeploymentStatus {
-  return {
-    id: data.id,
-    status: data.status,
-    description: data.description,
-    logUrl: data.log_url,
-    createdAt: data.created_at,
-    updatedAt: data.updated_at,
-    deploymentId: data.deployment_id,
-    repoId: data.repo_id,
-    edges: {
-      deployment: data.edges.deployment
-        ? mapDataToDeployment(data.edges.deployment)
-        : undefined,
-      repo: data.edges.repo ? mapDataToRepo(data.edges.repo) : undefined,
-    },
-  };
+  const deploymentStatus = camelcaseKeys(data, { deep: true });
+
+  if ('deployment' in data.edges) {
+    deploymentStatus.edges.deployment = mapDataToDeployment(
+      data.edges.deployment
+    );
+  }
+
+  if ('repo' in data.edges) {
+    deploymentStatus.edges.repo = mapDataToRepo(data.edges.repo);
+  }
+
+  return deploymentStatus;
 }
 
 function mapDeploymentStatusToString(status: DeploymentStatusEnum): string {
