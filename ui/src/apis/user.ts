@@ -37,24 +37,24 @@ export const mapDataToUser = (data: any): User => {
   user.updatedAt = new Date(data.updated_at);
 
   if ('chat_user' in data.edges) {
-    const { chatUserData } = data.edges;
+    const { chat_user } = data.edges;
 
     user.chatUser = {
-      id: chatUserData.id,
-      createdAt: new Date(chatUserData.created_at),
-      updatedAt: new Date(chatUserData.updated_at),
+      id: chat_user.id,
+      createdAt: new Date(chat_user.created_at),
+      updatedAt: new Date(chat_user.updated_at),
     };
   }
 
   return user;
 };
 
-export const mapDataToRateLimit = (data: RateLimitData): RateLimit => {
-  return {
-    limit: data.limit,
-    remaining: data.remaining,
-    reset: new Date(data.reset),
-  };
+export const mapDataToRateLimit = (data: any): RateLimit => {
+  const rateLimit = camelcaseKeys(data);
+
+  rateLimit.reset = new Date(data.reset);
+
+  return rateLimit;
 };
 
 /**

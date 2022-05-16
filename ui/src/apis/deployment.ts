@@ -13,38 +13,9 @@ import {
   HttpForbiddenError,
   HttpConflictError,
 } from '../models';
-import { UserData, mapDataToUser } from './user';
-import { RepoData, mapDataToRepo } from './repo';
+import { mapDataToUser } from './user';
+import { mapDataToRepo } from './repo';
 import { mapDataToCommit } from './commit';
-
-export interface DeploymentData {
-  id: number;
-  number: number;
-  type: string;
-  ref: string;
-  sha: string;
-  env: string;
-  status: string;
-  uid: number;
-  is_rollback: boolean;
-  auto_deploy: boolean;
-  created_at: string;
-  updated_at: string;
-  edges: {
-    user?: UserData;
-    repo?: RepoData;
-    deployment_statuses?: DeploymentStatusData[];
-  };
-}
-
-interface DeploymentStatusData {
-  id: number;
-  status: string;
-  description: string;
-  log_url: string;
-  created_at: string;
-  updated_at: string;
-}
 
 export const mapDataToDeployment = (data: any): Deployment => {
   const deployment: Deployment = camelcaseKeys(data);

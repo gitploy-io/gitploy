@@ -3,29 +3,13 @@ import { StatusCodes } from 'http-status-codes';
 
 import { instance, headers } from './setting';
 import { _fetch } from './_base';
-import { DeploymentData, mapDataToDeployment } from './deployment';
+import { mapDataToDeployment } from './deployment';
 
 import {
   Repo,
   HttpForbiddenError,
   HttpUnprocessableEntityError,
 } from '../models';
-
-export interface RepoData {
-  id: number;
-  namespace: string;
-  name: string;
-  description: string;
-  config_path: string;
-  active: boolean;
-  webhook_id: number;
-  locked: boolean;
-  created_at: string;
-  updated_at: string;
-  edges: {
-    deployments?: DeploymentData[];
-  };
-}
 
 export const mapDataToRepo = (data: any): Repo => {
   const repo: Repo = camelcaseKeys(data);
