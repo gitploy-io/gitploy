@@ -5,31 +5,6 @@ import { _fetch } from './_base';
 import { instance, headers } from './setting';
 import { User, RateLimit, HttpForbiddenError } from '../models';
 
-export interface UserData {
-  id: number;
-  login: string;
-  avatar: string;
-  admin: boolean;
-  hash?: string;
-  created_at: string;
-  updated_at: string;
-  edges: {
-    chat_user: ChatUserData;
-  };
-}
-
-interface ChatUserData {
-  id: string;
-  created_at: string;
-  updated_at: string;
-}
-
-interface RateLimitData {
-  limit: number;
-  remaining: number;
-  reset: string;
-}
-
 export const mapDataToUser = (data: any): User => {
   const user: User = camelcaseKeys(data);
 
@@ -79,7 +54,7 @@ export const listUsers = async (
 
   const users = await res
     .json()
-    .then((data: UserData[]) => data.map((d) => mapDataToUser(d)));
+    .then((data: any[]) => data.map((d) => mapDataToUser(d)));
 
   return users;
 };
@@ -99,9 +74,7 @@ export const updateUser = async (
     throw new HttpForbiddenError(message);
   }
 
-  const user: User = await res
-    .json()
-    .then((data: UserData) => mapDataToUser(data));
+  const user: User = await res.json().then((data: any) => mapDataToUser(data));
 
   return user;
 };
