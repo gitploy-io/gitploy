@@ -25,7 +25,7 @@ require (
 	github.com/shurcooL/githubv4 v0.0.0-20201206200315-234843c633fa
 	github.com/slack-go/slack v0.10.3
 	github.com/tidwall/gjson v1.14.1
-	github.com/urfave/cli/v2 v2.6.0
+	github.com/urfave/cli/v2 v2.7.1
 	go.uber.org/zap v1.21.0
 	golang.org/x/oauth2 v0.0.0-20220309155454-6242fa91716a
 	gopkg.in/h2non/gock.v1 v1.1.2
@@ -35,6 +35,7 @@ require (
 require (
 	ariga.io/atlas v0.3.7-0.20220303204946-787354f533c3 // indirect
 	github.com/agext/levenshtein v1.2.1 // indirect
+	github.com/antzucaro/matchr v0.0.0-20210222213004-b04723ef80f0 // indirect
 	github.com/apparentlymart/go-textseg/v13 v13.0.0 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
