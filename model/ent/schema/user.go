@@ -51,9 +51,21 @@ func (User) Edges() []ent.Edge {
 			Annotations(entsql.Annotation{
 				OnDelete: entsql.Cascade,
 			}),
-		edge.To("deployments", Deployment.Type),
-		edge.To("reviews", Review.Type),
-		edge.To("locks", Lock.Type),
-		edge.To("repos", Repo.Type),
+		edge.To("deployments", Deployment.Type).
+			Annotations(entsql.Annotation{
+				OnDelete: entsql.SetNull,
+			}),
+		edge.To("reviews", Review.Type).
+			Annotations(entsql.Annotation{
+				OnDelete: entsql.SetNull,
+			}),
+		edge.To("locks", Lock.Type).
+			Annotations(entsql.Annotation{
+				OnDelete: entsql.Cascade,
+			}),
+		edge.To("repos", Repo.Type).
+			Annotations(entsql.Annotation{
+				OnDelete: entsql.SetNull,
+			}),
 	}
 }

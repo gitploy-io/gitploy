@@ -58,7 +58,8 @@ func (Deployment) Fields() []ent.Field {
 			Default(nowUTC).
 			UpdateDefault(nowUTC),
 		// Edges
-		field.Int64("user_id"),
+		field.Int64("user_id").
+			Optional(),
 		field.Int64("repo_id"),
 
 		// Deprecated fields.
