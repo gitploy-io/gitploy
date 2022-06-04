@@ -52,7 +52,7 @@ var (
 		{Name: "is_approval_enabled", Type: field.TypeBool, Nullable: true},
 		{Name: "required_approval_count", Type: field.TypeInt, Nullable: true},
 		{Name: "repo_id", Type: field.TypeInt64},
-		{Name: "user_id", Type: field.TypeInt64},
+		{Name: "user_id", Type: field.TypeInt64, Nullable: true},
 	}
 	// DeploymentsTable holds the schema information for the "deployments" table.
 	DeploymentsTable = &schema.Table{
@@ -70,7 +70,7 @@ var (
 				Symbol:     "deployments_users_deployments",
 				Columns:    []*schema.Column{DeploymentsColumns[17]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
-				OnDelete:   schema.NoAction,
+				OnDelete:   schema.SetNull,
 			},
 		},
 		Indexes: []*schema.Index{
@@ -240,7 +240,7 @@ var (
 				Symbol:     "locks_users_locks",
 				Columns:    []*schema.Column{LocksColumns[5]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
-				OnDelete:   schema.NoAction,
+				OnDelete:   schema.Cascade,
 			},
 		},
 		Indexes: []*schema.Index{
@@ -266,7 +266,7 @@ var (
 				Symbol:     "notification_records_events_notification_record",
 				Columns:    []*schema.Column{NotificationRecordsColumns[1]},
 				RefColumns: []*schema.Column{EventsColumns[0]},
-				OnDelete:   schema.NoAction,
+				OnDelete:   schema.Cascade,
 			},
 		},
 	}
@@ -365,7 +365,7 @@ var (
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "deployment_id", Type: field.TypeInt},
-		{Name: "user_id", Type: field.TypeInt64},
+		{Name: "user_id", Type: field.TypeInt64, Nullable: true},
 	}
 	// ReviewsTable holds the schema information for the "reviews" table.
 	ReviewsTable = &schema.Table{
@@ -383,7 +383,7 @@ var (
 				Symbol:     "reviews_users_reviews",
 				Columns:    []*schema.Column{ReviewsColumns[6]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
-				OnDelete:   schema.NoAction,
+				OnDelete:   schema.SetNull,
 			},
 		},
 	}

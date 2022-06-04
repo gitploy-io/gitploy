@@ -1167,6 +1167,20 @@ func UserIDNotIn(vs ...int64) predicate.Deployment {
 	})
 }
 
+// UserIDIsNil applies the IsNil predicate on the "user_id" field.
+func UserIDIsNil() predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldUserID)))
+	})
+}
+
+// UserIDNotNil applies the NotNil predicate on the "user_id" field.
+func UserIDNotNil() predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldUserID)))
+	})
+}
+
 // RepoIDEQ applies the EQ predicate on the "repo_id" field.
 func RepoIDEQ(v int64) predicate.Deployment {
 	return predicate.Deployment(func(s *sql.Selector) {

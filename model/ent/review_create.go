@@ -85,6 +85,14 @@ func (rc *ReviewCreate) SetUserID(i int64) *ReviewCreate {
 	return rc
 }
 
+// SetNillableUserID sets the "user_id" field if the given value is not nil.
+func (rc *ReviewCreate) SetNillableUserID(i *int64) *ReviewCreate {
+	if i != nil {
+		rc.SetUserID(*i)
+	}
+	return rc
+}
+
 // SetDeploymentID sets the "deployment_id" field.
 func (rc *ReviewCreate) SetDeploymentID(i int) *ReviewCreate {
 	rc.mutation.SetDeploymentID(i)
@@ -217,14 +225,8 @@ func (rc *ReviewCreate) check() error {
 	if _, ok := rc.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Review.updated_at"`)}
 	}
-	if _, ok := rc.mutation.UserID(); !ok {
-		return &ValidationError{Name: "user_id", err: errors.New(`ent: missing required field "Review.user_id"`)}
-	}
 	if _, ok := rc.mutation.DeploymentID(); !ok {
 		return &ValidationError{Name: "deployment_id", err: errors.New(`ent: missing required field "Review.deployment_id"`)}
-	}
-	if _, ok := rc.mutation.UserID(); !ok {
-		return &ValidationError{Name: "user", err: errors.New(`ent: missing required edge "Review.user"`)}
 	}
 	if _, ok := rc.mutation.DeploymentID(); !ok {
 		return &ValidationError{Name: "deployment", err: errors.New(`ent: missing required edge "Review.deployment"`)}

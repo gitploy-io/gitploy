@@ -91,6 +91,20 @@ func (ru *ReviewUpdate) SetUserID(i int64) *ReviewUpdate {
 	return ru
 }
 
+// SetNillableUserID sets the "user_id" field if the given value is not nil.
+func (ru *ReviewUpdate) SetNillableUserID(i *int64) *ReviewUpdate {
+	if i != nil {
+		ru.SetUserID(*i)
+	}
+	return ru
+}
+
+// ClearUserID clears the value of the "user_id" field.
+func (ru *ReviewUpdate) ClearUserID() *ReviewUpdate {
+	ru.mutation.ClearUserID()
+	return ru
+}
+
 // SetDeploymentID sets the "deployment_id" field.
 func (ru *ReviewUpdate) SetDeploymentID(i int) *ReviewUpdate {
 	ru.mutation.SetDeploymentID(i)
@@ -235,9 +249,6 @@ func (ru *ReviewUpdate) check() error {
 		if err := review.StatusValidator(v); err != nil {
 			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "Review.status": %w`, err)}
 		}
-	}
-	if _, ok := ru.mutation.UserID(); ru.mutation.UserCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "Review.user"`)
 	}
 	if _, ok := ru.mutation.DeploymentID(); ru.mutation.DeploymentCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "Review.deployment"`)
@@ -500,6 +511,20 @@ func (ruo *ReviewUpdateOne) SetUserID(i int64) *ReviewUpdateOne {
 	return ruo
 }
 
+// SetNillableUserID sets the "user_id" field if the given value is not nil.
+func (ruo *ReviewUpdateOne) SetNillableUserID(i *int64) *ReviewUpdateOne {
+	if i != nil {
+		ruo.SetUserID(*i)
+	}
+	return ruo
+}
+
+// ClearUserID clears the value of the "user_id" field.
+func (ruo *ReviewUpdateOne) ClearUserID() *ReviewUpdateOne {
+	ruo.mutation.ClearUserID()
+	return ruo
+}
+
 // SetDeploymentID sets the "deployment_id" field.
 func (ruo *ReviewUpdateOne) SetDeploymentID(i int) *ReviewUpdateOne {
 	ruo.mutation.SetDeploymentID(i)
@@ -651,9 +676,6 @@ func (ruo *ReviewUpdateOne) check() error {
 		if err := review.StatusValidator(v); err != nil {
 			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "Review.status": %w`, err)}
 		}
-	}
-	if _, ok := ruo.mutation.UserID(); ruo.mutation.UserCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "Review.user"`)
 	}
 	if _, ok := ruo.mutation.DeploymentID(); ruo.mutation.DeploymentCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "Review.deployment"`)
