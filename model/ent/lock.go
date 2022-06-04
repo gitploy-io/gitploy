@@ -25,7 +25,7 @@ type Lock struct {
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at"`
 	// UserID holds the value of the "user_id" field.
-	UserID int64 `json:"user_id"`
+	UserID int64 `json:"user_id,omitemtpy"`
 	// RepoID holds the value of the "repo_id" field.
 	RepoID int64 `json:"repo_id"`
 	// Edges holds the relations/edges for other nodes in the graph.

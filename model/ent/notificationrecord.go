@@ -17,7 +17,7 @@ type NotificationRecord struct {
 	// ID of the ent.
 	ID int `json:"id,omitempty"`
 	// EventID holds the value of the "event_id" field.
-	EventID int `json:"event_id"`
+	EventID int `json:"event_id,omitemtpy"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the NotificationRecordQuery when eager-loading is set.
 	Edges NotificationRecordEdges `json:"edges"`

@@ -218,6 +218,20 @@ func (du *DeploymentUpdate) SetUserID(i int64) *DeploymentUpdate {
 	return du
 }
 
+// SetNillableUserID sets the "user_id" field if the given value is not nil.
+func (du *DeploymentUpdate) SetNillableUserID(i *int64) *DeploymentUpdate {
+	if i != nil {
+		du.SetUserID(*i)
+	}
+	return du
+}
+
+// ClearUserID clears the value of the "user_id" field.
+func (du *DeploymentUpdate) ClearUserID() *DeploymentUpdate {
+	du.mutation.ClearUserID()
+	return du
+}
+
 // SetRepoID sets the "repo_id" field.
 func (du *DeploymentUpdate) SetRepoID(i int64) *DeploymentUpdate {
 	du.mutation.SetRepoID(i)
@@ -455,9 +469,6 @@ func (du *DeploymentUpdate) check() error {
 		if err := deployment.HTMLURLValidator(v); err != nil {
 			return &ValidationError{Name: "html_url", err: fmt.Errorf(`ent: validator failed for field "Deployment.html_url": %w`, err)}
 		}
-	}
-	if _, ok := du.mutation.UserID(); du.mutation.UserCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "Deployment.user"`)
 	}
 	if _, ok := du.mutation.RepoID(); du.mutation.RepoCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "Deployment.repo"`)
@@ -1028,6 +1039,20 @@ func (duo *DeploymentUpdateOne) SetUserID(i int64) *DeploymentUpdateOne {
 	return duo
 }
 
+// SetNillableUserID sets the "user_id" field if the given value is not nil.
+func (duo *DeploymentUpdateOne) SetNillableUserID(i *int64) *DeploymentUpdateOne {
+	if i != nil {
+		duo.SetUserID(*i)
+	}
+	return duo
+}
+
+// ClearUserID clears the value of the "user_id" field.
+func (duo *DeploymentUpdateOne) ClearUserID() *DeploymentUpdateOne {
+	duo.mutation.ClearUserID()
+	return duo
+}
+
 // SetRepoID sets the "repo_id" field.
 func (duo *DeploymentUpdateOne) SetRepoID(i int64) *DeploymentUpdateOne {
 	duo.mutation.SetRepoID(i)
@@ -1272,9 +1297,6 @@ func (duo *DeploymentUpdateOne) check() error {
 		if err := deployment.HTMLURLValidator(v); err != nil {
 			return &ValidationError{Name: "html_url", err: fmt.Errorf(`ent: validator failed for field "Deployment.html_url": %w`, err)}
 		}
-	}
-	if _, ok := duo.mutation.UserID(); duo.mutation.UserCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "Deployment.user"`)
 	}
 	if _, ok := duo.mutation.RepoID(); duo.mutation.RepoCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "Deployment.repo"`)

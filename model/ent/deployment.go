@@ -46,7 +46,7 @@ type Deployment struct {
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updated_at"`
 	// UserID holds the value of the "user_id" field.
-	UserID int64 `json:"user_id"`
+	UserID int64 `json:"user_id,omitemtpy"`
 	// RepoID holds the value of the "repo_id" field.
 	RepoID int64 `json:"repo_id"`
 	// IsApprovalEnabled holds the value of the "is_approval_enabled" field.

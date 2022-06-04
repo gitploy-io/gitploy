@@ -146,6 +146,20 @@ func EventIDNotIn(vs ...int) predicate.NotificationRecord {
 	})
 }
 
+// EventIDIsNil applies the IsNil predicate on the "event_id" field.
+func EventIDIsNil() predicate.NotificationRecord {
+	return predicate.NotificationRecord(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldEventID)))
+	})
+}
+
+// EventIDNotNil applies the NotNil predicate on the "event_id" field.
+func EventIDNotNil() predicate.NotificationRecord {
+	return predicate.NotificationRecord(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldEventID)))
+	})
+}
+
 // HasEvent applies the HasEdge predicate on the "event" edge.
 func HasEvent() predicate.NotificationRecord {
 	return predicate.NotificationRecord(func(s *sql.Selector) {

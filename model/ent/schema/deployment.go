@@ -58,7 +58,8 @@ func (Deployment) Fields() []ent.Field {
 			Default(nowUTC).
 			UpdateDefault(nowUTC),
 		// Edges
-		field.Int64("user_id"),
+		field.Int64("user_id").
+			Optional(),
 		field.Int64("repo_id"),
 
 		// Deprecated fields.
@@ -77,8 +78,7 @@ func (Deployment) Edges() []ent.Edge {
 		edge.From("user", User.Type).
 			Ref("deployments").
 			Field("user_id").
-			Unique().
-			Required(),
+			Unique(),
 		edge.From("repo", Repo.Type).
 			Ref("deployments").
 			Field("repo_id").

@@ -293,7 +293,7 @@ func (nrq *NotificationRecordQuery) WithEvent(opts ...func(*EventQuery)) *Notifi
 // Example:
 //
 //	var v []struct {
-//		EventID int `json:"event_id"`
+//		EventID int `json:"event_id,omitemtpy"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
@@ -320,7 +320,7 @@ func (nrq *NotificationRecordQuery) GroupBy(field string, fields ...string) *Not
 // Example:
 //
 //	var v []struct {
-//		EventID int `json:"event_id"`
+//		EventID int `json:"event_id,omitemtpy"`
 //	}
 //
 //	client.NotificationRecord.Query().

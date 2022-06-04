@@ -27,7 +27,7 @@ type Review struct {
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updated_at"`
 	// UserID holds the value of the "user_id" field.
-	UserID int64 `json:"user_id"`
+	UserID int64 `json:"user_id,omitemtpy"`
 	// DeploymentID holds the value of the "deployment_id" field.
 	DeploymentID int `json:"deployment_id"`
 	// Edges holds the relations/edges for other nodes in the graph.

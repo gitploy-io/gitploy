@@ -30,7 +30,8 @@ func (Review) Fields() []ent.Field {
 			Default(nowUTC).
 			UpdateDefault(nowUTC),
 		// Edges
-		field.Int64("user_id"),
+		field.Int64("user_id").
+			Optional(),
 		field.Int("deployment_id"),
 	}
 }
@@ -41,8 +42,7 @@ func (Review) Edges() []ent.Edge {
 		edge.From("user", User.Type).
 			Ref("reviews").
 			Field("user_id").
-			Unique().
-			Required(),
+			Unique(),
 		edge.From("deployment", Deployment.Type).
 			Ref("reviews").
 			Field("deployment_id").

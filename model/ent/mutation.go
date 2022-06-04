@@ -1476,9 +1476,22 @@ func (m *DeploymentMutation) OldUserID(ctx context.Context) (v int64, err error)
 	return oldValue.UserID, nil
 }
 
+// ClearUserID clears the value of the "user_id" field.
+func (m *DeploymentMutation) ClearUserID() {
+	m.user = nil
+	m.clearedFields[deployment.FieldUserID] = struct{}{}
+}
+
+// UserIDCleared returns if the "user_id" field was cleared in this mutation.
+func (m *DeploymentMutation) UserIDCleared() bool {
+	_, ok := m.clearedFields[deployment.FieldUserID]
+	return ok
+}
+
 // ResetUserID resets all changes to the "user_id" field.
 func (m *DeploymentMutation) ResetUserID() {
 	m.user = nil
+	delete(m.clearedFields, deployment.FieldUserID)
 }
 
 // SetRepoID sets the "repo_id" field.
@@ -1643,7 +1656,7 @@ func (m *DeploymentMutation) ClearUser() {
 
 // UserCleared reports if the "user" edge to the User entity was cleared.
 func (m *DeploymentMutation) UserCleared() bool {
-	return m.cleareduser
+	return m.UserIDCleared() || m.cleareduser
 }
 
 // UserIDs returns the "user" edge IDs in the mutation.
@@ -2161,6 +2174,9 @@ func (m *DeploymentMutation) ClearedFields() []string {
 	if m.FieldCleared(deployment.FieldHTMLURL) {
 		fields = append(fields, deployment.FieldHTMLURL)
 	}
+	if m.FieldCleared(deployment.FieldUserID) {
+		fields = append(fields, deployment.FieldUserID)
+	}
 	if m.FieldCleared(deployment.FieldIsApprovalEnabled) {
 		fields = append(fields, deployment.FieldIsApprovalEnabled)
 	}
@@ -2192,6 +2208,9 @@ func (m *DeploymentMutation) ClearField(name string) error {
 		return nil
 	case deployment.FieldHTMLURL:
 		m.ClearHTMLURL()
+		return nil
+	case deployment.FieldUserID:
+		m.ClearUserID()
 		return nil
 	case deployment.FieldIsApprovalEnabled:
 		m.ClearIsApprovalEnabled()
@@ -5535,9 +5554,22 @@ func (m *LockMutation) OldUserID(ctx context.Context) (v int64, err error) {
 	return oldValue.UserID, nil
 }
 
+// ClearUserID clears the value of the "user_id" field.
+func (m *LockMutation) ClearUserID() {
+	m.user = nil
+	m.clearedFields[lock.FieldUserID] = struct{}{}
+}
+
+// UserIDCleared returns if the "user_id" field was cleared in this mutation.
+func (m *LockMutation) UserIDCleared() bool {
+	_, ok := m.clearedFields[lock.FieldUserID]
+	return ok
+}
+
 // ResetUserID resets all changes to the "user_id" field.
 func (m *LockMutation) ResetUserID() {
 	m.user = nil
+	delete(m.clearedFields, lock.FieldUserID)
 }
 
 // SetRepoID sets the "repo_id" field.
@@ -5583,7 +5615,7 @@ func (m *LockMutation) ClearUser() {
 
 // UserCleared reports if the "user" edge to the User entity was cleared.
 func (m *LockMutation) UserCleared() bool {
-	return m.cleareduser
+	return m.UserIDCleared() || m.cleareduser
 }
 
 // UserIDs returns the "user" edge IDs in the mutation.
@@ -5780,6 +5812,9 @@ func (m *LockMutation) ClearedFields() []string {
 	if m.FieldCleared(lock.FieldExpiredAt) {
 		fields = append(fields, lock.FieldExpiredAt)
 	}
+	if m.FieldCleared(lock.FieldUserID) {
+		fields = append(fields, lock.FieldUserID)
+	}
 	return fields
 }
 
@@ -5796,6 +5831,9 @@ func (m *LockMutation) ClearField(name string) error {
 	switch name {
 	case lock.FieldExpiredAt:
 		m.ClearExpiredAt()
+		return nil
+	case lock.FieldUserID:
+		m.ClearUserID()
 		return nil
 	}
 	return fmt.Errorf("unknown Lock nullable field %s", name)
@@ -6061,9 +6099,22 @@ func (m *NotificationRecordMutation) OldEventID(ctx context.Context) (v int, err
 	return oldValue.EventID, nil
 }
 
+// ClearEventID clears the value of the "event_id" field.
+func (m *NotificationRecordMutation) ClearEventID() {
+	m.event = nil
+	m.clearedFields[notificationrecord.FieldEventID] = struct{}{}
+}
+
+// EventIDCleared returns if the "event_id" field was cleared in this mutation.
+func (m *NotificationRecordMutation) EventIDCleared() bool {
+	_, ok := m.clearedFields[notificationrecord.FieldEventID]
+	return ok
+}
+
 // ResetEventID resets all changes to the "event_id" field.
 func (m *NotificationRecordMutation) ResetEventID() {
 	m.event = nil
+	delete(m.clearedFields, notificationrecord.FieldEventID)
 }
 
 // ClearEvent clears the "event" edge to the Event entity.
@@ -6073,7 +6124,7 @@ func (m *NotificationRecordMutation) ClearEvent() {
 
 // EventCleared reports if the "event" edge to the Event entity was cleared.
 func (m *NotificationRecordMutation) EventCleared() bool {
-	return m.clearedevent
+	return m.EventIDCleared() || m.clearedevent
 }
 
 // EventIDs returns the "event" edge IDs in the mutation.
@@ -6184,7 +6235,11 @@ func (m *NotificationRecordMutation) AddField(name string, value ent.Value) erro
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *NotificationRecordMutation) ClearedFields() []string {
-	return nil
+	var fields []string
+	if m.FieldCleared(notificationrecord.FieldEventID) {
+		fields = append(fields, notificationrecord.FieldEventID)
+	}
+	return fields
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -6197,6 +6252,11 @@ func (m *NotificationRecordMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *NotificationRecordMutation) ClearField(name string) error {
+	switch name {
+	case notificationrecord.FieldEventID:
+		m.ClearEventID()
+		return nil
+	}
 	return fmt.Errorf("unknown NotificationRecord nullable field %s", name)
 }
 
@@ -8672,9 +8732,22 @@ func (m *ReviewMutation) OldUserID(ctx context.Context) (v int64, err error) {
 	return oldValue.UserID, nil
 }
 
+// ClearUserID clears the value of the "user_id" field.
+func (m *ReviewMutation) ClearUserID() {
+	m.user = nil
+	m.clearedFields[review.FieldUserID] = struct{}{}
+}
+
+// UserIDCleared returns if the "user_id" field was cleared in this mutation.
+func (m *ReviewMutation) UserIDCleared() bool {
+	_, ok := m.clearedFields[review.FieldUserID]
+	return ok
+}
+
 // ResetUserID resets all changes to the "user_id" field.
 func (m *ReviewMutation) ResetUserID() {
 	m.user = nil
+	delete(m.clearedFields, review.FieldUserID)
 }
 
 // SetDeploymentID sets the "deployment_id" field.
@@ -8720,7 +8793,7 @@ func (m *ReviewMutation) ClearUser() {
 
 // UserCleared reports if the "user" edge to the User entity was cleared.
 func (m *ReviewMutation) UserCleared() bool {
-	return m.cleareduser
+	return m.UserIDCleared() || m.cleareduser
 }
 
 // UserIDs returns the "user" edge IDs in the mutation.
@@ -8985,6 +9058,9 @@ func (m *ReviewMutation) ClearedFields() []string {
 	if m.FieldCleared(review.FieldComment) {
 		fields = append(fields, review.FieldComment)
 	}
+	if m.FieldCleared(review.FieldUserID) {
+		fields = append(fields, review.FieldUserID)
+	}
 	return fields
 }
 
@@ -9001,6 +9077,9 @@ func (m *ReviewMutation) ClearField(name string) error {
 	switch name {
 	case review.FieldComment:
 		m.ClearComment()
+		return nil
+	case review.FieldUserID:
+		m.ClearUserID()
 		return nil
 	}
 	return fmt.Errorf("unknown Review nullable field %s", name)

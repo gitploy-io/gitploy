@@ -34,6 +34,20 @@ func (nru *NotificationRecordUpdate) SetEventID(i int) *NotificationRecordUpdate
 	return nru
 }
 
+// SetNillableEventID sets the "event_id" field if the given value is not nil.
+func (nru *NotificationRecordUpdate) SetNillableEventID(i *int) *NotificationRecordUpdate {
+	if i != nil {
+		nru.SetEventID(*i)
+	}
+	return nru
+}
+
+// ClearEventID clears the value of the "event_id" field.
+func (nru *NotificationRecordUpdate) ClearEventID() *NotificationRecordUpdate {
+	nru.mutation.ClearEventID()
+	return nru
+}
+
 // SetEvent sets the "event" edge to the Event entity.
 func (nru *NotificationRecordUpdate) SetEvent(e *Event) *NotificationRecordUpdate {
 	return nru.SetEventID(e.ID)
@@ -57,18 +71,12 @@ func (nru *NotificationRecordUpdate) Save(ctx context.Context) (int, error) {
 		affected int
 	)
 	if len(nru.hooks) == 0 {
-		if err = nru.check(); err != nil {
-			return 0, err
-		}
 		affected, err = nru.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 			mutation, ok := m.(*NotificationRecordMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = nru.check(); err != nil {
-				return 0, err
 			}
 			nru.mutation = mutation
 			affected, err = nru.sqlSave(ctx)
@@ -108,14 +116,6 @@ func (nru *NotificationRecordUpdate) ExecX(ctx context.Context) {
 	if err := nru.Exec(ctx); err != nil {
 		panic(err)
 	}
-}
-
-// check runs all checks and user-defined validators on the builder.
-func (nru *NotificationRecordUpdate) check() error {
-	if _, ok := nru.mutation.EventID(); nru.mutation.EventCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "NotificationRecord.event"`)
-	}
-	return nil
 }
 
 func (nru *NotificationRecordUpdate) sqlSave(ctx context.Context) (n int, err error) {
@@ -196,6 +196,20 @@ func (nruo *NotificationRecordUpdateOne) SetEventID(i int) *NotificationRecordUp
 	return nruo
 }
 
+// SetNillableEventID sets the "event_id" field if the given value is not nil.
+func (nruo *NotificationRecordUpdateOne) SetNillableEventID(i *int) *NotificationRecordUpdateOne {
+	if i != nil {
+		nruo.SetEventID(*i)
+	}
+	return nruo
+}
+
+// ClearEventID clears the value of the "event_id" field.
+func (nruo *NotificationRecordUpdateOne) ClearEventID() *NotificationRecordUpdateOne {
+	nruo.mutation.ClearEventID()
+	return nruo
+}
+
 // SetEvent sets the "event" edge to the Event entity.
 func (nruo *NotificationRecordUpdateOne) SetEvent(e *Event) *NotificationRecordUpdateOne {
 	return nruo.SetEventID(e.ID)
@@ -226,18 +240,12 @@ func (nruo *NotificationRecordUpdateOne) Save(ctx context.Context) (*Notificatio
 		node *NotificationRecord
 	)
 	if len(nruo.hooks) == 0 {
-		if err = nruo.check(); err != nil {
-			return nil, err
-		}
 		node, err = nruo.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 			mutation, ok := m.(*NotificationRecordMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = nruo.check(); err != nil {
-				return nil, err
 			}
 			nruo.mutation = mutation
 			node, err = nruo.sqlSave(ctx)
@@ -277,14 +285,6 @@ func (nruo *NotificationRecordUpdateOne) ExecX(ctx context.Context) {
 	if err := nruo.Exec(ctx); err != nil {
 		panic(err)
 	}
-}
-
-// check runs all checks and user-defined validators on the builder.
-func (nruo *NotificationRecordUpdateOne) check() error {
-	if _, ok := nruo.mutation.EventID(); nruo.mutation.EventCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "NotificationRecord.event"`)
-	}
-	return nil
 }
 
 func (nruo *NotificationRecordUpdateOne) sqlSave(ctx context.Context) (_node *NotificationRecord, err error) {

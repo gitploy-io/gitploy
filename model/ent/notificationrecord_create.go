@@ -4,7 +4,6 @@ package ent
 
 import (
 	"context"
-	"errors"
 	"fmt"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -23,6 +22,14 @@ type NotificationRecordCreate struct {
 // SetEventID sets the "event_id" field.
 func (nrc *NotificationRecordCreate) SetEventID(i int) *NotificationRecordCreate {
 	nrc.mutation.SetEventID(i)
+	return nrc
+}
+
+// SetNillableEventID sets the "event_id" field if the given value is not nil.
+func (nrc *NotificationRecordCreate) SetNillableEventID(i *int) *NotificationRecordCreate {
+	if i != nil {
+		nrc.SetEventID(*i)
+	}
 	return nrc
 }
 
@@ -101,12 +108,6 @@ func (nrc *NotificationRecordCreate) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (nrc *NotificationRecordCreate) check() error {
-	if _, ok := nrc.mutation.EventID(); !ok {
-		return &ValidationError{Name: "event_id", err: errors.New(`ent: missing required field "NotificationRecord.event_id"`)}
-	}
-	if _, ok := nrc.mutation.EventID(); !ok {
-		return &ValidationError{Name: "event", err: errors.New(`ent: missing required edge "NotificationRecord.event"`)}
-	}
 	return nil
 }
 
