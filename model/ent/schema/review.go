@@ -42,8 +42,7 @@ func (Review) Edges() []ent.Edge {
 		edge.From("user", User.Type).
 			Ref("reviews").
 			Field("user_id").
-			Unique().
-			Required(),
+			Unique(),
 		edge.From("deployment", Deployment.Type).
 			Ref("reviews").
 			Field("deployment_id").

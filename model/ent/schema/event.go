@@ -2,6 +2,7 @@ package schema
 
 import (
 	"entgo.io/ent"
+	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
@@ -50,6 +51,9 @@ func (Event) Edges() []ent.Edge {
 			Field("review_id").
 			Unique(),
 		edge.To("notification_record", NotificationRecord.Type).
+			Annotations(entsql.Annotation{
+				OnDelete: entsql.Cascade,
+			}).
 			Unique(),
 	}
 }

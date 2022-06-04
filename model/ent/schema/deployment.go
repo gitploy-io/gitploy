@@ -78,8 +78,7 @@ func (Deployment) Edges() []ent.Edge {
 		edge.From("user", User.Type).
 			Ref("deployments").
 			Field("user_id").
-			Unique().
-			Required(),
+			Unique(),
 		edge.From("repo", Repo.Type).
 			Ref("deployments").
 			Field("repo_id").
