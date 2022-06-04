@@ -62,6 +62,14 @@ func (lc *LockCreate) SetUserID(i int64) *LockCreate {
 	return lc
 }
 
+// SetNillableUserID sets the "user_id" field if the given value is not nil.
+func (lc *LockCreate) SetNillableUserID(i *int64) *LockCreate {
+	if i != nil {
+		lc.SetUserID(*i)
+	}
+	return lc
+}
+
 // SetRepoID sets the "repo_id" field.
 func (lc *LockCreate) SetRepoID(i int64) *LockCreate {
 	lc.mutation.SetRepoID(i)
@@ -163,14 +171,8 @@ func (lc *LockCreate) check() error {
 	if _, ok := lc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Lock.created_at"`)}
 	}
-	if _, ok := lc.mutation.UserID(); !ok {
-		return &ValidationError{Name: "user_id", err: errors.New(`ent: missing required field "Lock.user_id"`)}
-	}
 	if _, ok := lc.mutation.RepoID(); !ok {
 		return &ValidationError{Name: "repo_id", err: errors.New(`ent: missing required field "Lock.repo_id"`)}
-	}
-	if _, ok := lc.mutation.UserID(); !ok {
-		return &ValidationError{Name: "user", err: errors.New(`ent: missing required edge "Lock.user"`)}
 	}
 	if _, ok := lc.mutation.RepoID(); !ok {
 		return &ValidationError{Name: "repo", err: errors.New(`ent: missing required edge "Lock.repo"`)}

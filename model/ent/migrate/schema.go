@@ -222,7 +222,7 @@ var (
 		{Name: "expired_at", Type: field.TypeTime, Nullable: true},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "repo_id", Type: field.TypeInt64},
-		{Name: "user_id", Type: field.TypeInt64},
+		{Name: "user_id", Type: field.TypeInt64, Nullable: true},
 	}
 	// LocksTable holds the schema information for the "locks" table.
 	LocksTable = &schema.Table{
@@ -240,7 +240,7 @@ var (
 				Symbol:     "locks_users_locks",
 				Columns:    []*schema.Column{LocksColumns[5]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
-				OnDelete:   schema.Cascade,
+				OnDelete:   schema.SetNull,
 			},
 		},
 		Indexes: []*schema.Index{

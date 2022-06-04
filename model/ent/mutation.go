@@ -5554,9 +5554,22 @@ func (m *LockMutation) OldUserID(ctx context.Context) (v int64, err error) {
 	return oldValue.UserID, nil
 }
 
+// ClearUserID clears the value of the "user_id" field.
+func (m *LockMutation) ClearUserID() {
+	m.user = nil
+	m.clearedFields[lock.FieldUserID] = struct{}{}
+}
+
+// UserIDCleared returns if the "user_id" field was cleared in this mutation.
+func (m *LockMutation) UserIDCleared() bool {
+	_, ok := m.clearedFields[lock.FieldUserID]
+	return ok
+}
+
 // ResetUserID resets all changes to the "user_id" field.
 func (m *LockMutation) ResetUserID() {
 	m.user = nil
+	delete(m.clearedFields, lock.FieldUserID)
 }
 
 // SetRepoID sets the "repo_id" field.
@@ -5602,7 +5615,7 @@ func (m *LockMutation) ClearUser() {
 
 // UserCleared reports if the "user" edge to the User entity was cleared.
 func (m *LockMutation) UserCleared() bool {
-	return m.cleareduser
+	return m.UserIDCleared() || m.cleareduser
 }
 
 // UserIDs returns the "user" edge IDs in the mutation.
@@ -5799,6 +5812,9 @@ func (m *LockMutation) ClearedFields() []string {
 	if m.FieldCleared(lock.FieldExpiredAt) {
 		fields = append(fields, lock.FieldExpiredAt)
 	}
+	if m.FieldCleared(lock.FieldUserID) {
+		fields = append(fields, lock.FieldUserID)
+	}
 	return fields
 }
 
@@ -5815,6 +5831,9 @@ func (m *LockMutation) ClearField(name string) error {
 	switch name {
 	case lock.FieldExpiredAt:
 		m.ClearExpiredAt()
+		return nil
+	case lock.FieldUserID:
+		m.ClearUserID()
 		return nil
 	}
 	return fmt.Errorf("unknown Lock nullable field %s", name)

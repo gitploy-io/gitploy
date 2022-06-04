@@ -51,6 +51,7 @@ func (User) Edges() []ent.Edge {
 			Annotations(entsql.Annotation{
 				OnDelete: entsql.Cascade,
 			}),
+		// In order to record the history, when a user is deleted, it is filled with a null value.
 		edge.To("deployments", Deployment.Type).
 			Annotations(entsql.Annotation{
 				OnDelete: entsql.SetNull,
@@ -61,7 +62,7 @@ func (User) Edges() []ent.Edge {
 			}),
 		edge.To("locks", Lock.Type).
 			Annotations(entsql.Annotation{
-				OnDelete: entsql.Cascade,
+				OnDelete: entsql.SetNull,
 			}),
 		edge.To("repos", Repo.Type).
 			Annotations(entsql.Annotation{

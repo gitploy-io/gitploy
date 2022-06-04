@@ -22,7 +22,8 @@ func (Lock) Fields() []ent.Field {
 		field.Time("created_at").
 			Default(nowUTC),
 		// Edges
-		field.Int64("user_id"),
+		field.Int64("user_id").
+			Optional(),
 		field.Int64("repo_id"),
 	}
 }
@@ -33,8 +34,7 @@ func (Lock) Edges() []ent.Edge {
 		edge.From("user", User.Type).
 			Ref("locks").
 			Field("user_id").
-			Unique().
-			Required(),
+			Unique(),
 		edge.From("repo", Repo.Type).
 			Ref("locks").
 			Field("repo_id").

@@ -76,6 +76,20 @@ func (lu *LockUpdate) SetUserID(i int64) *LockUpdate {
 	return lu
 }
 
+// SetNillableUserID sets the "user_id" field if the given value is not nil.
+func (lu *LockUpdate) SetNillableUserID(i *int64) *LockUpdate {
+	if i != nil {
+		lu.SetUserID(*i)
+	}
+	return lu
+}
+
+// ClearUserID clears the value of the "user_id" field.
+func (lu *LockUpdate) ClearUserID() *LockUpdate {
+	lu.mutation.ClearUserID()
+	return lu
+}
+
 // SetRepoID sets the "repo_id" field.
 func (lu *LockUpdate) SetRepoID(i int64) *LockUpdate {
 	lu.mutation.SetRepoID(i)
@@ -171,9 +185,6 @@ func (lu *LockUpdate) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (lu *LockUpdate) check() error {
-	if _, ok := lu.mutation.UserID(); lu.mutation.UserCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "Lock.user"`)
-	}
 	if _, ok := lu.mutation.RepoID(); lu.mutation.RepoCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "Lock.repo"`)
 	}
@@ -360,6 +371,20 @@ func (luo *LockUpdateOne) SetUserID(i int64) *LockUpdateOne {
 	return luo
 }
 
+// SetNillableUserID sets the "user_id" field if the given value is not nil.
+func (luo *LockUpdateOne) SetNillableUserID(i *int64) *LockUpdateOne {
+	if i != nil {
+		luo.SetUserID(*i)
+	}
+	return luo
+}
+
+// ClearUserID clears the value of the "user_id" field.
+func (luo *LockUpdateOne) ClearUserID() *LockUpdateOne {
+	luo.mutation.ClearUserID()
+	return luo
+}
+
 // SetRepoID sets the "repo_id" field.
 func (luo *LockUpdateOne) SetRepoID(i int64) *LockUpdateOne {
 	luo.mutation.SetRepoID(i)
@@ -462,9 +487,6 @@ func (luo *LockUpdateOne) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (luo *LockUpdateOne) check() error {
-	if _, ok := luo.mutation.UserID(); luo.mutation.UserCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "Lock.user"`)
-	}
 	if _, ok := luo.mutation.RepoID(); luo.mutation.RepoCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "Lock.repo"`)
 	}
