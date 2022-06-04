@@ -6099,9 +6099,22 @@ func (m *NotificationRecordMutation) OldEventID(ctx context.Context) (v int, err
 	return oldValue.EventID, nil
 }
 
+// ClearEventID clears the value of the "event_id" field.
+func (m *NotificationRecordMutation) ClearEventID() {
+	m.event = nil
+	m.clearedFields[notificationrecord.FieldEventID] = struct{}{}
+}
+
+// EventIDCleared returns if the "event_id" field was cleared in this mutation.
+func (m *NotificationRecordMutation) EventIDCleared() bool {
+	_, ok := m.clearedFields[notificationrecord.FieldEventID]
+	return ok
+}
+
 // ResetEventID resets all changes to the "event_id" field.
 func (m *NotificationRecordMutation) ResetEventID() {
 	m.event = nil
+	delete(m.clearedFields, notificationrecord.FieldEventID)
 }
 
 // ClearEvent clears the "event" edge to the Event entity.
@@ -6111,7 +6124,7 @@ func (m *NotificationRecordMutation) ClearEvent() {
 
 // EventCleared reports if the "event" edge to the Event entity was cleared.
 func (m *NotificationRecordMutation) EventCleared() bool {
-	return m.clearedevent
+	return m.EventIDCleared() || m.clearedevent
 }
 
 // EventIDs returns the "event" edge IDs in the mutation.
@@ -6222,7 +6235,11 @@ func (m *NotificationRecordMutation) AddField(name string, value ent.Value) erro
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *NotificationRecordMutation) ClearedFields() []string {
-	return nil
+	var fields []string
+	if m.FieldCleared(notificationrecord.FieldEventID) {
+		fields = append(fields, notificationrecord.FieldEventID)
+	}
+	return fields
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -6235,6 +6252,11 @@ func (m *NotificationRecordMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *NotificationRecordMutation) ClearField(name string) error {
+	switch name {
+	case notificationrecord.FieldEventID:
+		m.ClearEventID()
+		return nil
+	}
 	return fmt.Errorf("unknown NotificationRecord nullable field %s", name)
 }
 

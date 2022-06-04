@@ -254,7 +254,7 @@ var (
 	// NotificationRecordsColumns holds the columns for the "notification_records" table.
 	NotificationRecordsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "event_id", Type: field.TypeInt, Unique: true},
+		{Name: "event_id", Type: field.TypeInt, Unique: true, Nullable: true},
 	}
 	// NotificationRecordsTable holds the schema information for the "notification_records" table.
 	NotificationRecordsTable = &schema.Table{
@@ -266,7 +266,7 @@ var (
 				Symbol:     "notification_records_events_notification_record",
 				Columns:    []*schema.Column{NotificationRecordsColumns[1]},
 				RefColumns: []*schema.Column{EventsColumns[0]},
-				OnDelete:   schema.Cascade,
+				OnDelete:   schema.SetNull,
 			},
 		},
 	}

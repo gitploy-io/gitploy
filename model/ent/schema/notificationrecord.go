@@ -14,7 +14,8 @@ type NotificationRecord struct {
 // Fields of the NotificationRecord.
 func (NotificationRecord) Fields() []ent.Field {
 	return []ent.Field{
-		field.Int("event_id"),
+		field.Int("event_id").
+			Optional(),
 	}
 }
 
@@ -24,7 +25,6 @@ func (NotificationRecord) Edges() []ent.Edge {
 		edge.From("event", Event.Type).
 			Ref("notification_record").
 			Field("event_id").
-			Unique().
-			Required(),
+			Unique(),
 	}
 }

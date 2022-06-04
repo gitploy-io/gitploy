@@ -52,7 +52,7 @@ func (Event) Edges() []ent.Edge {
 			Unique(),
 		edge.To("notification_record", NotificationRecord.Type).
 			Annotations(entsql.Annotation{
-				OnDelete: entsql.Cascade,
+				OnDelete: entsql.SetNull,
 			}).
 			Unique(),
 	}
