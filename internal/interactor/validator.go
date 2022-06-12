@@ -176,6 +176,10 @@ type DynamicPayloadValidator struct {
 }
 
 func (v *DynamicPayloadValidator) Validate(d *ent.Deployment) error {
+	if d.IsRollback {
+		return nil
+	}
+
 	if !v.Env.IsDynamicPayloadEnabled() {
 		return nil
 	}

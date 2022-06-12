@@ -138,3 +138,13 @@ func TestSerializationValidator_Validate(t *testing.T) {
 		}
 	})
 }
+
+func TestDynamicPayloadValidator_Validate(t *testing.T) {
+	t.Run("Returns nil if it is rollback.", func(t *testing.T) {
+		v := &i.DynamicPayloadValidator{Env: &extent.Env{}}
+
+		if err := v.Validate(&ent.Deployment{IsRollback: true}); err != nil {
+			t.Fatalf("Validate returns an error: %s", err)
+		}
+	})
+}
