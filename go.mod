@@ -25,11 +25,11 @@ require (
 	github.com/shurcooL/githubv4 v0.0.0-20201206200315-234843c633fa
 	github.com/slack-go/slack v0.11.0
 	github.com/tidwall/gjson v1.14.1
-	github.com/urfave/cli/v2 v2.8.1
+	github.com/urfave/cli/v2 v2.10.2
 	go.uber.org/zap v1.21.0
 	golang.org/x/oauth2 v0.0.0-20220309155454-6242fa91716a
 	gopkg.in/h2non/gock.v1 v1.1.2
-	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b
+	gopkg.in/yaml.v3 v3.0.1
 )
 
 require (
@@ -38,7 +38,7 @@ require (
 	github.com/apparentlymart/go-textseg/v13 v13.0.0 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
-	github.com/cpuguy83/go-md2man/v2 v2.0.1 // indirect
+	github.com/cpuguy83/go-md2man/v2 v2.0.2 // indirect
 	github.com/go-openapi/inflect v0.19.0 // indirect
 	github.com/go-playground/locales v0.14.0 // indirect
 	github.com/go-playground/universal-translator v0.18.0 // indirect
