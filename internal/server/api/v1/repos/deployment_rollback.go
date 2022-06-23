@@ -56,14 +56,15 @@ func (s *DeploymentAPI) Rollback(c *gin.Context) {
 
 	d, err = s.i.Deploy(ctx, u, re,
 		&ent.Deployment{
-			Type:       d.Type,
-			Env:        d.Env,
-			Ref:        d.Ref,
-			IsRollback: true,
+			Type:           d.Type,
+			Env:            d.Env,
+			Ref:            d.Ref,
+			DynamicPayload: d.DynamicPayload,
+			IsRollback:     true,
 		},
 		env)
 	if err != nil {
-		s.log.Check(gb.GetZapLogLevel(err), "Failed to deploy.").Write(zap.Error(err))
+		s.log.Check(gb.GetZapLogLevel(err), "Failed to rollback.").Write(zap.Error(err))
 		gb.ResponseWithError(c, err)
 		return
 	}
