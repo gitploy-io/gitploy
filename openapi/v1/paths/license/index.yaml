@@ -1,0 +1,13 @@
+get:
+  tags:
+    - License
+  summary: Return license
+  responses:
+    '200':
+      description: Licnese
+      content:
+        application/json:
+          schema:
+            $ref: '../../schemas/License.yaml'
+    '500':
+      $ref: '../../responses.yaml#/500InternalError'

@@ -1,0 +1,21 @@
+type: object
+properties:
+  id:
+    type: number
+  env:
+    type: string
+  expired_at:
+    type: string
+  created_at:
+    type: string
+  edges:
+    type: object
+    properties:
+      repo:
+        $ref: 'Repository.yaml'
+      user:
+        $ref: 'User.yaml'
+required:
+  - id
+  - env
+  - created_at

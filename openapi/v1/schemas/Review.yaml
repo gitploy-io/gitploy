@@ -1,0 +1,29 @@
+type: object
+properties:
+  id:
+    type: integer
+  status:
+    type: string
+    enum:
+      - pending
+      - rejected
+      - approved
+  comment:
+    type: string
+  created_at:
+    type: string
+  updated_at:
+    type: string
+  edges:
+    type: object
+    properties:
+      user:
+        $ref: 'User.yaml'
+      deployment:
+        $ref: 'Deployment.yaml'
+required:
+  - id
+  - status
+  - comment
+  - created_at
+  - updated_at

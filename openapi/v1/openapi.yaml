@@ -1,0 +1,85 @@
+openapi: '3.0.2'
+info:
+  title: gitploy.
+  version: '1.0'
+servers:
+  - url: http://localhost/api/v1
+  - url: https://gitploy.jp.ngrok.io/api/v1
+paths:
+  /license:
+    $ref: './paths/license/index.yaml'
+  /repos:
+    $ref: './paths/repos/index.yaml'
+  /repos/{namespace}/{name}:
+    $ref: './paths/repos/repo.yaml'
+  /repos/{namespace}/{name}/commits:
+    $ref: './paths/repos/commits.yaml'
+  /repos/{namespace}/{name}/commits/{sha}:
+    $ref: './paths/repos/commit.yaml'
+  /repos/{namespace}/{name}/commits/{sha}/statuses:
+    $ref: './paths/repos/commit_statuses.yaml'
+  /repos/{namespace}/{name}/branches:
+    $ref: './paths/repos/branches.yaml'
+  /repos/{namespace}/{name}/branches/{branch}:
+    $ref: './paths/repos/branch.yaml'
+  /repos/{namespace}/{name}/tags:
+    $ref: './paths/repos/tags.yaml'
+  /repos/{namespace}/{name}/tags/{tag}:
+    $ref: './paths/repos/tag.yaml'
+  /repos/{namespace}/{name}/deployments:
+    $ref: './paths/repos/deployments.yaml'
+  /repos/{namespace}/{name}/deployment:
+    $ref: './paths/repos/deployment.yaml'
+  /repos/{namespace}/{name}/deployments/{number}/changes:
+    $ref: './paths/repos/deployment_changes.yaml'
+  /repos/{namespace}/{name}/deployments/{number}/rollback:
+    $ref: './paths/repos/deployment_rollback.yaml'
+  /repos/{namespace}/{name}/deployments/{number}/reviews:
+    $ref: './paths/repos/deployment_reviews.yaml'
+  /repos/{namespace}/{name}/deployments/{number}/review:
+    $ref: './paths/repos/deployment_review.yaml'
+  /repos/{namespace}/{name}/deployments/{number}/statuses:
+    $ref: './paths/repos/deployment_statuses.yaml'
+  /repos/{namespace}/{name}/deployments/{number}/remote-statuses:
+    $ref: './paths/repos/deployment_statuses.yaml'
+  /repos/{namespace}/{name}/locks:
+    $ref: './paths/repos/locks.yaml'
+  /repos/{namespace}/{name}/locks/{lockId}:
+    $ref: './paths/repos/lock.yaml'
+  /repos/{namespace}/{name}/perms:
+    $ref: './paths/repos/perms.yaml'
+  /repos/{namespace}/{name}/config:
+    $ref: './paths/repos/config.yaml'
+  /users:
+    $ref: './paths/users/index.yaml'
+  /users/{id}:
+    $ref: './paths/users/user.yaml'
+  /user:
+    $ref: './paths/users/me.yaml'
+  /user/rate-limit:
+    $ref: './paths/users/ratelimit.yaml'
+  /search/deployments:
+    $ref: './paths/search/deployments.yaml'
+  /search/reviews:
+    $ref: './paths/search/deployments.yaml'
+  /stream/events:
+    $ref: './paths/stream/events.yaml'
+  /sync:
+    $ref: './paths/sync/index.yaml'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      description: Hash key of user
+    OAuth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://github.com/oauth/authorize
+          tokenUrl: https://github.com/oauth/token
+          scopes:
+            read: Grants read access
+            write: Grants write access
+            admin: Grants access to admin operations

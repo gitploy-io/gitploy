@@ -1,0 +1,77 @@
+get:
+  tags:
+    - Repo
+  summary: List locked environments.
+  parameters:
+    - in: path
+      name: namespace
+      required: true
+      schema:
+        type: string
+    - in: path
+      name: name
+      required: true
+      schema:
+        type: string
+  responses:
+    '200':
+      description: Locks
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '../../schemas/Lock.yaml'
+    '401': 
+      $ref: '../../responses.yaml#/401Unauthorized'
+    '402':
+      $ref: '../../responses.yaml#/402PaymentRequired'
+    '403': 
+      $ref: '../../responses.yaml#/403Forbidden'
+    '500':
+      $ref: '../../responses.yaml#/500InternalError'
+post:
+  tags:
+    - Repo
+  summary: Lock the environment.
+  parameters:
+    - in: path
+      name: namespace
+      required: true
+      schema:
+        type: string
+    - in: path
+      name: name
+      required: true
+      schema:
+        type: string
+  requestBody:
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            env:
+              type: string
+              description: The name of env in deploy.yml
+            expired_at:
+              type: string
+          required:
+            - env
+  responses:
+    '201':
+      description: Lock
+      content:
+        application/json:
+          schema:
+            $ref: '../../schemas/Lock.yaml'
+    '401': 
+      $ref: '../../responses.yaml#/401Unauthorized'
+    '402':
+      $ref: '../../responses.yaml#/402PaymentRequired'
+    '403': 
+      $ref: '../../responses.yaml#/403Forbidden'
+    '422':
+      $ref: '../../responses.yaml#/422UnprocessableEntity'
+    '500':
+      $ref: '../../responses.yaml#/500InternalError'

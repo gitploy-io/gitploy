@@ -1,0 +1,17 @@
+get:
+  tags:
+    - User
+  summary: Get rate-limit of SCM.
+  responses:
+    '200':
+      description: Rate Limit
+      content:
+        application/json:
+          schema:
+            $ref: '../../schemas/RateLimit.yaml'
+    '401': 
+      $ref: '../../responses.yaml#/401Unauthorized'
+    '403':
+      $ref: '../../responses.yaml#/403Forbidden'
+    '500':
+      $ref: '../../responses.yaml#/500InternalError'

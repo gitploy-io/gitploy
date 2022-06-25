@@ -1,0 +1,13 @@
+type: object
+properties:
+  kind: 
+    type: string
+  member_count:
+    type: number
+  member_limit:
+    type: number
+  expired_at:
+    type: string
+required:
+  - kind
+  - member_count

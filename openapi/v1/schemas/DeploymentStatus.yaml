@@ -1,0 +1,32 @@
+type: object
+properties:
+  id:
+    type: number
+  status:
+    type: string
+  description:
+    type: string
+  log_url:
+    type: string
+  created_at:
+    type: string
+  updated_at:
+    type: string
+  deployment_id:
+    type: number
+  repo_id:
+    type: number
+  edges:
+    type: object
+    properties:
+      deployment:
+        $ref: 'DeploymentStatus.yaml'
+      repo:
+        $ref: 'Repository.yaml'
+required:
+  - id
+  - status
+  - created_at
+  - updated_at
+  - deployment_id
+  - repo_id

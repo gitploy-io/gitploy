@@ -1,0 +1,35 @@
+get:
+  tags:
+    - User
+  summary: Get user list.
+  parameters:
+    - in: query
+      name: q
+      schema:
+        type: string
+        description: Search users by login.
+    - in: query
+      name: page
+      schema:
+        type: number
+        default: 1
+    - in: query
+      name: per_page
+      schema:
+        type: number
+        default: 30
+  responses:
+    '200':
+      description: User
+      content:
+        application/json:
+          schema:
+           $ref: '../../schemas/User.yaml'
+    '401': 
+      $ref: '../../responses.yaml#/401Unauthorized'
+    '402':
+      $ref: '../../responses.yaml#/402PaymentRequired'
+    '403':
+      $ref: '../../responses.yaml#/403Forbidden'
+    '500':
+      $ref: '../../responses.yaml#/500InternalError'

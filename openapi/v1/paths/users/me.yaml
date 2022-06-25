@@ -1,0 +1,17 @@
+get:
+  tags:
+    - User
+  summary: Get my information.
+  responses:
+    '200':
+      description: User
+      content:
+        application/json:
+          schema:
+           $ref: '../../schemas/User.yaml'
+    '401': 
+      $ref: '../../responses.yaml#/401Unauthorized'
+    '402':
+      $ref: '../../responses.yaml#/402PaymentRequired'
+    '500':
+      $ref: '../../responses.yaml#/500InternalError'

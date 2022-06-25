@@ -1,0 +1,67 @@
+get:
+  tags:
+    - Search
+  summary: Search deployments.
+  parameters:
+    - in: query
+      name: statuses
+      required: false
+      schema:
+        type: string
+        description: > 
+          Status list comma separated.
+    - in: query
+      name: owned
+      required: false
+      schema:
+        type: boolean
+        description: Own deployments.
+    - in: query
+      name: production_only
+      required: false
+      schema:
+        type: boolean
+        description: Return the deployments for the production environment.
+    - in: query
+      name: from
+      required: false
+      schema:
+        type: string
+        format: date-time
+        description: Begin of created_at.
+    - in: query
+      name: to
+      required: false
+      schema:
+        type: string
+        format: date-time
+        description: End of created_at.
+    - in: query
+      name: page
+      schema:
+        type: integer
+        default: 1
+        description: The page number
+    - in: query
+      name: per_page
+      schema:
+        type: integer
+        default: 30
+        description: The number per page
+  responses:
+    '200':
+      description: Returns deployments which matches to conditions.
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '../../schemas/Deployment.yaml'
+    '400':
+      $ref: '../../responses.yaml#/400BadRequest'
+    '402':
+      $ref: '../../responses.yaml#/402PaymentRequired'
+    '401': 
+      $ref: '../../responses.yaml#/401Unauthorized'
+    '500':
+      $ref: '../../responses.yaml#/500InternalError'

@@ -1,0 +1,43 @@
+post:
+  tags:
+    - Repo
+  summary: Rollback by the deployment.
+  parameters:
+    - in: path
+      name: namespace
+      required: true
+      schema:
+        type: string
+    - in: path
+      name: name
+      required: true
+      schema:
+        type: string
+    - in: path
+      name: number
+      required: true
+      schema:
+        type: integer
+        description: The deployment number.
+  responses:
+    '201':
+      description: Rollbacked Deployment
+      content:
+        application/json:
+          schema:
+            $ref: '../../schemas/Deployment.yaml'
+    '401': 
+      $ref: '../../responses.yaml#/401Unauthorized'
+    '402':
+      $ref: '../../responses.yaml#/402PaymentRequired'
+    '403': 
+      $ref: '../../responses.yaml#/403Forbidden'
+    '404': 
+      $ref: '../../responses.yaml#/404NotFound'
+    '409':
+      $ref: '../../responses.yaml#/409Conflict'
+    '422':
+      description: The deployment number or the configuration is invalid.
+      $ref: '../../responses.yaml#/422UnprocessableEntity'
+    '500':
+      $ref: '../../responses.yaml#/500InternalError'

@@ -1,0 +1,109 @@
+get:
+  tags:
+    - Repo
+  summary: List deployments of repository.
+  parameters:
+    - in: path
+      name: namespace
+      required: true
+      schema:
+        type: string
+    - in: path
+      name: name
+      required: true
+      schema:
+        type: string
+    - in: query
+      name: env
+      description: Name for the target deployment environment.
+      schema:
+        type: string
+        description: The target environment
+    - in: query
+      name: status
+      description: The status of deployment.
+      schema:
+        type: string
+        description: The deployment status
+    - in: query
+      name: page
+      schema:
+        type: integer
+        default: 1
+        description: The page number
+    - in: query
+      name: per_page
+      schema:
+        type: integer
+        default: 30
+        description: The item count per page
+  responses:
+    '200':
+      description: Deployment list
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '../../schemas/Deployment.yaml'
+    '401': 
+      $ref: '../../responses.yaml#/401Unauthorized'
+    '402':
+      $ref: '../../responses.yaml#/402PaymentRequired'
+    '403': 
+      $ref: '../../responses.yaml#/403Forbidden'
+    '500':
+      $ref: '../../responses.yaml#/500InternalError'
+post:
+  tags:
+    - Repo
+  summary: Create a new deployment.
+  parameters:
+    - in: path
+      name: namespace
+      required: true
+      schema:
+        type: string
+    - in: path
+      name: name
+      required: true
+      schema:
+        type: string
+  requestBody:
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            type:
+              type: string
+              default: commit
+            ref:
+              type: string
+            env:
+              type: string
+            dynamic_payload:
+              type: object
+          required:
+            - type
+            - ref
+            - env
+  responses:
+    '201':
+      description: Created
+    '400': 
+      $ref: '../../responses.yaml#/400BadRequest'
+    '401': 
+      $ref: '../../responses.yaml#/401Unauthorized'
+    '402':
+      $ref: '../../responses.yaml#/402PaymentRequired'
+    '403': 
+      $ref: '../../responses.yaml#/403Forbidden'
+    '409':
+      $ref: '../../responses.yaml#/409Conflict'
+      description: The deployment number is conflicted.
+    '422':
+      $ref: '../../responses.yaml#/422UnprocessableEntity'
+      description: The deployment payload or the configuration is invalid.
+    '500':
+      $ref: '../../responses.yaml#/500InternalError'

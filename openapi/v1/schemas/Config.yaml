@@ -1,0 +1,82 @@
+Config:
+  type: object
+  properties:
+    envs:
+      type: array
+      items:
+        $ref: '#/Env'
+
+Env:
+  type: object
+  properties:
+    name:
+      type: string
+    task:
+      type: string
+    description:
+      type: string
+    auto_merge:
+      type: boolean
+    required_contexts:
+      type: array
+      items:
+        type: string
+    payload:
+      type: string
+    dynamic_payload:
+      $ref: '#/DynamicPayload'
+    production_environment:
+      type: boolean
+    review:
+      type: object
+      properties:
+        enabled: 
+          type: boolean
+        reviewers:
+          type: array
+          items:
+            type: string
+      required:
+        - enabled
+        - reviewers
+  required:
+    - name
+    - task
+    - description
+    - auto_merge
+    - payload
+    - production_environment
+
+DynamicPayload:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+        inputs:
+          # Dictionaries
+          type: object
+          additionalProperties:
+            type: object
+            properties:
+              type:
+                type: string
+                enum:
+                  - select
+                  - number
+                  - string
+                  - boolean
+              required:
+                type: boolean
+              default:
+                anyOf:
+                  - type: number
+                  - type: string
+                  - type: boolean
+              description:
+                type: string
+              options:
+                type: array
+                items:
+                  type: string
+            required:
+              - type

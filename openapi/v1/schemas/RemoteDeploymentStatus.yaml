@@ -1,0 +1,13 @@
+type: object
+properties:
+  id:
+    type: number
+  status:
+    type: string
+  description:
+    type: string
+  log_url:
+    type: string
+required:
+  - id
+  - status

@@ -1,0 +1,12 @@
+type: object
+properties:
+  limit:
+    type: number
+  remaining:
+    type: number
+  reset:
+    type: string
+required:
+  - limit
+  - remaining
+  - reset

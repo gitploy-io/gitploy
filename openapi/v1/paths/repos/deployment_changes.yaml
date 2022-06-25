@@ -1,0 +1,53 @@
+get:
+  tags:
+    - Repo
+  summary: List commits from the environment state.
+  description: > 
+    List commits from the environment state, internally, 
+    it compares with the previous succeed deployment.
+  parameters:
+    - in: path
+      name: namespace
+      required: true
+      schema:
+        type: string
+    - in: path
+      name: name
+      required: true
+      schema:
+        type: string
+    - in: path
+      name: number
+      required: true
+      schema:
+        type: integer
+        description: The deployment number.
+    - in: query
+      name: page
+      schema:
+        type: integer
+        default: 1
+    - in: query
+      name: per_page
+      schema:
+        type: integer
+        default: 30
+  responses:
+    '200':
+      description: Commits
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '../../schemas/Commit.yaml'
+    '401': 
+      $ref: '../../responses.yaml#/401Unauthorized'
+    '402':
+      $ref: '../../responses.yaml#/402PaymentRequired'
+    '403': 
+      $ref: '../../responses.yaml#/403Forbidden'
+    '404': 
+      $ref: '../../responses.yaml#/404NotFound'
+    '500':
+      $ref: '../../responses.yaml#/500InternalError'

@@ -1,0 +1,54 @@
+get:
+  tags:
+    - Repo
+  summary: List repositories the user can access.
+  parameters:
+    - in: query
+      name: sort 
+      schema:
+        type: boolean
+        default: false
+    - in: query
+      name: q
+      schema:
+        type: string
+        default: ""
+    - in: query
+      name: namespace
+      schema:
+        type: string
+        default: ""
+    - in: query
+      name: name
+      schema:
+        type: string
+        default: ""
+    - in: query
+      name: page
+      schema:
+        type: integer
+        default: 1
+        description: The page number
+    - in: query
+      name: per_page
+      schema:
+        type: integer
+        default: 30
+        description: The number per page
+  responses:
+    '200':
+      description: Repositories
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '../../schemas/Repository.yaml'
+    '400':
+      $ref: '../../responses.yaml#/400BadRequest'
+    '401': 
+      $ref: '../../responses.yaml#/401Unauthorized'
+    '402':
+      $ref: '../../responses.yaml#/402PaymentRequired'
+    '500':
+      $ref: '../../responses.yaml#/500InternalError'
