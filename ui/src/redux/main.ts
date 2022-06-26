@@ -170,7 +170,7 @@ export const notifyDeploymentStatusEvent = createAsyncThunk<
     notify(`${repo.namespace}/${repo.name} #${deployment.number}`, {
       icon: '/logo192.png',
       body: `${deploymentStatus.status} - ${deploymentStatus.description}`,
-      tag: String(deployment.id),
+      tag: String(deploymentStatus.id),
     });
   }
 );
