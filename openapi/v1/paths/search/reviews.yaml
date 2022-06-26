@@ -1,0 +1,21 @@
+get:
+  tags:
+    - Search
+  summary: Search assigned reviews.
+  responses:
+    '200':
+      description: Returns deployments which matches to conditions.
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '../../schemas/Review.yaml'
+    '400':
+      $ref: '../../responses.yaml#/400BadRequest'
+    '401': 
+      $ref: '../../responses.yaml#/401Unauthorized'
+    '402':
+      $ref: '../../responses.yaml#/402PaymentRequired'
+    '500':
+      $ref: '../../responses.yaml#/500InternalError'

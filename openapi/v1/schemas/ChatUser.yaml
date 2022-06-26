@@ -1,0 +1,12 @@
+type: object
+properties:
+  id:
+    type: string
+  created_at:
+    type: string
+  updated_at:
+    type: string
+required:
+  - id
+  - created_at
+  - updated_at

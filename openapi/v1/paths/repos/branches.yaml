@@ -1,0 +1,44 @@
+get:
+  tags:
+    - Repo
+  summary: List branches of the repository.
+  parameters:
+    - in: path
+      name: namespace
+      required: true
+      schema:
+        type: string
+    - in: path
+      name: name
+      required: true
+      schema:
+        type: string
+    - in: query
+      name: page
+      schema:
+        type: integer
+        default: 1
+        description: The page number
+    - in: query
+      name: per_page
+      schema:
+        type: integer
+        default: 30
+        description: The item count per page
+  responses:
+    '200':
+      description: Branches
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '../../schemas/Branch.yaml'
+    '401': 
+      $ref: '../../responses.yaml#/401Unauthorized'
+    '402':
+      $ref: '../../responses.yaml#/402PaymentRequired'
+    '403': 
+      $ref: '../../responses.yaml#/403Forbidden'
+    '500':
+      $ref: '../../responses.yaml#/500InternalError'

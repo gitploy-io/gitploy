@@ -1,0 +1,59 @@
+type: object
+properties:
+  id:
+    type: integer
+  type:
+    type: string
+    enum:
+      - commit
+      - branch
+      - tag
+  ref:
+    type: string
+  env:
+    type: string
+  status:
+    type: string
+    enum:
+      - waiting
+      - created
+      - queued
+      - running
+      - success
+      - failure
+      - canceled
+  uid:
+    type: integer
+  sha:
+    type: string
+  html_url:
+    type: string
+  production_environment:
+    type: boolean
+  is_rollback:
+    type: boolean
+  created_at:
+    type: string
+  updated_at:
+    type: string
+  edges:
+    type: object
+    properties:
+      user:
+        $ref: 'User.yaml'
+      repo:
+        $ref: 'Repository.yaml'
+      deployment_statuses:
+        type: array
+        items:
+          $ref: 'DeploymentStatus.yaml'
+required:
+  - id
+  - type
+  - ref
+  - env
+  - status
+  - production_environment
+  - is_rollback
+  - created_at
+  - updated_at

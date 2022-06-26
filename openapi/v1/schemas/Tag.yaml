@@ -1,0 +1,9 @@
+type: object
+properties:
+  name:
+    type: string
+  commit_sha:
+    type: string
+required:
+  - name
+  - commit_sha

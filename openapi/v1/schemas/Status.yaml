@@ -1,0 +1,22 @@
+type: object
+properties:
+  context:
+    type: string
+  avatar_url: 
+    type: string
+  target_url:
+    type: string
+  state:
+    type: string
+    description: The state is one of failure, pending, and success.
+    enum:
+      - pending
+      - failure
+      - success
+      - cancelled
+      - skipped
+required:
+  - context
+  - avatar_url
+  - target_url
+  - state

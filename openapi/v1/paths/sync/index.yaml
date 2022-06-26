@@ -1,0 +1,13 @@
+post:
+  tags:
+    - Sync
+  summary: Synchronize with SCM.
+  responses:
+    '200':
+      description: OK
+    '401': 
+      $ref: '../../responses.yaml#/401Unauthorized'
+    '402':
+      $ref: '../../responses.yaml#/402PaymentRequired'
+    '500':
+      $ref: '../../responses.yaml#/500InternalError'

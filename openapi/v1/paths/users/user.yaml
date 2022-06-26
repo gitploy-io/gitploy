@@ -1,0 +1,61 @@
+patch:
+  tags:
+    - User
+  summary: Update the user.
+  parameters:
+    - in: path
+      name: id
+      required: true
+      schema:
+        type: string
+        description: User id.
+  requestBody:
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            admin: 
+              type: boolean
+              default: false
+  responses:
+    '200':
+      description: User
+      content:
+        application/json:
+          schema:
+           $ref: '../../schemas/User.yaml'
+    '401': 
+      $ref: '../../responses.yaml#/401Unauthorized'
+    '402':
+      $ref: '../../responses.yaml#/402PaymentRequired'
+    '403':
+      $ref: '../../responses.yaml#/403Forbidden'
+    '500':
+      $ref: '../../responses.yaml#/500InternalError'
+delete:
+  tags:
+    - User
+  summary: Delete the user.
+  parameters:
+    - in: path
+      name: id
+      required: true
+      schema:
+        type: string
+        description: User id.
+  responses:
+    '200':
+      description: User
+      content:
+        application/json:
+          schema:
+           $ref: '../../schemas/User.yaml'
+    '401': 
+      $ref: '../../responses.yaml#/401Unauthorized'
+    '402':
+      $ref: '../../responses.yaml#/402PaymentRequired'
+    '403':
+      $ref: '../../responses.yaml#/403Forbidden'
+    '500':
+      $ref: '../../responses.yaml#/500InternalError'

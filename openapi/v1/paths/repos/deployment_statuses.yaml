@@ -1,0 +1,40 @@
+get:
+  tags:
+    - Repo
+  summary: List deployment statuses.
+  parameters:
+    - in: path
+      name: namespace
+      required: true
+      schema:
+        type: string
+    - in: path
+      name: name
+      required: true
+      schema:
+        type: string
+    - in: path
+      name: number
+      required: true
+      schema:
+        type: integer
+        description: The deployment number.
+  responses:
+    '200':
+      description: Return the deployment statuses.
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '../../schemas/DeploymentStatus.yaml'
+    '401': 
+      $ref: '../../responses.yaml#/401Unauthorized'
+    '402':
+      $ref: '../../responses.yaml#/402PaymentRequired'
+    '403': 
+      $ref: '../../responses.yaml#/403Forbidden'
+    '422':
+      $ref: '../../responses.yaml#/422UnprocessableEntity'
+    '500':
+      $ref: '../../responses.yaml#/500InternalError'

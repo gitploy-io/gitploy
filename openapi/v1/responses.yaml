@@ -1,0 +1,57 @@
+400BadRequest:
+  description: |
+    The request could not be understood by the server due to malformed syntax.
+  content:
+    application/json:
+      schema:
+        $ref: './schemas/Error.yaml'
+
+401Unauthorized:
+  description: Unauthorized access
+  content:
+    application/json:
+      schema:
+        $ref: './schemas/Error.yaml'
+
+402PaymentRequired:
+  description: License is expired
+  content:
+    application/json:
+      schema:
+        $ref: './schemas/Error.yaml'
+
+403Forbidden:
+  description: Permisson denied
+  content:
+    application/json:
+      schema:
+        $ref: './schemas/Error.yaml'
+
+404NotFound:
+  description: The resource is not found
+  content:
+    application/json:
+      schema:
+        $ref: './schemas/Error.yaml'
+
+409Conflict:
+  description: The conflict occurs
+  content:
+    application/json:
+      schema:
+        $ref: './schemas/Error.yaml'
+
+422UnprocessableEntity:
+  description: |
+    the syntax of the request entity is correct but was unable to process the contained instructions. 
+  content:
+    application/json:
+      schema:
+        $ref: './schemas/Error.yaml'
+    
+500InternalError:
+  description: Server internal error
+  content:
+    application/json:
+      schema:
+        $ref: './schemas/Error.yaml'

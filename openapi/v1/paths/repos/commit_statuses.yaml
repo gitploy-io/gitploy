@@ -1,0 +1,45 @@
+get:
+  tags:
+    - Repo
+  summary: List statuses of the commit.
+  parameters:
+    - in: path
+      name: namespace
+      required: true
+      schema:
+        type: string
+    - in: path
+      name: name
+      required: true
+      schema:
+        type: string
+    - in: path
+      name: sha
+      required: true
+      schema:
+        type: string
+        description: The commit sha
+  responses:
+    '200':
+      description: Statuses for ref
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              state:
+                type: string
+              statuses:
+                type: array
+                items:
+                  $ref: '../../schemas/Status.yaml'
+    '401': 
+      $ref: '../../responses.yaml#/401Unauthorized'
+    '402':
+      $ref: '../../responses.yaml#/402PaymentRequired'
+    '403': 
+      $ref: '../../responses.yaml#/403Forbidden'
+    '404':
+      $ref: '../../responses.yaml#/404NotFound'
+    '500':
+      $ref: '../../responses.yaml#/500InternalError'

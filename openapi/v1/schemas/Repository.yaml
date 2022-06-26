@@ -1,0 +1,41 @@
+type: object
+properties:
+  id:
+    type: number
+  namespace:
+    type: string
+    description: Repository owner
+  name:
+    type: string
+  description:
+    type: string
+  config_path:
+    type: string
+  active:
+    type: boolean
+  webhook_id:
+    type: integer
+  synced_at:
+    type: string
+  created_at:
+    type: string
+  updated_at:
+    type: string
+  latest_deployed_at:
+    type: string
+  edges:
+    type: object
+    properties:
+      deployments:
+        type: array
+        items:
+          $ref: 'Deployment.yaml'
+required:
+  - id
+  - namespace
+  - name
+  - description
+  - config_path
+  - active
+  - created_at
+  - updated_at

@@ -1,0 +1,84 @@
+patch:
+  tags:
+    - Repo
+  summary: Patch the lock.
+  parameters:
+    - in: path
+      name: namespace
+      required: true
+      schema:
+        type: string
+    - in: path
+      name: name
+      required: true
+      schema:
+        type: string
+    - in: path
+      name: lockId
+      required: true
+      schema:
+        type: integer
+        description: The lock ID.
+  requestBody:
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            expired_at:
+              type: string
+  responses:
+    '200':
+      description: Ok
+      content:
+        application/json:
+          schema:
+            type: object
+    '401': 
+      $ref: '../../responses.yaml#/401Unauthorized'
+    '402':
+      $ref: '../../responses.yaml#/402PaymentRequired'
+    '403': 
+      $ref: '../../responses.yaml#/403Forbidden'
+    '404':
+      $ref: '../../responses.yaml#/404NotFound'
+    '500':
+      $ref: '../../responses.yaml#/500InternalError'
+delete:
+  tags:
+    - Repo
+  summary: Unlock the environment.
+  parameters:
+    - in: path
+      name: namespace
+      required: true
+      schema:
+        type: string
+    - in: path
+      name: name
+      required: true
+      schema:
+        type: string
+    - in: path
+      name: lockId
+      required: true
+      schema:
+        type: integer
+        description: The lock ID.
+  responses:
+    '200':
+      description: Ok
+      content:
+        application/json:
+          schema:
+            type: object
+    '401': 
+      $ref: '../../responses.yaml#/401Unauthorized'
+    '402':
+      $ref: '../../responses.yaml#/402PaymentRequired'
+    '403': 
+      $ref: '../../responses.yaml#/403Forbidden'
+    '404':
+      $ref: '../../responses.yaml#/404NotFound'
+    '500':
+      $ref: '../../responses.yaml#/500InternalError'

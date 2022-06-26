@@ -1,0 +1,31 @@
+get:
+  tags:
+    - Event
+  summary: Subscribes streaming event
+  responses:
+    '200':
+      description: Returns events for deployments and reviews
+      content:
+        text/event-stream:
+          schema:
+            type: array
+            format: chunked
+            items:
+              type: object
+              format: text 
+              required:
+                - id 
+                - event 
+                - data
+              properties: 
+                id:
+                  type: integer
+                event:
+                  type: string
+                  enum:
+                    - deployment_status
+                    - review
+                data:
+                  oneOf:
+                    - $ref: '../../schemas/DeploymentStatus.yaml'
+                    - $ref: '../../schemas/Review.yaml'

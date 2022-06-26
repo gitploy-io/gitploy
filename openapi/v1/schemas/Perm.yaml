@@ -1,0 +1,24 @@
+type: object
+properties:
+  id:
+    type: number
+  repo_perm:
+    type: string
+  synced_at:
+    type: string
+  created_at:
+    type: string
+  updated_at:
+    type: string
+  edges:
+    type: object
+    properties:
+      user:
+        $ref: './User.yaml'
+      repo:
+        $ref: './Repository.yaml'
+required:
+  - id
+  - repo_perm
+  - created_at
+  - updated_at
