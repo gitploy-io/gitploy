@@ -3,7 +3,7 @@ module github.com/gitploy-io/gitploy
 go 1.17
 
 require (
-	entgo.io/ent v0.10.1
+	entgo.io/ent v0.11.1
 	github.com/AlekSi/pointer v1.2.0
 	github.com/asaskevich/EventBus v0.0.0-20200907212545-49d423059eef
 	github.com/davecgh/go-spew v1.1.1
@@ -19,7 +19,7 @@ require (
 	github.com/jackc/pgx/v4 v4.16.1
 	github.com/joho/godotenv v1.4.0
 	github.com/kelseyhightower/envconfig v1.4.0
-	github.com/mattn/go-sqlite3 v1.14.10
+	github.com/mattn/go-sqlite3 v1.14.13
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v1.12.2
 	github.com/shurcooL/githubv4 v0.0.0-20201206200315-234843c633fa
@@ -33,7 +33,7 @@ require (
 )
 
 require (
-	ariga.io/atlas v0.3.7-0.20220303204946-787354f533c3 // indirect
+	ariga.io/atlas v0.5.0 // indirect
 	github.com/agext/levenshtein v1.2.1 // indirect
 	github.com/apparentlymart/go-textseg/v13 v13.0.0 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
