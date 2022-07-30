@@ -1,5 +1,3 @@
-replicaCount: 2
-
 ingress:
   enabled: true
   annotations:
@@ -26,7 +24,9 @@ env:
   GITPLOY_SERVER_PROTO: https
   GITPLOY_ADMIN_USERS: "hanjunlee"
   GITPLOY_GITHUB_SCOPES: "public_repo,read:user,read:org"
-  GITPLOY_STORE_DRIVER: "mysql"
 
 extraSecretNamesForEnvFrom:
   - gitploy-prod-secret
+
+persistentVolume:
+  enabled: true
