@@ -1,10 +1,7 @@
 # Gitploy 
 
 <p align="center">
-  <img src="./images/logo.png"><br/>
-  <a href="https://www.producthunt.com/posts/gitploy?utm_source=badge-featured&utm_medium=badge&utm_souce=badge-gitploy" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=322626&theme=light" alt="Gitploy - Build the deployment system around GitHub in minutes. | Product Hunt" style="width: 250px; height: 54px;" width="250" height="54" /></a>
-  <a href="https://www.producthunt.com/posts/gitploy?utm_source=badge-top-post-badge&utm_medium=badge&utm_souce=badge-gitploy" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/top-post-badge.svg?post_id=322626&theme=light&period=daily" alt="Gitploy - Build the deployment system around GitHub in minutes. | Product Hunt" style="width: 250px; height: 54px;" width="250" height="54" /></a>
-  <br/>  
+  <img src="./images/logo.png"><br/>  
   <img src="https://img.shields.io/github/v/release/gitploy-io/gitploy?display_name=release">
   <img src="https://img.shields.io/github/v/release/gitploy-io/gitploy?include_prereleases&label=pre-release">
   <img src="https://github.com/gitploy-io/gitploy/actions/workflows/test.yaml/badge.svg">
