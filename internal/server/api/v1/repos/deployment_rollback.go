@@ -9,6 +9,7 @@ import (
 
 	gb "github.com/gitploy-io/gitploy/internal/server/global"
 	"github.com/gitploy-io/gitploy/model/ent"
+	"github.com/gitploy-io/gitploy/model/ent/deployment"
 	"github.com/gitploy-io/gitploy/model/extent"
 	"github.com/gitploy-io/gitploy/pkg/e"
 )
@@ -54,15 +55,7 @@ func (s *DeploymentAPI) Rollback(c *gin.Context) {
 		return
 	}
 
-	d, err = s.i.Deploy(ctx, u, re,
-		&ent.Deployment{
-			Type:           d.Type,
-			Env:            d.Env,
-			Ref:            d.Ref,
-			DynamicPayload: d.DynamicPayload,
-			IsRollback:     true,
-		},
-		env)
+	d, err = s.i.Deploy(ctx, u, re, s.buildDeploymentForRollback(d), env)
 	if err != nil {
 		s.log.Check(gb.GetZapLogLevel(err), "Failed to rollback.").Write(zap.Error(err))
 		gb.ResponseWithError(c, err)
@@ -76,4 +69,26 @@ func (s *DeploymentAPI) Rollback(c *gin.Context) {
 
 	s.log.Info("Start to rollback.", zap.String("repo", re.GetFullName()), zap.Int("number", d.Number))
 	gb.Response(c, http.StatusCreated, d)
+}
+
+func (s *DeploymentAPI) buildDeploymentForRollback(d *ent.Deployment) *ent.Deployment {
+	// To avoid referencing the head of the branch,
+	// server has to reference the commit SHA of the deployment.
+	if d.Type == deployment.TypeBranch && d.Sha != "" {
+		return &ent.Deployment{
+			Type:           deployment.TypeCommit,
+			Env:            d.Env,
+			Ref:            d.Sha,
+			DynamicPayload: d.DynamicPayload,
+			IsRollback:     true,
+		}
+	}
+
+	return &ent.Deployment{
+		Type:           d.Type,
+		Env:            d.Env,
+		Ref:            d.Ref,
+		DynamicPayload: d.DynamicPayload,
+		IsRollback:     true,
+	}
 }
