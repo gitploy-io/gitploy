@@ -19,7 +19,7 @@ require (
 	github.com/jackc/pgx/v4 v4.17.0
 	github.com/joho/godotenv v1.4.0
 	github.com/kelseyhightower/envconfig v1.4.0
-	github.com/mattn/go-sqlite3 v1.14.15
+	github.com/mattn/go-sqlite3 v1.14.16
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v1.12.2
 	github.com/shurcooL/githubv4 v0.0.0-20201206200315-234843c633fa
