@@ -79,9 +79,10 @@ func NewError(code ErrorCode, wrap error) *Error {
 
 func NewErrorWithMessage(code ErrorCode, message string, wrap error) *Error {
 	return &Error{
-		Code:    code,
-		Message: message,
-		Wrap:    wrap,
+		Code:     code,
+		Message:  message,
+		Wrap:     wrap,
+		httpCode: mapHTTPCode(code),
 	}
 }
 
