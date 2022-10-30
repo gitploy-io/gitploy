@@ -26,7 +26,7 @@ require (
 	github.com/slack-go/slack v0.11.3
 	github.com/tidwall/gjson v1.14.2
 	github.com/urfave/cli/v2 v2.16.2
-	go.uber.org/zap v1.21.0
+	go.uber.org/zap v1.23.0
 	golang.org/x/oauth2 v0.0.0-20220309155454-6242fa91716a
 	gopkg.in/h2non/gock.v1 v1.1.2
 	gopkg.in/yaml.v3 v3.0.1
