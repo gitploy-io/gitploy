@@ -52,12 +52,3 @@ var httpCodes = map[ErrorCode]int{
 	ErrorPermissionRequired:          http.StatusForbidden,
 	ErrorRepoUniqueName:              http.StatusUnprocessableEntity,
 }
-
-func GetHttpCode(code ErrorCode) int {
-	httpCode, ok := httpCodes[code]
-	if !ok {
-		return http.StatusInternalServerError
-	}
-
-	return httpCode
-}
