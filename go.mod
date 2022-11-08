@@ -23,7 +23,7 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v1.12.2
 	github.com/shurcooL/githubv4 v0.0.0-20201206200315-234843c633fa
-	github.com/slack-go/slack v0.11.3
+	github.com/slack-go/slack v0.11.4
 	github.com/tidwall/gjson v1.14.2
 	github.com/urfave/cli/v2 v2.23.4
 	go.uber.org/zap v1.21.0
