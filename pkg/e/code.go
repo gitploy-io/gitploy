@@ -3,6 +3,7 @@ package e
 import (
 	"errors"
 	"fmt"
+	"net/http"
 	"strings"
 )
 
@@ -62,22 +63,26 @@ type (
 		Code    ErrorCode
 		Message string
 		Wrap    error
+
+		httpCode int
 	}
 )
 
 func NewError(code ErrorCode, wrap error) *Error {
 	return &Error{
-		Code:    code,
-		Message: GetMessage(code),
-		Wrap:    wrap,
+		Code:     code,
+		Message:  GetMessage(code),
+		Wrap:     wrap,
+		httpCode: mapHTTPCode(code),
 	}
 }
 
 func NewErrorWithMessage(code ErrorCode, message string, wrap error) *Error {
 	return &Error{
-		Code:    code,
-		Message: message,
-		Wrap:    wrap,
+		Code:     code,
+		Message:  message,
+		Wrap:     wrap,
+		httpCode: mapHTTPCode(code),
 	}
 }
 
@@ -94,8 +99,27 @@ func (e *Error) Error() string {
 	return strings.Join(msgs, ", ")
 }
 
+// GetHTTPCode returns the HTTP code.
+func (e *Error) GetHTTPCode() int {
+	return e.httpCode
+}
+
+// SetHTTPCode sets the HTTP code manually.
+func (e *Error) SetHTTPCode(code int) {
+	e.httpCode = code
+}
+
 func (e *Error) Unwrap() error {
 	return e.Wrap
+}
+
+func mapHTTPCode(code ErrorCode) int {
+	httpCode, ok := httpCodes[code]
+	if !ok {
+		return http.StatusInternalServerError
+	}
+
+	return httpCode
 }
 
 func IsError(err error) bool {

@@ -13,7 +13,7 @@ func Response(c *gin.Context, httpCode int, data interface{}) {
 
 func ResponseWithError(c *gin.Context, err error) {
 	if ge, ok := err.(*e.Error); ok {
-		c.JSON(e.GetHttpCode(ge.Code), map[string]string{
+		c.JSON(ge.GetHTTPCode(), map[string]string{
 			"code":    string(ge.Code),
 			"message": ge.Message,
 		})
@@ -44,7 +44,7 @@ func ResponseWithStatusAndError(c *gin.Context, status int, err error) {
 
 func AbortWithError(c *gin.Context, err error) {
 	if ge, ok := err.(*e.Error); ok {
-		c.AbortWithStatusJSON(e.GetHttpCode(ge.Code), map[string]string{
+		c.AbortWithStatusJSON(ge.GetHTTPCode(), map[string]string{
 			"code":    string(ge.Code),
 			"message": ge.Message,
 		})
