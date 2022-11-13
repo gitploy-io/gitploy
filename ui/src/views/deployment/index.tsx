@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { shallowEqual } from 'react-redux';
-import { Params, useParams } from 'react-router-dom';
+import { Params, useNavigate, useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import { Button, PageHeader, Result, Row, Col } from 'antd';
 import { useAppSelector, useAppDispatch } from '../../redux/hooks';
@@ -168,8 +168,10 @@ function DeploymentPage({
   onClickReject,
   onClickDeploy,
 }: DeploymentPageProps): JSX.Element {
+  const navigate = useNavigate();
+
   const onBack = () => {
-    window.location.href = `/${namespace}/${name}`;
+    navigate(-1);
   };
 
   return (
