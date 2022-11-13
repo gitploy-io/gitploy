@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { shallowEqual } from 'react-redux';
 import { Params, useParams } from 'react-router-dom';
 import { PageHeader, Result, Button } from 'antd';
+import { RedoOutlined } from '@ant-design/icons';
 import { useAppSelector, useAppDispatch } from '../../redux/hooks';
 import {
   DeploymentType,
@@ -49,10 +50,13 @@ export default (): JSX.Element => {
     envs,
     env,
     currentDeployment,
+    branch,
     branches,
     branchStatuses,
+    commit,
     commits,
     commitStatuses,
+    tag,
     tags,
     tagStatuses,
     deploying,
@@ -73,6 +77,24 @@ export default (): JSX.Element => {
     f();
     // eslint-disable-next-line
   }, [dispatch]);
+
+  const onClickRefresh = () => {
+    dispatch(fetchTags());
+    if (tag) {
+      dispatch(checkTag());
+    }
+
+    dispatch(fetchBranches());
+    if (branch) {
+      dispatch(checkBranch());
+      // Fetch commits only when a branch is selected.
+      dispatch(fetchCommits());
+    }
+
+    if (commit) {
+      dispatch(checkCommit());
+    }
+  };
 
   const onSelectEnv = (env: Env) => {
     dispatch(actions.setEnv(env));
@@ -151,6 +173,7 @@ export default (): JSX.Element => {
   }
   return (
     <RepoDeploy
+      onClickRefresh={onClickRefresh}
       envs={envs}
       onSelectEnv={onSelectEnv}
       onChangeType={onChangeType}
@@ -179,9 +202,11 @@ interface RepoDeployProps
   extends DeployFormProps,
     Omit<DynamicPayloadModalProps, 'visible' | 'env' | 'onClickCancel'> {
   env?: Env;
+  onClickRefresh(): void;
 }
 
 function RepoDeploy({
+  onClickRefresh,
   // Properities for the DeployForm component.
   envs,
   onSelectEnv,
@@ -227,7 +252,19 @@ function RepoDeploy({
   return (
     <div>
       <div>
-        <PageHeader title="Deploy" />
+        <PageHeader
+          title="Deploy"
+          extra={[
+            <Button
+              key="1"
+              type="text"
+              shape="circle"
+              size="large"
+              icon={<RedoOutlined />}
+              onClick={onClickRefresh}
+            />,
+          ]}
+        />
       </div>
       <div style={{ padding: '16px 0px' }}>
         <DeployForm
