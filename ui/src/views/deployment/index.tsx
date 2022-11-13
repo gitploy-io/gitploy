@@ -1,9 +1,8 @@
 import { useEffect } from 'react';
 import { shallowEqual } from 'react-redux';
-import { useParams } from 'react-router-dom';
+import { Params, useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import { Button, PageHeader, Result, Row, Col } from 'antd';
-
 import { useAppSelector, useAppDispatch } from '../../redux/hooks';
 import {
   deploymentSlice as slice,
@@ -27,7 +26,6 @@ import {
   subscribeDeploymentStatusEvents,
   subscribeReviewEvents,
 } from '../../apis';
-
 import Main from '../main';
 import HeaderBreadcrumb, { HeaderBreadcrumbProps } from './HeaderBreadcrumb';
 import ReviewButton, { ReviewButtonProps } from './ReviewButton';
@@ -38,14 +36,15 @@ import DeploymentDescriptor, {
 import DeploymentStatusSteps from './DeploymentStatusSteps';
 import Spin from '../../components/Spin';
 
+interface ParamsType extends Params {
+  namespace: string;
+  name: string;
+  number: string;
+}
+
 // It makes the view by binding the state to the deployment page.
 export default (): JSX.Element => {
-  const { namespace, name, number } = useParams<{
-    namespace: string;
-    name: string;
-    number: string;
-  }>();
-
+  const { namespace, name, number } = useParams() as ParamsType;
   const {
     display,
     deployment,

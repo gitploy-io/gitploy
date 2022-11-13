@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { Params, useParams } from 'react-router-dom';
 import { shallowEqual } from 'react-redux';
 import { PageHeader, Select } from 'antd';
 
@@ -17,11 +17,13 @@ import Pagination, { PaginationProps } from '../../components/Pagination';
 
 const { Option } = Select;
 
+interface ParamsType extends Params {
+  namespace: string;
+  name: string;
+}
+
 export default (): JSX.Element => {
-  const { namespace, name } = useParams<{
-    namespace: string;
-    name: string;
-  }>();
+  const { namespace, name } = useParams() as ParamsType;
 
   const { loading, deployments, envs, page } = useAppSelector(
     (state) => state.repoHome,
