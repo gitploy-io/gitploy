@@ -273,6 +273,41 @@ func (i *DeploymentInteractor) CreateDeploymentStatus(ctx context.Context, ds *e
 	return ds, nil
 }
 
+// CompareCommitsFromLastestDeployment returns the changed commit from the last deployment.
+// If there is no last deployment, an empty slice is returned.
+func (i *DeploymentInteractor) CompareCommitsFromLastestDeployment(ctx context.Context, r *ent.Repo, number int, options *ListOptions) ([]*extent.Commit, error) {
+	d, err := i.store.FindDeploymentOfRepoByNumber(ctx, r, number)
+	if err != nil {
+		i.log.Sugar().Errorf("Failed to find the deployment by ID(%d).", number)
+		return nil, err
+	}
+
+	if d.Status == deployment.StatusWaiting {
+		i.log.Info("The deployment is waiting, it doesn't have an SHA to compare.")
+		return []*extent.Commit{}, nil
+	}
+
+	last, err := i.store.FindPrevSuccessDeployment(ctx, d)
+	if e.HasErrorCode(err, e.ErrorCodeEntityNotFound) {
+		i.log.Info("The lastes deployment is not found. It returns an empty commit slice.")
+		return []*extent.Commit{}, nil
+	} else if err != nil {
+		i.log.Error("Failed to find the last success deployment.")
+		return nil, err
+	}
+
+	// TODO: Handling the not-found error.
+	u := ctx.Value(KeyUser).(*ent.User)
+
+	commits, _, err := i.scm.CompareCommits(ctx, u, r, last.Sha, d.Sha, options)
+	if err != nil {
+		i.log.Sugar().Errorf("Failed to compare %s ... %s.", last.Sha, d.Sha)
+		return nil, err
+	}
+
+	return commits, nil
+}
+
 func (i *DeploymentInteractor) runClosingInactiveDeployment(stop <-chan struct{}) {
 	ctx := context.Background()
 
