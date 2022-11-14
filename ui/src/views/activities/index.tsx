@@ -40,6 +40,7 @@ export default (): JSX.Element => {
   }: SearchActivitiesValues) => {
     if (period) {
       console.debug('Set search options.', period, productionOnly);
+      // TODO: Replace the state of the query into the URL query parameter.
       dispatch(
         actions.setSearchOptions({
           startDate: period[0].toDate(),
