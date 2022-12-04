@@ -69,18 +69,18 @@ func (mr *MockInteractorMockRecorder) CompareCommits(ctx, u, r, base, head, opt 
 }
 
 // CompareCommitsFromLastestDeployment mocks base method.
-func (m *MockInteractor) CompareCommitsFromLastestDeployment(ctx context.Context, r *ent.Repo, number int, options *interactor.ListOptions) ([]*extent.Commit, error) {
+func (m *MockInteractor) CompareCommitsFromLastestDeployment(ctx context.Context, r *ent.Repo, d *ent.Deployment, options *interactor.ListOptions) ([]*extent.Commit, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CompareCommitsFromLastestDeployment", ctx, r, number, options)
+	ret := m.ctrl.Call(m, "CompareCommitsFromLastestDeployment", ctx, r, d, options)
 	ret0, _ := ret[0].([]*extent.Commit)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // CompareCommitsFromLastestDeployment indicates an expected call of CompareCommitsFromLastestDeployment.
-func (mr *MockInteractorMockRecorder) CompareCommitsFromLastestDeployment(ctx, r, number, options interface{}) *gomock.Call {
+func (mr *MockInteractorMockRecorder) CompareCommitsFromLastestDeployment(ctx, r, d, options interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CompareCommitsFromLastestDeployment", reflect.TypeOf((*MockInteractor)(nil).CompareCommitsFromLastestDeployment), ctx, r, number, options)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CompareCommitsFromLastestDeployment", reflect.TypeOf((*MockInteractor)(nil).CompareCommitsFromLastestDeployment), ctx, r, d, options)
 }
 
 // CreateLock mocks base method.

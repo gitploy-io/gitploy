@@ -50,7 +50,14 @@ func (s *DeploymentAPI) ListChanges(c *gin.Context) {
 
 	ctx := context.WithValue(c.Request.Context(), gb.KeyUser, u)
 
-	commits, err := s.i.CompareCommitsFromLastestDeployment(ctx, re, number, &i.ListOptions{
+	d, err := s.i.FindDeploymentOfRepoByNumber(ctx, re, number)
+	if err != nil {
+		s.log.Warn("Failed to find the deployment.", zap.Error(err))
+		gb.ResponseWithError(c, err)
+		return
+	}
+
+	commits, err := s.i.CompareCommitsFromLastestDeployment(ctx, re, d, &i.ListOptions{
 		Page:    page,
 		PerPage: perPage,
 	})

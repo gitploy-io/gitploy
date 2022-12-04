@@ -275,13 +275,7 @@ func (i *DeploymentInteractor) CreateDeploymentStatus(ctx context.Context, ds *e
 
 // CompareCommitsFromLastestDeployment returns the changed commit from the last deployment.
 // If there is no last deployment, an empty slice is returned.
-func (i *DeploymentInteractor) CompareCommitsFromLastestDeployment(ctx context.Context, r *ent.Repo, number int, options *ListOptions) ([]*extent.Commit, error) {
-	d, err := i.store.FindDeploymentOfRepoByNumber(ctx, r, number)
-	if err != nil {
-		i.log.Sugar().Errorf("Failed to find the deployment by ID(%d).", number)
-		return nil, err
-	}
-
+func (i *DeploymentInteractor) CompareCommitsFromLastestDeployment(ctx context.Context, r *ent.Repo, d *ent.Deployment, options *ListOptions) ([]*extent.Commit, error) {
 	if d.Status == deployment.StatusWaiting {
 		i.log.Info("The deployment is waiting, it doesn't have an SHA to compare.")
 		return []*extent.Commit{}, nil
