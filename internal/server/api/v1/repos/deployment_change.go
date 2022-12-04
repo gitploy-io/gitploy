@@ -2,7 +2,6 @@ package repos
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -12,7 +11,6 @@ import (
 	i "github.com/gitploy-io/gitploy/internal/interactor"
 	gb "github.com/gitploy-io/gitploy/internal/server/global"
 	"github.com/gitploy-io/gitploy/model/ent"
-	"github.com/gitploy-io/gitploy/model/ent/deployment"
 	"github.com/gitploy-io/gitploy/pkg/e"
 )
 
@@ -48,7 +46,7 @@ func (s *DeploymentAPI) ListChanges(c *gin.Context) {
 	vr, _ := c.Get(KeyRepo)
 	re := vr.(*ent.Repo)
 
-	ctx := context.WithValue(c.Request.Context(), gb.KeyUser, u)
+	ctx := context.WithValue(c.Request.Context(), i.KeyUser, u)
 
 	d, err := s.i.FindDeploymentOfRepoByNumber(ctx, re, number)
 	if err != nil {
@@ -67,33 +65,6 @@ func (s *DeploymentAPI) ListChanges(c *gin.Context) {
 		return
 	}
 
+	s.log.Info("Get the changed commits for the deployment.", zap.Int("number", number))
 	gb.Response(c, http.StatusOK, commits)
-}
-
-func (s *DeploymentAPI) getCommitSha(ctx context.Context, u *ent.User, re *ent.Repo, typ deployment.Type, ref string) (string, error) {
-	switch typ {
-	case deployment.TypeCommit:
-		c, err := s.i.GetCommit(ctx, u, re, ref)
-		if err != nil {
-			return "", err
-		}
-
-		return c.SHA, nil
-	case deployment.TypeBranch:
-		b, err := s.i.GetBranch(ctx, u, re, ref)
-		if err != nil {
-			return "", err
-		}
-
-		return b.CommitSHA, nil
-	case deployment.TypeTag:
-		t, err := s.i.GetTag(ctx, u, re, ref)
-		if err != nil {
-			return "", err
-		}
-
-		return t.CommitSHA, nil
-	default:
-		return "", fmt.Errorf("Type must be one of commit, branch, tag.")
-	}
 }

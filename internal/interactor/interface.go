@@ -9,8 +9,6 @@ import (
 	"github.com/gitploy-io/gitploy/model/extent"
 )
 
-const KeyUser = "gitploy.user"
-
 type (
 	Store interface {
 		UserStore
