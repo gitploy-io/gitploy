@@ -13,7 +13,7 @@ require (
 	github.com/gin-contrib/sse v0.1.0
 	github.com/gin-gonic/gin v1.8.1
 	github.com/gitploy-io/cronexpr v0.2.2
-	github.com/go-sql-driver/mysql v1.6.0
+	github.com/go-sql-driver/mysql v1.7.0
 	github.com/golang/mock v1.6.0
 	github.com/google/go-github/v42 v42.0.0
 	github.com/jackc/pgx/v4 v4.17.2
