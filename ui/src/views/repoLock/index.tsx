@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { shallowEqual } from 'react-redux';
-import { useParams } from 'react-router-dom';
+import { Params, useParams } from 'react-router-dom';
 import { PageHeader, Button } from 'antd';
 import { Result } from 'antd';
 
@@ -15,11 +15,13 @@ import {
 } from '../../redux/repoLock';
 import LockList, { LockListProps } from './LockList';
 
+interface ParamsType extends Params {
+  namespace: string;
+  name: string;
+}
+
 export default (): JSX.Element => {
-  const { namespace, name } = useParams<{
-    namespace: string;
-    name: string;
-  }>();
+  const { namespace, name } = useParams() as ParamsType;
 
   const { display, config, locks } = useAppSelector(
     (state) => state.repoLock,

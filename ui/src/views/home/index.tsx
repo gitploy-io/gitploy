@@ -29,6 +29,7 @@ export default (): JSX.Element => {
   }, [dispatch]);
 
   const search = (q: string) => {
+    // TODO: Replace the state of the query into the URL query parameter.
     dispatch(actions.setQ(q));
     dispatch(actions.setFirstPage());
     dispatch(listRepos());

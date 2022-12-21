@@ -38,10 +38,10 @@ export const fetchEnvs = createAsyncThunk<
 
 export const fetchDeployments = createAsyncThunk<
   Deployment[],
-  void,
+  { env: string; page: number },
   { state: { repoHome: RepoHomeState } }
->('repoHome/fetchDeployments', async (_, { getState }) => {
-  const { namespace, name, env, page } = getState().repoHome;
+>('repoHome/fetchDeployments', async ({ env, page }, { getState }) => {
+  const { namespace, name } = getState().repoHome;
 
   const deployments = await listDeployments(
     namespace,
@@ -64,15 +64,6 @@ export const repoHomeSlice = createSlice({
     ) => {
       state.namespace = action.payload.namespace;
       state.name = action.payload.name;
-    },
-    setEnv: (state, action: PayloadAction<string>) => {
-      state.env = action.payload;
-    },
-    increasePage: (state) => {
-      state.page = state.page + 1;
-    },
-    decreasePage: (state) => {
-      state.page = state.page - 1;
     },
   },
   extraReducers: (builder) => {
