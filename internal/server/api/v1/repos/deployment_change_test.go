@@ -55,21 +55,12 @@ func TestDeploymentAPI_ListChanges(t *testing.T) {
 
 		m.
 			EXPECT().
-			FindPrevSuccessDeployment(ctx, any).
-			Return(&ent.Deployment{
-				ID:     5,
-				Sha:    base,
-				Status: deployment.StatusSuccess,
-			}, nil)
-
-		m.
-			EXPECT().
-			CompareCommits(ctx, any, any, base, head, gomock.Any()).
+			CompareCommitsFromLastestDeployment(ctx, any, gomock.AssignableToTypeOf(&ent.Deployment{}), any).
 			Return([]*extent.Commit{
 				{
 					SHA: head,
 				},
-			}, []*extent.CommitFile{}, nil)
+			}, nil)
 
 		// Ready the router to handle it.
 		gin.SetMode(gin.ReleaseMode)

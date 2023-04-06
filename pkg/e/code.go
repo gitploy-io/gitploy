@@ -77,6 +77,16 @@ func NewError(code ErrorCode, wrap error) *Error {
 	}
 }
 
+// TODO: Migrate the other functions which
+// constructs an error into this function.
+func NError(code ErrorCode, message string) *Error {
+	return &Error{
+		Code:     code,
+		Message:  GetMessage(code),
+		httpCode: mapHTTPCode(code),
+	}
+}
+
 func NewErrorWithMessage(code ErrorCode, message string, wrap error) *Error {
 	return &Error{
 		Code:     code,
@@ -105,12 +115,18 @@ func (e *Error) GetHTTPCode() int {
 }
 
 // SetHTTPCode sets the HTTP code manually.
-func (e *Error) SetHTTPCode(code int) {
+func (e *Error) SetHTTPCode(code int) *Error {
 	e.httpCode = code
+	return e
 }
 
 func (e *Error) Unwrap() error {
 	return e.Wrap
+}
+
+func (e *Error) SetWrap(wrap error) *Error {
+	e.Wrap = wrap
+	return e
 }
 
 func mapHTTPCode(code ErrorCode) int {
