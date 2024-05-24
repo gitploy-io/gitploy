@@ -32,9 +32,21 @@ func (g *Github) CreateRemoteDeployment(ctx context.Context, u *ent.User, r *ent
 			ProductionEnvironment: env.ProductionEnvironment,
 		})
 	if res.StatusCode == http.StatusConflict {
+		// Determine if there is a merge conflict or a commit status check failed.
+		// https://github.com/gitploy-io/gitploy/issues/526
+		for _, es := range err.(*github.ErrorResponse).Errors {
+			if es.Field == "required_contexts" {
+				return nil, e.NewErrorWithMessage(
+					e.ErrorCodeEntityUnprocessable,
+					"A commit status check failed.",
+					err,
+				)
+			}
+		}
+
 		return nil, e.NewErrorWithMessage(
 			e.ErrorCodeEntityUnprocessable,
-			"There is merge conflict or a commit status check failed.",
+			"There is merge conflict. Retry after resolving the conflict.",
 			err,
 		)
 	} else if res.StatusCode == http.StatusUnprocessableEntity {
