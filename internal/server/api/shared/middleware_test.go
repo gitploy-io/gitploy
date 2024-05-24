@@ -42,33 +42,6 @@ func TestMiddleware_IsLicenseExpired(t *testing.T) {
 		}
 	})
 
-	t.Run("Return 402 error when the count of member is over the limit.", func(t *testing.T) {
-		ctrl := gomock.NewController(t)
-		m := mock.NewMockInteractor(ctrl)
-
-		m.
-			EXPECT().
-			GetLicense(gomock.Any()).
-			Return(extent.NewTrialLicense(extent.TrialMemberLimit+1, extent.TrialDeploymentLimit), nil)
-
-		gin.SetMode(gin.ReleaseMode)
-		router := gin.New()
-
-		lm := NewMiddleware(m)
-		router.GET("/repos", lm.IsLicenseExpired(), func(c *gin.Context) {
-			c.Status(http.StatusOK)
-		})
-
-		req, _ := http.NewRequest("GET", "/repos", nil)
-		w := httptest.NewRecorder()
-
-		router.ServeHTTP(w, req)
-
-		if w.Code != http.StatusPaymentRequired {
-			t.Fatalf("IsLicenseExpired = %v, wanted %v", w.Code, http.StatusPaymentRequired)
-		}
-	})
-
 	t.Run("Return 200 when the count of member is under the limit.", func(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		m := mock.NewMockInteractor(ctrl)

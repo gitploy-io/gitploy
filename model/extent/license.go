@@ -1,10 +1,15 @@
 package extent
 
-import "time"
+import (
+	"math"
+	"time"
+)
 
 const (
 	TrialMemberLimit     = 5
 	TrialDeploymentLimit = 5000
+	InfiniteMemberLimit  = math.MaxInt
+	InfiniteDeploymentLimit = math.MaxInt
 )
 
 const (
@@ -47,9 +52,9 @@ func NewTrialLicense(memberCnt, deploymentCnt int) *License {
 	return &License{
 		Kind:            LicenseKindTrial,
 		MemberCount:     memberCnt,
-		MemberLimit:     TrialMemberLimit,
+		MemberLimit:     InfiniteMemberLimit,
 		DeploymentCount: deploymentCnt,
-		DeploymentLimit: TrialDeploymentLimit,
+		DeploymentLimit: InfiniteMemberLimit,
 	}
 }
 
@@ -57,7 +62,7 @@ func NewStandardLicense(memberCnt int, d *SigningData) *License {
 	return &License{
 		Kind:            LicenseKindStandard,
 		MemberCount:     memberCnt,
-		MemberLimit:     d.MemberLimit,
+		MemberLimit:     InfiniteMemberLimit,
 		DeploymentCount: -1,
 		ExpiredAt:       d.ExpiredAt,
 	}

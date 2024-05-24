@@ -15,24 +15,6 @@ func TestLicense_IsOverLimit(t *testing.T) {
 		}
 	})
 
-	t.Run("Return true when the trial license is over the member limit.", func(t *testing.T) {
-		l := NewTrialLicense(TrialMemberLimit+1, 0)
-
-		expected := true
-		if finished := l.IsOverLimit(); finished != expected {
-			t.Fatalf("IsOverLimit = %v, wanted %v", finished, expected)
-		}
-	})
-
-	t.Run("Return true when the trial license is over the deployment limit.", func(t *testing.T) {
-		l := NewTrialLicense(5, TrialDeploymentLimit+1)
-
-		expected := true
-		if finished := l.IsOverLimit(); finished != expected {
-			t.Fatalf("IsOverLimit = %v, wanted %v", finished, expected)
-		}
-	})
-
 	t.Run("Return false when the trial license is less than or equal to the limit.", func(t *testing.T) {
 		l := NewTrialLicense(TrialMemberLimit, TrialDeploymentLimit)
 
