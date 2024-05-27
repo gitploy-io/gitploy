@@ -1,5 +1,5 @@
 import './App.less';
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 import Home from './views/home';
 import Repo from './views/repo';
@@ -12,29 +12,18 @@ function App(): JSX.Element {
   return (
     <div className="App">
       <Router>
-        <Switch>
-          <Route path="/:namespace/:name/deployments/:number">
-            <Deployment />
-          </Route>
-          <Route path="/:namespace/:name/:tab">
-            <Repo />
-          </Route>
-          <Route path="/:namespace/:name">
-            <Repo />
-          </Route>
-          <Route path="/settings">
-            <Settings />
-          </Route>
-          <Route path="/members">
-            <Members />
-          </Route>
-          <Route path="/activities">
-            <Activities />
-          </Route>
-          <Route path="/">
-            <Home />
-          </Route>
-        </Switch>
+        <Routes>
+          <Route
+            path="/:namespace/:name/deployments/:number"
+            element={<Deployment />}
+          />
+          <Route path="/:namespace/:name/:tab" element={<Repo />} />
+          <Route path="/:namespace/:name" element={<Repo />} />
+          <Route path="/settings" element={<Settings />} />
+          <Route path="/members" element={<Members />} />
+          <Route path="/activities" element={<Activities />} />
+          <Route path="/" element={<Home />} />
+        </Routes>
       </Router>
     </div>
   );

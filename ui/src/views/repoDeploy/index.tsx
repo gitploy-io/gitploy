@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { shallowEqual } from 'react-redux';
-import { useParams } from 'react-router-dom';
+import { Params, useParams } from 'react-router-dom';
 import { PageHeader, Result, Button } from 'antd';
 import { RedoOutlined } from '@ant-design/icons';
 import { useAppSelector, useAppDispatch } from '../../redux/hooks';
@@ -36,11 +36,13 @@ import DynamicPayloadModal, {
 
 const { actions } = repoDeploySlice;
 
+interface ParamsType extends Params {
+  namespace: string;
+  name: string;
+}
+
 export default (): JSX.Element => {
-  const { namespace, name } = useParams<{
-    namespace: string;
-    name: string;
-  }>();
+  const { namespace, name } = useParams() as ParamsType;
 
   const {
     display,

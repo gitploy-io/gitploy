@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom';
+import { Params, useParams } from 'react-router-dom';
 import { Menu, Breadcrumb, Result } from 'antd';
 import { shallowEqual } from 'react-redux';
 import { useEffect } from 'react';
@@ -15,14 +15,14 @@ import RepoDeploy from '../repoDeploy';
 import RepoRollabck from '../repoRollback';
 import RepoSettings from '../repoSettings';
 
-interface Params {
+interface ParamsTypes extends Params {
   namespace: string;
   name: string;
   tab: string;
 }
 
 export default (): JSX.Element => {
-  const { namespace, name, tab } = useParams<Params>();
+  const { namespace, name, tab } = useParams() as ParamsTypes;
   const { display, repo } = useAppSelector((state) => state.repo, shallowEqual);
   const dispatch = useAppDispatch();
 
