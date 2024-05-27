@@ -1263,6 +1263,21 @@ func (mr *MockSCMMockRecorder) GetConfigRedirectURL(ctx, u, r interface{}) *gomo
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetConfigRedirectURL", reflect.TypeOf((*MockSCM)(nil).GetConfigRedirectURL), ctx, u, r)
 }
 
+// GetDefaultBranch mocks base method.
+func (m *MockSCM) GetDefaultBranch(ctx context.Context, u *ent.User, r *ent.Repo) (*extent.Branch, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetDefaultBranch", ctx, u, r)
+	ret0, _ := ret[0].(*extent.Branch)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetDefaultBranch indicates an expected call of GetDefaultBranch.
+func (mr *MockSCMMockRecorder) GetDefaultBranch(ctx, u, r interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetDefaultBranch", reflect.TypeOf((*MockSCM)(nil).GetDefaultBranch), ctx, u, r)
+}
+
 // GetNewConfigRedirectURL mocks base method.
 func (m *MockSCM) GetNewConfigRedirectURL(ctx context.Context, u *ent.User, r *ent.Repo) (string, error) {
 	m.ctrl.T.Helper()
@@ -1571,6 +1586,21 @@ func (m *MockBranchSCM) GetBranch(ctx context.Context, u *ent.User, r *ent.Repo,
 func (mr *MockBranchSCMMockRecorder) GetBranch(ctx, u, r, branch interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetBranch", reflect.TypeOf((*MockBranchSCM)(nil).GetBranch), ctx, u, r, branch)
+}
+
+// GetDefaultBranch mocks base method.
+func (m *MockBranchSCM) GetDefaultBranch(ctx context.Context, u *ent.User, r *ent.Repo) (*extent.Branch, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetDefaultBranch", ctx, u, r)
+	ret0, _ := ret[0].(*extent.Branch)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetDefaultBranch indicates an expected call of GetDefaultBranch.
+func (mr *MockBranchSCMMockRecorder) GetDefaultBranch(ctx, u, r interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetDefaultBranch", reflect.TypeOf((*MockBranchSCM)(nil).GetDefaultBranch), ctx, u, r)
 }
 
 // ListBranches mocks base method.
