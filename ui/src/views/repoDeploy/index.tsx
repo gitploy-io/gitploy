@@ -228,7 +228,16 @@ function RepoDeploy({
   env,
   onClickOk,
 }: RepoDeployProps): JSX.Element {
+  const [refreshing, setRefreshing] = useState(false);
   const [payloadModalVisible, setPayloadModalVisible] = useState(false);
+
+  const _onClickRefresh = () => {
+    setRefreshing(true);
+    onClickRefresh();
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 1000);
+  };
 
   const _onClickDeploy = () => {
     if (env?.dynamicPayload?.enabled) {
@@ -257,9 +266,10 @@ function RepoDeploy({
               key="1"
               type="text"
               shape="circle"
-              size="large"
+              size="middle"
+              loading={refreshing}
               icon={<RedoOutlined />}
-              onClick={onClickRefresh}
+              onClick={_onClickRefresh}
             />,
           ]}
         />
