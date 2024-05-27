@@ -133,6 +133,7 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 		repov1.GET("/:namespace/:name/commits/:sha/statuses", rm.RepoReadPerm(), api.Commits.ListStatuses)
 		repov1.GET("/:namespace/:name/branches", rm.RepoReadPerm(), api.Branch.List)
 		repov1.GET("/:namespace/:name/branches/:branch", rm.RepoReadPerm(), api.Branch.Get)
+		repov1.GET("/:namespace/:name/default-branch", rm.RepoReadPerm(), api.Branch.GetDefault)
 		repov1.GET("/:namespace/:name/tags", rm.RepoReadPerm(), api.Tag.List)
 		repov1.GET("/:namespace/:name/tags/:tag", rm.RepoReadPerm(), api.Tag.Get)
 		repov1.GET("/:namespace/:name/deployments", rm.RepoReadPerm(), api.Deployment.List)

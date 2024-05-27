@@ -23,6 +23,7 @@ import {
   listDeployments,
   listBranches,
   getBranch,
+  getDefaultBranch,
   listCommits,
   getCommit,
   listStatuses,
@@ -121,7 +122,23 @@ export const fetchBranches = createAsyncThunk<
   const { namespace, name } = getState().repoDeploy;
 
   const branches = await listBranches(namespace, name, firstPage, perPage);
-  return branches;
+
+  const defaultBranch = await getDefaultBranch(namespace, name);
+
+  // Add the default branch, and remove the duplicated one.
+  branches.unshift(defaultBranch);
+
+  const reduced = branches.reduce((acc, cur) => {
+    if (acc.findIndex((b) => b.name === cur.name) === -1) {
+      acc.push(cur);
+    }
+
+    return acc;
+  }, [] as Branch[]);
+
+  console.log(reduced);
+
+  return reduced;
 });
 
 export const checkBranch = createAsyncThunk<

@@ -52,3 +52,27 @@ export const getBranch = async (
 
   return ret;
 };
+
+export const getDefaultBranch = async (
+  namespace: string,
+  name: string
+): Promise<Branch> => {
+  const response = await _fetch(
+    `${instance}/api/v1/repos/${namespace}/${name}/default-branch`,
+    {
+      headers,
+      credentials: 'same-origin',
+    }
+  );
+
+  if (response.status === StatusCodes.NOT_FOUND) {
+    const message = await response.json().then((data) => data.message);
+    throw new HttpNotFoundError(message);
+  }
+
+  const ret: Branch = await response
+    .json()
+    .then((b: any) => mapDataToBranch(b));
+
+  return ret;
+};

@@ -32,3 +32,22 @@ func (s *BranchAPI) Get(c *gin.Context) {
 
 	gb.Response(c, http.StatusOK, b)
 }
+
+func (s *BranchAPI) GetDefault(c *gin.Context) {
+	ctx := c.Request.Context()
+
+	uv, _ := c.Get(gb.KeyUser)
+	u := uv.(*ent.User)
+
+	rv, _ := c.Get(KeyRepo)
+	repo := rv.(*ent.Repo)
+
+	b, err := s.i.GetDefaultBranch(ctx, u, repo)
+	if err != nil {
+		s.log.Check(gb.GetZapLogLevel(err), "Failed to get the branch.").Write(zap.Error(err))
+		gb.ResponseWithError(c, err)
+		return
+	}
+
+	gb.Response(c, http.StatusOK, b)
+}
