@@ -103,7 +103,7 @@ function DynamicItem({ name, input }: DynamicItemProps): JSX.Element {
           tooltip={description}
           rules={rules}
         >
-          <Input />
+          <Input.TextArea rows={1} autoSize />
         </Form.Item>
       );
     case DynamicPayloadInputTypeEnum.Number:
