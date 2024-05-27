@@ -337,6 +337,21 @@ func (mr *MockInteractorMockRecorder) GetConfig(ctx, u, r interface{}) *gomock.C
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetConfig", reflect.TypeOf((*MockInteractor)(nil).GetConfig), ctx, u, r)
 }
 
+// GetDefaultBranch mocks base method.
+func (m *MockInteractor) GetDefaultBranch(ctx context.Context, u *ent.User, r *ent.Repo) (*extent.Branch, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetDefaultBranch", ctx, u, r)
+	ret0, _ := ret[0].(*extent.Branch)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetDefaultBranch indicates an expected call of GetDefaultBranch.
+func (mr *MockInteractorMockRecorder) GetDefaultBranch(ctx, u, r interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetDefaultBranch", reflect.TypeOf((*MockInteractor)(nil).GetDefaultBranch), ctx, u, r)
+}
+
 // GetEvaluatedConfig mocks base method.
 func (m *MockInteractor) GetEvaluatedConfig(ctx context.Context, u *ent.User, r *ent.Repo, v *extent.EvalValues) (*extent.Config, error) {
 	m.ctrl.T.Helper()
