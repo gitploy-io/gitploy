@@ -157,6 +157,26 @@ func (g *Github) GetBranch(ctx context.Context, u *ent.User, r *ent.Repo, branch
 	return mapGithubBranchToBranch(b), nil
 }
 
+func (g *Github) GetDefaultBranch(ctx context.Context, u *ent.User, r *ent.Repo) (*extent.Branch, error) {
+	rr, res, err := g.Client(ctx, u.Token).Repositories.Get(ctx, r.Namespace, r.Name)
+	if res.StatusCode == http.StatusNotFound {
+		return nil, e.NewErrorWithMessage(e.ErrorCodeEntityNotFound, "The default branch is not found.", err)
+	} else if err != nil {
+		return nil, e.NewError(e.ErrorCodeInternalError, err)
+	}
+
+	b, res, err := g.Client(ctx, u.Token).
+		Repositories.
+		GetBranch(ctx, r.Namespace, r.Name, *rr.DefaultBranch, false)
+	if res.StatusCode == http.StatusNotFound {
+		return nil, e.NewErrorWithMessage(e.ErrorCodeEntityNotFound, "The default branch is not found.", err)
+	} else if err != nil {
+		return nil, e.NewError(e.ErrorCodeInternalError, err)
+	}
+
+	return mapGithubBranchToBranch(b), nil
+}
+
 // ListTags list up tags as ordered by commit date.
 // Github GraphQL explore - https://docs.github.com/en/graphql/overview/explorer
 func (g *Github) ListTags(ctx context.Context, u *ent.User, r *ent.Repo, opt *i.ListOptions) ([]*extent.Tag, error) {
